@@ -1,2 +1,2 @@
 # MLPro
-A synoptic framework for standardized machine learning tasks in Python
+A Synoptic Framework for Standardized Machine Learning Tasks in Python
