@@ -102,13 +102,7 @@ class GridWorld(Environment):
         return state
         
     def _simulate_reaction(self, p_action: Action) -> None:
-<<<<<<< HEAD
         self.agent_pos += np.array(p_action).astype(np.int)
-=======
-        action = p_action.get_sorted_values()
-
-        self.agent_pos += np.array(action).astype(np.int)
->>>>>>> c294cabee5804857f788fc296aacad371470ea5f
         self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
         
         self.num_step += 1

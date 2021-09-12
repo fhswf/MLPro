@@ -23,10 +23,6 @@ from typing import List
 from time import sleep
 from mlpro.bf.various import *
 from mlpro.bf.math import *
-<<<<<<< HEAD
-=======
-from mlpro.bf.ml import *
->>>>>>> c294cabee5804857f788fc296aacad371470ea5f
 from mlpro.rl.models import *
 
 
