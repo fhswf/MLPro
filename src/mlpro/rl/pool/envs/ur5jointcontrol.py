@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-13  0.0.0     WB       Creation
 ## -- 2021-09-13  1.0.0     WB       Released first version
+## -- 2021-09-13  1.0.1     WB       Instantiated without WrEnvGym
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-13)
+Ver. 1.0.1 (2021-09-13)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
@@ -18,7 +19,6 @@ based on the Gym-based environment 'UR5RandomTargetTask-v0'.
 
 
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGym
 import numpy as np
 import gym
 import rospy
@@ -42,10 +42,6 @@ class UR5JointControl(Environment):
     C_NAME      = 'UR5JointControl'
     C_LATENCY   = timedelta(0,1,0)
     C_INFINITY  = np.finfo(np.float32).max      
-    roscore = subprocess.Popen('roscore')
-    rospy.init_node('ur5_lab_training_start',
-                anonymous=True, log_level=rospy.WARN)
-    task_and_robot_environment_name = 'UR5RandomTargetTask-v0'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -54,15 +50,22 @@ class UR5JointControl(Environment):
         Parameters:
             p_logging       Boolean switch for logging
         """
-
+        roscore = subprocess.Popen('roscore')
+        rospy.init_node('ur5_lab_training_start',
+                    anonymous=True, log_level=rospy.WARN)
+                    
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
 
-        env              = WrEnvGym(env=StartOpenAI_ROS_Environment(
-                                            task_and_robot_environment_name),
-                                    p_logging=p_logging,)
-        self.num_joint = 6
+        self.env = StartOpenAI_ROS_Environment(
+                            'UR5RandomTargetTask-v0')
+        self.reset()
                  
-                 
+## -------------------------------------------------------------------------------------------------
+    def _obs_to_state(self, observation):
+        state = State(self._state_space)
+        state.set_values(observation)
+        return state
+        
 ## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self):
         # Setup state space
@@ -80,26 +83,26 @@ class UR5JointControl(Environment):
                                 [-math.inf,math.inf]))
             
         # Setup action space
-        for idx in range(self.num_joint):
+        for idx in range(6):
             self._action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad', 'rad', [-np.pi,np.pi]))
 
     
 ## -------------------------------------------------------------------------------------------------
     def reset(self) -> None:
-        self.state = env.reset()
-  
+        obs = self.env.reset()
+        self.state = self._obs_to_state(obs)
 
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_action: Action) -> None:
-        self.state, self.reward, self.done, info = env.step(p_action.get_sorted_values())
-        
+        obs, self.reward_gym, self.done, info = self.env.step(p_action.get_sorted_values())
+        self.state = self._obs_to_state(obs)
 
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self) -> None: 
-        self.state = env.get_observation()
+        obs = self.env.get_observation()
         
-        close = np.allclose(a=self.state[:3], 
-                            b=self.goal_pos[3:], 
+        close = np.allclose(a=obs[:3], 
+                            b=obs[3:], 
                             atol=0.2)
         if close:
             self.done = True
@@ -109,7 +112,8 @@ class UR5JointControl(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def compute_reward(self) -> Reward:
-        reward = self.reward
-
-        return reward
+        reward = Reward(Reward.C_TYPE_OVERALL)
+        reward.set_overall_reward(self.reward_gym)
+        self.reward = reward
+        return self.reward
 
