@@ -35,9 +35,12 @@ Main Contributions
 - Clear documentations
 
 
+Instructions for use
+--------------
+
 .. toctree::
    :maxdepth: 2
-   :caption: Instructions for use
+   :caption: Contents:
    
    instructions/installation
    instructions/rl
