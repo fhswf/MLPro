@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-MLPro for Machine Learning Professional - A Synoptic Framework for Standardized Machine Learning Tasks in Python!
+MLPro - Machine Learning Professional
 ================================================
 
 .. toctree::
@@ -12,7 +12,8 @@ MLPro for Machine Learning Professional - A Synoptic Framework for Standardized 
 
 `MLPro <https://github.com/fhswf/MLPro.git>`_ is a synoptic framework for standardized machine learning tasks in Python!
 
-MLPro was developed in 2021 by `Automation Technology team at Fachhochschule Südwestfalen <https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php>`_ .
+MLPro was developed in 2021 by `Automation Technology team at Fachhochschule Südwestfalen <https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php>`_.
+
 MLPro provides complete, standardized, and reusable functionalities to support your scientific research or industrial project in machine learning.
 
 In MLPro v0.0.0, we provide a standarized Python package for conducting research in reinforcement learning (RL) and game
