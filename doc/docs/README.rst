@@ -2,6 +2,10 @@
 :target: https://mlpro.readthedocs.io/en/latest/?badge=latest
 :alt: Documentation Status
 
+.. image:: https://badge.fury.io/py/mlpro.svg
+:target: https://badge.fury.io/py/mlpro
+:alt: mlpro on pypi
+
 Documentation
 ================================================
 
