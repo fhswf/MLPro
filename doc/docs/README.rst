@@ -8,6 +8,6 @@ Documentation
 Read MLPro documentation online at https://mlpro.readthedocs.io/
 
 Optionally, build the documentation from ''docs/'' folder::
-    pip install sphinx
-    cd doc/docs/
-    make html
+pip install sphinx
+cd doc/docs/
+make html
