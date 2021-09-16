@@ -282,7 +282,7 @@ class RobotHTM(Environment):
         reward = Reward(Reward.C_TYPE_OVERALL)
         disterror = np.linalg.norm(self.state.get_values()[:3] - self.state.get_values()[3:])
         rew = -disterror
-        if disterror >= 0.2:
+        if disterror <= 0.2:
             rew = rew + 20
         reward.set_overall_reward(rew)
         return reward
