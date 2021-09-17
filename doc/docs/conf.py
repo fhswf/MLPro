@@ -71,5 +71,5 @@ html_context = {
   'display_github': True,
   'github_user': 'fhswf',
   'github_repo': 'MLPro',
-  'github_version': 'main/doc/docs/',
+  'github_version': 'read_the_docs/doc/docs/',
 }
