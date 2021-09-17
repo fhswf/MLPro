@@ -665,6 +665,13 @@ class SARBuffer:
 
         return self._sar_data
 
+## -------------------------------------------------------------------------------------------------
+    def is_full(self):
+        """
+        Returns True if the buffer is full
+        """
+
+        return len(self._sar_data) >= self._size
 
 
 
