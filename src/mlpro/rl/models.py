@@ -1070,6 +1070,7 @@ class MultiAgent(Agent):
             return False
 
         reward = p_args[0]
+        done = p_args[1]
 
         self.log(self.C_LOG_TYPE_I, 'Start of adaption for all agents...')      
 
@@ -1078,7 +1079,7 @@ class MultiAgent(Agent):
             agent = agent_entry[0]
             if ( reward.get_type() != Reward.C_TYPE_OVERALL ) and not reward.is_rewarded(agent.get_id()): continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-            adapted = adapted or agent.adapt(reward)
+            adapted = adapted or agent.adapt(reward, done)
 
         self.log(self.C_LOG_TYPE_I, 'End of adaption for all agents...')        
 
