@@ -599,8 +599,6 @@ class SARBuffer(Buffer):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_size:int):
         """
-        [summary]
-
         Parameters:
             p_size (int): Buffer size
         """
