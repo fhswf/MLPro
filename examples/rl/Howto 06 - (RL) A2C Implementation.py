@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-13  0.0.0     MRD      Creation
-## -- 2021-09-13  1.0.0     MRD      Released first version
+## -- 2021-09-18  1.0.0     MRD      Released first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-13)
+Ver. 1.0.0 (2021-09-18)
 
 This module shows how to implement A2C from the pool
 """
@@ -20,37 +20,31 @@ from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGym
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.rl.pool.scenarios.a2c_scenario import A2CScenario
-from mlpro.rl.pool.policies.a2c_policy import A2CPolicy
-from mlpro.rl.pool.agents.a2c_agent import A2CAgent
+from mlpro.rl.pool.policies.a2c import A2C 
 import gym
 import random
 from pathlib import Path
 
-
-
-
 # 1 Implement your own RL scenario
-class MyScenario(A2CScenario):
+class MyScenario(Scenario):
 
-    C_NAME      = 'MyScenario'
+    C_NAME      = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        self._env   = RobotHTM(p_logging=False) 
+        self._env   = RobotHTM(p_logging=True) 
 
         # 2 Setup standard single-agent with own policy
-        self._agent = A2CAgent(
-            p_policy=A2CPolicy(
+        self._agent = Agent(
+            p_policy=A2C(
                 p_state_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
+                p_buffer_size=100,
                 p_ada=p_ada,
                 p_logging=p_logging
-            ),
-            p_sarbuffer_size=self._cycle_limit,    
+            ),    
             p_envmodel=None,
             p_name='Smith',
-            p_id=0,
             p_ada=p_ada,
             p_logging=p_logging
         )
