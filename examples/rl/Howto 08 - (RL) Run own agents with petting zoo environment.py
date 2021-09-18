@@ -63,10 +63,10 @@ class MyScenario(Scenario):
             agent_asspace   = self._env.get_action_space().spawn([agent_id-1])
             agent           = Agent(p_policy=MyPolicy(p_state_space=agent_sspace,
                                                       p_action_space=agent_asspace,
+                                                      p_buffer_size=10,
                                                       p_ada=p_ada,
                                                       p_logging=p_logging
                                                       ),
-                                    p_sarbuffer_size=10,
                                     p_envmodel=None,
                                     p_id=agent_id,
                                     p_name=agent_name,

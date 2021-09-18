@@ -89,10 +89,10 @@ class MyScenario(Scenario):
                 p_policy=MyPolicy(
                     p_state_space=self._env.get_state_space().spawn([0,1,2,3]),
                     p_action_space=self._env.get_action_space().spawn([0]),
+                    p_buffer_size=1,
                     p_ada=True,
                     p_logging=True
                 ),
-                p_sarbuffer_size=1,
                 p_envmodel=None,
                 p_name='Smith-1',
                 p_id=0,
@@ -109,10 +109,10 @@ class MyScenario(Scenario):
                 p_policy=MyPolicy(
                     p_state_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
                     p_action_space=self._env.get_action_space().spawn([1,2]),
+                    p_buffer_size=1,
                     p_ada=True,
                     p_logging=True
                 ),
-                p_sarbuffer_size=1,
                 p_envmodel=None,
                 p_name='Smith-2',
                 p_id=1,

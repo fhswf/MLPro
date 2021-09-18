@@ -76,10 +76,10 @@ class MyScenario(Scenario):
             p_policy=MyPolicy(
                 p_state_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
+                p_buffer_size=10,
                 p_ada=p_ada,
                 p_logging=p_logging
             ),    
-            p_sarbuffer_size=10,
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
