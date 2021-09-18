@@ -6,7 +6,14 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-19  0.0.0     MRD      Creation
+## -- 2021-09-19  1.0.0     MRD      Release first version
 ## -------------------------------------------------------------------------------------------------
+
+"""
+Ver. 1.0.0 (2021-09-19)
+
+This module provides the implementation of random sampling on SARBuffer.
+"""
 
 from mlpro.rl.models import *
 import random
