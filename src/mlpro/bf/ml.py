@@ -8,12 +8,10 @@
 ## -- 2021-08-20  0.0.0     DA       Creation 
 ## -- 2021-08-25  1.0.0     DA       Release of first version
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
-## -- 2021-09-18  1.0.1     MRD      Buffer Class Implementation. Add new parameter buffer
-## --                                to the Adaptive Class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-09-18)
+Ver. 1.0.0 (2021-08-25)
 
 This module provides common machine learning functionalities and properties.
 """
@@ -122,10 +120,9 @@ class Adaptive(Log, LoadSave):
     C_NAME          = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer=None, p_ada=True, p_logging=True):
+    def __init__(self, p_ada=True, p_logging=True):
         """
         Parameters:
-            p_buffer            Buffer
             p_ada               Boolean switch for adaptivity
             p_logging           Boolean switch for logging functionality
         """
@@ -135,8 +132,6 @@ class Adaptive(Log, LoadSave):
         self._hyperparam_space  = HyperParamSpace()
         self._hyperparam_tupel  = None
         self._init_hyperparam()
-
-        self._buffer = p_buffer
 
         self._attrib_hp1 = 0
 
@@ -193,101 +188,3 @@ class Adaptive(Log, LoadSave):
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_I, 'Adaption started')
         return True
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Buffer:
-    """
-    Base class implementation for buffer management.
-    """
-
-    C_TYPE = "Buffer"
-    C_NAME = "????"
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_size=1):
-        """
-        [summary]
-
-        Args:
-            p_size (int, optional): Buffer size. Defaults to 1.
-        """
-        self._size = p_size
-
-## -------------------------------------------------------------------------------------------------
-    def add_element(self, *p_args):
-        """
-        Add sample to the buffer.
-
-        """                            
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def clear(self):
-        """
-        Clear the buffer.
-
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def get_latest(self):
-        """
-        Get the latest element in the buffer
-
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def get_all(self):
-        """
-        Return all buffered elements.
-
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def get_sample(self, p_num:int):
-        """
-        Sample some element from the buffer.
-
-        Parameters:
-            p_num (int): Number of sample
-
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def _gen_sample_ind(self, p_num:int) -> list:
-        """
-        Generate random indices from the buffer.
-
-        Parameters:
-            p_num (int): Number of sample
-
-        Returns:
-            List of incides
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def _extract_rows(self, p_list_idx:list):
-        """
-        Extract the element in the buffer based on a
-        list of indices.
-
-        Parameters:
-            p_list_idx (list): List of indices
-
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def is_full(self) -> bool:
-        """
-        Check if the buffer is full.
-
-        Returns:
-            True, if the buffer is full
-        """
-        raise NotImplementedError

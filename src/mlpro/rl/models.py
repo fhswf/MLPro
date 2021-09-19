@@ -25,14 +25,10 @@
 ## -- 2021-08-27  1.3.1     SY       Move classes WrEnvPZoo, WrPolicyRAY to a new module wrapper
 ## -- 2021-08-28  1.3.2     DA       Bugfixes and minor improvements
 ## -- 2021-09-11  1.3.2     MRD      Change Header information to match our new library name
-## -- 2021-09-18  1.3.3     MRD      Implement new SARBuffer class and SARBufferelement. The buffer
-## --                                is now working in dictionary. Now the SARBuffer is inside
-## --                                the Policy and EnvModel instead of the Agent.
-## --                                Added "Done" as default input for Agent.adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2021-09-18)
+Ver. 1.3.2 (2021-08-28)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -554,156 +550,7 @@ class Environment(EnvBase):
         raise NotImplementedError
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class SARBufferElement:
-    """
-    Element of a State-Action-Reward-Buffer.
-    """
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_element:dict) -> None:
-        """
-        Parameters:
-            p_element (dict): Buffer element in dictionary
-        """
-
-        self._element = {}
-
-        self.add_value_element(p_element)
-        
-## -------------------------------------------------------------------------------------------------
-    def add_value_element(self,val):
-        self._element = {**self._element, **val}
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_data(self):
-        """
-        Get the buffer element.
-
-        Returns:
-            Returns the buffer element.
-        """
-
-        return self._element
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class SARBuffer(Buffer):
-    """
-    State-Action-Reward-Buffer in dictionary.
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_size:int):
-        """
-        Parameters:
-            p_size (int): Buffer size
-        """
-        super().__init__(p_size=p_size)
-        self._data_buffer = {}
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_element(self, p_elem:SARBufferElement):
-        """
-        Add element to the buffer.
-
-        Parameters:
-            p_elem (SARBufferElement): [description]
-        """
-        self._data_buffer = {**p_elem.get_data(), **self._data_buffer}
-        for key, value in self._data_buffer.items():
-            if key in p_elem.get_data() and key in self._data_buffer:
-                if not isinstance(self._data_buffer [key], list):
-                    self._data_buffer [key] = [p_elem.get_data()[key]]
-                else:
-                    self._data_buffer [key].append(p_elem.get_data()[key])
-
-                if len(self._data_buffer [key]) > self._size:
-                    self._data_buffer [key].pop()
-
-
-## -------------------------------------------------------------------------------------------------
-    def clear(self):
-        """
-        Resets buffer.
-        """
-
-        self._data_buffer.clear()
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_latest(self):
-        """
-        Returns latest buffered element. 
-        """
-
-        try:
-            return {key: self._data_buffer[key][0] for key in self._data_buffer}
-        except:
-            return None
-
-## -------------------------------------------------------------------------------------------------
-    def get_all(self):
-        """
-        Return all buffered elements.
-
-        """
-        return self._data_buffer
-
-## -------------------------------------------------------------------------------------------------
-    def get_sample(self, p_num:int) -> dict:
-        """
-        Sample some element from the buffer.
-
-        Parameters:
-            p_num (int): Number of sample
-
-        Returns:
-            Samples in dictionary
-        """
-        return self._extract_rows(self._gen_sample_ind)
-
-## -------------------------------------------------------------------------------------------------
-    def _gen_sample_ind(self, p_num:int) -> list:
-        """
-        Generate random indices from the buffer.
-
-        Parameters:
-            p_num (int): Number of sample
-
-        Returns:
-            List of incides
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def _extract_rows(self, p_list_idx:list) -> dict:
-        """
-        Extract the element in the buffer based on a
-        list of indices.
-
-        Parameters:
-            p_list_idx (list): List of indices
-
-        Returns:
-            Samples in dictionary
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def is_full(self) -> bool:
-        """
-        Check if the buffer is full.
-
-        Returns:
-            True, if the buffer is full
-        """
-        keys = list(self._data_buffer.keys())
-        return len(self._data_buffer[keys[0]]) >= self._size
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -716,9 +563,117 @@ class EnvModel(EnvBase, Adaptive):
     C_TYPE      = 'EnvModel'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer_size=1, p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
+    def __init__(self, p_ada=True, p_logging=True):
         EnvBase.__init__(self, p_logging=p_logging)
         Adaptive.__init__(self, p_ada=p_ada, p_logging=p_logging)
+        
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SARBufferElement:
+    """
+    Element of a State-Action-Reward-Buffer.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_state_old:State, p_action:Action, p_state_new:State, p_reward:Reward, *p_custom_data) -> None:
+        """
+        Parameters:
+            p_state_old     State of environment
+            p_action        Action of agent
+            p_state_new     Successor state of environment
+            p_reward        Reward
+            p_custom_data   Further custom values to be buffered
+        """
+
+        self._state_old     = p_state_old
+        self._action        = p_action
+        self._state_new     = p_state_new
+        self._reward        = p_reward
+        self._custom_data   = p_custom_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_data(self):
+        """
+        Returns:
+            old state
+            action
+            new state
+            reward
+            custom data
+        """
+
+        return self._state_old, self._action, self._state_new, self._reward, self._custom_data
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SARBuffer:
+    """
+    State-Action-Reward-Buffer.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_size=1):
+        """
+        Parameters:
+            p_size          Buffer size
+        """
+
+        self._size       = p_size
+        self._sar_data   = []
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_element(self, p_elem:SARBufferElement):
+        self._sar_data.insert(0, p_elem)
+        if len(self._sar_data) > self._size:
+            self._sar_data.pop()
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear(self):
+        """
+        Resets buffer.
+        """
+
+        self._sar_data.clear()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_latest(self):
+        """
+        Returns latest buffered element. 
+        """
+
+        try:
+            return self._sar_data[0]
+        except:
+            return None
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_all(self):
+        """
+        Returns all buffered elements. 
+        """
+
+        return self._sar_data
+
+## -------------------------------------------------------------------------------------------------
+    def is_full(self):
+        """
+        Returns True if the buffer is full
+        """
+
+        return len(self._sar_data) >= self._size
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -749,18 +704,16 @@ class Policy(Adaptive, Plottable):
     C_NAME          = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
+    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_ada=True, p_logging=True):
         """
          Parameters:
             p_state_space       State space object
             p_action_space      Action space object
-            p_buffer_size       Size of the buffer
-            p_buffer_cls        Buffer class to be used
             p_ada               Boolean switch for adaptivity
             p_logging           Boolean switch for logging functionality
         """
 
-        super().__init__(p_buffer=p_buffer_cls(p_buffer_size), p_ada=p_ada, p_logging=p_logging)
+        super().__init__(p_ada=p_ada, p_logging=p_logging)
         self._state_space   = p_state_space
         self._action_space  = p_action_space
         self.set_id(0)
@@ -815,24 +768,6 @@ class Policy(Adaptive, Plottable):
 
         raise NotImplementedError
 
-## -------------------------------------------------------------------------------------------------
-    def add_buffer(self, p_buffer_element: SARBufferElement):
-        """
-        Intended to save the data to the buffer. By default it save the SARS data.
-        
-        """
-        buffer_element = self._add_additional_buffer(p_buffer_element)
-        self._buffer.add_element(buffer_element)
-
-## -------------------------------------------------------------------------------------------------
-    def _add_additional_buffer(self, p_buffer_element:SARBufferElement):
-        """
-        Intended to add additional buffer element to the buffer other than SARS data. Redefine this method
-        to add additional buffer element
-        """
-        
-        return p_buffer_element
-
 
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
@@ -859,7 +794,7 @@ class Agent(Policy):
     C_NAME          = 'Standard'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_name='', p_id=0, p_ada=True, p_logging=True):
+    def __init__(self, p_policy:Policy, p_sarbuffer_size=1, p_envmodel:EnvModel=None, p_name='', p_id=0, p_ada=True, p_logging=True):
         """
         Parameters:
             p_policy            Policy object
@@ -880,6 +815,7 @@ class Agent(Policy):
         self._policy            = p_policy
         self._action_space      = self._policy.get_action_space()
         self._state_space       = self._policy.get_state_space()
+        self._sar_buffer        = SARBuffer(p_sarbuffer_size)
         self._envmodel          = p_envmodel
 
         self._set_id(p_id)
@@ -921,7 +857,6 @@ class Agent(Policy):
 
         Parameters:
             p_args[0]       Reward object (see class Reward)
-            p_args[1]       Done Flag
 
         Returns:
             True, if something has beed adapted
@@ -937,14 +872,13 @@ class Agent(Policy):
             return False
 
         reward = p_args[0]
-        done = p_args[1]
         self.log(self.C_LOG_TYPE_I, 'Adaption: previous state =', self._previous_state.get_values(), '; reward = ', p_args[0].get_agent_reward(self._id))
 
         # 2 Add data to SAR buffer
-        self._policy.add_buffer(SARBufferElement(dict(previous_state=self._previous_state, action=self._previous_action, state=self._state, reward=reward, done=done)))
+        self._sar_buffer.add_element(SARBufferElement(self._previous_state, self._previous_action, self._state, reward))
 
         # 3 Adapt policy
-        return self._policy.adapt()
+        return self._policy.adapt(self._sar_buffer)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -963,6 +897,7 @@ class Agent(Policy):
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         self._policy.clear_buffer()
+        self._sar_buffer.clear()
 
 
 
@@ -1372,7 +1307,7 @@ class Scenario(Log, LoadSave):
 
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
-        self._agent.adapt(reward, self._env.done)
+        self._agent.adapt(reward)
 
 
         # 6 Optional visualization
