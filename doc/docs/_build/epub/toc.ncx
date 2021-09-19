@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<ncx version="2005-1" xmlns="http://www.daisy.org/z3986/2005/ncx/">
+  <head>
+    <meta name="dtb:uid" content="unknown"/>
+    <meta name="dtb:depth" content="2"/>
+    <meta name="dtb:totalPageCount" content="0"/>
+    <meta name="dtb:maxPageNumber" content="0"/>
+  </head>
+  <docTitle>
+    <text>MLPro Documentations</text>
+  </docTitle>
+  <navMap>    
+    <navPoint id="navPoint1" playOrder="1">
+      <navLabel>
+        <text>MLPro for Machine Learning Professional - A Synoptic Framework for Standardized Machine Learning Tasks in Python!</text>
+      </navLabel>
+      <content src="index.xhtml" />  
+    </navPoint>
+    <navPoint id="navPoint2" playOrder="2">
+      <navLabel>
+        <text>Installation</text>
+      </navLabel>
+      <content src="instructions/installation.xhtml" />  
+    </navPoint>
+    <navPoint id="navPoint3" playOrder="3">
+      <navLabel>
+        <text>Reinforcement Learning</text>
+      </navLabel>
+      <content src="instructions/rl.xhtml" />  
+      <navPoint id="navPoint4" playOrder="3">
+        <navLabel>
+          <text>Reinforcement Learning</text>
+        </navLabel>
+        <content src="instructions/rl.xhtml" />  
+      </navPoint>
+      <navPoint id="navPoint5" playOrder="4">
+        <navLabel>
+          <text>RL Environment</text>
+        </navLabel>
+        <content src="instructions/rl.xhtml#rl-environment" />  
+      </navPoint>
+      <navPoint id="navPoint6" playOrder="5">
+        <navLabel>
+          <text>RL Algorithm</text>
+        </navLabel>
+        <content src="instructions/rl.xhtml#rl-algorithm" />  
+      </navPoint>
+      <navPoint id="navPoint7" playOrder="6">
+        <navLabel>
+          <text>RL Scenario</text>
+        </navLabel>
+        <content src="instructions/rl.xhtml#rl-scenario" />  
+      </navPoint>
+    </navPoint>
+    <navPoint id="navPoint8" playOrder="7">
+      <navLabel>
+        <text>Game Theoretical</text>
+      </navLabel>
+      <content src="instructions/gt.xhtml" />  
+      <navPoint id="navPoint9" playOrder="7">
+        <navLabel>
+          <text>Game Theoretical</text>
+        </navLabel>
+        <content src="instructions/gt.xhtml" />  
+      </navPoint>
+      <navPoint id="navPoint10" playOrder="8">
+        <navLabel>
+          <text>GT Game Board</text>
+        </navLabel>
+        <content src="instructions/gt.xhtml#gt-game-board" />  
+      </navPoint>
+      <navPoint id="navPoint11" playOrder="9">
+        <navLabel>
+          <text>GT Algorithm</text>
+        </navLabel>
+        <content src="instructions/gt.xhtml#gt-algorithm" />  
+      </navPoint>
+      <navPoint id="navPoint12" playOrder="10">
+        <navLabel>
+          <text>GT Game</text>
+        </navLabel>
+        <content src="instructions/gt.xhtml#gt-game" />  
+      </navPoint>
+    </navPoint>
+    <navPoint id="navPoint13" playOrder="11">
+      <navLabel>
+        <text>Basic Functions</text>
+      </navLabel>
+      <content src="instructions/bf.xhtml" />  
+    </navPoint>
+    <navPoint id="navPoint14" playOrder="12">
+      <navLabel>
+        <text>Scientific User Interface</text>
+      </navLabel>
+      <content src="instructions/ui.xhtml" />  
+      <navPoint id="navPoint15" playOrder="12">
+        <navLabel>
+          <text>Scientific User Interface</text>
+        </navLabel>
+        <content src="instructions/ui.xhtml" />  
+      </navPoint>
+      <navPoint id="navPoint16" playOrder="13">
+        <navLabel>
+          <text>SciUI RL</text>
+        </navLabel>
+        <content src="instructions/ui.xhtml#sciui-rl" />  
+      </navPoint>
+      <navPoint id="navPoint17" playOrder="14">
+        <navLabel>
+          <text>SciUI GT</text>
+        </navLabel>
+        <content src="instructions/ui.xhtml#sciui-gt" />  
+      </navPoint>
+    </navPoint>
+    <navPoint id="navPoint18" playOrder="15">
+      <navLabel>
+        <text>RL Pools</text>
+      </navLabel>
+      <content src="instructions/pool.xhtml" />  
+      <navPoint id="navPoint19" playOrder="15">
+        <navLabel>
+          <text>RL Pools</text>
+        </navLabel>
+        <content src="instructions/pool.xhtml" />  
+      </navPoint>
+      <navPoint id="navPoint20" playOrder="16">
+        <navLabel>
+          <text>Environments</text>
+        </navLabel>
+        <content src="instructions/pool.xhtml#environments" />  
+      </navPoint>
+      <navPoint id="navPoint21" playOrder="17">
+        <navLabel>
+          <text>Algorithms</text>
+        </navLabel>
+        <content src="instructions/pool.xhtml#algorithms" />  
+      </navPoint>
+      <navPoint id="navPoint22" playOrder="18">
+        <navLabel>
+          <text>Scenarios</text>
+        </navLabel>
+        <content src="instructions/pool.xhtml#scenarios" />  
+      </navPoint>
+    </navPoint>
+  </navMap>
+</ncx>
