@@ -1,3 +1,5 @@
+.. _target-package:
+
 Third Party Packages
 ========
 `MLPro <https://github.com/fhswf/MLPro.git>`_ allows you to reuse widely-used packages and
@@ -17,8 +19,10 @@ OpenAI Gym Environments
 Our wrapper class for gym environment is pretty straightforward. You can just simply apply
 a command to setup a gym-based environment, while creating a scenario.
 
-.. code-block:: bash
+.. code-block:: python
 
+    from mlpro.rl.wrappers import WrEnvGym
+    
     self._env = WrEnvGym([gym environment object], p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=True)
 
 For more information, please check our how to files :ref:`here<target-howto-rl>`.
@@ -29,8 +33,10 @@ PettingZoo Environments
 
 Under construction. The wrapper will be available soon.
 
-.. code-block:: bash
+.. code-block:: python
 
+    from mlpro.rl.wrappers import WrEnvPZoo
+    
     self._env = WrEnvPZoo([zoo environment object], p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=True)
 
 Ray RLlib
@@ -38,6 +44,8 @@ Ray RLlib
 
 Under construction. The wrapper will be available soon.
 
-.. code-block:: bash
+.. code-block:: python
+
+    from mlpro.rl.wrappers import wrPolicyRay
 
     wrPolicyRay(...)

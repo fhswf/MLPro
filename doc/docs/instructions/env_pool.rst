@@ -1,3 +1,5 @@
+.. _target-env-pool:
+
 RL Environments Pool
 ================
 

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Third Party Packages &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -16,7 +17,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="RL Environments Pool" href="env_pool.html" />
+    <link rel="next" title="Contributions" href="contribution.html" />
     <link rel="prev" title="Scientific User Interface" href="ui.html" /> 
 </head>
 
@@ -48,6 +49,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#ray-rllib">Ray RLlib</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="contribution.html">Contributions</a></li>
 </ul>
 <p class="caption"><span class="caption-text">RL Pool:</span></p>
 <ul>
@@ -89,7 +91,7 @@
            <div itemprop="articleBody">
              
   <div class="section" id="third-party-packages">
-<h1>Third Party Packages<a class="headerlink" href="#third-party-packages" title="Permalink to this headline">¶</a></h1>
+<span id="target-package"></span><h1>Third Party Packages<a class="headerlink" href="#third-party-packages" title="Permalink to this headline">¶</a></h1>
 <p><a class="reference external" href="https://github.com/fhswf/MLPro.git">MLPro</a> allows you to reuse widely-used packages and
 integrate them to MLPro interface by calling wrapper classes.</p>
 <p>At the moment, a wrapper class for OpenAI Gym Environments has been tested and is ready-to-use.
@@ -100,7 +102,9 @@ However, it has not been very stable yet and some minor improvements might be ne
 <h2>OpenAI Gym Environments<a class="headerlink" href="#openai-gym-environments" title="Permalink to this headline">¶</a></h2>
 <p>Our wrapper class for gym environment is pretty straightforward. You can just simply apply
 a command to setup a gym-based environment, while creating a scenario.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>self._env <span class="o">=</span> WrEnvGym<span class="o">([</span>gym environment object<span class="o">]</span>, p_state_space:MSpace<span class="o">=</span>None, p_action_space:MSpace<span class="o">=</span>None, <span class="nv">p_logging</span><span class="o">=</span>True<span class="o">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.rl.wrappers</span> <span class="kn">import</span> <span class="n">WrEnvGym</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">WrEnvGym</span><span class="p">([</span><span class="n">gym</span> <span class="n">environment</span> <span class="nb">object</span><span class="p">],</span> <span class="n">p_state_space</span><span class="p">:</span><span class="n">MSpace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_action_space</span><span class="p">:</span><span class="n">MSpace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For more information, please check our how to files <a class="reference internal" href="howto_rl.html#target-howto-rl"><span class="std std-ref">here</span></a>.</p>
@@ -108,14 +112,18 @@ a command to setup a gym-based environment, while creating a scenario.</p>
 <div class="section" id="pettingzoo-environments">
 <h2>PettingZoo Environments<a class="headerlink" href="#pettingzoo-environments" title="Permalink to this headline">¶</a></h2>
 <p>Under construction. The wrapper will be available soon.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>self._env <span class="o">=</span> WrEnvPZoo<span class="o">([</span>zoo environment object<span class="o">]</span>, p_state_space:MSpace<span class="o">=</span>None, p_action_space:MSpace<span class="o">=</span>None, <span class="nv">p_logging</span><span class="o">=</span>True<span class="o">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.rl.wrappers</span> <span class="kn">import</span> <span class="n">WrEnvPZoo</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">WrEnvPZoo</span><span class="p">([</span><span class="n">zoo</span> <span class="n">environment</span> <span class="nb">object</span><span class="p">],</span> <span class="n">p_state_space</span><span class="p">:</span><span class="n">MSpace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_action_space</span><span class="p">:</span><span class="n">MSpace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="ray-rllib">
 <h2>Ray RLlib<a class="headerlink" href="#ray-rllib" title="Permalink to this headline">¶</a></h2>
 <p>Under construction. The wrapper will be available soon.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wrPolicyRay<span class="o">(</span>...<span class="o">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.rl.wrappers</span> <span class="kn">import</span> <span class="n">wrPolicyRay</span>
+
+<span class="n">wrPolicyRay</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -126,7 +134,7 @@ a command to setup a gym-based environment, while creating a scenario.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="ui.html" class="btn btn-neutral float-left" title="Scientific User Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="env_pool.html" class="btn btn-neutral float-right" title="RL Environments Pool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="contribution.html" class="btn btn-neutral float-right" title="Contributions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

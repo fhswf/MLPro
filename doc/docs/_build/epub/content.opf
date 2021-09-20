@@ -12,8 +12,8 @@
     <dc:publisher>FH-SWF AT</dc:publisher>
     <dc:rights>2021, FH-SWF AT</dc:rights>
     <dc:identifier id="unknown">unknown</dc:identifier>
-    <dc:date>2021-09-15T17:30:09Z</dc:date>
-    <meta property="dcterms:modified">2021-09-15T17:30:09Z</meta>
+    <dc:date>2021-09-20T14:00:00Z</dc:date>
+    <meta property="dcterms:modified">2021-09-20T14:00:00Z</meta>
     <meta property="ibooks:version"></meta>
     <meta property="ibooks:specified-fonts">true</meta>
     <meta property="ibooks:binding">true</meta>
@@ -22,30 +22,56 @@
   <manifest>
     <item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml" />
     <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>
-    <item id="epub-0" href="genindex.xhtml" media-type="application/xhtml+xml" />
-    <item id="epub-1" href="index.xhtml" media-type="application/xhtml+xml" />
-    <item id="epub-2" href="_static/basic.css" media-type="text/css" />
-    <item id="epub-3" href="_static/epub.css" media-type="text/css" />
-    <item id="epub-4" href="_static/file.png" media-type="image/png" />
-    <item id="epub-5" href="_static/minus.png" media-type="image/png" />
-    <item id="epub-6" href="_static/plus.png" media-type="image/png" />
-    <item id="epub-7" href="_static/pygments.css" media-type="text/css" />
-    <item id="epub-8" href="instructions/bf.xhtml" media-type="application/xhtml+xml" />
-    <item id="epub-9" href="instructions/gt.xhtml" media-type="application/xhtml+xml" />
-    <item id="epub-10" href="instructions/installation.xhtml" media-type="application/xhtml+xml" />
-    <item id="epub-11" href="instructions/pool.xhtml" media-type="application/xhtml+xml" />
-    <item id="epub-12" href="instructions/rl.xhtml" media-type="application/xhtml+xml" />
-    <item id="epub-13" href="instructions/ui.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-0" href="README.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-1" href="genindex.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-2" href="index.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-3" href="_images/796eaeb87d0f8b5b0d91e047084482368fcf75df.svg" media-type="image/svg+xml" />
+    <item id="epub-4" href="_images/mlpro.svg" media-type="image/svg+xml" />
+    <item id="epub-5" href="_static/basic.css" media-type="text/css" />
+    <item id="epub-6" href="_static/custom.css" media-type="text/css" />
+    <item id="epub-7" href="_static/epub.css" media-type="text/css" />
+    <item id="epub-8" href="_static/file.png" media-type="image/png" />
+    <item id="epub-9" href="_static/logo_fh-at.png" media-type="image/png" />
+    <item id="epub-10" href="_static/minus.png" media-type="image/png" />
+    <item id="epub-11" href="_static/plus.png" media-type="image/png" />
+    <item id="epub-12" href="_static/pygments.css" media-type="text/css" />
+    <item id="epub-13" href="instructions/alg_pool.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-14" href="instructions/bf.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-15" href="instructions/buf_pool.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-16" href="instructions/contribution.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-17" href="instructions/env_pool.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-18" href="instructions/gt.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-19" href="instructions/howto_bf.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-20" href="instructions/howto_gt.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-21" href="instructions/howto_rl.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-22" href="instructions/howto_ui.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-23" href="instructions/installation.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-24" href="instructions/package.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-25" href="instructions/pool.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-26" href="instructions/rl.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-27" href="instructions/sce_pool.xhtml" media-type="application/xhtml+xml" />
+    <item id="epub-28" href="instructions/ui.xhtml" media-type="application/xhtml+xml" />
   </manifest>
   <spine toc="ncx" page-progression-direction="ltr">
-    <itemref idref="epub-1" />
-    <itemref idref="epub-10" />
-    <itemref idref="epub-12" />
-    <itemref idref="epub-9" />
-    <itemref idref="epub-8" />
+    <itemref idref="epub-2" />
+    <itemref idref="epub-23" />
+    <itemref idref="epub-26" />
+    <itemref idref="epub-18" />
+    <itemref idref="epub-14" />
+    <itemref idref="epub-28" />
+    <itemref idref="epub-24" />
+    <itemref idref="epub-16" />
+    <itemref idref="epub-17" />
     <itemref idref="epub-13" />
-    <itemref idref="epub-11" />
-    <itemref idref="epub-0" />
+    <itemref idref="epub-27" />
+    <itemref idref="epub-15" />
+    <itemref idref="epub-19" />
+    <itemref idref="epub-21" />
+    <itemref idref="epub-20" />
+    <itemref idref="epub-22" />
+    <itemref idref="epub-1" />
+    <itemref idref="epub-0" linear="no" />
+    <itemref idref="epub-25" linear="no" />
   </spine>
   <guide>
     <reference type="toc" title="Table of Contents" href="index.xhtml" />

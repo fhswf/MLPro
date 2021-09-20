@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Reinforcement Learning</title>
     <link rel="stylesheet" href="../_static/epub.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" /> 
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" /> 
   </head><body>
 
     <div class="document">
@@ -17,23 +18,314 @@
 <h1>Reinforcement Learning</h1>
 <div class="section" id="rl-environment">
 <h2>RL Environment</h2>
-<ul class="simple">
-<li><p>how to build a custom environment</p></li>
-<li><p>how to reuse from third part packages (Gym, PettingZoo)</p></li>
+<ul>
+<li><p><strong>Environment Creation for Simulation Mode</strong></p>
+<blockquote>
+<div><p>To create an environment that satisfies MLPro interface is immensly simple and straigtforward.
+Basically a MLPro environment is a class with 5 main functions. Each environment must apply the
+following mlpro functions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.rl.models</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">MyEnvironment</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom Environment that satisfies mlpro interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">C_NAME</span>          <span class="o">=</span> <span class="s1">&#39;My Environment&#39;</span>
+    <span class="n">C_LATENCY</span>       <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>         <span class="c1"># Default latency 1s</span>
+    <span class="n">C_REWARD_TYPE</span>   <span class="o">=</span> <span class="n">Reward</span><span class="o">.</span><span class="n">C_TYPE_OVERALL</span>    <span class="c1"># Default reward type</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_mode</span><span class="o">=</span><span class="n">C_MODE_SIM</span><span class="p">,</span> <span class="n">p_latency</span><span class="p">:</span><span class="n">timedelta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            p_mode              Mode of environment (simulation/real)</span>
+<span class="sd">            p_latency           Optional: latency of environment. If not provided</span>
+<span class="sd">                                internal value C_LATENCY will be used by default</span>
+<span class="sd">            p_logging           Boolean switch for logging</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p_latency</span><span class="o">=</span><span class="n">p_latency</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_spaces</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">p_mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implement this method to enrich the state and action space with specific</span>
+<span class="sd">        dimensions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Setup state space example</span>
+        <span class="c1"># self.state_space.add_dim(Dimension(0, &#39;Pos&#39;, &#39;Position&#39;, &#39;&#39;, &#39;m&#39;, &#39;m&#39;, [-50,50]))</span>
+        <span class="c1"># self.state_space.add_dim(Dimension(1, &#39;Vel&#39;, &#39;Velocity&#39;, &#39;&#39;, &#39;m/sec&#39;, &#39;\frac{m}{sec}&#39;, [-50,50]))</span>
+
+        <span class="c1"># Setup action space example</span>
+        <span class="c1"># self.action_space.add_dim(Dimension(0, &#39;Rot&#39;, &#39;Rotation&#39;, &#39;&#39;, &#39;1/sec&#39;, &#39;\frac{1}{sec}&#39;, [-50,50]))</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">_simulate_reaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_action</span><span class="p">:</span><span class="n">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simulates a state transition of the environment based on a new action.</span>
+<span class="sd">        Please use method set_state() for internal update.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            p_action      Action to be processed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets environment to initial state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">compute_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Reward</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes a reward.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">          Reward object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">_evaluate_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the goal achievement value in [0,1] and the flags done and broken</span>
+<span class="sd">        based on the current state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># state evaluations example</span>
+        <span class="c1"># if self.done:</span>
+        <span class="c1">#     self.goal_achievement = 1.0</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     self.goal_achievement = 0.0</span>
+        <span class="o">....</span>
+</pre></div>
+</div>
+<p>One of the benefits for MLPro users is the variety of reward structures, which is useful for Multi-Agent RL
+and Game Theoretical approach. Three types of reward structures are supported in this framework, such as:</p>
+<ol class="arabic simple">
+<li><p><strong>C_TYPE_OVERALL</strong> as the default type and is a scalar overall value</p></li>
+<li><p><strong>C_TYPE_EVERY_AGENT</strong> is a scalar for every agent</p></li>
+<li><p><strong>C_TYPE_EVERY_ACTION</strong> is a scalar for every agent and action.</p></li>
+</ol>
+<p>To set up state- and action-spaces using our basic functionalities, please refer to our <a class="reference internal" href="howto_bf.xhtml#target-howto-bf"><span class="std std-ref">how to File 02</span></a>
+or <a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2002%20-%20(Math)%20Spaces%2C%20subspaces%20and%20elements.py">here</a><span class="link-target"> [https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2002%20-%20(Math)%20Spaces%2C%20subspaces%20and%20elements.py]</span>.
+Dimension class is currently improved and we will provide the explanation afterwards!</p>
+<p>We highly recommend you to check out our <a class="reference internal" href="howto_rl.xhtml#target-howto-rl"><span class="std std-ref">how to files</span></a> and our
+<a class="reference internal" href="env_pool.xhtml#target-env-pool"><span class="std std-ref">pre-built environments</span></a>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Environment Creation for Real Hardware Mode</strong></p>
+<blockquote>
+<div><p>In MLPro, we can choose simulation mode or real hardward mode. For real hardware mode, the creation of
+an environment is very similar to simulation mode. You do not need to define <strong>_simulate_reaction</strong>, but you
+need to replace it with <strong>_export_action</strong> and <strong>_import_state</strong> as it is shown in the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.rl.models</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">MyEnvironment</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom Environment that satisfies mlpro interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">C_NAME</span>          <span class="o">=</span> <span class="s1">&#39;My Environment&#39;</span>
+    <span class="n">C_LATENCY</span>       <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>         <span class="c1"># Default latency 1s</span>
+    <span class="n">C_REWARD_TYPE</span>   <span class="o">=</span> <span class="n">Reward</span><span class="o">.</span><span class="n">C_TYPE_OVERALL</span>    <span class="c1"># Default reward type</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_mode</span><span class="o">=</span><span class="n">C_MODE_REAL</span><span class="p">,</span> <span class="n">p_latency</span><span class="p">:</span><span class="n">timedelta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            p_mode              Mode of environment (simulation/real)</span>
+<span class="sd">            p_latency           Optional: latency of environment. If not provided</span>
+<span class="sd">                                internal value C_LATENCY will be used by default</span>
+<span class="sd">            p_logging           Boolean switch for logging</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p_latency</span><span class="o">=</span><span class="n">p_latency</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_spaces</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">p_mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implement this method to enrich the state and action space with specific</span>
+<span class="sd">        dimensions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Setup state space example</span>
+        <span class="c1"># self.state_space.add_dim(Dimension(0, &#39;Pos&#39;, &#39;Position&#39;, &#39;&#39;, &#39;m&#39;, &#39;m&#39;, [-50,50]))</span>
+        <span class="c1"># self.state_space.add_dim(Dimension(1, &#39;Vel&#39;, &#39;Velocity&#39;, &#39;&#39;, &#39;m/sec&#39;, &#39;\frac{m}{sec}&#39;, [-50,50]))</span>
+
+        <span class="c1"># Setup action space example</span>
+        <span class="c1"># self.action_space.add_dim(Dimension(0, &#39;Rot&#39;, &#39;Rotation&#39;, &#39;&#39;, &#39;1/sec&#39;, &#39;\frac{1}{sec}&#39;, [-50,50]))</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">_export_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_action</span><span class="p">:</span><span class="n">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exports given action to be processed externally (for instance by a real hardware).</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            p_action      Action to be exported</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True, if action export was successful. False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">_import_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Imports state from an external system (for instance a real hardware).</span>
+<span class="sd">        Please use method set_state() for internal update.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">          True, if state import was successful. False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets environment to initial state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">compute_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Reward</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes a reward.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">          Reward object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">_evaluate_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the goal achievement value in [0,1] and the flags done and broken</span>
+<span class="sd">        based on the current state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># state evaluations example</span>
+        <span class="c1"># if self.done:</span>
+        <span class="c1">#     self.goal_achievement = 1.0</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     self.goal_achievement = 0.0</span>
+        <span class="o">....</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p><strong>Environment from Third Party Packages</strong></p>
+<blockquote>
+<div><p>Alternatively, if your environment follows Gym or PettingZoo interface, you can apply our
+relevant useful wrappers for the integration between third party packages and MLPro. For more
+information, please click <a class="reference internal" href="package.xhtml#target-package"><span class="std std-ref">here</span></a>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Environment Checker</strong></p>
+<blockquote>
+<div><p>To check whether your developed environment is compatible to MLPro interface, we provide a test script
+using unittest. At the moment, you can find the source code <a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/test/test_environment.py">here</a><span class="link-target"> [https://github.com/fhswf/MLPro/blob/main/test/test_environment.py]</span>.
+We will prepare a built-in testing module in MLPro, show you how to excecute the testing soon and provides an example as well.</p>
+</div></blockquote>
+</li>
 </ul>
 </div>
 <div class="section" id="rl-algorithm">
 <h2>RL Algorithm</h2>
-<ul class="simple">
-<li><p>how to build own Algorithm</p></li>
-<li><p>how to reuse from third part packages (RLlib)</p></li>
+<ul>
+<li><p><strong>Policy Creation</strong></p>
+<blockquote>
+<div><p>To create a RL policy that satisfies MLPro interface is pretty direct.
+You just require to assure that the RL policy consists at least these following 3 main functions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.rl.models</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">MyPolicy</span><span class="p">(</span><span class="n">Policy</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a policy that satisfies mlpro interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">C_NAME</span>          <span class="o">=</span> <span class="s1">&#39;????&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_state_space</span><span class="p">:</span><span class="n">MSpace</span><span class="p">,</span> <span class="n">p_action_space</span><span class="p">:</span><span class="n">MSpace</span><span class="p">,</span> <span class="n">p_ada</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">         Parameters:</span>
+<span class="sd">            p_state_space       State space object</span>
+<span class="sd">            p_action_space      Action space object</span>
+<span class="sd">            p_ada               Boolean switch for adaptivity</span>
+<span class="sd">            p_logging           Boolean switch for logging functionality</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p_ada</span><span class="o">=</span><span class="n">p_ada</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_state_space</span>   <span class="o">=</span> <span class="n">p_state_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_action_space</span>  <span class="o">=</span> <span class="n">p_action_space</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_id</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">adapt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">p_args</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adapts the policy based on State-Action-Reward (SAR) data that will be expected as a SAR</span>
+<span class="sd">        buffer object. Please call super-method at the beginning of your own implementation and</span>
+<span class="sd">        adapt only if it returns True.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            p_arg[0]            SAR Buffer object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">adapt</span><span class="p">(</span><span class="o">*</span><span class="n">p_args</span><span class="p">):</span> <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="o">....</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">clear_buffer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Intended to clear internal temporary attributes, buffers, ... Can be used while training</span>
+<span class="sd">        to prepare the next episode.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">compute_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_state</span><span class="p">:</span><span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Action</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Specific action computation method to be redefined.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            p_state       State of environment</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Action object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+</pre></div>
+</div>
+<p>This class represents the policy of a single-agent. It is adaptive and can be trained with
+State-Action-Reward (SAR) data that will be expected as a SAR buffer object.</p>
+<p>The three main learning paradigms of machine learning to train a policy are supported:</p>
+<p>a) Training by Supervised Learning
+The entire SAR data set inside the SAR buffer shall be adapted.</p>
+<p>b) Training by Reinforcement Learning
+The latest SAR data record inside the SAR buffer shall be adapted.</p>
+<p>c) Training by Unsupervised Learning
+All state data inside the SAR buffer shall be adapted.</p>
+<p>Furthermore a policy class can compute actions from states.</p>
+<p>Hyperparameters of the policy should be stored in the internal object <strong>self._hp_list</strong>, so that
+they can be tuned from outside. Optionally a policy-specific callback method can be called on
+changes. For more information see class HyperParameterList.</p>
+<p>To set up a hyperparameter space, please refer to our <a class="reference internal" href="howto_bf.xhtml#target-howto-bf"><span class="std std-ref">how to File 04</span></a>
+or <a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2004%20-%20(ML)%20Hyperparameters%20setup.py">here</a><span class="link-target"> [https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2004%20-%20(ML)%20Hyperparameters%20setup.py]</span>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Policy from Third Party Packages</strong></p>
+<blockquote>
+<div><p>In addition, we are planning to reuse Ray RLlib in the near future. For more updates,
+please click <a class="reference internal" href="package.xhtml#target-package"><span class="std std-ref">here</span></a>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Algorithm Checker</strong></p>
+<blockquote>
+<div><p>A test script using unittest to check the develop policies will be available soon!</p>
+</div></blockquote>
+</li>
 </ul>
 </div>
 <div class="section" id="rl-scenario">
 <h2>RL Scenario</h2>
+<p>Scenario is where the interaction between RL agent(s) and an environment with a unique
+specific settings takes place.</p>
 <ul class="simple">
-<li><p>how to setup agent(s)</p></li>
-<li><p>how to setup a scenario</p></li>
+<li><p><strong>Agent Creation</strong></p></li>
+<li><p><strong>Scenario Creation</strong></p></li>
 </ul>
 </div>
 </div>

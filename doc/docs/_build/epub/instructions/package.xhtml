@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Third Party Packages</title>
+    <link rel="stylesheet" href="../_static/epub.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" /> 
+  </head><body>
+
+    <div class="document">
+      <div class="documentwrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="third-party-packages">
+<span id="target-package"></span><h1>Third Party Packages</h1>
+<p><a class="reference external" href="https://github.com/fhswf/MLPro.git">MLPro</a><span class="link-target"> [https://github.com/fhswf/MLPro.git]</span> allows you to reuse widely-used packages and
+integrate them to MLPro interface by calling wrapper classes.</p>
+<p>At the moment, a wrapper class for OpenAI Gym Environments has been tested and is ready-to-use.
+However, it has not been very stable yet and some minor improvements might be needed.</p>
+<p>In the near future, we are going to add wrapper classes for PettingZoo and Ray RLlib.</p>
+<p>Soure code of available wrappers: <a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/wrappers.py">https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/wrappers.py</a></p>
+<div class="section" id="openai-gym-environments">
+<h2>OpenAI Gym Environments</h2>
+<p>Our wrapper class for gym environment is pretty straightforward. You can just simply apply
+a command to setup a gym-based environment, while creating a scenario.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>self._env <span class="o">=</span> WrEnvGym<span class="o">([</span>gym environment object<span class="o">]</span>, p_state_space:MSpace<span class="o">=</span>None, p_action_space:MSpace<span class="o">=</span>None, <span class="nv">p_logging</span><span class="o">=</span>True<span class="o">)</span>
+</pre></div>
+</div>
+<p>For more information, please check our how to files <a class="reference internal" href="howto_rl.xhtml#target-howto-rl"><span class="std std-ref">here</span></a>.</p>
+</div>
+<div class="section" id="pettingzoo-environments">
+<h2>PettingZoo Environments</h2>
+<p>Under construction. The wrapper will be available soon.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>self._env <span class="o">=</span> WrEnvPZoo<span class="o">([</span>zoo environment object<span class="o">]</span>, p_state_space:MSpace<span class="o">=</span>None, p_action_space:MSpace<span class="o">=</span>None, <span class="nv">p_logging</span><span class="o">=</span>True<span class="o">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="ray-rllib">
+<h2>Ray RLlib</h2>
+<p>Under construction. The wrapper will be available soon.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>wrPolicyRay<span class="o">(</span>...<span class="o">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  </body>
+</html>

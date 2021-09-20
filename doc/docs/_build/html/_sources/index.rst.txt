@@ -20,6 +20,8 @@ In MLPro, we provide a standarized Python package for conducting research in rei
 theoretical (GT) approaches, including environments, algorithms, multi-agent RL (MARL), and many more. Additionally, we
 enable our users to reuse the available packages by developing wrapper classes.
 
+Moreover, MLPro focuses not only on Model-Free but also Model-Based RL problem.
+
 Github repository: https://github.com/fhswf/MLPro.git
 
 
@@ -49,6 +51,7 @@ Instructions for use
    instructions/bf
    instructions/ui
    instructions/package
+   instructions/contribution
 
 .. toctree::
    :maxdepth: 2
