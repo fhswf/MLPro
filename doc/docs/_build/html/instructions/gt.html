@@ -40,12 +40,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="rl.html">Reinforcement Learning</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Theoretical</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#gt-game-board">GT Game Board</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#gt-algorithm">GT Algorithm</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#gt-game">GT Game</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Game Theoretical</a></li>
 <li class="toctree-l1"><a class="reference internal" href="bf.html">Basic Functions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ui.html">Scientific User Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="package.html">Third Party Packages</a></li>
@@ -92,25 +87,117 @@
              
   <div class="section" id="game-theoretical">
 <h1>Game Theoretical<a class="headerlink" href="#game-theoretical" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="gt-game-board">
-<h2>GT Game Board<a class="headerlink" href="#gt-game-board" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>how to build a game board</p></li>
-</ul>
+<p>Game Theory (GT) is well-known in economic studies as a theoretical approach to model the strategic
+interaction between multiple individuals or players in a specific situation. Game Theory
+approach can also be adopted in the science area to optimize decision-making processes in a
+strategic setting and often use to solve Multi-Agent RL (MARL) problems.</p>
+<p>You can easily access the GT module, as follows:</p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fhswf_at_ml.gt.models</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
 </div>
-<div class="section" id="gt-algorithm">
-<h2>GT Algorithm<a class="headerlink" href="#gt-algorithm" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>how to build a GT-based algorithm</p></li>
-</ul>
+</div></blockquote>
+<p>Some of developed RL frameworks in MLPro can also be reuse in the GT approach.
+Thus we can just simply inherit some classes from RL frameworks, such as:</p>
+<ol class="arabic">
+<li><dl>
+<dt><strong>GameBoard(rl.Environent)</strong></dt><dd><p>Since you need a unique utility function for each specific player in the GT approach.
+A local utility function can be defined as below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fhswf_at_ml.rl.models</span> <span class="k">as</span> <span class="nn">rl</span>
+
+<span class="k">class</span> <span class="nc">GameBoard</span><span class="p">(</span><span class="n">rl</span><span class="o">.</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Model class for a game theoretical game board. See super class for more information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">C_TYPE</span>              <span class="o">=</span> <span class="s1">&#39;Game Board&#39;</span>
+    <span class="n">C_REWARD_TYPE</span>       <span class="o">=</span> <span class="n">rl</span><span class="o">.</span><span class="n">Reward</span><span class="o">.</span><span class="n">C_TYPE_EVERY_AGENT</span>
+
+    <span class="k">def</span> <span class="nf">compute_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rl</span><span class="o">.</span><span class="n">Reward</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_action</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">reward</span> <span class="o">=</span> <span class="n">rl</span><span class="o">.</span><span class="n">Reward</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_reward_type</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">player_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_action</span><span class="o">.</span><span class="n">get_agent_ids</span><span class="p">():</span>
+            <span class="n">reward</span><span class="o">.</span><span class="n">add_agent_reward</span><span class="p">(</span><span class="n">player_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_utility_fct</span><span class="p">(</span><span class="n">player_id</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">reward</span>
+
+    <span class="k">def</span> <span class="nf">_utility_fct</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_player_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes utility of given player. To be redefined.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="mi">0</span>
+</pre></div>
 </div>
-<div class="section" id="gt-game">
-<h2>GT Game<a class="headerlink" href="#gt-game" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>how to setup players</p></li>
-<li><p>how to setup a game</p></li>
-</ul>
+</dd>
+</dl>
+</li>
+<li><p><strong>Player(rl.Agent)</strong></p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fhswf_at_ml.rl.models</span> <span class="k">as</span> <span class="nn">rl</span>
+
+<span class="k">class</span> <span class="nc">Player</span><span class="p">(</span><span class="n">rl</span><span class="o">.</span><span class="n">Agent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class implements a game theoretical player model. See super class for more information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">C_TYPE</span>      <span class="o">=</span> <span class="s1">&#39;Player&#39;</span>
+</pre></div>
 </div>
+</div></blockquote>
+</li>
+<li><p><strong>Game(rl.Scenario)</strong></p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fhswf_at_ml.rl.models</span> <span class="k">as</span> <span class="nn">rl</span>
+
+<span class="k">class</span> <span class="nc">Game</span><span class="p">(</span><span class="n">rl</span><span class="o">.</span><span class="n">Scenario</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class implements a game consisting of a game board and a (multi-)player. See super class for</span>
+<span class="sd">    more information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">C_TYPE</span>      <span class="o">=</span> <span class="s1">&#39;Game&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p><strong>MultiPlayer(rl.MultiAgent)</strong></p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fhswf_at_ml.rl.models</span> <span class="k">as</span> <span class="nn">rl</span>
+
+<span class="k">class</span> <span class="nc">MultiPlayer</span><span class="p">(</span><span class="n">rl</span><span class="o">.</span><span class="n">MultiAgent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class implements a game theoretical model for a team of players. See super class for more</span>
+<span class="sd">    information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">C_TYPE</span>      <span class="o">=</span> <span class="s1">&#39;Multi-Player&#39;</span>
+
+    <span class="k">def</span> <span class="nf">add_player</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_player</span><span class="p">:</span><span class="n">Player</span><span class="p">,</span> <span class="n">p_weight</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_agent</span><span class="p">(</span><span class="n">p_agent</span><span class="o">=</span><span class="n">p_player</span><span class="p">,</span> <span class="n">p_weight</span><span class="o">=</span><span class="n">p_weight</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p><strong>Training(rl.Training)</strong></p>
+<blockquote>
+<div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">fhswf_at_ml.rl.models</span> <span class="k">as</span> <span class="nn">rl</span>
+
+<span class="k">class</span> <span class="nc">Training</span><span class="p">(</span><span class="n">rl</span><span class="o">.</span><span class="n">Training</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This class implements a standardized episodical training process. See super class for more information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">C_NAME</span>      <span class="o">=</span> <span class="s1">&#39;GT&#39;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>You can check out some of the examples on our <a class="reference internal" href="howto_gt.html#target-howto-gt"><span class="std std-ref">how to files</span></a>
+or <a class="reference external" href="https://github.com/fhswf/MLPro/tree/main/examples/gt">here</a>.</p>
 </div>
 
 
