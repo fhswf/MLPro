@@ -5,4 +5,4 @@ further improvement ideas, add pre-builts environments and algorithms, improve o
 or any kind of improvements.
 
 You can directly contribute on our public `GitHub's repository <https://github.com/fhswf/MLPro.git>`_
-or reach us per email mlpro@fh-swf.de.
+or reach us per email mlpro@listen.fh-swf.de.
