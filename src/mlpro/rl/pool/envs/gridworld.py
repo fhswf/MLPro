@@ -9,6 +9,7 @@
 ## -- 2021-09-09  1.00  WB     Release of first version
 ## -- 2021-09-11  1.01  MRD    Fix compability with mlpro structure
 ## -- 2021-09-11  1.01  MRD    Change Header information to match our new library name
+## -- 2021-09-13  1.02  WB     Fix on simulate reaction      
 ## -----------------------------------------------------------------------------
 
 """
@@ -102,7 +103,7 @@ class GridWorld(Environment):
         return state
         
     def _simulate_reaction(self, p_action: Action) -> None:
-        self.agent_pos += np.array(p_action).astype(np.int)
+        self.agent_pos += np.array(p_action.get_sorted_values()).astype(np.int)
         self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
         
         self.num_step += 1
