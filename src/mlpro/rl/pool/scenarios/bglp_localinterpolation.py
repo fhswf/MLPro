@@ -8,10 +8,11 @@
 ## -- 2021-09-06  0.00  SY     Creation
 ## -- 2021-09-06  1.00  SY     Release of first version
 ## -- 2021-09-11  1.00  MRD    Change Header information to match our new library name
+## -- 2021-09-22  1.01  SY     Solving minor bugs
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.00 (2021-09-06)
+Ver. 1.00 (2021-09-22)
 
 Environment : BGLP
 Algorithms  : SbPG - Local Interpolation
@@ -22,13 +23,8 @@ from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.models import *
 from mlpro.bf.various import *
 from mlpro.bf.math import *
-<<<<<<< HEAD
-from mlpro.rl import *
-from mlpro.rl.pool.envs import BGLP
-=======
 from mlpro.bf.ml import *
-from bglp import BGLP
->>>>>>> c294cabee5804857f788fc296aacad371470ea5f
+from mlpro.rl import *
 import random
 import numpy as np
 import math as m
