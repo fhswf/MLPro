@@ -10,17 +10,19 @@
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
 ## -- 2021-09-18  1.0.1     MRD      Buffer Class Implementation. Add new parameter buffer
 ## --                                to the Adaptive Class
+## -- 2021-09-19  1.0.1     MRD      Improvement on Buffer Class. Implement new base class
+## --                                Buffer Element and BufferRnd
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-09-18)
+Ver. 1.0.1 (2021-09-19)
 
 This module provides common machine learning functionalities and properties.
 """
 
 from mlpro.bf.various import *
 from mlpro.bf.math import *
-
+import random
 
 
 
@@ -106,9 +108,183 @@ class HyperParamTuning(Log):
 
         raise NotImplementedError
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class BufferElement:
+    """
+    Base class implementation for buffer element
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_element:dict) -> None:
+        """
+        Parameters:
+            p_element (dict): Buffer element in dictionary
+        """
+
+        self._element = {}
+
+        self.add_value_element(p_element)
+
+## -------------------------------------------------------------------------------------------------
+    def add_value_element(self, p_val:dict):
+        """
+        Adding new value to the element container
+
+        Parameters:
+            p_val (dict): Elements in dictionary
+        """
+        self._element = {**self._element, **p_val}
 
 
+## -------------------------------------------------------------------------------------------------
+    def get_data(self):
+        """
+        Get the buffer element.
 
+        Returns:
+            Returns the buffer element.
+        """
+
+        return self._element
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Buffer:
+    """
+    Base class implementation for buffer management.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_size=1):
+        """
+        Parameters:
+            p_size (int, optional): Buffer size. Defaults to 1.
+        """
+        self._size = p_size
+        self._data_buffer = {}
+
+## -------------------------------------------------------------------------------------------------
+    def add_element(self, p_elem:BufferElement):
+        """
+        Add element to the buffer.
+
+        Parameters:
+            p_elem (BufferElement): Element of Buffer
+        """
+        self._data_buffer = {**p_elem.get_data(), **self._data_buffer}
+        for key, value in self._data_buffer.items():
+            if key in p_elem.get_data() and key in self._data_buffer:
+                if not isinstance(self._data_buffer [key], list):
+                    self._data_buffer [key] = [p_elem.get_data()[key]]
+                else:
+                    self._data_buffer [key].append(p_elem.get_data()[key])
+
+                if len(self._data_buffer [key]) > self._size:
+                    self._data_buffer [key].pop()
+
+## -------------------------------------------------------------------------------------------------
+    def clear(self):
+        """
+        Resets buffer.
+        """
+
+        self._data_buffer.clear()
+
+## -------------------------------------------------------------------------------------------------
+    def get_latest(self):
+        """
+        Returns latest buffered element. 
+        """
+
+        try:
+            return {key: self._data_buffer[key][0] for key in self._data_buffer}
+        except:
+            return None
+
+## -------------------------------------------------------------------------------------------------
+    def get_all(self):
+        """
+        Return all buffered elements.
+
+        """
+        return self._data_buffer
+
+## -------------------------------------------------------------------------------------------------
+    def get_sample(self, p_num:int):
+        """
+        Sample some element from the buffer.
+
+        Parameters:
+            p_num (int): Number of sample
+
+        Returns:
+            Samples in dictionary
+        """
+        return self._extract_rows(self._gen_sample_ind(p_num))
+
+## -------------------------------------------------------------------------------------------------
+    def _gen_sample_ind(self, p_num:int) -> list:
+        """
+        Generate random indices from the buffer.
+
+        Parameters:
+            p_num (int): Number of sample
+
+        Returns:
+            List of incides
+        """
+        raise NotImplementedError
+
+## -------------------------------------------------------------------------------------------------
+    def _extract_rows(self, p_list_idx:list):
+        """
+        Extract the element in the buffer based on a
+        list of indices.
+
+        Parameters:
+            p_list_idx (list): List of indices
+
+        Returns:
+            Samples in dictionary
+        """
+        rows = {}
+        for key in self._data_buffer:
+            rows[key] = [self._data_buffer[key][i] for i in p_list_idx]
+        return rows
+
+## -------------------------------------------------------------------------------------------------
+    def is_full(self) -> bool:
+        """
+        Check if the buffer is full.
+
+        Returns:
+            True, if the buffer is full
+        """
+        keys = list(self._data_buffer.keys())
+        return len(self._data_buffer[keys[0]]) >= self._size
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class BufferRnd(Buffer):
+    """
+    Buffer implmentation with random sampling
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def _gen_sample_ind(self, p_num: int) -> list:
+        """
+        Generate random indicies
+
+        Parameters:
+            p_num (int): Number of sample
+
+        Returns:
+            List of indicies
+        """
+        keys = list(self._data_buffer.keys())
+        return random.sample(list(range(0,len(self._data_buffer[keys[0]]))),p_num)
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -122,7 +298,7 @@ class Adaptive(Log, LoadSave):
     C_NAME          = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer=None, p_ada=True, p_logging=True):
+    def __init__(self, p_buffer:Buffer=None, p_ada=True, p_logging=True):
         """
         Parameters:
             p_buffer            Buffer
@@ -194,100 +370,3 @@ class Adaptive(Log, LoadSave):
         self.log(self.C_LOG_TYPE_I, 'Adaption started')
         return True
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Buffer:
-    """
-    Base class implementation for buffer management.
-    """
-
-    C_TYPE = "Buffer"
-    C_NAME = "????"
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_size=1):
-        """
-        [summary]
-
-        Args:
-            p_size (int, optional): Buffer size. Defaults to 1.
-        """
-        self._size = p_size
-
-## -------------------------------------------------------------------------------------------------
-    def add_element(self, *p_args):
-        """
-        Add sample to the buffer.
-
-        """                            
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def clear(self):
-        """
-        Clear the buffer.
-
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def get_latest(self):
-        """
-        Get the latest element in the buffer
-
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def get_all(self):
-        """
-        Return all buffered elements.
-
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def get_sample(self, p_num:int):
-        """
-        Sample some element from the buffer.
-
-        Parameters:
-            p_num (int): Number of sample
-
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def _gen_sample_ind(self, p_num:int) -> list:
-        """
-        Generate random indices from the buffer.
-
-        Parameters:
-            p_num (int): Number of sample
-
-        Returns:
-            List of incides
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def _extract_rows(self, p_list_idx:list):
-        """
-        Extract the element in the buffer based on a
-        list of indices.
-
-        Parameters:
-            p_list_idx (list): List of indices
-
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def is_full(self) -> bool:
-        """
-        Check if the buffer is full.
-
-        Returns:
-            True, if the buffer is full
-        """
-        raise NotImplementedError

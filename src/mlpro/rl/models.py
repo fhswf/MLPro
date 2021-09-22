@@ -29,10 +29,12 @@
 ## --                                is now working in dictionary. Now the SARBuffer is inside
 ## --                                the Policy and EnvModel instead of the Agent.
 ## --                                Added "Done" as default input for Agent.adapt()
+## -- 2021-09-19  1.3.3     MRD      Change SARBuffer Class and Inherits SARBufferElement with base
+## --                                class Buffer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2021-09-18)
+Ver. 1.3.3 (2021-09-19)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -556,37 +558,11 @@ class Environment(EnvBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SARBufferElement:
+class SARBufferElement(BufferElement):
     """
     Element of a State-Action-Reward-Buffer.
     """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_element:dict) -> None:
-        """
-        Parameters:
-            p_element (dict): Buffer element in dictionary
-        """
-
-        self._element = {}
-
-        self.add_value_element(p_element)
-        
-## -------------------------------------------------------------------------------------------------
-    def add_value_element(self,val):
-        self._element = {**self._element, **val}
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_data(self):
-        """
-        Get the buffer element.
-
-        Returns:
-            Returns the buffer element.
-        """
-
-        return self._element
+    pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -595,115 +571,8 @@ class SARBuffer(Buffer):
     """
     State-Action-Reward-Buffer in dictionary.
     """
+    pass
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_size:int):
-        """
-        Parameters:
-            p_size (int): Buffer size
-        """
-        super().__init__(p_size=p_size)
-        self._data_buffer = {}
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_element(self, p_elem:SARBufferElement):
-        """
-        Add element to the buffer.
-
-        Parameters:
-            p_elem (SARBufferElement): [description]
-        """
-        self._data_buffer = {**p_elem.get_data(), **self._data_buffer}
-        for key, value in self._data_buffer.items():
-            if key in p_elem.get_data() and key in self._data_buffer:
-                if not isinstance(self._data_buffer [key], list):
-                    self._data_buffer [key] = [p_elem.get_data()[key]]
-                else:
-                    self._data_buffer [key].append(p_elem.get_data()[key])
-
-                if len(self._data_buffer [key]) > self._size:
-                    self._data_buffer [key].pop()
-
-
-## -------------------------------------------------------------------------------------------------
-    def clear(self):
-        """
-        Resets buffer.
-        """
-
-        self._data_buffer.clear()
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_latest(self):
-        """
-        Returns latest buffered element. 
-        """
-
-        try:
-            return {key: self._data_buffer[key][0] for key in self._data_buffer}
-        except:
-            return None
-
-## -------------------------------------------------------------------------------------------------
-    def get_all(self):
-        """
-        Return all buffered elements.
-
-        """
-        return self._data_buffer
-
-## -------------------------------------------------------------------------------------------------
-    def get_sample(self, p_num:int) -> dict:
-        """
-        Sample some element from the buffer.
-
-        Parameters:
-            p_num (int): Number of sample
-
-        Returns:
-            Samples in dictionary
-        """
-        return self._extract_rows(self._gen_sample_ind)
-
-## -------------------------------------------------------------------------------------------------
-    def _gen_sample_ind(self, p_num:int) -> list:
-        """
-        Generate random indices from the buffer.
-
-        Parameters:
-            p_num (int): Number of sample
-
-        Returns:
-            List of incides
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def _extract_rows(self, p_list_idx:list) -> dict:
-        """
-        Extract the element in the buffer based on a
-        list of indices.
-
-        Parameters:
-            p_list_idx (list): List of indices
-
-        Returns:
-            Samples in dictionary
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def is_full(self) -> bool:
-        """
-        Check if the buffer is full.
-
-        Returns:
-            True, if the buffer is full
-        """
-        keys = list(self._data_buffer.keys())
-        return len(self._data_buffer[keys[0]]) >= self._size
 
 
 ## -------------------------------------------------------------------------------------------------
