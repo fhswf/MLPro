@@ -624,7 +624,7 @@ class PrioritizedBuffer(SARBuffer):
     
     
 ## -------------------------------------------------------------------------------------------------    
-    def add_element(self, p_elem:PrioritizedBufferElement)
+    def add_element(self, p_elem:PrioritizedBufferElement):
         """
         Add element to the buffer.
 
@@ -709,7 +709,7 @@ class PrioritizedBuffer(SARBuffer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_priorities(self, p_list_idx:list, priorities:np.ndarray)
+    def update_priorities(self, p_list_idx:list, priorities:np.ndarray):
         """
         Updates the priority tree.
         Needs to be called during each training step, utilising the element-wise calculated loss.
