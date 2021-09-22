@@ -175,13 +175,13 @@ class Buffer:
         self._data_buffer = {**p_elem.get_data(), **self._data_buffer}
         for key, value in self._data_buffer.items():
             if key in p_elem.get_data() and key in self._data_buffer:
-                if not isinstance(self._data_buffer [key], list):
-                    self._data_buffer [key] = [p_elem.get_data()[key]]
+                if not isinstance(self._data_buffer[key], list):
+                    self._data_buffer[key] = [p_elem.get_data()[key]]
                 else:
-                    self._data_buffer [key].append(p_elem.get_data()[key])
+                    self._data_buffer[key].append(p_elem.get_data()[key])
 
-                if len(self._data_buffer [key]) > self._size:
-                    self._data_buffer [key].pop()
+                if len(self._data_buffer[key]) > self._size:
+                    self._data_buffer[key].pop(-len(self._data_buffer[key]))
 
 ## -------------------------------------------------------------------------------------------------
     def clear(self):
@@ -198,7 +198,7 @@ class Buffer:
         """
 
         try:
-            return {key: self._data_buffer[key][0] for key in self._data_buffer}
+            return {key: self._data_buffer[key][-1] for key in self._data_buffer}
         except:
             return None
 
