@@ -562,10 +562,7 @@ class SARBufferElement(BufferElement):
     """
     Element of a State-Action-Reward-Buffer.
     """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_element: dict) -> None:
-        super().__init__(p_element)
+    pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -574,14 +571,8 @@ class SARBuffer(Buffer):
     """
     State-Action-Reward-Buffer in dictionary.
     """
+    pass
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_size:int):
-        """
-        Parameters:
-            p_size (int): Buffer size
-        """
-        super().__init__(p_size=p_size)
 
 
 ## -------------------------------------------------------------------------------------------------

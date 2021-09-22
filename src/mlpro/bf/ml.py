@@ -221,7 +221,7 @@ class Buffer:
         Returns:
             Samples in dictionary
         """
-        return self._extract_rows(self._gen_sample_ind)
+        return self._extract_rows(self._gen_sample_ind(p_num))
 
 ## -------------------------------------------------------------------------------------------------
     def _gen_sample_ind(self, p_num:int) -> list:
@@ -271,10 +271,6 @@ class BufferRnd(Buffer):
     """
     Buffer implmentation with random sampling
     """
-    
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_size=1):
-        super().__init__(p_size=p_size)
 
 ## -------------------------------------------------------------------------------------------------
     def _gen_sample_ind(self, p_num: int) -> list:
