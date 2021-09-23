@@ -120,7 +120,10 @@ class WrEnvGym(Environment):
             action_gym = action_sorted.astype(self._gym_env.action_space.dtype)
 
         # 2 Process step of Gym environment
-        observation, reward_gym, self.done, info = self._gym_env.step(action_gym)
+        try:
+            observation, reward_gym, self.done, info = self._gym_env.step(action_gym)
+        except:
+            observation, reward_gym, self.done, info = self._gym_env.step(np.atleast_1d(action_gym))
         obs     = DataObject(observation)
 
         # 3 Create state object from Gym observation
