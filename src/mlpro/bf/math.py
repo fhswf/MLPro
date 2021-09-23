@@ -9,16 +9,21 @@
 ## -- 2021-05-30  1.0.0     DA       Release of first version
 ## -- 2021-08-26  1.1.0     DA       Class Dimension extended by base set and description
 ## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
+## -- 2021-09-23  1.2.0     DA       Changes to deal with big data objects:
+## --                                - new class DataObject
+## --                                - new base set type 'D' in class Dimension
+## --                                - changes in class Element: list instead of np.array
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-08-24)
+Ver. 1.2.0 (2021-09-23)
 
 This module provides basic mathematical classes.
 """
 
 
 import numpy as np
+from itertools import repeat
 
 
 
@@ -33,6 +38,7 @@ class Dimension:
     C_BASE_SET_R    = 'R'       # real numbers
     C_BASE_SET_N    = 'N'       # natural numbers 
     C_BASE_SET_Z    = 'Z'       # integer numbers
+    C_BASE_SET_DO   = 'DO'      # (big) data objects (like images, point clouds, ...)
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_id, p_name_short, p_base_set=C_BASE_SET_R, p_name_long='', p_name_latex='', p_unit='', p_unit_latex='', p_boundaries=[], p_description='') -> None:
@@ -187,6 +193,32 @@ class Set:
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class DataObject:
+    """
+    Container class for (big) data objects of any type with optional additional meta data.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_data, *p_meta_data) -> None:
+        self._data      = p_data
+        self._meta_data = p_meta_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_data(self):
+        return self._data
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_meta_data(self) -> tuple:
+        return self._meta_data
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class Element:
     """
     Element of a (multivariate) set.
@@ -194,8 +226,8 @@ class Element:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_set:Set) -> None:
-        self._set = p_set
-        self.set_values(np.zeros(self._set.get_num_dim()))
+        self._set       = p_set
+        self._values    = list(repeat(0,self._set.get_num_dim()))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -209,12 +241,19 @@ class Element:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_values(self) -> np.ndarray:
+    def get_values(self):
         return self._values
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_values(self, p_values:np.array):
+    def set_values(self, p_values):
+        """
+        Overwrites the values of all components of the element.
+
+        Parameters:
+            p_values        Something iterable with same length as number of element dimensions.
+        """
+
         self._values = p_values
 
 
@@ -297,4 +336,4 @@ class ESpace(MSpace):
 
 ## -------------------------------------------------------------------------------------------------
     def distance(self, p_e1: Element, p_e2: Element):
-        return np.sum( (p_e1.get_values() - p_e2.get_values())**2 )**0.5
+        return np.sum( ( np.array(p_e1.get_values()) - np.array(p_e2.get_values()) )**2 )**0.5
