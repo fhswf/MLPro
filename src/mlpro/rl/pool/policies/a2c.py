@@ -19,6 +19,7 @@ This module provide A2C Algorithm based on reference.
 
 import torch
 import random
+from torch.distributions.constraint_registry import _transform_to_stack
 import torch.optim as optim
 from mlpro.rl.models import *
 import numpy as np
@@ -28,6 +29,8 @@ def init(module, weight_init, bias_init, gain=1):
     bias_init(module.bias.data)
     return module
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class AddBias(torch.nn.Module):
     def __init__(self, bias):
         super(AddBias, self).__init__()
@@ -38,19 +41,39 @@ class AddBias(torch.nn.Module):
         
         return x + bias
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class FixedNormal(torch.distributions.Normal):
     def log_probs(self, actions):
         return super().log_prob(actions).sum(-1, keepdim=True)
 
-    def entrop(self):
-        return super.entropy().sum(-1)
+    def entropy(self):
+        return super().entropy().sum(-1)
 
     def mode(self):
         return self.mean
 
-class DiagGaussian(torch.nn.Module):
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class FixedCategorical(torch.distributions.Categorical):
+    def log_probs(self, actions):
+        return super().log_prob(actions).sum(-1, keepdim=True)
+
+    def entropy(self):
+        return super().entropy().sum(-1)
+
+    def mode(self):
+        return torch.argmax(self.probs, dim=1)
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class DiagGaussianDistribution(torch.nn.Module):
+    """
+    Diagonal Gaussian for Continuous Action
+
+    """
     def __init__(self, num_inputs, num_outputs):
-        super(DiagGaussian, self).__init__()
+        super(DiagGaussianDistribution, self).__init__()
 
         init_ = lambda m: init(m, torch.nn.init.orthogonal_, lambda x: torch.nn.init.
                                constant_(x, 0))
@@ -64,7 +87,29 @@ class DiagGaussian(torch.nn.Module):
         action_logstd = self.logstd(zeros)
         
         return action_mean, FixedNormal(action_mean, action_logstd.exp())
-    
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class CategoricalDistribution(torch.nn.Module):
+    """
+    Categorical Distribution for Discrete Action
+
+    """
+    def __init__(self, num_inputs, num_outputs):
+        super(CategoricalDistribution, self).__init__()
+
+        init_ = lambda m: init(m, torch.nn.init.orthogonal_, lambda x: torch.nn.init.
+                               constant_(x, 0))
+
+        self.fc_mean = init_(torch.nn.Linear(num_inputs, num_outputs))
+
+    def forward(self, x):
+        action_mean = self.fc_mean(x)
+        
+        return action_mean, FixedCategorical(action_mean)
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class MLPBase(torch.nn.Module):
     def __init__(self, num_inputs, hidden_size, recurrent=False):
         super(MLPBase, self).__init__()
@@ -91,60 +136,17 @@ class MLPBase(torch.nn.Module):
         hidden_actor = self.actor(x)
         return self.critic_linear(hidden_critic), hidden_actor
 
-class MLPActor(torch.nn.Module):
-    def __init__(self, num_inputs, hidden_size, recurrent=False):
-        super(MLPActor, self).__init__()
-
-        init_ = lambda m: init(m, torch.nn.init.orthogonal_, lambda x: torch.nn.init.
-                               constant_(x, 0), np.sqrt(2))
-
-        self.actor = torch.nn.Sequential(
-            init_(torch.nn.Linear(num_inputs, hidden_size)), torch.nn.Tanh(),
-            init_(torch.nn.Linear(hidden_size, hidden_size)), torch.nn.Tanh())
-        
-        self.actor_linear = init_(torch.nn.Linear(hidden_size, 2))
-
-        self.train()
-
-    def forward(self, inputs):
-        x = inputs
-        hidden_actor = self.actor(x)
-        return hidden_actor
-
-class ActorGaussianMLP(torch.nn.Module):
-    def __init__(self, num_inputs, num_actions, hidden_size=64):
-        super(ActorGaussianMLP, self).__init__()
-        self.base = MLPActor(num_inputs, hidden_size)
-        self.dist = DiagGaussian(hidden_size,num_actions)
-        self.num_inputs = num_inputs
-        self.num_actions = num_actions
-    
-    def sample_action(self, inputs, deterministic=False):
-        actor_features = self.base(inputs)
-        mean, dist = self.dist(actor_features)
-
-        if deterministic:
-            action = dist.mode()
-        else:
-            action = dist.sample()
-
-        action_log_probs = dist.log_probs(action)
-
-        return action, action_log_probs, mean
-    
-    def evaluate_action(self, inputs, action):
-        actor_features = self.base(inputs)
-        mean, dist = self.dist(actor_features)
-
-        action_log_probs = dist.log_probs(action)
-
-        return action_log_probs, mean
-
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class ActorCriticMLP(torch.nn.Module):
+    """
+    Implemention of Actor Critic network based on Feed Forward Network
+    """
+
     def __init__(self, num_inputs, num_actions, hidden_size=64):
         super(ActorCriticMLP, self).__init__()
         self.base = MLPBase(num_inputs, hidden_size)
-        self.dist = DiagGaussian(hidden_size,num_actions)
+        self.dist = DiagGaussianDistribution(hidden_size,num_actions)
         self.num_inputs = num_inputs
         self.num_actions = num_actions
     
@@ -175,6 +177,8 @@ class ActorCriticMLP(torch.nn.Module):
 
         return value, action_log_probs, dist_entropy
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class A2C(Policy):
     """
     Implementation of A2C Policy Algorithm
@@ -183,7 +187,8 @@ class A2C(Policy):
     C_NAME = 'A2C'
     
     def __init__(self, p_state_space: MSpace, p_action_space: MSpace, p_buffer_size: int, 
-        p_ada, p_use_gae=False, p_gae_lambda=0, p_gamma=0.99, p_value_loss_coef=0.5, p_entropy_coef=0, p_learning_rate=3e-4, p_logging=True):
+                p_ada, p_use_gae=False, p_gae_lambda=0, p_gamma=0.99, p_value_loss_coef=0.5, 
+                p_entropy_coef=0, p_learning_rate=3e-4, p_logging=True):
         """
         Parameters:
             p_state_space (MSpace): State Space
@@ -198,7 +203,8 @@ class A2C(Policy):
             p_learning_rate ([type], optional): Learning rate. Defaults to 3e-4.
             p_logging (bool, optional): Toggle for logging. Defaults to True.
         """
-        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, 
+                        p_logging=p_logging)
         
         self.use_gae = p_use_gae
         self.gae_lambda = p_gae_lambda
@@ -206,10 +212,16 @@ class A2C(Policy):
         self.value_loss_coef = p_value_loss_coef
         self.entropy_coef = p_entropy_coef
         self.learning_rate = p_learning_rate
-        self.policy = ActorCriticMLP(self.get_state_space().get_num_dim(),self.get_action_space().get_num_dim())
-        self.optimizer = optim.Adam(self.policy.parameters(), lr=self.learning_rate)
         self.additional_buffer_element = {}
+        self._setup_policy()
 
+    def _setup_policy(self):
+        self.policy = ActorCriticMLP(self.get_state_space().get_num_dim(),
+                                    self.get_action_space().get_num_dim())
+
+        self.optimizer = optim.Adam(self.policy.parameters(), lr=self.learning_rate)
+
+## -------------------------------------------------------------------------------------------------
     def adapt(self, *p_args) -> bool:
         if not super().adapt(*p_args):
             return False
@@ -230,7 +242,7 @@ class A2C(Policy):
         rewards = torch.Tensor([reward.get_overall_reward() for reward in sar_data["reward"]])
         values = torch.Tensor([value for value in sar_data["value"]])
         dones = torch.Tensor([done for done in sar_data["done"]])
-        returns = torch.zeros(rewards.size(0))  
+        returns = torch.zeros(rewards.size(0)) 
 
         # Get the next value from the last observation
         with torch.no_grad():
@@ -267,7 +279,10 @@ class A2C(Policy):
                 returns[step] = next_return * self.gamma * next_non_terminal + rewards[step]
 
         # Evaluate the state action pair to get the value
-        values, action_log_probs, dist_entropy = self.policy.evaluate_action(states.view(-1,self._state_space.get_num_dim()),actions.view(-1,self._action_space.get_num_dim()))
+        values, action_log_probs, dist_entropy = self.policy.evaluate_action(
+                                                                states.view(-1,self._state_space.get_num_dim()),
+                                                                actions.view(-1,self._action_space.get_num_dim())
+                                                                )
         
         # Compute Advantage and Value Loss
         values = values.view(self._buffer._size , 1, 1)
