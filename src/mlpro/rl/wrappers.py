@@ -61,12 +61,12 @@ class WrEnvGym(Environment):
         if p_state_space is not None: 
             self._state_space = p_state_space
         else:
-            self._state_space = self._recognize_space(self._gym_env.observation_space)
+            self._state_space = self._recognize_space(self._gym_env.observation_space, "observation")
         
         if p_action_space is not None: 
             self._action_space = p_action_space
         else:
-            self._action_space = self._recognize_space(self._gym_env.action_space)
+            self._action_space = self._recognize_space(self._gym_env.action_space, "action")
 
         self.reset()
 
@@ -78,9 +78,17 @@ class WrEnvGym(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _recognize_space(self, p_gym_space) -> ESpace:
+    def _recognize_space(self, p_gym_space, dict_name) -> ESpace:
         space = ESpace()
-        space.add_dim(Dimension(p_id=0,p_name_short='0', p_base_set='DO'))
+        
+        if dict_name == "observation":
+            space.add_dim(Dimension(p_id=0,p_name_short='0', p_base_set='DO'))
+        elif dict_name == "action":
+            if len(p_gym_space.shape) == 0:
+                space.add_dim(Dimension(p_id=0,p_name_short='0'))
+            else:
+                for d in range(p_gym_space.shape[0]):
+                    space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
         
         return space
 
@@ -197,7 +205,7 @@ class WrEnvPZoo(Environment):
         if p_action_space is not None: 
             self._action_space = p_action_space
         else:
-            self._action_space = self._recognize_space(self._zoo_env.action_spaces, "action_mask")
+            self._action_space = self._recognize_space(self._zoo_env.action_spaces, "action")
 
         self.reset()
 
@@ -215,7 +223,7 @@ class WrEnvPZoo(Environment):
         
         if dict_name == "observation":
             space.add_dim(Dimension(p_id=0,p_name_short='0', p_base_set='DO'))
-        elif dict_name == "action_mask":
+        elif dict_name == "action":
             for k in p_zoo_space:
                 space.add_dim(Dimension(p_id=id_,p_name_short=k, p_base_set='DO'))
                 id_ += 1
