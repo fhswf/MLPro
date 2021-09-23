@@ -30,32 +30,6 @@ from itertools import repeat
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DataObject:
-    """
-    Container class for (big) data objects of any type with optional additional meta data.
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_data, *p_meta_data) -> None:
-        self._data      = p_data
-        self._meta_data = p_meta_data
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_data(self):
-        return self._data
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_meta_data(self) -> tuple:
-        return self._meta_data
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
 class Dimension:
     """
     Objects of this type specify properties of a dimension of a set.
@@ -64,7 +38,7 @@ class Dimension:
     C_BASE_SET_R    = 'R'       # real numbers
     C_BASE_SET_N    = 'N'       # natural numbers 
     C_BASE_SET_Z    = 'Z'       # integer numbers
-    C_BASE_SET_D    = 'D'       # big data objects (like images, point clouds, ...)
+    C_BASE_SET_DO   = 'DO'      # (big) data objects (like images, point clouds, ...)
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_id, p_name_short, p_base_set=C_BASE_SET_R, p_name_long='', p_name_latex='', p_unit='', p_unit_latex='', p_boundaries=[], p_description='') -> None:
@@ -212,6 +186,32 @@ class Set:
             new_set.add_dim(self._dim_list[self._dim_ids.index(i)])
  
         return new_set
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class DataObject:
+    """
+    Container class for (big) data objects of any type with optional additional meta data.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_data, *p_meta_data) -> None:
+        self._data      = p_data
+        self._meta_data = p_meta_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_data(self):
+        return self._data
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_meta_data(self) -> tuple:
+        return self._meta_data
 
 
 
