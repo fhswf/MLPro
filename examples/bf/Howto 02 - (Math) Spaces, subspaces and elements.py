@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-05-28  1.0.0     DA       Creation/Release
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
+## -- 2021-09-23  1.0.1     DA       Adaption to changes in class Element
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-05-28)
+Ver. 1.0.1 (2021-09-23)
 
 This module demonstrates how to create a space and subspaces and to spawn elements.
 """
@@ -86,12 +87,9 @@ class MathDemo(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def change_elem_values(self):
-        # First option: changing a value indexed by a unique dimension index...
+        # Changing a value indexed by a unique dimension index...
         self.elem.set_value(self.C_POS, 4.77)
         self.elem.set_value(self.C_VEL, -8.22)
-
-        # Second option: get numpy array of values and change it directly
-        self.elem.get_values()[5] = 9.876
         self.log(self.C_LOG_TYPE_I, 'Element changed to ', self.elem.get_values())
 
 
@@ -99,7 +97,7 @@ class MathDemo(Log):
     def calculate_distance(self):
         e1 = Element(self.espace)
         e2 = Element(self.espace)
-        e2.get_values()[5] = 1
+        e2.set_value(5,1)
         self.log(self.C_LOG_TYPE_I, 'New element e1 =', e1.get_values())
         self.log(self.C_LOG_TYPE_I, 'New element e2 =', e2.get_values())
         self.log(self.C_LOG_TYPE_I, 'Euclidian distance between e1 and e2 =', self.espace.distance(e1,e2))
