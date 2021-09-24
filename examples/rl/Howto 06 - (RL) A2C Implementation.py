@@ -32,7 +32,10 @@ class MyScenario(Scenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        self._env   = RobotHTM(p_logging=True) 
+        # self._env   = RobotHTM(p_logging=False)
+        gym_env     = gym.make('CartPole-v1')
+        # gym_env     = gym.make('MountainCarContinuous-v0')
+        self._env   = WrEnvGym(gym_env, p_logging=False) 
 
         # 2 Setup standard single-agent with own policy
         self._agent = Agent(
