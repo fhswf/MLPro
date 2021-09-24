@@ -7,12 +7,13 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-18  0.0.0     MRD      Creation
 ## -- 2021-09-18  1.0.0     MRD      Release first version only for continous action
+## -- 2021-09-24  1.0.1     MRD      Add categorical distribution to deal with the discrete action
 ## -------------------------------------------------------------------------------------------------
 ## -- Reference
-## -- https://github.com/ikostrikov/pytorch-a2c-ppo-acktr-gail
+## -- https://github.com/DLR-RM/stable-baselines3
 
 """
-Ver. 1.0.0 (2021-09-18)
+Ver. 1.0.0 (2021-09-24)
 
 This module provide A2C Algorithm based on reference.
 """

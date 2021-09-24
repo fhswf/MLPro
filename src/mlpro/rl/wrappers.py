@@ -11,10 +11,12 @@
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
 ## -- 2021-09-23  1.1.0     SY       Update WrEnvGym to solve big data issues
 ## --                                WrEnvPZoo is ready to use
+## -- 2021-09-24  1.1.1     MRD      Change the gym wrapper _recognize_space() function to seperate
+## --                                between discrete space and continuous space
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-09-23)
+Ver. 1.1.0 (2021-09-24)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
