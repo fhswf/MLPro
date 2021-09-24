@@ -8,10 +8,11 @@
 ## -- 2021-09-13  0.0.0     WB       Creation
 ## -- 2021-09-13  1.0.0     WB       Released first version
 ## -- 2021-09-13  1.0.1     WB       Instantiated without WrEnvGym
+## -- 2021-09-23  1.0.1     WB       Increased C_LATENCY
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-09-13)
+Ver. 1.0.1 (2021-09-23)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
@@ -40,7 +41,7 @@ class UR5JointControl(Environment):
     """
 
     C_NAME      = 'UR5JointControl'
-    C_LATENCY   = timedelta(0,1,0)
+    C_LATENCY   = timedelta(0,5,0)
     C_INFINITY  = np.finfo(np.float32).max      
 
 
