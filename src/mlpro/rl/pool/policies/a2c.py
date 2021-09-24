@@ -106,7 +106,7 @@ class CategoricalDistribution(torch.nn.Module):
     def forward(self, x):
         action_mean = self.fc_mean(x)
         
-        return action_mean, FixedCategorical(action_mean)
+        return action_mean, FixedCategorical(logits=action_mean)
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -143,12 +143,12 @@ class ActorCriticMLP(torch.nn.Module):
     Implemention of Actor Critic network based on Feed Forward Network
     """
 
-    def __init__(self, num_inputs, num_actions, hidden_size=64):
+    def __init__(self, p_num_inputs, p_num_actions, p_dist_cls, hidden_size=64):
         super(ActorCriticMLP, self).__init__()
-        self.base = MLPBase(num_inputs, hidden_size)
-        self.dist = DiagGaussianDistribution(hidden_size,num_actions)
-        self.num_inputs = num_inputs
-        self.num_actions = num_actions
+        self.base = MLPBase(p_num_inputs, hidden_size)
+        self.dist = p_dist_cls(hidden_size,p_num_actions)
+        self.num_inputs = p_num_inputs
+        self.num_actions = p_num_actions
     
     def sample_action(self, inputs, deterministic=False):
         value, actor_features = self.base(inputs)
@@ -216,8 +216,23 @@ class A2C(Policy):
         self._setup_policy()
 
     def _setup_policy(self):
-        self.policy = ActorCriticMLP(self.get_state_space().get_num_dim(),
-                                    self.get_action_space().get_num_dim())
+        """
+        Setup the Policy Network based on type of the action space of an environment.
+        """
+        
+        action_dim = self.get_action_space().get_num_dim()
+        state_dim = self.get_state_space().get_num_dim()
+        dist = DiagGaussianDistribution
+
+        # Check if action is Discrete
+        if self.get_action_space().get_num_dim() == 1:
+            if len(self.get_action_space().get_dim(0).get_boundaries()) == 1:
+                action_dim = self.get_action_space().get_dim(0).get_boundaries()[0]
+                dist = CategoricalDistribution
+
+
+        self.policy = ActorCriticMLP(state_dim,
+                                    action_dim, dist)
 
         self.optimizer = optim.Adam(self.policy.parameters(), lr=self.learning_rate)
 
@@ -237,46 +252,33 @@ class A2C(Policy):
         sar_data = self._buffer.get_all()
         
         # Remap the data from the buffer to its own variable
-        states = torch.Tensor([state.get_values() for state in sar_data["previous_state"]])
+        states = torch.Tensor([state.get_values() for state in sar_data["state"]])
         actions = torch.Tensor([action.get_sorted_values() for action in sar_data["action"]])
-        rewards = torch.Tensor([reward.get_overall_reward() for reward in sar_data["reward"]])
-        values = torch.Tensor([value for value in sar_data["value"]])
-        dones = torch.Tensor([done for done in sar_data["done"]])
-        returns = torch.zeros(rewards.size(0)) 
+        rewards = torch.Tensor([reward.get_overall_reward() for reward in sar_data["reward"]]).flatten()
+        values = torch.Tensor([value for value in sar_data["value"]]).flatten()
+        dones = torch.Tensor([done for done in sar_data["done"]]).flatten()
+        advantages = torch.zeros(self._buffer._size) 
+
+        print(torch.sum(rewards))
 
         # Get the next value from the last observation
         with torch.no_grad():
-            next_value = self.policy.get_value(states[-1]).detach()
+            last_values = self.policy.get_value(states[-1]).detach()
 
         # Calculate Returns
-        if self.use_gae:
-            returns[-1] = next_value
-            gae = 0
-            for step in reversed(range(rewards.size(0))):
-                if step == self._buffer._size - 1:
-                    next_non_terminal = 1.0 - dones[-1]
-                    next_values = next_value
-                    next_return = returns[-1]
-                else:
-                    next_non_terminal = 1.0 - dones[step + 1]
-                    next_values = values[step + 1]
-                    next_return = returns[step + 1]
+        last_gae_lam = 0
+        for step in reversed(range(self._buffer._size)):
+            if step == self._buffer._size - 1:
+                next_non_terminal = 1.0 - dones[-1]
+                next_values = last_values
+            else:
+                next_non_terminal = 1.0 - dones[step + 1]
+                next_values = values[step + 1]
+            delta = rewards[step] + self.gamma * next_values * next_non_terminal - values[step]
+            last_gae_lam = delta + self.gamma * self.gae_lambda * next_non_terminal * last_gae_lam
+            advantages[step] = last_gae_lam
 
-                delta = rewards[step] + self.gamma * next_values * next_non_terminal - values[step]
-                gae = delta + self.gamma * self.gae_lambda * next_non_terminal * gae
-                returns[step] = gae + values[step]
-        else:
-            returns[-1] = next_value
-            for step in reversed(range(rewards.size(0))):
-                if step == self._buffer._size - 1:
-                    next_non_terminal = 1.0 - dones[-1]
-                    next_values = next_value
-                    next_return = returns[-1]
-                else:
-                    next_non_terminal = 1.0 - dones[step + 1]
-                    next_values = values[step + 1]
-                    next_return = returns[step + 1]
-                returns[step] = next_return * self.gamma * next_non_terminal + rewards[step]
+        returns = advantages + values
 
         # Evaluate the state action pair to get the value
         values, action_log_probs, dist_entropy = self.policy.evaluate_action(
@@ -284,14 +286,13 @@ class A2C(Policy):
                                                                 actions.view(-1,self._action_space.get_num_dim())
                                                                 )
         
-        # Compute Advantage and Value Loss
+        # Compute Value Loss
         values = values.view(self._buffer._size , 1, 1)
-        advantages = returns[:-1] - values
-        value_loss = advantages.pow(2).mean()
+        value_loss = torch.nn.functional.mse_loss(returns, values)
 
         # Compute Action Loss
         action_log_probs = action_log_probs.view(self._buffer._size , 1, 1)
-        action_loss = -(advantages.detach() * action_log_probs).mean()
+        action_loss = -(advantages * action_log_probs).mean()
 
         # Compute Actor and Critic Loss
         ac_loss = value_loss * self.value_loss_coef + action_loss - dist_entropy * self.entropy_coef

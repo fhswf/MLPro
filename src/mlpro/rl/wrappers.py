@@ -20,6 +20,7 @@ This module provides wrapper classes for reinforcement learning tasks.
 """
 
 
+import gym
 import numpy as np
 from typing import List
 from time import sleep
@@ -81,14 +82,11 @@ class WrEnvGym(Environment):
     def _recognize_space(self, p_gym_space, dict_name) -> ESpace:
         space = ESpace()
         
-        if dict_name == "observation":
-            space.add_dim(Dimension(p_id=0,p_name_short='0', p_base_set='DO'))
-        elif dict_name == "action":
-            if len(p_gym_space.shape) == 0:
-                space.add_dim(Dimension(p_id=0,p_name_short='0'))
-            else:
-                for d in range(p_gym_space.shape[0]):
-                    space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
+        if len(p_gym_space.shape) == 0:
+            space.add_dim(Dimension(p_id=0,p_name_short='0', p_boundaries=[p_gym_space.n]))
+        else:
+            for d in range(p_gym_space.shape[0]):
+                space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
         
         return space
 
