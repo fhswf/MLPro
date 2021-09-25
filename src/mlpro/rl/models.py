@@ -31,10 +31,13 @@
 ## --                                Added "Done" as default input for Agent.adapt()
 ## -- 2021-09-19  1.3.3     MRD      Change SARBuffer Class and Inherits SARBufferElement with base
 ## --                                class Buffer
+## -- 2021-09-25  1.3.4     MRD      Remove Previous state into the buffer. Add Next state to the buffer
+## --                                Remove clearing buffer on every reset. The clearing buffer should
+## --                                be controlled from the policy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2021-09-19)
+Ver. 1.3.4 (2021-09-25)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -618,7 +621,8 @@ class Policy(Adaptive, Plottable):
     C_NAME          = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
+    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_buffer_size=1, 
+                p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
         """
          Parameters:
             p_state_space       State space object
@@ -716,7 +720,6 @@ class Policy(Adaptive, Plottable):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Agent(Policy):
@@ -728,7 +731,8 @@ class Agent(Policy):
     C_NAME          = 'Standard'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_name='', p_id=0, p_ada=True, p_logging=True):
+    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_name='', p_id=0, p_ada=True, 
+                p_logging=True):
         """
         Parameters:
             p_policy            Policy object
@@ -807,10 +811,13 @@ class Agent(Policy):
 
         reward = p_args[0]
         done = p_args[1]
-        self.log(self.C_LOG_TYPE_I, 'Adaption: previous state =', self._previous_state.get_values(), '; reward = ', p_args[0].get_agent_reward(self._id))
+        next_state = p_args[2]
+        self.log(self.C_LOG_TYPE_I, 'Adaption: previous state =', self._previous_state.get_values(), 
+                '; reward = ', p_args[0].get_agent_reward(self._id))
 
         # 2 Add data to SAR buffer
-        self._policy.add_buffer(SARBufferElement(dict(previous_state=self._previous_state, action=self._previous_action, state=self._state, reward=reward, done=done)))
+        self._policy.add_buffer(SARBufferElement(dict(state=self._state, action=self._previous_action, 
+                                                    reward=reward, next_state=next_state, done=done)))
 
         # 3 Adapt policy
         return self._policy.adapt()
@@ -940,6 +947,7 @@ class MultiAgent(Agent):
 
         reward = p_args[0]
         done = p_args[1]
+        next_state = p_args[2]
 
         self.log(self.C_LOG_TYPE_I, 'Start of adaption for all agents...')      
 
@@ -948,7 +956,7 @@ class MultiAgent(Agent):
             agent = agent_entry[0]
             if ( reward.get_type() != Reward.C_TYPE_OVERALL ) and not reward.is_rewarded(agent.get_id()): continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-            adapted = adapted or agent.adapt(reward, done)
+            adapted = adapted or agent.adapt(reward, done, next_state)
 
         self.log(self.C_LOG_TYPE_I, 'End of adaption for all agents...')        
 
@@ -1106,7 +1114,8 @@ class Scenario(Log, LoadSave):
     C_NAME              = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode=Environment.C_MODE_SIM, p_ada=True, p_cycle_len:timedelta=None, p_cycle_limit=0, p_visualize=True, p_logging=True):
+    def __init__(self, p_mode=Environment.C_MODE_SIM, p_ada=True, p_cycle_len:timedelta=None, 
+                p_cycle_limit=0, p_visualize=True, p_logging=True):
         """
         Parameters:
             p_mode              Operation mode of environment (see Environment.C_MODE_*)
@@ -1166,7 +1175,6 @@ class Scenario(Log, LoadSave):
 
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Scenario reset...')
         self._env.reset()
-        self._agent.clear_buffer()
 
         if self._visualize:
             self._env.init_plot()
@@ -1188,7 +1196,8 @@ class Scenario(Log, LoadSave):
       
 
 ## -------------------------------------------------------------------------------------------------
-    def run_cycle(self, p_cycle_id, p_ds_states:RLDataStoring=None, p_ds_actions:RLDataStoring=None, p_ds_rewards:RLDataStoring=None):
+    def run_cycle(self, p_cycle_id, p_ds_states:RLDataStoring=None, p_ds_actions:RLDataStoring=None, 
+                p_ds_rewards:RLDataStoring=None):
         """
         Processes a single control cycle with optional data logging.
 
@@ -1241,7 +1250,7 @@ class Scenario(Log, LoadSave):
 
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
-        self._agent.adapt(reward, self._env.done)
+        self._agent.adapt(reward, self._env.done, self._env.get_state())
 
 
         # 6 Optional visualization
@@ -1260,7 +1269,8 @@ class Scenario(Log, LoadSave):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, p_exit_when_broken=True, p_exit_when_done=True, p_ds_states:RLDataStoring=None, p_ds_actions:RLDataStoring=None, p_ds_rewards:RLDataStoring=None):
+    def run(self, p_exit_when_broken=True, p_exit_when_done=True, p_ds_states:RLDataStoring=None, 
+            p_ds_actions:RLDataStoring=None, p_ds_rewards:RLDataStoring=None):
         """
         Processes control cycles in a loop. Termination depends on parameters.
 
@@ -1347,7 +1357,8 @@ class Training(Log):
     C_FNAME_ENV_REWARDS     = 'env_rewards'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:Scenario, p_episode_limit=50, p_cycle_limit=0, p_collect_states=True, p_collect_actions=True, p_collect_rewards=True, p_collect_training=True, p_logging=True):
+    def __init__(self, p_scenario:Scenario, p_episode_limit=50, p_cycle_limit=0, p_collect_states=True, 
+                p_collect_actions=True, p_collect_rewards=True, p_collect_training=True, p_logging=True):
         """
         Parmeters:
             p_scenario              RL scenario object
@@ -1497,7 +1508,8 @@ class Training(Log):
 
         if self._ds_training is not None:
             if self._ds_training.save_data(p_path, self.C_FNAME_TRAINING, p_delimiter):
-                self.log(self.C_LOG_TYPE_I, 'Saved training data to file "' + self.C_FNAME_TRAINING + '" in "' + p_path + '"')
+                self.log(self.C_LOG_TYPE_I, 'Saved training data to file "' + self.C_FNAME_TRAINING 
+                        + '" in "' + p_path + '"')
                 num_files  += 1
                 result      = result and True
             else:
@@ -1505,7 +1517,8 @@ class Training(Log):
 
         if self._ds_states is not None:
             if self._ds_states.save_data(p_path, self.C_FNAME_ENV_STATES, p_delimiter):
-                self.log(self.C_LOG_TYPE_I, 'Saved environment state data to file "' + self.C_FNAME_ENV_STATES+ '" in "' + p_path + '"')
+                self.log(self.C_LOG_TYPE_I, 'Saved environment state data to file "' + self.C_FNAME_ENV_STATES
+                        + '" in "' + p_path + '"')
                 num_files  += 1
                 result      = result and True
             else:
@@ -1513,7 +1526,8 @@ class Training(Log):
 
         if self._ds_actions is not None:
             if self._ds_actions.save_data(p_path, self.C_FNAME_AGENT_ACTIONS, p_delimiter):
-                self.log(self.C_LOG_TYPE_I, 'Saved agent action data to file "' + self.C_FNAME_AGENT_ACTIONS + '" in "' + p_path + '"')
+                self.log(self.C_LOG_TYPE_I, 'Saved agent action data to file "' + self.C_FNAME_AGENT_ACTIONS 
+                        + '" in "' + p_path + '"')
                 num_files  += 1
                 result      = result and True
             else:
@@ -1521,7 +1535,8 @@ class Training(Log):
 
         if self._ds_rewards is not None:
             if self._ds_rewards.save_data(p_path, self.C_FNAME_ENV_REWARDS, p_delimiter):
-                self.log(self.C_LOG_TYPE_I, 'Saved environment reward data to file "' + self.C_FNAME_ENV_REWARDS + '" in "' + p_path + '"')
+                self.log(self.C_LOG_TYPE_I, 'Saved environment reward data to file "' + self.C_FNAME_ENV_REWARDS 
+                        + '" in "' + p_path + '"')
                 num_files  += 1
                 result      = result and True
             else:
