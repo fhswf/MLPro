@@ -120,16 +120,19 @@ class PrioritizedBuffer(SARBuffer):
         Returns:
             Samples in dictionary
         """
-        super()._extract_rows(p_list_idx)
-        weights = []
+        rows = {}
+        for key in self._data_buffer:
+            rows[key] = [self._data_buffer[key][i] for i in p_list_idx]
+        p_sample = []
         buffer_length = len(self._data_buffer)
         
         p_min = self.min_tree.min()/self.sum_tree.sum()
         max_weight = (p_min*buffer_length)**(-self.beta)
-        p_sample = self.sum_tree[p_list_idx]/self.sum_tree.sum()
-        weights = ((p_sample*buffer_length)**(-self.beta))/max_weight
+        for idx in p_list_idx:
+            p_sample.append(self.sum_tree[idx]/self.sum_tree.sum())
+        weights = (np.array(p_sample*buffer_length)**(-self.beta))/max_weight
         
-        rows['weights'] = weights
+        rows['weights'] = list(weights)
         rows['p_list_idx'] = p_list_idx
         
         return rows
@@ -166,8 +169,9 @@ class PrioritizedBuffer(SARBuffer):
         assert min(p_list_idx) >= 0
         assert max(p_list_idx) <= len(self._data_buffer)
         
-        self.sum_tree[p_list_idx] = priorities**self.alpha
-        self.min_tree[p_list_idx] = priorities**self.alpha
+        for idx in p_list_idx:
+            self.sum_tree[idx] = priorities**self.alpha
+            self.min_tree[idx] = priorities**self.alpha
         
         self.max_priority = max(self.max_priority, np.max(priorities))
 
