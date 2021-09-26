@@ -397,7 +397,7 @@ class EnvBase(Log, Plottable):
 ## -------------------------------------------------------------------------------------------------
 class Environment(EnvBase):
     """
-    This class represents the central environment model to be reused/inherited in own rl projects.
+    This class represents the c entral environment model to be reused/inherited in own rl projects.
     """
 
     C_TYPE          = 'Environment'
