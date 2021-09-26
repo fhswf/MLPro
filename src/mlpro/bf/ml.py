@@ -12,10 +12,11 @@
 ## --                                to the Adaptive Class
 ## -- 2021-09-19  1.0.1     MRD      Improvement on Buffer Class. Implement new base class
 ## --                                Buffer Element and BufferRnd
+## -- 2021-09-25  1.0.2     MRD      Add __len__ functionality for SARBuffer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-09-19)
+Ver. 1.0.2 (2021-09-25)
 
 This module provides common machine learning functionalities and properties.
 """
@@ -264,6 +265,10 @@ class Buffer:
         keys = list(self._data_buffer.keys())
         return len(self._data_buffer[keys[0]]) >= self._size
 
+## -------------------------------------------------------------------------------------------------
+    def __len__(self):
+        keys = list(self._data_buffer.keys())
+        return len(self._data_buffer[keys[0]])
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------

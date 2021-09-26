@@ -188,8 +188,8 @@ class A2C(Policy):
     C_NAME = 'A2C'
     
     def __init__(self, p_state_space: MSpace, p_action_space: MSpace, p_buffer_size: int, 
-                p_ada, p_use_gae=False, p_gae_lambda=0, p_gamma=0.99, p_value_loss_coef=0.5, 
-                p_entropy_coef=0, p_learning_rate=3e-4, p_logging=True):
+                p_ada, p_buffer_cls=SARBuffer, p_use_gae=False, p_gae_lambda=0, p_gamma=0.99, 
+                p_value_loss_coef=0.5, p_entropy_coef=0, p_learning_rate=3e-4, p_logging=True):
         """
         Parameters:
             p_state_space (MSpace): State Space
@@ -204,8 +204,8 @@ class A2C(Policy):
             p_learning_rate ([type], optional): Learning rate. Defaults to 3e-4.
             p_logging (bool, optional): Toggle for logging. Defaults to True.
         """
-        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, 
-                        p_logging=p_logging)
+        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, 
+                        p_buffer_cls=p_buffer_cls, p_ada=p_ada, p_logging=p_logging)
         
         self.use_gae = p_use_gae
         self.gae_lambda = p_gae_lambda
@@ -259,8 +259,6 @@ class A2C(Policy):
         values = torch.Tensor([value for value in sar_data["value"]]).flatten()
         dones = torch.Tensor([done for done in sar_data["done"]]).flatten()
         advantages = torch.zeros(self._buffer._size) 
-
-        print(torch.sum(rewards))
 
         # Get the next value from the last observation
         with torch.no_grad():
@@ -318,7 +316,7 @@ class A2C(Policy):
             obs = torch.Tensor(obs).reshape(1,obs.size)
         
         with torch.no_grad():
-            value, action, action_log, dist_entropy = self.policy.sample_action(obs,deterministic=True)
+            value, action, action_log, dist_entropy = self.policy.sample_action(obs,deterministic=False)
         
         # Add to additional_buffer_element
         self.additional_buffer_element = dict(value=value, action_log=action_log, entropy=dist_entropy)
