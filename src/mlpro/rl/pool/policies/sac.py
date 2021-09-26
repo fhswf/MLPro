@@ -6,13 +6,15 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-24  0.0.0     MRD      Creation
-## -- 2021-09-25  1.0.0     MRD      Release first version 
+## -- 2021-09-25  1.0.0     MRD      Release first version
+## -- 2021-09-26  1.0.0     MRD      Change the exploration to warm up phase only
+## --                                adjustment on the critic loss calculation
 ## -------------------------------------------------------------------------------------------------
 ## -- Reference
 ## -- https://github.com/DLR-RM/stable-baselines3
 
 """
-Ver. 1.0.0 (2021-09-25)
+Ver. 1.0.0 (2021-09-26)
 
 This module provide SAC Algorithm based on reference.
 """
@@ -255,7 +257,8 @@ class SAC(Policy):
     def __init__(self, p_state_space: MSpace, p_action_space: MSpace, p_buffer_size: int, 
                 p_ada, p_batch_size=64, p_buffer_cls=RandomSARBuffer, p_explore_chance=0.5, p_qnet_type="Q", 
                 p_alpha=0.2, p_tau=0.005, p_gamma=0.99, p_gradient_step=1, p_target_update_interval=1, 
-                p_automatic_entropy_tuning=True, p_learning_rate=3e-4, p_logging=True):
+                p_warm_up_step=50000, p_automatic_entropy_tuning=True, p_learning_rate=3e-4, 
+                p_actor_lr=0.0003, p_critic_lr=0.0003, p_logging=True):
         """
         Args:
             p_state_space (MSpace): State Space
@@ -279,6 +282,7 @@ class SAC(Policy):
         
 
         self.batch_size = p_batch_size
+        self.warm_up_phase = p_warm_up_step
         self.gradient_step = p_gradient_step
         self.qnet_type = p_qnet_type
         self.automatic_entropy_tuning = p_automatic_entropy_tuning
@@ -288,8 +292,12 @@ class SAC(Policy):
         self.gamma = p_gamma
         self.exploration_chance = p_explore_chance
         self.learning_rate = p_learning_rate
+        self.actor_learning_rate = p_actor_lr
+        self.critic_learning_rate = p_critic_lr
         self.additional_buffer_element = {}
         self._setup_policy()
+        
+        self.episode_step = 0
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_policy(self):
@@ -311,17 +319,17 @@ class SAC(Policy):
         self.policy = ActorGaussianMLP(state_dim,
                                     action_dim, self._dist_cls)
 
-        self.policy_optim = optim.Adam(self.policy.parameters(), lr=self.learning_rate)
+        self.policy_optim = optim.Adam(self.policy.parameters(), lr=self.actor_learning_rate)
 
         self.critic = QNetwork(self.get_state_space().get_num_dim(), self.get_action_space().get_num_dim(), 
-                                128)
+                                64)
 
         self.critic_target = QNetwork(self.get_state_space().get_num_dim(), self.get_action_space().get_num_dim(), 
-                                128)
+                                64)
 
         hard_update(self.critic_target, self.critic)
 
-        self.critic_optim = optim.Adam(self.critic.parameters(), lr=self.learning_rate)
+        self.critic_optim = optim.Adam(self.critic.parameters(), lr=self.critic_learning_rate)
 
         if self.automatic_entropy_tuning is True:
             init_value = 1.0
@@ -341,7 +349,7 @@ class SAC(Policy):
             return False
 
         # Adapt only when Buffer is full
-        if len(self._buffer) % self.batch_size != 0:
+        if len(self._buffer) < self.warm_up_phase:
             self.log(self.C_LOG_TYPE_I, 'Buffer is not full yet, keep collecting data!')
             return False
         
@@ -385,16 +393,16 @@ class SAC(Policy):
                 next_q_values, _ = torch.min(next_q_values, dim=1, keepdim=True)
 
                 # add entropy term
-                next_q_values = next_q_values - self.alpha * next_state_log_pi.reshape(-1, 1)
+                next_q_values = next_q_values - self.alpha.detach() * next_state_log_pi.reshape(-1, 1)
 
                 # td error + entropy term
-                target_q_values = rewards + (1 - dones) * self.gamma * next_q_values
+                target_q_values = rewards + (1 - dones) * self.gamma * next_q_values.detach().reshape(self.batch_size)
 
             # Single Q
             current_q_values = self.critic(states, actions)
 
             # Critic Loss
-            critic_loss = 0.5 * sum([torch.nn.functional.mse_loss(current_q, target_q_values) for current_q in current_q_values])
+            critic_loss = torch.nn.functional.mse_loss(current_q_values,target_q_values.reshape(self.batch_size,1))
 
             # Optimze Critic Loss
             self.critic_optim.zero_grad()
@@ -432,7 +440,7 @@ class SAC(Policy):
             obs = torch.Tensor(obs).reshape(1,obs.size)
 
         # Exploration
-        if random.random() < self.exploration_chance:
+        if self.episode_step < self.warm_up_phase:
             action = []
             for action_dim in range(self.get_action_space().get_num_dim()):
                 if len(self.get_action_space().get_dim(action_dim).get_boundaries()) == 1:
@@ -445,7 +453,8 @@ class SAC(Policy):
             with torch.no_grad():
                 action, _, _ = self.policy.sample_action(obs,deterministic=False)
             action = action.cpu().numpy().flatten()
-
+        
+        self.episode_step = self.episode_step + 1
         action = Action(self._id, self._action_space, action)
         return action
 
