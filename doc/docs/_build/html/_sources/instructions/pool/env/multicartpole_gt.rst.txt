@@ -1,0 +1,6 @@
+- `Multi-Cartpole <https://github.com/fhswf/MLPro/blob/main/src/mlpro/gt/pool/boards/multicartpole.py>`_
+    You can get started as follow:
+
+    .. code-block:: bash
+    
+        import mlpro.gt.pool.boards.multicartpole

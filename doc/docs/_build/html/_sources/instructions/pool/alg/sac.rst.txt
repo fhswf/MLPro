@@ -1,0 +1,6 @@
+- `Soft Actor-Critic (SAC) <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/policies/sac.py>`_
+    You can get started as follow:
+
+    .. code-block:: bash
+    
+        import mlpro.rl.pool.policies.sac

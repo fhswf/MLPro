@@ -6,10 +6,6 @@
 MLPro - Machine Learning Professional
 ================================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
 `MLPro <https://github.com/fhswf/MLPro.git>`_ is a synoptic framework for standardized machine learning tasks in Python!
 
 MLPro was developed in 2021 by `Automation Technology team at Fachhochschule Südwestfalen <https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php>`_.
@@ -42,34 +38,47 @@ Instructions for use
 --------------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: Overview of MLPro:
    
-   instructions/installation
-   instructions/rl
-   instructions/gt
-   instructions/bf
-   instructions/ui
-   instructions/package
-   instructions/contribution
+   instructions/overview/introduction
+   
+.. toctree::
+   :maxdepth: 1
+   :caption: User Guide:
+   
+   instructions/guide/installation
+   instructions/guide/getstarted
+   instructions/guide/rl
+   instructions/guide/gt
+   instructions/guide/bf
+   instructions/guide/package
 
 .. toctree::
    :maxdepth: 2
    :caption: RL Pool:
    
-   instructions/env_pool
-   instructions/alg_pool
-   instructions/sce_pool
-   instructions/buf_pool
+   instructions/pool/env_pool
+   instructions/pool/alg_pool
+   instructions/pool/sce_pool
+   instructions/pool/buf_pool
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: How to Files:
    
-   instructions/howto_bf
-   instructions/howto_rl
-   instructions/howto_gt
-   instructions/howto_ui
+   instructions/howtofile/howto_bf
+   instructions/howtofile/howto_rl
+   instructions/howtofile/howto_gt
+   instructions/howtofile/howto_ui
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Others:
+   
+   instructions/other/ui
+   instructions/other/contribution
+   instructions/other/changelog
 
 Citing MLPro
 ------------------------
