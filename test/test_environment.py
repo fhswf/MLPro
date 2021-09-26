@@ -31,7 +31,7 @@ from mlpro.rl.pool.envs.gridworld import GridWorld
 ## -------------------------------------------------------------------------------------------------
 @pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld])
 def test_environment(env_cls):
-    assertIsInstance(env_cls, Environment)
+    assert isinstance(env_cls, Environment)
     
     assert isinstance(env_cls.get_state_space(), ESpace)
     assert env_cls.get_state_space().get_num_dim() != 0
