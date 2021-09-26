@@ -5,16 +5,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-09-22  0.0.0     WB      Creation
+## -- 2021-09-22  0.0.0     WB       Creation
 ## -- 2021-09-22  1.0.0     WB       Added PrioritizedBuffer Class and PrioritizedBufferElement,
 ## --                                including the required SegmentTree data structure
+## -- 2021-09-26  1.0.1     WB       Bug Fix 
 ## -------------------------------------------------------------------------------------------------
 ## -- Reference
 ## -- https://github.com/openai/baselines/blob/master/baselines/deepq/replay_buffer.py
 
 
 """
-Ver. 1.0.0 (2021-09-22)
+Ver. 1.0.1 (2021-09-26)
 
 This module provides the Prioritized Buffer based on the reference.
 """
@@ -169,9 +170,10 @@ class PrioritizedBuffer(SARBuffer):
         assert min(p_list_idx) >= 0
         assert max(p_list_idx) <= len(self._data_buffer)
         
-        for idx in p_list_idx:
-            self.sum_tree[idx] = priorities**self.alpha
-            self.min_tree[idx] = priorities**self.alpha
+        new_priorities = priorities**self.alpha
+        for i in range(len(p_list_idx)):
+            self.sum_tree[p_list_idx[i]] = new_priorities[i]
+            self.min_tree[p_list_idx[i]] = new_priorities[i]
         
         self.max_priority = max(self.max_priority, np.max(priorities))
 
