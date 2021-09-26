@@ -31,30 +31,31 @@ from mlpro.rl.pool.envs.gridworld import GridWorld
 ## -------------------------------------------------------------------------------------------------
 @pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld])
 def test_environment(env_cls):
-    assert isinstance(env_cls, Environment)
+    env = env_cls()
+    assert isinstance(env, Environment)
     
-    assert isinstance(env_cls.get_state_space(), ESpace)
-    assert env_cls.get_state_space().get_num_dim() != 0
+    assert isinstance(env.get_state_space(), ESpace)
+    assert env.get_state_space().get_num_dim() != 0
     
-    assert isinstance(env_cls.get_action_space(), ESpace)
-    assert env_cls.get_action_space().get_num_dim() != 0
+    assert isinstance(env.get_action_space(), ESpace)
+    assert env.get_action_space().get_num_dim() != 0
     
-    state = env_cls.get_state()
+    state = env.get_state()
     
     assert isinstance(state, State)
         
-    my_action_values = np.zeros(env_cls.get_action_space().get_num_dim())
-    for d in range(env_cls.get_action_space().get_num_dim()):
+    my_action_values = np.zeros(env.get_action_space().get_num_dim())
+    for d in range(env.get_action_space().get_num_dim()):
         my_action_values[d] = random.random() 
 
-    my_action_values = Action(0, env_cls.get_action_space(), my_action_values)
+    my_action_values = Action(0, env.get_action_space(), my_action_values)
 
-    env_cls.process_action(my_action_values)
+    env.process_action(my_action_values)
 
-    reward = env_cls.compute_reward()
+    reward = env.compute_reward()
     
     assert isinstance(reward, Reward)
 
-    env_cls._evaluate_state()
+    env._evaluate_state()
 
-    env_cls.reset()
+    env.reset()
