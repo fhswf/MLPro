@@ -33,15 +33,15 @@ from mlpro.rl.pool.envs.gridworld import GridWorld
 def test_environment(env_cls):
     assertIsInstance(env_cls, Environment)
     
-    assertIsInstance(env_cls.get_state_space(), ESpace, "The type of state space is wrong")
-    assertNotEqual(env_cls.get_state_space().get_num_dim(), 0, "The state space dimension is still empty")
+    assert isinstance(env_cls.get_state_space(), ESpace)
+    assert env_cls.get_state_space().get_num_dim() != 0
     
-    assertIsInstance(env_cls.get_action_space(), ESpace, "The type of action space is wrong")
-    assertNotEqual(env_cls.get_action_space().get_num_dim(), 0, "The action space dimenstion is still empty")
+    assert isinstance(env_cls.get_action_space(), ESpace)
+    assert env_cls.get_action_space().get_num_dim() != 0
     
     state = env_cls.get_state()
     
-    assertIsInstance(state, State, "The type of state is wrong")
+    assert isinstance(state, State)
         
     my_action_values = np.zeros(env_cls.get_action_space().get_num_dim())
     for d in range(env_cls.get_action_space().get_num_dim()):
@@ -53,7 +53,7 @@ def test_environment(env_cls):
 
     reward = env_cls.compute_reward()
     
-    assertIsInstance(reward, Reward, "The type of the reward is wrong")
+    assert isinstance(reward, Reward)
 
     env_cls._evaluate_state()
 
