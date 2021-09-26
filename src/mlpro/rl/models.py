@@ -34,10 +34,11 @@
 ## -- 2021-09-25  1.3.4     MRD      Remove Previous state into the buffer. Add Next state to the buffer
 ## --                                Remove clearing buffer on every reset. The clearing buffer should
 ## --                                be controlled from the policy
+## -- 2021-09-xx  1.4.0     DA       Class Agent: method adapt() implemented
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2021-09-25)
+Ver. 1.4.0 (2021-09-xx)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -397,7 +398,7 @@ class EnvBase(Log, Plottable):
 ## -------------------------------------------------------------------------------------------------
 class Environment(EnvBase):
     """
-    This class represents the c entral environment model to be reused/inherited in own rl projects.
+    This class represents the central environment model to be reused/inherited in own rl projects.
     """
 
     C_TYPE          = 'Environment'
@@ -425,6 +426,15 @@ class Environment(EnvBase):
 ## -------------------------------------------------------------------------------------------------
     def get_mode(self):
         return self._mode
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self):
+        """
+        Returns limit of cycles per training episode.
+        """
+
+        return self.C_CYCLE_LIMIT
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -602,7 +612,7 @@ class EnvModel(EnvBase, Adaptive):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_buffer_size=1, p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
         EnvBase.__init__(self, p_logging=p_logging)
-        Adaptive.__init__(self, p_ada=p_ada, p_logging=p_logging)
+        Adaptive.__init__(self, p_buffer=p_buffer_cls(p_size=p_buffer_size), p_ada=p_ada, p_logging=p_logging)
 
 
 
@@ -737,20 +747,50 @@ class Policy(Adaptive, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class ActionPlanner (Log):
+    """
+    Template class for action planning algorithms to be used as part of planning agents.
+
+    """
+
+    C_TYPE          = 'Action Planner'
+
+## -------------------------------------------------------------------------------------------------
+    def compute_action(self, p_state:State, p_policy:Policy, p_envmodel:EnvModel, p_depth) -> Action:
+        """
+        ...
+        
+        Parameters:
+            p_state             Current state of environment
+            p_policy            Poliy of an agent
+            p_envmodel          Environment model
+            p_depth             Planning depth (=length of action sequence to be predicted)
+        """
+
+        raise NotImplementedError
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class Agent(Policy):
     """
     This class represents a single agent model.
     """
 
     C_TYPE          = 'Agent'
-    C_NAME          = 'Standard'
+    C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_name='', p_id=0, p_ada=True, 
+    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_action_planner:ActionPlanner=None, p_name='', p_id=0, p_ada=True, 
                 p_logging=True):
         """
         Parameters:
             p_policy            Policy object
+            p_envmodel          Optional environment model object
+            p_action_planner    Optional action planner object (obligatory for model based agents)
             p_name              Optional name of agent
             p_id                Unique agent id (especially important for multi-agent scenarios)
             p_ada               Boolean switch for adaptivity
@@ -769,6 +809,7 @@ class Agent(Policy):
         self._action_space      = self._policy.get_action_space()
         self._state_space       = self._policy.get_state_space()
         self._envmodel          = p_envmodel
+        self._action_planner    = p_action_planner
 
         self._set_id(p_id)
         self.switch_logging(p_logging)
