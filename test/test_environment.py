@@ -9,10 +9,12 @@
 ## -- 2021-09-11  1.0.0     MRD      Release First Version
 ## -- 2021-09-22  1.0.1     WB       Change Environment Instantiation Method
 ## -- 2021-09-26  1.0.2     MRD      Change the structure to work with GitHub Automated Test
+## -- 2021 09-26  1.0.3     MRD      Change the import module due to the change of the pool
+## --                                folder structer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-09-22)
+Ver. 1.0.3 (2021-09-26)
 
 Unit test classes for environment.
 """
@@ -22,9 +24,7 @@ import pytest
 import random
 import numpy as np
 from mlpro.rl.models import *
-from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.rl.pool.envs.bglp import BGLP
-from mlpro.rl.pool.envs.gridworld import GridWorld
+from mlpro.rl.pool.envs import RobotHTM, BGLP, GridWorld
 # from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
 
 

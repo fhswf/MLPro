@@ -7,10 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-24  0.0.0     MRD      Creation
 ## -- 2021-09-25  1.0.0     MRD      Released first version
+## -- 2021 09-26  1.0.1     MRD      Change the import module due to the change of the pool
+## --                                folder structer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-25)
+Ver. 1.0.1 (2021-09-26)
 
 This module shows how to implement SAC from the pool
 """
@@ -19,8 +21,8 @@ This module shows how to implement SAC from the pool
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGym
-from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.rl.pool.policies.sac import SAC 
+from mlpro.rl.pool.envs import RobotHTM
+from mlpro.rl.pool.policies import SAC
 import gym
 import random
 from pathlib import Path
@@ -32,10 +34,10 @@ class MyScenario(Scenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        # self._env   = RobotHTM(p_logging=False)
+        self._env   = RobotHTM(p_logging=False)
         # gym_env     = gym.make('CartPole-v1')
-        gym_env     = gym.make('MountainCarContinuous-v0')
-        self._env   = WrEnvGym(gym_env, p_logging=False) 
+        # gym_env     = gym.make('MountainCarContinuous-v0')
+        # self._env   = WrEnvGym(gym_env, p_logging=False) 
 
         # 2 Setup standard single-agent with own policy
         self._agent = Agent(

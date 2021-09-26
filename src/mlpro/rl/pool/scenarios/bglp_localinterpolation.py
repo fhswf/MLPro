@@ -9,17 +9,19 @@
 ## -- 2021-09-06  1.00  SY     Release of first version
 ## -- 2021-09-11  1.00  MRD    Change Header information to match our new library name
 ## -- 2021-09-22  1.01  SY     Solving minor bugs
+## -- 2021 09-26  1.02  MRD    Change the import module due to the change of the pool
+## --                          folder structer
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.00 (2021-09-22)
+Ver. 1.00 (2021-09-26)
 
 Environment : BGLP
 Algorithms  : SbPG - Local Interpolation
 """
 
 
-from mlpro.rl.pool.envs.bglp import BGLP
+from mlpro.rl.pool.envs import BGLP
 from mlpro.rl.models import *
 from mlpro.bf.various import *
 from mlpro.bf.math import *

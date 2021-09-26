@@ -9,10 +9,12 @@
 ## -- 2021-06-06  1.0.0     DA       Release of first version
 ## -- 2021-08-28  1.1.0     DA       Introduced Policy
 ## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
+## -- 2021 09-26  1.1.1     MRD      Change the import module due to the change of the pool
+## --                                folder structer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-08-28)
+Ver. 1.1.1 (2021-09-26)
 
 This module shows how to run an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -20,7 +22,7 @@ MultiCartPole based on the OpenAI Gym CartPole environment.
 
 
 from mlpro.rl.models import *
-from mlpro.rl.pool.envs.multicartpole import MultiCartPole
+from mlpro.rl.pool.envs import MultiCartPole
 import random
 
 
