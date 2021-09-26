@@ -405,6 +405,8 @@ class Environment(EnvBase):
     C_MODE_SIM      = 0
     C_MODE_REAL     = 1
 
+    C_CYCLE_LIMIT   = 100   # Recommended cycle limit for training episodes
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_mode=C_MODE_SIM, p_latency:timedelta=None, p_logging=True):
         """
@@ -559,13 +561,20 @@ class Environment(EnvBase):
         raise NotImplementedError
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SARBufferElement(BufferElement):
     """
     Element of a State-Action-Reward-Buffer.
     """
+
     pass
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -574,7 +583,10 @@ class SARBuffer(Buffer):
     """
     State-Action-Reward-Buffer in dictionary.
     """
+
     pass
+
+
 
 
 
@@ -591,6 +603,9 @@ class EnvModel(EnvBase, Adaptive):
     def __init__(self, p_buffer_size=1, p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
         EnvBase.__init__(self, p_logging=p_logging)
         Adaptive.__init__(self, p_ada=p_ada, p_logging=p_logging)
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
