@@ -7,10 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-13  0.0.0     MRD      Creation
 ## -- 2021-09-18  1.0.0     MRD      Released first version
+## -- 2021 09-26  1.0.1     MRD      Change the import module due to the change of the pool
+## --                                folder structer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-18)
+Ver. 1.0.1 (2021-09-26)
 
 This module shows how to implement A2C from the pool
 """
@@ -19,8 +21,8 @@ This module shows how to implement A2C from the pool
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGym
-from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.rl.pool.policies.a2c import A2C 
+from mlpro.rl.pool.envs import RobotHTM
+from mlpro.rl.pool.policies import A2C 
 import gym
 import random
 from pathlib import Path

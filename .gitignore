@@ -4,3 +4,4 @@
 *.tar.gz
 __pycache__/
 *.mustache
+.pytest_cache

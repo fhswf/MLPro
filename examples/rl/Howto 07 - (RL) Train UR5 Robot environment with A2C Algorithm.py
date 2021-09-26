@@ -7,10 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-23  0.0.0     WB       Creation
 ## -- 2021-09-23  1.0.0     WB       Released first version
+## -- 2021 09-26  1.0.1     MRD      Change the import module due to the change of the pool
+## --                                folder structer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-23)
+Ver. 1.0.0 (2021-09-26)
 
 This module shows how to implement A2C on the UR5 Robot Environment
 """
@@ -19,7 +21,7 @@ This module shows how to implement A2C on the UR5 Robot Environment
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
-from mlpro.rl.pool.policies.a2c import A2C 
+from mlpro.rl.pool.policies import A2C 
 import random
 from pathlib import Path
 
