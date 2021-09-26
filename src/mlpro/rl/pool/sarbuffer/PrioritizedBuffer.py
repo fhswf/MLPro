@@ -175,7 +175,7 @@ class PrioritizedBuffer(SARBuffer):
             self.sum_tree[p_list_idx[i]] = new_priorities[i]
             self.min_tree[p_list_idx[i]] = new_priorities[i]
         
-        self.max_priority = max(self.max_priority, np.max(priorities))
+        self.max_priority = max(self.max_priority, np.max(new_priorities))
 
 
 ## -------------------------------------------------------------------------------------------------
