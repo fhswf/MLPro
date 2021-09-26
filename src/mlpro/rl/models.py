@@ -34,7 +34,9 @@
 ## -- 2021-09-25  1.3.4     MRD      Remove Previous state into the buffer. Add Next state to the buffer
 ## --                                Remove clearing buffer on every reset. The clearing buffer should
 ## --                                be controlled from the policy
-## -- 2021-09-xx  1.4.0     DA       Class Agent: method adapt() implemented
+## -- 2021-09-xx  1.4.0     DA       Enhancements for model-based agends:
+## --                                - New class ActionPlanner
+## --                                - Class Agent: method adapt() implemented
 ## -------------------------------------------------------------------------------------------------
 
 """
