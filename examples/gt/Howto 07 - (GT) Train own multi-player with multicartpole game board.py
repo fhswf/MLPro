@@ -11,10 +11,11 @@
 ## -- 2021-07-06  1.1.1     SY       Bugfix due to method Training.save_data() update
 ## -- 2021-08-28  1.1.2     DA       Adjustments after changings on rl models
 ## -- 2021-09-11  1.1.2     MRD      Change Header information to match our new library name
+## -- 2021-09-28  1.1.3     SY       Adjustment due to implementation of SAR Buffer on player
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2021-08-28)
+Ver. 1.1.3 (2021-09-28)
 
 This module shows how to train an own multi-player with the enhanced multi-action
 game board MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -91,10 +92,10 @@ class MyGame(Game):
                 p_policy=MyPolicy(
                     p_state_space=self._env.get_state_space().spawn([0,1,2,3]),
                     p_action_space=self._env.get_action_space().spawn([0]),
+                    p_buffer_size=1,
                     p_ada=True,
                     p_logging=True
                 ),
-                p_sarbuffer_size=1,
                 p_envmodel=None,
                 p_name='Neo',
                 p_id=0,
@@ -111,10 +112,10 @@ class MyGame(Game):
                 p_policy=MyPolicy(
                     p_state_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
                     p_action_space=self._env.get_action_space().spawn([1,2]),
+                    p_buffer_size=1,
                     p_ada=True,
                     p_logging=True
                 ),
-                p_sarbuffer_size=1,
                 p_envmodel=None,
                 p_name='Trinity',
                 p_id=1,

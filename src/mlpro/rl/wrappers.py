@@ -13,10 +13,11 @@
 ## --                                WrEnvPZoo is ready to use
 ## -- 2021-09-24  1.1.1     MRD      Change the gym wrapper _recognize_space() function to seperate
 ## --                                between discrete space and continuous space
+## -- 2021-09-28  1.1.2     SY       WrEnvGym, WrEnvPZoo: implementation of method get_cycle_limits()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-09-24)
+Ver. 1.1.2 (2021-09-28)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
@@ -165,6 +166,11 @@ class WrEnvGym(Environment):
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         self._gym_env.render()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self):
+        return self._gym_env._max_episode_steps
 
 
 
@@ -317,6 +323,14 @@ class WrEnvPZoo(Environment):
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         self._zoo_env.render()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self):
+        try:
+            return self._zoo_env.env.env.max_cycles
+        except:
+            return self.C_CYCLE_LIMIT
 
 
 

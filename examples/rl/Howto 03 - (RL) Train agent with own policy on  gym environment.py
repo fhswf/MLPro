@@ -11,10 +11,11 @@
 ## -- 2021-07-06  1.1.1     SY       Bugfix due to method Training.save_data() update
 ## -- 2021-08-28  1.2.0     DA       Introduced Policy
 ## -- 2021-09-11  1.2.0     MRD      Change Header information to match our new library name
+## -- 2021-09-28  1.2.1     SY       Updated due to implementation of method get_cycle_limits()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-08-28)
+Ver. 1.2.1 (2021-09-28)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """
@@ -93,7 +94,7 @@ class MyScenario(Scenario):
 myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
-    p_cycle_limit=100,
+    p_cycle_limit=500,
     p_visualize=True,
     p_logging=True
 )
@@ -107,7 +108,6 @@ now             = datetime.now()
 training        = Training(
     p_scenario=myscenario,
     p_episode_limit=50,
-    p_cycle_limit=100,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,

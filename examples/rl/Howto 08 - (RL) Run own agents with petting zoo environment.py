@@ -131,21 +131,21 @@ class C4Scenario(Scenario):
 
 # 3 Instantiate scenario
 
-# myscenario  = PBScenario(
-#     p_mode=Environment.C_MODE_SIM,
-#     p_ada=True,
-#     p_cycle_limit=100,
-#     p_visualize=False,
-#     p_logging=True
-# )
-
-myscenario  = C4Scenario(
+myscenario  = PBScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
     p_visualize=False,
     p_logging=True
 )
+
+# myscenario  = C4Scenario(
+#     p_mode=Environment.C_MODE_SIM,
+#     p_ada=True,
+#     p_cycle_limit=100,
+#     p_visualize=False,
+#     p_logging=True
+# )
 
 
 
