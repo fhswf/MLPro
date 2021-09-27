@@ -67,7 +67,7 @@ class MyScenario(Scenario):
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
         gym_env     = gym.make('CartPole-v1')
-        self._env   = WrEnvGym(gym_env, p_logging=True) 
+        self._env   = WrEnvGym(gym_env, p_logging=p_logging) 
 
         # 2 Setup standard single-agent with own policy
         self._agent = Agent(

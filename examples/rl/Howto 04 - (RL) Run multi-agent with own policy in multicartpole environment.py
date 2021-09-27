@@ -66,7 +66,7 @@ class MyScenario(Scenario):
     def _setup(self, p_mode, p_ada, p_logging):
 
         # 1 Setup Multi-Agent Environment (consisting of 3 OpenAI Gym Cartpole envs)
-        self._env   = MultiCartPole(p_num_envs=3, p_logging=True)
+        self._env   = MultiCartPole(p_num_envs=3, p_logging=p_logging)
 
 
         # 2 Setup Multi-Agent 

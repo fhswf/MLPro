@@ -1464,6 +1464,8 @@ class Training(Log):
 
         if self._cycle_limit <= 0:
             raise ParamError('Invalid cycle limit')
+        else:
+            self.log(self.C_LOG_TYPE_I, 'Limit of cycles per episide:', str(self._cycle_limit))
 
         if p_collect_states:
             self._ds_states   = RLDataStoring(self._env.get_state_space())
