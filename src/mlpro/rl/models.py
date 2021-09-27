@@ -46,6 +46,7 @@ This module provides model classes for reinforcement learning tasks.
 """
 
 
+from typing_extensions import ParamSpec
 import numpy as np
 from typing import List
 from time import sleep
@@ -752,24 +753,35 @@ class Policy(Adaptive, Plottable):
 class ActionPlanner (Log):
     """
     Template class for action planning algorithms to be used as part of planning agents.
-
     """
 
     C_TYPE          = 'Action Planner'
 
 ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_logging=True):
+        super().__init__(p_logging=p_logging)
+        self._action_path = []
+
+
+## -------------------------------------------------------------------------------------------------
     def compute_action(self, p_state:State, p_policy:Policy, p_envmodel:EnvModel, p_depth) -> Action:
         """
-        ...
+        Computes a path of actions with defined length that maximizes the reward of the given 
+        environment model.
         
         Parameters:
             p_state             Current state of environment
             p_policy            Poliy of an agent
             p_envmodel          Environment model
-            p_depth             Planning depth (=length of action sequence to be predicted)
+            p_depth             Planning depth (=length of action path to be predicted)
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_action_path(self):
+        self._action_path.clear()
 
 
 
@@ -804,6 +816,12 @@ class Agent(Policy):
         else:
             self.set_name(self.C_NAME)
 
+        self.switch_logging(p_logging)
+        self.switch_adaptivity(p_ada)
+
+        if ( ( p_envmodel is not None ) and ( p_action_planner is None ) ) or ( ( p_envmodel is None ) and ( p_action_planner is not None ) ):
+           raise ParamSpec('Model-based agents need an env model and an action planner')
+           
         self._state             = None
         self._previous_state    = None
         self._previous_action   = None
@@ -814,8 +832,6 @@ class Agent(Policy):
         self._action_planner    = p_action_planner
 
         self._set_id(p_id)
-        self.switch_logging(p_logging)
-        self.switch_adaptivity(p_ada)
         self.clear_buffer()
 
 
