@@ -35,8 +35,9 @@
 ## --                                Remove clearing buffer on every reset. The clearing buffer should
 ## --                                be controlled from the policy
 ## -- 2021-09-xx  1.4.0     DA       Enhancements for model-based agends:
-## --                                - New class ActionPlanner
-## --                                - Class Agent: method adapt() implemented
+## --                                  - New class ActionPlanner
+## --                                  - Class Agent: method adapt() implemented
+## --                                Introduction of method Environment.get_cycle_limit()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -46,10 +47,10 @@ This module provides model classes for reinforcement learning tasks.
 """
 
 
-from typing_extensions import ParamSpec
 import numpy as np
 from typing import List
 from time import sleep
+from mlpro.bf.exceptions import ParamError
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
@@ -409,7 +410,7 @@ class Environment(EnvBase):
     C_MODE_SIM      = 0
     C_MODE_REAL     = 1
 
-    C_CYCLE_LIMIT   = 100   # Recommended cycle limit for training episodes
+    C_CYCLE_LIMIT   = 0         # Recommended cycle limit for training episodes
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_mode=C_MODE_SIM, p_latency:timedelta=None, p_logging=True):
@@ -820,7 +821,7 @@ class Agent(Policy):
         self.switch_adaptivity(p_ada)
 
         if ( ( p_envmodel is not None ) and ( p_action_planner is None ) ) or ( ( p_envmodel is None ) and ( p_action_planner is not None ) ):
-           raise ParamSpec('Model-based agents need an env model and an action planner')
+           raise ParamError('Model-based agents need an env model and an action planner')
            
         self._state             = None
         self._previous_state    = None
@@ -1437,7 +1438,8 @@ class Training(Log):
         Parmeters:
             p_scenario              RL scenario object
             p_episode_limit         Maximum number of episodes
-            p_cycle_limit           Naximum number of cycles within an episode (0 means: no limit)
+            p_cycle_limit           Naximum number of cycles within an episode (a value > 0 overrides
+                                    the cycle limit provided by the enviroment)
             p_collect_states        If True, the environment states will be collected
             p_collect_actions       If True, the agent actions will be collected
             p_collect_rewards       If True, the environment reward will be collected
@@ -1454,7 +1456,14 @@ class Training(Log):
         self._episode_id    = 0
         self._episode_limit = p_episode_limit
         self._cycle_id      = 0
-        self._cycle_limit   = p_cycle_limit
+
+        if p_cycle_limit > 0:
+            self._cycle_limit = p_cycle_limit
+        else:
+            self._cycle_limit = self._env.get_cycle_limit()
+
+        if self._cycle_limit <= 0:
+            raise ParamError('Invalid cycle limit')
 
         if p_collect_states:
             self._ds_states   = RLDataStoring(self._env.get_state_space())
