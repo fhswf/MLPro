@@ -48,6 +48,7 @@ def test_buffer(buffer_cls):
                 p_policy=SAC(
                     p_state_space=self._env.get_state_space(),
                     p_action_space=self._env.get_action_space(),
+                    p_batch_size=10,
                     p_buffer_size=10,
                     p_buffer_cls=buffer_cls,
                     p_ada=p_ada,
