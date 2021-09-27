@@ -9,12 +9,13 @@
 ## -- 2021-09-25  1.0.0     MRD      Release first version
 ## -- 2021-09-26  1.0.0     MRD      Change the exploration to warm up phase only
 ## --                                adjustment on the critic loss calculation
+## -- 2021-09-27  1.0.0     WB       Bug Fix
 ## -------------------------------------------------------------------------------------------------
 ## -- Reference
 ## -- https://github.com/DLR-RM/stable-baselines3
 
 """
-Ver. 1.0.0 (2021-09-26)
+Ver. 1.0.0 (2021-09-27)
 
 This module provide SAC Algorithm based on reference.
 """
@@ -23,7 +24,7 @@ import torch
 import random
 import torch.optim as optim
 from mlpro.rl.models import *
-from mlpro.rl.pool.sarbuffer.randomsarbuffer import RandomSARBuffer
+from mlpro.rl.pool.sarbuffer import RandomSARBuffer
 import numpy as np
 
 def init(module, weight_init, bias_init, gain=1):
