@@ -14,10 +14,11 @@
 ## -- 2021-09-24  1.1.1     MRD      Change the gym wrapper _recognize_space() function to seperate
 ## --                                between discrete space and continuous space
 ## -- 2021-09-28  1.1.2     SY       WrEnvGym, WrEnvPZoo: implementation of method get_cycle_limits()
+## -- 2021-09-29  1.1.3     SY       Change name: WrEnvGym to WrEnvGYM2MLPro, WrEnvPZoo to WrEnvPZOO2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2021-09-28)
+Ver. 1.1.3 (2021-09-29)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
@@ -37,7 +38,7 @@ from mlpro.rl.models import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvGym(Environment):
+class WrEnvGYM2MLPro(Environment):
     """
     This class is a ready to use wrapper class for OpenAI Gym environments. 
     Objects of this type can be treated as an environment object. Encapsulated 
@@ -178,7 +179,7 @@ class WrEnvGym(Environment):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvPZoo(Environment):
+class WrEnvPZOO2MLPro(Environment):
     """
     This class is a ready to use wrapper class for Petting Zoo environments. 
     Objects of this type can be treated as an environment object. Encapsulated 

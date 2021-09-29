@@ -9,10 +9,11 @@
 ## -- 2021-06-06  1.0.0     DA       Released first version
 ## -- 2021-08-28  1.1.0     DA       Introduced Policy
 ## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
+## -- 2021-09-29  1.1.1     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-08-28)
+Ver. 1.1.1 (2021-09-29)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 the fhswf_at_ml framework.
@@ -21,7 +22,7 @@ the fhswf_at_ml framework.
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGym
+from mlpro.rl.wrappers import WrEnvGYM2MLPro
 import gym
 import random
 
@@ -67,7 +68,7 @@ class MyScenario(Scenario):
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
         gym_env     = gym.make('CartPole-v1')
-        self._env   = WrEnvGym(gym_env, p_logging=p_logging) 
+        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
         # 2 Setup standard single-agent with own policy
         self._agent = Agent(

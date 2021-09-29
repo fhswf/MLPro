@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-13  0.0.0     MRD      Creation
 ## -- 2021-09-18  1.0.0     MRD      Released first version
+## -- 2021-09-29  1.0.1     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-18)
+Ver. 1.0.1 (2021-09-29)
 
 This module shows how to implement A2C from the pool
 """
@@ -18,7 +19,7 @@ This module shows how to implement A2C from the pool
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGym
+from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.rl.pool.policies.a2c import A2C 
 import gym
@@ -35,7 +36,7 @@ class MyScenario(Scenario):
         # self._env   = RobotHTM(p_logging=False)
         gym_env     = gym.make('CartPole-v1')
         # gym_env     = gym.make('MountainCarContinuous-v0')
-        self._env   = WrEnvGym(gym_env, p_logging=False) 
+        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
 
         # 2 Setup standard single-agent with own policy
         self._agent = Agent(

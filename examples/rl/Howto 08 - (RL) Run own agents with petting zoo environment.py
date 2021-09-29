@@ -9,10 +9,11 @@
 ## -- 2021-08-27  1.0.0     SY       Released first version
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
 ## -- 2021-09-23  1.1.0     SY       Updated wrapper WrEnvPZoo class, provides two different envs
+## -- 2021-09-29  1.1.1     SY       Change name: WrEnvPZoo to WrEnvPZOO2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-09-23)
+Ver. 1.1.1 (2021-09-29)
 
 This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
 the fhswf_at_ml framework.
@@ -23,7 +24,7 @@ from pettingzoo.butterfly import pistonball_v4
 from pettingzoo.classic import connect_four_v3
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvPZoo
+from mlpro.rl.wrappers import WrEnvPZOO2MLPro
 import random
 
 
@@ -54,7 +55,7 @@ class PBScenario(Scenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         zoo_env             = pistonball_v4.env()
-        self._env           = WrEnvPZoo(zoo_env, p_logging=True)
+        self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=True)
         
         self._agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_logging=True)
         agent_id            = 0
@@ -104,7 +105,7 @@ class C4Scenario(Scenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         zoo_env             = connect_four_v3.env()
-        self._env           = WrEnvPZoo(zoo_env, p_logging=True)
+        self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=True)
         
         self._agent         = MultiAgent(p_name='Connect4_Agents', p_ada=1, p_logging=True)
         agent_id            = 0

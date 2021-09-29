@@ -9,10 +9,11 @@
 ## -- 2021-06-06  1.0.0     DA       Released first version
 ## -- 2021-08-28  1.1.0     DA       Adjustments after changes on rl models
 ## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
+## -- 2021-09-29  1.1.1     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-008-28)
+Ver. 1.1.1 (2021-09-29)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -20,7 +21,7 @@ OpenAI Gym environment 'CartPole-v1'.
 
 
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGym
+from mlpro.rl.wrappers import WrEnvGYM2MLPro
 import numpy as np
 import gym
 
@@ -58,7 +59,7 @@ class MultiCartPole(Environment):
         for i in range(self._num_envs): 
             state_space_env  = self._state_space.spawn([i*4, i*4+1, i*4+2, i*4+3])
             action_space_env = self._action_space.spawn([i])
-            env              = WrEnvGym(gym.make('CartPole-v1'), state_space_env, action_space_env)
+            env              = WrEnvGYM2MLPro(gym.make('CartPole-v1'), state_space_env, action_space_env)
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)
 
