@@ -812,12 +812,14 @@ class Agent(Policy):
         reward = p_args[0]
         done = p_args[1]
         next_state = p_args[2]
+        next_done = p_args[3]
         self.log(self.C_LOG_TYPE_I, 'Adaption: previous state =', self._previous_state.get_values(), 
                 '; reward = ', p_args[0].get_agent_reward(self._id))
 
         # 2 Add data to SAR buffer
         self._policy.add_buffer(SARBufferElement(dict(state=self._state, action=self._previous_action, 
-                                                    reward=reward, next_state=next_state, done=done)))
+                                                    reward=reward, next_state=next_state, done=done,
+                                                    next_done=next_done)))
 
         # 3 Adapt policy
         return self._policy.adapt()
@@ -1229,7 +1231,9 @@ class Scenario(Log, LoadSave):
 
         # 3 Environment: process agent's action
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Env processes action...')
+        done = self._env.done
         self._env.process_action(action)
+        next_done = self._env.done
         self._timer.add_time(self._env.get_latency())     # in virtual mode only...
         self._env.get_state().set_tstamp(self._timer.get_time())
 
@@ -1250,7 +1254,7 @@ class Scenario(Log, LoadSave):
 
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
-        self._agent.adapt(reward, self._env.done, self._env.get_state())
+        self._agent.adapt(reward, done, self._env.get_state(), next_done)
 
 
         # 6 Optional visualization

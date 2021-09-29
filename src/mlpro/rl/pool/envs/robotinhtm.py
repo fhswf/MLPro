@@ -9,10 +9,11 @@
 ## -- 2021-09-11  1.00  MRD    Release of first version
 ## -- 2021-09-11  1.01  MRD    Change Header information to match our new library name
 ## -- 2021-09-25  1.02  MRD    Minor fix for state space and action space recognition
+## -- 2021-09-30  1.03  MRD    Change from math.inf to np.inf
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.02 (2021-09-25)
+Ver. 1.03 (2021-09-30)
 
 This module provide an environment of a robot manipulator based on Homogeneous Matrix
 """
@@ -242,12 +243,12 @@ class RobotHTM(Environment):
         """
 
         # 1 Setup state space
-        self._state_space.add_dim(Dimension(0, 'Tx', 'Targetx', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(1, 'Ty', 'Targety', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(2, 'Tz', 'Targetz', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(3, 'Px', 'Positionx', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(4, 'Py', 'Positiony', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(5, 'Pz', 'Positionz', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
+        self._state_space.add_dim(Dimension(0, 'Tx', 'Targetx', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        self._state_space.add_dim(Dimension(1, 'Ty', 'Targety', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        self._state_space.add_dim(Dimension(2, 'Tz', 'Targetz', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        self._state_space.add_dim(Dimension(3, 'Px', 'Positionx', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        self._state_space.add_dim(Dimension(4, 'Py', 'Positiony', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        self._state_space.add_dim(Dimension(5, 'Pz', 'Positionz', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
 
         # 2 Setup action space
         for idx in range(self.num_joint):
