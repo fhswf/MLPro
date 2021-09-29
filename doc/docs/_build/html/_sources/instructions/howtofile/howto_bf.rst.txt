@@ -11,3 +11,9 @@ We provide some examples of `MLPro <https://github.com/fhswf/MLPro.git>`_'s basi
 - File 04: `(ML) Hyperparameters setup <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2004%20-%20(ML)%20Hyperparameters%20setup.py>`_ 
 
 Moreover, you can find the UML diagram of MLPro's basic funcionalities `here <https://github.com/fhswf/MLPro/tree/main/doc/bf>`_.
+
+.. toctree::
+   :maxdepth: 1
+   :caption: User Guide:
+   
+   howto_gt.rst

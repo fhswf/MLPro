@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Environments &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Scenarios" href="../scenario.html" />
+    <link rel="prev" title="Multi-Agent Environments" href="multienv.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../_static/logo_fh-at.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Introduction:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/overview.html">What is MLPro?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/getstarted.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/architecture.html">Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/dependencies.html">Dependencies</a></li>
+</ul>
+<p class="caption"><span class="caption-text">MLPro-BF – Basic Functions:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/math.html">Mathematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/ml.html">Machine Learning</a></li>
+</ul>
+<p class="caption"><span class="caption-text">MLPro-RL – Reinforcement Learning:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../agents.html">Agents</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../env.html">Environments</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="multienv.html">Multi-Agent Environments</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Custom Environments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../scenario.html">Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pool.html">Pool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../wrapper.html">3rd Party Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../howto.html">Examples</a></li>
+</ul>
+<p class="caption"><span class="caption-text">MLPro-GT – Game Theory:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gt/gt.html">Game Theory</a></li>
+</ul>
+<p class="caption"><span class="caption-text">MLPro-UI – Interactive ML:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../ui/sciui.html">UI Framework SciUI</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Project MLPro:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../project/versions.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project/paper.html">Papers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../project/cont.html">Contribution</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../env.html">Environments</a> &raquo;</li>
+      <li>Custom Environments</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/read_the_docs/doc/docs/instructions/rl/env/customenv.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="custom-environments">
+<h1>Custom Environments<a class="headerlink" href="#custom-environments" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li><p><strong>Environment Creation for Simulation Mode</strong></p>
+<blockquote>
+<div><p>To create an environment that satisfies MLPro interface is immensly simple and straigtforward.
+Basically a MLPro environment is a class with 5 main functions. Each environment must apply the
+following mlpro functions:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.rl.models</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">MyEnvironment</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom Environment that satisfies mlpro interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">C_NAME</span>          <span class="o">=</span> <span class="s1">&#39;MyEnvironment&#39;</span>
+    <span class="n">C_LATENCY</span>       <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>         <span class="c1"># Default latency 1s</span>
+    <span class="n">C_REWARD_TYPE</span>   <span class="o">=</span> <span class="n">Reward</span><span class="o">.</span><span class="n">C_TYPE_OVERALL</span>    <span class="c1"># Default reward type</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_mode</span><span class="o">=</span><span class="n">C_MODE_SIM</span><span class="p">,</span> <span class="n">p_latency</span><span class="p">:</span><span class="n">timedelta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            p_mode              Mode of environment (simulation/real)</span>
+<span class="sd">            p_latency           Optional: latency of environment. If not provided</span>
+<span class="sd">                                internal value C_LATENCY will be used by default</span>
+<span class="sd">            p_logging           Boolean switch for logging</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p_latency</span><span class="o">=</span><span class="n">p_latency</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_spaces</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">p_mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implement this method to enrich the state and action space with specific</span>
+<span class="sd">        dimensions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Setup state space example</span>
+        <span class="c1"># self.state_space.add_dim(Dimension(0, &#39;Pos&#39;, &#39;Position&#39;, &#39;&#39;, &#39;m&#39;, &#39;m&#39;, [-50,50]))</span>
+        <span class="c1"># self.state_space.add_dim(Dimension(1, &#39;Vel&#39;, &#39;Velocity&#39;, &#39;&#39;, &#39;m/sec&#39;, &#39;\frac{m}{sec}&#39;, [-50,50]))</span>
+
+        <span class="c1"># Setup action space example</span>
+        <span class="c1"># self.action_space.add_dim(Dimension(0, &#39;Rot&#39;, &#39;Rotation&#39;, &#39;&#39;, &#39;1/sec&#39;, &#39;\frac{1}{sec}&#39;, [-50,50]))</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">_simulate_reaction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_action</span><span class="p">:</span><span class="n">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Simulates a state transition of the environment based on a new action.</span>
+<span class="sd">        Please use method set_state() for internal update.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            p_action      Action to be processed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets environment to initial state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">compute_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Reward</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes a reward.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">          Reward object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">_evaluate_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the goal achievement value in [0,1] and the flags done and broken</span>
+<span class="sd">        based on the current state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># state evaluations example</span>
+        <span class="c1"># if self.done:</span>
+        <span class="c1">#     self.goal_achievement = 1.0</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     self.goal_achievement = 0.0</span>
+        <span class="o">....</span>
+</pre></div>
+</div>
+<p>One of the benefits for MLPro users is the variety of reward structures, which is useful for Multi-Agent RL
+and Game Theoretical approach. Three types of reward structures are supported in this framework, such as:</p>
+<ol class="arabic simple">
+<li><p><strong>C_TYPE_OVERALL</strong> as the default type and is a scalar overall value</p></li>
+<li><p><strong>C_TYPE_EVERY_AGENT</strong> is a scalar for every agent</p></li>
+<li><p><strong>C_TYPE_EVERY_ACTION</strong> is a scalar for every agent and action.</p></li>
+</ol>
+<p>To set up state- and action-spaces using our basic functionalities, please refer to our <a class="reference internal" href="../howto.html#target-howto"><span class="std std-ref">how to File 02</span></a>
+or <a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2002%20-%20(Math)%20Spaces%2C%20subspaces%20and%20elements.py">here</a>.
+Dimension class is currently improved and we will provide the explanation afterwards!</p>
+</div></blockquote>
+</li>
+<li><p><strong>Environment Creation for Real Hardware Mode</strong></p>
+<blockquote>
+<div><p>In MLPro, we can choose simulation mode or real hardward mode. For real hardware mode, the creation of
+an environment is very similar to simulation mode. You do not need to define <strong>_simulate_reaction</strong>, but you
+need to replace it with <strong>_export_action</strong> and <strong>_import_state</strong> as it is shown in the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.rl.models</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="k">class</span> <span class="nc">MyEnvironment</span><span class="p">(</span><span class="n">Environment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom Environment that satisfies mlpro interface.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">C_NAME</span>          <span class="o">=</span> <span class="s1">&#39;MyEnvironment&#39;</span>
+    <span class="n">C_LATENCY</span>       <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>         <span class="c1"># Default latency 1s</span>
+    <span class="n">C_REWARD_TYPE</span>   <span class="o">=</span> <span class="n">Reward</span><span class="o">.</span><span class="n">C_TYPE_OVERALL</span>    <span class="c1"># Default reward type</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_mode</span><span class="o">=</span><span class="n">C_MODE_REAL</span><span class="p">,</span> <span class="n">p_latency</span><span class="p">:</span><span class="n">timedelta</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            p_mode              Mode of environment (simulation/real)</span>
+<span class="sd">            p_latency           Optional: latency of environment. If not provided</span>
+<span class="sd">                                internal value C_LATENCY will be used by default</span>
+<span class="sd">            p_logging           Boolean switch for logging</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p_latency</span><span class="o">=</span><span class="n">p_latency</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_spaces</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_mode</span><span class="p">(</span><span class="n">p_mode</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_spaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Implement this method to enrich the state and action space with specific</span>
+<span class="sd">        dimensions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Setup state space example</span>
+        <span class="c1"># self.state_space.add_dim(Dimension(0, &#39;Pos&#39;, &#39;Position&#39;, &#39;&#39;, &#39;m&#39;, &#39;m&#39;, [-50,50]))</span>
+        <span class="c1"># self.state_space.add_dim(Dimension(1, &#39;Vel&#39;, &#39;Velocity&#39;, &#39;&#39;, &#39;m/sec&#39;, &#39;\frac{m}{sec}&#39;, [-50,50]))</span>
+
+        <span class="c1"># Setup action space example</span>
+        <span class="c1"># self.action_space.add_dim(Dimension(0, &#39;Rot&#39;, &#39;Rotation&#39;, &#39;&#39;, &#39;1/sec&#39;, &#39;\frac{1}{sec}&#39;, [-50,50]))</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">_export_action</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_action</span><span class="p">:</span><span class="n">Action</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Exports given action to be processed externally (for instance by a real hardware).</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">            p_action      Action to be exported</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True, if action export was successful. False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">_import_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Imports state from an external system (for instance a real hardware).</span>
+<span class="sd">        Please use method set_state() for internal update.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">          True, if state import was successful. False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Resets environment to initial state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">compute_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Reward</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Computes a reward.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">          Reward object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">....</span>
+
+    <span class="k">def</span> <span class="nf">_evaluate_state</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the goal achievement value in [0,1] and the flags done and broken</span>
+<span class="sd">        based on the current state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># state evaluations example</span>
+        <span class="c1"># if self.done:</span>
+        <span class="c1">#     self.goal_achievement = 1.0</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     self.goal_achievement = 0.0</span>
+        <span class="o">....</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p><strong>Environment from Third Party Packages</strong></p>
+<blockquote>
+<div><p>Alternatively, if your environment follows Gym or PettingZoo interface, you can apply our
+relevant useful wrappers for the integration between third party packages and MLPro. For more
+information, please click <a class="reference internal" href="../wrapper.html#target-package"><span class="std std-ref">here</span></a>.</p>
+</div></blockquote>
+</li>
+<li><p><strong>Environment Checker</strong></p>
+<blockquote>
+<div><p>To check whether your developed environment is compatible to MLPro interface, we provide a test script
+using unittest. At the moment, you can find the source code <a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/test/test_environment.py">here</a>.
+We will prepare a built-in testing module in MLPro, show you how to excecute the testing soon and provides an example as well.</p>
+</div></blockquote>
+</li>
+</ul>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="multienv.html" class="btn btn-neutral float-left" title="Multi-Agent Environments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../scenario.html" class="btn btn-neutral float-right" title="Scenarios" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, FH-SWF AT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

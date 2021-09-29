@@ -38,48 +38,59 @@ Instructions for use
 --------------
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Overview of MLPro:
+   :maxdepth: 2
+   :caption: Introduction:
    
-   instructions/overview/introduction
+   instructions/intro/overview
+   instructions/intro/getstarted
+   instructions/intro/architecture
+   instructions/intro/dependencies
    
 .. toctree::
-   :maxdepth: 1
-   :caption: User Guide:
+   :maxdepth: 2
+   :caption: MLPro-BF – Basic Functions:
    
-   instructions/guide/installation
-   instructions/guide/getstarted
-   instructions/guide/rl
-   instructions/guide/gt
-   instructions/guide/bf
-   instructions/guide/package
+   instructions/bf/math
+   instructions/bf/ml
+
+.. toctree::
+   :maxdepth: 3
+   :caption: MLPro-RL – Reinforcement Learning:
+   
+   instructions/rl/overview
+   instructions/rl/agents
+   instructions/rl/env
+   instructions/rl/scenario
+   instructions/rl/pool
+   instructions/rl/wrapper
+   instructions/rl/howto
 
 .. toctree::
    :maxdepth: 2
-   :caption: RL Pool:
+   :caption: MLPro-GT – Game Theory:
    
-   instructions/pool/env_pool
-   instructions/pool/alg_pool
-   instructions/pool/sce_pool
-   instructions/pool/buf_pool
+   instructions/gt/gt
 
 .. toctree::
-   :maxdepth: 1
-   :caption: How to Files:
+   :maxdepth: 2
+   :caption: MLPro-UI – Interactive ML:
    
-   instructions/howtofile/howto_bf
-   instructions/howtofile/howto_rl
-   instructions/howtofile/howto_gt
-   instructions/howtofile/howto_ui
+   instructions/ui/sciui
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Others:
+   :maxdepth: 2
+   :caption: Project MLPro:
    
-   instructions/other/ui
-   instructions/other/contribution
-   instructions/other/changelog
+   instructions/project/versions
+   instructions/project/paper
+   instructions/project/cont
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Quick Help:
+   
+   instructions/project/help
+   
 Citing MLPro
 ------------------------
 To cite this project in publications:
