@@ -344,8 +344,7 @@ class WrPolicySB3(Policy):
             pass
 
     def __init__(self, p_sb3_policy, p_state_space, p_action_space, p_buffer_size, p_ada=True, p_logging=True):
-        """[summary]
-
+        """
         Args:
             p_sb3_policy : SB3 Policy
             p_state_space : Environment State Space
