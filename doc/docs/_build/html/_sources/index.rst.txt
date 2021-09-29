@@ -39,7 +39,7 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: Introduction:
+   :caption: Introduction
    
    instructions/intro/overview
    instructions/intro/getstarted
@@ -48,14 +48,14 @@ Instructions for use
    
 .. toctree::
    :maxdepth: 2
-   :caption: MLPro-BF – Basic Functions:
+   :caption: MLPro-BF – Basic Functions
    
    instructions/bf/math
    instructions/bf/ml
 
 .. toctree::
    :maxdepth: 3
-   :caption: MLPro-RL – Reinforcement Learning:
+   :caption: MLPro-RL – Reinforcement Learning
    
    instructions/rl/overview
    instructions/rl/agents
@@ -67,19 +67,19 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: MLPro-GT – Game Theory:
+   :caption: MLPro-GT – Game Theory
    
    instructions/gt/gt
 
 .. toctree::
    :maxdepth: 2
-   :caption: MLPro-UI – Interactive ML:
+   :caption: MLPro-UI – Interactive ML
    
    instructions/ui/sciui
 
 .. toctree::
    :maxdepth: 2
-   :caption: Project MLPro:
+   :caption: Project MLPro
    
    instructions/project/versions
    instructions/project/paper
@@ -87,7 +87,7 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: Quick Help:
+   :caption: Quick Help
    
    instructions/project/help
    

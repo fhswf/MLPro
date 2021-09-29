@@ -1,6 +1,0 @@
-- `Random Buffer <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/sarbuffer/randombuffer.py>`_
-    You can get started as follow:
-    
-    .. code-block:: bash
-    
-        import mlpro.rl.pool.sarbuffer.randombuffer

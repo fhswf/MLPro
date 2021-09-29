@@ -1,6 +1,0 @@
-- `Grid World Problem <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/gridworld.py>`_
-    You can get started as follow:
-
-    .. code-block:: bash
-    
-        import mlpro.rl.pool.envs.gridworld
