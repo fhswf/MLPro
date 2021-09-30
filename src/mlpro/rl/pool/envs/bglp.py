@@ -10,10 +10,11 @@
 ## -- 2021-09-01  1.01  SY     Minor improvements, code cleaning, add descriptions
 ## -- 2021-09-06  1.02  SY     Minor improvements, combine bglp and BGLP classes
 ## -- 2021-09-11  1.02  MRD    Change Header information to match our new library name
+## -- 2021-09-30  1.03  SY     Minor change
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.02 (2021-09-06)
+Ver. 1.03 (2021-09-30)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -808,7 +809,7 @@ class BGLP(Environment):
         for resnum in range(len(self.ress)):
             res = self.ress[resnum]
             res.update()
-            if res.idx_r == 0:
+            if resnum == 0:
                 if res.vol_cur_rel <= self.margin_p[0]:
                     res.vol_cur_abs = self.levels_init[resnum]*res.vol_max
                     res.vol_cur_rel = self.levels_init[resnum]
