@@ -9,17 +9,20 @@
 ## -- 2021-09-06  1.00  SY     Release of first version
 ## -- 2021-09-11  1.00  MRD    Change Header information to match our new library name
 ## -- 2021-09-22  1.01  SY     Solving minor bugs
+## -- 2021 09-26  1.02  MRD    Change the import module due to the change of the pool
+## --                          folder structer
+## -- 2021 09-30  1.03  SY     Minor Improvements
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.00 (2021-09-22)
+Ver. 1.03 (2021-09-30)
 
 Environment : BGLP
-Algorithms  : SbPG - Local Interpolation
+Algorithms  : SbPG - Local Interpolation (dummy)
 """
 
 
-from mlpro.rl.pool.envs.bglp import BGLP
+from mlpro.rl.pool.envs import BGLP
 from mlpro.rl.models import *
 from mlpro.bf.various import *
 from mlpro.bf.math import *
@@ -38,7 +41,7 @@ class MyPolicy(Policy):
 
     C_NAME      = 'MyPolicy'
 
-    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_ada=1.0, p_logging=True, episodes_max=10):
+    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=1.0, p_logging=True, episodes_max=10):
         super().__init__(p_state_space=p_state_space, p_action_space=p_action_space, p_ada=p_ada, p_logging=p_logging)
         self._state_space       = p_state_space
         self._action_space      = p_action_space
@@ -97,8 +100,8 @@ class MyPolicy(Policy):
     
     def calc_current_states(self, levels):
         for i in range(self._state_space.get_num_dim()):
-            levels_cur = levels*self.levels_max[i]
-            self.levels_current[i] = min(m.floor(self.num_states*levels_cur[i]/self.levels_max[i]),self.num_states-1)
+            levels_cur = levels[i]*self.levels_max[i]
+            self.levels_current[i] = min(m.floor(self.num_states*levels_cur/self.levels_max[i]),self.num_states-1)
     
     def memorize_levels(self):
         for i in range(self._state_space.get_num_dim()):
@@ -126,11 +129,19 @@ class MyPolicy(Policy):
         else:
             self.exploration = 1
 
-    def adapt(self, p_reward: Reward) -> bool:
-        if not super().adapt(p_reward): return False
+    def adapt(self, *p_args) -> bool:
+        if not super().adapt(*p_args):
+            return False
+        
+        if not self._buffer.is_full():
+            return False
+        
+        sar_data = self._buffer.get_all()
+        for reward in sar_data["reward"]:
+            rwd = reward.get_agent_reward(self._id)
         if self.updated:
             self.int_act()
-            self.update_maps(self.action_last[0], p_reward.get_agent_reward(self._id)[0], self.levels_last, self.levels_last_con)
+            self.update_maps(self.action_last[0], rwd, self.levels_last, self.levels_last_con)
         self.log(self.C_LOG_TYPE_I, 'Performance map is updated')
         return False
     
@@ -144,7 +155,7 @@ class MyPolicy(Policy):
         
           
     def interpolate_map(self, pos_y, pos_x):
-        distances = torch.sqrt((pos_x-self.grid_center_x)**2+(pos_y-self.grid_center_y)**2)
+        distances = torch.sqrt((pos_x.item()-self.grid_center_x)**2+(pos_y.item()-self.grid_center_y)**2)
         distances[distances == 0] = 0.0001
         ranges = (distances < self.maxrange ** 2).float()
         weight_vab = torch.nonzero(ranges).long()
@@ -175,11 +186,10 @@ class MyScenario(Scenario):
         agent_id        = 0
         agent_sspace    = state_space.spawn([0,1])
         agent_aspace    = action_space.spawn([0])
-        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False)
+        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
-                p_sarbuffer_size=1,
                 p_envmodel=None,
                 p_name=agent_name,
                 p_id=agent_id,
@@ -194,11 +204,10 @@ class MyScenario(Scenario):
         agent_id        = 1
         agent_sspace    = state_space.spawn([1,2])
         agent_aspace    = action_space.spawn([1])
-        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False)
+        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
-                p_sarbuffer_size=1,
                 p_envmodel=None,
                 p_name=agent_name,
                 p_id=agent_id,
@@ -213,11 +222,10 @@ class MyScenario(Scenario):
         agent_id        = 2
         agent_sspace    = state_space.spawn([2,3])
         agent_aspace    = action_space.spawn([2])
-        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False)
+        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
-                p_sarbuffer_size=1,
                 p_envmodel=None,
                 p_name=agent_name,
                 p_id=agent_id,
@@ -232,11 +240,10 @@ class MyScenario(Scenario):
         agent_id        = 3
         agent_sspace    = state_space.spawn([3,4])
         agent_aspace    = action_space.spawn([3])
-        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False)
+        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
-                p_sarbuffer_size=1,
                 p_envmodel=None,
                 p_name=agent_name,
                 p_id=agent_id,
@@ -251,11 +258,10 @@ class MyScenario(Scenario):
         agent_id        = 4
         agent_sspace    = state_space.spawn([4,5])
         agent_aspace    = action_space.spawn([4])
-        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False)
+        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
-                p_sarbuffer_size=1,
                 p_envmodel=None,
                 p_name=agent_name,
                 p_id=agent_id,
