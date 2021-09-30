@@ -10,10 +10,11 @@
 ## -- 2021-09-11  1.01  MRD    Fix compability with mlpro structure
 ## -- 2021-09-11  1.01  MRD    Change Header information to match our new library name
 ## -- 2021-09-13  1.02  WB     Fix on simulate reaction      
+## -- 2021-09-30  1.03  SY     State-space and action-space improvement     
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.01 (2021-09-11)
+Ver. 1.03 (2021-09-30)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -71,11 +72,12 @@ class GridWorld(Environment):
             data *= size
             
         for i in range(data):
-            self._state_space.add_dim(Dimension(i, str(i), [0,3]))
+            self._state_space.add_dim(Dimension(i, str(i), p_base_set='Z',
+                                                p_boundaries=[0,3]))
         
         for i in range(len(self.grid_size)):
-            self._action_space.add_dim(Dimension(i, str(i), 
-            [-self.grid_size[i], self.grid_size[i]] ))
+            self._action_space.add_dim(Dimension(i, str(i), p_base_set='Z',
+                                                 p_boundaries=[-self.grid_size[i], self.grid_size[i]]))
     
     def reset(self) -> None:
         """

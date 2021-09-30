@@ -15,16 +15,18 @@
 ## --                                between discrete space and continuous space
 ## -- 2021-09-28  1.1.2     SY       WrEnvGym, WrEnvPZoo: implementation of method get_cycle_limits()
 ## -- 2021-09-29  1.1.3     SY       Change name: WrEnvGym to WrEnvGYM2MLPro, WrEnvPZoo to WrEnvPZOO2MLPro
+## -- 2021-09-30  1.2.0     SY       New classes: WrEnvMLPro2GYM
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2021-09-29)
+Ver. 1.2.0 (2021-09-30)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
 
 import gym
+from gym import error, spaces, utils
 import numpy as np
 from typing import List
 from time import sleep
@@ -335,5 +337,104 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrEnvMLPro2GYM(gym.Env):
+    """
+    This class is a ready to use wrapper class for MLPro to OpenAI Gym environments. 
+    Objects of this type can be treated as an gym.Env object. Encapsulated 
+    MLPro environment must be compatible to class Environment.
+    """
+
+    C_TYPE        = 'MLPro to Gym Env'
+    metadata      = {'render.modes': ['human']}
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_mlpro_env, p_state_space:MSpace=None, p_action_space:MSpace=None):
+        """
+        Parameters:
+            p_mlpro_env     MLPro's Environment object
+            p_state_space   Optional external state space object that meets the
+                            state space of the MLPro environment
+            p_action_space  Optional external action space object that meets the
+                            state space of the MLPro environment
+        """
+
+        self._mlpro_env             = p_mlpro_env
+        
+        if p_state_space is not None: 
+            self.observation_space  = p_state_space
+        else:
+            self.observation_space  = self._recognize_space(self._mlpro_env._state_space)
+        
+        if p_action_space is not None: 
+            self.action_space       = p_action_space
+        else:
+            self.action_space       = self._recognize_space(self._mlpro_env._action_space)
+        
+        self.first_refresh          = True
+        self.reset()
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _recognize_space(self, p_mlpro_space):
+        _shape      = p_mlpro_space.get_num_dim()
+        ids         = p_mlpro_space.get_dim_ids()[0]
+        _low        = p_mlpro_space.get_dim(ids).get_boundaries()[0]
+        _high       = p_mlpro_space.get_dim(ids).get_boundaries()[1]
+        set_base    = p_mlpro_space.get_dim(ids).get_base_set()
+        
+        if set_base == 'N' or set_base == 'Z':
+            space = spaces.Box(low=_low, high=_high, shape=(_shape,), dtype=np.int)
+        else:
+            space = spaces.Box(low=_low, high=_high, shape=(_shape,), dtype=np.float32)
+            
+        return space
+
+
+## -------------------------------------------------------------------------------------------------
+    def step(self, action):
+        _action     = Action()
+        _act_set    = Set()
+        idx         = self._mlpro_env._action_space.get_num_dim()
+        for i in range(idx):
+            _act_set.add_dim(Dimension(i,'action_'+str(i)))
+        _act_elem   = Element(_act_set)
+        for i in range(idx):
+            _act_elem.set_value(i, action[i].item())
+        _action.add_elem('0', _act_elem)
+        
+        self._mlpro_env.process_action(_action)
+        reward          = self._mlpro_env.compute_reward()
+        self._mlpro_env._evaluate_state
+        
+        return self._mlpro_env.get_state().get_values(), reward.get_overall_reward(), self._mlpro_env.done, {}
+    
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self):
+        self._mlpro_env.reset()
+        return self._mlpro_env.get_state().get_values()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def render(self, mode='human'):
+        try:
+            if self.first_refresh:
+                self._mlpro_env.init_plot()
+                self.first_refresh = False
+            else:
+                self._mlpro_env.update_plot()
+            return True
+        except:
+            return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def close(self):
+        self._mlpro_env.__del__()
+            
+            
 
 
