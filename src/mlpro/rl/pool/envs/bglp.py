@@ -10,11 +10,11 @@
 ## -- 2021-09-01  1.01  SY     Minor improvements, code cleaning, add descriptions
 ## -- 2021-09-06  1.02  SY     Minor improvements, combine bglp and BGLP classes
 ## -- 2021-09-11  1.02  MRD    Change Header information to match our new library name
-## -- 2021-09-30  1.03  SY     Minor change
+## -- 2021-10-02  1.03  SY     Minor change
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.03 (2021-09-30)
+Ver. 1.03 (2021-10-02)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -630,16 +630,16 @@ class BGLP(Environment):
         To enrich the state and action space with specific dimensions. 
         """
         levels_max = [17.42, 9.10, 17.42, 9.10, 17.42, 9.10]
-        self._state_space.add_dim(Dimension(0, 'E-0 LvlSiloA', 'Env-0 Level of Silo A', '', 'L', 'L',[0, levels_max[0]]))
-        self._state_space.add_dim(Dimension(1, 'E-0 LvlHopperA', 'Env-0 Level of Hopper A', '', 'L', 'L',[0, levels_max[1]]))
-        self._state_space.add_dim(Dimension(2, 'E-0 LvlSiloB', 'Env-0 Level of Silo B', '', 'L', 'L',[0, levels_max[2]]))
-        self._state_space.add_dim(Dimension(3, 'E-0 LvlHopperB', 'Env-0 Level of Hopper B', '', 'L', 'L',[0, levels_max[3]]))
-        self._state_space.add_dim(Dimension(4, 'E-0 LvlSiloC', 'Env-0 Level of Silo C', '', 'L', 'L',[0, levels_max[4]]))
-        self._state_space.add_dim(Dimension(5, 'E-0 LvlHopperC', 'Env-0 Level of Hopper C', '', 'L', 'L',[0, levels_max[5]]))
+        self._state_space.add_dim(Dimension(0, 'E-0 LvlSiloA', 'R', 'Env-0 Level of Silo A', '', 'L', 'L',[0, levels_max[0]]))
+        self._state_space.add_dim(Dimension(1, 'E-0 LvlHopperA', 'R', 'Env-0 Level of Hopper A', '', 'L', 'L',[0, levels_max[1]]))
+        self._state_space.add_dim(Dimension(2, 'E-0 LvlSiloB', 'R', 'Env-0 Level of Silo B', '', 'L', 'L',[0, levels_max[2]]))
+        self._state_space.add_dim(Dimension(3, 'E-0 LvlHopperB', 'R', 'Env-0 Level of Hopper B', '', 'L', 'L',[0, levels_max[3]]))
+        self._state_space.add_dim(Dimension(4, 'E-0 LvlSiloC', 'R', 'Env-0 Level of Silo C', '', 'L', 'L',[0, levels_max[4]]))
+        self._state_space.add_dim(Dimension(5, 'E-0 LvlHopperC', 'R', 'Env-0 Level of Hopper C', '', 'L', 'L',[0, levels_max[5]]))
             
         for i in range(self.num_envs):
             env_str = str(i)
-            self._action_space.add_dim(Dimension(i, 'E-' + env_str + ' Act', 'Env-' + env_str + ' Actuator Control', '', '', '', [0,1]))
+            self._action_space.add_dim(Dimension(i, 'E-' + env_str + ' Act', 'R', 'Env-' + env_str + ' Actuator Control', '', '', '', [0,1]))
 
     def collect_substates(self) -> State:
         """
