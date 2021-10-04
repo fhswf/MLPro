@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-10-02  0.0.0     SY       Creation
 ## -- 2021-10-02  1.0.0     SY       Released first version
+## -- 2021-10-04  1.0.1     DA       Minor fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-10-02)
+Ver. 1.0.1 (2021-10-04)
 
 This module shows how to wrap mlpro's Environment class to petting zoo compatible.
 """
@@ -19,7 +20,7 @@ This module shows how to wrap mlpro's Environment class to petting zoo compatibl
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvMLPro2PZoo
-from mlpro.rl.pool.envs import BGLP
+from mlpro.rl.pool.envs.bglp import BGLP
 import random
 
 from pettingzoo.test import api_test
