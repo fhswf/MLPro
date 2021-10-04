@@ -7,11 +7,13 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-13  0.0.0     MRD      Creation
 ## -- 2021-09-18  1.0.0     MRD      Released first version
-## -- 2021-09-29  1.0.1     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
+## -- 2021 09-26  1.0.1     MRD      Change the import module due to the change of the pool
+## --                                folder structer
+## -- 2021-09-29  1.0.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-09-29)
+Ver. 1.0.2 (2021-09-29)
 
 This module shows how to implement A2C from the pool
 """
@@ -20,8 +22,8 @@ This module shows how to implement A2C from the pool
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
-from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.rl.pool.policies.a2c import A2C 
+from mlpro.rl.pool.envs import RobotHTM
+from mlpro.rl.pool.policies import A2C 
 import gym
 import random
 from pathlib import Path
