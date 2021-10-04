@@ -34,10 +34,14 @@
 ## -- 2021-09-25  1.3.4     MRD      Remove Previous state into the buffer. Add Next state to the buffer
 ## --                                Remove clearing buffer on every reset. The clearing buffer should
 ## --                                be controlled from the policy
+## -- 2021-09-xx  1.4.0     DA       Enhancements for model-based agends:
+## --                                  - New class ActionPlanner
+## --                                  - Class Agent: method adapt() implemented
+## --                                Introduction of method Environment.get_cycle_limit()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2021-09-25)
+Ver. 1.4.0 (2021-09-xx)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -46,6 +50,7 @@ This module provides model classes for reinforcement learning tasks.
 import numpy as np
 from typing import List
 from time import sleep
+from mlpro.bf.exceptions import ParamError
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
@@ -405,6 +410,8 @@ class Environment(EnvBase):
     C_MODE_SIM      = 0
     C_MODE_REAL     = 1
 
+    C_CYCLE_LIMIT   = 0         # Recommended cycle limit for training episodes
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_mode=C_MODE_SIM, p_latency:timedelta=None, p_logging=True):
         """
@@ -423,6 +430,15 @@ class Environment(EnvBase):
 ## -------------------------------------------------------------------------------------------------
     def get_mode(self):
         return self._mode
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self):
+        """
+        Returns limit of cycles per training episode.
+        """
+
+        return self.C_CYCLE_LIMIT
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -559,13 +575,20 @@ class Environment(EnvBase):
         raise NotImplementedError
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SARBufferElement(BufferElement):
     """
     Element of a State-Action-Reward-Buffer.
     """
+
     pass
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -574,7 +597,10 @@ class SARBuffer(Buffer):
     """
     State-Action-Reward-Buffer in dictionary.
     """
+
     pass
+
+
 
 
 
@@ -590,7 +616,10 @@ class EnvModel(EnvBase, Adaptive):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_buffer_size=1, p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
         EnvBase.__init__(self, p_logging=p_logging)
-        Adaptive.__init__(self, p_ada=p_ada, p_logging=p_logging)
+        Adaptive.__init__(self, p_buffer=p_buffer_cls(p_size=p_buffer_size), p_ada=p_ada, p_logging=p_logging)
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -722,20 +751,61 @@ class Policy(Adaptive, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class ActionPlanner (Log):
+    """
+    Template class for action planning algorithms to be used as part of planning agents.
+    """
+
+    C_TYPE          = 'Action Planner'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_logging=True):
+        super().__init__(p_logging=p_logging)
+        self._action_path = []
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_action(self, p_state:State, p_policy:Policy, p_envmodel:EnvModel, p_depth) -> Action:
+        """
+        Computes a path of actions with defined length that maximizes the reward of the given 
+        environment model.
+        
+        Parameters:
+            p_state             Current state of environment
+            p_policy            Poliy of an agent
+            p_envmodel          Environment model
+            p_depth             Planning depth (=length of action path to be predicted)
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_action_path(self):
+        self._action_path.clear()
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class Agent(Policy):
     """
     This class represents a single agent model.
     """
 
     C_TYPE          = 'Agent'
-    C_NAME          = 'Standard'
+    C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_name='', p_id=0, p_ada=True, 
+    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_action_planner:ActionPlanner=None, p_name='', p_id=0, p_ada=True, 
                 p_logging=True):
         """
         Parameters:
             p_policy            Policy object
+            p_envmodel          Optional environment model object
+            p_action_planner    Optional action planner object (obligatory for model based agents)
             p_name              Optional name of agent
             p_id                Unique agent id (especially important for multi-agent scenarios)
             p_ada               Boolean switch for adaptivity
@@ -747,6 +817,12 @@ class Agent(Policy):
         else:
             self.set_name(self.C_NAME)
 
+        self.switch_logging(p_logging)
+        self.switch_adaptivity(p_ada)
+
+        if ( ( p_envmodel is not None ) and ( p_action_planner is None ) ) or ( ( p_envmodel is None ) and ( p_action_planner is not None ) ):
+           raise ParamError('Model-based agents need an env model and an action planner')
+           
         self._state             = None
         self._previous_state    = None
         self._previous_action   = None
@@ -754,10 +830,9 @@ class Agent(Policy):
         self._action_space      = self._policy.get_action_space()
         self._state_space       = self._policy.get_state_space()
         self._envmodel          = p_envmodel
+        self._action_planner    = p_action_planner
 
         self._set_id(p_id)
-        self.switch_logging(p_logging)
-        self.switch_adaptivity(p_ada)
         self.clear_buffer()
 
 
@@ -1363,7 +1438,8 @@ class Training(Log):
         Parmeters:
             p_scenario              RL scenario object
             p_episode_limit         Maximum number of episodes
-            p_cycle_limit           Naximum number of cycles within an episode (0 means: no limit)
+            p_cycle_limit           Naximum number of cycles within an episode (a value > 0 overrides
+                                    the cycle limit provided by the enviroment)
             p_collect_states        If True, the environment states will be collected
             p_collect_actions       If True, the agent actions will be collected
             p_collect_rewards       If True, the environment reward will be collected
@@ -1380,7 +1456,16 @@ class Training(Log):
         self._episode_id    = 0
         self._episode_limit = p_episode_limit
         self._cycle_id      = 0
-        self._cycle_limit   = p_cycle_limit
+
+        if p_cycle_limit > 0:
+            self._cycle_limit = p_cycle_limit
+        else:
+            self._cycle_limit = self._env.get_cycle_limit()
+
+        if self._cycle_limit <= 0:
+            raise ParamError('Invalid cycle limit')
+        else:
+            self.log(self.C_LOG_TYPE_I, 'Limit of cycles per episide:', str(self._cycle_limit))
 
         if p_collect_states:
             self._ds_states   = RLDataStoring(self._env.get_state_space())
