@@ -8,11 +8,12 @@
 ## -- 2021-09-13  0.0.0     WB       Creation
 ## -- 2021-09-13  1.0.0     WB       Released first version
 ## -- 2021-09-13  1.0.1     WB       Instantiated without WrEnvGym
-## -- 2021-09-23  1.0.1     WB       Increased C_LATENCY
+## -- 2021-09-23  1.0.2     WB       Increased C_LATENCY
+## -- 2021-10-05  1.0.3     SY       Update following new attributes done and broken in State
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-09-23)
+Ver. 1.0.3 (2021-10-05)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
@@ -95,7 +96,8 @@ class UR5JointControl(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_action: Action) -> None:
-        obs, self.reward_gym, self.done, info = self.env.step(p_action.get_sorted_values())
+        obs, self.reward_gym, done, info = self.env.step(p_action.get_sorted_values())
+        self._state.set_done(done)
         self.state = self._obs_to_state(obs)
 
 ## -------------------------------------------------------------------------------------------------
@@ -106,7 +108,7 @@ class UR5JointControl(Environment):
                             b=obs[3:], 
                             atol=0.2)
         if close:
-            self.done = True
+            self._state.set_done(True)
             self.goal_achievement = 1.0
         else:
             self.goal_achievement = 0.0

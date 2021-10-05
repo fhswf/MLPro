@@ -9,10 +9,11 @@
 ## -- 2021-09-11  1.00  MRD    Release of first version
 ## -- 2021-09-11  1.01  MRD    Change Header information to match our new library name
 ## -- 2021-09-25  1.02  MRD    Minor fix for state space and action space recognition
+## -- 2021-10-05  1.03  SY     Update following new attributes done and broken in State
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.02 (2021-09-25)
+Ver. 1.03 (2021-10-05)
 
 This module provide an environment of a robot manipulator based on Homogeneous Matrix
 """
@@ -273,10 +274,10 @@ class RobotHTM(Environment):
     def _evaluate_state(self) -> None:
         disterror = np.linalg.norm(self.state.get_values()[:3] - self.state.get_values()[3:])
         if disterror <= 0.2:
-            self.done = True
+            self._state.set_done(True)
             self.goal_achievement = 1.0
         else:
-            self.done = False
+            self._state.set_done(False)
             self.goal_achievement = 0.0
 
     def compute_reward(self) -> Reward:
@@ -315,6 +316,6 @@ class RobotHTM(Environment):
             else:
                 self.target = torch.Tensor([[-0.5, -0.5, 0.5]])
                 self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
-        self.done = False
+        self._state.set_done(False)
         self.goal_achievement = 0.0
         self.state = self.get_state()                
