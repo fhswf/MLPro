@@ -235,6 +235,8 @@ class RobotHTM(Environment):
         else:
             self.target = torch.Tensor([[0.5, 0.5, 0.5]])
             self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+
+        self.reset()
     
     def _setup_spaces(self):
         """
@@ -316,6 +318,6 @@ class RobotHTM(Environment):
             else:
                 self.target = torch.Tensor([[-0.5, -0.5, 0.5]])
                 self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+        self._state = self.get_state()
         self._state.set_done(False)
-        self.goal_achievement = 0.0
-        self._state = self.get_state()                
+        self.goal_achievement = 0.0                

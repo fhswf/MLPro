@@ -349,6 +349,10 @@ class SAC(Policy):
         if not super().adapt(*p_args):
             return False
 
+        # Add data to buffer
+        keys = ["state", "action", "next_state", "reward"]
+        self.add_buffer(SARBufferElement(dict(zip(keys, p_args))))
+
         # Adapt only when Buffer is full
         if len(self._buffer) < self.warm_up_phase:
             self.log(self.C_LOG_TYPE_I, 'Buffer is not full yet, keep collecting data!')

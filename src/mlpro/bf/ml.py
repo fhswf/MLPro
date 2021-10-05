@@ -277,6 +277,7 @@ class Buffer:
 ## -------------------------------------------------------------------------------------------------
     def __len__(self):
         keys = list(self._data_buffer.keys())
+        print(keys)
         return len(self._data_buffer[keys[0]])
 
 

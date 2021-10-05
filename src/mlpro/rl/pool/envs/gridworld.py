@@ -67,6 +67,8 @@ class GridWorld(Environment):
         super(GridWorld, self).__init__(p_mode=Environment.C_MODE_SIM,
                                         p_logging=p_logging)
 
+        self.reset()
+
     def _setup_spaces(self):
         data = 1
         for size in self.grid_size:
@@ -106,7 +108,7 @@ class GridWorld(Environment):
         return state
         
     def _simulate_reaction(self, p_action: Action) -> None:
-        self.agent_pos += np.array(p_action.get_sorted_values()).astype(np.int)
+        self.agent_pos += np.array(p_action.get_sorted_values()).astype(int)
         self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
         
         self.num_step += 1
