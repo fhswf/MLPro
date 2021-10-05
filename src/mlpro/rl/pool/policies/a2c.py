@@ -242,6 +242,10 @@ class A2C(Policy):
         if not super().adapt(*p_args):
             return False
 
+        # Add to buffer
+        keys = ["state", "action", "next_state", "reward"]
+        self.add_buffer(SARBufferElement(dict(zip(keys, p_args))))
+
         # Adapt only when Buffer is full
         if not self._buffer.is_full():
             self.log(self.C_LOG_TYPE_I, 'Buffer is not full yet, keep collecting data!')
@@ -257,7 +261,7 @@ class A2C(Policy):
         actions = torch.Tensor([action.get_sorted_values() for action in sar_data["action"]])
         rewards = torch.Tensor([reward.get_overall_reward() for reward in sar_data["reward"]]).flatten()
         values = torch.Tensor([value for value in sar_data["value"]]).flatten()
-        dones = torch.Tensor([done for done in sar_data["done"]]).flatten()
+        dones = torch.Tensor([state.get_done() for state in sar_data["state"]]).flatten()
         advantages = torch.zeros(self._buffer._size) 
 
         # Get the next value from the last observation

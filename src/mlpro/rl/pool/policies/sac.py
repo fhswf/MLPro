@@ -371,7 +371,7 @@ class SAC(Policy):
             next_states = torch.Tensor([next_states.get_values() for next_states in sar_data["next_state"]])
             actions = torch.Tensor([action.get_sorted_values() for action in sar_data["action"]])
             rewards = torch.Tensor([reward.get_overall_reward() for reward in sar_data["reward"]])
-            dones = torch.Tensor([done for done in sar_data["done"]])
+            dones = torch.Tensor([state.get_done() for state in sar_data["state"]])
 
             # Action by current actor for the sampled state
             action, action_log_probs, _ = self.policy.sample_action(states)
