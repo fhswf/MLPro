@@ -34,14 +34,14 @@
 ## -- 2021-09-25  1.3.4     MRD      Remove Previous state into the buffer. Add Next state to the buffer
 ## --                                Remove clearing buffer on every reset. The clearing buffer should
 ## --                                be controlled from the policy
-## -- 2021-09-xx  1.4.0     DA       Enhancements for model-based agends:
+## -- 2021-10-05  1.4.0     DA       Enhancements for model-based agends:
 ## --                                  - New class ActionPlanner
 ## --                                  - Class Agent: method adapt() implemented
 ## --                                Introduction of method Environment.get_cycle_limit()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2021-09-xx)
+Ver. 1.4.0 (2021-10-05)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -865,7 +865,7 @@ class Agent(Policy):
 ## -------------------------------------------------------------------------------------------------
     def adapt(self, *p_args) -> bool:
         """
-        Default adaption implementation of a single agent.
+        Default adaptation implementation of a single agent.
 
         Parameters:
             p_args[0]       Reward object (see class Reward)
@@ -875,7 +875,7 @@ class Agent(Policy):
             True, if something has beed adapted
         """
 
-        # 1 Check: Adaption possible?
+        # 1 Check: Adaptation possible?
         if self._adaptivity == False:
             self.log(self.C_LOG_TYPE_I, 'Adaption disabled')
             return False
@@ -884,18 +884,11 @@ class Agent(Policy):
             self.log(self.C_LOG_TYPE_I, 'Adaption: previous state None -> adaptivity skipped')
             return False
 
-        reward = p_args[0]
-        done = p_args[1]
-        next_state = p_args[2]
-        self.log(self.C_LOG_TYPE_I, 'Adaption: previous state =', self._previous_state.get_values(), 
-                '; reward = ', p_args[0].get_agent_reward(self._id))
 
-        # 2 Add data to SAR buffer
-        self._policy.add_buffer(SARBufferElement(dict(state=self._state, action=self._previous_action, 
-                                                    reward=reward, next_state=next_state, done=done)))
+        if self._envmodel is None:
+            # 2 Model-free adaptation
+            pass
 
-        # 3 Adapt policy
-        return self._policy.adapt()
 
 
 ## -------------------------------------------------------------------------------------------------
