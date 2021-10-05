@@ -92,13 +92,13 @@ class UR5JointControl(Environment):
 ## -------------------------------------------------------------------------------------------------
     def reset(self) -> None:
         obs = self.env.reset()
-        self.state = self._obs_to_state(obs)
+        self._state = self._obs_to_state(obs)
 
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_action: Action) -> None:
         obs, self.reward_gym, done, info = self.env.step(p_action.get_sorted_values())
         self._state.set_done(done)
-        self.state = self._obs_to_state(obs)
+        self._state = self._obs_to_state(obs)
 
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self) -> None: 

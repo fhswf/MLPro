@@ -92,7 +92,7 @@ class GridWorld(Environment):
                             if self.random_goal_position 
                             else border-1 for border in self.grid_size])
         self.num_step = 0
-        self.state = self.get_state()
+        self._state = self.get_state()
         
     def get_state(self):
         obs = np.zeros(self.grid_size, dtype=np.float32)
@@ -115,7 +115,7 @@ class GridWorld(Environment):
             self._state.set_done(True)
         else:
             self._state.set_done(False)
-        self.state = self.get_state()
+        self._state = self.get_state()
         
     def compute_reward(self):
         reward = Reward(Reward.C_TYPE_OVERALL)

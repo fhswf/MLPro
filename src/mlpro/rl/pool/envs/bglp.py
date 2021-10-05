@@ -659,7 +659,7 @@ class BGLP(Environment):
         self.reset_actuators()
         obs         = self.calc_state()
         self.t      = 0
-        self.state = self.collect_substates()
+        self._state = self.collect_substates()
 
     def _simulate_reaction(self, p_action: Action) -> None:
         """
@@ -693,7 +693,7 @@ class BGLP(Environment):
         self.set_actions(action)
         self._state.set_done(False)
         self._state.set_broken(False)
-        self.state = self.collect_substates()
+        self._state = self.collect_substates()
 
 
     def _evaluate_state(self) -> None: 

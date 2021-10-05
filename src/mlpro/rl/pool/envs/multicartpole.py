@@ -95,7 +95,7 @@ class MultiCartPole(Environment):
 ## -------------------------------------------------------------------------------------------------
     def reset(self) -> None:
         for env in self._envs: env.reset()
-        self.state = self.collect_substates()
+        self._state = self.collect_substates()
   
 
 ## -------------------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ class MultiCartPole(Environment):
                 done_flag       = self.get_done() and env.done
                 self._state.set_done(done_flag)
 
-        self.state = self.collect_substates()
+        self._state = self.collect_substates()
 
 
 ## -------------------------------------------------------------------------------------------------

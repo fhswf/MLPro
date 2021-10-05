@@ -39,10 +39,11 @@
 ## --                                - New class ActionPlanner
 ## --                                - Class Agent: method adapt() implemented
 ## --                                Introduction of method Environment.get_cycle_limit()
+## -- 2021-10-05  1.4.1     SY       Bugfixes and minor improvements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2021-10-05)
+Ver. 1.4.1 (2021-10-05)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -378,7 +379,7 @@ class EnvBase(Log, Plottable):
         Explicitely sets the current state of the environment. Internal use only.
         """
 
-        self.state = p_state
+        self._state = p_state
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1067,9 +1068,8 @@ class MultiAgent(Agent):
             self.log(self.C_LOG_TYPE_I, 'Adaption disabled')
             return False
 
-        reward = p_args[0]
-        done = p_args[1]
-        next_state = p_args[2]
+        next_states     = p_args[0]
+        reward          = p_args[1]
 
         self.log(self.C_LOG_TYPE_I, 'Start of adaption for all agents...')      
 
@@ -1078,7 +1078,7 @@ class MultiAgent(Agent):
             agent = agent_entry[0]
             if ( reward.get_type() != Reward.C_TYPE_OVERALL ) and not reward.is_rewarded(agent.get_id()): continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-            adapted = adapted or agent.adapt(reward, done, next_state)
+            adapted = adapted or agent.adapt(next_states,reward)
 
         self.log(self.C_LOG_TYPE_I, 'End of adaption for all agents...')        
 

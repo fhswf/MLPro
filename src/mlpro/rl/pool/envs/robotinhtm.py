@@ -261,7 +261,7 @@ class RobotHTM(Environment):
         self.RobotArm1.update_theta(action*self.dt)
         self.RobotArm1.update_joint_coords()
         self.jointangles = self.RobotArm1.thetas
-        self.state = self.get_state()
+        self._state = self.get_state()
     
     def get_state(self) -> State:
         obs = torch.cat([self.target, self.RobotArm1.joints[:3,[-1]].reshape(1,3)], dim=1)
@@ -272,7 +272,7 @@ class RobotHTM(Environment):
 
    
     def _evaluate_state(self) -> None:
-        disterror = np.linalg.norm(self.state.get_values()[:3] - self.state.get_values()[3:])
+        disterror = np.linalg.norm(self._state.get_values()[:3] - self._state.get_values()[3:])
         if disterror <= 0.2:
             self._state.set_done(True)
             self.goal_achievement = 1.0
@@ -282,7 +282,7 @@ class RobotHTM(Environment):
 
     def compute_reward(self) -> Reward:
         reward = Reward(Reward.C_TYPE_OVERALL)
-        disterror = np.linalg.norm(self.state.get_values()[:3] - self.state.get_values()[3:])
+        disterror = np.linalg.norm(self._state.get_values()[:3] - self._state.get_values()[3:])
         rew = -disterror
         if disterror <= 0.2:
             rew = rew + 20
@@ -318,4 +318,4 @@ class RobotHTM(Environment):
                 self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
         self._state.set_done(False)
         self.goal_achievement = 0.0
-        self.state = self.get_state()                
+        self._state = self.get_state()                

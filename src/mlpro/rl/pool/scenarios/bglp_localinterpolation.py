@@ -133,16 +133,16 @@ class MyPolicy(Policy):
         if not super().adapt(*p_args):
             return False
         
-        if not self._buffer.is_full():
-            return False
+        # if not self._buffer.is_full():
+        #     return False
         
-        sar_data = self._buffer.get_all()
-        for reward in sar_data["reward"]:
-            rwd = reward.get_agent_reward(self._id)
-        if self.updated:
-            self.int_act()
-            self.update_maps(self.action_last[0], rwd, self.levels_last, self.levels_last_con)
-        self.log(self.C_LOG_TYPE_I, 'Performance map is updated')
+        # sar_data = self._buffer.get_all()
+        # for reward in sar_data["reward"]:
+        #     rwd = reward.get_agent_reward(self._id)
+        # if self.updated:
+        #     self.int_act()
+        #     self.update_maps(self.action_last[0], rwd, self.levels_last, self.levels_last_con)
+        # self.log(self.C_LOG_TYPE_I, 'Performance map is updated')
         return False
     
     def update_maps(self, action, utility, levels, levels_con):
@@ -167,6 +167,13 @@ class MyPolicy(Policy):
         DistancesTotal = sum(sum(weights))
         outputs = weights/DistancesTotal*maps_update
         return sum(sum(outputs))
+
+    def clear_buffer(self):
+        self._buffer.clear()
+    
+    def _add_additional_buffer(self, p_buffer_element: SARBufferElement):
+        p_buffer_element.add_value_element(self.additional_buffer_element)
+        return p_buffer_element
         
 #################################################################
 
