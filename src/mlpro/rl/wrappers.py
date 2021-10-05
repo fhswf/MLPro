@@ -17,10 +17,11 @@
 ## -- 2021-09-29  1.1.3     SY       Change name: WrEnvGym to WrEnvGYM2MLPro, WrEnvPZoo to WrEnvPZOO2MLPro
 ## -- 2021-09-30  1.2.0     SY       New classes: WrEnvMLPro2GYM
 ## -- 2021-10-02  1.3.0     SY       New classes: WrEnvMLPro2PZoo, update _recognize_space() in WrEnvGYM2MLPro
+## -- 2021-10-05  1.3.1     SY       Update following new attributes done and broken in State
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-10-02)
+Ver. 1.3.1 (2021-10-05)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
@@ -139,9 +140,10 @@ class WrEnvGYM2MLPro(Environment):
 
         # 2 Process step of Gym environment
         try:
-            observation, reward_gym, self.done, info = self._gym_env.step(action_gym)
+            observation, reward_gym, done, info = self._gym_env.step(action_gym)
         except:
-            observation, reward_gym, self.done, info = self._gym_env.step(np.atleast_1d(action_gym))
+            observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
+        self._state.set_done(done)
         obs     = DataObject(observation)
 
         # 3 Create state object from Gym observation
@@ -156,7 +158,7 @@ class WrEnvGYM2MLPro(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self):
-        if self.done:
+        if self.get_done():
             self.goal_achievement = 1.0
         else:
             self.goal_achievement = 0.0
@@ -286,10 +288,11 @@ class WrEnvPZOO2MLPro(Environment):
             action_zoo = action_sorted_agent.astype(self._zoo_env.action_spaces[k].dtype)
             
         # 2 Process step of Zoo environment that automatically switches control to the next agent.
-            observation, reward_zoo, self.done, info = self._zoo_env.last()
+            observation, reward_zoo, done, info = self._zoo_env.last()
+            self._state.set_done(done)
             obs     = DataObject(observation)
             
-            if self.done:
+            if self.get_done():
                 self._zoo_env.step(None)
             else:
                 try:
@@ -313,7 +316,7 @@ class WrEnvPZOO2MLPro(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self):
-        if self.done:
+        if self.get_done():
             self.goal_achievement = 1.0
         else:
             self.goal_achievement = 0.0
@@ -415,7 +418,7 @@ class WrEnvMLPro2GYM(gym.Env):
         reward          = self._mlpro_env.compute_reward()
         self._mlpro_env._evaluate_state
         
-        return self._mlpro_env.get_state().get_values(), reward.get_overall_reward(), self._mlpro_env.done, {}
+        return self._mlpro_env.get_state().get_values(), reward.get_overall_reward(), self._mlpro_env.get_done(), {}
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -546,7 +549,7 @@ class WrEnvMLPro2PZoo():
                 
             self.rewards[agent] = self._mlpro_env.compute_reward().get_agent_reward(agent)
             
-            if self._mlpro_env.done:
+            if self._mlpro_env.get_done():
                 self.dones = {agent: True for agent in self.agents}
             
             self.agent_selection = self._agent_selector.next()

@@ -113,7 +113,7 @@ class MultiCartPole(Environment):
                 action_env      = Action()
                 action_env.add_elem(agent_id, action_elem_env)
                 env._simulate_reaction(action_env)
-                done_flag       = self.get_done() and env.done
+                done_flag       = self.get_done() and env.get_done()
                 self._state.set_done(done_flag)
 
         self._state = self.collect_substates()
