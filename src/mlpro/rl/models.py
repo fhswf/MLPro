@@ -34,9 +34,10 @@
 ## -- 2021-09-25  1.3.4     MRD      Remove Previous state into the buffer. Add Next state to the buffer
 ## --                                Remove clearing buffer on every reset. The clearing buffer should
 ## --                                be controlled from the policy
-## -- 2021-10-05  1.4.0     DA       Enhancements for model-based agends:
-## --                                  - New class ActionPlanner
-## --                                  - Class Agent: method adapt() implemented
+## -- 2021-10-05  1.4.0     DA       Enhancements around model-based agents:
+## --                                - Class State: new attributes done, broken and related methods 
+## --                                - New class ActionPlanner
+## --                                - Class Agent: method adapt() implemented
 ## --                                Introduction of method Environment.get_cycle_limit()
 ## -------------------------------------------------------------------------------------------------
 
@@ -69,6 +70,29 @@ class State(Element, TStamp):
     def __init__(self, p_state_space:MSpace):
         TStamp.__init__(self)
         Element.__init__(self, p_state_space)
+        self.set_done(False)
+        self.set_broken(False)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_done(self) -> bool:
+        return self._done
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_done(self, p_done:bool):
+        self._done = p_done
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_broken(self) -> bool:
+        return self._broken
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_broken(self, p_broken:bool):
+        self._broken = p_broken
+
 
 
 
@@ -295,9 +319,7 @@ class EnvBase(Log, Plottable):
         self._action_space     = ESpace()
         self._state            = None
         self._last_action      = None
-        self.goal_achievement  = 0.0
-        self.broken            = False
-        self.done              = False
+        self._goal_achievement = 0.0
         self.set_latency(p_latency)
 
 
@@ -347,7 +369,7 @@ class EnvBase(Log, Plottable):
         Returns current state of environment.
         """
 
-        return self.state
+        return self._state
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -357,6 +379,23 @@ class EnvBase(Log, Plottable):
         """
 
         self.state = p_state
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_done(self) -> bool:
+        if self._state is None: return False
+        return self._state.get_done()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_broken(self) -> bool:
+        if self._state is None: return False
+        return self._state.get_broken()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_goal_achievement(self):
+        return self._goal_achievement
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -564,15 +603,17 @@ class Environment(EnvBase):
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self) -> None:
         """
-        Updates the goal achievement value in [0,1] and the flags done and broken based on the 
+        Updates the internal goal achievement value in [0,1] and the flags done and broken inside the 
         current state. Please redefine.
         """
 
-        self.goal_achievement = 0.0
-        self.done             = False
-        self.broken           = False
-
         raise NotImplementedError
+
+        # Sample code
+        self._goal_achievement = 0.0
+        self._state.set_done(False)
+        self._state.set_broken(False)
+
 
 
 
@@ -824,6 +865,7 @@ class Agent(Policy):
            raise ParamError('Model-based agents need an env model and an action planner')
            
         self._state             = None
+        self._reward            = None
         self._previous_state    = None
         self._previous_action   = None
         self._policy            = p_policy
@@ -868,12 +910,17 @@ class Agent(Policy):
         Default adaptation implementation of a single agent.
 
         Parameters:
-            p_args[0]       Reward object (see class Reward)
-            p_args[1]       Done Flag
-
+            p_args[0]       State object (see class State)
+            p_args[1]       Reward object (see class Reward)
+ 
         Returns:
             True, if something has beed adapted
         """
+
+        # 0 Intro
+        self._state  = p_args[0]
+        self._reward = p_args[1]
+
 
         # 1 Check: Adaptation possible?
         if self._adaptivity == False:
@@ -887,19 +934,26 @@ class Agent(Policy):
 
         if self._envmodel is None:
             # 2 Model-free adaptation
+            return self._policy.adapt(self._previous_state, self._previous_action, self._state, self._reward)
+
+        else:
+            # 3 Model-based adaptation
             pass
+
+
+        # 4 Outro
+        self._previous_state
 
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state: State) -> Action:
+    def compute_action(self, p_state:State) -> Action:
         """
         Default implementation of a single agent.
         """
 
         self.log(self.C_LOG_TYPE_I, 'Action computation: state received = ', p_state.get_values())
         self._previous_state  = self._state
-        self._state           = p_state
         self._previous_action = self._policy.compute_action(p_state)
         return self._previous_action
 
@@ -1318,7 +1372,7 @@ class Scenario(Log, LoadSave):
 
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
-        self._agent.adapt(reward, self._env.done, self._env.get_state())
+        self._agent.adapt(self._env.get_state(), reward)
 
 
         # 6 Optional visualization
@@ -1369,7 +1423,7 @@ class Scenario(Log, LoadSave):
             self.run_cycle(cycle_id, p_ds_states=p_ds_states, p_ds_actions=p_ds_actions, p_ds_rewards=p_ds_rewards)
 
             # 2.2 Check and handle environment's health
-            if self._env.broken: 
+            if self._env.get_broken(): 
                 self.log(self.C_LOG_TYPE_E, 'Environment broken!')
                 if p_exit_when_broken: 
                     break
@@ -1378,8 +1432,8 @@ class Scenario(Log, LoadSave):
                     self._env.reset()
 
             # 2.3 Check and handle environment's done state
-            if self._env.done != done:
-                done = self._env.done
+            if self._env.get_done() != done:
+                done = self._env.get_done()
                 if done == True:
                     self.log(self.C_LOG_TYPE_I, 'Environment goal achieved')
                 else:
@@ -1397,7 +1451,7 @@ class Scenario(Log, LoadSave):
 
         # 3 Finish run
         self.log(self.C_LOG_TYPE_I, 'Stop')
-        return self._env.done, self._env.broken, cycle_id
+        return self._env.get_done(), self._env.get_broken(), cycle_id
 
 
 
@@ -1524,7 +1578,7 @@ class Training(Log):
 
 
         # 3 Update training counters
-        if self._env.done or self._env.broken or ( self._cycle_id == (self._cycle_limit-1) ):
+        if self._env.get_done() or self._env.get_broken() or ( self._cycle_id == (self._cycle_limit-1) ):
             # 3.1 Episode finished
             self.log(self.C_LOG_TYPE_I, '--------------------------------------')
             self.log(self.C_LOG_TYPE_I, '-- Episode', self._episode_id, 'finished after', self._cycle_id + 1, 'cycles')
@@ -1532,12 +1586,12 @@ class Training(Log):
 
             # 3.1.1 Update global training data storage
             if self._ds_training is not None:
-                if self._env.done==True:
+                if self._env.get_done()==True:
                     done_num = 1
                 else:
                     done_num = 0
 
-                if self._env.broken==True:
+                if self._env.get_broken()==True:
                     broken_num = 1
                 else:
                     broken_num = 0
