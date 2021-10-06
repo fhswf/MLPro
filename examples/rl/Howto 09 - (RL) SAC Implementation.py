@@ -63,7 +63,7 @@ myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=True,
+    p_visualize=False,
     p_logging=False
 )
 

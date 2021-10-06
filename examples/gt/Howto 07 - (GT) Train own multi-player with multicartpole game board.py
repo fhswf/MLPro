@@ -128,7 +128,7 @@ mygame  = MyGame(
     p_mode=GameBoard.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=True,
+    p_visualize=False,
     p_logging=True
 )
 
