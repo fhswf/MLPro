@@ -254,9 +254,11 @@ class SAC(Policy):
     """
 
     C_NAME = 'SAC'
+
+    C_BUFFER_CLS = RandomSARBuffer
     
     def __init__(self, p_state_space: MSpace, p_action_space: MSpace, p_buffer_size: int, 
-                p_ada, p_batch_size=64, p_buffer_cls=RandomSARBuffer, p_explore_chance=0.5, p_qnet_type="Q", 
+                p_ada, p_batch_size=64, p_explore_chance=0.5, p_qnet_type="Q", 
                 p_alpha=0.2, p_tau=0.005, p_gamma=0.99, p_gradient_step=1, p_target_update_interval=1, 
                 p_warm_up_step=50000, p_automatic_entropy_tuning=True, p_learning_rate=3e-4, 
                 p_actor_lr=0.0003, p_critic_lr=0.0003, p_logging=True):
@@ -279,7 +281,7 @@ class SAC(Policy):
             p_logging (bool, optional): Logging. Defaults to True.
         """
         super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, 
-                        p_buffer_cls=p_buffer_cls, p_ada=p_ada, p_logging=p_logging)
+                         p_ada=p_ada, p_logging=p_logging)
         
 
         self.batch_size = p_batch_size
@@ -345,13 +347,9 @@ class SAC(Policy):
             self.alpha_optim = optim.Adam([self.log_alpha], lr=self.learning_rate)
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
-        if not super().adapt(*p_args):
-            return False
-
+    def _adapt(self, *p_args) -> bool:
         # Add data to buffer
-        keys = ["state", "action", "next_state", "reward"]
-        self.add_buffer(SARBufferElement(dict(zip(keys, p_args))))
+        self.add_buffer(p_args[0])
 
         # Adapt only when Buffer is full
         if len(self._buffer) < self.warm_up_phase:
@@ -434,6 +432,15 @@ class SAC(Policy):
         return True
 
 ## -------------------------------------------------------------------------------------------------
+    def add_buffer(self, p_buffer_element: SARSElement):
+        """
+        Intended to save the data to the buffer. By default it save the SARS data.
+        
+        """
+        buffer_element = self._add_additional_buffer(p_buffer_element)
+        self._buffer.add_element(buffer_element)
+
+## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         self._buffer.clear()
 
@@ -464,6 +471,6 @@ class SAC(Policy):
         return action
 
 ## -------------------------------------------------------------------------------------------------
-    def _add_additional_buffer(self, p_buffer_element: SARBufferElement):
+    def _add_additional_buffer(self, p_buffer_element: SARSElement):
         p_buffer_element.add_value_element(self.additional_buffer_element)
         return p_buffer_element
