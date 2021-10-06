@@ -141,7 +141,7 @@ now             = datetime.now()
 
 training        = Training(
     p_scenario=myscenario,
-    p_episode_limit=50,
+    p_episode_limit=1,
     p_cycle_limit=100,
     p_collect_states=True,
     p_collect_actions=True,
