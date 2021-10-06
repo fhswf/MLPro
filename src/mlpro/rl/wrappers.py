@@ -248,6 +248,7 @@ class WrEnvPZOO2MLPro(Environment):
                 
         return space
 
+
 ## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self):
         pass
@@ -344,6 +345,7 @@ class WrEnvPZOO2MLPro(Environment):
             return self._zoo_env.env.env.max_cycles
         except:
             return self.C_CYCLE_LIMIT
+
 
 
 
@@ -449,7 +451,6 @@ class WrEnvMLPro2GYM(gym.Env):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class WrEnvMLPro2PZoo():
@@ -461,7 +462,6 @@ class WrEnvMLPro2PZoo():
     """
 
     C_TYPE        = 'MLPro to PZoo Env'
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
