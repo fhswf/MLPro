@@ -13,10 +13,11 @@
 ## -- 2021-09-11  1.2.0     MRD      Change Header information to match our new library name
 ## -- 2021-09-28  1.2.1     SY       Updated due to implementation of method get_cycle_limits()
 ## -- 2021-09-29  1.2.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
+## -- 2021-10-06  1.2.3     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2021-09-29)
+Ver. 1.2.3 (2021-10-06)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """

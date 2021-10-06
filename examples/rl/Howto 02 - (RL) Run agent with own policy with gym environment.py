@@ -14,7 +14,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2021-10-06)
+Ver. 1.1.2 (2021-10-06)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 the fhswf_at_ml framework.
