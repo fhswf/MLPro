@@ -31,7 +31,7 @@ jobs:
         pip install matplotlib
         pip install gym
         pip install PettingZoo
-        pip install stable-baseline3
+        pip install stable-baselines3
         pip install pyglet
         pip install pymunk
         pip install pygame
