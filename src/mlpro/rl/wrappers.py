@@ -18,10 +18,11 @@
 ## -- 2021-09-30  1.2.0     SY       New classes: WrEnvMLPro2GYM
 ## -- 2021-10-02  1.3.0     SY       New classes: WrEnvMLPro2PZoo, update _recognize_space() in WrEnvGYM2MLPro
 ## -- 2021-10-05  1.3.1     SY       Update following new attributes done and broken in State
+## -- 2021-10-06  1.3.2     DA       Minor fixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-10-05)
+Ver. 1.3.2 (2021-10-06)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
@@ -375,12 +376,12 @@ class WrEnvMLPro2GYM(gym.Env):
         if p_state_space is not None: 
             self.observation_space  = p_state_space
         else:
-            self.observation_space  = self._recognize_space(self._mlpro_env._state_space)
+            self.observation_space  = self._recognize_space(self._mlpro_env.get_state_space())
         
         if p_action_space is not None: 
             self.action_space       = p_action_space
         else:
-            self.action_space       = self._recognize_space(self._mlpro_env._action_space)
+            self.action_space       = self._recognize_space(self._mlpro_env.get_action_space())
         
         self.first_refresh          = True
         self.reset()
@@ -492,12 +493,12 @@ class WrEnvMLPro2PZoo():
             if p_state_space is not None: 
                 self.observation_spaces = p_state_space
             else:
-                self.observation_spaces = self._recognize_space(self._mlpro_env._state_space)
+                self.observation_spaces = self._recognize_space(self._mlpro_env.get_state_space())
             
             if p_action_space is not None: 
                 self.action_spaces      = p_action_space
             else:
-                self.action_spaces      = self._recognize_space(self._mlpro_env._action_space)
+                self.action_spaces      = self._recognize_space(self._mlpro_env.get_action_space())
             
             self.first_refresh          = True
             self.reset()
@@ -536,7 +537,7 @@ class WrEnvMLPro2PZoo():
             if agent == self.possible_agents[-1]:
                 _action     = Action()
                 _act_set    = Set()
-                idx         = self._mlpro_env._action_space.get_num_dim()
+                idx         = self._mlpro_env.get_action_space().get_num_dim()
                 for i in range(idx):
                     _act_set.add_dim(Dimension(i,'action_'+str(i)))
                 _act_elem   = Element(_act_set)
@@ -545,7 +546,7 @@ class WrEnvMLPro2PZoo():
                 _action.add_elem('0', _act_elem)
                 
                 self._mlpro_env.process_action(_action)
-                self._mlpro_env._evaluate_state
+                self._mlpro_env._evaluate_state()
                 
             self.rewards[agent] = self._mlpro_env.compute_reward().get_agent_reward(agent)
             
