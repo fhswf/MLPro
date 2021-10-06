@@ -44,4 +44,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        xvfb-run -s \"-screen 0 1400x900x24\" python -m pytest
+        xvfb-run -s "-screen 0 1400x900x24" python -m pytest
