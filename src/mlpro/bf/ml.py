@@ -13,17 +13,20 @@
 ## -- 2021-09-19  1.0.1     MRD      Improvement on Buffer Class. Implement new base class
 ## --                                Buffer Element and BufferRnd
 ## -- 2021-09-25  1.0.2     MRD      Add __len__ functionality for SARBuffer
+## -- 2021-10-06  1.0.3     DA       Extended class Adaptive by new methods _adapt(), get_adapted(),
+## --                                _set_adapted(); moved Buffer classes to mlpro.bf.data.py
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-09-25)
+Ver. 1.0.3 (2021-10-06)
 
 This module provides common machine learning functionalities and properties.
 """
 
 from mlpro.bf.various import *
 from mlpro.bf.math import *
-import random
+from mlpro.bf.data import Buffer
+
 
 
 
@@ -113,201 +116,6 @@ class HyperParamTuning(Log):
 
 
 
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class BufferElement:
-    """
-    Base class implementation for buffer element
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_element:dict) -> None:
-        """
-        Parameters:
-            p_element (dict): Buffer element in dictionary
-        """
-
-        self._element = {}
-
-        self.add_value_element(p_element)
-
-## -------------------------------------------------------------------------------------------------
-    def add_value_element(self, p_val:dict):
-        """
-        Adding new value to the element container
-
-        Parameters:
-            p_val (dict): Elements in dictionary
-        """
-        self._element = {**self._element, **p_val}
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_data(self):
-        """
-        Get the buffer element.
-
-        Returns:
-            Returns the buffer element.
-        """
-
-        return self._element
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Buffer:
-    """
-    Base class implementation for buffer management.
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_size=1):
-        """
-        Parameters:
-            p_size (int, optional): Buffer size. Defaults to 1.
-        """
-        self._size = p_size
-        self._data_buffer = {}
-
-## -------------------------------------------------------------------------------------------------
-    def add_element(self, p_elem:BufferElement):
-        """
-        Add element to the buffer.
-
-        Parameters:
-            p_elem (BufferElement): Element of Buffer
-        """
-        self._data_buffer = {**p_elem.get_data(), **self._data_buffer}
-        for key, value in self._data_buffer.items():
-            if key in p_elem.get_data() and key in self._data_buffer:
-                if not isinstance(self._data_buffer[key], list):
-                    self._data_buffer[key] = [p_elem.get_data()[key]]
-                else:
-                    self._data_buffer[key].append(p_elem.get_data()[key])
-
-                if len(self._data_buffer[key]) > self._size:
-                    self._data_buffer[key].pop(-len(self._data_buffer[key]))
-
-## -------------------------------------------------------------------------------------------------
-    def clear(self):
-        """
-        Resets buffer.
-        """
-
-        self._data_buffer.clear()
-
-## -------------------------------------------------------------------------------------------------
-    def get_latest(self):
-        """
-        Returns latest buffered element. 
-        """
-
-        try:
-            return {key: self._data_buffer[key][-1] for key in self._data_buffer}
-        except:
-            return None
-
-## -------------------------------------------------------------------------------------------------
-    def get_all(self):
-        """
-        Return all buffered elements.
-
-        """
-        return self._data_buffer
-
-## -------------------------------------------------------------------------------------------------
-    def get_sample(self, p_num:int):
-        """
-        Sample some element from the buffer.
-
-        Parameters:
-            p_num (int): Number of sample
-
-        Returns:
-            Samples in dictionary
-        """
-        return self._extract_rows(self._gen_sample_ind(p_num))
-
-## -------------------------------------------------------------------------------------------------
-    def _gen_sample_ind(self, p_num:int) -> list:
-        """
-        Generate random indices from the buffer.
-
-        Parameters:
-            p_num (int): Number of sample
-
-        Returns:
-            List of incides
-        """
-        raise NotImplementedError
-
-## -------------------------------------------------------------------------------------------------
-    def _extract_rows(self, p_list_idx:list):
-        """
-        Extract the element in the buffer based on a
-        list of indices.
-
-        Parameters:
-            p_list_idx (list): List of indices
-
-        Returns:
-            Samples in dictionary
-        """
-        rows = {}
-        for key in self._data_buffer:
-            rows[key] = [self._data_buffer[key][i] for i in p_list_idx]
-        return rows
-
-## -------------------------------------------------------------------------------------------------
-    def is_full(self) -> bool:
-        """
-        Check if the buffer is full.
-
-        Returns:
-            True, if the buffer is full
-        """
-        keys = list(self._data_buffer.keys())
-        return len(self._data_buffer[keys[0]]) >= self._size
-
-## -------------------------------------------------------------------------------------------------
-    def __len__(self):
-        keys = list(self._data_buffer.keys())
-        return len(self._data_buffer[keys[0]])
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class BufferRnd(Buffer):
-    """
-    Buffer implmentation with random sampling
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def _gen_sample_ind(self, p_num: int) -> list:
-        """
-        Generate random indicies
-
-        Parameters:
-            p_num (int): Number of sample
-
-        Returns:
-            List of indicies
-        """
-        keys = list(self._data_buffer.keys())
-        return random.sample(list(range(0,len(self._data_buffer[keys[0]]))),p_num)
-
-
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Adaptive(Log, LoadSave):
@@ -319,24 +127,30 @@ class Adaptive(Log, LoadSave):
     C_TYPE          = 'Adaptive'
     C_NAME          = '????'
 
+    C_BUFFER_CLS    = Buffer            
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer:Buffer=None, p_ada=True, p_logging=True):
+    def __init__(self, p_buffer_size=0, p_ada=True, p_logging=True):
         """
         Parameters:
-            p_buffer            Buffer
+            p_buffer_size       Initial size of internal data buffer (0=no buffering)
             p_ada               Boolean switch for adaptivity
             p_logging           Boolean switch for logging functionality
         """
 
         Log.__init__(self, p_logging=p_logging)
+        self._adapted           = False
         self.switch_adaptivity(p_ada)
         self._hyperparam_space  = HyperParamSpace()
         self._hyperparam_tupel  = None
         self._init_hyperparam()
 
-        self._buffer = p_buffer
+        if p_buffer_size > 0:
+            self._buffer = self.C_BUFFER_CLS(p_size=p_buffer_size)
+        else:
+            self._buffer = None
 
-        self._attrib_hp1 = 0
+        self._attrib_hp1        = 0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -372,14 +186,20 @@ class Adaptive(Log, LoadSave):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_adapted(self) -> bool:
+        return self._adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def _set_adapted(self, p_adapted:bool):
+        self._adapted = p_adapted
+
+
+## -------------------------------------------------------------------------------------------------
     def adapt(self, *p_args) -> bool:
         """
-        Adapts something inside in the sense of machine learning. The number and types of parameters 
-        depend on the specific implementation. Please redefine and describe the exact number and types
-        of parameters in your own implementation. It is recommended to call this implementation stub
-        by calling super().adapt() and to continue adapting something only if it returns True. So it 
-        is ensured that an adaption takes place only it adaptivity is switched on. Furthermore adaption
-        will be logged.
+        Adapts something inside in the sense of machine learning. Please redefine and describe the 
+        protected method _adapt() that is called here. 
 
         Parameters:
             p_args          All parameters that are needed for the adaption. 
@@ -389,6 +209,26 @@ class Adaptive(Log, LoadSave):
         """
 
         if not self._adaptivity: return False
-        self.log(self.C_LOG_TYPE_I, 'Adaption started')
-        return True
+        self.log(self.C_LOG_TYPE_I, 'Adaptation started')
+        self._set_adapted(self._adapt(*p_args))
+        return self.get_adapted()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        """
+        Please redefine and implement your specific adaptation algorithm. Furthermore please describe 
+        the type and purpose of all parameters needed by your implementation. This method will be 
+        called by public method adapt() if adaptivity is switched on. 
+
+        Parameters:
+            p_args[0]           ...
+            p_args[1]           ...
+            ...
+
+        Returns:
+            True, if something has been adapted. False otherwise.
+        """
+
+        raise NotImplementedError
 

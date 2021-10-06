@@ -56,6 +56,8 @@ from mlpro.bf.exceptions import ParamError
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
+from mlpro.bf.data import *
+from mlpro.bf.plot import *
 
 
 
@@ -622,12 +624,21 @@ class Environment(EnvBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SARBufferElement(BufferElement):
+class SARSElement(BufferElement):
     """
-    Element of a State-Action-Reward-Buffer.
+    Element of a SARSBuffer.
     """
 
-    pass
+    def __init__(self, p_state:State, p_action:Action, p_reward:Reward, p_state_new:State):
+        """
+        Parameters:
+            p_state         State of an environment
+            p_action        Action of an agent
+            p_reward        Reward of an environment
+            p_state_new     State of the environment as reaction to the action
+        """
+
+        super().__init__( { "state" : p_state, "action" : p_action, "reward" : p_reward, "state_new" : p_state_new } )
 
 
 
@@ -635,9 +646,9 @@ class SARBufferElement(BufferElement):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SARBuffer(Buffer):
+class SARSBuffer(Buffer):
     """
-    State-Action-Reward-Buffer in dictionary.
+    State-Action-Reward-State-Buffer in dictionary.
     """
 
     pass
@@ -653,12 +664,14 @@ class EnvModel(EnvBase, Adaptive):
     Template class for a Real world model to be used for model based agents.
     """
 
-    C_TYPE      = 'EnvModel'
+    C_TYPE          = 'EnvModel'
+
+    C_BUFFER_CLS    = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer_size=1, p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
+    def __init__(self, p_buffer_size=1, p_ada=True, p_logging=True):
         EnvBase.__init__(self, p_logging=p_logging)
-        Adaptive.__init__(self, p_buffer=p_buffer_cls(p_size=p_buffer_size), p_ada=p_ada, p_logging=p_logging)
+        Adaptive.__init__(self, p_buffer=self.C_BUFFER_CLS(p_size=p_buffer_size), p_ada=p_ada, p_logging=p_logging)
 
 
 
@@ -690,21 +703,20 @@ class Policy(Adaptive, Plottable):
 
     C_TYPE          = 'Policy'
     C_NAME          = '????'
+    C_BUFFER_CLS    = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_buffer_size=1, 
-                p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
+    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=True):
         """
          Parameters:
             p_state_space       State space object
             p_action_space      Action space object
             p_buffer_size       Size of the buffer
-            p_buffer_cls        Buffer class to be used
             p_ada               Boolean switch for adaptivity
             p_logging           Boolean switch for logging functionality
         """
 
-        super().__init__(p_buffer=p_buffer_cls(p_buffer_size), p_ada=p_ada, p_logging=p_logging)
+        super().__init__(p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         self._state_space   = p_state_space
         self._action_space  = p_action_space
         self.set_id(0)
@@ -731,18 +743,15 @@ class Policy(Adaptive, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+    def _adapt(self, *p_args) -> bool:
         """
-        Adapts the policy based on State-Action-Reward (SAR) data that will be expected as a SAR
-        buffer object. Please call super-method at the beginning of your own implementation and
-        adapt only if it returns True.
+        Adapts the policy based on State-Action-Reward-State (SARS) data.
 
         Parameters:
-            p_arg[0]            SAR Buffer object
+            p_arg[0]           Object of type SARSElement
         """
 
-        if not super().adapt(*p_args): return False
-        return True
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -759,24 +768,6 @@ class Policy(Adaptive, Plottable):
 
         raise NotImplementedError
 
-## -------------------------------------------------------------------------------------------------
-    def add_buffer(self, p_buffer_element: SARBufferElement):
-        """
-        Intended to save the data to the buffer. By default it save the SARS data.
-        
-        """
-        buffer_element = self._add_additional_buffer(p_buffer_element)
-        self._buffer.add_element(buffer_element)
-
-## -------------------------------------------------------------------------------------------------
-    def _add_additional_buffer(self, p_buffer_element:SARBufferElement):
-        """
-        Intended to add additional buffer element to the buffer other than SARS data. Redefine this method
-        to add additional buffer element
-        """
-        
-        return p_buffer_element
-
 
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
@@ -785,7 +776,8 @@ class Policy(Adaptive, Plottable):
         to prepare the next episode.
         """
 
-        pass
+        if self._buffer is not None:
+            self._buffer.clear()
 
 
 
@@ -841,13 +833,14 @@ class Agent(Policy):
     C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_action_planner:ActionPlanner=None, p_name='', p_id=0, p_ada=True, 
+    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_action_planner:ActionPlanner=None, p_planning_depth=0, p_name='', p_id=0, p_ada=True, 
                 p_logging=True):
         """
         Parameters:
             p_policy            Policy object
             p_envmodel          Optional environment model object
             p_action_planner    Optional action planner object (obligatory for model based agents)
+            p_planning_depth    Optional planning depth (obligatory for model based agents)
             p_name              Optional name of agent
             p_id                Unique agent id (especially important for multi-agent scenarios)
             p_ada               Boolean switch for adaptivity
@@ -874,6 +867,7 @@ class Agent(Policy):
         self._state_space       = self._policy.get_state_space()
         self._envmodel          = p_envmodel
         self._action_planner    = p_action_planner
+        self._planning_depth    = p_planning_depth
 
         self._set_id(p_id)
         self.clear_buffer()
@@ -906,7 +900,7 @@ class Agent(Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+    def _adapt(self, *p_args) -> bool:
         """
         Default adaptation implementation of a single agent.
 
@@ -919,32 +913,24 @@ class Agent(Policy):
         """
 
         # 0 Intro
-        self._state  = p_args[0]
-        self._reward = p_args[1]
+        state  = p_args[0]
+        reward = p_args[1]
 
 
         # 1 Check: Adaptation possible?
-        if self._adaptivity == False:
-            self.log(self.C_LOG_TYPE_I, 'Adaption disabled')
-            return False
-
         if self._previous_state is None:
             self.log(self.C_LOG_TYPE_I, 'Adaption: previous state None -> adaptivity skipped')
             return False
 
 
+        # 2 Adaptation
         if self._envmodel is None:
-            # 2 Model-free adaptation
-            return self._policy.adapt(self._previous_state, self._previous_action, self._state, self._reward)
+            # 2.1 Model-free adaptation
+            return self._policy.adapt(SARSElement(self._previous_state, self._previous_action, reward, state))
 
         else:
-            # 3 Model-based adaptation
-            pass
-
-
-        # 4 Outro
-        self._previous_state
-
+            # 2.2 Model-based adaptation
+            raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -953,9 +939,24 @@ class Agent(Policy):
         Default implementation of a single agent.
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Action computation: state received = ', p_state.get_values())
-        self._previous_state  = self._state
-        self._previous_action = self._policy.compute_action(p_state)
+        # 0 Intro
+        self.log(self.C_LOG_TYPE_I, 'Action computation started')
+        self._previous_state    = self._state
+        self._state             = p_state
+
+
+        # 1 Action computation
+        if self._action_planner is None:
+            # 1.1 W/o action planner
+            self._previous_action = self._policy.compute_action(p_state)
+
+        else:
+            # 1.2 With action planner
+            self._previous_action = self._action_planner.compute_action(p_state, self._policy, self._envmodel, self._planning_depth)
+
+
+        # 2 Outro
+        self.log(self.C_LOG_TYPE_I, 'Action computation finished')
         return self._previous_action
 
 
@@ -1063,11 +1064,7 @@ class MultiAgent(Agent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
-        if not self._adaptivity:
-            self.log(self.C_LOG_TYPE_I, 'Adaption disabled')
-            return False
-
+    def _adapt(self, *p_args) -> bool:
         next_states     = p_args[0]
         reward          = p_args[1]
 
