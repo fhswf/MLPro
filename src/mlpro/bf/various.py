@@ -35,7 +35,6 @@ from datetime import datetime, timedelta
 from time import sleep
 import pickle as pkl
 import os
-from colorama import Fore
 from mlpro.bf.exceptions import *
 
 
@@ -157,6 +156,10 @@ class Log:
 
     C_LOG_TYPES     = [ C_LOG_TYPE_I, C_LOG_TYPE_W, C_LOG_TYPE_E ]
 
+    C_COL_WARNING   = '\033[93m'    # Yellow
+    C_COL_ERROR     = '\033[91m'    # Red
+    C_COL_RESET     = '\033[0m'     # Reset color
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=True):
         """
@@ -223,11 +226,11 @@ class Log:
         now = datetime.now()
 
         if p_type == self.C_LOG_TYPE_W:
-            col = Fore.YELLOW
+            col = self.C_COL_WARNING
         elif p_type == self.C_LOG_TYPE_E:
-            col = Fore.RED
+            col = self.C_COL_ERROR
         else:
-            col = Fore.RESET
+            col = self.C_COL_RESET
 
         print(col + '%04d-%02d-%02d  %02d:%02d:%02d.%06d ' % (now.year, now.month, now.day, now.hour, now.minute, now.second, now.microsecond), p_type + '  ' + self.C_TYPE + ' ' + self.C_NAME + ':', *p_args)
 
