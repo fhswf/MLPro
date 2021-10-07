@@ -33,6 +33,7 @@ howto_list = {
     "rl_06": "examples.rl.Howto 06 - (RL) A2C Implementation",
     "rl_08": "examples.rl.Howto 08 - (RL) Run own agents with petting zoo environment",
     "rl_09": "examples.rl.Howto 09 - (RL) SAC Implementation",
+    "rl_10": "examples.rl.Howto 10 - (RL) Train using SB3 Wrapper"
     "rl_11": "examples.rl.Howto 11 - (RL) Wrap mlpro Environment class to gym environment",
     "rl_12": "examples.rl.Howto 12 - (RL) Wrap mlpro Environment class to petting zoo environment",
     "sciui_01": "examples.sciui.Howto 01 (SciUI) - Reuse of interactive 2D,3D input space"
