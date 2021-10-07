@@ -9,10 +9,11 @@
 ## -- 2021-06-06  1.0.0     DA       Release of first version
 ## -- 2021-08-28  1.0.1     DA       Adjustments after changings on rl models
 ## -- 2021-09-11  1.0.1     MRD      Change Header information to match our new library name
+## -- 2021-10-06  1.0.2     DA       Adjustments after changings on rl models
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-08-28)
+Ver. 1.0.2 (2021-10-06)
 
 This module shows how to run an own multi-player with the enhanced multi-action game board 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -46,15 +47,11 @@ class MyPolicy(Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def adapt(self, *p_args) -> bool:
-        # 1 Call super-method because of logging and initial stuff. If it returns False
-        #   a policy adaption is not neccessary respectively not possible....
-        if not super().adapt(p_args): return False
-
-        # 2 Adapting the internal policy is up to you...
+    def _adapt(self, *p_args) -> bool:
+        # 1 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 
-        # 3 Only return True if something has been adapted...
+        # 2 Only return True if something has been adapted...
         return False
 
 
@@ -89,8 +86,6 @@ class MyGame(Game):
                     p_ada=True,
                     p_logging=True
                 ),
-                p_sarbuffer_size=1,
-                p_envmodel=None,
                 p_name='Neo',
                 p_id=0,
                 p_ada=True,
@@ -109,8 +104,6 @@ class MyGame(Game):
                     p_ada=True,
                     p_logging=True
                 ),
-                p_sarbuffer_size=1,
-                p_envmodel=None,
                 p_name='Trinity',
                 p_id=1,
                 p_ada=True,
@@ -127,7 +120,7 @@ mygame  = MyGame(
     p_mode=GameBoard.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=True,
+    p_visualize=False,
     p_logging=True
 )
 

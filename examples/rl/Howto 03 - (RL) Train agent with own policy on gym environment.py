@@ -13,10 +13,11 @@
 ## -- 2021-09-11  1.2.0     MRD      Change Header information to match our new library name
 ## -- 2021-09-28  1.2.1     SY       Updated due to implementation of method get_cycle_limits()
 ## -- 2021-09-29  1.2.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
+## -- 2021-10-06  1.2.3     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2021-09-29)
+Ver. 1.2.3 (2021-10-06)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """
@@ -49,15 +50,11 @@ class MyPolicy(Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def adapt(self, *p_args) -> bool:
-        # 1 Call super-method because of logging and initial stuff. If it returns False
-        #   a policy adaption is not neccessary respectively not possible....
-        if not super().adapt(p_args): return False
-
-        # 2 Adapting the internal policy is up to you...
+    def _adapt(self, *p_args) -> bool:
+        # 1 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 
-        # 3 Only return True if something has been adapted...
+        # 2 Only return True if something has been adapted...
         return False
 
 
@@ -95,8 +92,8 @@ class MyScenario(Scenario):
 myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
-    p_cycle_limit=500,
-    p_visualize=True,
+    p_cycle_limit=100,
+    p_visualize=False,
     p_logging=True
 )
 
@@ -108,7 +105,7 @@ now             = datetime.now()
 
 training        = Training(
     p_scenario=myscenario,
-    p_episode_limit=50,
+    p_episode_limit=1,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,

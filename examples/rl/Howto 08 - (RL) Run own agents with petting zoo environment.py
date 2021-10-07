@@ -10,10 +10,11 @@
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
 ## -- 2021-09-23  1.1.0     SY       Updated wrapper WrEnvPZoo class, provides two different envs
 ## -- 2021-09-29  1.1.1     SY       Change name: WrEnvPZoo to WrEnvPZOO2MLPro
+## -- 2021-10-06  1.1.2     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2021-09-29)
+Ver. 1.1.2 (2021-10-06)
 
 This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
 the fhswf_at_ml framework.
@@ -43,8 +44,7 @@ class ContRandPolicy(Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def adapt(self, *p_args) -> bool:
-        if not super().adapt(p_args): return False
+    def _adapt(self, *p_args) -> bool:
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
         return False
     

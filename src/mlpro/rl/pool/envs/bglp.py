@@ -12,16 +12,16 @@
 ## -- 2021-09-11  1.02  MRD    Change Header information to match our new library name
 ## -- 2021-10-02  1.03  SY     Minor change
 ## -- 2021-10-05  1.04  SY     Update following new attributes done and broken in State
-## -- 2021-10-07  2.00  SY     Enable batch production scenario
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 2.00 (2021-10-07)
+Ver. 1.04 (2021-10-05)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
 
 from mlpro.rl.models import *
+from mlpro.gt.models import *
 import numpy as np
 import torch
 import random
@@ -535,14 +535,10 @@ class BGLP(Environment):
     energy_t            = 0
     transport_t         = 0
     margin_t            = 0
-    prod_reached        = 0
-    prod_target         = 0
-    prod_scenario       = 0
 
     def __init__(self, p_reward_type=Reward.C_TYPE_OVERALL, p_logging=True,
                  t_step=0.5, t_set=10.0, demand=0.1, lr_margin=1.0, lr_demand=4.0,
-                 lr_energy=0.0010, margin_p=[0.2,0.8,4], prod_target=10000,
-                 prod_scenario='continuous'):
+                 lr_energy=0.0010, margin_p=[0.2,0.8,4]):
         """
         Parameters:
             p_reward_type   Reward type to be computed
@@ -554,8 +550,6 @@ class BGLP(Environment):
             lr_demand       Learning rate for demand (rewarding)
             lr_energy       Learning rate for energy (rewarding)
             margin_p        Margin parameters
-            prod_target     Production target in one episode (L)
-            prod_scenario   Production scenarion ('continuous'/'batch')
         """
         
         self.num_envs       = 5                                                 # Number of internal sub-environments
@@ -569,8 +563,6 @@ class BGLP(Environment):
         self.lr_margin      = lr_margin
         self.lr_demand      = lr_demand
         self.lr_energy      = lr_energy
-        self.prod_target    = prod_target
-        self.prod_scenario  = prod_scenario
         self.levels_init    = torch.ones(6,1)*0.5
         self.sils           = []
         self.hops           = []
@@ -665,10 +657,9 @@ class BGLP(Environment):
         """
         self.reset_levels()
         self.reset_actuators()
-        obs                 = self.calc_state()
-        self.t              = 0
-        self.prod_reached   = 0
-        self._state         = self.collect_substates()
+        obs         = self.calc_state()
+        self.t      = 0
+        self._state = self.collect_substates()
 
     def _simulate_reaction(self, p_action: Action) -> None:
         """
@@ -706,27 +697,17 @@ class BGLP(Environment):
 
 
     def _evaluate_state(self) -> None: 
-        """
-        Updates the goal achievement value in [0,1] and the flags done and broken
-        based on the current state. Please redefine.
-   
-        Returns:
-          -
-        """
-
-        if self.prod_scenario == 'continuous':
-            self.goal_achievement = 0.0
-            self._state.set_done(False)
-            self._state.set_broken(False)
-        else:
-            if self.prod_reached >= self.prod_target:
-                self.goal_achievement = 1.0
-                self._state.set_done(True)
-            else:
-                self.goal_achievement = self.prod_reached/self.prod_target
-                self._state.set_done(False)
-                self._state.set_broken(False)
-             
+         """
+         Updates the goal achievement value in [0,1] and the flags done and broken
+         based on the current state. Please redefine.
+    
+         Returns:
+           -
+         """
+    
+         self.goal_achievement = 0.0
+         self._state.set_done(False)
+         self._state.set_broken(False)
 
     def compute_reward(self) -> Reward:
         """
@@ -820,8 +801,6 @@ class BGLP(Environment):
             self.overflow[resnum] = overflow
             self.demand[resnum] = demand
             res.set_change(ins-outs-overflow)
-            if resnum == len(self.ress)-1:
-                self.prod_reached += outs
 
     def update_levels(self):
         """
