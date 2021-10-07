@@ -285,9 +285,11 @@ class RobotHTM(Environment):
     def compute_reward(self) -> Reward:
         reward = Reward(Reward.C_TYPE_OVERALL)
         disterror = np.linalg.norm(self._state.get_values()[:3] - self._state.get_values()[3:])
+        
         rew = -disterror
         if disterror <= 0.2:
             rew = rew + 20
+        rew = rew.astype("float64")
         reward.set_overall_reward(rew)
         return reward
     

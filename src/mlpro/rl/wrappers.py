@@ -94,14 +94,14 @@ class WrEnvGYM2MLPro(Environment):
     def _recognize_space(self, p_gym_space, dict_name) -> ESpace:
         space = ESpace()
         
-        if len(p_gym_space.shape) == 0:
-            space.add_dim(Dimension(p_id=0,p_name_short='0', p_boundaries=[p_gym_space.n]))
-        else:
+        if isinstance(p_gym_space, gym.spaces.Discrete):
+            space.add_dim(Dimension(p_id=0,p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
+        elif isinstance(p_gym_space, gym.spaces.Box):
             shape_dim = len(p_gym_space.shape)
             for i in range(shape_dim):
                 for d in range(p_gym_space.shape[i]):
-                    space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
-        
+                    space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R, p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
+
         return space
 
 
@@ -391,16 +391,23 @@ class WrEnvMLPro2GYM(gym.Env):
 
 ## -------------------------------------------------------------------------------------------------
     def _recognize_space(self, p_mlpro_space):
-        _shape      = p_mlpro_space.get_num_dim()
-        ids         = p_mlpro_space.get_dim_ids()[0]
-        _low        = p_mlpro_space.get_dim(ids).get_boundaries()[0]
-        _high       = p_mlpro_space.get_dim(ids).get_boundaries()[1]
-        set_base    = p_mlpro_space.get_dim(ids).get_base_set()
-        
-        if set_base == 'N' or set_base == 'Z':
-            space = spaces.Box(low=_low, high=_high, shape=(_shape,), dtype=np.int)
+        space = None
+        action_dim = p_mlpro_space.get_num_dim()
+        if len(p_mlpro_space.get_dim(0).get_boundaries()) == 1:
+            space = gym.spaces.Discrete(p_mlpro_space.get_dim(0).get_boundaries()[0])
         else:
-            space = spaces.Box(low=_low, high=_high, shape=(_shape,), dtype=np.float32)
+            lows = []
+            highs = []
+            for dimension in range(action_dim):
+                lows.append(p_mlpro_space.get_dim(dimension).get_boundaries()[0])
+                highs.append(p_mlpro_space.get_dim(dimension).get_boundaries()[1])
+
+            space = gym.spaces.Box(
+                            low=np.array(lows, dtype=np.float32), 
+                            high=np.array(highs, dtype=np.float32), 
+                            shape=(action_dim,), 
+                            dtype=np.float32
+                            )
             
         return space
 
@@ -410,6 +417,10 @@ class WrEnvMLPro2GYM(gym.Env):
         _action     = Action()
         _act_set    = Set()
         idx         = self._mlpro_env._action_space.get_num_dim()
+
+        if isinstance(self.observation_space, gym.spaces.Discrete):
+            action = np.array([action])
+        
         for i in range(idx):
             _act_set.add_dim(Dimension(i,'action_'+str(i)))
         _act_elem   = Element(_act_set)
@@ -421,13 +432,23 @@ class WrEnvMLPro2GYM(gym.Env):
         reward          = self._mlpro_env.compute_reward()
         self._mlpro_env._evaluate_state
         
-        return self._mlpro_env.get_state().get_values(), reward.get_overall_reward(), self._mlpro_env.get_done(), {}
+        obs = None
+        if isinstance(self.observation_space, gym.spaces.Box):
+            obs = np.array(self._mlpro_env.get_state().get_values(), dtype=np.float32)
+        else:
+            obs = np.array(self._mlpro_env.get_state().get_values())
+        return obs, reward.get_overall_reward(), self._mlpro_env.get_done(), {}
     
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self):
         self._mlpro_env.reset()
-        return self._mlpro_env.get_state().get_values()
+        obs = None
+        if isinstance(self.observation_space, gym.spaces.Box):
+            obs = np.array(self._mlpro_env.get_state().get_values(), dtype=np.float32)
+        else:
+            obs = np.array(self._mlpro_env.get_state().get_values())
+        return obs
     
 
 ## -------------------------------------------------------------------------------------------------

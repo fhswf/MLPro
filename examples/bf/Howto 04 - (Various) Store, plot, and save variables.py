@@ -18,9 +18,14 @@ This module demonstrates how to store, plot, save and load variables.
 """
 
 
+<<<<<<< HEAD:examples/bf/Howto 04 - (Various) Store, plot, and save variables.py
 from mlpro.bf.various import *
 from mlpro.bf.data import *
 from mlpro.bf.plot import *
+=======
+from mlpro.bf.data import DataStoring
+from mlpro.bf.plot import DataPlotting
+>>>>>>> Fix wrapper and and some environment:examples/bf/Howto 03 - (Various) Store, plot, and save variables.py
 import random
 
 

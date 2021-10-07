@@ -22,7 +22,7 @@ howto_list = {
     "bf_01": "examples.bf.Howto 01 - (Various) Logging",
     "bf_02": "examples.bf.Howto 02 - (Various) Timer",
     "bf_03": "examples.bf.Howto 03 - (Math) Spaces, subspaces and elements",
-    "bf_04": "examples.bf.Howto 04 - (Various) Store, plot, and save variables",
+    # "bf_04": "examples.bf.Howto 04 - (Various) Store, plot, and save variables",
     "bf_05": "examples.bf.Howto 05 - (ML) Hyperparameters setup",
     "gt_06": "examples.gt.Howto 06 - (GT) Run multi-player with own policy in multicartpole game board",
     "gt_07": "examples.gt.Howto 07 - (GT) Train own multi-player with multicartpole game board",
