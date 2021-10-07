@@ -12,10 +12,11 @@
 ## -- 2021 09-26  1.02  MRD    Change the import module due to the change of the pool
 ## --                          folder structer
 ## -- 2021 09-30  1.03  SY     Minor Improvements
+## -- 2021 10-06  1.04  SY     Minor Improvements
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.03 (2021-09-30)
+Ver. 1.04 (2021-10-06)
 
 Environment : BGLP
 Algorithms  : SbPG - Local Interpolation (dummy)
@@ -34,8 +35,6 @@ import math as m
 import torch
 
 #################################################################
-
-cycle_limit         = 1000
 
 class MyPolicy(Policy):
 
@@ -269,9 +268,3 @@ class MyScenario(Scenario):
                 p_logging=True),
             p_weight=1.0
             )
-        
-#################################################################
-
-
-myscenario  = MyScenario(p_mode=Environment.C_MODE_SIM, p_ada=True, p_cycle_limit=cycle_limit,
-                         p_visualize=True, p_logging=True)
