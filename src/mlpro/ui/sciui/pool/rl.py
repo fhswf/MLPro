@@ -423,10 +423,19 @@ class RLParam(SciUITabCTRL):
  ## -------------------------------------------------------------------------------------------------
     def __cb_simulation_run(self, *args):
         self.__first_training_run()
+        self.shared_db.last_refresh         = 0
         if not self.shared_db.rl_sim_finished:
             self.shared_db.rl_sim_started   = True
             self.shared_db.rl_sim_stop      = False
-            self.shared_db.rl_training.run() 
+            while self.shared_db.rl_training._episode_id < self.shared_db.rl_training._episode_limit:
+                current_episode_id          = self.shared_db.rl_training._episode_id
+                while self.shared_db.rl_training._episode_id == current_episode_id:
+                    self.shared_db.rl_training.run_cycle()
+                    if (self.shared_db.last_refresh % self.shared_db.refresh_rate) == 0:
+                        self.shared_db.ep_monitor_frame.refresh(None)
+                        self.shared_db.plot_frame.refresh(None)
+                        self.shared_db.log_frame.refresh(None)
+                    self.shared_db.last_refresh += 1
             self.shared_db.rl_sim_stop      = True
             self.__env_finish_check()
             self.shared_db.start_global_refresh()
@@ -434,10 +443,18 @@ class RLParam(SciUITabCTRL):
  ## -------------------------------------------------------------------------------------------------
     def __cb_simulation_run_ep(self, *args):
         self.__first_training_run()
+        self.shared_db.last_refresh         = 0
         if not self.shared_db.rl_sim_finished:
             self.shared_db.rl_sim_started   = True
             self.shared_db.rl_sim_stop      = False
-            self.shared_db.rl_training.run_episode() 
+            current_episode_id              = self.shared_db.rl_training._episode_id
+            while self.shared_db.rl_training._episode_id == current_episode_id:
+                self.shared_db.rl_training.run_cycle()
+                if (self.shared_db.last_refresh % self.shared_db.refresh_rate) == 0:
+                    self.shared_db.ep_monitor_frame.refresh(None)
+                    self.shared_db.plot_frame.refresh(None)
+                    self.shared_db.log_frame.refresh(None)
+                self.shared_db.last_refresh += 1
             self.shared_db.rl_sim_stop      = True
             self.__env_finish_check()
             self.shared_db.start_global_refresh()
@@ -693,18 +710,19 @@ class RLRewardsView(SciUIFrameParam):
         
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RLExpRateView(SciUIFrameParam):
+class RLGoalsCompletedView(SciUIFrameParam):
     """
     ...
     """
 
-    C_NAME                              = 'Exploration Rate'
-    C_AGENT_LABELS                      = ['Agent 01','Agent 02','Agent 03','Agent 04','Agent 05']
+    C_NAME                              = 'Goals Completed'
+    C_AGENT_LABELS                      = []
 
 
 ## -------------------------------------------------------------------------------------------------
     def init_component(self):
         super().init_component()
+        self.C_AGENT_LABELS.append(self.shared_db.rl_env)
         self.first_refresh              = True
         
         self.exp_rate_plt               = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self.logging)
@@ -850,8 +868,8 @@ class RLGeneralView(SciUIFrame):
                                          p_padx=10, p_logging=self.logging, p_visible=True))
         self.add_component(RLRewardsView(p_shared_db=self.shared_db, p_row=1, p_col=0, p_pady=8,
                                          p_padx=10, p_logging=self.logging, p_visible=True))
-        # self.add_component(RLExpRateView(p_shared_db=self.shared_db, p_row=1, p_col=1, p_pady=8,
-        #                                  p_padx=10, p_logging=self.logging, p_visible=True))
+        self.add_component(RLGoalsCompletedView(p_shared_db=self.shared_db, p_row=1, p_col=1, p_pady=8,
+                                                p_padx=10, p_logging=self.logging, p_visible=True))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1192,9 +1210,10 @@ class RLFrameTopRight(SciUIFrame):
 ## -------------------------------------------------------------------------------------------------
     def init_component(self):
         super().init_component()
-
-        self.add_component(RLView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,
-                                  p_logging=self.logging, p_visible=True, p_height_perc=1))
+        
+        self.shared_db.plot_frame = RLView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,
+                                           p_logging=self.logging, p_visible=True, p_height_perc=1)
+        self.add_component(self.shared_db.plot_frame)
 
         
         
@@ -1234,9 +1253,10 @@ class RLFrameBottomLeft(SciUIFrame):
 ## -------------------------------------------------------------------------------------------------
     def init_component(self):
         super().init_component()
-
-        self.add_component(RLEpMonitoring(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,p_padx=5,
-                                          p_logging=self.logging, p_visible=True, p_height_perc=1))
+        
+        self.shared_db.ep_monitor_frame = RLEpMonitoring(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,p_padx=5,
+                                                         p_logging=self.logging, p_visible=True, p_height_perc=1)
+        self.add_component(self.shared_db.ep_monitor_frame)
         
         
 ## -------------------------------------------------------------------------------------------------
@@ -1251,11 +1271,12 @@ class RLFrameBottomRight(SciUIFrame):
 ## -------------------------------------------------------------------------------------------------
     def init_component(self):
         super().init_component()
-
+        
         self.add_component(RLLoggingSelection(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,p_padx=5,
                                               p_logging=self.logging, p_visible=True, p_height_perc=1))
-        self.add_component(RLLogging(p_shared_db=self.shared_db, p_row=0, p_col=1, p_pady=5,p_padx=5,
-                                     p_logging=self.logging, p_visible=True, p_height_perc=1))
+        self.shared_db.log_frame = RLLogging(p_shared_db=self.shared_db, p_row=0, p_col=1, p_pady=5,p_padx=5,
+                                             p_logging=self.logging, p_visible=True, p_height_perc=1) 
+        self.add_component(self.shared_db.log_frame)
 
 
         
@@ -1296,7 +1317,8 @@ class RLInteractiveUI(SciUIFrame):
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_shared_db:SciUISharedDB, p_row, p_col, p_title=None, p_width_perc=0.0,
-                 p_height_perc=0.0, p_visible=False, p_padx=5, p_pady=0, p_sticky='NW', p_logging=True): 
+                 p_height_perc=0.0, p_visible=False, p_padx=5, p_pady=0, p_sticky='NW', p_logging=True,
+                 p_refresh_rate=100): 
         """
         Parameters:
             p_shared_db         Shared DB object for scenario-internal communication
@@ -1310,27 +1332,29 @@ class RLInteractiveUI(SciUIFrame):
             p_pady              Vertical distance to neighbor frames
             p_sticky            Tkinter sticky parameter 
             p_logging           Boolean switch for logging
+            p_refresh_rate      Refresh rate per cycle time
         """
 
-        self.row            = p_row
-        self.col            = p_col
-        self.width_perc     = p_width_perc              # Frame width in percent of main window width
-        self.height_perc    = p_height_perc             # Frame height in percent of main window height
-        self.width_pix      = p_shared_db.window_width * self.width_perc
-        self.height_pix     = p_shared_db.window_height * self.height_perc
-        self.frame_visible  = p_visible
+        self.row                        = p_row
+        self.col                        = p_col
+        self.width_perc                 = p_width_perc              # Frame width in percent of main window width
+        self.height_perc                = p_height_perc             # Frame height in percent of main window height
+        self.width_pix                  = p_shared_db.window_width * self.width_perc
+        self.height_pix                 = p_shared_db.window_height * self.height_perc
+        self.frame_visible              = p_visible
 
         if p_title == None:
-            self.frame_text     = self.C_NAME
+            self.frame_text             = self.C_NAME
         else:
-            self.frame_text     = p_title
+            self.frame_text             = p_title
 
-        self.frame          = None
-        self.components     = []
-        self.sticky         = p_sticky
-        self.padx           = p_padx
-        self.pady           = p_pady
-        self.popup_menu     = None
+        self.frame                      = None
+        self.components                 = []
+        self.sticky                     = p_sticky
+        self.padx                       = p_padx
+        self.pady                       = p_pady
+        self.popup_menu                 = None
+        self.refresh_rate               = p_refresh_rate
         
         super().__init__(p_shared_db, p_row, p_col, p_logging=p_logging) 
         
@@ -1339,6 +1363,8 @@ class RLInteractiveUI(SciUIFrame):
     @staticmethod
     def enrich_shared_db(p_shared_db:SciUISharedDB):
         p_shared_db.rlui_selected_scenario  = False
+        p_shared_db.refresh_rate            = 0
+        p_shared_db.last_refresh            = 0
         
         p_shared_db.rl_env                  = ""
         p_shared_db.rl_learning_alg         = ""
@@ -1369,8 +1395,11 @@ class RLInteractiveUI(SciUIFrame):
         p_shared_db.rl_run_state_btn        = 'normal'
         p_shared_db.rl_log_state_box        = True
         p_shared_db.rl_log_state_btn        = 'normal'
-        
         p_shared_db.bg_color_run_button     = 'red'
+        
+        p_shared_db.log_frame               = None
+        p_shared_db.plot_frame              = None
+        p_shared_db.ep_monitor_frame        = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1378,12 +1407,12 @@ class RLInteractiveUI(SciUIFrame):
         super().init_component()
         self.add_component(RLFrameTop(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,
                                       p_logging=self.logging))
-        
         self.add_component(RLFrameBottom(p_shared_db=self.shared_db, p_row=1, p_col=0, p_pady=5,
                                          p_logging=self.logging))
 
  ## -------------------------------------------------------------------------------------------------
     def refresh(self, p_parent_frame):
+        self.shared_db.refresh_rate                = self.refresh_rate
         if self.shared_db.rl_sim_started == False and self.shared_db.rl_sim_stop == True:
             self.shared_db.rl_sce_state_btn        = True
             self.shared_db.rl_param_state_box      = 'normal'
