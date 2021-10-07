@@ -21,10 +21,11 @@
 ## -- 2021-10-06  1.3.2     DA       Minor fixes
 ## -- 2021-10-07  1.3.3     MRD      Redefine WrEnvMLPro2GYM reset(), step(), _recognize_space() function
 ## --                                Redefine also _recognize_space() from WrEnvGYM2MLPro
+## -- 2021-10-07  1.3.4     SY       Update WrEnvMLPro2PZoo() following above changes (ver. 1.3.3)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2021-10-06)
+Ver. 1.3.4 (2021-10-07)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
@@ -529,16 +530,23 @@ class WrEnvMLPro2PZoo():
 
 ## -------------------------------------------------------------------------------------------------
         def _recognize_space(self, p_mlpro_space):
-            _shape          = p_mlpro_space.get_num_dim()
-            ids             = p_mlpro_space.get_dim_ids()[0]
-            _low            = p_mlpro_space.get_dim(ids).get_boundaries()[0]
-            _high           = p_mlpro_space.get_dim(ids).get_boundaries()[1]
-            set_base        = p_mlpro_space.get_dim(ids).get_base_set()
-            
-            if set_base == 'N' or set_base == 'Z':
-                space       = spaces.Box(low=_low, high=_high, shape=(_shape,), dtype=np.int)
+            space = None
+            action_dim = p_mlpro_space.get_num_dim()
+            if len(p_mlpro_space.get_dim(0).get_boundaries()) == 1:
+                space = gym.spaces.Discrete(p_mlpro_space.get_dim(0).get_boundaries()[0])
             else:
-                space       = spaces.Box(low=_low, high=_high, shape=(_shape,), dtype=np.float32)
+                lows = []
+                highs = []
+                for dimension in range(action_dim):
+                    lows.append(p_mlpro_space.get_dim(dimension).get_boundaries()[0])
+                    highs.append(p_mlpro_space.get_dim(dimension).get_boundaries()[1])
+    
+                space = gym.spaces.Box(
+                                low=np.array(lows, dtype=np.float32), 
+                                high=np.array(highs, dtype=np.float32), 
+                                shape=(action_dim,), 
+                                dtype=np.float32
+                                )
                 
             setup_space     = {agent: space for agent in self.possible_agents}
                 
@@ -561,6 +569,8 @@ class WrEnvMLPro2PZoo():
                 _action     = Action()
                 _act_set    = Set()
                 idx         = self._mlpro_env.get_action_space().get_num_dim()
+                if isinstance(self.observation_space, gym.spaces.Discrete):
+                    action = np.array([action])
                 for i in range(idx):
                     _act_set.add_dim(Dimension(i,'action_'+str(i)))
                 _act_elem   = Element(_act_set)
