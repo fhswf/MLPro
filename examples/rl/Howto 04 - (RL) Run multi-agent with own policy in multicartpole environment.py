@@ -11,10 +11,11 @@
 ## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
 ## -- 2021 09-26  1.1.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
+## -- 2021-10-06  1.1.2     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2021-09-26)
+Ver. 1.1.2 (2021-10-06)
 
 This module shows how to run an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -46,15 +47,11 @@ class MyPolicy(Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def adapt(self, *p_args) -> bool:
-        # 1 Call super-method because of logging and initial stuff. If it returns False
-        #   a policy adaption is not neccessary respectively not possible....
-        if not super().adapt(p_args): return False
-
-        # 2 Adapting the internal policy is up to you...
+    def _adapt(self, *p_args) -> bool:
+        # 1 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 
-        # 3 Only return True if something has been adapted...
+        # 2 Only return True if something has been adapted...
         return False
 
 
@@ -126,8 +123,8 @@ class MyScenario(Scenario):
 myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=True,
+    p_cycle_limit=500,
+    p_visualize=False,
     p_logging=True
 )
 

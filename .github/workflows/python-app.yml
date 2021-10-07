@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.7, 3.8]
 
     steps:
     - uses: actions/checkout@v2
@@ -31,7 +31,10 @@ jobs:
         pip install matplotlib
         pip install gym
         pip install PettingZoo
-        pip install torch==1.9.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
+        pip install stable-baselines3
+        pip install pyglet
+        pip install pymunk
+        pip install pygame
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
@@ -41,4 +44,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest
+        python -m pytest

@@ -11,10 +11,11 @@
 ## -- 2021-09-06  1.02  SY     Minor improvements, combine bglp and BGLP classes
 ## -- 2021-09-11  1.02  MRD    Change Header information to match our new library name
 ## -- 2021-10-02  1.03  SY     Minor change
+## -- 2021-10-05  1.04  SY     Update following new attributes done and broken in State
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.03 (2021-10-02)
+Ver. 1.04 (2021-10-05)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -534,7 +535,6 @@ class BGLP(Environment):
     energy_t            = 0
     transport_t         = 0
     margin_t            = 0
-    done                = 0
 
     def __init__(self, p_reward_type=Reward.C_TYPE_OVERALL, p_logging=True,
                  t_step=0.5, t_set=10.0, demand=0.1, lr_margin=1.0, lr_demand=4.0,
@@ -621,7 +621,6 @@ class BGLP(Environment):
         self.margin_t           = torch.zeros((len(self.ress),1))
         self.reward             = torch.zeros((len(self.acts),1))
         self.con_res_to_act     = [[-1,0],[0,1],[1,2],[2,3],[3,4],[4,-1]]
-        self.done               = False
         
         self.reset()
             
@@ -660,7 +659,7 @@ class BGLP(Environment):
         self.reset_actuators()
         obs         = self.calc_state()
         self.t      = 0
-        self.state = self.collect_substates()
+        self._state = self.collect_substates()
 
     def _simulate_reaction(self, p_action: Action) -> None:
         """
@@ -692,8 +691,9 @@ class BGLP(Environment):
             self.t              += self.t_step
             x += 1
         self.set_actions(action)
-        self.done = False
-        self.state = self.collect_substates()
+        self._state.set_done(False)
+        self._state.set_broken(False)
+        self._state = self.collect_substates()
 
 
     def _evaluate_state(self) -> None: 
@@ -706,8 +706,8 @@ class BGLP(Environment):
          """
     
          self.goal_achievement = 0.0
-         self.done             = False
-         self.broken           = False
+         self._state.set_done(False)
+         self._state.set_broken(False)
 
     def compute_reward(self) -> Reward:
         """
@@ -897,19 +897,6 @@ class BGLP(Environment):
             else:
                 self.reward[actnum] += 1/(1+self.lr_margin*self.margin_t[actnum+1])
         return self.reward[:]
-
-    def evaluate_state(self):
-         """
-         Updates the goal achievement value in [0,1] and the flags done and broken
-         based on the current state. Please redefine.
-    
-         Returns:
-           -
-         """
-    
-         self.goal_achievement = 0.0
-         self.done             = False
-         self.broken           = False
 
 
 

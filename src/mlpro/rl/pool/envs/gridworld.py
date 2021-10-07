@@ -11,10 +11,11 @@
 ## -- 2021-09-11  1.01  MRD    Change Header information to match our new library name
 ## -- 2021-09-13  1.02  WB     Fix on simulate reaction      
 ## -- 2021-09-30  1.03  SY     State-space and action-space improvement     
+## -- 2021-10-05  1.04  SY     Update following new attributes done and broken in State
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.03 (2021-09-30)
+Ver. 1.04 (2021-10-05)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -66,6 +67,8 @@ class GridWorld(Environment):
         super(GridWorld, self).__init__(p_mode=Environment.C_MODE_SIM,
                                         p_logging=p_logging)
 
+        self.reset()
+
     def _setup_spaces(self):
         data = 1
         for size in self.grid_size:
@@ -91,7 +94,7 @@ class GridWorld(Environment):
                             if self.random_goal_position 
                             else border-1 for border in self.grid_size])
         self.num_step = 0
-        self.state = self.get_state()
+        self._state = self.get_state()
         
     def get_state(self):
         obs = np.zeros(self.grid_size, dtype=np.float32)
@@ -105,16 +108,16 @@ class GridWorld(Environment):
         return state
         
     def _simulate_reaction(self, p_action: Action) -> None:
-        self.agent_pos += np.array(p_action.get_sorted_values()).astype(np.int)
+        self.agent_pos += np.array(p_action.get_sorted_values()).astype(int)
         self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
         
         self.num_step += 1
         euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos)
         if euclidean_distance == 0:
-            self.done = True
+            self._state.set_done(True)
         else:
-            self.done = False
-        self.state = self.get_state()
+            self._state.set_done(False)
+        self._state = self.get_state()
         
     def compute_reward(self):
         reward = Reward(Reward.C_TYPE_OVERALL)
@@ -131,8 +134,8 @@ class GridWorld(Environment):
     def _evaluate_state(self):
         if self.num_step >= self.max_step:
             self.goal_achievement   = 0.0
-            self.done               = True
-        elif self.done == True:
+            self._state.set_done(True)
+        elif self.get_done() == True:
             self.goal_achievement   = 1.0
             
     

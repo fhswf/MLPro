@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : Howto 04 - (ML) Hyperparameters setup
+## -- Module  : Howto 05 - (ML) Hyperparameters setup
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

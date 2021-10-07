@@ -15,7 +15,7 @@ Ver. 1.0.0 (2021-09-25)
 This module provides implementation of SARBuffer with random sampling.
 """
 
-from mlpro.bf.ml import BufferRnd
+from mlpro.bf.data import BufferRnd
 
 
 ## -------------------------------------------------------------------------------------------------

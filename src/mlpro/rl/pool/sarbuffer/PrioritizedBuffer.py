@@ -31,7 +31,7 @@ from mlpro.rl.models import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PrioritizedBufferElement(SARBufferElement):
+class PrioritizedBufferElement(SARSElement):
     """
     Element of a State-Action-Reward-Buffer.
     """
@@ -40,7 +40,7 @@ class PrioritizedBufferElement(SARBufferElement):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PrioritizedBuffer(SARBuffer):
+class PrioritizedBuffer(SARSBuffer):
     """
     Prioritized Sampling State-Action-Reward-Buffer in dictionary.
     """
