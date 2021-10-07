@@ -18,13 +18,16 @@
 ## -- 2021-09-11  1.5.0     MRD      Change Header information to match our new library name
 ## -- 2021-10-06  1.5.2     DA       Moved class DataStoring to new module mlpro.bf.data.py and
 ## --                                classes DataPlotting, Plottable to new module mlpro.bf.plot.py
+## -- 2021-10-07  1.6.0     DA       Class Log: 
+## --                                - colored text depending on log type 
+## --                                - new method set_log_level()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.2 (2021-10-06)
+Ver. 1.6.0 (2021-10-07)
 
-This module provides various classes with elementry functionalities for reuse in
-higher level classes. For example: logging, load/save, timer, ...
+This module provides various classes with elementry functionalities for reuse in higher level classes. 
+For example: logging, load/save, timer, ...
 """
 
 
@@ -32,6 +35,8 @@ from datetime import datetime, timedelta
 from time import sleep
 import pickle as pkl
 import os
+from colorama import Fore
+from mlpro.bf.exceptions import *
 
 
 
@@ -150,6 +155,8 @@ class Log:
     C_LOG_TYPE_W    = 'W'           # Warning
     C_LOG_TYPE_E    = 'E'           # Error
 
+    C_LOG_TYPES     = [ C_LOG_TYPE_I, C_LOG_TYPE_W, C_LOG_TYPE_E ]
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=True):
         """
@@ -158,6 +165,7 @@ class Log:
         """
 
         self.switch_logging(p_logging)
+        self.set_log_level(self.C_LOG_TYPE_I)
         self.log(self.C_LOG_TYPE_I, 'Instantiated')
 
 
@@ -171,6 +179,24 @@ class Log:
         """
 
         self.logging = p_logging 
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_log_level(self, p_level):
+        """
+        Sets the log level. 
+
+        Parameters:
+            p_level         Possible values are 
+                            C_LOG_TYPE_I (everything will be looged) 
+                            C_LOG_TYPE_W (warnings and errors will be logged)
+                            C_LOG_TYPE_E (only errors will be logged)
+        """
+
+        if p_level in self.C_LOG_TYPES:
+            self._level = p_level
+        else:
+            raise ParamError('Wrong log level. Please use constants C_LOG_TYPE_* of class Log')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -188,8 +214,22 @@ class Log:
         """
 
         if not self.logging: return
+
+        if self._level == self.C_LOG_TYPE_W:
+            if p_type == self.C_LOG_TYPE_I: return
+        elif self._level == self.C_LOG_TYPE_E:
+            if ( p_type == self.C_LOG_TYPE_I ) or ( p_type == self.C_LOG_TYPE_W ): return
+
         now = datetime.now()
-        print('%04d-%02d-%02d  %02d:%02d:%02d.%06d ' % (now.year, now.month, now.day, now.hour, now.minute, now.second, now.microsecond), p_type + '  ' + self.C_TYPE + ' ' + self.C_NAME + ':', *p_args)
+
+        if p_type == self.C_LOG_TYPE_W:
+            col = Fore.YELLOW
+        elif p_type == self.C_LOG_TYPE_E:
+            col = Fore.RED
+        else:
+            col = Fore.RESET
+
+        print(col + '%04d-%02d-%02d  %02d:%02d:%02d.%06d ' % (now.year, now.month, now.day, now.hour, now.minute, now.second, now.microsecond), p_type + '  ' + self.C_TYPE + ' ' + self.C_NAME + ':', *p_args)
 
 
 

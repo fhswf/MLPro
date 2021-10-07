@@ -852,9 +852,6 @@ class Agent(Policy):
         else:
             self.set_name(self.C_NAME)
 
-        self.switch_logging(p_logging)
-        self.switch_adaptivity(p_ada)
-
         if ( ( p_envmodel is not None ) and ( p_action_planner is None ) ) or ( ( p_envmodel is None ) and ( p_action_planner is not None ) ):
            raise ParamError('Model-based agents need an env model and an action planner')
            
@@ -870,6 +867,11 @@ class Agent(Policy):
         self._planning_depth    = p_planning_depth
 
         self._set_id(p_id)
+
+        Log.__init__(self, p_logging)
+        self.switch_logging(p_logging)
+        self.switch_adaptivity(p_ada)
+
         self.clear_buffer()
 
 
@@ -897,6 +899,18 @@ class Agent(Policy):
     def set_name(self, p_name):
         self._name   = p_name
         self.C_NAME  = p_name
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging: bool):
+        super().switch_logging(p_logging)
+        self._policy.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_log_level(self, p_level):
+        super().set_log_level(p_level)
+        self._policy.set_log_level(p_level)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -990,16 +1004,26 @@ class MultiAgent(Agent):
 
         self._agents = []
         self.set_name(p_name)
-        self.switch_logging(p_logging=p_logging)
-        self.switch_adaptivity(p_ada=p_ada)
+
+        Log.__init__(self, p_logging)
+        self.switch_logging(p_logging)
+        self.switch_adaptivity(p_ada)
         
 
 ## -------------------------------------------------------------------------------------------------
-    def switch_logging(self, p_logging=True) -> None: 
-        super().switch_logging(p_logging=p_logging)
+    def switch_logging(self, p_logging:bool) -> None: 
+        Log.switch_logging(self, p_logging=p_logging)
 
         for agent_entry in self._agents:
             agent_entry[0].switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_log_level(self, p_level):
+        Log.set_log_level(self, p_level)
+
+        for agent_entry in self._agents:
+            agent_entry[0].set_log_level(p_level)
 
 
 ## -------------------------------------------------------------------------------------------------
