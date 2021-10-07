@@ -1,21 +1,22 @@
-## -----------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
 ## -- Module  : bglp_localinterpolation
-## -----------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 ## -- History :
-## -- yyyy-mm-dd  Ver.  Auth.  Description
-## -- 2021-09-06  0.00  SY     Creation
-## -- 2021-09-06  1.00  SY     Release of first version
-## -- 2021-09-11  1.00  MRD    Change Header information to match our new library name
-## -- 2021-09-22  1.01  SY     Solving minor bugs
-## -- 2021 09-26  1.02  MRD    Change the import module due to the change of the pool
-## --                          folder structer
-## -- 2021 09-30  1.03  SY     Minor Improvements
-## -----------------------------------------------------------------------------
+## -- yyyy-mm-dd  Ver.      Auth.    Description
+## -- 2021-09-06  0.0.0     SY       Creation
+## -- 2021-09-06  1.0.0     SY       Release of first version
+## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
+## -- 2021-09-22  1.0.1     SY       Solving minor bugs
+## -- 2021-09-26  1.0.2     MRD      Change the import module due to the change of the pool
+## --                                folder structer
+## -- 2021-09-30  1.0.3     SY       Minor Improvements
+## -- 2021-10-07  1.0.4     DA       Refactoring
+## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.03 (2021-09-30)
+Ver. 1.0.4 (2021-10-07)
 
 Environment : BGLP
 Algorithms  : SbPG - Local Interpolation (dummy)
@@ -129,10 +130,7 @@ class MyPolicy(Policy):
         else:
             self.exploration = 1
 
-    def adapt(self, *p_args) -> bool:
-        if not super().adapt(*p_args):
-            return False
-        
+    def _adapt(self, *p_args) -> bool:
         # if not self._buffer.is_full():
         #     return False
         
@@ -171,7 +169,7 @@ class MyPolicy(Policy):
     def clear_buffer(self):
         self._buffer.clear()
     
-    def _add_additional_buffer(self, p_buffer_element: SARBufferElement):
+    def _add_additional_buffer(self, p_buffer_element: SARSElement):
         p_buffer_element.add_value_element(self.additional_buffer_element)
         return p_buffer_element
         
