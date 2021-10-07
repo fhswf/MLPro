@@ -728,7 +728,7 @@ class WrPolicySB32MLPro(Policy):
         obs = p_state.get_values()
         
         if not isinstance(obs, torch.Tensor):
-            obs = torch.Tensor(obs).reshape(1,obs.size)
+            obs = torch.Tensor(obs).reshape(1,obs.size).to(self.sb3.device)
         
         with torch.no_grad():
             actions, values, log_probs = self.sb3.policy.forward(obs)
@@ -749,7 +749,7 @@ class WrPolicySB32MLPro(Policy):
             self.log(self.C_LOG_TYPE_I, 'Buffer is not full yet, keep collecting data!')
             return False
 
-        last_obs = torch.Tensor([self.last_buffer_element.get_data()["state_new"].get_values()])
+        last_obs = torch.Tensor([self.last_buffer_element.get_data()["state_new"].get_values()]).to(self.sb3.device)
         last_done = self.last_buffer_element.get_data()["state_new"].get_done()
 
         # Get the next value from the last observation
