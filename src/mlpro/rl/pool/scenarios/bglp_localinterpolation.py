@@ -13,10 +13,11 @@
 ## --                                folder structer
 ## -- 2021-09-30  1.0.3     SY       Minor Improvements
 ## -- 2021-10-07  1.0.4     DA       Refactoring
+## -- 2021 10-07  1.0.5     SY       Minor Improvements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2021-10-07)
+Ver. 1.0.5 (2021-10-07)
 
 Environment : BGLP
 Algorithms  : SbPG - Local Interpolation (dummy)
@@ -35,8 +36,6 @@ import math as m
 import torch
 
 #################################################################
-
-cycle_limit         = 1000
 
 class MyPolicy(Policy):
 
@@ -274,9 +273,3 @@ class MyScenario(Scenario):
                 p_logging=True),
             p_weight=1.0
             )
-        
-#################################################################
-
-
-myscenario  = MyScenario(p_mode=Environment.C_MODE_SIM, p_ada=True, p_cycle_limit=cycle_limit,
-                         p_visualize=True, p_logging=True)
