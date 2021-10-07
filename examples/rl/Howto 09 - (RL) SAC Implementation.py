@@ -9,10 +9,11 @@
 ## -- 2021-09-25  1.0.0     MRD      Released first version
 ## -- 2021 09-26  1.0.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
+## -- 2021-09-29  1.0.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-09-26)
+Ver. 1.0.2 (2021-09-29)
 
 This module shows how to implement SAC from the pool
 """
@@ -20,7 +21,7 @@ This module shows how to implement SAC from the pool
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGym
+from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.pool.envs import RobotHTM
 from mlpro.rl.pool.policies import SAC
 import gym
@@ -37,7 +38,7 @@ class MyScenario(Scenario):
         self._env   = RobotHTM(p_logging=False)
         # gym_env     = gym.make('CartPole-v1')
         # gym_env     = gym.make('MountainCarContinuous-v0')
-        # self._env   = WrEnvGym(gym_env, p_logging=False) 
+        # self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
 
         # 2 Setup standard single-agent with own policy
         self._agent = Agent(
@@ -62,7 +63,7 @@ myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=True,
+    p_visualize=False,
     p_logging=False
 )
 
@@ -74,7 +75,7 @@ now             = datetime.now()
 
 training        = Training(
     p_scenario=myscenario,
-    p_episode_limit=2000,
+    p_episode_limit=2,
     p_cycle_limit=100,
     p_collect_states=True,
     p_collect_actions=True,

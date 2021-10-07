@@ -9,10 +9,12 @@
 ## -- 2021-06-06  1.0.0     DA       Released first version
 ## -- 2021-08-28  1.1.0     DA       Adjustments after changes on rl models
 ## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
+## -- 2021-09-29  1.1.1     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
+## -- 2021-10-05  1.1.2     SY       Update following new attributes done and broken in State
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-008-28)
+Ver. 1.1.2 (2021-10-05)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -20,7 +22,7 @@ OpenAI Gym environment 'CartPole-v1'.
 
 
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGym
+from mlpro.rl.wrappers import WrEnvGYM2MLPro
 import numpy as np
 import gym
 
@@ -58,7 +60,7 @@ class MultiCartPole(Environment):
         for i in range(self._num_envs): 
             state_space_env  = self._state_space.spawn([i*4, i*4+1, i*4+2, i*4+3])
             action_space_env = self._action_space.spawn([i])
-            env              = WrEnvGym(gym.make('CartPole-v1'), state_space_env, action_space_env)
+            env              = WrEnvGYM2MLPro(gym.make('CartPole-v1'), state_space_env, action_space_env)
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)
 
@@ -93,13 +95,13 @@ class MultiCartPole(Environment):
 ## -------------------------------------------------------------------------------------------------
     def reset(self) -> None:
         for env in self._envs: env.reset()
-        self.state = self.collect_substates()
+        self._state = self.collect_substates()
   
 
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_action: Action) -> None:
 
-        self.done = True
+        self._state.set_done(True)
 
         for agent_id in p_action.get_agent_ids():
             action_elem = p_action.get_elem(agent_id)
@@ -111,9 +113,10 @@ class MultiCartPole(Environment):
                 action_env      = Action()
                 action_env.add_elem(agent_id, action_elem_env)
                 env._simulate_reaction(action_env)
-                self.done       = self.done and env.done
+                done_flag       = self.get_done() and env.get_done()
+                self._state.set_done(done_flag)
 
-        self.state = self.collect_substates()
+        self._state = self.collect_substates()
 
 
 ## -------------------------------------------------------------------------------------------------

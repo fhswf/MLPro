@@ -13,10 +13,11 @@
 ## -- 2021-09-11  1.2.0     MRD      Change Header information to match our new library name
 ## -- 2021 09-26  1.2.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
+## -- 2021-10-06  1.2.2     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2021-09-26)
+Ver. 1.2.2 (2021-10-06)
 
 This module shows how to train an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -51,12 +52,8 @@ class MyPolicy(Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def adapt(self, *p_args) -> bool:
-        # 1 Call super-method because of logging and initial stuff. If it returns False
-        #   a policy adaption is not neccessary respectively not possible....
-        if not super().adapt(p_args): return False
-
-        # 2 Adapting the internal policy is up to you...
+    def _adapt(self, *p_args) -> bool:
+        # 1 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 
         # 3 Only return True if something has been adapted...
@@ -73,7 +70,7 @@ class MyScenario(Scenario):
     def _setup(self, p_mode, p_ada, p_logging):
 
         # 1 Setup Multi-Agent Environment (consisting of 3 OpenAI Gym Cartpole envs)
-        self._env   = MultiCartPole(p_num_envs=3, p_logging=True)
+        self._env   = MultiCartPole(p_num_envs=3, p_logging=p_logging)
 
 
         # 2 Setup Multi-Agent 
@@ -132,7 +129,7 @@ myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=True,
+    p_visualize=False,
     p_logging=True
 )
 
@@ -144,7 +141,7 @@ now             = datetime.now()
 
 training        = Training(
     p_scenario=myscenario,
-    p_episode_limit=50,
+    p_episode_limit=1,
     p_cycle_limit=100,
     p_collect_states=True,
     p_collect_actions=True,

@@ -186,9 +186,11 @@ class A2C(Policy):
     """
 
     C_NAME = 'A2C'
+
+    C_BUFFER_CLS = SARSBuffer
     
     def __init__(self, p_state_space: MSpace, p_action_space: MSpace, p_buffer_size: int, 
-                p_ada, p_buffer_cls=SARBuffer, p_use_gae=False, p_gae_lambda=0, p_gamma=0.99, 
+                p_ada, p_use_gae=False, p_gae_lambda=0, p_gamma=0.99, 
                 p_value_loss_coef=0.5, p_entropy_coef=0, p_learning_rate=3e-4, p_logging=True):
         """
         Parameters:
@@ -205,7 +207,7 @@ class A2C(Policy):
             p_logging (bool, optional): Toggle for logging. Defaults to True.
         """
         super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, 
-                        p_buffer_cls=p_buffer_cls, p_ada=p_ada, p_logging=p_logging)
+                        p_ada=p_ada, p_logging=p_logging)
         
         self.use_gae = p_use_gae
         self.gae_lambda = p_gae_lambda
@@ -238,9 +240,9 @@ class A2C(Policy):
         self.optimizer = optim.Adam(self.policy.parameters(), lr=self.learning_rate)
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
-        if not super().adapt(*p_args):
-            return False
+    def _adapt(self, *p_args) -> bool:
+        # Add to buffer
+        self.add_buffer(p_args[0])
 
         # Adapt only when Buffer is full
         if not self._buffer.is_full():
@@ -257,7 +259,7 @@ class A2C(Policy):
         actions = torch.Tensor([action.get_sorted_values() for action in sar_data["action"]])
         rewards = torch.Tensor([reward.get_overall_reward() for reward in sar_data["reward"]]).flatten()
         values = torch.Tensor([value for value in sar_data["value"]]).flatten()
-        dones = torch.Tensor([done for done in sar_data["done"]]).flatten()
+        dones = torch.Tensor([state.get_done() for state in sar_data["state"]]).flatten()
         advantages = torch.zeros(self._buffer._size) 
 
         # Get the next value from the last observation
@@ -306,9 +308,20 @@ class A2C(Policy):
 
         return True
 
+## -------------------------------------------------------------------------------------------------
+    def add_buffer(self, p_buffer_element: SARSElement):
+        """
+        Intended to save the data to the buffer. By default it save the SARS data.
+        
+        """
+        buffer_element = self._add_additional_buffer(p_buffer_element)
+        self._buffer.add_element(buffer_element)
+
+## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         self._buffer.clear()
 
+## -------------------------------------------------------------------------------------------------
     def compute_action(self, p_state: State) -> Action:
         obs = p_state.get_values()
         
@@ -324,7 +337,8 @@ class A2C(Policy):
         action = action.cpu().numpy().flatten()
         action = Action(self._id, self._action_space, action)
         return action
-    
-    def _add_additional_buffer(self, p_buffer_element: SARBufferElement):
+
+## -------------------------------------------------------------------------------------------------
+    def _add_additional_buffer(self, p_buffer_element: SARSElement):
         p_buffer_element.add_value_element(self.additional_buffer_element)
         return p_buffer_element

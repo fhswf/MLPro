@@ -11,10 +11,12 @@
 ## -- 2021-07-06  1.1.1     SY       Bugfix due to method Training.save_data() update
 ## -- 2021-08-28  1.1.2     DA       Adjustments after changings on rl models
 ## -- 2021-09-11  1.1.2     MRD      Change Header information to match our new library name
+## -- 2021-09-28  1.1.3     SY       Adjustment due to implementation of SAR Buffer on player
+## -- 2021-10-06  1.1.4     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2021-08-28)
+Ver. 1.1.4 (2021-10-06)
 
 This module shows how to train an own multi-player with the enhanced multi-action
 game board MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -51,15 +53,11 @@ class MyPolicy(Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def adapt(self, *p_args) -> bool:
-        # 1 Call super-method because of logging and initial stuff. If it returns False
-        #   a policy adaption is not neccessary respectively not possible....
-        if not super().adapt(p_args): return False
-
-        # 2 Adapting the internal policy is up to you...
+    def _adapt(self, *p_args) -> bool:
+        # 1 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 
-        # 3 Only return True if something has been adapted...
+        # 2 Only return True if something has been adapted...
         return False
 
 
@@ -91,11 +89,10 @@ class MyGame(Game):
                 p_policy=MyPolicy(
                     p_state_space=self._env.get_state_space().spawn([0,1,2,3]),
                     p_action_space=self._env.get_action_space().spawn([0]),
+                    p_buffer_size=1,
                     p_ada=True,
                     p_logging=True
                 ),
-                p_sarbuffer_size=1,
-                p_envmodel=None,
                 p_name='Neo',
                 p_id=0,
                 p_ada=True,
@@ -111,11 +108,10 @@ class MyGame(Game):
                 p_policy=MyPolicy(
                     p_state_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
                     p_action_space=self._env.get_action_space().spawn([1,2]),
+                    p_buffer_size=1,
                     p_ada=True,
                     p_logging=True
                 ),
-                p_sarbuffer_size=1,
-                p_envmodel=None,
                 p_name='Trinity',
                 p_id=1,
                 p_ada=True,
@@ -132,7 +128,7 @@ mygame  = MyGame(
     p_mode=GameBoard.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=True,
+    p_visualize=False,
     p_logging=True
 )
 
@@ -144,7 +140,7 @@ now             = datetime.now()
 
 training        = Training(
     p_game=mygame,
-    p_episode_limit=50,
+    p_episode_limit=2,
     p_cycle_limit=100,
     p_collect_states=True,
     p_collect_actions=True,

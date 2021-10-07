@@ -34,10 +34,16 @@
 ## -- 2021-09-25  1.3.4     MRD      Remove Previous state into the buffer. Add Next state to the buffer
 ## --                                Remove clearing buffer on every reset. The clearing buffer should
 ## --                                be controlled from the policy
+## -- 2021-10-05  1.4.0     DA       Enhancements around model-based agents:
+## --                                - Class State: new attributes done, broken and related methods 
+## --                                - New class ActionPlanner
+## --                                - Class Agent: method adapt() implemented
+## --                                Introduction of method Environment.get_cycle_limit()
+## -- 2021-10-05  1.4.1     SY       Bugfixes and minor improvements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2021-09-25)
+Ver. 1.4.1 (2021-10-05)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -46,9 +52,12 @@ This module provides model classes for reinforcement learning tasks.
 import numpy as np
 from typing import List
 from time import sleep
+from mlpro.bf.exceptions import ParamError
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
+from mlpro.bf.data import *
+from mlpro.bf.plot import *
 
 
 
@@ -64,6 +73,29 @@ class State(Element, TStamp):
     def __init__(self, p_state_space:MSpace):
         TStamp.__init__(self)
         Element.__init__(self, p_state_space)
+        self.set_done(False)
+        self.set_broken(False)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_done(self) -> bool:
+        return self._done
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_done(self, p_done:bool):
+        self._done = p_done
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_broken(self) -> bool:
+        return self._broken
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_broken(self, p_broken:bool):
+        self._broken = p_broken
+
 
 
 
@@ -290,9 +322,7 @@ class EnvBase(Log, Plottable):
         self._action_space     = ESpace()
         self._state            = None
         self._last_action      = None
-        self.goal_achievement  = 0.0
-        self.broken            = False
-        self.done              = False
+        self._goal_achievement = 0.0
         self.set_latency(p_latency)
 
 
@@ -342,7 +372,7 @@ class EnvBase(Log, Plottable):
         Returns current state of environment.
         """
 
-        return self.state
+        return self._state
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -351,7 +381,24 @@ class EnvBase(Log, Plottable):
         Explicitely sets the current state of the environment. Internal use only.
         """
 
-        self.state = p_state
+        self._state = p_state
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_done(self) -> bool:
+        if self._state is None: return False
+        return self._state.get_done()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_broken(self) -> bool:
+        if self._state is None: return False
+        return self._state.get_broken()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_goal_achievement(self):
+        return self._goal_achievement
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -405,6 +452,8 @@ class Environment(EnvBase):
     C_MODE_SIM      = 0
     C_MODE_REAL     = 1
 
+    C_CYCLE_LIMIT   = 0         # Recommended cycle limit for training episodes
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_mode=C_MODE_SIM, p_latency:timedelta=None, p_logging=True):
         """
@@ -423,6 +472,15 @@ class Environment(EnvBase):
 ## -------------------------------------------------------------------------------------------------
     def get_mode(self):
         return self._mode
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self):
+        """
+        Returns limit of cycles per training episode.
+        """
+
+        return self.C_CYCLE_LIMIT
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -548,33 +606,54 @@ class Environment(EnvBase):
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self) -> None:
         """
-        Updates the goal achievement value in [0,1] and the flags done and broken based on the 
+        Updates the internal goal achievement value in [0,1] and the flags done and broken inside the 
         current state. Please redefine.
         """
 
-        self.goal_achievement = 0.0
-        self.done             = False
-        self.broken           = False
-
         raise NotImplementedError
 
+        # Sample code
+        self._goal_achievement = 0.0
+        self._state.set_done(False)
+        self._state.set_broken(False)
+
+
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SARBufferElement(BufferElement):
+class SARSElement(BufferElement):
     """
-    Element of a State-Action-Reward-Buffer.
+    Element of a SARSBuffer.
     """
+
+    def __init__(self, p_state:State, p_action:Action, p_reward:Reward, p_state_new:State):
+        """
+        Parameters:
+            p_state         State of an environment
+            p_action        Action of an agent
+            p_reward        Reward of an environment
+            p_state_new     State of the environment as reaction to the action
+        """
+
+        super().__init__( { "state" : p_state, "action" : p_action, "reward" : p_reward, "state_new" : p_state_new } )
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SARSBuffer(Buffer):
+    """
+    State-Action-Reward-State-Buffer in dictionary.
+    """
+
     pass
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class SARBuffer(Buffer):
-    """
-    State-Action-Reward-Buffer in dictionary.
-    """
-    pass
 
 
 
@@ -585,12 +664,17 @@ class EnvModel(EnvBase, Adaptive):
     Template class for a Real world model to be used for model based agents.
     """
 
-    C_TYPE      = 'EnvModel'
+    C_TYPE          = 'EnvModel'
+
+    C_BUFFER_CLS    = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer_size=1, p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
+    def __init__(self, p_buffer_size=1, p_ada=True, p_logging=True):
         EnvBase.__init__(self, p_logging=p_logging)
-        Adaptive.__init__(self, p_ada=p_ada, p_logging=p_logging)
+        Adaptive.__init__(self, p_buffer=self.C_BUFFER_CLS(p_size=p_buffer_size), p_ada=p_ada, p_logging=p_logging)
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -619,21 +703,20 @@ class Policy(Adaptive, Plottable):
 
     C_TYPE          = 'Policy'
     C_NAME          = '????'
+    C_BUFFER_CLS    = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_buffer_size=1, 
-                p_buffer_cls=SARBuffer, p_ada=True, p_logging=True):
+    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=True):
         """
          Parameters:
             p_state_space       State space object
             p_action_space      Action space object
             p_buffer_size       Size of the buffer
-            p_buffer_cls        Buffer class to be used
             p_ada               Boolean switch for adaptivity
             p_logging           Boolean switch for logging functionality
         """
 
-        super().__init__(p_buffer=p_buffer_cls(p_buffer_size), p_ada=p_ada, p_logging=p_logging)
+        super().__init__(p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         self._state_space   = p_state_space
         self._action_space  = p_action_space
         self.set_id(0)
@@ -660,18 +743,15 @@ class Policy(Adaptive, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+    def _adapt(self, *p_args) -> bool:
         """
-        Adapts the policy based on State-Action-Reward (SAR) data that will be expected as a SAR
-        buffer object. Please call super-method at the beginning of your own implementation and
-        adapt only if it returns True.
+        Adapts the policy based on State-Action-Reward-State (SARS) data.
 
         Parameters:
-            p_arg[0]            SAR Buffer object
+            p_arg[0]           Object of type SARSElement
         """
 
-        if not super().adapt(*p_args): return False
-        return True
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -688,24 +768,6 @@ class Policy(Adaptive, Plottable):
 
         raise NotImplementedError
 
-## -------------------------------------------------------------------------------------------------
-    def add_buffer(self, p_buffer_element: SARBufferElement):
-        """
-        Intended to save the data to the buffer. By default it save the SARS data.
-        
-        """
-        buffer_element = self._add_additional_buffer(p_buffer_element)
-        self._buffer.add_element(buffer_element)
-
-## -------------------------------------------------------------------------------------------------
-    def _add_additional_buffer(self, p_buffer_element:SARBufferElement):
-        """
-        Intended to add additional buffer element to the buffer other than SARS data. Redefine this method
-        to add additional buffer element
-        """
-        
-        return p_buffer_element
-
 
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
@@ -714,7 +776,47 @@ class Policy(Adaptive, Plottable):
         to prepare the next episode.
         """
 
-        pass
+        if self._buffer is not None:
+            self._buffer.clear()
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class ActionPlanner (Log):
+    """
+    Template class for action planning algorithms to be used as part of planning agents.
+    """
+
+    C_TYPE          = 'Action Planner'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_logging=True):
+        super().__init__(p_logging=p_logging)
+        self._action_path = []
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_action(self, p_state:State, p_policy:Policy, p_envmodel:EnvModel, p_depth) -> Action:
+        """
+        Computes a path of actions with defined length that maximizes the reward of the given 
+        environment model.
+        
+        Parameters:
+            p_state             Current state of environment
+            p_policy            Poliy of an agent
+            p_envmodel          Environment model
+            p_depth             Planning depth (=length of action path to be predicted)
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_action_path(self):
+        self._action_path.clear()
 
 
 
@@ -728,14 +830,17 @@ class Agent(Policy):
     """
 
     C_TYPE          = 'Agent'
-    C_NAME          = 'Standard'
+    C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_name='', p_id=0, p_ada=True, 
+    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_action_planner:ActionPlanner=None, p_planning_depth=0, p_name='', p_id=0, p_ada=True, 
                 p_logging=True):
         """
         Parameters:
             p_policy            Policy object
+            p_envmodel          Optional environment model object
+            p_action_planner    Optional action planner object (obligatory for model based agents)
+            p_planning_depth    Optional planning depth (obligatory for model based agents)
             p_name              Optional name of agent
             p_id                Unique agent id (especially important for multi-agent scenarios)
             p_ada               Boolean switch for adaptivity
@@ -747,17 +852,26 @@ class Agent(Policy):
         else:
             self.set_name(self.C_NAME)
 
+        if ( ( p_envmodel is not None ) and ( p_action_planner is None ) ) or ( ( p_envmodel is None ) and ( p_action_planner is not None ) ):
+           raise ParamError('Model-based agents need an env model and an action planner')
+           
         self._state             = None
+        self._reward            = None
         self._previous_state    = None
         self._previous_action   = None
         self._policy            = p_policy
         self._action_space      = self._policy.get_action_space()
         self._state_space       = self._policy.get_state_space()
         self._envmodel          = p_envmodel
+        self._action_planner    = p_action_planner
+        self._planning_depth    = p_planning_depth
 
         self._set_id(p_id)
+
+        Log.__init__(self, p_logging)
         self.switch_logging(p_logging)
         self.switch_adaptivity(p_ada)
+
         self.clear_buffer()
 
 
@@ -788,53 +902,75 @@ class Agent(Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+    def switch_logging(self, p_logging: bool):
+        super().switch_logging(p_logging)
+        self._policy.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_log_level(self, p_level):
+        super().set_log_level(p_level)
+        self._policy.set_log_level(p_level)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
         """
-        Default adaption implementation of a single agent.
+        Default adaptation implementation of a single agent.
 
         Parameters:
-            p_args[0]       Reward object (see class Reward)
-            p_args[1]       Done Flag
-
+            p_args[0]       State object (see class State)
+            p_args[1]       Reward object (see class Reward)
+ 
         Returns:
             True, if something has beed adapted
         """
 
-        # 1 Check: Adaption possible?
-        if self._adaptivity == False:
-            self.log(self.C_LOG_TYPE_I, 'Adaption disabled')
-            return False
+        # 0 Intro
+        state  = p_args[0]
+        reward = p_args[1]
 
+
+        # 1 Check: Adaptation possible?
         if self._previous_state is None:
             self.log(self.C_LOG_TYPE_I, 'Adaption: previous state None -> adaptivity skipped')
             return False
 
-        reward = p_args[0]
-        done = p_args[1]
-        next_state = p_args[2]
-        next_done = p_args[3]
-        self.log(self.C_LOG_TYPE_I, 'Adaption: previous state =', self._previous_state.get_values(), 
-                '; reward = ', p_args[0].get_agent_reward(self._id))
 
-        # 2 Add data to SAR buffer
-        self._policy.add_buffer(SARBufferElement(dict(state=self._state, action=self._previous_action, 
-                                                    reward=reward, next_state=next_state, done=done,
-                                                    next_done=next_done)))
+        # 2 Adaptation
+        if self._envmodel is None:
+            # 2.1 Model-free adaptation
+            return self._policy.adapt(SARSElement(self._previous_state, self._previous_action, reward, state))
 
-        # 3 Adapt policy
-        return self._policy.adapt()
+        else:
+            # 2.2 Model-based adaptation
+            raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state: State) -> Action:
+    def compute_action(self, p_state:State) -> Action:
         """
         Default implementation of a single agent.
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Action computation: state received = ', p_state.get_values())
-        self._previous_state  = self._state
-        self._state           = p_state
-        self._previous_action = self._policy.compute_action(p_state)
+        # 0 Intro
+        self.log(self.C_LOG_TYPE_I, 'Action computation started')
+        self._previous_state    = self._state
+        self._state             = p_state
+
+
+        # 1 Action computation
+        if self._action_planner is None:
+            # 1.1 W/o action planner
+            self._previous_action = self._policy.compute_action(p_state)
+
+        else:
+            # 1.2 With action planner
+            self._previous_action = self._action_planner.compute_action(p_state, self._policy, self._envmodel, self._planning_depth)
+
+
+        # 2 Outro
+        self.log(self.C_LOG_TYPE_I, 'Action computation finished')
         return self._previous_action
 
 
@@ -868,16 +1004,26 @@ class MultiAgent(Agent):
 
         self._agents = []
         self.set_name(p_name)
-        self.switch_logging(p_logging=p_logging)
-        self.switch_adaptivity(p_ada=p_ada)
+
+        Log.__init__(self, p_logging)
+        self.switch_logging(p_logging)
+        self.switch_adaptivity(p_ada)
         
 
 ## -------------------------------------------------------------------------------------------------
-    def switch_logging(self, p_logging=True) -> None: 
-        super().switch_logging(p_logging=p_logging)
+    def switch_logging(self, p_logging:bool) -> None: 
+        Log.switch_logging(self, p_logging=p_logging)
 
         for agent_entry in self._agents:
             agent_entry[0].switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_log_level(self, p_level):
+        Log.set_log_level(self, p_level)
+
+        for agent_entry in self._agents:
+            agent_entry[0].set_log_level(p_level)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -942,14 +1088,9 @@ class MultiAgent(Agent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
-        if not self._adaptivity:
-            self.log(self.C_LOG_TYPE_I, 'Adaption disabled')
-            return False
-
-        reward = p_args[0]
-        done = p_args[1]
-        next_state = p_args[2]
+    def _adapt(self, *p_args) -> bool:
+        next_states     = p_args[0]
+        reward          = p_args[1]
 
         self.log(self.C_LOG_TYPE_I, 'Start of adaption for all agents...')      
 
@@ -958,7 +1099,7 @@ class MultiAgent(Agent):
             agent = agent_entry[0]
             if ( reward.get_type() != Reward.C_TYPE_OVERALL ) and not reward.is_rewarded(agent.get_id()): continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-            adapted = adapted or agent.adapt(reward, done, next_state)
+            adapted = adapted or agent.adapt(next_states,reward)
 
         self.log(self.C_LOG_TYPE_I, 'End of adaption for all agents...')        
 
@@ -1231,9 +1372,7 @@ class Scenario(Log, LoadSave):
 
         # 3 Environment: process agent's action
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Env processes action...')
-        done = self._env.done
         self._env.process_action(action)
-        next_done = self._env.done
         self._timer.add_time(self._env.get_latency())     # in virtual mode only...
         self._env.get_state().set_tstamp(self._timer.get_time())
 
@@ -1254,7 +1393,7 @@ class Scenario(Log, LoadSave):
 
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
-        self._agent.adapt(reward, done, self._env.get_state(), next_done)
+        self._agent.adapt(self._env.get_state(), reward)
 
 
         # 6 Optional visualization
@@ -1305,7 +1444,7 @@ class Scenario(Log, LoadSave):
             self.run_cycle(cycle_id, p_ds_states=p_ds_states, p_ds_actions=p_ds_actions, p_ds_rewards=p_ds_rewards)
 
             # 2.2 Check and handle environment's health
-            if self._env.broken: 
+            if self._env.get_broken(): 
                 self.log(self.C_LOG_TYPE_E, 'Environment broken!')
                 if p_exit_when_broken: 
                     break
@@ -1314,8 +1453,8 @@ class Scenario(Log, LoadSave):
                     self._env.reset()
 
             # 2.3 Check and handle environment's done state
-            if self._env.done != done:
-                done = self._env.done
+            if self._env.get_done() != done:
+                done = self._env.get_done()
                 if done == True:
                     self.log(self.C_LOG_TYPE_I, 'Environment goal achieved')
                 else:
@@ -1333,7 +1472,7 @@ class Scenario(Log, LoadSave):
 
         # 3 Finish run
         self.log(self.C_LOG_TYPE_I, 'Stop')
-        return self._env.done, self._env.broken, cycle_id
+        return self._env.get_done(), self._env.get_broken(), cycle_id
 
 
 
@@ -1367,7 +1506,8 @@ class Training(Log):
         Parmeters:
             p_scenario              RL scenario object
             p_episode_limit         Maximum number of episodes
-            p_cycle_limit           Naximum number of cycles within an episode (0 means: no limit)
+            p_cycle_limit           Naximum number of cycles within an episode (a value > 0 overrides
+                                    the cycle limit provided by the enviroment)
             p_collect_states        If True, the environment states will be collected
             p_collect_actions       If True, the agent actions will be collected
             p_collect_rewards       If True, the environment reward will be collected
@@ -1384,7 +1524,16 @@ class Training(Log):
         self._episode_id    = 0
         self._episode_limit = p_episode_limit
         self._cycle_id      = 0
-        self._cycle_limit   = p_cycle_limit
+
+        if p_cycle_limit > 0:
+            self._cycle_limit = p_cycle_limit
+        else:
+            self._cycle_limit = self._env.get_cycle_limit()
+
+        if self._cycle_limit <= 0:
+            raise ParamError('Invalid cycle limit')
+        else:
+            self.log(self.C_LOG_TYPE_I, 'Limit of cycles per episide:', str(self._cycle_limit))
 
         if p_collect_states:
             self._ds_states   = RLDataStoring(self._env.get_state_space())
@@ -1450,7 +1599,7 @@ class Training(Log):
 
 
         # 3 Update training counters
-        if self._env.done or self._env.broken or ( self._cycle_id == (self._cycle_limit-1) ):
+        if self._env.get_done() or self._env.get_broken() or ( self._cycle_id == (self._cycle_limit-1) ):
             # 3.1 Episode finished
             self.log(self.C_LOG_TYPE_I, '--------------------------------------')
             self.log(self.C_LOG_TYPE_I, '-- Episode', self._episode_id, 'finished after', self._cycle_id + 1, 'cycles')
@@ -1458,12 +1607,12 @@ class Training(Log):
 
             # 3.1.1 Update global training data storage
             if self._ds_training is not None:
-                if self._env.done==True:
+                if self._env.get_done()==True:
                     done_num = 1
                 else:
                     done_num = 0
 
-                if self._env.broken==True:
+                if self._env.get_broken()==True:
                     broken_num = 1
                 else:
                     broken_num = 0

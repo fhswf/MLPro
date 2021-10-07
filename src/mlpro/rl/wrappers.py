@@ -13,18 +13,26 @@
 ## --                                WrEnvPZoo is ready to use
 ## -- 2021-09-24  1.1.1     MRD      Change the gym wrapper _recognize_space() function to seperate
 ## --                                between discrete space and continuous space
-## -- 2021-09-30  1.1.2     MRD      Implement WrPolicySB3 class to wrap Policy from Stable Baseline 3
-## --                                for On-Policy Only
+## -- 2021-09-28  1.1.2     SY       WrEnvGym, WrEnvPZoo: implementation of method get_cycle_limits()
+## -- 2021-09-29  1.1.3     SY       Change name: WrEnvGym to WrEnvGYM2MLPro, WrEnvPZoo to WrEnvPZOO2MLPro
+## -- 2021-09-30  1.2.0     SY       New classes: WrEnvMLPro2GYM
+## -- 2021-10-02  1.3.0     SY       New classes: WrEnvMLPro2PZoo, update _recognize_space() in WrEnvGYM2MLPro
+## -- 2021-10-05  1.3.1     SY       Update following new attributes done and broken in State
+## -- 2021-10-06  1.3.2     DA       Minor fixes
+## -- 2021-10-07  1.3.3     MRD      Redefine WrEnvMLPro2GYM reset(), step(), _recognize_space() function
+## --                                Redefine also _recognize_space() from WrEnvGYM2MLPro
+## -- 2021-10-07  1.3.4     SY       Update WrEnvMLPro2PZoo() following above changes (ver. 1.3.3)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2021-09-30)
+Ver. 1.3.4 (2021-10-07)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
 
 import gym
+from gym import error, spaces, utils
 import numpy as np
 import torch
 from stable_baselines3.common.logger import Logger
@@ -33,6 +41,9 @@ from time import sleep
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.rl.models import *
+from pettingzoo import AECEnv
+from pettingzoo.utils import agent_selector
+from pettingzoo.utils import wrappers
 
 
 
@@ -40,7 +51,7 @@ from mlpro.rl.models import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvGym(Environment):
+class WrEnvGYM2MLPro(Environment):
     """
     This class is a ready to use wrapper class for OpenAI Gym environments. 
     Objects of this type can be treated as an environment object. Encapsulated 
@@ -88,12 +99,14 @@ class WrEnvGym(Environment):
     def _recognize_space(self, p_gym_space, dict_name) -> ESpace:
         space = ESpace()
         
-        if len(p_gym_space.shape) == 0:
-            space.add_dim(Dimension(p_id=0,p_name_short='0', p_boundaries=[p_gym_space.n]))
-        else:
-            for d in range(p_gym_space.shape[0]):
-                space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
-        
+        if isinstance(p_gym_space, gym.spaces.Discrete):
+            space.add_dim(Dimension(p_id=0,p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
+        elif isinstance(p_gym_space, gym.spaces.Box):
+            shape_dim = len(p_gym_space.shape)
+            for i in range(shape_dim):
+                for d in range(p_gym_space.shape[i]):
+                    space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R, p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
+
         return space
 
 
@@ -133,9 +146,10 @@ class WrEnvGym(Environment):
 
         # 2 Process step of Gym environment
         try:
-            observation, reward_gym, self.done, info = self._gym_env.step(action_gym)
+            observation, reward_gym, done, info = self._gym_env.step(action_gym)
         except:
-            observation, reward_gym, self.done, info = self._gym_env.step(np.atleast_1d(action_gym))
+            observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
+        self._state.set_done(done)
         obs     = DataObject(observation)
 
         # 3 Create state object from Gym observation
@@ -150,7 +164,7 @@ class WrEnvGym(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self):
-        if self.done:
+        if self.get_done():
             self.goal_achievement = 1.0
         else:
             self.goal_achievement = 0.0
@@ -171,12 +185,17 @@ class WrEnvGym(Environment):
         self._gym_env.render()
 
 
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self):
+        return self._gym_env._max_episode_steps
+
+
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvPZoo(Environment):
+class WrEnvPZOO2MLPro(Environment):
     """
     This class is a ready to use wrapper class for Petting Zoo environments. 
     Objects of this type can be treated as an environment object. Encapsulated 
@@ -234,6 +253,7 @@ class WrEnvPZoo(Environment):
                 
         return space
 
+
 ## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self):
         pass
@@ -275,10 +295,11 @@ class WrEnvPZoo(Environment):
             action_zoo = action_sorted_agent.astype(self._zoo_env.action_spaces[k].dtype)
             
         # 2 Process step of Zoo environment that automatically switches control to the next agent.
-            observation, reward_zoo, self.done, info = self._zoo_env.last()
+            observation, reward_zoo, done, info = self._zoo_env.last()
+            self._state.set_done(done)
             obs     = DataObject(observation)
             
-            if self.done:
+            if self.get_done():
                 self._zoo_env.step(None)
             else:
                 try:
@@ -302,7 +323,7 @@ class WrEnvPZoo(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self):
-        if self.done:
+        if self.get_done():
             self.goal_achievement = 1.0
         else:
             self.goal_achievement = 0.0
@@ -324,6 +345,297 @@ class WrEnvPZoo(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self):
+        try:
+            return self._zoo_env.env.env.max_cycles
+        except:
+            return self.C_CYCLE_LIMIT
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrEnvMLPro2GYM(gym.Env):
+    """
+    This class is a ready to use wrapper class for MLPro to OpenAI Gym environments. 
+    Objects of this type can be treated as an gym.Env object. Encapsulated 
+    MLPro environment must be compatible to class Environment.
+    """
+
+    C_TYPE        = 'MLPro to Gym Env'
+    metadata      = {'render.modes': ['human']}
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_mlpro_env, p_state_space:MSpace=None, p_action_space:MSpace=None):
+        """
+        Parameters:
+            p_mlpro_env     MLPro's Environment object
+            p_state_space   Optional external state space object that meets the
+                            state space of the MLPro environment
+            p_action_space  Optional external action space object that meets the
+                            state space of the MLPro environment
+        """
+
+        self._mlpro_env             = p_mlpro_env
+        
+        if p_state_space is not None: 
+            self.observation_space  = p_state_space
+        else:
+            self.observation_space  = self._recognize_space(self._mlpro_env.get_state_space())
+        
+        if p_action_space is not None: 
+            self.action_space       = p_action_space
+        else:
+            self.action_space       = self._recognize_space(self._mlpro_env.get_action_space())
+        
+        self.first_refresh          = True
+        self.reset()
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _recognize_space(self, p_mlpro_space):
+        space = None
+        action_dim = p_mlpro_space.get_num_dim()
+        if len(p_mlpro_space.get_dim(0).get_boundaries()) == 1:
+            space = gym.spaces.Discrete(p_mlpro_space.get_dim(0).get_boundaries()[0])
+        else:
+            lows = []
+            highs = []
+            for dimension in range(action_dim):
+                lows.append(p_mlpro_space.get_dim(dimension).get_boundaries()[0])
+                highs.append(p_mlpro_space.get_dim(dimension).get_boundaries()[1])
+
+            space = gym.spaces.Box(
+                            low=np.array(lows, dtype=np.float32), 
+                            high=np.array(highs, dtype=np.float32), 
+                            shape=(action_dim,), 
+                            dtype=np.float32
+                            )
+            
+        return space
+
+
+## -------------------------------------------------------------------------------------------------
+    def step(self, action):
+        _action     = Action()
+        _act_set    = Set()
+        idx         = self._mlpro_env._action_space.get_num_dim()
+
+        if isinstance(self.observation_space, gym.spaces.Discrete):
+            action = np.array([action])
+        
+        for i in range(idx):
+            _act_set.add_dim(Dimension(i,'action_'+str(i)))
+        _act_elem   = Element(_act_set)
+        for i in range(idx):
+            _act_elem.set_value(i, action[i].item())
+        _action.add_elem('0', _act_elem)
+        
+        self._mlpro_env.process_action(_action)
+        reward          = self._mlpro_env.compute_reward()
+        self._mlpro_env._evaluate_state
+        
+        obs = None
+        if isinstance(self.observation_space, gym.spaces.Box):
+            obs = np.array(self._mlpro_env.get_state().get_values(), dtype=np.float32)
+        else:
+            obs = np.array(self._mlpro_env.get_state().get_values())
+        return obs, reward.get_overall_reward(), self._mlpro_env.get_done(), {}
+    
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self):
+        self._mlpro_env.reset()
+        obs = None
+        if isinstance(self.observation_space, gym.spaces.Box):
+            obs = np.array(self._mlpro_env.get_state().get_values(), dtype=np.float32)
+        else:
+            obs = np.array(self._mlpro_env.get_state().get_values())
+        return obs
+    
+
+## -------------------------------------------------------------------------------------------------
+    def render(self, mode='human'):
+        try:
+            if self.first_refresh:
+                self._mlpro_env.init_plot()
+                self.first_refresh = False
+            else:
+                self._mlpro_env.update_plot()
+            return True
+        except:
+            return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def close(self):
+        self._mlpro_env.__del__()
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrEnvMLPro2PZoo():
+    """
+    This class is a ready to use wrapper class for MLPro to PettingZoo environments. 
+    Objects of this type can be treated as an AECEnv object. Encapsulated 
+    MLPro environment must be compatible to class Environment.
+    To be noted, this wrapper is not capable for parallel environment yet.
+    """
+
+    C_TYPE        = 'MLPro to PZoo Env'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
+        """
+        Parameters:
+            p_mlpro_env     MLPro's Environment object
+            p_num_agents    Number of Agents
+            p_state_space   Optional external state space object that meets the
+                            state space of the MLPro environment
+            p_action_space  Optional external action space object that meets the
+                            state space of the MLPro environment
+        """
+        
+        self.pzoo_env   = self.raw_env(p_mlpro_env, p_num_agents, p_state_space, p_action_space)
+        self.pzoo_env   = wrappers.CaptureStdoutWrapper(self.pzoo_env)
+        self.pzoo_env   = wrappers.OrderEnforcingWrapper(self.pzoo_env)
+
+
+## -------------------------------------------------------------------------------------------------
+    class raw_env(AECEnv):
+        metadata = {'render.modes': ['human'], "name": "pzoo_custom"}
+
+## -------------------------------------------------------------------------------------------------
+        def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
+            self._mlpro_env             = p_mlpro_env
+            self.possible_agents        = ["agent_" + str(r) for r in range(p_num_agents)]
+            self.agent_name_mapping = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
+            
+            if p_state_space is not None: 
+                self.observation_spaces = p_state_space
+            else:
+                self.observation_spaces = self._recognize_space(self._mlpro_env.get_state_space())
+            
+            if p_action_space is not None: 
+                self.action_spaces      = p_action_space
+            else:
+                self.action_spaces      = self._recognize_space(self._mlpro_env.get_action_space())
+            
+            self.first_refresh          = True
+            self.reset()
+        
+
+## -------------------------------------------------------------------------------------------------
+        def _recognize_space(self, p_mlpro_space):
+            space = None
+            action_dim = p_mlpro_space.get_num_dim()
+            if len(p_mlpro_space.get_dim(0).get_boundaries()) == 1:
+                space = gym.spaces.Discrete(p_mlpro_space.get_dim(0).get_boundaries()[0])
+            else:
+                lows = []
+                highs = []
+                for dimension in range(action_dim):
+                    lows.append(p_mlpro_space.get_dim(dimension).get_boundaries()[0])
+                    highs.append(p_mlpro_space.get_dim(dimension).get_boundaries()[1])
+    
+                space = gym.spaces.Box(
+                                low=np.array(lows, dtype=np.float32), 
+                                high=np.array(highs, dtype=np.float32), 
+                                shape=(action_dim,), 
+                                dtype=np.float32
+                                )
+                
+            setup_space     = {agent: space for agent in self.possible_agents}
+                
+            return setup_space
+
+
+## -------------------------------------------------------------------------------------------------
+        def step(self, action):
+            if self.dones[self.agent_selection]:
+                return self._was_done_step(action)
+            
+            agent = self.agent_selection
+            self._cumulative_rewards[agent] = 0
+            
+            if agent == "agent_0":
+                self.action_set = []
+            self.action_set.append(action[self.agent_selection.index(agent)])
+            
+            if agent == self.possible_agents[-1]:
+                _action     = Action()
+                _act_set    = Set()
+                idx         = self._mlpro_env.get_action_space().get_num_dim()
+                if isinstance(self.observation_space, gym.spaces.Discrete):
+                    action = np.array([action])
+                for i in range(idx):
+                    _act_set.add_dim(Dimension(i,'action_'+str(i)))
+                _act_elem   = Element(_act_set)
+                for i in range(idx):
+                    _act_elem.set_value(i, self.action_set[i])
+                _action.add_elem('0', _act_elem)
+                
+                self._mlpro_env.process_action(_action)
+                self._mlpro_env._evaluate_state()
+                
+            self.rewards[agent] = self._mlpro_env.compute_reward().get_agent_reward(agent)
+            
+            if self._mlpro_env.get_done():
+                self.dones = {agent: True for agent in self.agents}
+            
+            self.agent_selection = self._agent_selector.next()
+            
+            self._accumulate_rewards()
+
+
+## -------------------------------------------------------------------------------------------------
+        def observe(self, agent_id):
+            # highly recommended to reimplement this function, since the states for
+            # each agent in different environments can not be standardized
+            dim     = len(self._mlpro_env.get_state().get_dim_ids())
+            state   = []
+            for i in range(dim):
+                state.append(self._mlpro_env.get_state().get_values()[i].item())
+            return np.array(state, dtype=np.float32)
+
+
+## -------------------------------------------------------------------------------------------------
+        def reset(self):
+            self.agents = self.possible_agents[:]
+            self.rewards = {agent: 0 for agent in self.agents}
+            self._cumulative_rewards = {agent: 0 for agent in self.agents}
+            self.dones = {agent: False for agent in self.agents}
+            self.infos = {agent: {} for agent in self.agents}
+            self.state = {agent: None for agent in self.agents}
+            self.observations = {agent: None for agent in self.agents}
+            
+            self._mlpro_env.reset()
+            
+            self._agent_selector = agent_selector(self.agents)
+            self.agent_selection = self._agent_selector.next()
+
+## -------------------------------------------------------------------------------------------------
+        def render(self, mode='human'):
+            try:
+                if self.first_refresh:
+                    self._mlpro_env.init_plot()
+                    self.first_refresh = False
+                else:
+                    self._mlpro_env.update_plot()
+                return True
+            except:
+                return False
+
+
+## -------------------------------------------------------------------------------------------------
+        def close(self):
+            self._mlpro_env.__del__()
+            
 ## -------------------------------------------------------------------------------------------------
 class WrPolicySB3(Policy):
     """
@@ -353,10 +665,11 @@ class WrPolicySB3(Policy):
             p_ada (bool, optional): Adaptability. Defaults to True.
             p_logging (bool, optional): Logging. Defaults to True.
         """
-        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, p_buffer_cls=SARBuffer, p_ada=p_ada, p_logging=p_logging)
+        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, p_buffer_cls=SARSBuffer, p_ada=p_ada, p_logging=p_logging)
         
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None
+            
 
         # Variable preparation for SB3
         action_space = None
@@ -452,7 +765,7 @@ class WrPolicySB3(Policy):
 
         return True
     
-    def add_buffer(self, p_buffer_element: SARBufferElement):
+    def add_buffer(self, p_buffer_element: SARSElement):
         """
         Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
         internal buffer from SB3.
@@ -469,6 +782,6 @@ class WrPolicySB3(Policy):
 
         self._buffer = self.sb3.rollout_buffer
 
-    def _add_additional_buffer(self, p_buffer_element: SARBufferElement):
+    def _add_additional_buffer(self, p_buffer_element: SARSElement):
         p_buffer_element.add_value_element(self.additional_buffer_element)
         return p_buffer_element
