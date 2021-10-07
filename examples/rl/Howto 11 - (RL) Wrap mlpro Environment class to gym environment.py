@@ -19,11 +19,17 @@ This module shows how to wrap mlpro's Environment class to gym compatible.
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvMLPro2GYM
+from mlpro.rl.wrappers import WrEnvMLPro2GYM, WrEnvGYM2MLPro
 from mlpro.rl.pool.envs.gridworld import GridWorld
+from mlpro.rl.pool.envs import RobotHTM
 import random
 from stable_baselines3.common.env_checker import check_env
 
-mlpro_env   = GridWorld(p_logging=True)
+import gym
+
+mlpro_env   = RobotHTM(p_logging=True)
+# mlpro_env   = GridWorld(p_logging=True)
+# gym_env     = gym.make('CartPole-v1')
+# mlpro_env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
 env         = WrEnvMLPro2GYM(mlpro_env, p_state_space=None, p_action_space=None)
 check_env(env)
