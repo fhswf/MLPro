@@ -19,6 +19,8 @@
 ## -- 2021-10-02  1.3.0     SY       New classes: WrEnvMLPro2PZoo, update _recognize_space() in WrEnvGYM2MLPro
 ## -- 2021-10-05  1.3.1     SY       Update following new attributes done and broken in State
 ## -- 2021-10-06  1.3.2     DA       Minor fixes
+## -- 2021-10-07  1.3.3     MRD      Redefine WrEnvMLPro2GYM reset(), step(), _recognize_space() function
+## --                                Redefine also _recognize_space() from WrEnvGYM2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """

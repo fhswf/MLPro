@@ -27,9 +27,6 @@ from stable_baselines3.common.env_checker import check_env
 
 import gym
 
-mlpro_env   = RobotHTM(p_logging=True)
-# mlpro_env   = GridWorld(p_logging=True)
-# gym_env     = gym.make('CartPole-v1')
-# mlpro_env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
+mlpro_env   = GridWorld(p_logging=True)
 env         = WrEnvMLPro2GYM(mlpro_env, p_state_space=None, p_action_space=None)
 check_env(env)
