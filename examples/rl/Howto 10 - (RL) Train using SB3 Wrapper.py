@@ -18,9 +18,8 @@ This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 import gym
 from stable_baselines3 import A2C, PPO
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGym
-from mlpro.rl.wrappers import WrPolicySB3
-from mlpro.rl.pool.envs import RobotHTM
+from mlpro.rl.wrappers import WrEnvGYM2MLPro
+from mlpro.rl.wrappers import WrPolicySB32MLPro
 from collections import deque
 
 # 1 Implement your own RL scenario
@@ -32,7 +31,7 @@ class MyScenario(Scenario):
         # 1 Setup environment
         # self._env   = RobotHTM(p_logging=False)
         gym_env     = gym.make('CartPole-v1')
-        self._env   = WrEnvGym(gym_env, p_logging=False) 
+        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
 
         # 2 Instatiate Policy From SB3
         # env is set to None, it will be set up later inside the wrapper
@@ -55,7 +54,7 @@ class MyScenario(Scenario):
         #             _init_setup_model=False)
 
         # 3 Wrap the policy
-        policy_wrapped = WrPolicySB3(
+        policy_wrapped = WrPolicySB32MLPro(
                 p_sb3_policy=policy_sb3, 
                 p_state_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),

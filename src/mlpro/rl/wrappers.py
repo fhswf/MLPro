@@ -22,10 +22,11 @@
 ## -- 2021-10-07  1.3.3     MRD      Redefine WrEnvMLPro2GYM reset(), step(), _recognize_space() function
 ## --                                Redefine also _recognize_space() from WrEnvGYM2MLPro
 ## -- 2021-10-07  1.3.4     SY       Update WrEnvMLPro2PZoo() following above changes (ver. 1.3.3)
+## -- 2021-10-07  1.4.0     MRD      Implement WrPolicySB32MLPro to wrap the policy from Stable-baselines3
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2021-10-07)
+Ver. 1.4.0 (2021-10-07)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
@@ -637,23 +638,12 @@ class WrEnvMLPro2PZoo():
             self._mlpro_env.__del__()
             
 ## -------------------------------------------------------------------------------------------------
-class WrPolicySB3(Policy):
+class WrPolicySB32MLPro(Policy):
     """
     This class provides a policy wrapper from Standard Baselines 3 (SB3).
     Especially On-Policy Algorithm
     """
     C_TYPE        = 'SB3 Policy'
-
-    class EmptyLogger(Logger):
-        """
-        Dummy class for SB3 Empty Logger. This is due to that SB3 has its own logger class.
-        Since we wont be using SB3 logger, we need Empty Logger to run the SB3 train, 
-        otherwise it wont work.
-        """
-        def __init__():
-            super().__init__()
-        def record(self, key=None, value=None, exclude=None):
-            pass
 
     def __init__(self, p_sb3_policy, p_state_space, p_action_space, p_buffer_size, p_ada=True, p_logging=True):
         """
@@ -665,7 +655,19 @@ class WrPolicySB3(Policy):
             p_ada (bool, optional): Adaptability. Defaults to True.
             p_logging (bool, optional): Logging. Defaults to True.
         """
-        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, p_buffer_cls=SARSBuffer, p_ada=p_ada, p_logging=p_logging)
+
+        class EmptyLogger(Logger):
+            """
+            Dummy class for SB3 Empty Logger. This is due to that SB3 has its own logger class.
+            Since we wont be using SB3 logger, we need Empty Logger to run the SB3 train, 
+            otherwise it wont work.
+            """
+            def __init__():
+                super().__init__()
+            def record(self, key=None, value=None, exclude=None):
+                pass
+
+        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None
@@ -718,7 +720,7 @@ class WrPolicySB3(Policy):
         self.sb3.n_envs = 1
 
         self.sb3._setup_model()
-        self.sb3.set_logger(self.EmptyLogger)
+        self.sb3.set_logger(EmptyLogger)
 
         self._buffer = self.sb3.rollout_buffer
 
@@ -738,17 +740,17 @@ class WrPolicySB3(Policy):
         action = Action(self._id, self._action_space, action)
         return action
 
-    def adapt(self, *p_args) -> bool:
-        if not super().adapt(*p_args):
-            return False
+    def _adapt(self, *p_args) -> bool:
+        # Add to buffer
+        self.add_buffer(p_args[0])
 
         # Adapt only when Buffer is full
         if not self.sb3.rollout_buffer.full:
             self.log(self.C_LOG_TYPE_I, 'Buffer is not full yet, keep collecting data!')
             return False
 
-        last_obs = torch.Tensor([self.last_buffer_element.get_data()["next_state"].get_values()])
-        last_done = self.last_buffer_element.get_data()["next_done"]
+        last_obs = torch.Tensor([self.last_buffer_element.get_data()["state_new"].get_values()])
+        last_done = self.last_buffer_element.get_data()["state_new"].get_done()
 
         # Get the next value from the last observation
         with torch.no_grad():
@@ -765,6 +767,9 @@ class WrPolicySB3(Policy):
 
         return True
     
+    def clear_buffer(self):
+        self.sb3.rollout_buffer.reset()
+    
     def add_buffer(self, p_buffer_element: SARSElement):
         """
         Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
@@ -776,7 +781,7 @@ class WrPolicySB3(Policy):
                             datas["state"].get_values(),
                             datas["action"].get_sorted_values(),
                             datas["reward"].get_overall_reward(),
-                            datas["done"],
+                            datas["state"].get_done(),
                             datas["value"],
                             datas["action_log"])
 
