@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-29  0.0.0     MRD      Creation
 ## -- 2021-10-07  1.0.0     MRD      Released first version
+## -- 2021-10-08  1.0.1     DA       Take over the cycle limit from the environment
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-10-07)
+Ver. 1.0.1 (2021-10-08)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
@@ -75,7 +76,7 @@ class MyScenario(Scenario):
 myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
-    p_cycle_limit=500,
+    p_cycle_limit=-1,           # get cycle limit from environment
     p_visualize=False,
     p_logging=False
 )
@@ -84,8 +85,7 @@ myscenario  = MyScenario(
 training        = Training(
     p_scenario=myscenario,
     p_episode_limit=2,
-    p_cycle_limit=500,
-    p_collect_states=True,
+   p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
