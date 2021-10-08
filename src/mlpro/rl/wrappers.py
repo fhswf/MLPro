@@ -22,10 +22,11 @@
 ## -- 2021-10-07  1.3.3     MRD      Redefine WrEnvMLPro2GYM reset(), step(), _recognize_space() function
 ## --                                Redefine also _recognize_space() from WrEnvGYM2MLPro
 ## -- 2021-10-07  1.3.4     SY       Update WrEnvMLPro2PZoo() following above changes (ver. 1.3.3)
+## -- 2021-10-07  1.4.0     MRD      Implement WrPolicySB32MLPro to wrap the policy from Stable-baselines3
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2021-10-07)
+Ver. 1.4.0 (2021-10-07)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
@@ -34,6 +35,8 @@ This module provides wrapper classes for reinforcement learning tasks.
 import gym
 from gym import error, spaces, utils
 import numpy as np
+import torch
+from stable_baselines3.common.logger import Logger
 from typing import List
 from time import sleep
 from mlpro.bf.various import *
@@ -634,7 +637,156 @@ class WrEnvMLPro2PZoo():
         def close(self):
             self._mlpro_env.__del__()
             
-            
+## -------------------------------------------------------------------------------------------------
+class WrPolicySB32MLPro(Policy):
+    """
+    This class provides a policy wrapper from Standard Baselines 3 (SB3).
+    Especially On-Policy Algorithm
+    """
+    C_TYPE        = 'SB3 Policy'
+
+    def __init__(self, p_sb3_policy, p_state_space, p_action_space, p_buffer_size, p_ada=True, p_logging=True):
+        """
+        Args:
+            p_sb3_policy : SB3 Policy
+            p_state_space : Environment State Space
+            p_action_space : Environment Action Space
+            p_buffer_size : Buffer Size
+            p_ada (bool, optional): Adaptability. Defaults to True.
+            p_logging (bool, optional): Logging. Defaults to True.
+        """
+
+        class EmptyLogger(Logger):
+            """
+            Dummy class for SB3 Empty Logger. This is due to that SB3 has its own logger class.
+            Since we wont be using SB3 logger, we need Empty Logger to run the SB3 train, 
+            otherwise it wont work.
+            """
+            def __init__():
+                super().__init__()
+            def record(self, key=None, value=None, exclude=None):
+                pass
+
+        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+        
+        self.sb3 = p_sb3_policy
+        self.last_buffer_element = None
             
 
+        # Variable preparation for SB3
+        action_space = None
+        state_space = None
 
+        # Check if action is Discrete or Box
+        action_dim = self.get_action_space().get_num_dim()
+        if len(self.get_action_space().get_dim(0).get_boundaries()) == 1:
+            action_space = gym.spaces.Discrete(self.get_action_space().get_dim(0).get_boundaries()[0])
+        else:
+            lows = []
+            highs = []
+            for dimension in range(action_dim):
+                lows.append(self.get_action_space().get_dim(dimension).get_boundaries()[0])
+                highs.append(self.get_action_space().get_dim(dimension).get_boundaries()[1])
+
+            action_space = gym.spaces.Box(
+                            low=np.array(lows, dtype=np.float32), 
+                            high=np.array(highs, dtype=np.float32), 
+                            shape=(action_dim,), 
+                            dtype=np.float32
+                            )
+
+        # Check if state is Discrete or Box
+        state_dim = self.get_state_space().get_num_dim()
+        if len(self.get_state_space().get_dim(0).get_boundaries()) == 1:
+            state_space = gym.spaces.Discrete(self.get_state_space().get_dim(0).get_boundaries()[0])
+        else:
+            lows = []
+            highs = []
+            for dimension in range(state_dim):
+                lows.append(self.get_state_space().get_dim(dimension).get_boundaries()[0])
+                highs.append(self.get_state_space().get_dim(dimension).get_boundaries()[1])
+
+            state_space = gym.spaces.Box(
+                            low=np.array(lows, dtype=np.float32), 
+                            high=np.array(highs, dtype=np.float32), 
+                            shape=(state_dim,), 
+                            dtype=np.float32
+                            )
+
+        # Setup SB3 Model
+        self.sb3.observation_space = state_space
+        self.sb3.action_space = action_space
+        self.sb3.n_steps = p_buffer_size
+        self.sb3.n_envs = 1
+
+        self.sb3._setup_model()
+        self.sb3.set_logger(EmptyLogger)
+
+        self._buffer = self.sb3.rollout_buffer
+
+    def compute_action(self, p_state: State) -> Action:
+        obs = p_state.get_values()
+        
+        if not isinstance(obs, torch.Tensor):
+            obs = torch.Tensor(obs).reshape(1,obs.size).to(self.sb3.device)
+        
+        with torch.no_grad():
+            actions, values, log_probs = self.sb3.policy.forward(obs)
+        
+        # Add to additional_buffer_element
+        self.additional_buffer_element = dict(value=values, action_log=log_probs)
+
+        action = actions.cpu().numpy().flatten()
+        action = Action(self._id, self._action_space, action)
+        return action
+
+    def _adapt(self, *p_args) -> bool:
+        # Add to buffer
+        self.add_buffer(p_args[0])
+
+        # Adapt only when Buffer is full
+        if not self.sb3.rollout_buffer.full:
+            self.log(self.C_LOG_TYPE_I, 'Buffer is not full yet, keep collecting data!')
+            return False
+
+        last_obs = torch.Tensor([self.last_buffer_element.get_data()["state_new"].get_values()]).to(self.sb3.device)
+        last_done = self.last_buffer_element.get_data()["state_new"].get_done()
+
+        # Get the next value from the last observation
+        with torch.no_grad():
+            _, last_values, _ = self.sb3.policy.forward(last_obs)
+
+        # Compute Return and Advantage
+        self.sb3.rollout_buffer.compute_returns_and_advantage(last_values=last_values, dones=last_done)
+
+        # Train
+        self.sb3.train()
+
+        # Clear Buffer After Update
+        self.sb3.rollout_buffer.reset()
+
+        return True
+    
+    def clear_buffer(self):
+        self.sb3.rollout_buffer.reset()
+    
+    def add_buffer(self, p_buffer_element: SARSElement):
+        """
+        Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
+        internal buffer from SB3.
+        """
+        self.last_buffer_element = self._add_additional_buffer(p_buffer_element)
+        datas = self.last_buffer_element.get_data()
+        self.sb3.rollout_buffer.add(
+                            datas["state"].get_values(),
+                            datas["action"].get_sorted_values(),
+                            datas["reward"].get_overall_reward(),
+                            datas["state"].get_done(),
+                            datas["value"],
+                            datas["action_log"])
+
+        self._buffer = self.sb3.rollout_buffer
+
+    def _add_additional_buffer(self, p_buffer_element: SARSElement):
+        p_buffer_element.add_value_element(self.additional_buffer_element)
+        return p_buffer_element

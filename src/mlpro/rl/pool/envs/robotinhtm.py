@@ -245,12 +245,12 @@ class RobotHTM(Environment):
         """
 
         # 1 Setup state space
-        self._state_space.add_dim(Dimension(0, 'Tx', 'Targetx', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(1, 'Ty', 'Targety', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(2, 'Tz', 'Targetz', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(3, 'Px', 'Positionx', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(4, 'Py', 'Positiony', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(5, 'Pz', 'Positionz', '', 'm', 'm', p_boundaries=[-math.inf,math.inf]))
+        self._state_space.add_dim(Dimension(0, 'Tx', 'Targetx', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        self._state_space.add_dim(Dimension(1, 'Ty', 'Targety', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        self._state_space.add_dim(Dimension(2, 'Tz', 'Targetz', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        self._state_space.add_dim(Dimension(3, 'Px', 'Positionx', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        self._state_space.add_dim(Dimension(4, 'Py', 'Positiony', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        self._state_space.add_dim(Dimension(5, 'Pz', 'Positionz', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
 
         # 2 Setup action space
         for idx in range(self.num_joint):
