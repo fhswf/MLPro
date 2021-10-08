@@ -811,15 +811,10 @@ class ActionPlanner (Log):
             p_policy            Poliy of an agent
             p_envmodel          Environment model
             p_depth             Planning depth (=length of action path to be predicted)
+            p_width             Planning width (=number of alternative actions per planning level)
         """
 
         raise NotImplementedError
-
-        actions
-        for i in range(p_width):
-            a = p_policy.compute_action(p_state)
-
-        p_policy.exporate_action(state)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -841,7 +836,7 @@ class Agent(Policy):
     C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_action_planner:ActionPlanner=None, p_planning_depth=0, p_name='', p_id=0, p_ada=True, 
+    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_action_planner:ActionPlanner=None, p_planning_depth=0, p_planning_width=0, p_name='', p_id=0, p_ada=True, 
                 p_logging=True):
         """
         Parameters:
@@ -849,6 +844,7 @@ class Agent(Policy):
             p_envmodel          Optional environment model object
             p_action_planner    Optional action planner object (obligatory for model based agents)
             p_planning_depth    Optional planning depth (obligatory for model based agents)
+            p_planning_width    Optional planning width (obligatory for model based agents)
             p_name              Optional name of agent
             p_id                Unique agent id (especially important for multi-agent scenarios)
             p_ada               Boolean switch for adaptivity
@@ -873,6 +869,7 @@ class Agent(Policy):
         self._envmodel          = p_envmodel
         self._action_planner    = p_action_planner
         self._planning_depth    = p_planning_depth
+        self._planning_width    = p_planning_width
 
         self._set_id(p_id)
 
@@ -974,7 +971,7 @@ class Agent(Policy):
 
         else:
             # 1.2 With action planner
-            self._previous_action = self._action_planner.compute_action(p_state, self._policy, self._envmodel, self._planning_depth)
+            self._previous_action = self._action_planner.compute_action(p_state, self._policy, self._envmodel, self._planning_depth, self._planning_width)
 
 
         # 2 Outro
