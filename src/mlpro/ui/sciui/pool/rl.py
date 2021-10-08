@@ -6,7 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-07-30  0.0.0     SY       Creation
-## -- 2021-10-07  1.0.0     SY       Release of first version
+## -- 2021-10-07  1.0.0     SY       Release of first draft
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -282,10 +282,9 @@ class RLParam(SciUITabCTRL):
         
         if (self.shared_db.rlui_selected_scenario == 0):
             Label(self.env_frame, text ="Please follow the given procedures :").grid(row=0, column=0, padx = 5, pady = 0, sticky="w")
-            Label(self.env_frame, text ="1. Select RL environment").grid(row=1, column=0, padx = 5, pady = 0, sticky="w")
-            Label(self.env_frame, text ="2. Select RL algorithm").grid(row=2, column=0, padx = 5, pady = 0, sticky="w")
-            Label(self.env_frame, text ="3. Fill all the parameters").grid(row=3, column=0, padx = 5, pady = 0, sticky="w")
-            Label(self.env_frame, text ="4. Run environment").grid(row=4, column=0, padx = 5, pady = 0, sticky="w")
+            Label(self.env_frame, text ="1. Select RL scenario").grid(row=1, column=0, padx = 5, pady = 0, sticky="w")
+            Label(self.env_frame, text ="3. Fill all the parameters").grid(row=2, column=0, padx = 5, pady = 0, sticky="w")
+            Label(self.env_frame, text ="4. Run environment").grid(row=3, column=0, padx = 5, pady = 0, sticky="w")
         else:
             self.__cb_environment_tab()
             self.__cb_agents_tab()

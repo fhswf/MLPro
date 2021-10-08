@@ -6,7 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-07-27  0.0.0     SY       Creation
-## -- 2021-10-07  1.0.0     SY       Release of first version
+## -- 2021-10-07  1.0.0     SY       Release of first draft
 ## -------------------------------------------------------------------------------------------------
 
 """
