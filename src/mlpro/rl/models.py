@@ -34,10 +34,10 @@
 ## -- 2021-09-25  1.3.4     MRD      Remove Previous state into the buffer. Add Next state to the buffer
 ## --                                Remove clearing buffer on every reset. The clearing buffer should
 ## --                                be controlled from the policy
-## -- 2021-10-05  1.4.0     DA       Enhancements around model-based agents:
+## -- 2021-10-05  1.4.0     DA       Various changes:
 ## --                                - Class State: new attributes done, broken and related methods 
 ## --                                - New class ActionPlanner
-## --                                - Class Agent: method adapt() implemented
+## --                                - Class Agent: preparation for model-based mode
 ## --                                Introduction of method Environment.get_cycle_limit()
 ## -- 2021-10-05  1.4.1     SY       Bugfixes and minor improvements
 ## -- 2021-10-08  1.4.2     DA       Class Scenario/constructor/param p_cycle_limit: new value -1
