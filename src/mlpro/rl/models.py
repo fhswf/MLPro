@@ -34,16 +34,18 @@
 ## -- 2021-09-25  1.3.4     MRD      Remove Previous state into the buffer. Add Next state to the buffer
 ## --                                Remove clearing buffer on every reset. The clearing buffer should
 ## --                                be controlled from the policy
-## -- 2021-10-05  1.4.0     DA       Enhancements around model-based agents:
+## -- 2021-10-05  1.4.0     DA       Various changes:
 ## --                                - Class State: new attributes done, broken and related methods 
 ## --                                - New class ActionPlanner
-## --                                - Class Agent: method adapt() implemented
+## --                                - Class Agent: preparation for model-based mode
 ## --                                Introduction of method Environment.get_cycle_limit()
 ## -- 2021-10-05  1.4.1     SY       Bugfixes and minor improvements
+## -- 2021-10-08  1.4.2     DA       Class Scenario/constructor/param p_cycle_limit: new value -1
+## --                                lets class get the cycle limit from the env
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2021-10-05)
+Ver. 1.4.2 (2021-10-08)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -799,7 +801,7 @@ class ActionPlanner (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state:State, p_policy:Policy, p_envmodel:EnvModel, p_depth) -> Action:
+    def compute_action(self, p_state:State, p_policy:Policy, p_envmodel:EnvModel, p_depth, p_width) -> Action:
         """
         Computes a path of actions with defined length that maximizes the reward of the given 
         environment model.
@@ -809,6 +811,7 @@ class ActionPlanner (Log):
             p_policy            Poliy of an agent
             p_envmodel          Environment model
             p_depth             Planning depth (=length of action path to be predicted)
+            p_width             Planning width (=number of alternative actions per planning level)
         """
 
         raise NotImplementedError
@@ -833,7 +836,7 @@ class Agent(Policy):
     C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_action_planner:ActionPlanner=None, p_planning_depth=0, p_name='', p_id=0, p_ada=True, 
+    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_action_planner:ActionPlanner=None, p_planning_depth=0, p_planning_width=0, p_name='', p_id=0, p_ada=True, 
                 p_logging=True):
         """
         Parameters:
@@ -841,6 +844,7 @@ class Agent(Policy):
             p_envmodel          Optional environment model object
             p_action_planner    Optional action planner object (obligatory for model based agents)
             p_planning_depth    Optional planning depth (obligatory for model based agents)
+            p_planning_width    Optional planning width (obligatory for model based agents)
             p_name              Optional name of agent
             p_id                Unique agent id (especially important for multi-agent scenarios)
             p_ada               Boolean switch for adaptivity
@@ -865,6 +869,7 @@ class Agent(Policy):
         self._envmodel          = p_envmodel
         self._action_planner    = p_action_planner
         self._planning_depth    = p_planning_depth
+        self._planning_width    = p_planning_width
 
         self._set_id(p_id)
 
@@ -966,7 +971,7 @@ class Agent(Policy):
 
         else:
             # 1.2 With action planner
-            self._previous_action = self._action_planner.compute_action(p_state, self._policy, self._envmodel, self._planning_depth)
+            self._previous_action = self._action_planner.compute_action(p_state, self._policy, self._envmodel, self._planning_depth, self._planning_width)
 
 
         # 2 Outro
@@ -1264,7 +1269,7 @@ class Scenario(Log, LoadSave):
             p_mode              Operation mode of environment (see Environment.C_MODE_*)
             p_ada               Boolean switch for adaptivity of agent
             p_cycle_len         Fixed cycle duration (optional)
-            p_cycle_limit       Maximum number of cycles (0=no limit)
+            p_cycle_limit       Maximum number of cycles (0=no limit, -1=get limit from env)
             p_visualize         Boolean switch for env/agent visualisation
             p_logging           Boolean switch for logging functionality
         """
@@ -1279,6 +1284,10 @@ class Scenario(Log, LoadSave):
 
         # 1 Setup entire scenario
         self._setup(p_mode, p_ada, p_logging)
+
+        # 2 Finalize cycle limit
+        if self._cycle_limit == -1:
+            self._cycle_limit = self._env.get_cycle_limit()
 
         # 2 Init timer
         if self._env.get_mode() == Environment.C_MODE_SIM:
