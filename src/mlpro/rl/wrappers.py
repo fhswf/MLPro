@@ -23,6 +23,7 @@
 ## --                                Redefine also _recognize_space() from WrEnvGYM2MLPro
 ## -- 2021-10-07  1.3.4     SY       Update WrEnvMLPro2PZoo() following above changes (ver. 1.3.3)
 ## -- 2021-10-07  1.4.0     MRD      Implement WrPolicySB32MLPro to wrap the policy from Stable-baselines3
+## -- 2021-10-08  1.4.1     DA       Correction of wrapper WREnvGYM2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -150,12 +151,13 @@ class WrEnvGYM2MLPro(Environment):
             observation, reward_gym, done, info = self._gym_env.step(action_gym)
         except:
             observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
-        self._state.set_done(done)
+        
         obs     = DataObject(observation)
 
         # 3 Create state object from Gym observation
         state   = State(self._state_space)
         state.set_values(obs.get_data())
+        state.set_done(done)
         self._set_state(state)
 
         # 4 Create and store reward object
