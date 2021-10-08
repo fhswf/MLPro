@@ -801,7 +801,7 @@ class ActionPlanner (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state:State, p_policy:Policy, p_envmodel:EnvModel, p_depth) -> Action:
+    def compute_action(self, p_state:State, p_policy:Policy, p_envmodel:EnvModel, p_depth, p_width) -> Action:
         """
         Computes a path of actions with defined length that maximizes the reward of the given 
         environment model.
@@ -814,6 +814,12 @@ class ActionPlanner (Log):
         """
 
         raise NotImplementedError
+
+        actions
+        for i in range(p_width):
+            a = p_policy.compute_action(p_state)
+
+        p_policy.exporate_action(state)
 
 
 ## -------------------------------------------------------------------------------------------------
