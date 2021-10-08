@@ -40,6 +40,8 @@
 ## --                                - Class Agent: method adapt() implemented
 ## --                                Introduction of method Environment.get_cycle_limit()
 ## -- 2021-10-05  1.4.1     SY       Bugfixes and minor improvements
+## -- 2021-10-08  1.4.2     DA       Class Scenario/constructor/param p_cycle_limit: new value -1
+## --                                lets class get the cycle limit from the env
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -1264,7 +1266,7 @@ class Scenario(Log, LoadSave):
             p_mode              Operation mode of environment (see Environment.C_MODE_*)
             p_ada               Boolean switch for adaptivity of agent
             p_cycle_len         Fixed cycle duration (optional)
-            p_cycle_limit       Maximum number of cycles (0=no limit)
+            p_cycle_limit       Maximum number of cycles (0=no limit, -1=get limit from env)
             p_visualize         Boolean switch for env/agent visualisation
             p_logging           Boolean switch for logging functionality
         """
@@ -1279,6 +1281,10 @@ class Scenario(Log, LoadSave):
 
         # 1 Setup entire scenario
         self._setup(p_mode, p_ada, p_logging)
+
+        # 2 Finalize cycle limit
+        if self._cycle_limit == -1:
+            self._cycle_limit = self._env.get_cycle_limit()
 
         # 2 Init timer
         if self._env.get_mode() == Environment.C_MODE_SIM:
