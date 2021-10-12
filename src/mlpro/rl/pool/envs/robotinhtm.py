@@ -18,7 +18,6 @@ Ver. 1.03 (2021-10-05)
 This module provide an environment of a robot manipulator based on Homogeneous Matrix
 """
 import torch
-import math
 import numpy as np
 import random
 from mlpro.rl.models import *
@@ -199,7 +198,7 @@ class RobotHTM(Environment):
         roboconf["Update_rate"] = 0.01
 
         for robo in roboconf["Joints"]:
-            self.RobotArm1.add_link_joint(lvector=torch.Tensor([[robo["Vector_link_length"]["x"],robo["Vector_link_length"]["y"],robo["Vector_link_length"]["z"]]]), jointAxis=robo["Joint_type"], thetaInit=torch.Tensor([math.radians(0)]))
+            self.RobotArm1.add_link_joint(lvector=torch.Tensor([[robo["Vector_link_length"]["x"],robo["Vector_link_length"]["y"],robo["Vector_link_length"]["z"]]]), jointAxis=robo["Joint_type"], thetaInit=torch.Tensor([np.radians(0)]))
         
 
         self.RobotArm1.update_joint_coords()
