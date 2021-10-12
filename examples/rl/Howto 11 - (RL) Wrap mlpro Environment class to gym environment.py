@@ -21,7 +21,7 @@ from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvMLPro2GYM, WrEnvGYM2MLPro
 from mlpro.rl.pool.envs.gridworld import GridWorld
-from mlpro.rl.pool.envs import RobotHTM
+from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 import random
 from stable_baselines3.common.env_checker import check_env
 

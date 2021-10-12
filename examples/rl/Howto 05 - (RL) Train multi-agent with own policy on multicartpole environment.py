@@ -26,7 +26,7 @@ MultiCartPole based on the OpenAI Gym CartPole environment.
 
 
 from mlpro.rl.models import *
-from mlpro.rl.pool.envs import MultiCartPole
+from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 import random
 from pathlib import Path
 import os

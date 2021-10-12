@@ -24,7 +24,7 @@ import torch
 import random
 import torch.optim as optim
 from mlpro.rl.models import *
-from mlpro.rl.pool.sarbuffer import RandomSARBuffer
+from mlpro.rl.pool.sarbuffer.RandomSARBuffer import RandomSARBuffer
 import numpy as np
 
 def init(module, weight_init, bias_init, gain=1):
