@@ -22,8 +22,8 @@ This module shows how to implement SAC from the pool
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
-from mlpro.rl.pool.envs import RobotHTM
-from mlpro.rl.pool.policies import SAC
+from mlpro.rl.pool.envs.robotinhtm import RobotHTM
+from mlpro.rl.pool.policies.sac import SAC
 import gym
 import random
 from pathlib import Path

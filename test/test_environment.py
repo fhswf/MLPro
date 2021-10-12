@@ -24,7 +24,10 @@ import pytest
 import random
 import numpy as np
 from mlpro.rl.models import *
-from mlpro.rl.pool.envs import RobotHTM, BGLP, GridWorld
+from mlpro.rl.pool.envs.robotinhtm import RobotHTM
+from mlpro.rl.pool.envs.bglp import BGLP
+from mlpro.rl.pool.envs.gridworld import GridWorld
+from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 # from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
 
 

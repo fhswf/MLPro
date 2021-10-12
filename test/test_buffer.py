@@ -23,9 +23,10 @@ from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
 from mlpro.rl.models import *
-from mlpro.rl.pool.envs import RobotHTM
-from mlpro.rl.pool.policies import SAC
-from mlpro.rl.pool.sarbuffer import PrioritizedBuffer, RandomSARBuffer
+from mlpro.rl.pool.envs.robotinhtm import RobotHTM
+from mlpro.rl.pool.policies.sac import SAC
+from mlpro.rl.pool.sarbuffer.PrioritizedBuffer import PrioritizedBuffer
+from mlpro.rl.pool.sarbuffer.RandomSARBuffer import RandomSARBuffer
 import gym
 import random
 from pathlib import Path
