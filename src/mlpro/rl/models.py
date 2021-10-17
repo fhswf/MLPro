@@ -960,8 +960,7 @@ class Agent(Policy):
 
         # 0 Intro
         self.log(self.C_LOG_TYPE_I, 'Action computation started')
-        self._previous_state    = self._state
-        self._state             = p_state
+        self._previous_state    = p_state
 
 
         # 1 Action computation
