@@ -859,7 +859,6 @@ class Agent(Policy):
         if ( ( p_envmodel is not None ) and ( p_action_planner is None ) ) or ( ( p_envmodel is None ) and ( p_action_planner is not None ) ):
            raise ParamError('Model-based agents need an env model and an action planner')
            
-        self._state             = None
         self._reward            = None
         self._previous_state    = None
         self._previous_action   = None
