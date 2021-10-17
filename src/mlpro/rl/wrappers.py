@@ -128,6 +128,7 @@ class WrEnvGYM2MLPro(Environment):
         # 2 Create state object from Gym observation
         state   = State(self._state_space)
         state.set_values(obs.get_data())
+        state.set_done(True)
         self._set_state(state)
 
 
