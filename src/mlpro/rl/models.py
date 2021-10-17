@@ -1336,7 +1336,6 @@ class Scenario(Log, LoadSave):
         self._env.get_state().set_tstamp(self._timer.get_time())
 
 
-
 ## -------------------------------------------------------------------------------------------------
     def get_env(self):
         return self._env
