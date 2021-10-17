@@ -38,6 +38,7 @@ from gym import error, spaces, utils
 import numpy as np
 import torch
 from stable_baselines3.common.logger import Logger
+from stable_baselines3.common.on_policy_algorithm  import OnPolicyAlgorithm
 from typing import List
 from time import sleep
 from mlpro.bf.various import *
@@ -719,15 +720,30 @@ class WrPolicySB32MLPro(Policy):
         # Setup SB3 Model
         self.sb3.observation_space = state_space
         self.sb3.action_space = action_space
-        self.sb3.n_steps = p_buffer_size
         self.sb3.n_envs = 1
+
+        if isinstance(p_sb3_policy, OnPolicyAlgorithm):
+            self.sb3.n_steps = p_buffer_size
+            self.compute_action = self._compute_action_on_policy
+            self._add_buffer = self._add_buffer_on_policy
+            self._adapt = self._adapt_on_policy
+            self.clear_buffer = self._clear_buffer_on_policy
+            self._buffer = self.sb3.rollout_buffer
+        else:
+            self.sb3.buffer_size = p_buffer_size
+            self.compute_action = self._compute_action_off_policy
+            self._add_buffer = self._add_buffer_off_policy
+            self._adapt = self._adapt_off_policy
+            self.clear_buffer = self._clear_buffer_off_policy
+            self._buffer = self.sb3.replay_buffer
+            self.collected_steps = 0
 
         self.sb3._setup_model()
         self.sb3.set_logger(EmptyLogger)
 
         self._buffer = self.sb3.rollout_buffer
 
-    def compute_action(self, p_state: State) -> Action:
+    def _compute_action_on_policy(self, p_state: State) -> Action:
         obs = p_state.get_values()
         
         if not isinstance(obs, torch.Tensor):
@@ -743,9 +759,42 @@ class WrPolicySB32MLPro(Policy):
         action = Action(self._id, self._action_space, action)
         return action
 
-    def _adapt(self, *p_args) -> bool:
+    def _compute_action_off_policy(self, p_state: State) -> Action:
+        self.sb3._last_obs = p_state.get_values()
+        action, buffer_action = self.sb3._sample_action(self.sb3.learning_starts)
+
+        action = action.flatten()
+        action = Action(self._id, self._action_space, action)
+
+        buffer_action = buffer_action.flatten()
+        buffer_action = Action(self._id, self._action_space, buffer_action)
+
+        # Add to additional_buffer_element
+        self.additional_buffer_element = dict(action=buffer_action)
+        return action
+
+    def _adapt_off_policy(self, *p_args) -> bool:
         # Add to buffer
-        self.add_buffer(p_args[0])
+        self._add_buffer(p_args[0])
+
+        if self.collected_steps < self.sb3.train_freq.frequency:
+            return False
+   
+        # Check wheter
+        if self.sb3.num_timesteps > 0 and self.sb3.num_timesteps > self.sb3.learning_starts:
+            # If no `gradient_steps` is specified,
+            # do as many gradients steps as steps performed during the rollout
+            gradient_steps = self.sb3.gradient_steps if self.sb3.gradient_steps >= 0 else self.collected_steps
+            # Special case when the user passes `gradient_steps=0`
+            if gradient_steps > 0:
+                self.sb3.train(batch_size=self.sb3.batch_size, gradient_steps=gradient_steps)
+
+        self.collected_steps = 0
+        return True
+
+    def _adapt_on_policy(self, *p_args) -> bool:
+        # Add to buffer
+        self._add_buffer(p_args[0])
 
         # Adapt only when Buffer is full
         if not self.sb3.rollout_buffer.full:
@@ -770,14 +819,47 @@ class WrPolicySB32MLPro(Policy):
 
         return True
     
-    def clear_buffer(self):
+    def _clear_buffer_on_policy(self):
         self.sb3.rollout_buffer.reset()
-    
-    def add_buffer(self, p_buffer_element: SARSElement):
+
+    def _clear_buffer_off_policy(self):
+        self.sb3.replay_buffer.reset()
+
+    def _add_buffer_off_policy(self, p_buffer_element: SARSElement):
         """
         Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
-        internal buffer from SB3.
+        internal buffer from SB3 for off_policy.
         """
+        self.collected_steps += 1
+        self.sb3.num_timesteps += 1
+        self.last_buffer_element = self._add_additional_buffer(p_buffer_element)
+        datas = self.last_buffer_element.get_data()
+
+        info = {}
+
+        if self.last_done:
+            self.sb3.replay_buffer.next_observations[self.sb3.replay_buffer.pos-1] = datas["state"].get_values().copy()
+            self.last_done = False
+
+        if datas["state_new"].get_done():
+            self.last_done = True
+
+        self.sb3.replay_buffer.add(
+                            datas["state"].get_values(),
+                            datas["state_new"].get_values(),
+                            datas["action"].get_sorted_values(),
+                            datas["reward"].get_overall_reward(),
+                            datas["state"].get_done(),
+                            [info])
+
+        self._buffer = self.sb3.replay_buffer
+
+    def _add_buffer_on_policy(self, p_buffer_element: SARSElement):
+        """
+        Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
+        internal buffer from SB3 for on_policy.
+        """
+        self.sb3.num_timesteps += 1
         self.last_buffer_element = self._add_additional_buffer(p_buffer_element)
         datas = self.last_buffer_element.get_data()
         self.sb3.rollout_buffer.add(
