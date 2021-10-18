@@ -81,7 +81,7 @@ class MyGame(Game):
         self._agent.add_player(
             p_player=Player(
                 p_policy=MyPolicy(
-                    p_state_space=self._env.get_state_space().spawn([0,1,2,3]),
+                    p_observation_space=self._env.get_state_space().spawn([0,1,2,3]),
                     p_action_space=self._env.get_action_space().spawn([0]),
                     p_ada=True,
                     p_logging=True
@@ -99,7 +99,7 @@ class MyGame(Game):
         self._agent.add_player(
             p_player=Player(
                 p_policy=MyPolicy(
-                    p_state_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
+                    p_observation_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
                     p_action_space=self._env.get_action_space().spawn([1,2]),
                     p_ada=True,
                     p_logging=True

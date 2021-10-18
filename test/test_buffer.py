@@ -25,8 +25,8 @@ from mlpro.bf.ml import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.rl.pool.policies.sac import SAC
-from mlpro.rl.pool.sarbuffer.PrioritizedBuffer import PrioritizedBuffer
-from mlpro.rl.pool.sarbuffer.RandomSARBuffer import RandomSARBuffer
+from mlpro.rl.pool.sarsbuffer.PrioritizedBuffer import PrioritizedBuffer
+from mlpro.rl.pool.sarsbuffer.RandomSARSBuffer import RandomSARSBuffer
 import gym
 import random
 from pathlib import Path
@@ -35,7 +35,7 @@ from pathlib import Path
 
             
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("buffer_cls", [PrioritizedBuffer, RandomSARBuffer])
+@pytest.mark.parametrize("buffer_cls", [PrioritizedBuffer, RandomSARSBuffer])
 def test_buffer(buffer_cls):    
     class MyScenario(Scenario):
 
@@ -50,7 +50,7 @@ def test_buffer(buffer_cls):
             # 2 Setup standard single-agent with own policy
             self._agent = Agent(
                 p_policy=SACB(
-                    p_state_space=self._env.get_state_space(),
+                    p_observation_space=self._env.get_state_space(),
                     p_action_space=self._env.get_action_space(),
                     p_batch_size=10,
                     p_buffer_size=10,
