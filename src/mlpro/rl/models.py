@@ -42,10 +42,12 @@
 ## -- 2021-10-05  1.4.1     SY       Bugfixes and minor improvements
 ## -- 2021-10-08  1.4.2     DA       Class Scenario/constructor/param p_cycle_limit: new value -1
 ## --                                lets class get the cycle limit from the env
+## -- 2021-10-18  1.4.3     DA       Refactoring Policy/Agent/MultiAgent: state space renamed to 
+## --                                observation space
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2021-10-08)
+Ver. 1.4.3 (2021-10-18)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -97,7 +99,6 @@ class State(Element, TStamp):
 ## -------------------------------------------------------------------------------------------------
     def set_broken(self, p_broken:bool):
         self._broken = p_broken
-
 
 
 
@@ -623,7 +624,6 @@ class Environment(EnvBase):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SARSElement(BufferElement):
@@ -708,25 +708,25 @@ class Policy(Adaptive, Plottable):
     C_BUFFER_CLS    = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=True):
+    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=True):
         """
          Parameters:
-            p_state_space       State space object
-            p_action_space      Action space object
-            p_buffer_size       Size of the buffer
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
+            p_observation_space     Subspace of an environment that is observed by the policy
+            p_action_space          Action space object
+            p_buffer_size           Size of the buffer
+            p_ada                   Boolean switch for adaptivity
+            p_logging               Boolean switch for logging functionality
         """
 
         super().__init__(p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
-        self._state_space   = p_state_space
-        self._action_space  = p_action_space
+        self._observation_space = p_observation_space
+        self._action_space      = p_action_space
         self.set_id(0)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_state_space(self) -> MSpace:
-        return self._state_space
+    def get_observation_space(self) -> MSpace:
+        return self._observation_space
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -757,12 +757,12 @@ class Policy(Adaptive, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state:State) -> Action:
+    def compute_action(self, p_obs:State) -> Action:
         """
         Specific action computation method to be redefined. 
 
         Parameters:
-            p_state       State of environment
+            p_obs       Observation data
 
         Returns:
             Action object
@@ -859,12 +859,13 @@ class Agent(Policy):
         if ( ( p_envmodel is not None ) and ( p_action_planner is None ) ) or ( ( p_envmodel is None ) and ( p_action_planner is not None ) ):
            raise ParamError('Model-based agents need an env model and an action planner')
            
+        self._observation       = None
         self._reward            = None
-        self._previous_state    = None
+        self._previous_obs      = None
         self._previous_action   = None
         self._policy            = p_policy
         self._action_space      = self._policy.get_action_space()
-        self._state_space       = self._policy.get_state_space()
+        self._observation_space = self._policy.get_observation_space()
         self._envmodel          = p_envmodel
         self._action_planner    = p_action_planner
         self._planning_depth    = p_planning_depth
@@ -918,6 +919,30 @@ class Agent(Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_observation_space(self) -> MSpace:
+        return self._policy.get_observation_space()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_action_space(self) -> MSpace:
+        return self._policy.get_action_space()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _extract_observation(self, p_state:State) -> State:
+        if p_state.get_related_set() == self.get_observation_space(): return p_state
+
+        obs_space   = self.get_observation_space()
+        obs_dim_ids = obs_space.get_dim_ids()
+        observation = State(obs_space)
+
+        for dim_id in obs_dim_ids:
+            observation.set_value(dim_id, p_state.get_value(dim_id))
+
+        return observation
+
+
+## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
         """
         Default adaptation implementation of a single agent.
@@ -930,24 +955,25 @@ class Agent(Policy):
             True, if something has beed adapted
         """
 
-        # 0 Intro
-        state  = p_args[0]
-        reward = p_args[1]
-
-
         # 1 Check: Adaptation possible?
-        if self._previous_state is None:
-            self.log(self.C_LOG_TYPE_I, 'Adaption: previous state None -> adaptivity skipped')
+        if self._previous_obs is None:
+            self.log(self.C_LOG_TYPE_I, 'Adaption: previous observation is None -> adaptivity skipped')
             return False
 
 
-        # 2 Adaptation
+        # 2 Extract agent specific observation data from state
+        state       = p_args[0]
+        reward      = p_args[1]
+        observation = self._extract_observation(state)
+
+
+        # 3 Adaptation
         if self._envmodel is None:
-            # 2.1 Model-free adaptation
-            return self._policy.adapt(SARSElement(self._previous_state, self._previous_action, reward, state))
+            # 3.1 Model-free adaptation
+            return self._policy.adapt(SARSElement(self._previous_obs, self._previous_action, reward, observation))
 
         else:
-            # 2.2 Model-based adaptation
+            # 3.2 Model-based adaptation
             raise NotImplementedError
 
 
@@ -955,21 +981,28 @@ class Agent(Policy):
     def compute_action(self, p_state:State) -> Action:
         """
         Default implementation of a single agent.
+
+        Parameters:
+            p_state         State of the related environment
+
+        Returns:
+            Action object
         """
 
         # 0 Intro
         self.log(self.C_LOG_TYPE_I, 'Action computation started')
-        self._previous_state    = p_state
+        self._previous_obs  = self._observation
+        self._observation   = self._extract_observation(p_state)
 
 
         # 1 Action computation
         if self._action_planner is None:
             # 1.1 W/o action planner
-            self._previous_action = self._policy.compute_action(p_state)
+            self._previous_action = self._policy.compute_action(self._observation)
 
         else:
             # 1.2 With action planner
-            self._previous_action = self._action_planner.compute_action(p_state, self._policy, self._envmodel, self._planning_depth, self._planning_width)
+            self._previous_action = self._action_planner.compute_action(self._observation, self._policy, self._envmodel, self._planning_depth, self._planning_width)
 
 
         # 2 Outro
@@ -1011,6 +1044,7 @@ class MultiAgent(Agent):
         Log.__init__(self, p_logging)
         self.switch_logging(p_logging)
         self.switch_adaptivity(p_ada)
+        self._set_adapted(False)
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -1091,21 +1125,32 @@ class MultiAgent(Agent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
-        next_states     = p_args[0]
-        reward          = p_args[1]
+    def get_observation_space(self) -> MSpace:
+        return None
 
-        self.log(self.C_LOG_TYPE_I, 'Start of adaption for all agents...')      
+
+## -------------------------------------------------------------------------------------------------
+    def get_action_space(self) -> MSpace:
+        return None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        state     = p_args[0]
+        reward    = p_args[1]
+
+        self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')      
 
         adapted = False
         for agent_entry in self._agents:
             agent = agent_entry[0]
             if ( reward.get_type() != Reward.C_TYPE_OVERALL ) and not reward.is_rewarded(agent.get_id()): continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-            adapted = adapted or agent.adapt(next_states,reward)
+            adapted = adapted or agent.adapt(state,reward)
 
-        self.log(self.C_LOG_TYPE_I, 'End of adaption for all agents...')        
+        self.log(self.C_LOG_TYPE_I, 'End of adaptation for all agents...')        
 
+        self._set_adapted(adapted)
         return adapted
 
 
@@ -1116,14 +1161,7 @@ class MultiAgent(Agent):
         action = Action()
 
         for agent, weight in self._agents:
-            state_agent     = State(agent.get_state_space())
-            state_ids       = agent.get_state_space().get_dim_ids()
-
-            for state_id in state_ids:
-                state_agent.set_value(state_id, p_state.get_value(state_id))
-
-            action_agent    = agent.compute_action(state_agent)
-
+            action_agent    = agent.compute_action(p_state)
             action_element  = action_agent.get_elem(agent.get_id())
             action_element.set_weight(weight)
             action.add_elem(agent.get_id(), action_element)
@@ -1332,7 +1370,6 @@ class Scenario(Log, LoadSave):
 
         self._timer.reset()
         self._env.get_state().set_tstamp(self._timer.get_time())
-
 
 
 ## -------------------------------------------------------------------------------------------------

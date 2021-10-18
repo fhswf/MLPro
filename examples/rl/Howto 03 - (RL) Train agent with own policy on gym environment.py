@@ -14,10 +14,11 @@
 ## -- 2021-09-28  1.2.1     SY       Updated due to implementation of method get_cycle_limits()
 ## -- 2021-09-29  1.2.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-06  1.2.3     DA       Refactoring 
-## -------------------------------------------------------------------------------------------------
+## -- 2021-10-18  1.2.4     DA       Refactoring 
+### -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2021-10-06)
+Ver. 1.2.4 (2021-10-18)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """
@@ -73,7 +74,7 @@ class MyScenario(Scenario):
         # 2 Setup standard single-agent with own policy
         self._agent = Agent(
             p_policy=MyPolicy(
-                p_state_space=self._env.get_state_space(),
+                p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
                 p_buffer_size=10,
                 p_ada=p_ada,
