@@ -964,13 +964,13 @@ class Agent(Policy):
         # 2 Extract agent specific observation data from state
         state       = p_args[0]
         reward      = p_args[1]
-        observation = self._extract_observation(state)
+        next_observation = self._extract_observation(state)
 
 
         # 3 Adaptation
         if self._envmodel is None:
             # 3.1 Model-free adaptation
-            return self._policy.adapt(SARSElement(self._observation, self._previous_action, reward, observation))
+            return self._policy.adapt(SARSElement(self._observation, self._previous_action, reward, next_observation))
 
         else:
             # 3.2 Model-based adaptation
