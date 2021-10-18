@@ -10,6 +10,7 @@
 ## -- 2021 09-26  1.0.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
 ## -- 2021-09-29  1.0.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
+## -- 2021-10-18  1.0.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -43,7 +44,7 @@ class MyScenario(Scenario):
         # 2 Setup standard single-agent with own policy
         self._agent = Agent(
             p_policy=A2C(
-                p_state_space=self._env.get_state_space(),
+                p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
                 p_buffer_size=100,
                 p_ada=p_ada,

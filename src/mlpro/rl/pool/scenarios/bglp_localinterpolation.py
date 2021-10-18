@@ -14,10 +14,11 @@
 ## -- 2021-09-30  1.0.3     SY       Minor Improvements
 ## -- 2021-10-07  1.0.4     DA       Refactoring
 ## -- 2021 10-07  1.0.5     SY       Minor Improvements
+## -- 2021-10-18  1.0.6     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2021-10-07)
+Ver. 1.0.6 (2021-10-18)
 
 Environment : BGLP
 Algorithms  : SbPG - Local Interpolation (dummy)
@@ -41,16 +42,14 @@ class MyPolicy(Policy):
 
     C_NAME      = 'MyPolicy'
 
-    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=1.0, p_logging=True, episodes_max=10):
-        super().__init__(p_state_space=p_state_space, p_action_space=p_action_space, p_ada=p_ada, p_logging=p_logging)
-        self._state_space       = p_state_space
-        self._action_space      = p_action_space
+    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=1.0, p_logging=True, episodes_max=10):
+        super().__init__(p_observation_space=p_observation_space, p_action_space=p_action_space, p_ada=p_ada, p_logging=p_logging)
         self.set_id(0)
         
-        self.levels_current     = np.zeros(p_state_space.get_num_dim())
-        self.levels_current_con = np.zeros(p_state_space.get_num_dim())
-        self.levels_last        = np.zeros(p_state_space.get_num_dim())
-        self.levels_last_con    = np.zeros(p_state_space.get_num_dim())
+        self.levels_current     = np.zeros(p_observation_space.get_num_dim())
+        self.levels_current_con = np.zeros(p_observation_space.get_num_dim())
+        self.levels_last        = np.zeros(p_observation_space.get_num_dim())
+        self.levels_last_con    = np.zeros(p_observation_space.get_num_dim())
         self.action_last        = np.zeros(p_action_space.get_num_dim())
         self.action_current     = np.zeros(p_action_space.get_num_dim())
         self.updated            = False
@@ -99,18 +98,18 @@ class MyPolicy(Policy):
                 self.grid_center_y[x,y] = self.grid[y]
     
     def calc_current_states(self, levels):
-        for i in range(self._state_space.get_num_dim()):
+        for i in range(self._observation_space.get_num_dim()):
             levels_cur = levels[i]*self.levels_max[i]
             self.levels_current[i] = min(m.floor(self.num_states*levels_cur/self.levels_max[i]),self.num_states-1)
     
     def memorize_levels(self):
-        for i in range(self._state_space.get_num_dim()):
+        for i in range(self._observation_space.get_num_dim()):
             self.levels_last[i] = self.levels_current[i]
             self.levels_last_con[i] = self.levels_current_con[i]
     
     def compute_action(self, p_state: State) -> Action:
         states = p_state.get_values()
-        for i in range(self._state_space.get_num_dim()):
+        for i in range(self._observation_space.get_num_dim()):
             self.levels_current_con[i] = states[i]
         self.calc_current_states(states)
         if random.uniform(0,1) <= self.exploration:
@@ -188,9 +187,9 @@ class MyScenario(Scenario):
         # Agent 1
         agent_name      = 'BELT_CONVEYOR_A'
         agent_id        = 0
-        agent_sspace    = state_space.spawn([0,1])
+        agent_ospace    = state_space.spawn([0,1])
         agent_aspace    = action_space.spawn([0])
-        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        agent_policy    = MyPolicy(p_observation_space=agent_ospace, p_action_space=agent_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
@@ -206,9 +205,9 @@ class MyScenario(Scenario):
         # Agent 2
         agent_name      = 'VACUUM_PUMP_B'
         agent_id        = 1
-        agent_sspace    = state_space.spawn([1,2])
+        agent_ospace    = state_space.spawn([1,2])
         agent_aspace    = action_space.spawn([1])
-        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
+        agent_policy    = MyPolicy(p_observation_space=agent_ospace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
@@ -224,9 +223,9 @@ class MyScenario(Scenario):
         # Agent 3
         agent_name      = 'VIBRATORY_CONVEYOR_B'
         agent_id        = 2
-        agent_sspace    = state_space.spawn([2,3])
+        agent_ospace    = state_space.spawn([2,3])
         agent_aspace    = action_space.spawn([2])
-        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
+        agent_policy    = MyPolicy(p_observation_space=agent_ospace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
@@ -242,9 +241,9 @@ class MyScenario(Scenario):
         # Agent 4
         agent_name      = 'VACUUM_PUMP_C'
         agent_id        = 3
-        agent_sspace    = state_space.spawn([3,4])
+        agent_ospace    = state_space.spawn([3,4])
         agent_aspace    = action_space.spawn([3])
-        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
+        agent_policy    = MyPolicy(p_observation_space=agent_ospace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
@@ -260,9 +259,9 @@ class MyScenario(Scenario):
         # Agent 5
         agent_name      = 'ROTARY_FEEDER_C'
         agent_id        = 4
-        agent_sspace    = state_space.spawn([4,5])
+        agent_ospace    = state_space.spawn([4,5])
         agent_aspace    = action_space.spawn([4])
-        agent_policy    = MyPolicy(p_state_space=agent_sspace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
+        agent_policy    = MyPolicy(p_observation_space=agent_ospace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,

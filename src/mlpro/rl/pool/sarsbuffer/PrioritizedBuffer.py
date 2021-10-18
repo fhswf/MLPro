@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro.pool.sarbuffer
+## -- Package : mlpro.pool.sarsbuffer
 ## -- Module  : PrioritizedBuffer
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

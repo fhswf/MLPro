@@ -9,13 +9,15 @@
 ## -- 2021-09-25  1.0.0     MRD      Release first version
 ## -- 2021-09-26  1.0.0     MRD      Change the exploration to warm up phase only
 ## --                                adjustment on the critic loss calculation
-## -- 2021-09-27  1.0.0     WB       Bug Fix
+## -- 2021-09-27  1.0.1     WB       Bug Fix
+## -- 2021-10-18  1.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 ## -- Reference
 ## -- https://github.com/DLR-RM/stable-baselines3
+## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-27)
+Ver. 1.0.2 (2021-1018)
 
 This module provide SAC Algorithm based on reference.
 """
@@ -24,7 +26,7 @@ import torch
 import random
 import torch.optim as optim
 from mlpro.rl.models import *
-from mlpro.rl.pool.sarbuffer.RandomSARBuffer import RandomSARBuffer
+from mlpro.rl.pool.sarsbuffer.RandomSARSBuffer import RandomSARSBuffer
 import numpy as np
 
 def init(module, weight_init, bias_init, gain=1):
@@ -255,16 +257,16 @@ class SAC(Policy):
 
     C_NAME = 'SAC'
 
-    C_BUFFER_CLS = RandomSARBuffer
+    C_BUFFER_CLS = RandomSARSBuffer
     
-    def __init__(self, p_state_space: MSpace, p_action_space: MSpace, p_buffer_size: int, 
+    def __init__(self, p_observation_space: MSpace, p_action_space: MSpace, p_buffer_size: int, 
                 p_ada, p_batch_size=64, p_explore_chance=0.5, p_qnet_type="Q", 
                 p_alpha=0.2, p_tau=0.005, p_gamma=0.99, p_gradient_step=1, p_target_update_interval=1, 
                 p_warm_up_step=50000, p_automatic_entropy_tuning=True, p_learning_rate=3e-4, 
                 p_actor_lr=0.0003, p_critic_lr=0.0003, p_logging=True):
         """
         Args:
-            p_state_space (MSpace): State Space
+            p_observation_space (MSpace): Observation Space
             p_action_space (MSpace): Action Space
             p_buffer_size (int): Buffer size
             p_ada ([type]): Adaptability
@@ -280,7 +282,7 @@ class SAC(Policy):
             p_learning_rate ([type], optional): Learning. Defaults to 3e-4.
             p_logging (bool, optional): Logging. Defaults to True.
         """
-        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, 
+        super().__init__(p_observation_space, p_action_space, p_buffer_size=p_buffer_size, 
                          p_ada=p_ada, p_logging=p_logging)
         
 
@@ -309,7 +311,7 @@ class SAC(Policy):
         """
         
         action_dim = self.get_action_space().get_num_dim()
-        state_dim = self.get_state_space().get_num_dim()
+        state_dim = self.get_observation_space().get_num_dim()
         self._dist_cls = DiagGaussianDistribution
 
         # Check if action is Discrete
@@ -324,10 +326,10 @@ class SAC(Policy):
 
         self.policy_optim = optim.Adam(self.policy.parameters(), lr=self.actor_learning_rate)
 
-        self.critic = QNetwork(self.get_state_space().get_num_dim(), self.get_action_space().get_num_dim(), 
+        self.critic = QNetwork(self.get_observation_space().get_num_dim(), self.get_action_space().get_num_dim(), 
                                 64)
 
-        self.critic_target = QNetwork(self.get_state_space().get_num_dim(), self.get_action_space().get_num_dim(), 
+        self.critic_target = QNetwork(self.get_observation_space().get_num_dim(), self.get_action_space().get_num_dim(), 
                                 64)
 
         hard_update(self.critic_target, self.critic)
