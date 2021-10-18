@@ -8,12 +8,14 @@
 ## -- 2021-09-18  0.0.0     MRD      Creation
 ## -- 2021-09-18  1.0.0     MRD      Release first version only for continous action
 ## -- 2021-09-24  1.0.1     MRD      Add categorical distribution to deal with the discrete action
+## -- 2021-10-18  1.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 ## -- Reference
 ## -- https://github.com/DLR-RM/stable-baselines3
+## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-24)
+Ver. 1.0.2 (2021-10-18)
 
 This module provide A2C Algorithm based on reference.
 """
@@ -189,12 +191,12 @@ class A2C(Policy):
 
     C_BUFFER_CLS = SARSBuffer
     
-    def __init__(self, p_state_space: MSpace, p_action_space: MSpace, p_buffer_size: int, 
+    def __init__(self, p_observation_space: MSpace, p_action_space: MSpace, p_buffer_size: int, 
                 p_ada, p_use_gae=False, p_gae_lambda=0, p_gamma=0.99, 
                 p_value_loss_coef=0.5, p_entropy_coef=0, p_learning_rate=3e-4, p_logging=True):
         """
         Parameters:
-            p_state_space (MSpace): State Space
+            p_observation_space (MSpace): Observation Space
             p_action_space (MSpace): Action Space
             p_buffer_size (int): Buffer size
             p_ada ([type]): Adaptivity
@@ -206,7 +208,7 @@ class A2C(Policy):
             p_learning_rate ([type], optional): Learning rate. Defaults to 3e-4.
             p_logging (bool, optional): Toggle for logging. Defaults to True.
         """
-        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, 
+        super().__init__(p_observation_space, p_action_space, p_buffer_size=p_buffer_size, 
                         p_ada=p_ada, p_logging=p_logging)
         
         self.use_gae = p_use_gae
@@ -224,7 +226,7 @@ class A2C(Policy):
         """
         
         action_dim = self.get_action_space().get_num_dim()
-        state_dim = self.get_state_space().get_num_dim()
+        state_dim = self.get_observation_space().get_num_dim()
         dist = DiagGaussianDistribution
 
         # Check if action is Discrete
@@ -283,7 +285,7 @@ class A2C(Policy):
 
         # Evaluate the state action pair to get the value
         values, action_log_probs, dist_entropy = self.policy.evaluate_action(
-                                                                states.view(-1,self._state_space.get_num_dim()),
+                                                                states.view(-1,self._observation_space.get_num_dim()),
                                                                 actions.view(-1,self._action_space.get_num_dim())
                                                                 )
         

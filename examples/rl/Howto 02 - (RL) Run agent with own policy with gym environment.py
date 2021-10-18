@@ -11,10 +11,11 @@
 ## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
 ## -- 2021-09-29  1.1.1     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-06  1.1.2     DA       Refactoring 
+## -- 2021-10-18  1.1.3     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2021-10-06)
+Ver. 1.1.3 (2021-10-18)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 the fhswf_at_ml framework.
@@ -70,7 +71,7 @@ class MyScenario(Scenario):
         # 2 Setup standard single-agent with own policy
         self._agent = Agent(
             p_policy=MyPolicy(
-                p_state_space=self._env.get_state_space(),
+                p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
                 p_buffer_size=1,
                 p_ada=p_ada,

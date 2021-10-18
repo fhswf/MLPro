@@ -11,10 +11,11 @@
 ## -- 2021-09-23  1.1.0     SY       Updated wrapper WrEnvPZoo class, provides two different envs
 ## -- 2021-09-29  1.1.1     SY       Change name: WrEnvPZoo to WrEnvPZOO2MLPro
 ## -- 2021-10-06  1.1.2     DA       Refactoring 
+## -- 2021-10-18  1.1.3     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2021-10-06)
+Ver. 1.1.3 (2021-10-18)
 
 This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
 the fhswf_at_ml framework.
@@ -61,9 +62,9 @@ class PBScenario(Scenario):
         agent_id            = 0
         for k in self._env._zoo_env.action_spaces:
             agent_name      = "Agent_"+str(agent_id)
-            agent_sspace    = self._env.get_state_space()
+            agent_ospace    = self._env.get_state_space()
             agent_asspace   = self._env.get_action_space().spawn([agent_id])
-            agent           = Agent(p_policy=ContRandPolicy(p_state_space=agent_sspace,
+            agent           = Agent(p_policy=ContRandPolicy(p_observation_space=agent_ospace,
                                                             p_action_space=agent_asspace,
                                                             p_buffer_size=10,
                                                             p_ada=p_ada,

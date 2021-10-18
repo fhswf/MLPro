@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro.pool.sarbuffer
-## -- Module  : RandomSARBuffer
+## -- Module  : RandomSARSBuffer
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -20,7 +20,7 @@ from mlpro.bf.data import BufferRnd
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RandomSARBuffer(BufferRnd):
+class RandomSARSBuffer(BufferRnd):
     """
     Random Sampling SARBuffer.
     This is just renaming class from BufferRnd

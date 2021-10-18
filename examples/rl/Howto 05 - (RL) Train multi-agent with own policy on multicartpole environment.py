@@ -14,10 +14,11 @@
 ## -- 2021 09-26  1.2.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
 ## -- 2021-10-06  1.2.2     DA       Refactoring 
+## -- 2021-10-18  1.2.3     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2021-10-06)
+Ver. 1.2.3 (2021-10-18)
 
 This module shows how to train an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -86,7 +87,7 @@ class MyScenario(Scenario):
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=MyPolicy(
-                    p_state_space=self._env.get_state_space().spawn([0,1,2,3]),
+                    p_observation_space=self._env.get_state_space().spawn([0,1,2,3]),
                     p_action_space=self._env.get_action_space().spawn([0]),
                     p_buffer_size=1,
                     p_ada=True,
@@ -106,7 +107,7 @@ class MyScenario(Scenario):
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=MyPolicy(
-                    p_state_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
+                    p_observation_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
                     p_action_space=self._env.get_action_space().spawn([1,2]),
                     p_buffer_size=1,
                     p_ada=True,

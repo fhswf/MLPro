@@ -9,10 +9,11 @@
 ## -- 2021-09-23  1.0.0     WB       Released first version
 ## -- 2021 09-26  1.0.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
+## -- 2021-10-18  1.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-26)
+Ver. 1.0.2 (2021-10-18)
 
 This module shows how to implement A2C on the UR5 Robot Environment
 """
@@ -40,7 +41,7 @@ class ScenarioUR5A2C(Scenario):
         # 2 Setup standard single-agent with own policy
         self._agent = Agent(
             p_policy=A2C(
-                p_state_space=self._env.get_state_space(),
+                p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
                 p_buffer_size=100,
                 p_ada=p_ada,

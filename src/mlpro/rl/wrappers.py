@@ -24,10 +24,11 @@
 ## -- 2021-10-07  1.3.4     SY       Update WrEnvMLPro2PZoo() following above changes (ver. 1.3.3)
 ## -- 2021-10-07  1.4.0     MRD      Implement WrPolicySB32MLPro to wrap the policy from Stable-baselines3
 ## -- 2021-10-08  1.4.1     DA       Correction of wrapper WREnvGYM2MLPro
+## -- 2021-10-18  1.4.2     DA       Reefactoring class WrPolicySB32MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2021-10-07)
+Ver. 1.4.2 (2021-10-18)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
@@ -639,19 +640,25 @@ class WrEnvMLPro2PZoo():
         def close(self):
             self._mlpro_env.__del__()
             
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 class WrPolicySB32MLPro(Policy):
     """
     This class provides a policy wrapper from Standard Baselines 3 (SB3).
     Especially On-Policy Algorithm
     """
+
     C_TYPE        = 'SB3 Policy'
 
-    def __init__(self, p_sb3_policy, p_state_space, p_action_space, p_buffer_size, p_ada=True, p_logging=True):
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_sb3_policy, p_observation_space, p_action_space, p_buffer_size, p_ada=True, p_logging=True):
         """
         Args:
             p_sb3_policy : SB3 Policy
-            p_state_space : Environment State Space
+            p_observation_space : Observation Space
             p_action_space : Environment Action Space
             p_buffer_size : Buffer Size
             p_ada (bool, optional): Adaptability. Defaults to True.
@@ -669,7 +676,7 @@ class WrPolicySB32MLPro(Policy):
             def record(self, key=None, value=None, exclude=None):
                 pass
 
-        super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+        super().__init__(p_observation_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None
@@ -677,7 +684,7 @@ class WrPolicySB32MLPro(Policy):
 
         # Variable preparation for SB3
         action_space = None
-        state_space = None
+        observation_space = None
 
         # Check if action is Discrete or Box
         action_dim = self.get_action_space().get_num_dim()
@@ -698,25 +705,25 @@ class WrPolicySB32MLPro(Policy):
                             )
 
         # Check if state is Discrete or Box
-        state_dim = self.get_state_space().get_num_dim()
-        if len(self.get_state_space().get_dim(0).get_boundaries()) == 1:
-            state_space = gym.spaces.Discrete(self.get_state_space().get_dim(0).get_boundaries()[0])
+        observation_dim = self.get_observation_space().get_num_dim()
+        if len(self.get_observation_space().get_dim(0).get_boundaries()) == 1:
+            observation_space = gym.spaces.Discrete(self.get_observation_space().get_dim(0).get_boundaries()[0])
         else:
             lows = []
             highs = []
-            for dimension in range(state_dim):
-                lows.append(self.get_state_space().get_dim(dimension).get_boundaries()[0])
-                highs.append(self.get_state_space().get_dim(dimension).get_boundaries()[1])
+            for dimension in range(observation_dim):
+                lows.append(self.get_observation_space().get_dim(dimension).get_boundaries()[0])
+                highs.append(self.get_observation_space().get_dim(dimension).get_boundaries()[1])
 
-            state_space = gym.spaces.Box(
-                            low=np.array(lows, dtype=np.float32), 
-                            high=np.array(highs, dtype=np.float32), 
-                            shape=(state_dim,), 
-                            dtype=np.float32
-                            )
+            observation_space = gym.spaces.Box(
+                                    low=np.array(lows, dtype=np.float32), 
+                                    high=np.array(highs, dtype=np.float32), 
+                                    shape=(observation_dim,), 
+                                    dtype=np.float32
+                                )
 
         # Setup SB3 Model
-        self.sb3.observation_space = state_space
+        self.sb3.observation_space = observation_space
         self.sb3.action_space = action_space
         self.sb3.n_steps = p_buffer_size
         self.sb3.n_envs = 1
@@ -726,8 +733,10 @@ class WrPolicySB32MLPro(Policy):
 
         self._buffer = self.sb3.rollout_buffer
 
-    def compute_action(self, p_state: State) -> Action:
-        obs = p_state.get_values()
+
+## -------------------------------------------------------------------------------------------------
+    def compute_action(self, p_obs: State) -> Action:
+        obs = p_obs.get_values()
         
         if not isinstance(obs, torch.Tensor):
             obs = torch.Tensor(obs).reshape(1,obs.size).to(self.sb3.device)
@@ -742,6 +751,8 @@ class WrPolicySB32MLPro(Policy):
         action = Action(self._id, self._action_space, action)
         return action
 
+
+## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
         # Add to buffer
         self.add_buffer(p_args[0])
@@ -769,9 +780,13 @@ class WrPolicySB32MLPro(Policy):
 
         return True
     
+
+## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         self.sb3.rollout_buffer.reset()
     
+
+## -------------------------------------------------------------------------------------------------
     def add_buffer(self, p_buffer_element: SARSElement):
         """
         Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
@@ -789,6 +804,8 @@ class WrPolicySB32MLPro(Policy):
 
         self._buffer = self.sb3.rollout_buffer
 
+
+## -------------------------------------------------------------------------------------------------
     def _add_additional_buffer(self, p_buffer_element: SARSElement):
         p_buffer_element.add_value_element(self.additional_buffer_element)
         return p_buffer_element

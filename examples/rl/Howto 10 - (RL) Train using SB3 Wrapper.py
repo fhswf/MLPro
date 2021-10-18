@@ -8,10 +8,11 @@
 ## -- 2021-09-29  0.0.0     MRD      Creation
 ## -- 2021-10-07  1.0.0     MRD      Released first version
 ## -- 2021-10-08  1.0.1     DA       Take over the cycle limit from the environment
+## -- 2021-10-18  1.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-10-08)
+Ver. 1.0.2 (2021-10-18)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
@@ -57,7 +58,7 @@ class MyScenario(Scenario):
         # 3 Wrap the policy
         policy_wrapped = WrPolicySB32MLPro(
                 p_sb3_policy=policy_sb3, 
-                p_state_space=self._env.get_state_space(),
+                p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
                 p_buffer_size=500,
                 p_ada=p_ada,
