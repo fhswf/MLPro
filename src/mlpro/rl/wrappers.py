@@ -671,11 +671,18 @@ class WrPolicySB32MLPro(Policy):
             def record(self, key=None, value=None, exclude=None):
                 pass
 
+        class DummyEnv(gym.Env):
+            def __init__(self, p_state_space, p_action_space) -> None:
+                super().__init__()
+                self.state_space = p_state_space
+                self.action_space = p_action_space
+
+
         super().__init__(p_state_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None
-            
+        self.last_done = False
 
         # Variable preparation for SB3
         action_space = None
@@ -716,6 +723,8 @@ class WrPolicySB32MLPro(Policy):
                             shape=(state_dim,), 
                             dtype=np.float32
                             )
+                            
+        self.sb3.env = DummyEnv(state_space, action_space)
 
         # Setup SB3 Model
         self.sb3.observation_space = state_space
@@ -740,8 +749,6 @@ class WrPolicySB32MLPro(Policy):
 
         self.sb3._setup_model()
         self.sb3.set_logger(EmptyLogger)
-
-        self._buffer = self.sb3.rollout_buffer
 
     def _compute_action_on_policy(self, p_state: State) -> Action:
         obs = p_state.get_values()
