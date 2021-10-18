@@ -859,17 +859,15 @@ class Agent(Policy):
         if ( ( p_envmodel is not None ) and ( p_action_planner is None ) ) or ( ( p_envmodel is None ) and ( p_action_planner is not None ) ):
            raise ParamError('Model-based agents need an env model and an action planner')
            
-        self._observation       = None
-        self._reward            = None
-        self._previous_obs      = None
-        self._previous_action   = None
-        self._policy            = p_policy
-        self._action_space      = self._policy.get_action_space()
-        self._observation_space = self._policy.get_observation_space()
-        self._envmodel          = p_envmodel
-        self._action_planner    = p_action_planner
-        self._planning_depth    = p_planning_depth
-        self._planning_width    = p_planning_width
+        self._previous_observation  = None
+        self._previous_action       = None
+        self._policy                = p_policy
+        self._action_space          = self._policy.get_action_space()
+        self._observation_space     = self._policy.get_observation_space()
+        self._envmodel              = p_envmodel
+        self._action_planner        = p_action_planner
+        self._planning_depth        = p_planning_depth
+        self._planning_width        = p_planning_width
 
         self._set_id(p_id)
 
@@ -943,41 +941,6 @@ class Agent(Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
-        """
-        Default adaptation implementation of a single agent.
-
-        Parameters:
-            p_args[0]       State object (see class State)
-            p_args[1]       Reward object (see class Reward)
- 
-        Returns:
-            True, if something has beed adapted
-        """
-
-        # 1 Check: Adaptation possible?
-        if self._previous_obs is None:
-            self.log(self.C_LOG_TYPE_I, 'Adaption: previous observation is None -> adaptivity skipped')
-            return False
-
-
-        # 2 Extract agent specific observation data from state
-        state       = p_args[0]
-        reward      = p_args[1]
-        next_observation = self._extract_observation(state)
-
-
-        # 3 Adaptation
-        if self._envmodel is None:
-            # 3.1 Model-free adaptation
-            return self._policy.adapt(SARSElement(self._observation, self._previous_action, reward, next_observation))
-
-        else:
-            # 3.2 Model-based adaptation
-            raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
     def compute_action(self, p_state:State) -> Action:
         """
         Default implementation of a single agent.
@@ -991,23 +954,59 @@ class Agent(Policy):
 
         # 0 Intro
         self.log(self.C_LOG_TYPE_I, 'Action computation started')
-        self._previous_obs  = self._observation
-        self._observation   = self._extract_observation(p_state)
+        observation = self._extract_observation(p_state)
 
 
         # 1 Action computation
         if self._action_planner is None:
             # 1.1 W/o action planner
-            self._previous_action = self._policy.compute_action(self._observation)
+            action = self._policy.compute_action(observation)
 
         else:
             # 1.2 With action planner
-            self._previous_action = self._action_planner.compute_action(self._observation, self._policy, self._envmodel, self._planning_depth, self._planning_width)
+            action = self._action_planner.compute_action(observation, self._policy, self._envmodel, self._planning_depth, self._planning_width)
 
 
         # 2 Outro
         self.log(self.C_LOG_TYPE_I, 'Action computation finished')
-        return self._previous_action
+        self._previous_observation  = observation
+        self._previous_action       = action
+        return action
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        """
+        Default adaptation implementation of a single agent.
+
+        Parameters:
+            p_args[0]       State object (see class State)
+            p_args[1]       Reward object (see class Reward)
+ 
+        Returns:
+            True, if something has beed adapted
+        """
+
+        # 1 Check: Adaptation possible?
+        if self._previous_observation is None:
+            self.log(self.C_LOG_TYPE_I, 'Adaption: previous observation is None -> adaptivity skipped')
+            return False
+
+
+        # 2 Extract agent specific observation data from state
+        state       = p_args[0]
+        reward      = p_args[1]
+        observation = self._extract_observation(state)
+
+
+        # 3 Adaptation
+        if self._envmodel is None:
+            # 3.1 Model-free adaptation
+            return self._policy.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
+
+        else:
+            # 3.2 Model-based adaptation
+            raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1135,6 +1134,22 @@ class MultiAgent(Agent):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def compute_action(self, p_state:State) -> Action:
+        self.log(self.C_LOG_TYPE_I, 'Start of action computation for all agents...')      
+
+        action = Action()
+
+        for agent, weight in self._agents:
+            action_agent    = agent.compute_action(p_state)
+            action_element  = action_agent.get_elem(agent.get_id())
+            action_element.set_weight(weight)
+            action.add_elem(agent.get_id(), action_element)
+
+        self.log(self.C_LOG_TYPE_I, 'End of action computation for all agents...')  
+        return action      
+
+
+## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
         state     = p_args[0]
         reward    = p_args[1]
@@ -1152,22 +1167,6 @@ class MultiAgent(Agent):
 
         self._set_adapted(adapted)
         return adapted
-
-
-## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state:State) -> Action:
-        self.log(self.C_LOG_TYPE_I, 'Start of action computation for all agents...')      
-
-        action = Action()
-
-        for agent, weight in self._agents:
-            action_agent    = agent.compute_action(p_state)
-            action_element  = action_agent.get_elem(agent.get_id())
-            action_element.set_weight(weight)
-            action.add_elem(agent.get_id(), action_element)
-
-        self.log(self.C_LOG_TYPE_I, 'End of action computation for all agents...')  
-        return action      
 
 
 ## -------------------------------------------------------------------------------------------------
