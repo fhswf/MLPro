@@ -787,12 +787,9 @@ class WrPolicySB32MLPro(Policy):
         if self.collected_steps < self.sb3.train_freq.frequency:
             return False
    
-        # Check wheter
+        # Check Step > Warp Up Phase
         if self.sb3.num_timesteps > 0 and self.sb3.num_timesteps > self.sb3.learning_starts:
-            # If no `gradient_steps` is specified,
-            # do as many gradients steps as steps performed during the rollout
             gradient_steps = self.sb3.gradient_steps if self.sb3.gradient_steps >= 0 else self.collected_steps
-            # Special case when the user passes `gradient_steps=0`
             if gradient_steps > 0:
                 self.sb3.train(batch_size=self.sb3.batch_size, gradient_steps=gradient_steps)
 
@@ -842,6 +839,7 @@ class WrPolicySB32MLPro(Policy):
         self.last_buffer_element = self._add_additional_buffer(p_buffer_element)
         datas = self.last_buffer_element.get_data()
 
+        # TODO : to detect timlimit or cyclelimit termination
         info = {}
 
         if self.last_done:

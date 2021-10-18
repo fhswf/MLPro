@@ -858,7 +858,8 @@ class Agent(Policy):
 
         if ( ( p_envmodel is not None ) and ( p_action_planner is None ) ) or ( ( p_envmodel is None ) and ( p_action_planner is not None ) ):
            raise ParamError('Model-based agents need an env model and an action planner')
-           
+        
+        self._state             = None
         self._reward            = None
         self._previous_state    = None
         self._previous_action   = None
@@ -959,7 +960,8 @@ class Agent(Policy):
 
         # 0 Intro
         self.log(self.C_LOG_TYPE_I, 'Action computation started')
-        self._previous_state    = p_state
+        self._previous_state    = copy(self._state)
+        self._state             = p_state
 
 
         # 1 Action computation
