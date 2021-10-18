@@ -1002,7 +1002,7 @@ class Agent(Policy):
         # 3 Adaptation
         if self._envmodel is None:
             # 3.1 Model-free adaptation
-            return self._policy.adapt(SARSElement(self._previous_obs, self._previous_action, reward, observation))
+            return self._policy.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
 
         else:
             # 3.2 Model-based adaptation
