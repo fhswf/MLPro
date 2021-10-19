@@ -44,10 +44,11 @@
 ## --                                lets class get the cycle limit from the env
 ## -- 2021-10-18  1.4.3     DA       Refactoring Policy/Agent/MultiAgent: state space renamed to 
 ## --                                observation space
+## -- 2021-10-dd  1.5.0     DA       Model-based Agent functionality 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.3 (2021-10-18)
+Ver. 1.5.0 (2021-10-dd)
 
 This module provides model classes for reinforcement learning tasks.
 """
