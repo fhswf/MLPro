@@ -9,6 +9,7 @@
 ## -- 2021-10-07  1.0.0     MRD      Released first version
 ## -- 2021-10-08  1.0.1     DA       Take over the cycle limit from the environment
 ## -- 2021-10-18  1.0.2     DA       Refactoring
+## -- 2021-10-18  1.0.3     MRD      SB3 Off Policy Wrapper DQN, DDPG, SAC
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -18,7 +19,7 @@ This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
 
 import gym
-from stable_baselines3 import A2C, PPO
+from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
@@ -41,18 +42,34 @@ class MyScenario(Scenario):
         # the wrapper manually
 
         # A2C
-        policy_sb3 = A2C(
-                    policy="MlpPolicy", 
-                    env=None,
-                    learning_rate=3e-4,
-                    use_rms_prop=False, 
-                    _init_setup_model=False)
-
-        # PPO
-        # policy_sb3 = PPO(
+        # policy_sb3 = A2C(
         #             policy="MlpPolicy", 
         #             env=None,
-        #             learning_rate=3e-4,
+        #             use_rms_prop=False, 
+        #             _init_setup_model=False)
+
+        # PPO
+        policy_sb3 = PPO(
+                    policy="MlpPolicy", 
+                    env=None,
+                    _init_setup_model=False)
+
+        # DQN Discrete only
+        # policy_sb3 = DQN(
+        #             policy="MlpPolicy", 
+        #             env=None,
+        #             _init_setup_model=False)
+
+        # DDPG Continuous only
+        # policy_sb3 = DDPG(
+        #             policy="MlpPolicy", 
+        #             env=None,
+        #             _init_setup_model=False)
+
+        # SAC Continuous only
+        # policy_sb3 = SAC(
+        #             policy="MlpPolicy", 
+        #             env=None,
         #             _init_setup_model=False)
 
         # 3 Wrap the policy
