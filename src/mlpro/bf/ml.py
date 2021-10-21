@@ -15,12 +15,13 @@
 ## -- 2021-09-25  1.0.2     MRD      Add __len__ functionality for SARBuffer
 ## -- 2021-10-06  1.0.3     DA       Extended class Adaptive by new methods _adapt(), get_adapted(),
 ## --                                _set_adapted(); moved Buffer classes to mlpro.bf.data.py
+## -- 2021-10-21  1.1.0     DA       New class AdaptiveFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2021-10-06)
+Ver. 1.1.0 (2021-10-21)
 
-This module provides common machine learning functionalities and properties.
+This module provides fundamental machine learning functionalities and properties.
 """
 
 from mlpro.bf.various import *
@@ -232,3 +233,71 @@ class Adaptive(Log, LoadSave):
 
         raise NotImplementedError
 
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AdaptiveFunction (Adaptive, Function):
+    """
+    Model class for an adaptive bi-multivariate mathematical function.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_input_space:MSpace, p_output_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+        Adaptive.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+        Function.__init__(self, p_input_space=p_input_space, p_output_space=p_output_space)
+        self._threshold         = p_threshold
+        self._mappings_total    = 0             # Number of mappings since last adaptation
+        self._mappings_good     = 0             # Number of 'good' mappings since last adaptation
+
+
+## -------------------------------------------------------------------------------------------------
+    def adapt(self, p_input:Element, p_output:Element) -> bool:
+        """
+        Parameters:
+            p_input         Abscissa/input element object (type Element)
+            p_output        Setpoint ordinate/output element (type Element)
+        """
+
+        if not self._adaptivity: return False
+        self.log(self.C_LOG_TYPE_I, 'Adaptation started')
+
+        # Quality check
+        if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
+            # Quality of function ok. No need to adapt.
+            self._mappings_total    += 1
+            self._mappings_good     += 1
+
+        else:
+            # Quality of function not ok. Adapation is to be triggered.
+            self._set_adapted(self._adapt(p_input, p_output))
+            if self.get_adapted():
+                self._mappings_total    = 1
+                self._mappings_good     = 1
+            else:
+                self._mappings_total    += 1
+
+        return self.get_adapted()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, p_input:Element, p_output:Element) -> bool:
+        """
+        Protected custom adaptation algorithm that is called by public adaptation method. Please redefine.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_maturity(self):
+        """
+        Returns the maturity of the adaptive function. The maturity is defined as the relation 
+        between the number of successful mapped inputs and the total number of mappings since the 
+        last adaptation.
+        """
+
+        if self._mappings_total == 0: return 0
+        return self._mappings_good / self._mappings_total

@@ -13,10 +13,11 @@
 ## --                                - new class DataObject
 ## --                                - new base set type 'D' in class Dimension
 ## --                                - changes in class Element: list instead of np.array
+## -- 2021-10-21  1.3.0     DA       New class Function
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-09-23)
+Ver. 1.3.0 (2021-10-21)
 
 This module provides basic mathematical classes.
 """
@@ -337,3 +338,38 @@ class ESpace(MSpace):
 ## -------------------------------------------------------------------------------------------------
     def distance(self, p_e1: Element, p_e2: Element):
         return np.sum( ( np.array(p_e1.get_values()) - np.array(p_e2.get_values()) )**2 )**0.5
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Function:
+    """
+    Model class for an elementary bi-multivariate mathematical function that maps elements of a
+    multivariate input space to elements of a multivariate output space.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_input_space:MSpace, p_output_space:MSpace):
+        self._input_space   = p_input_space
+        self._output_space  = p_output_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def map(self, p_input:Element) -> Element:
+        """
+        Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
+        """
+
+        return self._map(p_input)
+        
+        
+## -------------------------------------------------------------------------------------------------
+    def _map(self, p_input:Element) -> Element:
+        """
+        Protected custom mapping algorithm - called by public map method. Please redefine.
+        """
+
+        raise NotImplementedError

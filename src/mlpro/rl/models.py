@@ -674,7 +674,13 @@ class EnvModel(EnvBase, Adaptive):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_buffer_size=1, p_ada=True, p_logging=True):
         EnvBase.__init__(self, p_logging=p_logging)
-        Adaptive.__init__(self, p_buffer=self.C_BUFFER_CLS(p_size=p_buffer_size), p_ada=p_ada, p_logging=p_logging)
+        Adaptive.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+# ## -------------------------------------------------------------------------------------------------
+#     def _adapt(self, *p_args) -> bool:
+
+#         pass
 
 
 
