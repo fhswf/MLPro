@@ -32,7 +32,7 @@ from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld])
+@pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld, MultiCartPole])
 def test_environment(env_cls):
     env = env_cls()
     assert isinstance(env, Environment)
