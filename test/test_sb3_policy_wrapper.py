@@ -21,10 +21,10 @@ import gym
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
-from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
+from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC, TD3
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [A2C, PPO, DQN, DDPG, SAC])
+@pytest.mark.parametrize("env_cls", [A2C, PPO, DQN, DDPG, SAC, TD3])
 def test_sb3_policy_wrapper(env_cls):
     class MyScenario(Scenario):
 
