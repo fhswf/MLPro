@@ -695,7 +695,23 @@ class EnvModel(EnvBase, Adaptive):
             p_arg[0]           Object of type SARSElement
         """
 
+        # ... to be implemented
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_maturity(self):
+        """
+        Returns maturity of environment model.
+        """
+
+        return min(self._afct_strans.get_maturity(), self._afct_strans.get_maturity())
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_buffer(self):
+        self._afct_strans.clear_buffer()
+        self._afct_reward.clear_buffer()
 
 
 
@@ -793,17 +809,6 @@ class Policy(Adaptive, Plottable):
         raise NotImplementedError
 
 
-## -------------------------------------------------------------------------------------------------
-    def clear_buffer(self):
-        """
-        Intended to clear internal temporary attributes, buffers, ... Can be used while training
-        to prepare the next episode.
-        """
-
-        if self._buffer is not None:
-            self._buffer.clear()
-
-
 
 
 
@@ -858,12 +863,13 @@ class Agent(Policy):
     C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_action_planner:ActionPlanner=None, p_planning_depth=0, p_planning_width=0, p_name='', p_id=0, p_ada=True, 
+    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_em_mat_thsld=1, p_action_planner:ActionPlanner=None, p_planning_depth=0, p_planning_width=0, p_name='', p_id=0, p_ada=True, 
                 p_logging=True):
         """
         Parameters:
             p_policy            Policy object
             p_envmodel          Optional environment model object
+            p_em_mat_thsld      Threshold for environment model maturity (whether or not the envmodel is 'good' enougth to be used to train the policy)
             p_action_planner    Optional action planner object (obligatory for model based agents)
             p_planning_depth    Optional planning depth (obligatory for model based agents)
             p_planning_width    Optional planning width (obligatory for model based agents)
@@ -887,6 +893,7 @@ class Agent(Policy):
         self._action_space          = self._policy.get_action_space()
         self._observation_space     = self._policy.get_observation_space()
         self._envmodel              = p_envmodel
+        self._em_mat_thsld          = p_em_mat_thsld
         self._action_planner        = p_action_planner
         self._planning_depth        = p_planning_depth
         self._planning_width        = p_planning_width
@@ -1019,23 +1026,32 @@ class Agent(Policy):
         state       = p_args[0]
         reward      = p_args[1]
         observation = self._extract_observation(state)
+        adapted     = False
 
 
         # 3 Adaptation
         if self._envmodel is None:
             # 3.1 Model-free adaptation
-            return self._policy.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
+            adapted = self._policy.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
 
         else:
             # 3.2 Model-based adaptation
-            return self._envmodel.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
+            adapted = self._envmodel.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
 
-            # Missing part: policy adaptation...
+            if self._envmodel.get_maturity() >= self._em_mat_thsld:
+                adapted = adapted or self._adapt_policy_by_model()
+
+        return adapted
+
+
+    def _adapt_policy_by_model(self):
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         self._policy.clear_buffer()
+        if self._envmodel is not None: self._envmodel.clear_buffer()
 
 
 

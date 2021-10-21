@@ -234,6 +234,11 @@ class Adaptive(Log, LoadSave):
         raise NotImplementedError
 
 
+## -------------------------------------------------------------------------------------------------
+    def clear_buffer(self):
+        if self._buffer is not None: self._buffer.clear()
+
+
 
 
 
