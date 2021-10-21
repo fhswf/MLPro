@@ -669,18 +669,33 @@ class EnvModel(EnvBase, Adaptive):
 
     C_TYPE          = 'EnvModel'
 
-    C_BUFFER_CLS    = SARSBuffer
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_afct_strans:AdaptiveFunction, p_afct_reward:AdaptiveFunction, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_afct_strans       Adaptive function for state transition prediction
+            p_afct_reward       Adaptive function for reward prediction
+            p_ada                   Boolean switch for adaptivity
+            p_logging               Boolean switch for logging functionality
+        """
+
+        EnvBase.__init__(self, p_logging=p_logging)
+        Adaptive.__init__(self, p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
+
+        self._afct_strans   = p_afct_strans
+        self._afct_reward   = p_afct_reward
+
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer_size=1, p_ada=True, p_logging=True):
-        EnvBase.__init__(self, p_logging=p_logging)
-        Adaptive.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+    def _adapt(self, *p_args) -> bool:
+       """
+        Adapts the internal predictive functions based on State-Action-Reward-State (SARS) data.
 
+        Parameters:
+            p_arg[0]           Object of type SARSElement
+        """
 
-# ## -------------------------------------------------------------------------------------------------
-#     def _adapt(self, *p_args) -> bool:
-
-#         pass
+        pass
 
 
 
@@ -1013,7 +1028,9 @@ class Agent(Policy):
 
         else:
             # 3.2 Model-based adaptation
-            raise NotImplementedError
+            return self._envmodel.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
+
+            # Missing part: policy adaptation...
 
 
 ## -------------------------------------------------------------------------------------------------
