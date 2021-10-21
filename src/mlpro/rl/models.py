@@ -688,7 +688,7 @@ class EnvModel(EnvBase, Adaptive):
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
-       """
+        """
         Adapts the internal predictive functions based on State-Action-Reward-State (SARS) data.
 
         Parameters:
