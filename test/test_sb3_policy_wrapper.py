@@ -35,14 +35,9 @@ def test_sb3_policy_wrapper(env_cls):
             gym_env     = gym.make('MountainCarContinuous-v0')
             self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
             
-
             param = {"policy": "MlpPolicy", "env": None, "_init_setup_model": False}
 
-            if env_cls == A2C:
-                param = {**param, **{"use_rms_prop": False}}
-
             if env_cls == DQN:
-                print("Here")
                 gym_env     = gym.make('CartPole-v1')
                 self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
 
