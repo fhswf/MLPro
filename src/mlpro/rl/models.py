@@ -705,7 +705,7 @@ class EnvModel(EnvBase, Adaptive):
         Returns maturity of environment model.
         """
 
-        return min(self._afct_strans.get_maturity(), self._afct_strans.get_maturity())
+        return min(self._afct_strans.get_maturity(), self._afct_reward.get_maturity())
 
 
 ## -------------------------------------------------------------------------------------------------
