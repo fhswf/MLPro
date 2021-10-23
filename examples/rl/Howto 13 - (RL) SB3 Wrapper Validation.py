@@ -20,10 +20,11 @@ This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 
 import gym
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
+from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
-from collections import deque
+
 
 # 1 Implement your own RL scenario
 class MyScenario(Scenario):
@@ -99,7 +100,10 @@ myscenario  = MyScenario(
     p_logging=False
 )
 
-# 3 Instantiate training
+# 3 Copy the SB3 Policy
+sb3_pol = copy.deepcopy(myscenario._agent._policy.sb3.policy)
+
+# 4 Instantiate training
 training        = Training(
     p_scenario=myscenario,
     p_episode_limit=200,
@@ -110,10 +114,10 @@ training        = Training(
     p_logging=True
 )
 
-# 4 Train
+# 5 Train
 training.run()
 
-# 5 Create Plotting Class
+# 6 Create Plotting Class
 class MyDataPlotting(DataPlotting):
     def get_plots(self):
         """
@@ -149,7 +153,7 @@ class MyDataPlotting(DataPlotting):
                 else:
                     plt.close(fig)
 
-# 6 Plotting    
+# 7 Plotting 1 MLpro    
 data_printing   = {"Cycle":        [False],
                     "Day":          [False],
                     "Second":       [False],
@@ -160,3 +164,55 @@ data_printing   = {"Cycle":        [False],
 _,_,_,mem = training.get_data()
 mem_plot    = MyDataPlotting(mem, p_window=10, p_showing=True, p_printing=data_printing)
 mem_plot.get_plots()
+
+# 8 Create Callback for the SB3 Training
+class CustomCallback(BaseCallback):
+    """
+    A custom callback that derives from ``BaseCallback``.
+
+    :param verbose: (int) Verbosity level 0: not output 1: info 2: debug
+    """
+    def __init__(self, p_limit_episode, p_verbose=0):
+        super(CustomCallback, self).__init__(p_verbose)
+        reward_space = Set()
+        reward_space.add_dim(Dimension(0, "Native"))
+        self.ds_rewards  = RLDataStoring(reward_space)
+        self.episode_num = 0
+        self.episode_limit = p_limit_episode
+        self.total_cycle = 0
+
+    def _on_training_start(self) -> None:
+        self.ds_rewards.add_episode(self.episode_num)
+
+    def _on_step(self) -> bool:
+        if self.episode_num > self.episode_limit:
+            return False
+
+        self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("rewards"))
+        self.total_cycle += 1
+        if self.locals.get("infos")[0]:
+            print(self.episode_num, self.total_cycle, self.locals.get("infos")[0]["episode"]["r"])
+            self.episode_num += 1
+            self.total_cycle = 0
+            self.ds_rewards.add_episode(self.episode_num)
+        
+        return True
+
+    def _on_training_end(self) -> None:
+        data_printing   = {"Cycle":        [False],
+                            "Day":          [False],
+                            "Second":       [False],
+                            "Microsecond":  [False],
+                            "Native":        [True,-1]}
+        mem_plot    = MyDataPlotting(self.ds_rewards, p_window=10, p_showing=True, p_printing=data_printing)
+        mem_plot.get_plots()
+
+# 9 Run the SB3 Training
+env     = gym.make('CartPole-v1')
+policy_sb3 = PPO(
+                policy="MlpPolicy", 
+                env=env,
+                n_steps=500,
+                verbose=0)
+policy_sb3.policy = sb3_pol
+policy_sb3.learn(total_timesteps=1000000, callback=CustomCallback(p_limit_episode=200))
