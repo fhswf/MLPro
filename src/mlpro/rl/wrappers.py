@@ -694,6 +694,8 @@ class WrPolicySB32MLPro(Policy):
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None
         self.last_done = False
+        self.action_lows = []
+        self.action_highs = []
 
         # Variable preparation for SB3
         action_space = None
@@ -704,15 +706,15 @@ class WrPolicySB32MLPro(Policy):
         if len(self.get_action_space().get_dim(0).get_boundaries()) == 1:
             action_space = gym.spaces.Discrete(self.get_action_space().get_dim(0).get_boundaries()[0])
         else:
-            lows = []
-            highs = []
+            self.action_lows = []
+            self.action_highs = []
             for dimension in range(action_dim):
-                lows.append(self.get_action_space().get_dim(dimension).get_boundaries()[0])
-                highs.append(self.get_action_space().get_dim(dimension).get_boundaries()[1])
+                self.action_lows.append(self.get_action_space().get_dim(dimension).get_boundaries()[0])
+                self.action_highs.append(self.get_action_space().get_dim(dimension).get_boundaries()[1])
 
             action_space = gym.spaces.Box(
-                            low=np.array(lows, dtype=np.float32), 
-                            high=np.array(highs, dtype=np.float32), 
+                            low=np.array(self.action_lows, dtype=np.float32), 
+                            high=np.array(self.action_highs, dtype=np.float32), 
                             shape=(action_dim,), 
                             dtype=np.float32
                             )
@@ -761,6 +763,7 @@ class WrPolicySB32MLPro(Policy):
 
         self.sb3._setup_model()
         self.sb3.set_logger(EmptyLogger)
+        self.sb3.policy.set_training_mode(False)
 
     def _compute_action_on_policy(self, p_obs: State) -> Action:
         obs = p_obs.get_values()
@@ -770,13 +773,20 @@ class WrPolicySB32MLPro(Policy):
         
         with torch.no_grad():
             actions, values, log_probs = self.sb3.policy.forward(obs)
-        
-        # Add to additional_buffer_element
-        self.additional_buffer_element = dict(value=values, action_log=log_probs)
 
-        action = actions.cpu().numpy().flatten()
-        action = Action(self._id, self._action_space, action)
-        return action
+        actions = actions.cpu().numpy().flatten()
+        clipped_action = actions
+
+        # Clipping if Continuous Action
+        if len(self.get_action_space().get_dim(0).get_boundaries()) > 1:
+            clipped_action = np.clip(actions, self.action_lows, self.action_highs)
+
+        actions = Action(self._id, self._action_space, actions)
+        clipped_action = Action(self._id, self._action_space, clipped_action)
+
+        # Add to additional_buffer_element
+        self.additional_buffer_element = dict(action=actions, value=values, action_log=log_probs)
+        return clipped_action
 
     def _compute_action_off_policy(self, p_obs: State) -> Action:
         self.sb3._last_obs = p_obs.get_values()
@@ -832,6 +842,9 @@ class WrPolicySB32MLPro(Policy):
 
         # Clear Buffer After Update
         self.sb3.rollout_buffer.reset()
+
+        # Set Training Mode
+        self.sb3.policy.set_training_mode(False)
 
         return True
     

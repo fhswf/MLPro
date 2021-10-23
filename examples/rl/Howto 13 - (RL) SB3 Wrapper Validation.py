@@ -25,10 +25,9 @@ from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
+from mlpro.rl.wrappers import WrEnvMLPro2GYM
+from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 
-
-gym_env     = gym.make('CartPole-v1')
-gym_env.seed(1)
 max_episode = 500
 mva_window = 100
 
@@ -39,7 +38,11 @@ class MyScenario(Scenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        # self._env   = RobotHTM(p_logging=False)
+        # mlpro_env = RobotHTM(p_seed=1, p_logging=False)
+        # gym_env     = gym.make('MountainCarContinuous-v0')
+        gym_env     = gym.make('CartPole-v1')
+        gym_env.seed(1)
+        # self._env   = mlpro_env
         self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
 
         # 2 Instatiate Policy From SB3
@@ -190,10 +193,21 @@ class CustomCallback(BaseCallback):
         self.total_cycle = 0
         self.plots = None
 
+        self.continue_training = True
+        self.rewards_cnt = []
+
     def _on_training_start(self) -> None:
         self.ds_rewards.add_episode(self.episode_num)
 
     def _on_step(self) -> bool:
+        # Custom Env Without Cycle Limit
+        # if self.continue_training:
+        #     self.rewards_cnt.append(self.locals.get("rewards"))
+        #     self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("rewards"))
+        #     self.total_cycle += 1
+        # else:
+        #     return False
+
         self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("rewards"))
         self.total_cycle += 1
         if self.locals.get("infos")[0]:
@@ -206,6 +220,17 @@ class CustomCallback(BaseCallback):
         
         return True
 
+    # Custom Env Without Cycle Limit
+    # def _on_rollout_end(self) -> None:
+    #     print(self.episode_num, self.total_cycle, sum(self.rewards_cnt))
+    #     self.episode_num += 1
+    #     self.total_cycle = 0
+    #     if self.episode_num >= self.episode_limit:
+    #         self.continue_training = False
+    #     else:
+    #         self.rewards_cnt = []
+    #         self.ds_rewards.add_episode(self.episode_num)
+
     def _on_training_end(self) -> None:
         data_printing   = {"Cycle":        [False],
                             "Day":          [False],
@@ -217,6 +242,11 @@ class CustomCallback(BaseCallback):
         self.plots = mem_plot.plots
 
 # 9 Run the SB3 Training
+# mlpro_env = RobotHTM(p_seed=1, p_logging=False)
+# gym_env     = gym.make('MountainCarContinuous-v0')
+gym_env     = gym.make('CartPole-v1')
+gym_env.seed(1)
+# gym_env = WrEnvMLPro2GYM(mlpro_env)
 policy_sb3 = PPO(
                 policy="MlpPolicy", 
                 env=gym_env,

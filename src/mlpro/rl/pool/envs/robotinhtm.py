@@ -167,7 +167,7 @@ class RobotHTM(Environment):
     C_LATENCY   = timedelta(0,1,0)
     C_INFINITY  = np.finfo(np.float32).max
 
-    def __init__(self, p_num_joints=3, p_target_mode="Random", p_logging=True):
+    def __init__(self, p_num_joints=3, p_target_mode="Random", p_seed=None, p_logging=True):
         """
         Parameters:
             p_logging               Boolean switch for logging
@@ -175,6 +175,9 @@ class RobotHTM(Environment):
             p_target_mode           Target Mode (Random or Fixed)
         """
         
+        if p_seed is not None:
+            np.random.seed(p_seed)
+            random.seed(p_seed)
         self.RobotArm1 = RobotArm3D()
 
         roboconf = {}
@@ -218,22 +221,22 @@ class RobotHTM(Environment):
             num = random.random()
             if num < 0.2:
                 self.target = torch.Tensor([[0.5, 0.5, 0.5]])
-                self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
             elif num < 0.4:
                 self.target = torch.Tensor([[0.0, 0.5, 0.5]])
-                self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
             elif num < 0.6:
                 self.target = torch.Tensor([[-0.5, 0.0, 0.5]])
-                self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
             elif num < 0.8:
                 self.target = torch.Tensor([[0.0, -0.5, 0.5]])
-                self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
             else:
                 self.target = torch.Tensor([[-0.5, -0.5, 0.5]])
-                self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
         else:
             self.target = torch.Tensor([[0.5, 0.5, 0.5]])
-            self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+            self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
 
         self.reset()
     
@@ -274,7 +277,7 @@ class RobotHTM(Environment):
    
     def _evaluate_state(self) -> None:
         disterror = np.linalg.norm(self._state.get_values()[:3] - self._state.get_values()[3:])
-        if disterror <= 0.2:
+        if disterror <= 0.1:
             self._state.set_done(True)
             self.goal_achievement = 1.0
         else:
@@ -285,10 +288,11 @@ class RobotHTM(Environment):
         reward = Reward(Reward.C_TYPE_OVERALL)
         disterror = np.linalg.norm(self._state.get_values()[:3] - self._state.get_values()[3:])
         
-        rew = -disterror
-        if disterror <= 0.2:
-            rew = rew + 20
-        rew = rew.astype("float64")
+        ratio = disterror/self.init_distance
+        rew = -torch.ones(1)*ratio
+        if disterror <= 0.1:
+            rew = rew + 5
+        rew = rew.item()
         reward.set_overall_reward(rew)
         return reward
     
@@ -306,19 +310,19 @@ class RobotHTM(Environment):
             num = random.random()
             if num < 0.2:
                 self.target = torch.Tensor([[0.5, 0.5, 0.5]])
-                self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
             elif num < 0.4:
                 self.target = torch.Tensor([[0.0, 0.5, 0.5]])
-                self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
             elif num < 0.6:
                 self.target = torch.Tensor([[-0.5, 0.0, 0.5]])
-                self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
             elif num < 0.8:
                 self.target = torch.Tensor([[0.0, -0.5, 0.5]])
-                self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
             else:
                 self.target = torch.Tensor([[-0.5, -0.5, 0.5]])
-                self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3,[-1]].reshape(1,3) - self.target)
         self._state = self.get_state()
         self._state.set_done(False)
         self.goal_achievement = 0.0                
