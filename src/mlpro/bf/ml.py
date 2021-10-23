@@ -15,11 +15,11 @@
 ## -- 2021-09-25  1.0.2     MRD      Add __len__ functionality for SARBuffer
 ## -- 2021-10-06  1.0.3     DA       Extended class Adaptive by new methods _adapt(), get_adapted(),
 ## --                                _set_adapted(); moved Buffer classes to mlpro.bf.data.py
-## -- 2021-10-21  1.1.0     DA       New class AdaptiveFunction
+## -- 2021-10-23  1.1.0     DA       New class AdaptiveFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-10-21)
+Ver. 1.1.0 (2021-10-23)
 
 This module provides fundamental machine learning functionalities and properties.
 """
@@ -249,10 +249,26 @@ class AdaptiveFunction (Adaptive, Function):
     Model class for an adaptive bi-multivariate mathematical function.
     """
 
+    C_TYPE          = 'Adaptive Fct'
+    C_NAME          = '????'
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_input_space:MSpace, p_output_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+    def __init__(self, p_input_space:MSpace, p_output_space:MSpace, p_output_elem_cls=Element, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_input_space       Input space
+            p_output_space      Output space
+            p_output_elem_cls   Output element class (compatible to class Element)
+            p_threshold         Threshold for the difference between a setpoint and a computed output. 
+                                Computed outputs with a difference less than this threshold will be 
+                                assessed as 'good' outputs.
+            p_buffer_size       Initial size of internal data buffer (0=no buffering)
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+
         Adaptive.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
-        Function.__init__(self, p_input_space=p_input_space, p_output_space=p_output_space)
+        Function.__init__(self, p_input_space=p_input_space, p_output_space=p_output_space, p_output_elem_cls=p_output_elem_cls)
         self._threshold         = p_threshold
         self._mappings_total    = 0             # Number of mappings since last adaptation
         self._mappings_good     = 0             # Number of 'good' mappings since last adaptation

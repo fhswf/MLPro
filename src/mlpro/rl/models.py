@@ -322,8 +322,8 @@ class EnvBase(Log, Plottable):
         """
 
         Log.__init__(self, p_logging=p_logging)
-        self._state_space      = ESpace()
-        self._action_space     = ESpace()
+        self._state_space      = ESpace()           # Euclidian space as default
+        self._action_space     = ESpace()           # Euclidian space as default
         self._state            = None
         self._last_action      = None
         self._goal_achievement = 0.0
@@ -555,8 +555,8 @@ class Environment(EnvBase):
         """
 
         # 1 Setup state space
-        # self.state_space.add_dim(Dimension(0, 'Pos', 'Position', '', 'm', 'm', [-50,50]))
-        # self.state_space.add_dim(Dimension(1, 'Vel', 'Velocity', '', 'm/sec', '\frac{m}{sec}', [-50,50]))
+        # self._state_space.add_dim(Dimension(0, 'Pos', 'Position', '', 'm', 'm', [-50,50]))
+        # self._state_space.add_dim(Dimension(1, 'Vel', 'Velocity', '', 'm/sec', '\frac{m}{sec}', [-50,50]))
 
         # 2 Setup action space
         # self.action_space.add_dim(Dimension(0, 'Rot', 'Rotation', '', '1/sec', '\frac{1}{sec}', [-50,50]))
@@ -627,6 +627,206 @@ class Environment(EnvBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class AFctSTrans(AdaptiveFunction):
+
+    C_TYPE          = 'AFct STrans'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_afct_cls, p_state_space:MSpace, p_action_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_state_space       State space
+            p_action_space      Action space
+            p_threshold         See description of class AdaptiveFunction
+            p_buffer_size       Initial size of internal data buffer (0=no buffering)
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+         
+        # concatenate state and action space to input space
+        # ...
+        input_space = None 
+
+        self._afct = p_afct_cls(p_input_space=input_space, p_output_space=p_state_space, p_output_elem_cls=State, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AFctReward(AdaptiveFunction):
+
+    C_TYPE          = 'AFct Reward'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_afct_cls, p_state_space:MSpace, p_action_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_state_space       State space
+            p_action_space      Action space
+            p_threshold         See description of class AdaptiveFunction
+            p_buffer_size       Initial size of internal data buffer (0=no buffering)
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+         
+        # concatenate state and action space to input space
+        # ...
+        input_space     = None 
+        output_space    = None
+
+        self._afct = p_afct_cls(p_input_space=input_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AFctDone(AdaptiveFunction):
+
+    C_TYPE          = 'AFct Done'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_state_space       State space
+            p_threshold         See description of class AdaptiveFunction
+            p_buffer_size       Initial size of internal data buffer (0=no buffering)
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+         
+        # concatenate state and action space to input space
+        # ...
+        output_space = None 
+
+        self._afct = p_afct_cls(p_input_space=p_state_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AFctBroken(AdaptiveFunction):
+
+    C_TYPE          = 'AFct Broken'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_state_space       State space
+            p_threshold         See description of class AdaptiveFunction
+            p_buffer_size       Initial size of internal data buffer (0=no buffering)
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+         
+        # concatenate state and action space to input space
+        # ...
+        output_space = None 
+
+        self._afct = p_afct_cls(p_input_space=p_state_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class EnvModel(EnvBase, Adaptive):
+    """
+    Template class for a Real world model to be used for model based agents.
+    """
+
+    C_TYPE          = 'EnvModel'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_afct_strans:AFctSTrans, p_afct_reward:AFctReward, p_afct_done:AFctDone, p_afct_broken:AFctBroken, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_state_space           State space
+            p_action_space          Action space
+            p_afct_strans           Adaptive function for state transition prediction
+            p_afct_reward           Adaptive function for reward prediction
+            p_afct_done             Adaptive function for done prediction
+            p_afct_broken           Adaptive function for broken prediction
+            p_ada                   Boolean switch for adaptivity
+            p_logging               Boolean switch for logging functionality
+        """
+
+        EnvBase.__init__(self, p_logging=p_logging)
+        Adaptive.__init__(self, p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
+        self._state_space   = p_state_space
+        self._action_space  = p_action_space
+        self._afct_strans   = p_afct_strans
+        self._afct_reward   = p_afct_reward
+        self._afct_done     = p_afct_done
+        self._afct_broken   = p_afct_broken
+ 
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        """
+        Adapts the internal predictive functions based on State-Action-Reward-State (SARS) data.
+
+        Parameters:
+            p_arg[0]           Object of type SARSElement
+        """
+
+        # ... to be implemented
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_maturity(self):
+        """
+        Returns maturity of environment model.
+        """
+
+        return min(self._afct_strans.get_maturity(), self._afct_reward.get_maturity(), self._afct_done.get_maturity(), self._afct_broken.get_maturity())
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_buffer(self):
+        self._afct_strans.clear_buffer()
+        self._afct_reward.clear_buffer()
+        self._afct_done.clear_buffer()
+        self._afct_broken.clear_buffer()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_functions(self):
+        return self._afct_strans, self._afct_reward, self._afct_done, self._afct_broken
+
+
+## -------------------------------------------------------------------------------------------------
+    def process_action(self, p_action: Action) -> bool:
+
+        # 1 Concatenate internal state and given action to input element of state transition fct
+        # ...
+        state_action = None
+
+        # 2 Predict next state
+        self._set_state(self._afct_strans.map(state_action))
+
+        return True
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class SARSElement(BufferElement):
     """
     Element of a SARSBuffer.
@@ -655,63 +855,6 @@ class SARSBuffer(Buffer):
     """
 
     pass
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class EnvModel(EnvBase, Adaptive):
-    """
-    Template class for a Real world model to be used for model based agents.
-    """
-
-    C_TYPE          = 'EnvModel'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_afct_strans:AdaptiveFunction, p_afct_reward:AdaptiveFunction, p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_afct_strans       Adaptive function for state transition prediction
-            p_afct_reward       Adaptive function for reward prediction
-            p_ada                   Boolean switch for adaptivity
-            p_logging               Boolean switch for logging functionality
-        """
-
-        EnvBase.__init__(self, p_logging=p_logging)
-        Adaptive.__init__(self, p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
-
-        self._afct_strans   = p_afct_strans
-        self._afct_reward   = p_afct_reward
-
-
-## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
-        """
-        Adapts the internal predictive functions based on State-Action-Reward-State (SARS) data.
-
-        Parameters:
-            p_arg[0]           Object of type SARSElement
-        """
-
-        # ... to be implemented
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_maturity(self):
-        """
-        Returns maturity of environment model.
-        """
-
-        return min(self._afct_strans.get_maturity(), self._afct_reward.get_maturity())
-
-
-## -------------------------------------------------------------------------------------------------
-    def clear_buffer(self):
-        self._afct_strans.clear_buffer()
-        self._afct_reward.clear_buffer()
 
 
 
@@ -1045,6 +1188,10 @@ class Agent(Policy):
 
 
     def _adapt_policy_by_model(self):
+        # 1 Instantiate a Scenario object
+        # 2 Instantiate a Training object
+        # 3 Execute episodical training
+        
         return True
 
 
