@@ -19,6 +19,7 @@ This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
 
 import gym
+import pandas as pd
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
 from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.rl.models import *
@@ -28,7 +29,8 @@ from mlpro.rl.wrappers import WrPolicySB32MLPro
 
 gym_env     = gym.make('CartPole-v1')
 gym_env.seed(1)
-max_episode = 200
+max_episode = 500
+mva_window = 100
 
 # 1 Implement your own RL scenario
 class MyScenario(Scenario):
@@ -147,7 +149,7 @@ class MyDataPlotting(DataPlotting):
                         minval = self.printing[name][1]
                     
                     label.append("%s"%fr_id)
-                ax.plot(self.moving_mean(raw, self.window))
+                ax.plot(raw)
                 ax.set_ylim(minval-(abs(minval)*0.1), maxval+(maxval*0.1))
                 ax.set_xlabel("Episode")
                 ax.legend(label, bbox_to_anchor = (1,0.5), loc = "center left")
@@ -167,7 +169,7 @@ data_printing   = {"Cycle":        [False],
 
 
 _,_,_,mem = training.get_data()
-mem_plot    = MyDataPlotting(mem, p_window=100, p_showing=False, p_printing=data_printing)
+mem_plot    = MyDataPlotting(mem, p_showing=False, p_printing=data_printing)
 mem_plot.get_plots()
 wrapper_plot = mem_plot.plots
 
@@ -192,15 +194,14 @@ class CustomCallback(BaseCallback):
         self.ds_rewards.add_episode(self.episode_num)
 
     def _on_step(self) -> bool:
-        if self.episode_num > self.episode_limit:
-            return False
-
         self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("rewards"))
         self.total_cycle += 1
         if self.locals.get("infos")[0]:
             print(self.episode_num, self.total_cycle, self.locals.get("infos")[0]["episode"]["r"])
             self.episode_num += 1
             self.total_cycle = 0
+            if self.episode_num >= self.episode_limit:
+                return False
             self.ds_rewards.add_episode(self.episode_num)
         
         return True
@@ -211,7 +212,7 @@ class CustomCallback(BaseCallback):
                             "Second":       [False],
                             "Microsecond":  [False],
                             "Native":        [True,-1]}
-        mem_plot    = MyDataPlotting(self.ds_rewards, p_window=100, p_showing=False, p_printing=data_printing)
+        mem_plot    = MyDataPlotting(self.ds_rewards, p_showing=False, p_printing=data_printing)
         mem_plot.get_plots()
         self.plots = mem_plot.plots
 
@@ -230,8 +231,12 @@ native_plot = cus_callback.plots
 # 10 Difference Plot
 native_ydata = native_plot[1][0].lines[0].get_ydata()
 wrapper_ydata = wrapper_plot[1][0].lines[0].get_ydata()
-plt.plot(native_ydata, label="Native")
-plt.plot(wrapper_ydata, label="Wrapper")
+smoothed_native = pd.Series.rolling(pd.Series(native_ydata), mva_window).mean()
+smoothed_native = [elem for elem in smoothed_native]
+smoothed_wrapper = pd.Series.rolling(pd.Series(wrapper_ydata), mva_window).mean()
+smoothed_wrapper = [elem for elem in smoothed_wrapper]
+plt.plot(smoothed_native, label="Native")
+plt.plot(smoothed_wrapper, label="Wrapper")
 plt.xlabel("Episode")
 plt.ylabel("Reward")
 plt.legend()
