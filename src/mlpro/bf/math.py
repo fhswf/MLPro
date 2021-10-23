@@ -13,11 +13,11 @@
 ## --                                - new class DataObject
 ## --                                - new base set type 'D' in class Dimension
 ## --                                - changes in class Element: list instead of np.array
-## -- 2021-10-21  1.3.0     DA       New class Function
+## -- 2021-10-23  1.3.0     DA       New class Function
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-10-21)
+Ver. 1.3.0 (2021-10-23)
 
 This module provides basic mathematical classes.
 """
@@ -352,9 +352,17 @@ class Function:
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_input_space:MSpace, p_output_space:MSpace):
-        self._input_space   = p_input_space
-        self._output_space  = p_output_space
+    def __init__(self, p_input_space:MSpace, p_output_space:MSpace, p_output_elem_cls=Element):
+        """
+        Parameters:
+            p_input_space       Input space
+            p_output_space      Output space
+            p_output_elem_cls   Output element class (compatible to class Element)
+        """
+
+        self._input_space       = p_input_space
+        self._output_space      = p_output_space
+        self._output_elem_cls   = p_output_elem_cls
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -363,13 +371,8 @@ class Function:
         Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
         """
 
-        return self._map(p_input)
+        output = self._output_elem_cls(p_set=self._output_space)
+        self._map(p_input, output)
+        return output
         
         
-## -------------------------------------------------------------------------------------------------
-    def _map(self, p_input:Element) -> Element:
-        """
-        Protected custom mapping algorithm - called by public map method. Please redefine.
-        """
-
-        raise NotImplementedError
