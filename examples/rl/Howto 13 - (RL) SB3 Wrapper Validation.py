@@ -26,6 +26,10 @@ from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
 
 
+gym_env     = gym.make('CartPole-v1')
+gym_env.seed(1)
+max_episode = 200
+
 # 1 Implement your own RL scenario
 class MyScenario(Scenario):
 
@@ -34,7 +38,6 @@ class MyScenario(Scenario):
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
         # self._env   = RobotHTM(p_logging=False)
-        gym_env     = gym.make('CartPole-v1')
         self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
 
         # 2 Instatiate Policy From SB3
@@ -53,7 +56,8 @@ class MyScenario(Scenario):
         policy_sb3 = PPO(
                     policy="MlpPolicy", 
                     env=None,
-                    _init_setup_model=False)
+                    _init_setup_model=False,
+                    seed=1)
 
         # DQN Discrete only
         # policy_sb3 = DQN(
@@ -106,7 +110,7 @@ sb3_pol = copy.deepcopy(myscenario._agent._policy.sb3.policy)
 # 4 Instantiate training
 training        = Training(
     p_scenario=myscenario,
-    p_episode_limit=200,
+    p_episode_limit=max_episode,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
@@ -130,8 +134,9 @@ class MyDataPlotting(DataPlotting):
                 fig     = plt.figure(figsize=(7,7))
                 raw   = []
                 label   = []
-                plt.title(name)
-                plt.grid(True, which="both", axis="both")
+                ax = fig.subplots(1,1)
+                ax.set_title(name)
+                ax.grid(True, which="both", axis="both")
                 for fr_id in self.data.frame_id[name]:
                     raw.append(np.sum(self.data.get_values(name,fr_id)))
                     if self.printing[name][1] == -1:
@@ -142,12 +147,12 @@ class MyDataPlotting(DataPlotting):
                         minval = self.printing[name][1]
                     
                     label.append("%s"%fr_id)
-                plt.plot(self.moving_mean(raw, self.window))
-                plt.ylim(minval-(abs(minval)*0.1), maxval+(maxval*0.1))
-                plt.xlabel("Episode")
-                plt.legend(label, bbox_to_anchor = (1,0.5), loc = "center left")
+                ax.plot(self.moving_mean(raw, self.window))
+                ax.set_ylim(minval-(abs(minval)*0.1), maxval+(maxval*0.1))
+                ax.set_xlabel("Episode")
+                ax.legend(label, bbox_to_anchor = (1,0.5), loc = "center left")
                 self.plots[0].append(name)
-                self.plots[1].append(fig)
+                self.plots[1].append(ax)
                 if self.showing:
                     plt.show()
                 else:
@@ -162,8 +167,9 @@ data_printing   = {"Cycle":        [False],
 
 
 _,_,_,mem = training.get_data()
-mem_plot    = MyDataPlotting(mem, p_window=10, p_showing=True, p_printing=data_printing)
+mem_plot    = MyDataPlotting(mem, p_window=100, p_showing=False, p_printing=data_printing)
 mem_plot.get_plots()
+wrapper_plot = mem_plot.plots
 
 # 8 Create Callback for the SB3 Training
 class CustomCallback(BaseCallback):
@@ -180,6 +186,7 @@ class CustomCallback(BaseCallback):
         self.episode_num = 0
         self.episode_limit = p_limit_episode
         self.total_cycle = 0
+        self.plots = None
 
     def _on_training_start(self) -> None:
         self.ds_rewards.add_episode(self.episode_num)
@@ -204,15 +211,28 @@ class CustomCallback(BaseCallback):
                             "Second":       [False],
                             "Microsecond":  [False],
                             "Native":        [True,-1]}
-        mem_plot    = MyDataPlotting(self.ds_rewards, p_window=10, p_showing=True, p_printing=data_printing)
+        mem_plot    = MyDataPlotting(self.ds_rewards, p_window=100, p_showing=False, p_printing=data_printing)
         mem_plot.get_plots()
+        self.plots = mem_plot.plots
 
 # 9 Run the SB3 Training
-env     = gym.make('CartPole-v1')
 policy_sb3 = PPO(
                 policy="MlpPolicy", 
-                env=env,
+                env=gym_env,
                 n_steps=500,
-                verbose=0)
-policy_sb3.policy = sb3_pol
-policy_sb3.learn(total_timesteps=1000000, callback=CustomCallback(p_limit_episode=200))
+                verbose=0,
+                seed=1)
+
+cus_callback = CustomCallback(p_limit_episode=max_episode)
+policy_sb3.learn(total_timesteps=1000000, callback=cus_callback)
+native_plot = cus_callback.plots
+
+# 10 Difference Plot
+native_ydata = native_plot[1][0].lines[0].get_ydata()
+wrapper_ydata = wrapper_plot[1][0].lines[0].get_ydata()
+plt.plot(native_ydata, label="Native")
+plt.plot(wrapper_ydata, label="Wrapper")
+plt.xlabel("Episode")
+plt.ylabel("Reward")
+plt.legend()
+plt.show()
