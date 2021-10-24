@@ -880,7 +880,6 @@ class WrPolicySB32MLPro(Policy):
                             datas["state"].get_done(),
                             [info])
 
-        self._buffer = self.sb3.replay_buffer
 
     def _add_buffer_on_policy(self, p_buffer_element: SARSElement):
         """
@@ -898,7 +897,6 @@ class WrPolicySB32MLPro(Policy):
                             datas["value"],
                             datas["action_log"])
 
-        self._buffer = self.sb3.rollout_buffer
 
 
 ## -------------------------------------------------------------------------------------------------
