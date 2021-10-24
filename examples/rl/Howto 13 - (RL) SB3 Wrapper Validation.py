@@ -30,6 +30,7 @@ from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 
 max_episode = 500
 mva_window = 100
+buffer_size = 100
 
 # 1 Implement your own RL scenario
 class MyScenario(Scenario):
@@ -38,12 +39,14 @@ class MyScenario(Scenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        # mlpro_env = RobotHTM(p_seed=1, p_logging=False)
+        mlpro_env = RobotHTM(p_seed=1, p_logging=False)
         # gym_env     = gym.make('MountainCarContinuous-v0')
-        gym_env     = gym.make('CartPole-v1')
-        gym_env.seed(1)
-        # self._env   = mlpro_env
-        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
+        # gym_env     = gym.make('Acrobot-v1')
+        # gym_env     = gym.make('LunarLanderContinuous-v2')
+        # gym_env     = gym.make('CartPole-v1')
+        # gym_env.seed(1)
+        self._env   = mlpro_env
+        # self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
 
         # 2 Instatiate Policy From SB3
         # env is set to None, it will be set up later inside the wrapper
@@ -87,7 +90,7 @@ class MyScenario(Scenario):
                 p_sb3_policy=policy_sb3, 
                 p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
-                p_buffer_size=500,
+                p_buffer_size=buffer_size,
                 p_ada=p_ada,
                 p_logging=p_logging)
         
@@ -104,7 +107,7 @@ class MyScenario(Scenario):
 myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
-    p_cycle_limit=-1,           # get cycle limit from environment
+    p_cycle_limit=100,           # get cycle limit from environment
     p_visualize=False,
     p_logging=False
 )
@@ -116,6 +119,7 @@ sb3_pol = copy.deepcopy(myscenario._agent._policy.sb3.policy)
 training        = Training(
     p_scenario=myscenario,
     p_episode_limit=max_episode,
+    p_cycle_limit=100,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
@@ -201,35 +205,36 @@ class CustomCallback(BaseCallback):
 
     def _on_step(self) -> bool:
         # Custom Env Without Cycle Limit
-        # if self.continue_training:
-        #     self.rewards_cnt.append(self.locals.get("rewards"))
-        #     self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("rewards"))
-        #     self.total_cycle += 1
-        # else:
-        #     return False
+        if self.continue_training:
+            self.rewards_cnt.append(self.locals.get("rewards"))
+            self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("rewards"))
+            self.total_cycle += 1
+        else:
+            return False
 
-        self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("rewards"))
-        self.total_cycle += 1
-        if self.locals.get("infos")[0]:
-            print(self.episode_num, self.total_cycle, self.locals.get("infos")[0]["episode"]["r"])
-            self.episode_num += 1
-            self.total_cycle = 0
-            if self.episode_num >= self.episode_limit:
-                return False
-            self.ds_rewards.add_episode(self.episode_num)
+        # With Cycle Limit
+        # self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("rewards"))
+        # self.total_cycle += 1
+        # if self.locals.get("infos")[0]:
+        #     print(self.episode_num, self.total_cycle, self.locals.get("infos")[0]["episode"]["r"])
+        #     self.episode_num += 1
+        #     self.total_cycle = 0
+        #     if self.episode_num >= self.episode_limit:
+        #         return False
+        #     self.ds_rewards.add_episode(self.episode_num)
         
         return True
 
     # Custom Env Without Cycle Limit
-    # def _on_rollout_end(self) -> None:
-    #     print(self.episode_num, self.total_cycle, sum(self.rewards_cnt))
-    #     self.episode_num += 1
-    #     self.total_cycle = 0
-    #     if self.episode_num >= self.episode_limit:
-    #         self.continue_training = False
-    #     else:
-    #         self.rewards_cnt = []
-    #         self.ds_rewards.add_episode(self.episode_num)
+    def _on_rollout_end(self) -> None:
+        print(self.episode_num, self.total_cycle, sum(self.rewards_cnt))
+        self.episode_num += 1
+        self.total_cycle = 0
+        if self.episode_num >= self.episode_limit:
+            self.continue_training = False
+        else:
+            self.rewards_cnt = []
+            self.ds_rewards.add_episode(self.episode_num)
 
     def _on_training_end(self) -> None:
         data_printing   = {"Cycle":        [False],
@@ -242,15 +247,17 @@ class CustomCallback(BaseCallback):
         self.plots = mem_plot.plots
 
 # 9 Run the SB3 Training
-# mlpro_env = RobotHTM(p_seed=1, p_logging=False)
+mlpro_env = RobotHTM(p_seed=1, p_logging=False)
+gym_env = WrEnvMLPro2GYM(mlpro_env)
 # gym_env     = gym.make('MountainCarContinuous-v0')
-gym_env     = gym.make('CartPole-v1')
-gym_env.seed(1)
-# gym_env = WrEnvMLPro2GYM(mlpro_env)
+# gym_env     = gym.make('Acrobot-v1')
+# gym_env     = gym.make('LunarLanderContinuous-v2')
+# gym_env     = gym.make('CartPole-v1')
+# gym_env.seed(1)
 policy_sb3 = PPO(
                 policy="MlpPolicy", 
                 env=gym_env,
-                n_steps=500,
+                n_steps=buffer_size,
                 verbose=0,
                 seed=1)
 
