@@ -657,7 +657,7 @@ class WrPolicySB32MLPro(Policy):
     C_TYPE        = 'SB3 Policy'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_sb3_policy, p_observation_space, p_action_space, p_buffer_size, p_ada=True, p_logging=True):
+    def __init__(self, p_sb3_policy, p_observation_space, p_action_space, p_ada=True, p_logging=True):
         """
         Args:
             p_sb3_policy : SB3 Policy
@@ -689,7 +689,7 @@ class WrPolicySB32MLPro(Policy):
                 self.observation_space = p_observation_space
                 self.action_space = p_action_space
 
-        super().__init__(p_observation_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+        super().__init__(p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
         
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None
@@ -746,7 +746,6 @@ class WrPolicySB32MLPro(Policy):
         self.sb3.n_envs = 1
 
         if isinstance(p_sb3_policy, OnPolicyAlgorithm):
-            self.sb3.n_steps = p_buffer_size
             self.compute_action = self._compute_action_on_policy
             self._add_buffer = self._add_buffer_on_policy
             self._adapt = self._adapt_on_policy
