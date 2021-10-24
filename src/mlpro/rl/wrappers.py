@@ -752,7 +752,6 @@ class WrPolicySB32MLPro(Policy):
             self.clear_buffer = self._clear_buffer_on_policy
             self._buffer = self.sb3.rollout_buffer
         else:
-            self.sb3.buffer_size = p_buffer_size
             self.compute_action = self._compute_action_off_policy
             self._add_buffer = self._add_buffer_off_policy
             self._adapt = self._adapt_off_policy
