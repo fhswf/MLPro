@@ -13,11 +13,11 @@
 ## --                                - new class DataObject
 ## --                                - new base set type 'D' in class Dimension
 ## --                                - changes in class Element: list instead of np.array
-## -- 2021-10-23  1.3.0     DA       New class Function
+## -- 2021-10-25  1.3.0     DA       New class Function
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-10-23)
+Ver. 1.3.0 (2021-10-25)
 
 This module provides basic mathematical classes.
 """
@@ -374,5 +374,10 @@ class Function:
         output = self._output_elem_cls(p_set=self._output_space)
         self._map(p_input, output)
         return output
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map(self, p_input:Element, p_output:Element):
+        raise NotImplementedError
         
         

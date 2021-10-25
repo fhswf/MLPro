@@ -628,6 +628,9 @@ class Environment(EnvBase):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class AFctSTrans(AdaptiveFunction):
+    """
+    Adaptive function for state transition prediction to be used inside the EnvModel class.
+    """
 
     C_TYPE          = 'AFct STrans'
 
@@ -649,6 +652,12 @@ class AFctSTrans(AdaptiveFunction):
         input_space = None 
 
         self._afct = p_afct_cls(p_input_space=input_space, p_output_space=p_state_space, p_output_elem_cls=State, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def map(self, p_state:State, p_action:Action) -> State:
+        input = None
+        return super().map(input)
 
 
 
@@ -820,6 +829,19 @@ class EnvModel(EnvBase, Adaptive):
         self._set_state(self._afct_strans.map(state_action))
 
         return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        """
+        Adapts the environment model based on State-Action-Reward-State (SARS) data.
+
+        Parameters:
+            p_arg[0]           Object of type SARSElement
+        """
+
+        raise NotImplementedError
+
 
 
 
