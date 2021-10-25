@@ -8,11 +8,12 @@
 ## -- 2021-06-16  1.0.0     SY       Creation/Release
 ## -- 2021-06-21  1.1.0     SY       Adjustment to updated DataPlotting class
 ## -- 2021-07-01  1.2.0     SY       Adjustment due to extension in save and load data
-## -- 2021-09-11  1.2.0     MRD      Change Header information to match our new library name
+## -- 2021-09-11  1.2.1     MRD      Change Header information to match our new library name
+## -- 2021-10-25  1.2.2     SY       Adjustment due to improvement in DataPlotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-09-11)
+Ver. 1.2.2 (2021-10-25)
 
 This module demonstrates how to store, plot, save and load variables.
 """
@@ -44,7 +45,18 @@ for ep in range(num_eps):
         mem.memorize("model_loss",ep_id,random.uniform(0.25-(ep*0.02),1-(ep*0.07)))
 
 ## 2. How to plot stored data ##        
-mem_plot    = DataPlotting(mem, p_window=100, p_showing=True, p_printing=data_printing)
+# 2.1. Plotting data per cycle
+# mem_plot    = DataPlotting(mem, p_type=DataPlotting.C_PLOT_TYPE_CY, p_window=100,
+#                             p_showing=True, p_printing=data_printing, p_figsize=(7,7),
+#                             p_color="darkblue")
+# 2.2. Plotting data with continuous cycle
+mem_plot    = DataPlotting(mem, p_type=DataPlotting.C_PLOT_TYPE_EP, p_window=1000,
+                            p_showing=True, p_printing=data_printing, p_figsize=(7,7),
+                            p_color="darkblue")
+# 2.3. Plotting data per epsiode according to its mean value
+# mem_plot    = DataPlotting(mem, p_type=DataPlotting.C_PLOT_TYPE_EP_M, p_window=1,
+#                             p_showing=True, p_printing=data_printing, p_figsize=(7,7),
+#                             p_color="darkblue")
 mem_plot.get_plots()
 
 ## 3. How to save plots and data in binary file (variables, classes, etc.) ##
