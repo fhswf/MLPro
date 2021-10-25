@@ -405,7 +405,7 @@ class ScientificObjects:
         self.set_item("Author", p_author)
         self.set_item("Title", p_title)
         self.set_item("Jorunal Name", p_journal)
-        self.set_item("Abstract", p_description)
+        self.set_item("Abstract", p_abstract)
         self.set_item("Year", p_year)
         self.set_item("Month", p_month)
         self.set_item("Day", p_day)
