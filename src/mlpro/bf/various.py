@@ -21,10 +21,11 @@
 ## -- 2021-10-07  1.6.0     DA       Class Log: 
 ## --                                - colored text depending on log type 
 ## --                                - new method set_log_level()
+## -- 2021-10-25  1.7.0     SY       Add new class ScientificObjects
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2021-10-07)
+Ver. 1.7.0 (2021-10-25)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer, ...
@@ -380,3 +381,66 @@ class TStamp:
 ## -------------------------------------------------------------------------------------------------
     def set_tstamp(self, p_tstamp:timedelta):
         self.tstamp = p_tstamp
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class ScientificObjects:
+    """
+    This class provides elementry functionality for storing scientific references.
+    """
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_type=None, p_author=None, p_title=None, p_journal=None, p_abstract=None,
+                 p_year=None, p_month=None, p_day=None, p_pages=None, p_volume=None, p_issue=None, 
+                 p_city=None, p_country=None, p_url=None, p_ror_id=None, p_doi=None,
+                 p_editor=None, p_publisher=None, p_translator=None, p_institution=None,
+                 p_conference=None, p_booktitle=None, p_notes=None):
+        self.references = {}
+        self.set_item("Type of source", p_type)
+        self.set_item("Author", p_author)
+        self.set_item("Title", p_title)
+        self.set_item("Jorunal Name", p_journal)
+        self.set_item("Abstract", p_description)
+        self.set_item("Year", p_year)
+        self.set_item("Month", p_month)
+        self.set_item("Day", p_day)
+        self.set_item("Pages", p_pages)
+        self.set_item("Volume", p_volume)
+        self.set_item("Issue", p_issue)
+        self.set_item("City", p_city)
+        self.set_item("Country", p_country)
+        self.set_item("URL", p_url)
+        self.set_item("ROR ID", p_ror_id)
+        self.set_item("DOI", p_doi)
+        self.set_item("Editor", p_editor)
+        self.set_item("Publisher", p_publisher)
+        self.set_item("Translator", p_translator)
+        self.set_item("Institution", p_institution)
+        self.set_item("Conference Publication Name", p_conference)
+        self.set_item("Book Title", p_booktitle)
+        self.set_item("Notes", p_notes)
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_item(self, p_item, p_input):
+        """
+        It is possible to add all kinds of information to the dictionary or update
+        the stored information.
+        """
+        if p_input:
+            self.references[p_item] = p_input
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_item(self, p_item):
+        return self.references.get(p_item)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_references(self):
+        return self.references

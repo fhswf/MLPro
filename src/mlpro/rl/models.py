@@ -44,10 +44,11 @@
 ## --                                lets class get the cycle limit from the env
 ## -- 2021-10-18  1.4.3     DA       Refactoring Policy/Agent/MultiAgent: state space renamed to 
 ## --                                observation space
+## -- 2021-10-25  1.4.4     SY       Enhancement of classes Policy, EnvBase by adding ScientificObjects.
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.3 (2021-10-18)
+Ver. 1.4.4 (2021-10-25)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -327,6 +328,7 @@ class EnvBase(Log, Plottable):
         self._last_action      = None
         self._goal_achievement = 0.0
         self.set_latency(p_latency)
+        self.add_references()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -438,6 +440,14 @@ class EnvBase(Log, Plottable):
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_references(self):
+        """
+        Add information related to a scientific object / reference. Please redefine.
+        """
+        self.references = ScientificObjects()
 
 
 
@@ -722,6 +732,7 @@ class Policy(Adaptive, Plottable):
         self._observation_space = p_observation_space
         self._action_space      = p_action_space
         self.set_id(0)
+        self.add_references()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -780,6 +791,14 @@ class Policy(Adaptive, Plottable):
 
         if self._buffer is not None:
             self._buffer.clear()
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_references(self):
+        """
+        Add information related to a scientific object / reference. Please redefine.
+        """
+        self.references = ScientificObjects()
 
 
 
