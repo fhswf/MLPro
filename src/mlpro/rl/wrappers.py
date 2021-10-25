@@ -91,7 +91,7 @@ class WrEnvGYM2MLPro(Environment):
         else:
             self._action_space = self._recognize_space(self._gym_env.action_space, "action")
 
-        self.reset()
+        # self.reset() This is double reset, should be removed
 
 
 ## -------------------------------------------------------------------------------------------------

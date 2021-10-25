@@ -28,8 +28,8 @@ from mlpro.rl.wrappers import WrPolicySB32MLPro
 from mlpro.rl.wrappers import WrEnvMLPro2GYM
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 
-max_episode = 500
-mva_window = 100
+max_episode = 150
+mva_window = 1
 buffer_size = 500
 
 # 1 Implement your own RL scenario
@@ -41,10 +41,10 @@ class MyScenario(Scenario):
         # 1 Setup environment
         # mlpro_env = RobotHTM(p_seed=1, p_logging=False)
         # gym_env     = gym.make('MountainCarContinuous-v0')
-        # gym_env     = gym.make('Acrobot-v1')
+        gym_env     = gym.make('Acrobot-v1')
         # gym_env     = gym.make('LunarLanderContinuous-v2')
-        gym_env     = gym.make('CartPole-v1')
-        gym_env.seed(1)
+        # gym_env     = gym.make('CartPole-v1')
+        gym_env.seed(2)
         # self._env   = mlpro_env
         self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
 
@@ -66,7 +66,7 @@ class MyScenario(Scenario):
                     env=None,
                     n_steps=buffer_size,
                     _init_setup_model=False,
-                    seed=1)
+                    seed=2)
 
         # DQN Discrete only
         # policy_sb3 = DQN(
@@ -194,6 +194,7 @@ class CustomCallback(BaseCallback):
         self.episode_num = 0
         self.episode_limit = p_limit_episode
         self.total_cycle = 0
+        self.cycles = 0
         self.plots = None
 
         self.continue_training = True
@@ -214,8 +215,9 @@ class CustomCallback(BaseCallback):
         # With Cycle Limit
         self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("rewards"))
         self.total_cycle += 1
+        self.cycles += 1
         if self.locals.get("infos")[0]:
-            print(self.episode_num, self.total_cycle, self.locals.get("infos")[0]["episode"]["r"])
+            print(self.episode_num, self.total_cycle, self.locals.get("infos")[0]["episode"]["r"], self.cycles)
             self.episode_num += 1
             self.total_cycle = 0
             if self.episode_num >= self.episode_limit:
@@ -249,19 +251,19 @@ class CustomCallback(BaseCallback):
 # mlpro_env = RobotHTM(p_seed=1, p_logging=False)
 # gym_env = WrEnvMLPro2GYM(mlpro_env)
 # gym_env     = gym.make('MountainCarContinuous-v0')
-# gym_env     = gym.make('Acrobot-v1')
+gym_env     = gym.make('Acrobot-v1')
 # gym_env     = gym.make('LunarLanderContinuous-v2')
-gym_env     = gym.make('CartPole-v1')
-gym_env.seed(1)
+# gym_env     = gym.make('CartPole-v1')
+gym_env.seed(2)
 policy_sb3 = PPO(
                 policy="MlpPolicy", 
                 env=gym_env,
                 n_steps=buffer_size,
                 verbose=0,
-                seed=1)
+                seed=2)
 
 cus_callback = CustomCallback(p_limit_episode=max_episode)
-policy_sb3.learn(total_timesteps=1000000, callback=cus_callback)
+policy_sb3.learn(total_timesteps=10000000, callback=cus_callback)
 native_plot = cus_callback.plots
 
 # 10 Difference Plot
