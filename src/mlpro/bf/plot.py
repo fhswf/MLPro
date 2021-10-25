@@ -167,7 +167,7 @@ class DataPlotting(LoadSave):
                         maxval = self.printing[name][2]
                 lines += plt.plot(self.moving_mean(data[:],self.window), color=self.color)
                 plt.ylim(self.printing[name][1], maxval)
-                plt.xlabel("continuous cycle")
+                plt.xlabel("continuous cycles")
                 self.plots[0].append(name)
                 self.plots[1].append(fig)
                 if self.showing:
@@ -198,7 +198,7 @@ class DataPlotting(LoadSave):
                     maxval = self.printing[name][2]
                 lines += plt.plot(self.moving_mean(data[:],self.window), color=self.color)
                 plt.ylim(self.printing[name][1], maxval)
-                plt.xlabel("episode")
+                plt.xlabel("episodes")
                 self.plots[0].append(name)
                 self.plots[1].append(fig)
                 if self.showing:
