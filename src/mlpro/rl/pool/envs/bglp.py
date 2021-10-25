@@ -920,11 +920,11 @@ class BGLP(Environment):
                 self.reward[actnum] += 1/(1+self.lr_margin*self.margin_t[actnum+1])
         return self.reward[:]
 
-    def add_references(self):
+    def add_reference(self):
         """
         Add information related to a scientific object / reference.
         """
-        self.references = ScientificObjects(
+        self.reference = ScientificObject(
             p_type="Journal Article",
             p_author="Dorothea Schwung, Steve Yuwono, Andreas Schwung, Steven X. Ding",
             p_title="Decentralized learning of energy optimal production policies using PLC-informed reinforcement learning",
