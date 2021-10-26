@@ -76,7 +76,7 @@ env3.seed(1)
 
 doublewrapped = WrEnvGYM2MLPro(env3, p_logging=False) 
 doublewrapped = WrEnvMLPro2GYM(doublewrapped)
-doublewrapped = TimeLimit(doublewrapped, max_episode_steps=100)
+doublewrapped = TimeLimit(doublewrapped, max_episode_steps=500)
 
 cus_callback = CustomCallback(p_limit_episode=max_episode)
 model = PPO("MlpPolicy", env, n_steps=buffer_size, verbose=0, seed=1, policy_kwargs=policy_kwargs)
