@@ -63,6 +63,8 @@ class MultiCartPole(Environment):
             env              = WrEnvGYM2MLPro(gym.make('CartPole-v1'), state_space_env, action_space_env)
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)
+        
+        self.reset()
 
 
 ## -------------------------------------------------------------------------------------------------

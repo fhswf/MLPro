@@ -21,10 +21,11 @@
 ## -- 2021-10-07  1.6.0     DA       Class Log: 
 ## --                                - colored text depending on log type 
 ## --                                - new method set_log_level()
+## -- 2021-10-25  1.7.0     SY       Add new class ScientificObject
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2021-10-07)
+Ver. 1.7.0 (2021-10-25)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer, ...
@@ -380,3 +381,46 @@ class TStamp:
 ## -------------------------------------------------------------------------------------------------
     def set_tstamp(self, p_tstamp:timedelta):
         self.tstamp = p_tstamp
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class ScientificObject:
+    """
+    This class provides elementry functionality for storing a scientific reference.
+    """
+    C_SCIREF_TYPE_NONE          = None
+    C_SCIREF_TYPE_ARTICLE       = "Journal Article"
+    C_SCIREF_TYPE_BOOK          = "Book"
+    C_SCIREF_TYPE_ONLINE        = "Online"
+    C_SCIREF_TYPE_PROCEEDINGS   = "Proceedings"
+    C_SCIREF_TYPE_TECHREPORT    = "Technical Report"
+    C_SCIREF_TYPE_UNPUBLISHED   = "Unpublished"
+        
+    C_SCIREF_TYPE               = None
+    C_SCIREF_AUTHOR             = None
+    C_SCIREF_TITLE              = None
+    C_SCIREF_JOURNAL            = None
+    C_SCIREF_ABSTRACT           = None
+    C_SCIREF_VOLUME             = None
+    C_SCIREF_NUMBER             = None
+    C_SCIREF_PAGES              = None
+    C_SCIREF_YEAR               = None
+    C_SCIREF_MONTH              = None
+    C_SCIREF_DAY                = None
+    C_SCIREF_DOI                = None
+    C_SCIREF_KEYWORDS           = None
+    C_SCIREF_ISBN               = None
+    C_SCIREF_SERIES             = None
+    C_SCIREF_PUBLISHER          = None
+    C_SCIREF_CITY               = None
+    C_SCIREF_COUNTRY            = None
+    C_SCIREF_URL                = None
+    C_SCIREF_CHAPTER            = None
+    C_SCIREF_BOOKTITLE          = None
+    C_SCIREF_INSTITUTION        = None
+    C_SCIREF_CONFERENCE         = None
+    C_SCIREF_NOTES              = None
