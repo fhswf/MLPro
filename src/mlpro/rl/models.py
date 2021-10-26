@@ -299,7 +299,7 @@ class Reward(TStamp):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class EnvBase(Log, Plottable):
+class EnvBase(Log, Plottable, ScientificObject):
     """
     Base class for all environment classes. It defines the interface and elementry properties for
     an environment in the context of reinforcement learning.
@@ -328,7 +328,6 @@ class EnvBase(Log, Plottable):
         self._last_action      = None
         self._goal_achievement = 0.0
         self.set_latency(p_latency)
-        self.reference         = ScientificObject()
 
 
 ## -------------------------------------------------------------------------------------------------

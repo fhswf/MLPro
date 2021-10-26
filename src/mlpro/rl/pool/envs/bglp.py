@@ -564,15 +564,15 @@ class BGLP(Environment):
         self.reward_type    = p_reward_type
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         
-        self.reference.C_SCIREF_TYPE    = ScientificObject.C_SCIREF_TYPE_ARTICLE
-        self.reference.C_SCIREF_AUTHOR  = "Dorothea Schwung, Steve Yuwono, Andreas Schwung, Steven X. Ding"
-        self.reference.C_SCIREF_TITLE   = "Decentralized learning of energy optimal production policies using PLC-informed reinforcement learning"
-        self.reference.C_SCIREF_JOURNAL = "Computers & Chemical Engineering"
-        self.reference.C_SCIREF_YEAR    = "2021"
-        self.reference.C_SCIREF_MONTH   = "05"
-        self.reference.C_SCIREF_DAY     = "28"
-        self.reference.C_SCIREF_VOLUME  = "152"
-        self.reference.C_SCIREF_DOI     = "10.1016/j.compchemeng.2021.107382"
+        self.C_SCIREF_TYPE    = self.C_SCIREF_TYPE_ARTICLE
+        self.C_SCIREF_AUTHOR  = "Dorothea Schwung, Steve Yuwono, Andreas Schwung, Steven X. Ding"
+        self.C_SCIREF_TITLE   = "Decentralized learning of energy optimal production policies using PLC-informed reinforcement learning"
+        self.C_SCIREF_JOURNAL = "Computers & Chemical Engineering"
+        self.C_SCIREF_YEAR    = "2021"
+        self.C_SCIREF_MONTH   = "05"
+        self.C_SCIREF_DAY     = "28"
+        self.C_SCIREF_VOLUME  = "152"
+        self.C_SCIREF_DOI     = "10.1016/j.compchemeng.2021.107382"
         
         self.t              = 0
         self.t_step         = t_step

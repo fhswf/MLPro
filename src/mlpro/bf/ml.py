@@ -119,7 +119,7 @@ class HyperParamTuning(Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Adaptive(Log, LoadSave):
+class Adaptive(Log, LoadSave, ScientificObject):
     """
     Property class for adapativity. And if something can be adapted it should be loadable and saveable
     so that this class provides load/save properties as well.
@@ -152,7 +152,6 @@ class Adaptive(Log, LoadSave):
             self._buffer = None
 
         self._attrib_hp1        = 0
-        self.reference          = ScientificObject()
 
 
 ## -------------------------------------------------------------------------------------------------
