@@ -152,7 +152,7 @@ class Adaptive(Log, LoadSave):
             self._buffer = None
 
         self._attrib_hp1        = 0
-        self.add_reference()
+        self.reference          = ScientificObject()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -233,12 +233,4 @@ class Adaptive(Log, LoadSave):
         """
 
         raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_reference(self):
-        """
-        Add information related to a scientific object / reference. Please redefine.
-        """
-        self.reference = ScientificObject()
 

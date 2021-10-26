@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : Howto 04 - (Various) Store, plot, and save variables
+## -- Module  : Howto 04 - (Data) Store, plot, and save variables
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -10,10 +10,11 @@
 ## -- 2021-07-01  1.2.0     SY       Adjustment due to extension in save and load data
 ## -- 2021-09-11  1.2.1     MRD      Change Header information to match our new library name
 ## -- 2021-10-25  1.2.2     SY       Adjustment due to improvement in DataPlotting
+## -- 2021-10-26  1.2.3     SY       Rename module
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2021-10-25)
+Ver. 1.2.3 (2021-10-26)
 
 This module demonstrates how to store, plot, save and load variables.
 """

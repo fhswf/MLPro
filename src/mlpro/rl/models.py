@@ -328,7 +328,7 @@ class EnvBase(Log, Plottable):
         self._last_action      = None
         self._goal_achievement = 0.0
         self.set_latency(p_latency)
-        self.add_reference()
+        self.reference         = ScientificObject()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -440,14 +440,6 @@ class EnvBase(Log, Plottable):
         """
 
         raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_reference(self):
-        """
-        Add information related to a scientific object / reference. Please redefine.
-        """
-        self.reference = ScientificObject()
 
 
 

@@ -399,36 +399,28 @@ class ScientificObject:
     C_SCIREF_TYPE_PROCEEDINGS   = "Proceedings"
     C_SCIREF_TYPE_TECHREPORT    = "Technical Report"
     C_SCIREF_TYPE_UNPUBLISHED   = "Unpublished"
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_type=C_SCIREF_TYPE_NONE, p_author=None, p_title=None, p_journal=None,
-                 p_abstract=None, p_volume=None, p_number=None, p_pages=None, p_year=None,
-                 p_month=None, p_day=None, p_doi=None, p_keywords=None, p_isbn=None,
-                 p_series=None, p_publisher=None, p_city=None, p_country=None, p_url=None,
-                 p_chapter=None, p_booktitle=None, p_institution=None, p_conference=None,
-                 p_notes=None):
         
-        self.C_SCIREF_TYPE               = p_type
-        self.C_SCIREF_AUTHOR             = p_author
-        self.C_SCIREF_TITLE              = p_title
-        self.C_SCIREF_JOURNAL            = p_journal
-        self.C_SCIREF_ABSTRACT           = p_abstract
-        self.C_SCIREF_VOLUME             = p_volume
-        self.C_SCIREF_NUMBER             = p_number
-        self.C_SCIREF_PAGES              = p_pages
-        self.C_SCIREF_YEAR               = p_year
-        self.C_SCIREF_MONTH              = p_month
-        self.C_SCIREF_DAY                = p_day
-        self.C_SCIREF_DOI                = p_doi
-        self.C_SCIREF_KEYWORDS           = p_keywords
-        self.C_SCIREF_ISBN               = p_isbn
-        self.C_SCIREF_SERIES             = p_series
-        self.C_SCIREF_PUBLISHER          = p_publisher
-        self.C_SCIREF_CITY               = p_city
-        self.C_SCIREF_COUNTRY            = p_country
-        self.C_SCIREF_URL                = p_url
-        self.C_SCIREF_CHAPTER            = p_chapter
-        self.C_SCIREF_BOOKTITLE          = p_booktitle
-        self.C_SCIREF_INSTITUTION        = p_institution
-        self.C_SCIREF_CONFERENCE         = p_conference
-        self.C_SCIREF_NOTES              = p_notes
+    C_SCIREF_TYPE               = None
+    C_SCIREF_AUTHOR             = None
+    C_SCIREF_TITLE              = None
+    C_SCIREF_JOURNAL            = None
+    C_SCIREF_ABSTRACT           = None
+    C_SCIREF_VOLUME             = None
+    C_SCIREF_NUMBER             = None
+    C_SCIREF_PAGES              = None
+    C_SCIREF_YEAR               = None
+    C_SCIREF_MONTH              = None
+    C_SCIREF_DAY                = None
+    C_SCIREF_DOI                = None
+    C_SCIREF_KEYWORDS           = None
+    C_SCIREF_ISBN               = None
+    C_SCIREF_SERIES             = None
+    C_SCIREF_PUBLISHER          = None
+    C_SCIREF_CITY               = None
+    C_SCIREF_COUNTRY            = None
+    C_SCIREF_URL                = None
+    C_SCIREF_CHAPTER            = None
+    C_SCIREF_BOOKTITLE          = None
+    C_SCIREF_INSTITUTION        = None
+    C_SCIREF_CONFERENCE         = None
+    C_SCIREF_NOTES              = None
