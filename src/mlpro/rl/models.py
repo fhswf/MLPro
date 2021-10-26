@@ -44,10 +44,11 @@
 ## --                                lets class get the cycle limit from the env
 ## -- 2021-10-18  1.4.3     DA       Refactoring Policy/Agent/MultiAgent: state space renamed to 
 ## --                                observation space
+## -- 2021-10-25  1.4.4     SY       Enhancement of class EnvBase by adding ScientificObject.
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.3 (2021-10-18)
+Ver. 1.4.4 (2021-10-25)
 
 This module provides model classes for reinforcement learning tasks.
 """
@@ -298,7 +299,7 @@ class Reward(TStamp):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class EnvBase(Log, Plottable):
+class EnvBase(Log, Plottable, ScientificObject):
     """
     Base class for all environment classes. It defines the interface and elementry properties for
     an environment in the context of reinforcement learning.

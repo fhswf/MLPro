@@ -15,10 +15,11 @@
 ## -- 2021-09-25  1.0.2     MRD      Add __len__ functionality for SARBuffer
 ## -- 2021-10-06  1.0.3     DA       Extended class Adaptive by new methods _adapt(), get_adapted(),
 ## --                                _set_adapted(); moved Buffer classes to mlpro.bf.data.py
+## -- 2021-10-25  1.0.4     SY       Enhancement of class Adaptive by adding ScientificObject.
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2021-10-06)
+Ver. 1.0.4 (2021-10-25)
 
 This module provides common machine learning functionalities and properties.
 """
@@ -118,7 +119,7 @@ class HyperParamTuning(Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Adaptive(Log, LoadSave):
+class Adaptive(Log, LoadSave, ScientificObject):
     """
     Property class for adapativity. And if something can be adapted it should be loadable and saveable
     so that this class provides load/save properties as well.

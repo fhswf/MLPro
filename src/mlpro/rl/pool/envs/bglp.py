@@ -13,15 +13,17 @@
 ## -- 2021-10-02  1.03  SY     Minor change
 ## -- 2021-10-05  1.04  SY     Update following new attributes done and broken in State
 ## -- 2021-10-07  2.00  SY     Enable batch production scenario
+## -- 2021-10-25  2.01  SY     Add scientific references related to the Environment
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 2.00 (2021-10-07)
+Ver. 2.01 (2021-10-25)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
 
 from mlpro.rl.models import *
+from mlpro.bf.various import *
 import numpy as np
 import torch
 import random
@@ -562,6 +564,16 @@ class BGLP(Environment):
         self.reward_type    = p_reward_type
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         
+        self.C_SCIREF_TYPE    = self.C_SCIREF_TYPE_ARTICLE
+        self.C_SCIREF_AUTHOR  = "Dorothea Schwung, Steve Yuwono, Andreas Schwung, Steven X. Ding"
+        self.C_SCIREF_TITLE   = "Decentralized learning of energy optimal production policies using PLC-informed reinforcement learning"
+        self.C_SCIREF_JOURNAL = "Computers & Chemical Engineering"
+        self.C_SCIREF_YEAR    = "2021"
+        self.C_SCIREF_MONTH   = "05"
+        self.C_SCIREF_DAY     = "28"
+        self.C_SCIREF_VOLUME  = "152"
+        self.C_SCIREF_DOI     = "10.1016/j.compchemeng.2021.107382"
+        
         self.t              = 0
         self.t_step         = t_step
         self.t_set          = t_set
@@ -917,12 +929,3 @@ class BGLP(Environment):
             else:
                 self.reward[actnum] += 1/(1+self.lr_margin*self.margin_t[actnum+1])
         return self.reward[:]
-
-
-
-
-
-
-
-
-
