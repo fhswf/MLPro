@@ -29,12 +29,14 @@ class CustomCallback(BaseCallback):
         self.rewards_cnt = []
         self.state = []
         self.action = []
+        self.dones = []
 
     def _on_step(self) -> bool:
         self.total_cycle += 1
         self.cycles += 1
         self.state.append(self.locals.get("obs_tensor"))
         self.action.append(self.locals.get("actions"))
+        self.dones.append(self.locals.get("dones"))
         if self.locals.get("infos")[0]:
             print(self.episode_num, self.total_cycle, self.locals.get("infos")[0]["episode"]["r"], self.cycles)
             self.rewards_cnt.append(self.locals.get("infos")[0]["episode"]["r"])
@@ -56,6 +58,9 @@ class CustomCallback(BaseCallback):
 
     def get_action(self):
         return self.action
+
+    def get_dones(self):
+        return self.dones
 
 max_episode = 200
 buffer_size = 1000000
@@ -93,25 +98,31 @@ action_native = cus_callback.get_action()
 action_native2 = cus_callback2.get_action()
 action_wrapped = cus_callback3.get_action()
 
+done_native = cus_callback.get_dones()
+done_native2 = cus_callback2.get_dones()
+done_wrapped = cus_callback3.get_dones()
+
 lengths = min(len(state_native), len(state_wrapped))
 
 dataPlotState1 = []
 dataPlotState2 = []
-for x in range(lengths):
-    dataPlotState1.append(torch.norm(state_native[x]-state_wrapped[x]).item())
-
-for y in range(lengths):
-    dataPlotState2.append(torch.norm(state_native[y]-state_native2[y]).item())
-
-lengths = min(len(action_native), len(action_wrapped))
-
 dataPlotAction1 = []
 dataPlotAction2 = []
-for x in range(lengths):
-    dataPlotAction1.append(np.linalg.norm(action_native[x]-action_wrapped[x]))
+dataPlotDones1 = []
+dataPlotDones2 = []
 
-for y in range(lengths):
-    dataPlotAction2.append(np.linalg.norm(action_native[y]-action_native2[y]))
+for x in range(lengths):
+    # State
+    dataPlotState1.append(torch.norm(state_native[x]-state_wrapped[x]).item())
+    dataPlotState2.append(torch.norm(state_native[x]-state_native2[x]).item())
+
+    # Action
+    dataPlotAction1.append(np.linalg.norm(action_native[x]-action_wrapped[x]))
+    dataPlotAction2.append(np.linalg.norm(action_native[x]-action_native2[x]))
+
+    # Dones
+    dataPlotDones1.append(done_native[x]^done_wrapped[x])
+    dataPlotDones2.append(done_native[x]^done_native2[x])
 
 # plt.plot(cus_callback.get_data_plot(), label="ENV NATIVE")
 # plt.plot(cus_callback2.get_data_plot(), label="ENV2 NATIVE")
@@ -125,6 +136,13 @@ plt.show()
 plt.clf()
 plt.plot(dataPlotAction1, label="Action Diff Native and Wrapped")
 plt.plot(dataPlotAction2, label="Action Diff Native and Native")
+plt.xlabel("Timestep")
+plt.legend()
+plt.show()
+
+plt.clf()
+plt.plot(dataPlotDones1, label="Done Diff Native and Native")
+plt.plot(dataPlotDones2, label="Done Diff Native and Wrapped")
 plt.xlabel("Timestep")
 plt.legend()
 plt.show()

@@ -398,7 +398,7 @@ class WrEnvMLPro2GYM(gym.Env):
             self.action_space       = self._recognize_space(self._mlpro_env.get_action_space())
         
         self.first_refresh          = True
-        self.reset()
+        # self.reset()
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -430,7 +430,7 @@ class WrEnvMLPro2GYM(gym.Env):
         _act_set    = Set()
         idx         = self._mlpro_env._action_space.get_num_dim()
 
-        if isinstance(self.observation_space, gym.spaces.Discrete):
+        if isinstance(self.action_space, gym.spaces.Discrete):
             action = np.array([action])
         
         for i in range(idx):
