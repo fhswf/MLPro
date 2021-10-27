@@ -23,8 +23,6 @@ from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
-from mlpro.rl.wrappers import WrEnvMLPro2GYM
-from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 
 # 1 Parameter
 max_episode = 400
