@@ -91,8 +91,6 @@ class WrEnvGYM2MLPro(Environment):
         else:
             self._action_space = self._recognize_space(self._gym_env.action_space, "action")
 
-        self.reset()
-
 
 ## -------------------------------------------------------------------------------------------------
     def __del__(self):
@@ -398,7 +396,6 @@ class WrEnvMLPro2GYM(gym.Env):
             self.action_space       = self._recognize_space(self._mlpro_env.get_action_space())
         
         self.first_refresh          = True
-        self.reset()
         
 
 ## -------------------------------------------------------------------------------------------------
