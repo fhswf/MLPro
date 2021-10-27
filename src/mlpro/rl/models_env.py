@@ -20,7 +20,7 @@
 """
 Ver. 1.2.0 (2021-10-dd)
 
-This module provides model classes for environments.
+This module provides model classes for environments and environnment models.
 """
 
 
@@ -32,7 +32,249 @@ from mlpro.rl.models_sar import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class EnvBase(Log, Plottable, ScientificObject):
+class AFctReward(Adaptive):
+    """
+    Adaptive function for reward prediction, based on universal adaptive function.
+    """
+
+    C_TYPE          = 'AFct Reward'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_state_space       State space
+            p_threshold         See description of class AdaptiveFunction
+            p_buffer_size       Initial size of internal data buffer (0=no buffering)
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+         
+        # concatenate state and action space to input space
+        # ...
+        input_space     = None 
+        output_space    = None
+
+        self._afct = p_afct_cls(p_input_space=input_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_reward(self, p_state:State) -> Reward:
+        # to be implemented...
+        # 
+        #
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        # to be implemented...
+        # 
+        #
+        pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class FctReward(AFctReward):
+    """
+    Non-adaptive function for reward computation. 
+    """
+
+    C_TYPE          = 'Fct Reward'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_state_space:MSpace, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_state_space       State space
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_reward(self, p_state:State) -> Reward:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        return False
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AFctDone(Adaptive):
+    """
+    Adaptive function for environment done state prediction, based on universal adaptive function.
+    """
+
+    C_TYPE          = 'AFct Done'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_state_space       State space
+            p_threshold         See description of class AdaptiveFunction
+            p_buffer_size       Initial size of internal data buffer (0=no buffering)
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+         
+        # concatenate state and action space to input space
+        # ...
+        output_space = None 
+
+        self._afct = p_afct_cls(p_input_space=p_state_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+# -------------------------------------------------------------------------------------------------
+    def compute_done(self, p_state:State) -> bool:
+        # to be implemented...
+        # 
+        #
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        # to be implemented...
+        # 
+        #
+        pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class FctDone(AFctDone):
+    """
+    Non-adaptive function for environment done state computation. 
+    """
+
+    C_TYPE          = 'Fct Done'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_state_space:MSpace, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_state_space       State space
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_done(self, p_state: State) -> bool:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        return False
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AFctBroken(Adaptive):
+    """
+    Adaptive function for environment broken state prediction, based on universal adaptive function.
+    """
+
+    C_TYPE          = 'AFct Broken'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_state_space       State space
+            p_threshold         See description of class AdaptiveFunction
+            p_buffer_size       Initial size of internal data buffer (0=no buffering)
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+         
+        # concatenate state and action space to input space
+        # ...
+        output_space = None 
+
+        self._afct = p_afct_cls(p_input_space=p_state_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state:State) -> bool:
+        # to be implemented...
+        # 
+        #
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        # to be implemented...
+        # 
+        #
+        pass
+
+
+       
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class FctBroken(AFctBroken):
+    """
+    Non-adaptive function for environment broken state computation. 
+    """
+
+    C_TYPE          = 'Fct Broken'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_state_space:MSpace, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_state_space       State space
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state: State) -> bool:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        return False
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class EnvBase(FctReward, FctDone, FctBroken, Plottable, ScientificObject):
     """
     Base class for all environment classes. It defines the interface and elementry properties for
     an environment in the context of reinforcement learning.
@@ -162,16 +404,54 @@ class EnvBase(Log, Plottable, ScientificObject):
         raise NotImplementedError
 
 
+# ## -------------------------------------------------------------------------------------------------
+#     def compute_reward(self) -> Reward:
+#         """
+#         Computes a reward. Please redefine.
+
+#         Returns:
+#           Reward object
+#         """
+
+#         raise NotImplementedError
+
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self) -> Reward:
-        """
-        Computes a reward. Please redefine.
+## -------------------------------------------------------------------------------------------------
+class AFctSTrans(AdaptiveFunction):
+    """
+    Adaptive function for state transition prediction to be used inside the EnvModel class.
+    """
 
-        Returns:
-          Reward object
-        """
+    C_TYPE          = 'AFct STrans'
 
-        raise NotImplementedError
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_afct_cls, p_state_space:MSpace, p_action_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+        """
+        Parameters:
+            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_state_space       State space
+            p_action_space      Action space
+            p_threshold         See description of class AdaptiveFunction
+            p_buffer_size       Initial size of internal data buffer (0=no buffering)
+            p_ada               Boolean switch for adaptivity
+            p_logging           Boolean switch for logging functionality
+        """
+         
+        # concatenate state and action space to input space
+        # ...
+        input_space = None 
+
+        self._afct = p_afct_cls(p_input_space=input_space, p_output_space=p_state_space, p_output_elem_cls=State, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def map(self, p_state:State, p_action:Action) -> State:
+        input = None
+        return super().map(input)
 
 
 
@@ -353,131 +633,6 @@ class Environment(EnvBase):
         self._goal_achievement = 0.0
         self._state.set_done(False)
         self._state.set_broken(False)
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class AFctSTrans(AdaptiveFunction):
-    """
-    Adaptive function for state transition prediction to be used inside the EnvModel class.
-    """
-
-    C_TYPE          = 'AFct STrans'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_afct_cls, p_state_space:MSpace, p_action_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
-            p_state_space       State space
-            p_action_space      Action space
-            p_threshold         See description of class AdaptiveFunction
-            p_buffer_size       Initial size of internal data buffer (0=no buffering)
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
-        """
-         
-        # concatenate state and action space to input space
-        # ...
-        input_space = None 
-
-        self._afct = p_afct_cls(p_input_space=input_space, p_output_space=p_state_space, p_output_elem_cls=State, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
-
-
-## -------------------------------------------------------------------------------------------------
-    def map(self, p_state:State, p_action:Action) -> State:
-        input = None
-        return super().map(input)
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class AFctReward(AdaptiveFunction):
-
-    C_TYPE          = 'AFct Reward'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_afct_cls, p_state_space:MSpace, p_action_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
-            p_state_space       State space
-            p_action_space      Action space
-            p_threshold         See description of class AdaptiveFunction
-            p_buffer_size       Initial size of internal data buffer (0=no buffering)
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
-        """
-         
-        # concatenate state and action space to input space
-        # ...
-        input_space     = None 
-        output_space    = None
-
-        self._afct = p_afct_cls(p_input_space=input_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
-
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class AFctDone(AdaptiveFunction):
-
-    C_TYPE          = 'AFct Done'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
-            p_state_space       State space
-            p_threshold         See description of class AdaptiveFunction
-            p_buffer_size       Initial size of internal data buffer (0=no buffering)
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
-        """
-         
-        # concatenate state and action space to input space
-        # ...
-        output_space = None 
-
-        self._afct = p_afct_cls(p_input_space=p_state_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class AFctBroken(AdaptiveFunction):
-
-    C_TYPE          = 'AFct Broken'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
-            p_state_space       State space
-            p_threshold         See description of class AdaptiveFunction
-            p_buffer_size       Initial size of internal data buffer (0=no buffering)
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
-        """
-         
-        # concatenate state and action space to input space
-        # ...
-        output_space = None 
-
-        self._afct = p_afct_cls(p_input_space=p_state_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
 
 
 

@@ -10,18 +10,24 @@
 ## -- 2021-06-15  1.0.1     SY       Bugfixing in class ActionElement
 ## -- 2021-08-28  1.0.2     DA       Bugfixes and minor improvements
 ## -- 2021-09-11  1.0.3     MRD      Change Header information to match our new library name
-## -- 2021-10-05  1.0.4     DA       Class State: new attributes done, broken and related methods 
-## -- 2021-10-05  1.0.5     SY       Bugfixes and minor improvements
+## -- 2021-09-19  1.0.4     MRD      Change SARBuffer Class and Inherits SARBufferElement with base
+## --                                class Buffer
+## -- 2021-09-25  1.0.5     MRD      Remove Previous state into the buffer. Add Next state to the buffer
+## --                                Remove clearing buffer on every reset. The clearing buffer should
+## --                                be controlled from the policy
+## -- 2021-10-05  1.0.6     DA       Class State: new attributes done, broken and related methods 
+## -- 2021-10-05  1.0.7     SY       Bugfixes and minor improvements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2021-10-05)
+Ver. 1.0.7 (2021-10-05)
 
-This module provides model classes for state, action and reward.
+This module provides model classes for state, action and reward data and their buffering.
 """
 
 
 from mlpro.bf.various import *
+from mlpro.bf.data import *
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
 from mlpro.bf.plot import *
@@ -255,3 +261,38 @@ class Reward(TStamp):
           return r[1][i_action]
       except:
           return None
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SARSElement(BufferElement):
+    """
+    Element of a SARSBuffer.
+    """
+
+    def __init__(self, p_state:State, p_action:Action, p_reward:Reward, p_state_new:State):
+        """
+        Parameters:
+            p_state         State of an environment
+            p_action        Action of an agent
+            p_reward        Reward of an environment
+            p_state_new     State of the environment as reaction to the action
+        """
+
+        super().__init__( { "state" : p_state, "action" : p_action, "reward" : p_reward, "state_new" : p_state_new } )
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SARSBuffer(Buffer):
+    """
+    State-Action-Reward-State-Buffer in dictionary.
+    """
+
+    pass

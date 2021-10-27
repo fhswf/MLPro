@@ -19,16 +19,11 @@
 ## --                                is now working in dictionary. Now the SARBuffer is inside
 ## --                                the Policy and EnvModel instead of the Agent.
 ## --                                Added "Done" as default input for Agent.adapt()
-## -- 2021-09-19  1.2.1     MRD      Change SARBuffer Class and Inherits SARBufferElement with base
-## --                                class Buffer
-## -- 2021-09-25  1.2.2     MRD      Remove Previous state into the buffer. Add Next state to the buffer
-## --                                Remove clearing buffer on every reset. The clearing buffer should
-## --                                be controlled from the policy
-## -- 2021-10-05  1.2.3     DA       Various changes:
+## -- 2021-10-05  1.2.1     DA       Various changes:
 ## --                                - New class ActionPlanner
 ## --                                - Class Agent: preparation for model-based mode
-## -- 2021-10-05  1.2.4     SY       Bugfixes and minor improvements
-## -- 2021-10-18  1.2.5     DA       Refactoring Policy/Agent/MultiAgent: state space renamed to 
+## -- 2021-10-05  1.2.2     SY       Bugfixes and minor improvements
+## -- 2021-10-18  1.2.3     DA       Refactoring Policy/Agent/MultiAgent: state space renamed to 
 ## --                                observation space
 ## -- 2021-10-dd  1.3.0     DA       Model-based Agent functionality 
 ## -------------------------------------------------------------------------------------------------
@@ -36,48 +31,13 @@
 """
 Ver. 1.3.0 (2021-10-dd)
 
-This module provides model classes for reinforcement learning tasks.
+This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
 
 
 from mlpro.bf.data import *
 from mlpro.rl.models_sar import *
 from mlpro.rl.models_env import *
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class SARSElement(BufferElement):
-    """
-    Element of a SARSBuffer.
-    """
-
-    def __init__(self, p_state:State, p_action:Action, p_reward:Reward, p_state_new:State):
-        """
-        Parameters:
-            p_state         State of an environment
-            p_action        Action of an agent
-            p_reward        Reward of an environment
-            p_state_new     State of the environment as reaction to the action
-        """
-
-        super().__init__( { "state" : p_state, "action" : p_action, "reward" : p_reward, "state_new" : p_state_new } )
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class SARSBuffer(Buffer):
-    """
-    State-Action-Reward-State-Buffer in dictionary.
-    """
-
-    pass
-
 
 
 
