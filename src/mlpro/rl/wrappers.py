@@ -42,6 +42,7 @@ import gym
 from gym import error, spaces, utils
 import numpy as np
 import torch
+from stable_baselines3.common import utils
 from stable_baselines3.common.logger import Logger
 from stable_baselines3.common.on_policy_algorithm  import OnPolicyAlgorithm
 from typing import List
@@ -667,18 +668,6 @@ class WrPolicySB32MLPro(Policy):
             p_ada (bool, optional): Adaptability. Defaults to True.
             p_logging (bool, optional): Logging. Defaults to True.
         """
-
-        class EmptyLogger(Logger):
-            """
-            Dummy class for SB3 Empty Logger. This is due to that SB3 has its own logger class.
-            Since we wont be using SB3 logger, we need Empty Logger to run the SB3 train, 
-            otherwise it wont work.
-            """
-            def __init__():
-                super().__init__()
-            def record(self, key=None, value=None, exclude=None):
-                pass
-
         class DummyEnv(gym.Env):
             """
             Dummy class for Environment. This is required due to some of the SB3 Policy Algorithm requires to have
@@ -758,7 +747,7 @@ class WrPolicySB32MLPro(Policy):
             self.collected_steps = 0
 
         self.sb3._setup_model()
-        self.sb3.set_logger(EmptyLogger)
+        self.sb3._logger = utils.configure_logger()
 
     def _compute_action_on_policy(self, p_obs: State) -> Action:
         obs = p_obs.get_values()
@@ -802,9 +791,11 @@ class WrPolicySB32MLPro(Policy):
             gradient_steps = self.sb3.gradient_steps if self.sb3.gradient_steps >= 0 else self.collected_steps
             if gradient_steps > 0:
                 self.sb3.train(batch_size=self.sb3.batch_size, gradient_steps=gradient_steps)
+                self.collected_steps = 0
+                return True
 
         self.collected_steps = 0
-        return True
+        return False
 
     def _adapt_on_policy(self, *p_args) -> bool:
         # Add to buffer
