@@ -11,7 +11,9 @@
 
 """
 Ver. 1.0.0 (2021-10-26)
-This module provides model classes for reinforcement learning tasks.
+
+This module provides model classes for reinforcement learning tasks. See sub-mdules for further
+information.
 """
 
 
