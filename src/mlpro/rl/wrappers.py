@@ -26,6 +26,9 @@
 ## -- 2021-10-08  1.4.1     DA       Correction of wrapper WREnvGYM2MLPro
 ## -- 2021-10-18  1.4.2     DA       Reefactoring class WrPolicySB32MLPro
 ## -- 2021-10-18  1.5.0     MRD      SB3 Off Policy Wrapper on WrPolicySB32MLPro
+## -- 2021-10-27  1.5.1     MRD      Remove reset() on WREnvGYM2MLPro and WrEnvMLPro2GYM init() function
+## --                                to prevent double reset, due to it will be reset later on Training Class
+## --                                Mismatch datatype last_done on WrPolicySB32MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -39,6 +42,7 @@ import gym
 from gym import error, spaces, utils
 import numpy as np
 import torch
+from stable_baselines3.common import utils
 from stable_baselines3.common.logger import Logger
 from stable_baselines3.common.on_policy_algorithm  import OnPolicyAlgorithm
 from typing import List
@@ -90,8 +94,6 @@ class WrEnvGYM2MLPro(Environment):
             self._action_space = p_action_space
         else:
             self._action_space = self._recognize_space(self._gym_env.action_space, "action")
-
-        self.reset()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -398,7 +400,6 @@ class WrEnvMLPro2GYM(gym.Env):
             self.action_space       = self._recognize_space(self._mlpro_env.get_action_space())
         
         self.first_refresh          = True
-        self.reset()
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -657,7 +658,7 @@ class WrPolicySB32MLPro(Policy):
     C_TYPE        = 'SB3 Policy'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_sb3_policy, p_observation_space, p_action_space, p_buffer_size, p_ada=True, p_logging=True):
+    def __init__(self, p_sb3_policy, p_observation_space, p_action_space, p_ada=True, p_logging=True):
         """
         Args:
             p_sb3_policy : SB3 Policy
@@ -667,18 +668,6 @@ class WrPolicySB32MLPro(Policy):
             p_ada (bool, optional): Adaptability. Defaults to True.
             p_logging (bool, optional): Logging. Defaults to True.
         """
-
-        class EmptyLogger(Logger):
-            """
-            Dummy class for SB3 Empty Logger. This is due to that SB3 has its own logger class.
-            Since we wont be using SB3 logger, we need Empty Logger to run the SB3 train, 
-            otherwise it wont work.
-            """
-            def __init__():
-                super().__init__()
-            def record(self, key=None, value=None, exclude=None):
-                pass
-
         class DummyEnv(gym.Env):
             """
             Dummy class for Environment. This is required due to some of the SB3 Policy Algorithm requires to have
@@ -689,7 +678,7 @@ class WrPolicySB32MLPro(Policy):
                 self.observation_space = p_observation_space
                 self.action_space = p_action_space
 
-        super().__init__(p_observation_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+        super().__init__(p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
         
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None
@@ -744,14 +733,12 @@ class WrPolicySB32MLPro(Policy):
         self.sb3.n_envs = 1
 
         if isinstance(p_sb3_policy, OnPolicyAlgorithm):
-            self.sb3.n_steps = p_buffer_size
             self.compute_action = self._compute_action_on_policy
             self._add_buffer = self._add_buffer_on_policy
             self._adapt = self._adapt_on_policy
             self.clear_buffer = self._clear_buffer_on_policy
             self._buffer = self.sb3.rollout_buffer
         else:
-            self.sb3.buffer_size = p_buffer_size
             self.compute_action = self._compute_action_off_policy
             self._add_buffer = self._add_buffer_off_policy
             self._adapt = self._adapt_off_policy
@@ -760,7 +747,7 @@ class WrPolicySB32MLPro(Policy):
             self.collected_steps = 0
 
         self.sb3._setup_model()
-        self.sb3.set_logger(EmptyLogger)
+        self.sb3._logger = utils.configure_logger()
 
     def _compute_action_on_policy(self, p_obs: State) -> Action:
         obs = p_obs.get_values()
@@ -804,9 +791,11 @@ class WrPolicySB32MLPro(Policy):
             gradient_steps = self.sb3.gradient_steps if self.sb3.gradient_steps >= 0 else self.collected_steps
             if gradient_steps > 0:
                 self.sb3.train(batch_size=self.sb3.batch_size, gradient_steps=gradient_steps)
+                self.collected_steps = 0
+                return True
 
         self.collected_steps = 0
-        return True
+        return False
 
     def _adapt_on_policy(self, *p_args) -> bool:
         # Add to buffer
@@ -818,7 +807,7 @@ class WrPolicySB32MLPro(Policy):
             return False
 
         last_obs = torch.Tensor([self.last_buffer_element.get_data()["state_new"].get_values()]).to(self.sb3.device)
-        last_done = self.last_buffer_element.get_data()["state_new"].get_done()
+        last_done = np.array([self.last_buffer_element.get_data()["state_new"].get_done()])
 
         # Get the next value from the last observation
         with torch.no_grad():
@@ -869,8 +858,6 @@ class WrPolicySB32MLPro(Policy):
                             datas["state"].get_done(),
                             [info])
 
-        self._buffer = self.sb3.replay_buffer
-
     def _add_buffer_on_policy(self, p_buffer_element: SARSElement):
         """
         Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
@@ -886,8 +873,6 @@ class WrPolicySB32MLPro(Policy):
                             datas["state"].get_done(),
                             datas["value"],
                             datas["action_log"])
-
-        self._buffer = self.sb3.rollout_buffer
 
 
 ## -------------------------------------------------------------------------------------------------
