@@ -40,10 +40,6 @@ class MyScenario(Scenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        # mlpro_env = RobotHTM(p_seed=1, p_logging=False)
-        # gym_env     = gym.make('MountainCarContinuous-v0')
-        # gym_env     = gym.make('Acrobot-v1')
-        # gym_env     = gym.make('LunarLanderContinuous-v2')
         gym_env     = gym.make('CartPole-v1')
         gym_env.seed(1)
         # self._env   = mlpro_env
@@ -215,11 +211,6 @@ class CustomCallback(BaseCallback, Log):
         self.plots = mem_plot.plots
 
 # 9 Run the SB3 Training Native
-# mlpro_env = RobotHTM(p_seed=1, p_logging=False)
-# gym_env = WrEnvMLPro2GYM(mlpro_env)
-# gym_env     = gym.make('MountainCarContinuous-v0')
-# gym_env     = gym.make('Acrobot-v1')
-# gym_env     = gym.make('LunarLanderContinuous-v2')
 gym_env     = gym.make('CartPole-v1')
 gym_env.seed(1)
 policy_sb3 = PPO(
