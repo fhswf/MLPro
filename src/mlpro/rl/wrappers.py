@@ -26,6 +26,9 @@
 ## -- 2021-10-08  1.4.1     DA       Correction of wrapper WREnvGYM2MLPro
 ## -- 2021-10-18  1.4.2     DA       Reefactoring class WrPolicySB32MLPro
 ## -- 2021-10-18  1.5.0     MRD      SB3 Off Policy Wrapper on WrPolicySB32MLPro
+## -- 2021-10-27  1.5.1     MRD      Remove reset() on WREnvGYM2MLPro and WrEnvMLPro2GYM init() function
+## --                                to prevent double reset, due to it will be reset later on Training Class
+## --                                Mismatch datatype last_done on WrPolicySB32MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """

@@ -1,19 +1,16 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : Howto 10 - Train using SB3 Wrapper
+## -- Module  : Howto 13 - Comparison Native and Wrapper SB3 Policy
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-09-29  0.0.0     MRD      Creation
-## -- 2021-10-07  1.0.0     MRD      Released first version
-## -- 2021-10-08  1.0.1     DA       Take over the cycle limit from the environment
-## -- 2021-10-18  1.0.2     DA       Refactoring
-## -- 2021-10-18  1.0.3     MRD      SB3 Off Policy Wrapper DQN, DDPG, SAC
+## -- 2021-10-27  0.0.0     MRD      Creation
+## -- 2021-10-27  1.0.0     MRD      Released first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-10-18)
+Ver. 1.0.0 (2021-10-27)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
