@@ -29,13 +29,14 @@ from mlpro.rl.wrappers import WrPolicySB32MLPro
 from mlpro.rl.wrappers import WrEnvMLPro2GYM
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 
-max_episode = 50
+# 1 Parameter
+max_episode = 400
 mva_window = 1
-buffer_size = 5
+buffer_size = 100
 policy_kwargs = dict(activation_fn=torch.nn.Tanh,
                      net_arch=[dict(pi=[10, 10], vf=[10, 10])])
 
-# 1 Implement your own RL scenario
+# 2 Implement your own RL scenario
 class MyScenario(Scenario):
 
     C_NAME      = 'Matrix'
@@ -82,7 +83,7 @@ class MyScenario(Scenario):
             p_logging=p_logging
         )
 
-# 2 Instantiate scenario
+# 3 Instantiate scenario
 myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
@@ -90,9 +91,6 @@ myscenario  = MyScenario(
     p_visualize=False,
     p_logging=False
 )
-
-# 3 Copy the SB3 Policy
-sb3_pol = copy.deepcopy(myscenario._agent._policy.sb3.policy)
 
 # 4 Instantiate training
 training        = Training(
@@ -105,7 +103,7 @@ training        = Training(
     p_logging=True
 )
 
-# 5 Train
+# 5 Train SB3 Wrapper
 training.run()
 
 # 6 Create Plotting Class
@@ -219,7 +217,7 @@ class CustomCallback(BaseCallback, Log):
         mem_plot.get_plots()
         self.plots = mem_plot.plots
 
-# 9 Run the SB3 Training
+# 9 Run the SB3 Training Native
 # mlpro_env = RobotHTM(p_seed=1, p_logging=False)
 # gym_env = WrEnvMLPro2GYM(mlpro_env)
 # gym_env     = gym.make('MountainCarContinuous-v0')
