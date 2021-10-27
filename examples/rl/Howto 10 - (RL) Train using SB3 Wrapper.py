@@ -50,7 +50,8 @@ class MyScenario(Scenario):
 
         # PPO
         policy_sb3 = PPO(
-                    policy="MlpPolicy", 
+                    policy="MlpPolicy",
+                    n_steps=5, 
                     env=None,
                     _init_setup_model=False)
 
@@ -77,7 +78,6 @@ class MyScenario(Scenario):
                 p_sb3_policy=policy_sb3, 
                 p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
-                p_buffer_size=500,
                 p_ada=p_ada,
                 p_logging=p_logging)
         

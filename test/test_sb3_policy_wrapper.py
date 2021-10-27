@@ -22,6 +22,7 @@ from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC, TD3
+from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 
 ## -------------------------------------------------------------------------------------------------
 @pytest.mark.parametrize("env_cls", [A2C, PPO, DQN, DDPG, SAC, TD3])
@@ -41,10 +42,18 @@ def test_sb3_policy_wrapper(env_cls):
                 gym_env     = gym.make('CartPole-v1')
                 self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
 
-            policy_sb3 = env_cls(
-                        policy="MlpPolicy", 
-                        env=None,
-                        _init_setup_model=False)
+            if issubclass(env_cls, OnPolicyAlgorithm):
+                policy_sb3 = env_cls(
+                            policy="MlpPolicy", 
+                            env=None,
+                            n_steps=3,
+                            _init_setup_model=False)
+            else:
+                policy_sb3 = env_cls(
+                            policy="MlpPolicy", 
+                            env=None,
+                            buffer_size=3,
+                            _init_setup_model=False)
 
 
             # 3 Wrap the policy
@@ -52,7 +61,6 @@ def test_sb3_policy_wrapper(env_cls):
                     p_sb3_policy=policy_sb3, 
                     p_observation_space=self._env.get_state_space(),
                     p_action_space=self._env.get_action_space(),
-                    p_buffer_size=3,
                     p_ada=p_ada,
                     p_logging=p_logging)
             
