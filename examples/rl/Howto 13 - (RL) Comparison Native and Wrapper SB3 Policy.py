@@ -21,7 +21,7 @@ This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 import gym
 import pandas as pd
 import torch
-from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
+from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
@@ -29,7 +29,7 @@ from mlpro.rl.wrappers import WrPolicySB32MLPro
 from mlpro.rl.wrappers import WrEnvMLPro2GYM
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 
-max_episode = 300
+max_episode = 50
 mva_window = 1
 buffer_size = 5
 policy_kwargs = dict(activation_fn=torch.nn.Tanh,
@@ -159,12 +159,16 @@ mem_plot.get_plots()
 wrapper_plot = mem_plot.plots
 
 # 8 Create Callback for the SB3 Training
-class CustomCallback(BaseCallback):
+class CustomCallback(BaseCallback, Log):
     """
     A custom callback that derives from ``BaseCallback``.
 
     :param verbose: (int) Verbosity level 0: not output 1: info 2: debug
     """
+
+    C_TYPE                  = 'Wrapper'
+    C_NAME                  = 'SB3 Policy'
+
     def __init__(self, p_limit_episode, p_verbose=0):
         super(CustomCallback, self).__init__(p_verbose)
         reward_space = Set()
@@ -180,6 +184,9 @@ class CustomCallback(BaseCallback):
         self.rewards_cnt = []
 
     def _on_training_start(self) -> None:
+        self.log(self.C_LOG_TYPE_I, '--------------------------------------')
+        self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'started...')
+        self.log(self.C_LOG_TYPE_I, '--------------------------------------\n')
         self.ds_rewards.add_episode(self.episode_num)
 
     def _on_step(self) -> bool:
@@ -188,12 +195,17 @@ class CustomCallback(BaseCallback):
         self.total_cycle += 1
         self.cycles += 1
         if self.locals.get("infos")[0]:
-            print(self.episode_num, self.total_cycle, self.locals.get("infos")[0]["episode"]["r"], self.cycles)
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------')
+            self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'finished after', self.total_cycle + 1, 'cycles')
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------\n\n')
             self.episode_num += 1
             self.total_cycle = 0
             if self.episode_num >= self.episode_limit:
                 return False
             self.ds_rewards.add_episode(self.episode_num)
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------')
+            self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'started...')
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------\n')
         
         return True
 
@@ -215,7 +227,7 @@ class CustomCallback(BaseCallback):
 # gym_env     = gym.make('LunarLanderContinuous-v2')
 gym_env     = gym.make('CartPole-v1')
 gym_env.seed(1)
-policy_sb3 = A2C(
+policy_sb3 = PPO(
                 policy="MlpPolicy", 
                 env=gym_env,
                 n_steps=buffer_size,
