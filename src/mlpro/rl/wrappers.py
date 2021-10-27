@@ -815,7 +815,7 @@ class WrPolicySB32MLPro(Policy):
             return False
 
         last_obs = torch.Tensor([self.last_buffer_element.get_data()["state_new"].get_values()]).to(self.sb3.device)
-        last_done = self.last_buffer_element.get_data()["state_new"].get_done()
+        last_done = np.array([self.last_buffer_element.get_data()["state_new"].get_done()])
 
         # Get the next value from the last observation
         with torch.no_grad():
