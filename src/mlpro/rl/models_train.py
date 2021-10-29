@@ -17,10 +17,11 @@
 ## -- 2021-10-05  1.2.3     SY       Bugfixes and minor improvements
 ## -- 2021-10-08  1.2.4     DA       Class Scenario/constructor/param p_cycle_limit: new value -1
 ## --                                lets class get the cycle limit from the env
+## -- 2021-10-28  1.2.5     DA       Bugfix method Scenario.reset(): agent's buffer was not cleared
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2021-10-08)
+Ver. 1.2.5 (2021-10-28)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -200,6 +201,7 @@ class Scenario(Log, LoadSave):
 
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Scenario reset...')
         self._env.reset()
+        self._agent.clear_buffer()
 
         if self._visualize:
             self._env.init_plot()
@@ -220,8 +222,7 @@ class Scenario(Log, LoadSave):
       
 
 ## -------------------------------------------------------------------------------------------------
-    def run_cycle(self, p_cycle_id, p_ds_states:RLDataStoring=None, p_ds_actions:RLDataStoring=None, 
-                p_ds_rewards:RLDataStoring=None):
+    def run_cycle(self, p_cycle_id, p_ds_states:RLDataStoring=None, p_ds_actions:RLDataStoring=None, p_ds_rewards:RLDataStoring=None):
         """
         Processes a single control cycle with optional data logging.
 
