@@ -193,20 +193,34 @@ class Scenario(Log, LoadSave):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self):
+    def reset(self, p_seed_env=None, p_seed_agent=None, p_clear_agent_buffer=False):
         """
-        Environment and timer will be resetted. Agent's internal buffer data will be cleared but
+        Environment and timer will be reset. The random generators for environment and agent will
+        also be reset. Optionally the agent's internal buffer data will be cleared but
         it's policy will not be touched.
+
+        Parameters:
+            p_seed_env              New seed for environment's random generator
+            p_seed_agent            New seed for agent's random generator
+            p_clear_agent_buffer    Boolean switch for clearing the agent's buffer
         """
 
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Scenario reset...')
-        self._env.reset()
-        self._agent.clear_buffer()
 
+        # 1 Reset environment
+        self._env.set_random_seed(p_seed_env)
+        self._env.reset()
+
+        # 2 Reset agent
+        if p_clear_agent_buffer: self._agent.clear_buffer()
+        self._agent.set_random_seed(p_seed_agent)
+
+        # 3 Reset visualization
         if self._visualize:
             self._env.init_plot()
             self._agent.init_plot()
 
+        # 4 Reset scenario timer
         self._timer.reset()
         self._env.get_state().set_tstamp(self._timer.get_time())
 
@@ -381,8 +395,34 @@ class Training(Log):
     C_FNAME_AGENT_ACTIONS   = 'agent_actions'
     C_FNAME_ENV_REWARDS     = 'env_rewards'
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:Scenario, p_episode_limit=50, p_cycle_limit=0, p_collect_states=True, 
+    def __init__(self, 
+                 p_scenario:Scenario,           # RL scenario object
+                 p_ctrl_grp_size=100,           # Size of control group
+                 p_cycle_limit=0,               # Optional limit for total number of training cycles
+                 p_adaptation_limit=0,          # Optional limit for total number of adaptations
+                 p_monitor_progress=True,       # If True, the training progress will be monitored
+                 p_collect_states=True,         # If True, the environment states will be collected
+                 p_collect_actions=True,        # If True, the agent actions will be collected
+                 p_collect_rewards=True,        # If True, the environment reward will be collected
+                 p_collect_training=True,       # If True, global training data will be collected
+                 p_logging=True                 # Boolean switch for logging
+                ):
+                
+        super().__init__(p_logging=p_logging)
+
+        self._scenario      = p_scenario
+        self._env           = self._scenario.get_env()
+        self._agent         = self._scenario.get_agent()
+
+        # ...
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__old(self, p_scenario:Scenario, p_episode_limit=50, p_cycle_limit=0, p_collect_states=True, 
                 p_collect_actions=True, p_collect_rewards=True, p_collect_training=True, p_logging=True):
         """
         Parmeters:

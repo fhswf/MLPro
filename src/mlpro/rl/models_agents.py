@@ -295,6 +295,13 @@ class Agent(Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        self._policy.set_random_seed(p_seed)
+        if self._envmodel is not None:
+            self._envmodel.set_random_seed(p_seed)
+
+
+## -------------------------------------------------------------------------------------------------
     def compute_action(self, p_state:State) -> Action:
         """
         Default implementation of a single agent.
@@ -500,6 +507,13 @@ class MultiAgent(Agent):
 ## -------------------------------------------------------------------------------------------------
     def get_action_space(self) -> MSpace:
         return None
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        for i, agent_entry in enumerate(self._agents):
+            agent       = agent_entry[0]
+            agent.set_random_seed(p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------

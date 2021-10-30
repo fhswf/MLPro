@@ -381,6 +381,15 @@ class EnvBase(FctReward, FctDone, FctBroken, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        """
+        Resets the internal random generator using the given seed.
+        """
+        
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
     def reset(self) -> None:
         """
         Resets environment to initial state. Please redefine.

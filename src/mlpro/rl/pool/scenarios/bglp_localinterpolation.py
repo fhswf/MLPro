@@ -25,7 +25,7 @@ Algorithms  : SbPG - Local Interpolation (dummy)
 """
 
 
-from mlpro.rl.pool.envs import BGLP
+from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.models import *
 from mlpro.bf.various import *
 from mlpro.bf.math import *

@@ -17,10 +17,11 @@
 ## --                                _set_adapted(); moved Buffer classes to mlpro.bf.data.py
 ## -- 2021-10-25  1.0.4     SY       Enhancement of class Adaptive by adding ScientificObject.
 ## -- 2021-10-26  1.1.0     DA       New class AdaptiveFunction
+## -- 2021-10-29  1.1.1     DA       New method Adaptive.set_random_seed()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-10-26)
+Ver. 1.1.1 (2021-10-29)
 
 This module provides fundamental machine learning functionalities and properties.
 """
@@ -185,6 +186,15 @@ class Adaptive(Log, LoadSave, ScientificObject):
             self.log(self.C_LOG_TYPE_I, 'Adaptivity switched on')
         else:
             self.log(self.C_LOG_TYPE_I, 'Adaptivity switched off')
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        """
+        Resets the internal random generator using the given seed.
+        """
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
