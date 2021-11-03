@@ -379,12 +379,14 @@ class Scenario(Log, LoadSave):
 class Training(Log):
     """
     This class performs an episodical training on a (multi-)agent in a given environment. Both are 
-    expected as parts of a reinforcement learning process (see class Process for more details).
+    expected as parts of a reinforcement learning scenario (see class Scenario for more details).
     The class optionally collects all relevant data like environmenal states and rewards or agents
     actions. Furthermore overarching training data will be collected.
 
     The class provides the three methods run(), run_episode(), run_cycle() that can be called in 
     any order to proceed the training.
+
+    https://github.com/fhswf/MLPro/issues/146
     """
 
     C_TYPE                  = 'Training'
@@ -396,14 +398,13 @@ class Training(Log):
     C_FNAME_ENV_REWARDS     = 'env_rewards'
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
                  p_scenario:Scenario,           # RL scenario object
                  p_ctrl_grp_size=100,           # Size of control group
-                 p_cycle_limit=0,               # Optional limit for total number of training cycles
-                 p_adaptation_limit=0,          # Optional limit for total number of adaptations
+                 p_max_cycles=0,                # Optional limit for total number of training cycles
+                 p_max_cycles_per_episode=0,    # Optional limit for cycles per episode
+                 p_max_adaptations=0,           # Optional limit for total number of adaptations
                  p_monitor_progress=True,       # If True, the training progress will be monitored
                  p_collect_states=True,         # If True, the environment states will be collected
                  p_collect_actions=True,        # If True, the agent actions will be collected
@@ -414,11 +415,30 @@ class Training(Log):
                 
         super().__init__(p_logging=p_logging)
 
-        self._scenario      = p_scenario
-        self._env           = self._scenario.get_env()
-        self._agent         = self._scenario.get_agent()
+        if p_monitor_progress: 
+            # Progress monitoring not yet supported
+            raise NotImplementedError
 
-        # ...
+        if ( p_max_cycles <= 0 ) or ( p_max_adaptations <= 0 ) or ( p_monitor_progress == False):
+            # No termination criteron defined
+            raise ParamError('Please define a termination criterion')
+
+        self._scenario              = p_scenario
+        self._env                   = self._scenario.get_env()
+        self._agent                 = self._scenario.get_agent()
+
+        self._ctrl_grp_size         = p_ctrl_grp_size
+        self._max_cycles            = p_max_cycles
+        self._max_cycles_per_epi    = p_max_cycles_per_episode
+        self._max_adaptation        = p_max_adaptations
+        self._monitor_progress      = p_monitor_progress
+
+        self._collect_states        = p_collect_states
+        self._collect_actions       = p_collect_actions
+        self._collect_rewards       = p_collect_rewards
+        self._collect_training      = p_collect_training
+
+        self.reset()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -497,12 +517,94 @@ class Training(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _init_episode(self):
+        self.log(self.C_LOG_TYPE_I, '--------------------------------------')
+        self.log(self.C_LOG_TYPE_I, '-- Episode', self._episodes, 'started...')
+        self.log(self.C_LOG_TYPE_I, '--------------------------------------\n')
+        self._scenario.reset()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _close_episode(self):
+        self.log(self.C_LOG_TYPE_I, '--------------------------------------')
+        self.log(self.C_LOG_TYPE_I, '-- Episode', self._episodes, 'finished after', self._cycles_episode, 'cycles')
+        self.log(self.C_LOG_TYPE_I, '--------------------------------------\n\n')
+
+        self._cycles_episode    = 0
+
+
+## -------------------------------------------------------------------------------------------------
+    def _close_training(self):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self):
+        self._cycles_total      = 0
+        self._cycles_episode    = 0 
+        self._episodes          = 0
+        self._adaptations       = 0
+
+
+## -------------------------------------------------------------------------------------------------
     def run_cycle(self):
         """
         Runs next training cycle.
+
+        Returns:
+            eof_episode     True, if end of episode has been reached. False otherwise.
+            eof_training    True, if end of training has been reached. False otherwise.
         """
 
-        # 1 Begin of new episode? Reset agent and environment 
+        # 0 Intro
+        eof_episode     = False
+        eof_training    = False
+
+        # 1 Init next episode
+        if self._cycles_episode == 0: self._init_episode()
+
+
+        # 2 Run a cycle
+        self._scenario.run_cycle(self._cycle_id, p_ds_states=self._ds_states, p_ds_actions=self._ds_actions, p_ds_rewards=self._ds_rewards)
+        self._cycles_episode    += 1
+        self._cycles_total      += 1
+
+
+        # 3 Check: episode finished?
+        if self._env.get_done():
+            self.log(self.C_LOG_TYPE_I, 'Environment state: DONE')
+            self._close_episode()
+            eof_episode = True
+
+        elif self._env.get_broken():
+            self.log(self.C_LOG_TYPE_E, 'Environment state: BROKEN')
+            self._close_episode()
+            eof_episode = True
+
+        elif ( self._max_cycles_per_epi > 0 ) and ( self._cycles_episode == self._max_cycles_per_epi ):
+            self.log(self.C_LOG_TYPE_W, 'Episode timed out')
+            self._close_episode()
+            eof_episode = True
+
+
+        # 4 Check: training finished?
+        if ( self._max_cycles > 0 ) and ( self._cycles_total == self._max_cycles ):
+            self.log(self.C_LOG_TYPE_I)
+
+        # 5 Outro
+        return eof_episode, eof_training
+
+
+## -------------------------------------------------------------------------------------------------
+    def run_cycle_old(self) -> bool:
+        """
+        Runs next training cycle.
+
+        Returns:
+            True, if training has been completed. False otherwise.
+        """
+
+        # 1 Begin of new episode? Reset environment 
         if self._cycle_id == 0:
             self.log(self.C_LOG_TYPE_I, '--------------------------------------')
             self.log(self.C_LOG_TYPE_I, '-- Episode', self._episode_id, 'started...')
@@ -552,23 +654,48 @@ class Training(Log):
             self._cycle_id     += 1
 
 
-## -------------------------------------------------------------------------------------------------
-    def run_episode(self):
-        """
-        Runs/finishes current training episode.
-        """
+# ## -------------------------------------------------------------------------------------------------
+#     def run_episode(self):
+#         """
+#         Runs/finishes current training episode.
+#         """
 
-        current_episode_id = self._episode_id
-        while self._episode_id == current_episode_id: self.run_cycle()
+#         current_episode_id = self._episode_id
+#         while self._episode_id == current_episode_id: self.run_cycle()
+
+
+# ## -------------------------------------------------------------------------------------------------
+#     def run(self):
+#         """
+#         Runs/finishes entire training.
+#         """
+
+#         while self._episode_id < self._episode_limit: self.run_episode()
 
 
 ## -------------------------------------------------------------------------------------------------
     def run(self):
         """
-        Runs/finishes entire training.
+        Runs a training until one of the termination criteria have been fulfilled.
         """
 
-        while self._episode_id < self._episode_limit: self.run_episode()
+        self.reset()
+        while not self.run_cycle()[1]: pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_adaptations(self):
+        return self._adaptations
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycles(self):
+        return self._cycles_total
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_episodes(self):
+        return self._episodes
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -619,7 +746,6 @@ class Training(Log):
 
         if num_files > 0: return result
         return False
-
 
 
 

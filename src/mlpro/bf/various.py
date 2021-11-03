@@ -22,10 +22,11 @@
 ## --                                - colored text depending on log type 
 ## --                                - new method set_log_level()
 ## -- 2021-10-25  1.7.0     SY       Add new class ScientificObject
+## -- 2021-11-03  1.7.1     DA       Class Log: new type C_LOG_TYPE_SUCCESS for success messages 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2021-10-25)
+Ver. 1.7.1 (2021-11-03)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer, ...
@@ -154,11 +155,13 @@ class Log:
     C_LOG_TYPE_I    = 'I'           # Information
     C_LOG_TYPE_W    = 'W'           # Warning
     C_LOG_TYPE_E    = 'E'           # Error
+    C_LOG_TYPE_S    = 'S'           # Success / Milestone
 
-    C_LOG_TYPES     = [ C_LOG_TYPE_I, C_LOG_TYPE_W, C_LOG_TYPE_E ]
+    C_LOG_TYPES     = [ C_LOG_TYPE_I, C_LOG_TYPE_W, C_LOG_TYPE_E, C_LOG_TYPE_S ]
 
     C_COL_WARNING   = '\033[93m'    # Yellow
     C_COL_ERROR     = '\033[91m'    # Red
+    C_COL_SUCCESS   = '\033[32m'    # Green
     C_COL_RESET     = '\033[0m'     # Reset color
 
 ## -------------------------------------------------------------------------------------------------
@@ -220,9 +223,9 @@ class Log:
         if not self.logging: return
 
         if self._level == self.C_LOG_TYPE_W:
-            if p_type == self.C_LOG_TYPE_I: return
+            if ( p_type == self.C_LOG_TYPE_I ) or ( p_type == self.C_LOG_TYPE_S ): return
         elif self._level == self.C_LOG_TYPE_E:
-            if ( p_type == self.C_LOG_TYPE_I ) or ( p_type == self.C_LOG_TYPE_W ): return
+            if ( p_type == self.C_LOG_TYPE_I ) or ( p_type == self.C_LOG_TYPE_S ) or ( p_type == self.C_LOG_TYPE_W ): return
 
         now = datetime.now()
 
@@ -230,10 +233,12 @@ class Log:
             col = self.C_COL_WARNING
         elif p_type == self.C_LOG_TYPE_E:
             col = self.C_COL_ERROR
+        elif p_type == self.C_LOG_TYPE_S:
+            col = self.C_COL_SUCCESS
         else:
             col = self.C_COL_RESET
 
-        print(col + '%04d-%02d-%02d  %02d:%02d:%02d.%06d ' % (now.year, now.month, now.day, now.hour, now.minute, now.second, now.microsecond), p_type + '  ' + self.C_TYPE + ' ' + self.C_NAME + ':', *p_args)
+        print(col + '%04d-%02d-%02d  %02d:%02d:%02d.%06d ' % (now.year, now.month, now.day, now.hour, now.minute, now.second, now.microsecond), p_type + '  ' + self.C_TYPE + ' ' + self.C_NAME + ':', *p_args, self.C_COL_RESET)
 
 
 
