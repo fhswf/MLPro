@@ -29,10 +29,13 @@
 ## -- 2021-10-27  1.5.1     MRD      Remove reset() on WREnvGYM2MLPro and WrEnvMLPro2GYM init() function
 ## --                                to prevent double reset, due to it will be reset later on Training Class
 ## --                                Mismatch datatype last_done on WrPolicySB32MLPro
+## -- 2021-11-03  1.5.2     SY       Remove reset() on WrEnvPZOO2MLPro and WrEnvMLPro2PZoo to avoid double reset
+## --                                New static method for gym space transformation on WrEnvGYM2MLPro
+## --                                and vice versa on WrEnvMLPro2GYM
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2021-10-18)
+Ver. 1.5.2 (2021-11-03)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
@@ -88,12 +91,12 @@ class WrEnvGYM2MLPro(Environment):
         if p_state_space is not None: 
             self._state_space = p_state_space
         else:
-            self._state_space = self._recognize_space(self._gym_env.observation_space, "observation")
+            self._state_space = self.recognize_space(self._gym_env.observation_space)
         
         if p_action_space is not None: 
             self._action_space = p_action_space
         else:
-            self._action_space = self._recognize_space(self._gym_env.action_space, "action")
+            self._action_space = self.recognize_space(self._gym_env.action_space)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -103,7 +106,8 @@ class WrEnvGYM2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _recognize_space(self, p_gym_space, dict_name) -> ESpace:
+    @staticmethod
+    def recognize_space(p_gym_space) -> ESpace:
         space = ESpace()
         
         if isinstance(p_gym_space, gym.spaces.Discrete):
@@ -238,8 +242,6 @@ class WrEnvPZOO2MLPro(Environment):
             self._action_space = p_action_space
         else:
             self._action_space = self._recognize_space(self._zoo_env.action_spaces, "action")
-
-        self.reset()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -392,18 +394,19 @@ class WrEnvMLPro2GYM(gym.Env):
         if p_state_space is not None: 
             self.observation_space  = p_state_space
         else:
-            self.observation_space  = self._recognize_space(self._mlpro_env.get_state_space())
+            self.observation_space  = self.recognize_space(self._mlpro_env.get_state_space())
         
         if p_action_space is not None: 
             self.action_space       = p_action_space
         else:
-            self.action_space       = self._recognize_space(self._mlpro_env.get_action_space())
+            self.action_space       = self.recognize_space(self._mlpro_env.get_action_space())
         
         self.first_refresh          = True
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _recognize_space(self, p_mlpro_space):
+    @staticmethod    
+    def recognize_space(p_mlpro_space):
         space = None
         action_dim = p_mlpro_space.get_num_dim()
         if len(p_mlpro_space.get_dim(0).get_boundaries()) == 1:
@@ -535,29 +538,11 @@ class WrEnvMLPro2PZoo():
                 self.action_spaces      = self._recognize_space(self._mlpro_env.get_action_space())
             
             self.first_refresh          = True
-            self.reset()
         
 
 ## -------------------------------------------------------------------------------------------------
         def _recognize_space(self, p_mlpro_space):
-            space = None
-            action_dim = p_mlpro_space.get_num_dim()
-            if len(p_mlpro_space.get_dim(0).get_boundaries()) == 1:
-                space = gym.spaces.Discrete(p_mlpro_space.get_dim(0).get_boundaries()[0])
-            else:
-                lows = []
-                highs = []
-                for dimension in range(action_dim):
-                    lows.append(p_mlpro_space.get_dim(dimension).get_boundaries()[0])
-                    highs.append(p_mlpro_space.get_dim(dimension).get_boundaries()[1])
-    
-                space = gym.spaces.Box(
-                                low=np.array(lows, dtype=np.float32), 
-                                high=np.array(highs, dtype=np.float32), 
-                                shape=(action_dim,), 
-                                dtype=np.float32
-                                )
-                
+            space           = WrEnvMLPro2GYM.recognize_space(p_mlpro_space)
             setup_space     = {agent: space for agent in self.possible_agents}
                 
             return setup_space
