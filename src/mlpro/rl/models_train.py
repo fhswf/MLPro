@@ -376,6 +376,28 @@ class Scenario(Log, LoadSave):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class TrainingResults(Saveable):
+    """
+    Results of a training (see class Training).
+    """
+
+    def __init__(self, p_scenario:Scenario):
+        self.scenario           = p_scenario
+        self.ts_start           = None
+        self.ts_end             = None
+        self.duration           = 0
+        self.num_cycles         = 0
+        self.num_episodes       = 0
+        self.num_adaptations    = 0
+        self.num_evaluations    = 0
+        self.highscore          = 0
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class Training(Log):
     """
     This class performs an episodical training on a (multi-)agent in a given environment. Both are 
@@ -397,14 +419,16 @@ class Training(Log):
     C_FNAME_AGENT_ACTIONS   = 'agent_actions'
     C_FNAME_ENV_REWARDS     = 'env_rewards'
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
                  p_scenario:Scenario,           # RL scenario object
-                 p_ctrl_grp_size=100,           # Size of control group
                  p_max_cycles=0,                # Optional limit for total number of training cycles
                  p_max_cycles_per_episode=0,    # Optional limit for cycles per episode
                  p_max_adaptations=0,           # Optional limit for total number of adaptations
+                 p_max_stagnations=5,           # Optional length of a sequence of evaluations without
+                                                # training progress
+                 p_eval_frequency=100,          # Optional evaluation frequency
+                 p_eval_grp_size=50,            # Number of evaluation episodes (eval group)
                  p_monitor_progress=True,       # If True, the training progress will be monitored
                  p_collect_states=True,         # If True, the environment states will be collected
                  p_collect_actions=True,        # If True, the agent actions will be collected
@@ -415,19 +439,17 @@ class Training(Log):
                 
         super().__init__(p_logging=p_logging)
 
-        if p_monitor_progress: 
-            # Progress monitoring not yet supported
-            raise NotImplementedError
-
         if ( p_max_cycles <= 0 ) or ( p_max_adaptations <= 0 ) or ( p_monitor_progress == False):
-            # No termination criteron defined
             raise ParamError('Please define a termination criterion')
+
+        if p_eval_grp_size <= 0:
+            raise ParamError('Size of evaluation group must be > 0')
 
         self._scenario              = p_scenario
         self._env                   = self._scenario.get_env()
         self._agent                 = self._scenario.get_agent()
 
-        self._ctrl_grp_size         = p_ctrl_grp_size
+        self._eval_grp_size         = p_eval_grp_size
         self._max_cycles            = p_max_cycles
         self._max_cycles_per_epi    = p_max_cycles_per_episode
         self._max_adaptation        = p_max_adaptations
@@ -531,6 +553,7 @@ class Training(Log):
         self.log(self.C_LOG_TYPE_I, '--------------------------------------\n\n')
 
         self._cycles_episode    = 0
+        self._ctrl_grp_id      += 1
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -539,12 +562,22 @@ class Training(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self):
-        self._cycles_total      = 0
-        self._cycles_episode    = 0 
-        self._episodes          = 0
-        self._adaptations       = 0
+    def _progress_detected(self) -> bool:
+        """
+        Determines training progress after finishing a control group loop.
 
+        Returns:
+            True, if there was a progress. False otherwise.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self):
+        self._results           = TrainingResults(self._scenario)
+        self._cycles_episode    = 0 
+        
 
 ## -------------------------------------------------------------------------------------------------
     def run_cycle(self):
@@ -560,19 +593,20 @@ class Training(Log):
         eof_episode     = False
         eof_training    = False
 
+
         # 1 Init next episode
         if self._cycles_episode == 0: self._init_episode()
 
 
         # 2 Run a cycle
-        self._scenario.run_cycle(self._cycle_id, p_ds_states=self._ds_states, p_ds_actions=self._ds_actions, p_ds_rewards=self._ds_rewards)
+        self._scenario.run_cycle(self._cycles_episode, p_ds_states=self._ds_states, p_ds_actions=self._ds_actions, p_ds_rewards=self._ds_rewards)
         self._cycles_episode    += 1
         self._cycles_total      += 1
 
 
-        # 3 Check: episode finished?
+        # 3 Check: Episode finished?
         if self._env.get_done():
-            self.log(self.C_LOG_TYPE_I, 'Environment state: DONE')
+            self.log(self.C_LOG_TYPE_S, 'Environment state: DONE')
             self._close_episode()
             eof_episode = True
 
@@ -587,9 +621,24 @@ class Training(Log):
             eof_episode = True
 
 
-        # 4 Check: training finished?
+        # 4 Check: Training finished?
         if ( self._max_cycles > 0 ) and ( self._cycles_total == self._max_cycles ):
-            self.log(self.C_LOG_TYPE_I)
+            self.log(self.C_LOG_TYPE_I, 'Training cycle limit reached')
+            eof_training = True
+
+        if ( self._max_adaptation > 0 ) and ( self._adaptations == self._max_adaptation ):
+            self.log(self.C_LOG_TYPE_I, 'Adaptation limit reached')
+            eof_training = True
+
+        if self._ctrl_grp_id == self._ctrl_grp_size:
+            self._ctrl_grp_id = 0
+
+            if self._monitor_progress and not self._progress_detected():
+                self.log(self.C_LOG_TYPE_S, 'Best agent configuration found!')
+                eof_training = True
+
+        if eof_training: self._close_training()
+
 
         # 5 Outro
         return eof_episode, eof_training
@@ -674,33 +723,24 @@ class Training(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self):
+    def run(self) -> TrainingResults:
         """
         Runs a training until one of the termination criteria have been fulfilled.
+
+        Returns:
+            Object that contains the training results
         """
 
         self.reset()
+
         while not self.run_cycle()[1]: pass
 
-
-## -------------------------------------------------------------------------------------------------
-    def get_adaptations(self):
-        return self._adaptations
+        return self.get_results()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_cycles(self):
-        return self._cycles_total
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_episodes(self):
-        return self._episodes
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_data(self):
-        return self._ds_training, self._ds_states, self._ds_actions, self._ds_rewards
+    def get_results(self):
+        return self._results
 
 
 ## -------------------------------------------------------------------------------------------------
