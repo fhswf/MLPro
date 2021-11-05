@@ -333,3 +333,63 @@ class AdaptiveFunction (Adaptive, Function):
 
         if self._mappings_total == 0: return 0
         return self._mappings_good / self._mappings_total
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Scenario (Log, LoadSave):
+    """
+    Template class for a common ML scenario.
+    """
+
+    C_TYPE      = 'Scenario'
+    C_NAME      = '????'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_logging=True):
+        super().__init__(p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_model(self) -> Adaptive:
+        """
+        Returns the adaptive object inside the scenario (see class Adaptive).
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_seed):
+        """
+        Resets the scenario. Internal random generators shall be seed with the given value.
+
+        Parameters:
+            p_seed          Seed value for internal random generator
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def run_step(self) -> bool:
+        """
+        Runs a single process step.
+
+        Returns:
+            True, if process step was successful. False otherwise.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def run(self):
+        """
+        Runs the scenario as a sequence of single process steps until there was a terminating event.
+        """
+
+        while self.run_step(): pass
