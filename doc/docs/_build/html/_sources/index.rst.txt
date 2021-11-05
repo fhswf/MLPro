@@ -52,6 +52,9 @@ Instructions for use
    
    instructions/bf/math
    instructions/bf/ml
+   instructions/bf/data
+   instructions/bf/time
+   instructions/bf/log
 
 .. toctree::
    :maxdepth: 3
