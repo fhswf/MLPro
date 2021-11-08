@@ -18,18 +18,21 @@
 ## -- 2021-10-25  1.0.4     SY       Enhancement of class Adaptive by adding ScientificObject.
 ## -- 2021-10-26  1.1.0     DA       New class AdaptiveFunction
 ## -- 2021-10-29  1.1.1     DA       New method Adaptive.set_random_seed()
+## -- 2021-11-08  1.2.0     DA       - Class Adaptive renamed to Model
+## --                                - New classes Mode, Scenario, TrainingResults, Training, 
+## --                                  HyperParamTuner
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2021-10-29)
+Ver. 1.2.0 (2021-11-08)
 
 This module provides fundamental machine learning functionalities and properties.
 """
 
+from os import confstr_names
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
-
 
 
 
@@ -88,46 +91,13 @@ class HyperParamTupel(Element):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamTuning(Log):
-    """
-    Template class for hyperparameter tuning.
-    """
-
-    C_TYPE          = 'Hyperparameter Tuning'
-    C_NAME          = '????'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_path:str, p_logging=True):
-        super().__init__(p_logging=p_logging)
-
-
-## -------------------------------------------------------------------------------------------------
-    def optimize(self, *p_hp):
-        """
-        Mathematical function to be optimized.
-
-        Parameters:
-            *p_hp       Hyperparameters
-
-        Returns:
-            Real value to be optimized
-        """
-
-        raise NotImplementedError
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Adaptive(Log, LoadSave, ScientificObject):
+class Model(Log, LoadSave, ScientificObject):
     """
     Property class for adapativity. And if something can be adapted it should be loadable and saveable
     so that this class provides load/save properties as well.
     """
 
-    C_TYPE          = 'Adaptive'
+    C_TYPE          = 'Model'
     C_NAME          = '????'
 
     C_BUFFER_CLS    = Buffer            
@@ -255,12 +225,12 @@ class Adaptive(Log, LoadSave, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AdaptiveFunction (Adaptive, Function):
+class AdaptiveFunction (Model, Function):
     """
     Model class for an adaptive bi-multivariate mathematical function.
     """
 
-    C_TYPE          = 'Adaptive Fct'
+    C_TYPE          = 'Model Fct'
     C_NAME          = '????'
 
 ## -------------------------------------------------------------------------------------------------
@@ -278,7 +248,7 @@ class AdaptiveFunction (Adaptive, Function):
             p_logging           Boolean switch for logging functionality
         """
 
-        Adaptive.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+        Model.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         Function.__init__(self, p_input_space=p_input_space, p_output_space=p_output_space, p_output_elem_cls=p_output_elem_cls)
         self._threshold         = p_threshold
         self._mappings_total    = 0             # Number of mappings since last adaptation
@@ -340,35 +310,121 @@ class AdaptiveFunction (Adaptive, Function):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Scenario (Log, LoadSave):
+class Mode (Log):
     """
-    Template class for a common ML scenario.
+    Property class that adds a mode and related methods to a child class.
+    """
+
+    C_MODE_INITIAL  = -1
+    C_MODE_SIM      = 0
+    C_MODE_REAL     = 1
+
+    C_VALID_MODES   = [ C_MODE_SIM, C_MODE_REAL ]
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_mode, p_logging=True):
+        super().__init__(p_logging)
+        self._mode = self.C_MODE_INITIAL
+        self.set_mode(p_mode)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_mode(self):
+        return self._mode
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_mode(self, p_mode):
+        if not p_mode in self.C_VALID_MODES: raise ParamError('Invalid mode')
+        if self._mode == p_mode: return
+        self._mode = p_mode
+        self.log(self.C_LOG_TYPE_I, 'Operation mode set to', self._mode)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Scenario (Mode, LoadSave):
+    """
+    Template class for a common ML scenario with an adaptive model inside.
     """
 
     C_TYPE      = 'Scenario'
     C_NAME      = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=True):
-        super().__init__(p_logging=p_logging)
+    def __init__(self, p_mode=Mode.C_MODE_SIM, p_ada:bool=True, p_logging:bool=True):
+        """
+        Parameters:
+            p_mode          Operation mode (see class Mode)
+            p_ada           Boolean switch for adaptivity of internal model
+            p_logging       Boolean switch for logging
+        """
+
+        self._model = self._setup(p_mode=self.C_MODE_SIM, p_ada=p_ada, p_logging=p_logging)
+        super().__init__(p_mode, p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_model(self) -> Adaptive:
+    def _setup(self, p_mode, p_ada:bool, p_logging:bool) -> Model:
         """
-        Returns the adaptive object inside the scenario (see class Adaptive).
+        Setup the ML scenario by redefining this method in the child class. 
+
+        Parameters:
+            p_mode          Operation mode (see class Mode)
+            p_ada           Boolean switch for adaptivity of internal model
+            p_logging       Boolean switch for logging functionality
+
+        Returns:
+            Adaptive model inside the ML scenario
         """
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed):
+    def get_model(self) -> Model:
+        """
+        Returns the adaptive model object inside the scenario.
+        """
+
+        return self._model
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_mode(self, p_mode):
+        super().set_mode(p_mode)
+        self._set_mode(p_mode)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _set_mode(self, p_mode):
+        """
+        Redefine this method to switch the scenario between simulation or real operation mode.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_seed=1):
         """
         Resets the scenario. Internal random generators shall be seed with the given value.
 
         Parameters:
             p_seed          Seed value for internal random generator
+        """
+
+        self.log(self.C_LOG_TYPE_I, 'Reset with seed', str(p_seed))
+        self._reset(p_seed)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed):
+        """
+        Custom method to reset the scenario and to set the given random seed value. See method reset().
         """
 
         raise NotImplementedError
@@ -383,6 +439,21 @@ class Scenario (Log, LoadSave):
             True, if process step was successful. False otherwise.
         """
 
+        self.log(self.C_LOG_TYPE_I, 'Start of process step')
+        result = self._run_step()
+        self.log(self.C_LOG_TYPE_I, 'End of process step')
+        return result
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run_step(self) -> bool:
+        """
+        Custom implementation of a single process step. To be redefined.
+
+        Returns:
+            True, if process step was successful. False otherwise.
+        """
+
         raise NotImplementedError
 
 
@@ -392,4 +463,141 @@ class Scenario (Log, LoadSave):
         Runs the scenario as a sequence of single process steps until there was a terminating event.
         """
 
+        self.log(self.C_LOG_TYPE_I, 'Start of processing...')
         while self.run_step(): pass
+        self.log(self.C_LOG_TYPE_I, 'End of processing...')
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class TrainingResults (Saveable):
+    """
+    Results of a training (see class Training).
+    """
+
+    def __init__(self, p_scenario:Scenario):
+        self.scenario       = p_scenario
+        self.ts_start       = None
+        self.ts_end         = None
+        self.ts_duration    = 0
+        self.score          = None
+        self.trained_model  = None
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class HyperParamTuner (Log):
+    """
+    Template class for hyperparameter tuning (HPT).
+    """
+
+    C_TYPE      = 'HyperParam Tuner'
+    C_NAME      = '????'
+
+## -------------------------------------------------------------------------------------------------
+    def maximize(self, p_ofct, p_model:Model, p_num_trials) -> TrainingResults:
+        """
+
+        Parameters:
+            p_ofct          Objective function to be maximized
+            p_model         Model object to be tuned
+            p_num_trials    Number of trials
+
+        Returns:
+            Training results of the best tuned model (see class TrainingResults)
+        """
+
+        self._ofct          = p_ofct
+        self._model         = p_model
+        self._num_trials    = p_num_trials
+        return self._maximize()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _maximize(self) -> TrainingResults:
+        raise NotImplementedError
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Training (Log):
+    """
+    Template class for a ML training and hyperparameter tuning.
+    """
+
+    C_TYPE      = 'Training'
+    C_NAME      = '????'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_scenario:Scenario, p_hpt:HyperParamTuner=None, p_hpt_trials=0, p_logging=False):
+        """
+        Parameters:
+            p_scenario          ML scenario (see class Scenario)
+            p_hpt               Optional hyperparameter tuner (see class HyperParamTuner)
+            p_hpt_trials        Optional number of hyperparameter tuning trials
+            p_logging           Boolean switch for logging       
+        """
+
+        super().__init__(p_logging=p_logging)
+
+        self._scenario      = p_scenario
+        self._hpt           = p_hpt
+        self._hpt_trials    = p_hpt_trials
+        self._results       = None
+
+        if self._hpt is not None: 
+            raise NotImplementedError('Hyperparameter Tuning not yet implemented')
+
+        if ( self._hpt is not None ) and ( p_hpt_trials <= 0 ):
+            raise ParamError('Please check number of trials for hyperparameter tuning')
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_scenario(self) -> Scenario:
+        return self._scenario
+
+
+## -------------------------------------------------------------------------------------------------
+    def run(self) -> TrainingResults:
+        """
+        Runs a training and returns the results of the best trained/tuned agent.
+        """
+
+        if self._hpt is None:
+            # 1 Training without hyperparameter tuning
+            self.log(self.C_LOG_TYPE_I, 'Training started (without hyperparameter tuning)')
+            self._results = self._run()
+
+        else:
+            # 2 Training 
+            self.log(self.C_LOG_TYPE_I, 'Training started (with hyperparameter tuning)')
+            self._results = self._hpt.maximize(p_ofct=self._run, p_model=self._scenario.get_model(), p_num_trials=self._hpt_trials)
+
+        self.log(self.C_LOG_TYPE_I, 'Training completed')
+        return self.get_results()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self) -> TrainingResults:
+        """
+        Training process to be implemented.
+
+        Returns:
+            Results of the best trained model.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_results(self) -> TrainingResults:
+        return self._results
