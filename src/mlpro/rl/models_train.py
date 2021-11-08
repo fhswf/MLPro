@@ -18,10 +18,11 @@
 ## -- 2021-10-08  1.2.4     DA       Class Scenario/constructor/param p_cycle_limit: new value -1
 ## --                                lets class get the cycle limit from the env
 ## -- 2021-10-28  1.2.5     DA       Bugfix method Scenario.reset(): agent's buffer was not cleared
+## -- 2021-11-dd  1.3.0     DA       Rework/improvement of class Training
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.5 (2021-10-28)
+Ver. 1.3.0 (2021-11-dd)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -30,6 +31,7 @@ This module provides model classes to define and run rl scenarios and to train a
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import *
+from mlpro.bf.ml import *
 from mlpro.rl.models_env import *
 
 
@@ -126,10 +128,9 @@ class RLDataStoring(DataStoring):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Scenario(Log, LoadSave):
+class RLScenario(Scenario):
     """
-    Template class for an rl sceario consisting of an environment and an agent. Please
-    implement method setup() to setup env and agent structure.
+    Template class for an RL scenario consisting of an environment and an agent. 
     """
 
     C_TYPE              = 'RL-Scenario'
@@ -150,7 +151,6 @@ class Scenario(Log, LoadSave):
 
         # 0 Intro
         self._env           = None
-        self._agent         = None
         self._cycle_len     = p_cycle_len
         self._cycle_limit   = p_cycle_limit
         self._visualize     = p_visualize
@@ -176,12 +176,12 @@ class Scenario(Log, LoadSave):
 
         self._timer  = Timer(t_mode, t_lap_duration, self._cycle_limit)
 
-
+         
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada:bool, p_logging:bool):
+    def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
         """
-        Here's the place to explicitely setup the entire rl scenario. Please bind your env to
-        self._env and your agent to self._agent. 
+        Here's the place to explicitely setup the entire RL scenario. Please bind your env to
+        self._env and return the agent as model. 
 
         Parameters:
             p_mode              Operation mode of environment (see Environment.C_MODE_*)
@@ -193,27 +193,24 @@ class Scenario(Log, LoadSave):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed_env=None, p_seed_agent=None, p_clear_agent_buffer=False):
+    def _reset(self, p_seed):
         """
-        Environment and timer will be reset. The random generators for environment and agent will
+        Environment and timer are reset. The random generators for environment and agent will
         also be reset. Optionally the agent's internal buffer data will be cleared but
         it's policy will not be touched.
 
         Parameters:
-            p_seed_env              New seed for environment's random generator
-            p_seed_agent            New seed for agent's random generator
-            p_clear_agent_buffer    Boolean switch for clearing the agent's buffer
+            p_seed                  New seed for environment's and agent's random generator
         """
 
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Scenario reset...')
 
         # 1 Reset environment
-        self._env.set_random_seed(p_seed_env)
+        self._env.set_random_seed(p_seed)
         self._env.reset()
 
         # 2 Reset agent
-        if p_clear_agent_buffer: self._agent.clear_buffer()
-        self._agent.set_random_seed(p_seed_agent)
+        self._model.set_random_seed(p_seed)
 
         # 3 Reset visualization
         if self._visualize:
@@ -786,29 +783,3 @@ class Training(Log):
 
         if num_files > 0: return result
         return False
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class HPTuningRL(HyperParamTuning):
-    """
-    Hyperparameter tuning for reinforcement learning.
-    """
-
-    C_NAME              = 'RL'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:Scenario, p_path:str, p_episode_limit=50, p_cycle_limit=0, p_logging=True):
-        super().__init__(p_path, p_logging=p_logging)
-
-
-## -------------------------------------------------------------------------------------------------
-    def optimize(self, *p_hp):
-        # 1 Set hyperparameters
-        # 2 Create and process a training
-        # 3 Return overall number of cycles a the value to be mininmized
-
-        return 0

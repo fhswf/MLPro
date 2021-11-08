@@ -14,11 +14,11 @@
 ## -- 2021-10-05  1.1.3     DA       Introduction of method Environment.get_cycle_limit()
 ## -- 2021-10-05  1.1.4     SY       Bugfixes and minor improvements
 ## -- 2021-10-25  1.1.5     SY       Enhancement of class EnvBase by adding ScientificObject.
-## -- 2021-10-dd  1.2.0     DA       New classes Fct* and AFct*, improvements in class EnvModel
+## -- 2021-11-dd  1.2.0     DA       New classes Fct* and AFct*, improvements in class EnvModel
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-10-dd)
+Ver. 1.2.0 (2021-11-dd)
 
 This module provides model classes for environments and environnment models.
 """
@@ -32,7 +32,7 @@ from mlpro.rl.models_sar import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctReward(Adaptive):
+class AFctReward(Model):
     """
     Adaptive function for reward prediction, based on universal adaptive function.
     """
@@ -43,7 +43,7 @@ class AFctReward(Adaptive):
     def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
         """
         Parameters:
-            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_afct_cls          Name of an adaptive function class (compatible to class AdaptiveFunction)
             p_state_space       State space
             p_threshold         See description of class AdaptiveFunction
             p_buffer_size       Initial size of internal data buffer (0=no buffering)
@@ -112,7 +112,7 @@ class FctReward(AFctReward):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctDone(Adaptive):
+class AFctDone(Model):
     """
     Adaptive function for environment done state prediction, based on universal adaptive function.
     """
@@ -123,7 +123,7 @@ class AFctDone(Adaptive):
     def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
         """
         Parameters:
-            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_afct_cls          Name of an adaptive function class (compatible to class AdaptiveFunction)
             p_state_space       State space
             p_threshold         See description of class AdaptiveFunction
             p_buffer_size       Initial size of internal data buffer (0=no buffering)
@@ -193,7 +193,7 @@ class FctDone(AFctDone):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctBroken(Adaptive):
+class AFctBroken(Model):
     """
     Adaptive function for environment broken state prediction, based on universal adaptive function.
     """
@@ -204,7 +204,7 @@ class AFctBroken(Adaptive):
     def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
         """
         Parameters:
-            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_afct_cls          Name of an adaptive function class (compatible to class AdaptiveFunction)
             p_state_space       State space
             p_threshold         See description of class AdaptiveFunction
             p_buffer_size       Initial size of internal data buffer (0=no buffering)
@@ -286,6 +286,8 @@ class EnvBase(FctReward, FctDone, FctBroken, Plottable, ScientificObject):
     C_LATENCY       = timedelta(0,1,0)              # Default latency 1s
 
     C_REWARD_TYPE   = Reward.C_TYPE_OVERALL         # Default reward type for reinforcement learning
+
+    C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_NONE
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_latency:timedelta=None, p_logging=True):
@@ -441,7 +443,7 @@ class AFctSTrans(AdaptiveFunction):
     def __init__(self, p_afct_cls, p_state_space:MSpace, p_action_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
         """
         Parameters:
-            p_afct_cls          Adaptive function class (compatible to class AdaptiveFunction)
+            p_afct_cls          Name of an adaptive function class (compatible to class AdaptiveFunction)
             p_state_space       State space
             p_action_space      Action space
             p_threshold         See description of class AdaptiveFunction
@@ -649,9 +651,9 @@ class Environment(EnvBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class EnvModel(EnvBase, Adaptive):
+class EnvModel(EnvBase, Model):
     """
-    Template class for a Real world model to be used for model based agents.
+    Template class for an environment model to be used for model based agents.
     """
 
     C_TYPE          = 'EnvModel'
@@ -671,7 +673,7 @@ class EnvModel(EnvBase, Adaptive):
         """
 
         EnvBase.__init__(self, p_logging=p_logging)
-        Adaptive.__init__(self, p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
+        Model.__init__(self, p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
         self._state_space   = p_state_space
         self._action_space  = p_action_space
         self._afct_strans   = p_afct_strans

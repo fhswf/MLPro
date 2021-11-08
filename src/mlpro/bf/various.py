@@ -395,8 +395,9 @@ class TStamp:
 ## -------------------------------------------------------------------------------------------------
 class ScientificObject:
     """
-    This class provides elementry functionality for storing a scientific reference.
+    This class provides elementary functionality for storing a scientific reference.
     """
+
     C_SCIREF_TYPE_NONE          = None
     C_SCIREF_TYPE_ARTICLE       = "Journal Article"
     C_SCIREF_TYPE_BOOK          = "Book"
@@ -405,7 +406,7 @@ class ScientificObject:
     C_SCIREF_TYPE_TECHREPORT    = "Technical Report"
     C_SCIREF_TYPE_UNPUBLISHED   = "Unpublished"
         
-    C_SCIREF_TYPE               = None
+    C_SCIREF_TYPE               = C_SCIREF_TYPE_NONE
     C_SCIREF_AUTHOR             = None
     C_SCIREF_TITLE              = None
     C_SCIREF_JOURNAL            = None

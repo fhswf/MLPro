@@ -33,7 +33,7 @@ from os import confstr_names
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
-
+from mlpro.bf.plot import *
 
 
 
@@ -91,16 +91,17 @@ class HyperParamTupel(Element):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Model(Log, LoadSave, ScientificObject):
+class Model(Log, LoadSave, Plottable, ScientificObject):
     """
-    Property class for adapativity. And if something can be adapted it should be loadable and saveable
-    so that this class provides load/save properties as well.
+    Fundamental template class for adaptive ML models.
     """
 
     C_TYPE          = 'Model'
     C_NAME          = '????'
 
-    C_BUFFER_CLS    = Buffer            
+    C_BUFFER_CLS    = Buffer       
+
+    C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_NONE     
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_buffer_size=0, p_ada=True, p_logging=True):
@@ -122,8 +123,6 @@ class Model(Log, LoadSave, ScientificObject):
             self._buffer = self.C_BUFFER_CLS(p_size=p_buffer_size)
         else:
             self._buffer = None
-
-        self._attrib_hp1        = 0
 
 
 ## -------------------------------------------------------------------------------------------------

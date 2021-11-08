@@ -25,11 +25,11 @@
 ## -- 2021-10-05  1.2.2     SY       Bugfixes and minor improvements
 ## -- 2021-10-18  1.2.3     DA       Refactoring Policy/Agent/MultiAgent: state space renamed to 
 ## --                                observation space
-## -- 2021-10-dd  1.3.0     DA       Model-based Agent functionality 
+## -- 2021-11-dd  1.3.0     DA       Model-based Agent functionality 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-10-dd)
+Ver. 1.3.0 (2021-11-dd)
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -44,7 +44,7 @@ from mlpro.rl.models_env import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Policy(Adaptive, Plottable):
+class Policy(Model):
     """
     This class represents the policy of a single-agent. It is adaptive and can be trained with
     State-Action-Reward (SAR) data that will be expected as a SAR buffer object. 
@@ -108,18 +108,6 @@ class Policy(Adaptive, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
-        """
-        Adapts the policy based on State-Action-Reward-State (SARS) data.
-
-        Parameters:
-            p_arg[0]           Object of type SARSElement
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
     def compute_action(self, p_obs:State) -> Action:
         """
         Specific action computation method to be redefined. 
@@ -129,6 +117,18 @@ class Policy(Adaptive, Plottable):
 
         Returns:
             Action object
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        """
+        Adapts the policy based on State-Action-Reward-State (SARS) data.
+
+        Parameters:
+            p_arg[0]           Object of type SARSElement
         """
 
         raise NotImplementedError
