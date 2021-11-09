@@ -49,7 +49,7 @@ class RLDataStoring(DataStoring):
     C_VAR0              = 'Episode ID'
 
     # Variables for training header data storage
-    C_VAR_NUM_CYLCLES   = 'Number of cycles'
+    C_VAR_NUM_CYCLES    = 'Number of cycles'
     C_VAR_ENV_DONE      = 'Goal reached'
     C_VAR_ENV_BROKEN    = 'Env broken'
 
@@ -71,7 +71,7 @@ class RLDataStoring(DataStoring):
 
         if self.space is None:
             # Initialization as a training header data storage
-            self.variables  = [ self.C_VAR_NUM_CYLCLES, self.C_VAR_ENV_DONE, self.C_VAR_ENV_BROKEN ]
+            self.variables  = [ self.C_VAR_NUM_CYCLES, self.C_VAR_ENV_DONE, self.C_VAR_ENV_BROKEN ]
 
         else:
             # Initalization as an episodical detail data storage
@@ -137,7 +137,10 @@ class RLScenario(Scenario):
     C_NAME              = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode=Environment.C_MODE_SIM, p_ada=True, p_cycle_len:timedelta=None, 
+    def __init__(self, p_mode=Mode.C_MODE_SIM, p_ada:bool=True, p_logging:bool=True):
+        super().__init__(p_mode=p_mode, p_ada=p_ada, p_logging=p_logging)
+
+    def __inMit__(self, p_mode=Environment.C_MODE_SIM, p_ada=True, p_cycle_len:timedelta=None, 
                 p_cycle_limit=0, p_visualize=True, p_logging=True):
         """
         Parameters:
@@ -395,7 +398,7 @@ class TrainingResults(Saveable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Training(Log):
+class RLTraining(Training):
     """
     This class performs an episodical training on a (multi-)agent in a given environment. Both are 
     expected as parts of a reinforcement learning scenario (see class Scenario for more details).
@@ -418,7 +421,7 @@ class Training(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_scenario:Scenario,           # RL scenario object
+                 p_scenario:RLScenario,         # RL scenario object
                  p_max_cycles=0,                # Optional limit for total number of training cycles
                  p_max_cycles_per_episode=0,    # Optional limit for cycles per episode
                  p_max_adaptations=0,           # Optional limit for total number of adaptations
