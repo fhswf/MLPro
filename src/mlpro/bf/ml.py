@@ -18,22 +18,24 @@
 ## -- 2021-10-25  1.0.4     SY       Enhancement of class Adaptive by adding ScientificObject.
 ## -- 2021-10-26  1.1.0     DA       New class AdaptiveFunction
 ## -- 2021-10-29  1.1.1     DA       New method Adaptive.set_random_seed()
-## -- 2021-11-08  1.2.0     DA       - Class Adaptive renamed to Model
+## -- 2021-11-09  1.2.0     DA       - Class Adaptive renamed to Model
 ## --                                - New classes Mode, Scenario, TrainingResults, Training, 
 ## --                                  HyperParamTuner
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-08)
+Ver. 1.2.0 (2021-11-09)
 
-This module provides fundamental machine learning functionalities and properties.
+This module provides fundamental machine learning templates, functionalities and properties.
 """
+
 
 from os import confstr_names
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
 from mlpro.bf.plot import *
+
 
 
 
@@ -347,23 +349,52 @@ class Mode (Log):
 ## -------------------------------------------------------------------------------------------------
 class Scenario (Mode, LoadSave):
     """
-    Template class for a common ML scenario with an adaptive model inside.
+    Template class for a common ML scenario with an adaptive model inside. To be inherited and 
+    specialized in higher ML subtopic layers.
+    
+    The following key features are included:
+      - Operation mode
+      - Cycle management
+      - Timer
+      - Latency 
+      - Explicit handling of an adaptive ML model inside
+    
     """
 
     C_TYPE      = 'Scenario'
     C_NAME      = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode=Mode.C_MODE_SIM, p_ada:bool=True, p_logging:bool=True):
-        """
-        Parameters:
-            p_mode          Operation mode (see class Mode)
-            p_ada           Boolean switch for adaptivity of internal model
-            p_logging       Boolean switch for logging
-        """
+    def __init__(self, 
+                 p_mode=Mode.C_MODE_SIM,        # Operation mode (see class Mode)
+                 p_ada:bool=True,               # Boolean switch for adaptivity of internal model
+                 p_cycle_len:timedelta=None,    # Fixed cycle duration (optional)
+                 p_cycle_limit=0,               # Maximum number of cycles (0=no limit)
+                 p_visualize=True,              # Boolean switch for env/agent visualisation
+                 p_logging:bool=True            # Boolean switch for logging
+                ):
 
+        # 0 Intro
+        self._cycle_len     = p_cycle_len
+        self._cycle_limit   = p_cycle_limit
+        self._visualize     = p_visualize
+
+        # 1 Setup entire scenario
         self._model = self._setup(p_mode=self.C_MODE_SIM, p_ada=p_ada, p_logging=p_logging)
         super().__init__(p_mode, p_logging)
+
+        # 2 Init timer
+        if self.get_mode() == Mode.C_MODE_SIM:
+            t_mode = Timer.C_MODE_VIRTUAL
+        else:
+            t_mode = Timer.C_MODE_REAL
+
+        if self._cycle_len is not None:
+            t_lap_duration = p_cycle_len
+        else:
+            t_lap_duration = self.get_latency()
+
+        self._timer  = Timer(t_mode, t_lap_duration, self._cycle_limit)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -408,6 +439,15 @@ class Scenario (Mode, LoadSave):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_latency(self) -> timedelta:
+        """
+        Returns the latency of the scenario. To be implemented in child class.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=1):
         """
         Resets the scenario. Internal random generators shall be seed with the given value.
@@ -418,6 +458,7 @@ class Scenario (Mode, LoadSave):
 
         self.log(self.C_LOG_TYPE_I, 'Reset with seed', str(p_seed))
         self._reset(p_seed)
+        self._timer.reset()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -430,27 +471,27 @@ class Scenario (Mode, LoadSave):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run_step(self) -> bool:
+    def run_cycle(self) -> bool:
         """
-        Runs a single process step.
+        Runs a single process cycle.
 
         Returns:
             True, if process step was successful. False otherwise.
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Start of process step')
-        result = self._run_step()
-        self.log(self.C_LOG_TYPE_I, 'End of process step')
+        self.log(self.C_LOG_TYPE_I, 'Start of process cycle')
+        result = self._run_cycle()
+        self.log(self.C_LOG_TYPE_I, 'End of process cycle')
         return result
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_step(self) -> bool:
+    def _run_cycle(self) -> bool:
         """
-        Custom implementation of a single process step. To be redefined.
+        Custom implementation of a single process cycle. To be redefined.
 
         Returns:
-            True, if process step was successful. False otherwise.
+            True, if process cycle was successful. False in case of a terminating event.
         """
 
         raise NotImplementedError
@@ -463,7 +504,7 @@ class Scenario (Mode, LoadSave):
         """
 
         self.log(self.C_LOG_TYPE_I, 'Start of processing...')
-        while self.run_step(): pass
+        while self.run_cycle(): pass
         self.log(self.C_LOG_TYPE_I, 'End of processing...')
 
 
