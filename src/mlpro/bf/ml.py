@@ -18,13 +18,13 @@
 ## -- 2021-10-25  1.0.4     SY       Enhancement of class Adaptive by adding ScientificObject.
 ## -- 2021-10-26  1.1.0     DA       New class AdaptiveFunction
 ## -- 2021-10-29  1.1.1     DA       New method Adaptive.set_random_seed()
-## -- 2021-11-09  1.2.0     DA       - Class Adaptive renamed to Model
+## -- 2021-11-10  1.2.0     DA       - Class Adaptive renamed to Model
 ## --                                - New classes Mode, Scenario, TrainingResults, Training, 
 ## --                                  HyperParamTuner
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-09)
+Ver. 1.2.0 (2021-11-10)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -371,8 +371,7 @@ class Scenario (Mode, LoadSave):
                  p_cycle_len:timedelta=None,    # Fixed cycle duration (optional)
                  p_cycle_limit=0,               # Maximum number of cycles (0=no limit)
                  p_visualize=True,              # Boolean switch for env/agent visualisation
-                 p_logging:bool=True            # Boolean switch for logging
-                ):
+                 p_logging:bool=True ):         # Boolean switch for logging
 
         # 0 Intro
         self._cycle_len     = p_cycle_len
@@ -381,6 +380,9 @@ class Scenario (Mode, LoadSave):
 
         # 1 Setup entire scenario
         self._model = self._setup(p_mode=self.C_MODE_SIM, p_ada=p_ada, p_logging=p_logging)
+        if self._model is None: 
+            raise ImplementationError('Please return your ML model in method self._setup()')
+
         super().__init__(p_mode, p_logging)
 
         # 2 Init timer
@@ -400,7 +402,7 @@ class Scenario (Mode, LoadSave):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_logging:bool) -> Model:
         """
-        Setup the ML scenario by redefining this method in the child class. 
+        Setup the ML scenario by redefinition.
 
         Parameters:
             p_mode          Operation mode (see class Mode)
@@ -450,24 +452,35 @@ class Scenario (Mode, LoadSave):
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=1):
         """
-        Resets the scenario. Internal random generators shall be seed with the given value.
+        Resets the scenario and especially the ML model inside. Internal random generators are seed 
+        with the given value. Custom reset actions can be implemented in method _reset().
 
         Parameters:
             p_seed          Seed value for internal random generator
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Reset with seed', str(p_seed))
+        # 0 Intro
+        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Scenario reset with seed', str(p_seed))
+
+        # 1 Internal ML model is reset
+        self._model.set_random_seed(p_seed)
+        if self._visualize: self._model.init_plot()
+
+        # 2 Custom reset of further scenario-specific components
         self._reset(p_seed)
+
+        # 3 Timer reset
         self._timer.reset()
 
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
         """
-        Custom method to reset the scenario and to set the given random seed value. See method reset().
+        Custom method to reset further components of the scenario (not the ML model itself) and to 
+        set the given random seed value. See method reset() for further details.
         """
 
-        raise NotImplementedError
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -476,7 +489,7 @@ class Scenario (Mode, LoadSave):
         Runs a single process cycle.
 
         Returns:
-            True, if process step was successful. False otherwise.
+            True, if process cycle was successful. False otherwise.
         """
 
         self.log(self.C_LOG_TYPE_I, 'Start of process cycle')
@@ -500,7 +513,7 @@ class Scenario (Mode, LoadSave):
 ## -------------------------------------------------------------------------------------------------
     def run(self):
         """
-        Runs the scenario as a sequence of single process steps until there was a terminating event.
+        Runs the scenario as a sequence of single process steps until a terminating event occured.
         """
 
         self.log(self.C_LOG_TYPE_I, 'Start of processing...')

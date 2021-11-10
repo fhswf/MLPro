@@ -137,62 +137,54 @@ class RLScenario(Scenario):
     C_NAME              = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode=Mode.C_MODE_SIM, p_ada:bool=True, p_logging:bool=True):
-        super().__init__(p_mode=p_mode, p_ada=p_ada, p_logging=p_logging)
-
-    def __inMit__(self, p_mode=Environment.C_MODE_SIM, p_ada=True, p_cycle_len:timedelta=None, 
-                p_cycle_limit=0, p_visualize=True, p_logging=True):
-        """
-        Parameters:
-            p_mode              Operation mode of environment (see Environment.C_MODE_*)
-            p_ada               Boolean switch for adaptivity of agent
-            p_cycle_len         Fixed cycle duration (optional)
-            p_cycle_limit       Maximum number of cycles (0=no limit, -1=get limit from env)
-            p_visualize         Boolean switch for env/agent visualisation
-            p_logging           Boolean switch for logging functionality
-        """
-
-        # 0 Intro
-        self._env           = None
-        self._cycle_len     = p_cycle_len
-        self._cycle_limit   = p_cycle_limit
-        self._visualize     = p_visualize
-        Log.__init__(self, p_logging=p_logging)
+    def __init__(self, 
+                 p_mode=Mode.C_MODE_SIM,        # Operation mode (see class Mode)
+                 p_ada:bool=True,               # Boolean switch for adaptivity of internal model
+                 p_cycle_len:timedelta=None,    # Fixed cycle duration (optional)
+                 p_cycle_limit=0,               # Maximum number of cycles (0=no limit, -1=get from env)
+                 p_visualize=True,              # Boolean switch for env/agent visualisation
+                 p_logging:bool=True ):         # Boolean switch for logging
 
         # 1 Setup entire scenario
-        self._setup(p_mode, p_ada, p_logging)
+        self._env   = None
+        super().__init__(p_mode=p_mode, p_ada=p_ada, p_cycle_len=p_cycle_len, p_cycle_limit=p_cycle_limit, p_visualize=p_visualize, p_logging=p_logging)
+        if self._env is None: 
+            raise ImplementationError('Please bind your RL environment to self._env')
+
+        self._agent = self._model
+
 
         # 2 Finalize cycle limit
-        if self._cycle_limit == -1:
+        if self._cycle_limit == -1: 
             self._cycle_limit = self._env.get_cycle_limit()
-
-        # 2 Init timer
-        if self._env.get_mode() == Environment.C_MODE_SIM:
-            t_mode = Timer.C_MODE_VIRTUAL
-        else:
-            t_mode = Timer.C_MODE_REAL
-
-        if self._cycle_len is not None:
-            t_lap_duration = p_cycle_len
-        else:
-            t_lap_duration = self._env.get_latency()
-
-        self._timer  = Timer(t_mode, t_lap_duration, self._cycle_limit)
 
          
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
         """
-        Here's the place to explicitely setup the entire RL scenario. Please bind your env to
-        self._env and return the agent as model. 
+        Setup the ML scenario by redefinition. Please bind your environment to self._env and return 
+        the agent as model. 
 
         Parameters:
-            p_mode              Operation mode of environment (see Environment.C_MODE_*)
-            p_ada               Boolean switch for adaptivity of agent
-            p_logging           Boolean switch for logging functionality
-       """
+            p_mode          Operation mode (see class Mode)
+            p_ada           Boolean switch for adaptivity of internal model
+            p_logging       Boolean switch for logging functionality
+
+        Returns:
+            Agent model (object of type Agent or Multiagent)
+        """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _set_mode(self, p_mode):
+        self._env.set_mode(p_mode)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self) -> timedelta:
+        return self._env.get_latency()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -206,24 +198,11 @@ class RLScenario(Scenario):
             p_seed                  New seed for environment's and agent's random generator
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Scenario reset...')
-
-        # 1 Reset environment
+        # Reset environment
         self._env.set_random_seed(p_seed)
         self._env.reset()
-
-        # 2 Reset agent
-        self._model.set_random_seed(p_seed)
-
-        # 3 Reset visualization
-        if self._visualize:
-            self._env.init_plot()
-            self._agent.init_plot()
-
-        # 4 Reset scenario timer
-        self._timer.reset()
-        self._env.get_state().set_tstamp(self._timer.get_time())
-
+        if self._visualize: self._env.init_plot()
+            
 
 ## -------------------------------------------------------------------------------------------------
     def get_env(self):
@@ -236,7 +215,7 @@ class RLScenario(Scenario):
       
 
 ## -------------------------------------------------------------------------------------------------
-    def run_cycle(self, p_cycle_id, p_ds_states:RLDataStoring=None, p_ds_actions:RLDataStoring=None, p_ds_rewards:RLDataStoring=None):
+    def _run_cycle(self, p_cycle_id, p_ds_states:RLDataStoring=None, p_ds_actions:RLDataStoring=None, p_ds_rewards:RLDataStoring=None):
         """
         Processes a single control cycle with optional data logging.
 
@@ -251,8 +230,10 @@ class RLScenario(Scenario):
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Start of cycle', str(p_cycle_id))
 
 
-        # 1 Environment: get and log current state
-        state   = self._env.get_state()
+        # 1 Environment: get current state
+        state = self._env.get_state()
+        state.set_tstamp(self._timer.get_time())
+
         if p_ds_states is not None:
             p_ds_states.memorize_row(p_cycle_id, self._timer.get_time(), state.get_values())
 
