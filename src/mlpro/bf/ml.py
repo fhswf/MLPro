@@ -536,7 +536,7 @@ class TrainingResults (Saveable):
         self.ts_start       = None
         self.ts_end         = None
         self.ts_duration    = 0
-        self.score          = None
+        self.highscore      = None
         self.trained_model  = None
 
 
