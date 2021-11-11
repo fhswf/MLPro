@@ -5,12 +5,18 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-10-06  1.0.0     DA       Creation and transfer of classes DataPlotting, Plottable from 
-## --                                mlpro.bf.various
+## -- 2021-04-16  0.0.0     DA       Creation
+## -- 2021-05-29  1.0.0     DA       Release of first version
+## -- 2021-06-16  1.1.0     SY       Adding the first version of data storing,
+## --                                data plotting, and data saving classes
+## -- 2021-06-21  1.2.0     SY       Add extensions in classes Loadable,
+## --                                Saveable, DataPlotting & DataStoring.
+## -- 2021-08-28  1.2.1     DA       Added constant C_VAR0 to class DataStoring
+## -- 2021-09-22  1.3.0     MRD      New classes BufferElement, Buffer, BufferRnd
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-10-06)
+Ver. 1.3.0 (2021-09-22)
 
 This module provides various elementary data management classes.
 """
@@ -27,6 +33,7 @@ import csv
 import copy
 from mlpro.bf.various import LoadSave
 import random
+
 
 
 
@@ -161,6 +168,7 @@ class DataStoring(LoadSave):
             return True
         except:
             return False
+
 
 
 
@@ -364,3 +372,4 @@ class BufferRnd(Buffer):
         """
         keys = list(self._data_buffer.keys())
         return random.sample(list(range(0,len(self._data_buffer[keys[0]]))),p_num)
+        
