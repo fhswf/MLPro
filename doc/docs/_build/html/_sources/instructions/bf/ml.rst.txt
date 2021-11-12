@@ -1,4 +1,4 @@
-Machine Learning
+2.3 Machine Learning
 ================
 
 This module includes hyperparameter setting, hyperparameter tuning, adaptive, and buffer
@@ -15,5 +15,6 @@ Add text here!
 .. toctree::
    :maxdepth: 1
    
+   ml/general
+   ml/training
    ml/adapt
-   ml/tuning

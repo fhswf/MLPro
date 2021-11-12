@@ -1,4 +1,4 @@
-Mathematics
+2.2 Mathematics
 ================
 
 `MLPro <https://github.com/fhswf/MLPro.git>`_ provides a module that consists of common
