@@ -18,16 +18,17 @@
 ## -- 2021-10-08  1.2.4     DA       Class Scenario/constructor/param p_cycle_limit: new value -1
 ## --                                lets class get the cycle limit from the env
 ## -- 2021-10-28  1.2.5     DA       Bugfix method Scenario.reset(): agent's buffer was not cleared
-## -- 2021-11-dd  1.3.0     DA       Rework/improvement of class Training
+## -- 2021-11-12  1.3.0     DA       Rework/improvement of class Training
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-11-dd)
+Ver. 1.3.0 (2021-11-12)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
 
 
+from os import error
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import *
@@ -158,6 +159,10 @@ class RLScenario(Scenario):
         if self._cycle_limit == -1: 
             self._cycle_limit = self._env.get_cycle_limit()
 
+
+        # 3 Init data logging
+        self.connect_data_logger()
+
          
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
@@ -175,6 +180,18 @@ class RLScenario(Scenario):
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure=None):
+        super().init_plot(p_figure=p_figure)
+        self._env.init_plot(p_figure=p_figure)
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self):
+        super().update_plot()
+        self._env.update_plot()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -205,37 +222,38 @@ class RLScenario(Scenario):
             
 
 ## -------------------------------------------------------------------------------------------------
-    def get_env(self):
-        return self._env
-
-
-## -------------------------------------------------------------------------------------------------
     def get_agent(self):
         return self._agent
       
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_cycle(self, p_cycle_id, p_ds_states:RLDataStoring=None, p_ds_actions:RLDataStoring=None, p_ds_rewards:RLDataStoring=None):
+    def get_env(self):
+        return self._env
+
+
+## -------------------------------------------------------------------------------------------------
+    def connect_data_logger(self, p_ds_states:RLDataStoring=None, p_ds_actions:RLDataStoring=None, p_ds_rewards:RLDataStoring=None):
+        self._ds_states     = p_ds_states
+        self._ds_actions    = p_ds_actions
+        self._ds_rewards    = p_ds_rewards
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run_cycle(self):
         """
-        Processes a single control cycle with optional data logging.
+        Processes a single control cycle.
 
-        Parameters:
-            p_cycle_id          Cycle id
-            p_ds_states         Optional external data storing object that collects environment state data
-            p_ds_actions        Optional external data storing object that collects agent action data
-            p_ds_rewards        Optional external data storing object that collects environment reeward data
+        Returns:
+            success         True, if environment goal has reached. False otherwise.
+            error           True, if environment has broken. False otherwise.
         """
-
-        # 0 Cycle intro
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Start of cycle', str(p_cycle_id))
-
 
         # 1 Environment: get current state
         state = self._env.get_state()
         state.set_tstamp(self._timer.get_time())
 
-        if p_ds_states is not None:
-            p_ds_states.memorize_row(p_cycle_id, self._timer.get_time(), state.get_values())
+        if self._ds_states is not None:
+            self._ds_states.memorize_row(self._cycle_id, self._timer.get_time(), state.get_values())
 
 
         # 2 Agent: compute and log next action
@@ -243,8 +261,8 @@ class RLScenario(Scenario):
         action  = self._agent.compute_action(state)
         ts      = self._timer.get_time()
         action.set_tstamp(ts)
-        if p_ds_actions is not None:
-            p_ds_actions.memorize_row(p_cycle_id, ts, action.get_sorted_values())
+        if self._ds_actions is not None:
+            self._ds_actions.memorize_row(self._cycle_id, ts, action.get_sorted_values())
 
 
         # 3 Environment: process agent's action
@@ -258,14 +276,14 @@ class RLScenario(Scenario):
         reward  = self._env.compute_reward()
         ts      = self._timer.get_time()
         reward.set_tstamp(ts)
-        if p_ds_rewards is not None:
+        if self._ds_rewards is not None:
             if ( reward.get_type() == Reward.C_TYPE_OVERALL ) or ( reward.get_type() == Reward.C_TYPE_EVERY_AGENT ):
-                reward_values = np.zeros(p_ds_rewards.get_space().get_num_dim())
+                reward_values = np.zeros(self._ds_rewards.get_space().get_num_dim())
 
-                for i, agent_id in enumerate(p_ds_rewards.get_space().get_dim_ids()): 
+                for i, agent_id in enumerate(self._ds_rewards.get_space().get_dim_ids()): 
                     reward_values[i] = reward.get_agent_reward(agent_id)
                 
-                p_ds_rewards.memorize_row(p_cycle_id, ts, reward_values)
+                self._ds_rewards.memorize_row(self._cycle_id, ts, reward_values)
 
 
         # 5 Agent: adapt policy
@@ -273,83 +291,17 @@ class RLScenario(Scenario):
         self._agent.adapt(self._env.get_state(), reward)
 
 
-        # 6 Optional visualization
-        if self._visualize:
-            self._env.update_plot()
-            self._agent.update_plot()
+        # 6 Check for terminating events
+        success = self._env.get_state().get_done()
+        error   = self._env.get_state().get_broken()
 
+        if success:
+            self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': Environment goal achieved')
 
-        # 7 Wait for next cycle (virtual mode only)
-        if ( self._timer.finish_lap() == False ) and ( self.cycle_len is not None ):
-            self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Process timed out !!!')
+        if error:
+            self.log(self.C_LOG_TYPE_E, 'Process time', self._timer.get_time(), ': Environment broken')
 
-
-        # 8 Cycle outro
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': End of cycle', str(p_cycle_id), '\n')
-
-
-## -------------------------------------------------------------------------------------------------
-    def run(self, p_exit_when_broken=True, p_exit_when_done=True, p_ds_states:RLDataStoring=None, 
-            p_ds_actions:RLDataStoring=None, p_ds_rewards:RLDataStoring=None):
-        """
-        Processes control cycles in a loop. Termination depends on parameters.
-
-        Parameters:
-            p_exit_when_broken      If True, loop terminates when environment has boken
-            p_exit_when_done        If True, loop terminates when goal of environment was achieved
-            p_ds_states             Optional external data storing object that collects environment state data
-            p_ds_actions            Optional external data storing object that collects agent action data
-            p_ds_rewards            Optional external data storing object that collects environment reeward data
-
-        Returns:
-            done                    True if environment reached it's goal
-            broken                  True if environment has broken
-            num_cycles              Number of cycles
-        """
-        
-        # 1 Preparation
-        done = False
-        self.reset()
-
-
-        # 2 Start run
-        self.log(self.C_LOG_TYPE_I, 'Run started')
-        cycle_id  = 1
-
-        while True:
-            # 2.1 Process one cycle
-            self.run_cycle(cycle_id, p_ds_states=p_ds_states, p_ds_actions=p_ds_actions, p_ds_rewards=p_ds_rewards)
-
-            # 2.2 Check and handle environment's health
-            if self._env.get_broken(): 
-                self.log(self.C_LOG_TYPE_E, 'Environment broken!')
-                if p_exit_when_broken: 
-                    break
-                else:
-                    self.log(self.C_LOG_TYPE_I, 'Reset environment')
-                    self._env.reset()
-
-            # 2.3 Check and handle environment's done state
-            if self._env.get_done() != done:
-                done = self._env.get_done()
-                if done == True:
-                    self.log(self.C_LOG_TYPE_I, 'Environment goal achieved')
-                else:
-                    self.log(self.C_LOG_TYPE_W, 'Environment goal missed')
-
-            if p_exit_when_done and done: break
-
-            # 2.4 Next cycle id
-            if self._cycle_limit > 0: 
-                if cycle_id < self._cycle_limit: 
-                    cycle_id = cycle_id + 1
-                else:
-                    break
-
-
-        # 3 Finish run
-        self.log(self.C_LOG_TYPE_I, 'Stop')
-        return self._env.get_done(), self._env.get_broken(), cycle_id
+        return success, error
 
 
 

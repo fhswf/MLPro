@@ -8,10 +8,11 @@
 ## -- 2021-10-06  1.0.0     DA       Creation and transfer of classes DataPlotting, Plottable from 
 ## --                                mlpro.bf.various
 ## -- 2021-10-25  1.0.1     SY       Improve get_plots() functionality, enable episodic plots
+## -- 2021-11-12  1.0.2     DA       Minor adjustments 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-10-06)
+Ver. 1.0.2 (2021-11-12)
 
 This module provides various classes related to data plotting.
 """
@@ -43,7 +44,7 @@ class Plottable:
             p_figure            Optional MatPlotLib host figure, where the plot shall be embedded
         """
 
-        pass
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -52,7 +53,7 @@ class Plottable:
         Updates the plot.
         """
 
-        pass
+        raise NotImplementedError
 
 
 

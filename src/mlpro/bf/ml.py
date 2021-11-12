@@ -18,18 +18,19 @@
 ## -- 2021-10-25  1.0.4     SY       Enhancement of class Adaptive by adding ScientificObject.
 ## -- 2021-10-26  1.1.0     DA       New class AdaptiveFunction
 ## -- 2021-10-29  1.1.1     DA       New method Adaptive.set_random_seed()
-## -- 2021-11-10  1.2.0     DA       - Class Adaptive renamed to Model
+## -- 2021-11-12  1.2.0     DA       - Class Adaptive renamed to Model
 ## --                                - New classes Mode, Scenario, TrainingResults, Training, 
 ## --                                  HyperParamTuner
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-10)
+Ver. 1.2.0 (2021-11-12)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
 
+import sys
 from os import confstr_names
 from mlpro.bf.various import *
 from mlpro.bf.math import *
@@ -347,7 +348,7 @@ class Mode (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Scenario (Mode, LoadSave):
+class Scenario (Mode, LoadSave, Plottable):
     """
     Template class for a common ML scenario with an adaptive model inside. To be inherited and 
     specialized in higher ML subtopic layers.
@@ -376,7 +377,10 @@ class Scenario (Mode, LoadSave):
         # 0 Intro
         self._cycle_len     = p_cycle_len
         self._cycle_limit   = p_cycle_limit
+        self._cycle_max     = sys.maxsize
+        self._cycle_id      = 0
         self._visualize     = p_visualize
+
 
         # 1 Setup entire scenario
         self._model = self._setup(p_mode=self.C_MODE_SIM, p_ada=p_ada, p_logging=p_logging)
@@ -384,6 +388,7 @@ class Scenario (Mode, LoadSave):
             raise ImplementationError('Please return your ML model in method self._setup()')
 
         super().__init__(p_mode, p_logging)
+
 
         # 2 Init timer
         if self.get_mode() == Mode.C_MODE_SIM:
@@ -414,6 +419,16 @@ class Scenario (Mode, LoadSave):
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure=None):
+        self._model.init_plot(p_figure=p_figure)
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self):
+        self._model.update_plot()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -484,41 +499,90 @@ class Scenario (Mode, LoadSave):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run_cycle(self) -> bool:
+    def run_cycle(self):
         """
         Runs a single process cycle.
 
         Returns:
-            True, if process cycle was successful. False otherwise.
+            success         True on success. False otherwise.
+            error           True on error. False otherwise.
+            timeout         True on timeout. False otherwise.
+            limit           True, if cycle limit has reached. False otherwise.
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Start of process cycle')
-        result = self._run_cycle()
-        self.log(self.C_LOG_TYPE_I, 'End of process cycle')
-        return result
+        # 1 Run a single custom cycle
+        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Start of cycle', str(self._cycle_id))
+        success, error = self._run_cycle()
+        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': End of cycle', str(self._cycle_id), '\n')
+
+
+        # 2 Update visualization
+        if self._visualize:
+            self.update_plot()
+
+
+        # 3 Update cycle id and check for optional limit
+        self._cycle_id = ( self._cycle_id + 1 ) & self._cycle_max
+        if ( self._cycle_limit > 0 ) and ( self._cycle_id >= self._cycle_limit ): 
+            limit = True
+        else:
+            limit = False
+
+
+        # 4 Wait for next cycle (real mode only)
+        if ( self._timer.finish_lap() == False ) and ( self._cycle_len is not None ):
+            self.log(self.C_LOG_TYPE_W, 'Process time', self._timer.get_time(), ': Process timed out !!!')
+            timeout = True
+        else:
+            timeout = False
+
+
+        # 5 Return result of custom cycle execution
+        return success, error, timeout, limit
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_cycle(self) -> bool:
+    def _run_cycle(self):
         """
         Custom implementation of a single process cycle. To be redefined.
 
         Returns:
-            True, if process cycle was successful. False in case of a terminating event.
-        """
+            success         True on success. False otherwise.
+            error           True on error. False otherwise.
+       """
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self):
+    def run(self, 
+            p_term_on_success:bool=True,        # If True, process terminates on success
+            p_term_on_error:bool=True,          # If True, process terminates on error
+            p_break_on_timeout:bool=False):     # If True, process terminates on timeout
         """
-        Runs the scenario as a sequence of single process steps until a terminating event occured.
+        Runs the scenario as a sequence of single process steps until a terminating event occures.
+
+        Returns:
+            success         True on success. False otherwise.
+            error           True on error. False otherwise.
+            timeout         True on timeout. False otherwise.
+            limit           True, if cycle limit has reached. False otherwise.
+            num_cycle       Number of cycles.
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Start of processing...')
-        while self.run_cycle(): pass
-        self.log(self.C_LOG_TYPE_I, 'End of processing...')
+        self._cycle_id = 0
+        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'Start of processing')
+
+        while True:
+            success, error, timeout, limit = self.run_cycle()
+            if p_term_on_success and success: break
+            if p_term_on_error and error: break
+            if p_break_on_timeout and timeout: break
+            if limit: break
+
+        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'End of processing')
+
+        return success, error, timeout, limit, self._cycle_id
 
 
 
