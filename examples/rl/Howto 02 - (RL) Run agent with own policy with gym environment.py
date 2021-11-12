@@ -83,7 +83,7 @@ class MyScenario(RLScenario):
 
 
 
-# 3 Instantiate scenario
+# 3 Instantiate scenario and run 100 cycles
 myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
@@ -92,8 +92,4 @@ myscenario  = MyScenario(
     p_logging=True
 )
 
-
-
-
-# 4 Run max. 100 cycles
 myscenario.run() 
