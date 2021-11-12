@@ -18,8 +18,8 @@
 # -- Project information -----------------------------------------------------
 
 project = 'MLPro Documentations'
-copyright = '2021, FH-SWF AT'
-author = 'FH-SWF AT'
+copyright = '2021, FH-SWF Automatisierungstechnik und lernende Systeme'
+author = 'Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0.0'

@@ -1,4 +1,4 @@
-Getting Started
+1.2 Getting Started
 ================
 
 Add text here!
