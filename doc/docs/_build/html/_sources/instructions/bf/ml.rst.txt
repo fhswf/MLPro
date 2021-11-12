@@ -8,6 +8,8 @@ classes.
 
     from mlpro.bf.ml import * 
     
+.. image:: logo_fh-at.png
+    
     
 Add text here!
 
