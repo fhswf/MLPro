@@ -39,7 +39,7 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: Introduction
+   :caption: 1 Introduction
    
    instructions/intro/overview
    instructions/intro/getstarted
@@ -48,7 +48,7 @@ Instructions for use
    
 .. toctree::
    :maxdepth: 2
-   :caption: MLPro-BF – Basic Functions
+   :caption: 2 MLPro-BF – Basic Functions
    
    instructions/bf/math
    instructions/bf/ml
@@ -58,7 +58,7 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 3
-   :caption: MLPro-RL – Reinforcement Learning
+   :caption: 3 MLPro-RL – Reinforcement Learning
    
    instructions/rl/overview
    instructions/rl/agents
