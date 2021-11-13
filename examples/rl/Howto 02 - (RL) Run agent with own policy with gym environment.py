@@ -84,12 +84,25 @@ class MyScenario(RLScenario):
 
 
 # 3 Instantiate scenario and run 100 cycles
-myscenario  = MyScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=False,
-    p_logging=True
-)
+if __name__ == "__main__":
+    # 3.1 Demo mode
+    myscenario  = MyScenario(
+        p_mode=Environment.C_MODE_SIM,
+        p_ada=True,
+        p_cycle_limit=100,
+        p_visualize=True,
+        p_logging=Log.C_LOG_ALL
+    )
+
+else:
+    # 3.2 Unit test mode
+    myscenario  = MyScenario(
+        p_mode=Environment.C_MODE_SIM,
+        p_ada=True,
+        p_cycle_limit=100,
+        p_visualize=False,
+        p_logging=Log.C_LOG_NOTHING
+    )
+
 
 myscenario.run() 

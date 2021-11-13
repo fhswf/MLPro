@@ -392,7 +392,7 @@ class EnvBase(FctReward, FctDone, FctBroken, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self) -> None:
+    def reset(self, p_seed=None) -> None:
         """
         Resets environment to initial state. Please redefine.
         """

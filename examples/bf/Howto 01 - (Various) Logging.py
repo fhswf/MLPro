@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-10-07  1.0.0     DA       Creation
 ## -- 2021-11-03  1.1.0     DA       Introduction of new log type C_LOG_TYPE_S for success messages
+## -- 2021-11-13  1.1.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-11-03)
+Ver. 1.1.1 (2021-11-13)
 
 This module demonstrates the Log class functionality.
 """
@@ -46,30 +47,29 @@ class MyClass(Log):
 
 
 # 2 Log everything inside your class... 
-print('\n--\n-- Sample 1: By default everything is logged...\n--\n')
-mc = MyClass(p_logging=True)
+print('\n--\n-- Example 1: By default everything is logged...\n--\n')
+mc = MyClass(p_logging=Log.C_LOG_ALL)
 mc.my_method()
 
 
 # 3 Log nothing inside your class
-print('\n--\n-- Sample 2: Now logging is switched off...\n--\n')
-mc.switch_logging(False)
+print('\n--\n-- Example 2: Now logging is switched off...\n--\n')
+mc.switch_logging(Log.C_LOG_NOTHING)
 mc.my_method()
 
 
 # 4 Log warnings and errors only
-print('\n--\n-- Sample 3: Only warnings and errors are logged...\n--\n')
-mc.switch_logging(True)
-mc.set_log_level(Log.C_LOG_TYPE_W)
+print('\n--\n-- Example 3: Only warnings and errors are logged...\n--\n')
+mc.switch_logging(Log.C_LOG_WE)
 mc.my_method()
 
 # 5 Log errors only
-print('\n--\n-- Sample 4: Only errors are logged...\n--\n')
-mc.set_log_level(Log.C_LOG_TYPE_E)
+print('\n--\n-- Example 4: Only errors are logged...\n--\n')
+mc.switch_logging(Log.C_LOG_E)
 mc.my_method()
 
 # 6 Log everything again
-print('\n--\n-- Sample 5: Everything is logged again...\n--\n')
-mc.set_log_level(Log.C_LOG_TYPE_I)
+print('\n--\n-- Example 5: Everything is logged again...\n--\n')
+mc.switch_logging(Log.C_LOG_ALL)
 mc.my_method()
 

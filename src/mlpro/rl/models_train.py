@@ -18,11 +18,11 @@
 ## -- 2021-10-08  1.2.4     DA       Class Scenario/constructor/param p_cycle_limit: new value -1
 ## --                                lets class get the cycle limit from the env
 ## -- 2021-10-28  1.2.5     DA       Bugfix method Scenario.reset(): agent's buffer was not cleared
-## -- 2021-11-12  1.3.0     DA       Rework/improvement of class Training
+## -- 2021-11-13  1.3.0     DA       Rework/improvement of class Training
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-11-12)
+Ver. 1.3.0 (2021-11-13)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -144,7 +144,7 @@ class RLScenario(Scenario):
                  p_cycle_len:timedelta=None,    # Fixed cycle duration (optional)
                  p_cycle_limit=0,               # Maximum number of cycles (0=no limit, -1=get from env)
                  p_visualize=True,              # Boolean switch for env/agent visualisation
-                 p_logging:bool=True ):         # Boolean switch for logging
+                 p_logging=Log.C_LOG_ALL ):     # Boolean switch for logging
 
         # 1 Setup entire scenario
         self._env   = None
@@ -164,6 +164,12 @@ class RLScenario(Scenario):
         self.connect_data_logger()
 
          
+## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging):
+        super().switch_logging(p_logging)
+        self._env.switch_logging(p_logging)
+
+
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
         """

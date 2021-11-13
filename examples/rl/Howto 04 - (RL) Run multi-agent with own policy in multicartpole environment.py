@@ -12,11 +12,12 @@
 ## -- 2021 09-26  1.1.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
 ## -- 2021-10-06  1.1.2     DA       Refactoring 
-## -- 2021-10-18  1.1.3    DA       Refactoring 
+## -- 2021-10-18  1.1.3     DA       Refactoring 
+## -- 2021-11-13  1.1.4     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2021-10-18)
+Ver. 1.1.4 (2021-11-13)
 
 This module shows how to run an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -59,7 +60,7 @@ class MyPolicy(Policy):
 
 
 # 2 Implement your own RL scenario
-class MyScenario(Scenario):
+class MyScenario(RLScenario):
 
     C_NAME      = 'Matrix'
 
@@ -72,10 +73,10 @@ class MyScenario(Scenario):
         # 2 Setup Multi-Agent 
 
         # 2.1 Create empty Multi-Agent
-        self._agent     = MultiAgent(
+        agent = self._agent = MultiAgent(
             p_name='Smith',
             p_ada=True,
-            p_logging=True
+            p_logging=p_logging
         )
 
         # 2.2 Add Single-Agent #1 with own policy (controlling sub-environment #1)
@@ -86,13 +87,13 @@ class MyScenario(Scenario):
                     p_action_space=self._env.get_action_space().spawn([0]),
                     p_buffer_size=1,
                     p_ada=True,
-                    p_logging=True
+                    p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-1',
                 p_id=0,
                 p_ada=True,
-                p_logging=True
+                p_logging=p_logging
             ),
             p_weight=0.3
         )
@@ -106,34 +107,31 @@ class MyScenario(Scenario):
                     p_action_space=self._env.get_action_space().spawn([1,2]),
                     p_buffer_size=1,
                     p_ada=True,
-                    p_logging=True
+                    p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-2',
                 p_id=1,
                 p_ada=True,
-                p_logging=True
+                p_logging=p_logging
             ),
             p_weight=0.7
         )
 
+        return agent
 
 
 
-# 3 Instantiate scenario
-myscenario  = MyScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=500,
-    p_visualize=False,
-    p_logging=True
-)
+# 3 Create your RL scenario object
+if __name__ == "__main__":
+    # 3.1 Demo mode
+    myscenario  = MyScenario( p_cycle_limit=500, p_visualize=True, p_logging=Log.C_LOG_ALL )
+
+else:
+    # 3.2 Unit test mode
+    myscenario  = MyScenario( p_cycle_limit=500, p_visualize=False, p_logging=Log.C_LOG_NOTHING )
 
 
 
-
-# 4 Run max. 100 cycles
-myscenario.run(
-    p_exit_when_broken=True,
-    p_exit_when_done=True
-)
+# 4 Run max. 500 cycles
+print(myscenario.run( p_term_on_success=True, p_term_on_error=True, p_term_on_timeout=True ))

@@ -23,10 +23,13 @@
 ## --                                - new method set_log_level()
 ## -- 2021-10-25  1.7.0     SY       Add new class ScientificObject
 ## -- 2021-11-03  1.7.1     DA       Class Log: new type C_LOG_TYPE_SUCCESS for success messages 
+## -- 2021-11-13  1.7.2     DA       Class Log: 
+## --                                - method set_log_level() removed
+## --                                - parameter p_logging is the new log level now
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.1 (2021-11-03)
+Ver. 1.7.2 (2021-11-13)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer, ...
@@ -152,6 +155,7 @@ class Log:
     C_TYPE          = '????'
     C_NAME          = '????'
 
+    # Types of log lines
     C_LOG_TYPE_I    = 'I'           # Information
     C_LOG_TYPE_W    = 'W'           # Warning
     C_LOG_TYPE_E    = 'E'           # Error
@@ -164,46 +168,54 @@ class Log:
     C_COL_SUCCESS   = '\033[32m'    # Green
     C_COL_RESET     = '\033[0m'     # Reset color
 
+    # Log levels
+    C_LOG_ALL       = True
+    C_LOG_NOTHING   = False
+    C_LOG_WE        = C_LOG_TYPE_W
+    C_LOG_E         = C_LOG_TYPE_E   
+
+    C_LOG_LEVELS    = [ C_LOG_ALL, C_LOG_NOTHING, C_LOG_WE, C_LOG_E ]
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=True):
+    def __init__(self, p_logging=C_LOG_ALL):
         """
         Parameters:
-            p_logging     switch for logging 
+            p_logging     Log level (see constants for log levels)
         """
 
         self.switch_logging(p_logging)
-        self.set_log_level(self.C_LOG_TYPE_I)
         self.log(self.C_LOG_TYPE_I, 'Instantiated')
 
 
 ## -------------------------------------------------------------------------------------------------
-    def switch_logging(self, p_logging:bool):
+    def switch_logging(self, p_logging):
         """
         Switches log functionality on/off.
 
         Parameters:
-            p_logging   switch for logging 
+            p_logging     Log level (see constants for log levels)
         """
 
-        self.logging = p_logging 
+        if p_logging not in self.C_LOG_LEVELS: raise ParamError('Wrong log level. See class Log for valid log levels')
+        self._level = p_logging 
 
 
-## -------------------------------------------------------------------------------------------------
-    def set_log_level(self, p_level):
-        """
-        Sets the log level. 
+# ## -------------------------------------------------------------------------------------------------
+#     def set_log_level(self, p_level):
+#         """
+#         Sets the log level. 
 
-        Parameters:
-            p_level         Possible values are 
-                            C_LOG_TYPE_I (everything will be looged) 
-                            C_LOG_TYPE_W (warnings and errors will be logged)
-                            C_LOG_TYPE_E (only errors will be logged)
-        """
+#         Parameters:
+#             p_level         Possible values are 
+#                             C_LOG_TYPE_I (everything will be looged) 
+#                             C_LOG_TYPE_W (warnings and errors will be logged)
+#                             C_LOG_TYPE_E (only errors will be logged)
+#         """
 
-        if p_level in self.C_LOG_TYPES:
-            self._level = p_level
-        else:
-            raise ParamError('Wrong log level. Please use constants C_LOG_TYPE_* of class Log')
+#         if p_level in self.C_LOG_TYPES:
+#             self._level = p_level
+#         else:
+#             raise ParamError('Wrong log level. Please use constants C_LOG_TYPE_* of class Log')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -220,11 +232,11 @@ class Log:
             Nothing
         """
 
-        if not self.logging: return
+        if not self._level: return
 
-        if self._level == self.C_LOG_TYPE_W:
+        if self._level == self.C_LOG_WE:
             if ( p_type == self.C_LOG_TYPE_I ) or ( p_type == self.C_LOG_TYPE_S ): return
-        elif self._level == self.C_LOG_TYPE_E:
+        elif self._level == self.C_LOG_E:
             if ( p_type == self.C_LOG_TYPE_I ) or ( p_type == self.C_LOG_TYPE_S ) or ( p_type == self.C_LOG_TYPE_W ): return
 
         now = datetime.now()

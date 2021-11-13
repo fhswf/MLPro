@@ -24,12 +24,13 @@
 ## -- 2021-10-07  1.3.4     SY       Update WrEnvMLPro2PZoo() following above changes (ver. 1.3.3)
 ## -- 2021-10-07  1.4.0     MRD      Implement WrPolicySB32MLPro to wrap the policy from Stable-baselines3
 ## -- 2021-10-08  1.4.1     DA       Correction of wrapper WREnvGYM2MLPro
-## -- 2021-10-18  1.4.2     DA       Reefactoring class WrPolicySB32MLPro
+## -- 2021-10-18  1.4.2     DA       Refactoring class WrPolicySB32MLPro
 ## -- 2021-10-18  1.5.0     MRD      SB3 Off Policy Wrapper on WrPolicySB32MLPro
+## -- 2021-11-13  1.5.1     DA       Minor adjustments
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2021-10-18)
+Ver. 1.5.1 (2021-11-13)
 
 This module provides wrapper classes for reinforcement learning tasks.
 """
@@ -66,16 +67,13 @@ class WrEnvGYM2MLPro(Environment):
     C_TYPE        = 'OpenAI Gym Env'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_gym_env, p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=True):
-        """
-        Parameters:
-            p_gym_env       Gym environment object
-            p_state_space   Optional external state space object that meets the
-                            state space of the gym environment
-            p_action_space  Optional external action space object that meets the
-                            state space of the gym environment
-            p_logging       Switch for logging
-        """
+    def __init__(self, 
+                 p_gym_env,                     # Gym environment object
+                 p_state_space:MSpace=None,     # Optional external state space object that meets the
+                                                # state space of the gym environment
+                 p_action_space:MSpace=None,    # ptional external action space object that meets the
+                                                # state space of the gym environment
+                 p_logging=Log.C_LOG_ALL):      # Log level (see constants of class Log)
 
         self._gym_env     = p_gym_env
         self.C_NAME       = 'Env "' + self._gym_env.spec.id + '"'
@@ -121,10 +119,11 @@ class WrEnvGYM2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self):
+    def reset(self, p_seed=None):
         self.log(self.C_LOG_TYPE_I, 'Reset')
 
         # 1 Reset Gym environment and determine initial state
+        self._gym_env.seed(p_seed)
         observation = self._gym_env.reset()
         obs         = DataObject(observation)
 

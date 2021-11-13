@@ -11,10 +11,11 @@
 ## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
 ## -- 2021-09-29  1.1.1     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-05  1.1.2     SY       Update following new attributes done and broken in State
+## -- 2021-11-13  1.1.3     DA       Added done/broken detection
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2021-10-05)
+Ver. 1.1.3 (2021-11-13)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -44,27 +45,30 @@ class MultiCartPole(Environment):
     C_INFINITY  = np.finfo(np.float32).max      
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_num_envs=2, p_reward_type=Reward.C_TYPE_OVERALL, p_logging=True):
-        """
-        Parameters:
-            p_num_envs      Number of internal sub-environments
-            p_reward_type   Reward type to be computed
-            p_logging       Boolean switch for logging
-        """
+    def __init__(self, 
+                 p_num_envs=2,                          # Number of internal sub-environments
+                 p_reward_type=Reward.C_TYPE_OVERALL,   # Reward type to be computed
+                 p_logging=Log.C_LOG_ALL):              # Log level (see constants of class Log)
 
         self._envs           = []
         self._num_envs       = p_num_envs
         self._reward_type    = p_reward_type
-        super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+        super().__init__(p_mode=Mode.C_MODE_SIM, p_logging=p_logging)
 
         for i in range(self._num_envs): 
             state_space_env  = self._state_space.spawn([i*4, i*4+1, i*4+2, i*4+3])
             action_space_env = self._action_space.spawn([i])
-            env              = WrEnvGYM2MLPro(gym.make('CartPole-v1'), state_space_env, action_space_env)
+            env              = WrEnvGYM2MLPro(gym.make('CartPole-v1'), state_space_env, action_space_env, p_logging=p_logging)
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)
         
         self.reset()
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging):
+        super().switch_logging(p_logging)
+        for env in self._envs: env.switch_logging(p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -85,18 +89,33 @@ class MultiCartPole(Environment):
     def collect_substates(self) -> State:
         state = State(self._state_space)
 
+        done    = True
+        broken  = False
+
         for env_id, env in enumerate(self._envs):
             sub_state_val = env.get_state().get_values()
             sub_state_dim = sub_state_val.shape[0]
             for d in range(sub_state_dim):
                 state.set_value(env_id*sub_state_dim + d, sub_state_val[d])
 
+            done = done and env.get_state().get_done()
+            broken = broken or env.get_state().get_broken()
+
+        state.set_done(done)
+        state.set_broken(broken)
+
         return state
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self) -> None:
-        for env in self._envs: env.reset()
+    def reset(self, p_seed=None):
+        seed = p_seed
+
+        for env in self._envs: 
+            env.reset(seed)
+            if seed is not None:
+                seed += 1
+
         self._state = self.collect_substates()
   
 

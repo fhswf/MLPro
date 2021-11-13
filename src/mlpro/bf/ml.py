@@ -18,13 +18,13 @@
 ## -- 2021-10-25  1.0.4     SY       Enhancement of class Adaptive by adding ScientificObject.
 ## -- 2021-10-26  1.1.0     DA       New class AdaptiveFunction
 ## -- 2021-10-29  1.1.1     DA       New method Adaptive.set_random_seed()
-## -- 2021-11-12  1.2.0     DA       - Class Adaptive renamed to Model
+## -- 2021-11-13  1.2.0     DA       - Class Adaptive renamed to Model
 ## --                                - New classes Mode, Scenario, TrainingResults, Training, 
 ## --                                  HyperParamTuner
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-12)
+Ver. 1.2.0 (2021-11-13)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -107,13 +107,10 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
     C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_NONE     
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer_size=0, p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_buffer_size       Initial size of internal data buffer (0=no buffering)
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
-        """
+    def __init__(self, 
+                 p_buffer_size=0,           # Initial size of internal data buffer (0=no buffering)
+                 p_ada=True,                # Boolean switch for adaptivity
+                 p_logging=Log.C_LOG_ALL):  # Log level (see constants of class Log)
 
         Log.__init__(self, p_logging=p_logging)
         self._adapted           = False
@@ -236,19 +233,18 @@ class AdaptiveFunction (Model, Function):
     C_NAME          = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_input_space:MSpace, p_output_space:MSpace, p_output_elem_cls=Element, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_input_space       Input space
-            p_output_space      Output space
-            p_output_elem_cls   Output element class (compatible to class Element)
-            p_threshold         Threshold for the difference between a setpoint and a computed output. 
-                                Computed outputs with a difference less than this threshold will be 
-                                assessed as 'good' outputs.
-            p_buffer_size       Initial size of internal data buffer (0=no buffering)
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
-        """
+    def __init__(self, 
+                 p_input_space:MSpace,          # Input space
+                 p_output_space:MSpace,         # Output space
+                 p_output_elem_cls=Element,     # Name of output element class (compatible to class 
+                                                # Element)
+                 p_threshold=0,                 # Threshold for the difference between a setpoint and
+                                                # a computed output. Computed outputs with a difference
+                                                # less than this threshold will be assessed as 'good'
+                                                # outputs.
+                 p_buffer_size=0,               # Initial size of internal data buffer (0=no buffering)
+                 p_ada=True,                    # Boolean switch for adaptivity
+                 p_logging=Log.C_LOG_ALL):      # Log level (see constants of class Log)
 
         Model.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         Function.__init__(self, p_input_space=p_input_space, p_output_space=p_output_space, p_output_elem_cls=p_output_elem_cls)
@@ -324,7 +320,7 @@ class Mode (Log):
     C_VALID_MODES   = [ C_MODE_SIM, C_MODE_REAL ]
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode, p_logging=True):
+    def __init__(self, p_mode, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)
         self._mode = self.C_MODE_INITIAL
         self.set_mode(p_mode)
@@ -372,7 +368,7 @@ class Scenario (Mode, LoadSave, Plottable):
                  p_cycle_len:timedelta=None,    # Fixed cycle duration (optional)
                  p_cycle_limit=0,               # Maximum number of cycles (0=no limit)
                  p_visualize=True,              # Boolean switch for env/agent visualisation
-                 p_logging:bool=True ):         # Boolean switch for logging
+                 p_logging=Log.C_LOG_ALL ):     # Log level (see constants of class Log)
 
         # 0 Intro
         self._cycle_len     = p_cycle_len
@@ -405,14 +401,20 @@ class Scenario (Mode, LoadSave, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada:bool, p_logging:bool) -> Model:
+    def switch_logging(self, p_logging):
+        super().switch_logging(p_logging)
+        self._model.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_ada:bool, p_logging) -> Model:
         """
         Setup the ML scenario by redefinition.
 
         Parameters:
             p_mode          Operation mode (see class Mode)
             p_ada           Boolean switch for adaptivity of internal model
-            p_logging       Boolean switch for logging functionality
+            p_logging       Log level (see constants of class Log)
 
         Returns:
             Adaptive model inside the ML scenario
@@ -556,9 +558,9 @@ class Scenario (Mode, LoadSave, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def run(self, 
-            p_term_on_success:bool=True,        # If True, process terminates on success
-            p_term_on_error:bool=True,          # If True, process terminates on error
-            p_break_on_timeout:bool=False):     # If True, process terminates on timeout
+            p_term_on_success:bool=True,        # If True then process terminates on success
+            p_term_on_error:bool=True,          # If True then process terminates on error
+            p_term_on_timeout:bool=False):     # If True then process terminates on timeout
         """
         Runs the scenario as a sequence of single process steps until a terminating event occures.
 
@@ -577,7 +579,7 @@ class Scenario (Mode, LoadSave, Plottable):
             success, error, timeout, limit = self.run_cycle()
             if p_term_on_success and success: break
             if p_term_on_error and error: break
-            if p_break_on_timeout and timeout: break
+            if p_term_on_timeout and timeout: break
             if limit: break
 
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'End of processing')
@@ -655,14 +657,11 @@ class Training (Log):
     C_NAME      = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:Scenario, p_hpt:HyperParamTuner=None, p_hpt_trials=0, p_logging=False):
-        """
-        Parameters:
-            p_scenario          ML scenario (see class Scenario)
-            p_hpt               Optional hyperparameter tuner (see class HyperParamTuner)
-            p_hpt_trials        Optional number of hyperparameter tuning trials
-            p_logging           Boolean switch for logging       
-        """
+    def __init__(self, 
+                 p_scenario:Scenario,           # ML scenario (see class Scenario)
+                 p_hpt:HyperParamTuner=None,    # Optional hyperparameter tuner (see class HyperParamTuner)
+                 p_hpt_trials=0,                # Optional number of hyperparameter tuning trials
+                 p_logging=Log.C_LOG_WE):       # Log level (see constants of class Log)
 
         super().__init__(p_logging=p_logging)
 
