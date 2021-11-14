@@ -128,7 +128,7 @@ else:
         p_cycle_limit=100,
         p_max_adaptations=0,
         p_max_stagnations=0,
-        p_path=str(Path.home()),
+        p_path=None,
         p_logging=Log.C_LOG_NOTHING
     )
 
