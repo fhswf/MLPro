@@ -129,7 +129,7 @@ class RLDataStoring(DataStoring):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RLScenario(Scenario):
+class RLScenario (Scenario):
     """
     Template class for an RL scenario consisting of an environment and an agent. 
     """
@@ -222,8 +222,7 @@ class RLScenario(Scenario):
         """
 
         # Reset environment
-        self._env.set_random_seed(p_seed)
-        self._env.reset()
+        self._env.reset(p_seed)
         if self._visualize: self._env.init_plot()
             
 
@@ -315,21 +314,37 @@ class RLScenario(Scenario):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class TrainingResults(Saveable):
+class RLTrainingResults (TrainingResults):
     """
-    Results of a training (see class Training).
+    Results of a RL training.
     """
 
-    def __init__(self, p_scenario:Scenario):
-        self.scenario           = p_scenario
-        self.ts_start           = None
-        self.ts_end             = None
-        self.duration           = 0
-        self.num_cycles         = 0
-        self.num_episodes       = 0
-        self.num_adaptations    = 0
-        self.num_evaluations    = 0
-        self.highscore          = 0
+    C_FNAME_TRAINING        = 'training'
+    C_FNAME_ENV_STATES      = 'env_states'
+    C_FNAME_AGENT_ACTIONS   = 'agent_actions'
+    C_FNAME_ENV_REWARDS     = 'env_rewards'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_scenario: Scenario, p_run, p_cycle_id, p_path=None):
+        super().__init__(p_scenario, p_run, p_cycle_id, p_path=p_path)
+
+        self.num_episodes      = 0
+        self.num_adaptations   = 0
+        self.num_evaluations   = 0
+        self.ds_states         = None
+        self.ds_actions        = None
+        self.ds_rewards        = None
+        self.ds_training       = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def save(self, p_path, p_filename='summary.txt') -> bool:
+        if not super().save(p_path, p_filename=p_filename): return False
+
+        if self.ds_states is not None: self.ds_states.save_data(p_path, self.C_FNAME_ENV_STATES)
+        if self.ds_actions is not None: self.ds_actions.save_data(p_path, self.C_FNAME_AGENT_ACTIONS)
+        if self.ds_rewards is not None: self.ds_rewards.save_data(p_path, self.C_FNAME_ENV_REWARDS)
+        if self.ds_training is not None: self.ds_training.save_data(p_path, self.C_FNAME_TRAINING)
 
 
 
@@ -337,7 +352,7 @@ class TrainingResults(Saveable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RLTraining(Training):
+class RLTraining (Training):
     """
     This class performs an episodical training on a (multi-)agent in a given environment. Both are 
     expected as parts of a reinforcement learning scenario (see class Scenario for more details).
@@ -353,102 +368,71 @@ class RLTraining(Training):
     C_TYPE                  = 'Training'
     C_NAME                  = 'RL'
 
-    C_FNAME_TRAINING        = 'training'
-    C_FNAME_ENV_STATES      = 'env_states'
-    C_FNAME_AGENT_ACTIONS   = 'agent_actions'
-    C_FNAME_ENV_REWARDS     = 'env_rewards'
+    C_CLS_RESULTS           = RLTrainingResults
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_scenario:RLScenario,         # RL scenario object
-                 p_max_cycles=0,                # Optional limit for total number of training cycles
-                 p_max_cycles_per_episode=0,    # Optional limit for cycles per episode
+                 p_scenario:RLScenario,         # RL scenario object 
+                 p_cycle_limit=0,               # Maximum number of training cycles (0=no limit)
+                 p_max_cycles_per_episode=-1,   # Optional limit for cycles per episode
+                                                # (0=no limit, -1=get environment limit)
                  p_max_adaptations=0,           # Optional limit for total number of adaptations
                  p_max_stagnations=5,           # Optional length of a sequence of evaluations without
                                                 # training progress
-                 p_eval_frequency=100,          # Optional evaluation frequency
+                 p_eval_frequency=100,          # Optional evaluation frequency (0=no evaluation)
                  p_eval_grp_size=50,            # Number of evaluation episodes (eval group)
-                 p_monitor_progress=True,       # If True, the training progress will be monitored
+                 p_hpt:HyperParamTuner=None,    # Optional hyperparameter tuner (see class HyperParamTuner)
+                 p_hpt_trials=0,                # Optional number of hyperparameter tuning trials
+                 p_path=None,                   # Optional destination path to store training data
                  p_collect_states=True,         # If True, the environment states will be collected
                  p_collect_actions=True,        # If True, the agent actions will be collected
                  p_collect_rewards=True,        # If True, the environment reward will be collected
                  p_collect_training=True,       # If True, global training data will be collected
-                 p_logging=True                 # Boolean switch for logging
-                ):
-                
-        super().__init__(p_logging=p_logging)
+                 p_logging=Log.C_LOG_WE):       # Log level (see constants of class Log)
 
-        if ( p_max_cycles <= 0 ) or ( p_max_adaptations <= 0 ) or ( p_monitor_progress == False):
+        if ( p_cycle_limit <= 0 ) and ( p_max_adaptations <= 0 ) and ( p_max_stagnations <= 0 ):
             raise ParamError('Please define a termination criterion')
 
-        if p_eval_grp_size <= 0:
-            raise ParamError('Size of evaluation group must be > 0')
+        if ( p_max_stagnations > 0 ) and ( ( p_eval_frequency <= 0) or ( p_eval_grp_size <= 0 ) ):
+            raise ParamError('Stagnation detection needs an eval freqency and eval group size > 0')
 
-        self._scenario              = p_scenario
+        if p_max_adaptations > 0: raise NotImplementedError
+        if p_max_stagnations > 0: raise NotImplementedError
+
+        super().__init__(p_scenario, p_cycle_limit=p_cycle_limit, p_hpt=p_hpt, p_hpt_trials=p_hpt_trials, p_path=p_path, p_logging=p_logging)
+ 
         self._env                   = self._scenario.get_env()
         self._agent                 = self._scenario.get_agent()
 
+        self._eval_frequency        = p_eval_frequency
         self._eval_grp_size         = p_eval_grp_size
-        self._max_cycles            = p_max_cycles
-        self._max_cycles_per_epi    = p_max_cycles_per_episode
         self._max_adaptation        = p_max_adaptations
-        self._monitor_progress      = p_monitor_progress
+
+        if p_max_cycles_per_episode > 0:
+            self._max_cycles_per_epi = p_max_cycles_per_episode
+        else:
+            self._max_cycles_per_epi = self._env.get_cycle_limit()
 
         self._collect_states        = p_collect_states
         self._collect_actions       = p_collect_actions
         self._collect_rewards       = p_collect_rewards
         self._collect_training      = p_collect_training
 
-        self.reset()
+        self._cycles_episode        = 0
+        self._eval_grp_id           = 0
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__old(self, p_scenario:Scenario, p_episode_limit=50, p_cycle_limit=0, p_collect_states=True, 
-                p_collect_actions=True, p_collect_rewards=True, p_collect_training=True, p_logging=True):
-        """
-        Parmeters:
-            p_scenario              RL scenario object
-            p_episode_limit         Maximum number of episodes
-            p_cycle_limit           Naximum number of cycles within an episode (a value > 0 overrides
-                                    the cycle limit provided by the enviroment)
-            p_collect_states        If True, the environment states will be collected
-            p_collect_actions       If True, the agent actions will be collected
-            p_collect_rewards       If True, the environment reward will be collected
-            p_collect_training      If True, global training data will be collected
-            p_logging               Boolean switch for logging
-        """
+    def _init_results(self) -> TrainingResults:
+        results = super()._init_results()
 
-        super().__init__(p_logging=p_logging)
+        if self._collect_states: 
+            results.ds_states = RLDataStoring(self._env.get_state_space())
 
-        self._scenario      = p_scenario
-        self._env           = self._scenario.get_env()
-        self._agent         = self._scenario.get_agent()
+        if self._collect_actions: 
+            results.ds_actions = RLDataStoring(self._env.get_action_space())
 
-        self._episode_id    = 0
-        self._episode_limit = p_episode_limit
-        self._cycle_id      = 0
-
-        if p_cycle_limit > 0:
-            self._cycle_limit = p_cycle_limit
-        else:
-            self._cycle_limit = self._env.get_cycle_limit()
-
-        if self._cycle_limit <= 0:
-            raise ParamError('Invalid cycle limit')
-        else:
-            self.log(self.C_LOG_TYPE_I, 'Limit of cycles per episide:', str(self._cycle_limit))
-
-        if p_collect_states:
-            self._ds_states   = RLDataStoring(self._env.get_state_space())
-        else:
-            self._ds_states   = None
-
-        if p_collect_actions:
-            self._ds_actions  = RLDataStoring(self._env.get_action_space())
-        else:
-            self._ds_actions  = None
-
-        if p_collect_rewards:
+        if self._collect_rewards: 
             reward_type = self._env.get_reward_type()
 
             if ( reward_type == Reward.C_TYPE_OVERALL ) or ( reward_type == Reward.C_TYPE_EVERY_AGENT ):
@@ -462,42 +446,37 @@ class RLTraining(Training):
                     reward_space.add_dim(Dimension(agent.get_id(), agent.get_name()))
 
                 if reward_space.get_num_dim() > 0:
-                    self._ds_rewards  = RLDataStoring(reward_space)
+                    results.ds_rewards  = RLDataStoring(reward_space)
 
-            else:
-                # Futher reward type not yet supported
-                self._ds_rewards  = None
+        if self._collect_training:
+            results.ds_training = RLDataStoring()
 
-        else:
-            self._ds_rewards  = None
+        self._scenario.connect_data_logger(p_ds_states=results.ds_states, p_ds_actions=results.ds_actions, p_ds_rewards=results.ds_rewards)
 
-        if p_collect_training:
-            self._ds_training = RLDataStoring()
-        else:
-            self._ds_training = None
+        return results
 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_episode(self):
         self.log(self.C_LOG_TYPE_I, '--------------------------------------')
-        self.log(self.C_LOG_TYPE_I, '-- Episode', self._episodes, 'started...')
+        self.log(self.C_LOG_TYPE_I, '-- Episode', self._results.num_episodes, 'started...')
         self.log(self.C_LOG_TYPE_I, '--------------------------------------\n')
-        self._scenario.reset()
+
+        if self._results.ds_states is not None: self._results.ds_states.add_episode(self._results.num_episodes)
+        if self._results.ds_actions is not None: self._results.ds_actions.add_episode(self._results.num_episodes)
+        if self._results.ds_rewards is not None: self._results.ds_rewards.add_episode(self._results.num_episodes)
+
+        self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _close_episode(self):
         self.log(self.C_LOG_TYPE_I, '--------------------------------------')
-        self.log(self.C_LOG_TYPE_I, '-- Episode', self._episodes, 'finished after', self._cycles_episode, 'cycles')
+        self.log(self.C_LOG_TYPE_I, '-- Episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
         self.log(self.C_LOG_TYPE_I, '--------------------------------------\n\n')
 
-        self._cycles_episode    = 0
-        self._ctrl_grp_id      += 1
-
-
-## -------------------------------------------------------------------------------------------------
-    def _close_training(self):
-        pass
+        self._cycles_episode         = 0
+        self._results.num_episodes  += 1
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -513,19 +492,12 @@ class RLTraining(Training):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self):
-        self._results           = TrainingResults(self._scenario)
-        self._cycles_episode    = 0 
-        
-
-## -------------------------------------------------------------------------------------------------
-    def run_cycle(self):
+    def _run_cycle(self) -> bool:
         """
-        Runs next training cycle.
+        Runs single training cycle.
 
         Returns:
-            eof_episode     True, if end of episode has been reached. False otherwise.
-            eof_training    True, if end of training has been reached. False otherwise.
+            True, if training has finished. False otherwise.
         """
 
         # 0 Intro
@@ -534,194 +506,32 @@ class RLTraining(Training):
 
 
         # 1 Init next episode
-        if self._cycles_episode == 0: self._init_episode()
+        if self._cycles_episode == 0: 
+            self._init_episode()
 
 
         # 2 Run a cycle
-        self._scenario.run_cycle(self._cycles_episode, p_ds_states=self._ds_states, p_ds_actions=self._ds_actions, p_ds_rewards=self._ds_rewards)
-        self._cycles_episode    += 1
-        self._cycles_total      += 1
+        success, error, timeout, limit = self._scenario.run_cycle()
+        self._cycles_episode += 1
 
 
         # 3 Check: Episode finished?
-        if self._env.get_done():
-            self.log(self.C_LOG_TYPE_S, 'Environment state: DONE')
-            self._close_episode()
-            eof_episode = True
-
-        elif self._env.get_broken():
-            self.log(self.C_LOG_TYPE_E, 'Environment state: BROKEN')
-            self._close_episode()
+        if success or error: 
             eof_episode = True
 
         elif ( self._max_cycles_per_epi > 0 ) and ( self._cycles_episode == self._max_cycles_per_epi ):
-            self.log(self.C_LOG_TYPE_W, 'Episode timed out')
-            self._close_episode()
+            self.log(self.C_LOG_TYPE_W, 'Episode cycle limit ', str(self._max_cycles_per_epi), ' reached')
             eof_episode = True
 
+        if eof_episode: 
+            self._close_episode()
+            
 
         # 4 Check: Training finished?
-        if ( self._max_cycles > 0 ) and ( self._cycles_total == self._max_cycles ):
-            self.log(self.C_LOG_TYPE_I, 'Training cycle limit reached')
+        if ( self._max_adaptation > 0 ) and ( self._results.num_adaptations == self._max_adaptation ):
+            self.log(self.C_LOG_TYPE_I, 'Adaptation limit ', str(self._max_adaptation), ' reached')
             eof_training = True
-
-        if ( self._max_adaptation > 0 ) and ( self._adaptations == self._max_adaptation ):
-            self.log(self.C_LOG_TYPE_I, 'Adaptation limit reached')
-            eof_training = True
-
-        if self._ctrl_grp_id == self._ctrl_grp_size:
-            self._ctrl_grp_id = 0
-
-            if self._monitor_progress and not self._progress_detected():
-                self.log(self.C_LOG_TYPE_S, 'Best agent configuration found!')
-                eof_training = True
-
-        if eof_training: self._close_training()
 
 
         # 5 Outro
-        return eof_episode, eof_training
-
-
-## -------------------------------------------------------------------------------------------------
-    def run_cycle_old(self) -> bool:
-        """
-        Runs next training cycle.
-
-        Returns:
-            True, if training has been completed. False otherwise.
-        """
-
-        # 1 Begin of new episode? Reset environment 
-        if self._cycle_id == 0:
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------')
-            self.log(self.C_LOG_TYPE_I, '-- Episode', self._episode_id, 'started...')
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------\n')
-            self._scenario.reset()
- 
-            # 1.1 Init frame for next episode in data storage objects
-            if self._ds_training is not None: self._ds_training.add_episode(self._episode_id)
-            if self._ds_states is not None: self._ds_states.add_episode(self._episode_id)
-            if self._ds_actions is not None: self._ds_actions.add_episode(self._episode_id)
-            if self._ds_rewards is not None: self._ds_rewards.add_episode(self._episode_id)
-
-
-        # 2 Run a cycle
-        self._scenario.run_cycle(self._cycle_id, p_ds_states=self._ds_states, p_ds_actions=self._ds_actions, p_ds_rewards=self._ds_rewards)
-
-
-        # 3 Update training counters
-        if self._env.get_done() or self._env.get_broken() or ( self._cycle_id == (self._cycle_limit-1) ):
-            # 3.1 Episode finished
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------')
-            self.log(self.C_LOG_TYPE_I, '-- Episode', self._episode_id, 'finished after', self._cycle_id + 1, 'cycles')
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------\n\n')
-
-            # 3.1.1 Update global training data storage
-            if self._ds_training is not None:
-                if self._env.get_done()==True:
-                    done_num = 1
-                else:
-                    done_num = 0
-
-                if self._env.get_broken()==True:
-                    broken_num = 1
-                else:
-                    broken_num = 0
-
-                self._ds_training.memorize(RLDataStoring.C_VAR_NUM_CYLCLES, self._episode_id, self._cycle_id + 1)
-                self._ds_training.memorize(RLDataStoring.C_VAR_ENV_DONE, self._episode_id, done_num)
-                self._ds_training.memorize(RLDataStoring.C_VAR_ENV_BROKEN, self._episode_id, broken_num)
- 
-            # 3.1.2 Prepare next episode
-            self._episode_id   += 1
-            self._cycle_id      = 0
-
-        else:
-            # 3.2 Prepare next cycle
-            self._cycle_id     += 1
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def run_episode(self):
-#         """
-#         Runs/finishes current training episode.
-#         """
-
-#         current_episode_id = self._episode_id
-#         while self._episode_id == current_episode_id: self.run_cycle()
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def run(self):
-#         """
-#         Runs/finishes entire training.
-#         """
-
-#         while self._episode_id < self._episode_limit: self.run_episode()
-
-
-## -------------------------------------------------------------------------------------------------
-    def run(self) -> TrainingResults:
-        """
-        Runs a training until one of the termination criteria have been fulfilled.
-
-        Returns:
-            Object that contains the training results
-        """
-
-        self.reset()
-
-        while not self.run_cycle()[1]: pass
-
-        return self.get_results()
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_results(self):
-        return self._results
-
-
-## -------------------------------------------------------------------------------------------------
-    def save_data(self, p_path, p_delimiter):
-        result      = True
-        num_files   = 0
-
-        if self._ds_training is not None:
-            if self._ds_training.save_data(p_path, self.C_FNAME_TRAINING, p_delimiter):
-                self.log(self.C_LOG_TYPE_I, 'Saved training data to file "' + self.C_FNAME_TRAINING 
-                        + '" in "' + p_path + '"')
-                num_files  += 1
-                result      = result and True
-            else:
-                result      = False
-
-        if self._ds_states is not None:
-            if self._ds_states.save_data(p_path, self.C_FNAME_ENV_STATES, p_delimiter):
-                self.log(self.C_LOG_TYPE_I, 'Saved environment state data to file "' + self.C_FNAME_ENV_STATES
-                        + '" in "' + p_path + '"')
-                num_files  += 1
-                result      = result and True
-            else:
-                result      = False
-
-        if self._ds_actions is not None:
-            if self._ds_actions.save_data(p_path, self.C_FNAME_AGENT_ACTIONS, p_delimiter):
-                self.log(self.C_LOG_TYPE_I, 'Saved agent action data to file "' + self.C_FNAME_AGENT_ACTIONS 
-                        + '" in "' + p_path + '"')
-                num_files  += 1
-                result      = result and True
-            else:
-                result      = False
-
-        if self._ds_rewards is not None:
-            if self._ds_rewards.save_data(p_path, self.C_FNAME_ENV_REWARDS, p_delimiter):
-                self.log(self.C_LOG_TYPE_I, 'Saved environment reward data to file "' + self.C_FNAME_ENV_REWARDS 
-                        + '" in "' + p_path + '"')
-                num_files  += 1
-                result      = result and True
-            else:
-                result      = False
-
-        if num_files > 0: return result
-        return False
+        return eof_training

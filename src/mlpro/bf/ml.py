@@ -18,20 +18,19 @@
 ## -- 2021-10-25  1.0.4     SY       Enhancement of class Adaptive by adding ScientificObject.
 ## -- 2021-10-26  1.1.0     DA       New class AdaptiveFunction
 ## -- 2021-10-29  1.1.1     DA       New method Adaptive.set_random_seed()
-## -- 2021-11-13  1.2.0     DA       - Class Adaptive renamed to Model
+## -- 2021-11-14  1.2.0     DA       - Class Adaptive renamed to Model
 ## --                                - New classes Mode, Scenario, TrainingResults, Training, 
 ## --                                  HyperParamTuner
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-13)
+Ver. 1.2.0 (2021-11-14)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
 
 import sys
-from os import confstr_names
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
@@ -42,7 +41,7 @@ from mlpro.bf.plot import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParam(Dimension):
+class HyperParam (Dimension):
     """
     ...
     """
@@ -65,7 +64,7 @@ class HyperParam(Dimension):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamSpace(ESpace):
+class HyperParamSpace (ESpace):
     """
     ...
     """
@@ -78,7 +77,7 @@ class HyperParamSpace(ESpace):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamTupel(Element):
+class HyperParamTupel (Element):
     """
     ...
     """
@@ -94,9 +93,14 @@ class HyperParamTupel(Element):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Model(Log, LoadSave, Plottable, ScientificObject):
+class Model (Log, LoadSave, Plottable, ScientificObject):
     """
-    Fundamental template class for adaptive ML models.
+    Fundamental template class for adaptive ML models. Supports especially
+      - Adaptivity
+      - Data buffering
+      - Hyperparameter management
+      - Plotting
+      - Scientific referencing on source code level
     """
 
     C_TYPE          = 'Model'
@@ -134,6 +138,8 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
         b) Create hyperparameter tuple and bind to self._hyperparam_tupel
         c) Set default value for each hyperparameter
         """
+
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -372,10 +378,10 @@ class Scenario (Mode, LoadSave, Plottable):
 
         # 0 Intro
         self._cycle_len     = p_cycle_len
-        self._cycle_limit   = p_cycle_limit
         self._cycle_max     = sys.maxsize
         self._cycle_id      = 0
         self._visualize     = p_visualize
+        self.set_cycle_limit(p_cycle_limit)
 
 
         # 1 Setup entire scenario
@@ -467,6 +473,11 @@ class Scenario (Mode, LoadSave, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def set_cycle_limit(self, p_limit):
+        self._cycle_limit = p_limit
+
+
+## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=1):
         """
         Resets the scenario and especially the ML model inside. Internal random generators are seed 
@@ -524,10 +535,10 @@ class Scenario (Mode, LoadSave, Plottable):
 
 
         # 3 Update cycle id and check for optional limit
-        self._cycle_id = ( self._cycle_id + 1 ) & self._cycle_max
-        if ( self._cycle_limit > 0 ) and ( self._cycle_id >= self._cycle_limit ): 
+        if ( self._cycle_limit > 0 ) and ( self._cycle_id >= ( self._cycle_limit -1 ) ): 
             limit = True
         else:
+            self._cycle_id = ( self._cycle_id + 1 ) & self._cycle_max
             limit = False
 
 
@@ -551,16 +562,21 @@ class Scenario (Mode, LoadSave, Plottable):
         Returns:
             success         True on success. False otherwise.
             error           True on error. False otherwise.
-       """
+        """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_id(self):
+        return self._cycle_id
 
 
 ## -------------------------------------------------------------------------------------------------
     def run(self, 
             p_term_on_success:bool=True,        # If True then process terminates on success
             p_term_on_error:bool=True,          # If True then process terminates on error
-            p_term_on_timeout:bool=False):     # If True then process terminates on timeout
+            p_term_on_timeout:bool=False ):     # If True then process terminates on timeout
         """
         Runs the scenario as a sequence of single process steps until a terminating event occures.
 
@@ -597,13 +613,71 @@ class TrainingResults (Saveable):
     Results of a training (see class Training).
     """
 
-    def __init__(self, p_scenario:Scenario):
+    def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_path=None):
         self.scenario       = p_scenario
-        self.ts_start       = None
+        self.run            = p_run
+        self.ts_start       = datetime.now()
         self.ts_end         = None
-        self.ts_duration    = 0
+        self.duration       = 0
+        self.cycle_id_start = p_cycle_id
+        self.cycle_id_end   = p_cycle_id
+        self.num_cycles     = 1
         self.highscore      = None
-        self.trained_model  = None
+        self.path           = p_path
+
+        self.custom_results = []
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_custom_result(self, p_name, p_value):
+        self.custom_results.append([p_name, p_value])
+
+
+## -------------------------------------------------------------------------------------------------
+    def close(self, p_cycle_id):
+        self.ts_end         = datetime.now()
+        self.duration       = self.ts_end - self.ts_start
+
+        self.cycle_id_end   = p_cycle_id
+        self.num_cycles     = self.cycle_id_end - self.cycle_id_start + 1
+
+
+## -------------------------------------------------------------------------------------------------
+    def _save_line(self, p_file, p_name, p_value):
+        value = p_value
+        if value is None: value = '-'
+        p_file.write(p_name + '\t' + str(value) + '\n')
+
+
+## -------------------------------------------------------------------------------------------------
+    def save(self, p_path, p_filename='summary.txt') -> bool:
+        """
+        Saves a training summary in the given path.
+        """
+
+        filename = p_path + os.sep + p_filename
+        filename.replace(os.sep + os.sep, os.sep)
+
+        file = open(filename, 'wt')
+        if file is None: return False
+
+        self._save_line(file, 'Scenario', '"' + self.scenario.C_TYPE + ' ' + self.scenario.C_NAME + '"')
+        self._save_line(file, 'Model', '"' + self.scenario.get_model().C_TYPE + ' ' + self.scenario.get_model().C_NAME + '"')
+        self._save_line(file, 'Run', str(self.run))
+        self._save_line(file, 'Start', self.ts_start)
+        self._save_line(file, 'End', self.ts_end)
+        self._save_line(file, 'Duration', self.duration)
+        self._save_line(file, 'Start cycle id', self.cycle_id_start)
+        self._save_line(file, 'End cycle id', self.cycle_id_end)
+        self._save_line(file, 'Number of cycles', self.num_cycles)
+        self._save_line(file, 'Highscore', self.highscore)
+        self._save_line(file, 'Path', '"' + str(self.path) + '"')
+
+        for name, value in self.custom_results:
+            self._save_line(file, name, value)
+
+        file.close()
+        return True
 
 
 
@@ -653,22 +727,31 @@ class Training (Log):
     Template class for a ML training and hyperparameter tuning.
     """
 
-    C_TYPE      = 'Training'
-    C_NAME      = '????'
+    C_TYPE          = 'Training'
+    C_NAME          = '????'
+
+    C_CLS_RESULTS   = TrainingResults
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
                  p_scenario:Scenario,           # ML scenario (see class Scenario)
+                 p_cycle_limit=0,               # Maximum number of training cycles (0=no limit)
                  p_hpt:HyperParamTuner=None,    # Optional hyperparameter tuner (see class HyperParamTuner)
                  p_hpt_trials=0,                # Optional number of hyperparameter tuning trials
+                 p_path=None,                   # Optional destination path to store training data
                  p_logging=Log.C_LOG_WE):       # Log level (see constants of class Log)
 
         super().__init__(p_logging=p_logging)
 
-        self._scenario      = p_scenario
-        self._hpt           = p_hpt
-        self._hpt_trials    = p_hpt_trials
-        self._results       = None
+        self._scenario          = p_scenario
+        self._num_cycles        = 0
+        self._cycle_limit       = p_cycle_limit
+        self._hpt               = p_hpt
+        self._hpt_trials        = p_hpt_trials
+        self._current_path      = None
+        self._current_run       = 0
+        self._results           = None
+        self._best_results      = None
 
         if self._hpt is not None: 
             raise NotImplementedError('Hyperparameter Tuning not yet implemented')
@@ -676,10 +759,107 @@ class Training (Log):
         if ( self._hpt is not None ) and ( p_hpt_trials <= 0 ):
             raise ParamError('Please check number of trials for hyperparameter tuning')
 
+        self._root_path         = self._gen_root_path(p_path)
+        self._scenario.set_cycle_limit(self._cycle_limit)
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_scenario(self) -> Scenario:
         return self._scenario
+
+
+## -------------------------------------------------------------------------------------------------
+    def _gen_root_path(self, p_path) -> str:
+        if p_path is None: return None
+
+        now         = datetime.now()
+        ts          = '%04d-%02d-%02d  %02d.%02d.%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
+        root_path   = p_path + str(os.sep) + ts + ' ' + self.C_TYPE + ' ' + self.C_NAME
+        root_path.replace(str(os.sep) + str(os.sep), str(os.sep))
+        os.mkdir(root_path)
+        return root_path
+
+
+## -------------------------------------------------------------------------------------------------
+    def _gen_current_path(self, p_root_path, p_run) -> str:
+        if p_root_path is None: return None
+        if self._hpt is None: return self._root_path
+
+        now             = datetime.now()
+        ts              = '%04d-%02d-%02d  %02d.%02d.%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
+        current_path    = p_root_path + os.sep + ts + ' Run #' + str(p_run)
+        current_path.replace(os.sep + os.sep, os.sep)
+        os.mkdir(current_path)
+        return current_path
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_results(self) -> TrainingResults:
+        return self.C_CLS_RESULTS(self._scenario, self._current_run, self._scenario.get_cycle_id(), self._current_path)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _close_results(self, p_results:TrainingResults):
+        p_results.close(self._scenario.get_cycle_id())
+        if self._current_path is not None: p_results.save(self._current_path)
+
+
+## -------------------------------------------------------------------------------------------------
+    def run_cycle(self) -> bool:
+        """
+        Runs a single training cycle.
+        
+        Returns:
+            True, if training run has finished. False otherwise.
+        """
+
+        # 1 Intro
+        if self._current_path is None:
+            # 1.1 Start of new training run
+            self._current_path  = self._gen_current_path(self._root_path, self._current_run)
+            self._results       = self._init_results()
+            self._num_cycles    = 0 
+            self.log(self.C_LOG_TYPE_I, 'Start of training run', str(self._current_run))
+            
+
+        # 2 Run a single training cycle
+        run_finished = self._run_cycle()
+        self._num_cycles += 1
+
+
+        # 3 Assess results
+        if ( self._cycle_limit > 0 ) and ( self._num_cycles >= self._cycle_limit ):
+            # 3.1 Cycle limit reached
+            self.log(self.C_LOG_TYPE_I, 'Cycle limit', self._cycle_limit, 'reached')
+            run_finished = True
+
+        if run_finished:
+            # 3.2 Training run finished
+            self.log(self.C_LOG_TYPE_I, 'End of training run', self._current_run)
+            self._scenario.get_model().save(self._current_path, 'trained model')
+            self._close_results(self._results)
+            self._current_path = None
+
+            if ( self._best_results is None ) or ( self._results.highscore > self._best_results.highscore ):
+                self.log(self.C_LOG_TYPE_S, 'Training run', str(self._current_run), ': New highscore', str(self._results.highscore))
+                self._best_results = self._results
+
+            self._current_run += 1
+
+        return run_finished
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _run_cycle(self) -> bool:
+        """
+        Single custom trainig cycle to be redefined. Custom training results can be added to using
+        self._results.add_custom_result(p_name, p_value).
+
+        Returns:
+            True, if training has finished. False otherwise.
+        """
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -704,16 +884,10 @@ class Training (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self) -> TrainingResults:
-        """
-        Training process to be implemented.
-
-        Returns:
-            Results of the best trained model.
-        """
-
-        raise NotImplementedError
+        while not self.run_cycle(): pass
+        return self.get_results()
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_results(self) -> TrainingResults:
-        return self._results
+        return self._best_results

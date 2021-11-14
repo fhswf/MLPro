@@ -134,4 +134,4 @@ else:
 
 
 # 4 Run max. 500 cycles
-print(myscenario.run( p_term_on_success=True, p_term_on_error=True, p_term_on_timeout=True ))
+myscenario.run( p_term_on_success=True, p_term_on_error=True, p_term_on_timeout=True )

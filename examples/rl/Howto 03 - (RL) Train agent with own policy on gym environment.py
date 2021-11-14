@@ -15,10 +15,11 @@
 ## -- 2021-09-29  1.2.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-06  1.2.3     DA       Refactoring 
 ## -- 2021-10-18  1.2.4     DA       Refactoring 
+## -- 2021-11-14  1.2.5     DA       Refactoring 
 ### -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2021-10-18)
+Ver. 1.2.5 (2021-11-14)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """
@@ -35,9 +36,14 @@ from pathlib import Path
 
 
 # 1 Implement your own agent policy
-class MyPolicy(Policy):
+class MyPolicy (Policy):
 
     C_NAME      = 'MyPolicy'
+
+
+    def set_random_seed(self, p_seed=None):
+        random.seed(p_seed)
+
 
     def compute_action(self, p_state: State) -> Action:
         # 1 Create a numpy array for your action values 
@@ -62,7 +68,7 @@ class MyPolicy(Policy):
 
 
 # 2 Implement your own RL scenario
-class MyScenario(Scenario):
+class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
 
@@ -72,14 +78,14 @@ class MyScenario(Scenario):
         self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
         # 2 Setup standard single-agent with own policy
-        self._agent = Agent(
-            p_policy=MyPolicy(
-                p_observation_space=self._env.get_state_space(),
-                p_action_space=self._env.get_action_space(),
-                p_buffer_size=10,
-                p_ada=p_ada,
-                p_logging=p_logging
-            ),    
+        return Agent(
+                p_policy=MyPolicy(
+                    p_observation_space=self._env.get_state_space(),
+                    p_action_space=self._env.get_action_space(),
+                    p_buffer_size=10,
+                    p_ada=p_ada,
+                    p_logging=p_logging
+                ),    
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
@@ -89,37 +95,42 @@ class MyScenario(Scenario):
 
 
 
-# 3 Instantiate scenario
-myscenario  = MyScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=False,
-    p_logging=True
-)
+# 3 Create and train scenario
+if __name__ == "__main__":
+    # 3.1 Demo mode
+    myscenario  = MyScenario(
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_visualize=True,
+        p_logging=Log.C_LOG_ALL
+    )
 
+    training = RLTraining(
+        p_scenario=myscenario,
+        p_cycle_limit=100,
+        p_max_adaptations=0,
+        p_max_stagnations=0,
+        p_path=str(Path.home()),
+        p_logging=Log.C_LOG_ALL
+    )
 
+else:
+    # 3.2 Unit test mode
+    myscenario  = MyScenario(
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_visualize=False,
+        p_logging=Log.C_LOG_NOTHING
+    )
 
+    training = RLTraining(
+        p_scenario=myscenario,
+        p_cycle_limit=100,
+        p_max_adaptations=0,
+        p_max_stagnations=0,
+        p_path=str(Path.home()),
+        p_logging=Log.C_LOG_NOTHING
+    )
 
-# 4 Train agent in scenario 
-now             = datetime.now()
-
-training        = Training(
-    p_scenario=myscenario,
-    p_episode_limit=1,
-    p_collect_states=True,
-    p_collect_actions=True,
-    p_collect_rewards=True,
-    p_collect_training=True,
-    p_logging=True
-)
 
 training.run()
-
-
-
-
-# 5 Save training data in user home directory
-ts              = '%04d-%02d-%02d  %02d%02d%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
-dest_path       = str(Path.home()) + os.sep + 'ccb rl - howto 03' + os.sep + ts
-training.save_data(dest_path, "\t")
