@@ -9,13 +9,14 @@
 ## -- 2021-09-18  1.0.0     MRD      Release first version only for continous action
 ## -- 2021-09-24  1.0.1     MRD      Add categorical distribution to deal with the discrete action
 ## -- 2021-10-18  1.0.2     DA       Refactoring
+## -- 2021-11-15  1.0.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 ## -- Reference
 ## -- https://github.com/DLR-RM/stable-baselines3
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-10-18)
+Ver. 1.0.3 (2021-11-15)
 
 This module provide A2C Algorithm based on reference.
 """
@@ -182,7 +183,7 @@ class ActorCriticMLP(torch.nn.Module):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class A2C(Policy):
+class A2C (Policy):
     """
     Implementation of A2C Policy Algorithm
     """
@@ -191,6 +192,7 @@ class A2C(Policy):
 
     C_BUFFER_CLS = SARSBuffer
     
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_observation_space: MSpace, p_action_space: MSpace, p_buffer_size: int, 
                 p_ada, p_use_gae=False, p_gae_lambda=0, p_gamma=0.99, 
                 p_value_loss_coef=0.5, p_entropy_coef=0, p_learning_rate=3e-4, p_logging=True):
@@ -220,6 +222,8 @@ class A2C(Policy):
         self.additional_buffer_element = {}
         self._setup_policy()
 
+
+## -------------------------------------------------------------------------------------------------
     def _setup_policy(self):
         """
         Setup the Policy Network based on type of the action space of an environment.
@@ -240,6 +244,7 @@ class A2C(Policy):
                                     action_dim, dist)
 
         self.optimizer = optim.Adam(self.policy.parameters(), lr=self.learning_rate)
+
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:

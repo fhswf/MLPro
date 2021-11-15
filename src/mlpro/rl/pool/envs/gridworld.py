@@ -1,21 +1,22 @@
-## -----------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
 ## -- Module  : gridworld
-## -----------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 ## -- History :
-## -- yyyy-mm-dd  Ver.  Auth.  Description
-## -- 2021-09-06  0.00  WB     Creation
-## -- 2021-09-09  1.00  WB     Release of first version
-## -- 2021-09-11  1.01  MRD    Fix compability with mlpro structure
-## -- 2021-09-11  1.01  MRD    Change Header information to match our new library name
-## -- 2021-09-13  1.02  WB     Fix on simulate reaction      
-## -- 2021-09-30  1.03  SY     State-space and action-space improvement     
-## -- 2021-10-05  1.04  SY     Update following new attributes done and broken in State
-## -----------------------------------------------------------------------------
+## -- yyyy-mm-dd  Ver.      Auth.    Description
+## -- 2021-09-06  0.0.0     WB       Creation
+## -- 2021-09-09  1.0.0     WB       Release of first version
+## -- 2021-09-11  1.0.1     MRD      Fix compability with mlpro structure
+## -- 2021-09-11  1.0.1     MRD      Change Header information to match our new library name
+## -- 2021-09-13  1.0.2     WB       Fix on simulate reaction      
+## -- 2021-09-30  1.0.3     SY       State-space and action-space improvement     
+## -- 2021-10-05  1.0.4     SY       Update following new attributes done and broken in State
+## -- 2021-11-15  1.0.5     DA       Refactoring
+## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.04 (2021-10-05)
+Ver. 1.0.5 (2021-11-15)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -82,10 +83,11 @@ class GridWorld(Environment):
             self._action_space.add_dim(Dimension(i, str(i), p_base_set='Z',
                                                  p_boundaries=[-self.grid_size[i], self.grid_size[i]]))
     
-    def reset(self) -> None:
+    def reset(self, p_seed=None) -> None:
         """
         To reset environment
         """
+        random.seed(p_seed)
         self.agent_pos = np.array([np.random.randint(0,border-1) 
                             if self.random_start_position 
                             else 0 for border in self.grid_size])
@@ -107,7 +109,8 @@ class GridWorld(Environment):
         state.set_values(obs.flatten())
         return state
         
-    def _simulate_reaction(self, p_action: Action) -> None:
+
+    def simulate_reaction(self, p_state: State, p_action: Action) -> State:
         self.agent_pos += np.array(p_action.get_sorted_values()).astype(int)
         self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
         
@@ -118,8 +121,10 @@ class GridWorld(Environment):
         else:
             self._state.set_done(False)
         self._state = self.get_state()
+        return self._state
         
-    def compute_reward(self):
+
+    def compute_reward(self, p_state:State=None) -> Reward:
         reward = Reward(Reward.C_TYPE_OVERALL)
         rew = 1
         euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos)
@@ -130,17 +135,37 @@ class GridWorld(Environment):
         
         reward.set_overall_reward(rew)
         return reward
-        
-    def _evaluate_state(self):
+
+
+    def compute_done(self, p_state: State) -> bool:
         if self.num_step >= self.max_step:
-            self.goal_achievement   = 0.0
-            self._state.set_done(True)
+            return True
         elif self.get_done() == True:
-            self.goal_achievement   = 1.0
+            return True
+
+        return False
+
+
+    def compute_broken(self, p_state: State) -> bool:
+        return False
+        
+
+    def _compute_goal_achievement(self, p_state: State = None):
+        if self.num_step >= self.max_step:
+            return 0.0
+        elif self.get_done() == True:
+            return 1.0
+
+        return 0.0
+
+
+    # def _evaluate_state(self):
+    #     if self.num_step >= self.max_step:
+    #         self.goal_achievement   = 0.0
+    #         self._state.set_done(True)
+    #     elif self.get_done() == True:
+    #         self.goal_achievement   = 1.0
             
-    
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
 
 
 

@@ -8,16 +8,18 @@
 ## -- 2021-09-29  0.0.0     MRD      Creation
 ## -- 2021-10-07  1.0.0     MRD      Released first version
 ## -- 2021-10-08  1.0.1     DA       Take over the cycle limit from the environment
+## -- 2021-11-15  1.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-10-08)
+Ver. 1.0.2 (2021-11-15)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
 
 import gym
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
+from mlpro.bf.ml import Mode
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
@@ -25,12 +27,14 @@ from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from collections import deque
 import pandas as pd
 
+
+
 # 1 Implement your own RL scenario
-class MyScenario(Scenario):
+class MyScenario(RLScenario):
 
     C_NAME      = 'Matrix'
 
-    def __init__(self, p_mode=..., p_ada=True, p_cycle_len: timedelta = None, p_cycle_limit=0, p_visualize=True, p_logging=True):
+    def __init__(self, p_mode=Mode.C_MODE_SIM, p_ada=True, p_cycle_len: timedelta = None, p_cycle_limit=0, p_visualize=True, p_logging=Log.C_LOG_ALL):
         super().__init__(p_mode=p_mode, p_ada=p_ada, p_cycle_len=p_cycle_len, p_cycle_limit=p_cycle_limit, p_visualize=p_visualize, p_logging=p_logging)
         self._reward_training = []
 
@@ -39,7 +43,7 @@ class MyScenario(Scenario):
         # self._env   = RobotHTM(p_logging=False)
         # gym_env     = gym.make('MountainCarContinuous-v0')
         gym_env     = gym.make('CartPole-v1')
-        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
+        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
         # 2 Instatiate Policy From SB3
         # env is set to None, it will be set up later inside the wrapper
@@ -87,7 +91,7 @@ class MyScenario(Scenario):
                 p_logging=p_logging)
         
         # 4 Setup standard single-agent with own policy
-        self._agent = Agent(
+        return Agent(
             p_policy=policy_wrapped,   
             p_envmodel=None,
             p_name='Smith',

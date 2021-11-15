@@ -135,7 +135,7 @@ class WrEnvGYM2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_action:Action):
+    def simulate_reaction(self, p_state:State, p_action: Action) -> State:
 
         # 1 Convert action to Gym syntax
         action_sorted = p_action.get_sorted_values()
@@ -161,24 +161,46 @@ class WrEnvGYM2MLPro(Environment):
         state   = State(self._state_space)
         state.set_values(obs.get_data())
         state.set_done(done)
-        self._set_state(state)
 
-        # 4 Create and store reward object
-        self.reward = Reward(Reward.C_TYPE_OVERALL)
-        self.reward.set_overall_reward(reward_gym)
+        # 4 Create reward object
+        self._reward = Reward(Reward.C_TYPE_OVERALL)
+        self._reward.set_overall_reward(reward_gym)
 
-
-## -------------------------------------------------------------------------------------------------
-    def _evaluate_state(self):
-        if self.get_done():
-            self.goal_achievement = 1.0
-        else:
-            self.goal_achievement = 0.0
+        # 5 Return next state
+        return state
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self) -> Reward:
-        return self.reward
+    def compute_goal_achievement(self, p_state:State=None):
+        if p_state is not None:
+            raise NotImplementedError
+
+        if self.get_done(): return 1.0
+        return 0.0
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_reward(self, p_state:State=None) -> Reward:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self._reward
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_done(self, p_state:State=None) -> bool:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self.get_done()
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state:State=None) -> bool:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self.get_broken()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -284,7 +306,9 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_action:Action):
+    def simulate_reaction(self, p_state:State, p_action:Action) -> State:
+
+        new_state = State(self._state_space)
 
         # 1 Convert action to Zoo syntax
         action_sorted = p_action.get_sorted_values()
@@ -315,16 +339,17 @@ class WrEnvPZOO2MLPro(Environment):
             agent_num += 1
 
         # 3 Create state object from Zoo observation
-            state = State(self._state_space)
             if isinstance(observation, dict):
-                state.set_values(obs.get_data()['observation'])
+                new_state.set_values(obs.get_data()['observation'])
             else:
-                state.set_values(obs.get_data())
-            self._set_state(state)
+                new_state.set_values(obs.get_data())
+
 
         # 4 Create and store reward object
-        self.reward = Reward(Reward.C_TYPE_OVERALL)
-        self.reward.set_overall_reward(reward_zoo)
+        self._reward = Reward(Reward.C_TYPE_OVERALL)
+        self._reward.set_overall_reward(reward_zoo)
+
+        return new_state
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -336,8 +361,27 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self) -> Reward:
-        return self.reward
+    def compute_reward(self, p_state:State=None) -> Reward:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self._reward
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_done(self, p_state:State=None) -> bool:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self.get_done()
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state:State=None) -> bool:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self.get_broken()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -441,7 +485,7 @@ class WrEnvMLPro2GYM(gym.Env):
         
         self._mlpro_env.process_action(_action)
         reward          = self._mlpro_env.compute_reward()
-        self._mlpro_env._evaluate_state
+#        self._mlpro_env._evaluate_state
         
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):

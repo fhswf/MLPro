@@ -18,13 +18,13 @@
 ## -- 2021-10-25  1.0.4     SY       Enhancement of class Adaptive by adding ScientificObject.
 ## -- 2021-10-26  1.1.0     DA       New class AdaptiveFunction
 ## -- 2021-10-29  1.1.1     DA       New method Adaptive.set_random_seed()
-## -- 2021-11-14  1.2.0     DA       - Class Adaptive renamed to Model
+## -- 2021-11-15  1.2.0     DA       - Class Adaptive renamed to Model
 ## --                                - New classes Mode, Scenario, TrainingResults, Training, 
 ## --                                  HyperParamTuner
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-14)
+Ver. 1.2.0 (2021-11-15)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -35,7 +35,7 @@ from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
 from mlpro.bf.plot import *
-
+import random
 
 
 
@@ -169,7 +169,7 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
         Resets the internal random generator using the given seed.
         """
 
-        raise NotImplementedError
+        random.seed(p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -762,6 +762,8 @@ class Training (Log):
         self._root_path         = self._gen_root_path(p_path)
         self._scenario.set_cycle_limit(self._cycle_limit)
 
+        self._new_run           = True
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_scenario(self) -> Scenario:
@@ -814,12 +816,17 @@ class Training (Log):
         """
 
         # 1 Intro
-        if self._current_path is None:
+        if self._new_run:
             # 1.1 Start of new training run
             self._current_path  = self._gen_current_path(self._root_path, self._current_run)
             self._results       = self._init_results()
             self._num_cycles    = 0 
-            self.log(self.C_LOG_TYPE_I, 'Start of training run', str(self._current_run))
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_I, '-- Training run', self._current_run, 'started...')
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------\n')
+            self._new_run = False
             
 
         # 2 Run a single training cycle
@@ -835,8 +842,12 @@ class Training (Log):
 
         if run_finished:
             # 3.2 Training run finished
-            self.log(self.C_LOG_TYPE_I, 'End of training run', self._current_run)
-            self._scenario.get_model().save(self._current_path, 'trained model')
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_I, '-- Training run', self._current_run, 'finished')
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------\n')
+            self._scenario.get_model().save(self._current_path, 'trained model.pkl')
             self._close_results(self._results)
             self._current_path = None
 
@@ -844,7 +855,8 @@ class Training (Log):
                 self.log(self.C_LOG_TYPE_S, 'Training run', str(self._current_run), ': New highscore', str(self._results.highscore))
                 self._best_results = self._results
 
-            self._current_run += 1
+            self._current_run  += 1
+            self._new_run       = True
 
         return run_finished
         
@@ -884,6 +896,7 @@ class Training (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self) -> TrainingResults:
+        self._new_run = True
         while not self.run_cycle(): pass
         return self.get_results()
 

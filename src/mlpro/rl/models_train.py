@@ -144,7 +144,7 @@ class RLScenario (Scenario):
                  p_cycle_len:timedelta=None,    # Fixed cycle duration (optional)
                  p_cycle_limit=0,               # Maximum number of cycles (0=no limit, -1=get from env)
                  p_visualize=True,              # Boolean switch for env/agent visualisation
-                 p_logging=Log.C_LOG_ALL ):     # Boolean switch for logging
+                 p_logging=Log.C_LOG_ALL ):     # Log level (see constants of class Log)
 
         # 1 Setup entire scenario
         self._env   = None
@@ -324,6 +324,10 @@ class RLTrainingResults (TrainingResults):
     C_FNAME_AGENT_ACTIONS   = 'agent_actions'
     C_FNAME_ENV_REWARDS     = 'env_rewards'
 
+    C_CPAR_NUM_EPI          = 'Number of episodes'
+    C_CPAR_NUM_EVAL         = 'Number of evaluations'
+    C_CPAR_NUM_ADAPT        = 'Number of adaptations'
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_scenario: Scenario, p_run, p_cycle_id, p_path=None):
         super().__init__(p_scenario, p_run, p_cycle_id, p_path=p_path)
@@ -335,6 +339,15 @@ class RLTrainingResults (TrainingResults):
         self.ds_actions        = None
         self.ds_rewards        = None
         self.ds_training       = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def close(self, p_cycle_id):
+        super().close(p_cycle_id)
+
+        self.add_custom_result(self.C_CPAR_NUM_EPI, self.num_episodes)
+        self.add_custom_result(self.C_CPAR_NUM_EVAL, self.num_evaluations)
+        self.add_custom_result(self.C_CPAR_NUM_ADAPT, self.num_adaptations)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -458,9 +471,9 @@ class RLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_episode(self):
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------')
+        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
         self.log(self.C_LOG_TYPE_I, '-- Episode', self._results.num_episodes, 'started...')
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------\n')
+        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------\n')
 
         if self._results.ds_states is not None: self._results.ds_states.add_episode(self._results.num_episodes)
         if self._results.ds_actions is not None: self._results.ds_actions.add_episode(self._results.num_episodes)
@@ -471,9 +484,9 @@ class RLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _close_episode(self):
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------')
+        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
         self.log(self.C_LOG_TYPE_I, '-- Episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------\n\n')
+        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------\n\n')
 
         self._cycles_episode         = 0
         self._results.num_episodes  += 1

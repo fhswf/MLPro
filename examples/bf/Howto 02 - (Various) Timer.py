@@ -26,7 +26,7 @@ from mlpro.bf.various import Timer, Log
 
 
 # Demo class
-class TimerDemo(Log):
+class TimerDemo (Log):
 
     C_TYPE  = 'Demo class'
     C_NAME  = 'Timer'

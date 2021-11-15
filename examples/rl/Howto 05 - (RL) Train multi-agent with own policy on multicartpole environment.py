@@ -14,11 +14,11 @@
 ## -- 2021 09-26  1.2.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
 ## -- 2021-10-06  1.2.2     DA       Refactoring 
-## -- 2021-10-18  1.2.3     DA       Refactoring 
+## -- 2021-11-15  1.3.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2021-10-18)
+Ver. 1.3.0 (2021-11-15)
 
 This module shows how to train an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -64,11 +64,11 @@ class MyPolicy(Policy):
 
 
 # 2 Implement your own RL scenario
-class MyScenario(Scenario):
+class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada:bool, p_logging) -> Model:
 
         # 1 Setup Multi-Agent Environment (consisting of 3 OpenAI Gym Cartpole envs)
         self._env   = MultiCartPole(p_num_envs=3, p_logging=p_logging)
@@ -77,86 +77,88 @@ class MyScenario(Scenario):
         # 2 Setup Multi-Agent 
 
         # 2.1 Create empty Multi-Agent
-        self._agent     = MultiAgent(
+        multi_agent     = MultiAgent(
             p_name='Smith',
-            p_ada=True,
-            p_logging=True
+            p_ada=p_ada,
+            p_logging=p_logging
         )
 
         # 2.2 Add Single-Agent #1 with own policy (controlling sub-environment #1)
-        self._agent.add_agent(
+        multi_agent.add_agent(
             p_agent=Agent(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([0,1,2,3]),
                     p_action_space=self._env.get_action_space().spawn([0]),
                     p_buffer_size=1,
-                    p_ada=True,
-                    p_logging=True
+                    p_ada=p_ada,
+                    p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-1',
                 p_id=0,
-                p_ada=True,
-                p_logging=True
+                p_ada=p_ada,
+                p_logging=p_logging
             ),
             p_weight=0.3
         )
 
-
-        # 2.2 Add Single-Agent #2 with own policy (controlling sub-environments #2,#3)
-        self._agent.add_agent(
+        # 2.3 Add Single-Agent #2 with own policy (controlling sub-environments #2,#3)
+        multi_agent.add_agent(
             p_agent=Agent(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
                     p_action_space=self._env.get_action_space().spawn([1,2]),
                     p_buffer_size=1,
-                    p_ada=True,
-                    p_logging=True
+                    p_ada=p_ada,
+                    p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-2',
                 p_id=1,
-                p_ada=True,
-                p_logging=True
+                p_ada=p_ada,
+                p_logging=p_logging
             ),
             p_weight=0.7
         )
 
+        # 2.4 Adaptive ML model (here: our multi-agent) is returned
+        return multi_agent
 
 
 
-# 3 Instantiate scenario
+
+# 3 Create scenario and start training
+
+if __name__ == "__main__":
+    # 3.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    path        = str(Path.home())
+ 
+else:
+    # 3.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    path        = None
+
+
+# 3.3 Create your scenario
 myscenario  = MyScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=False,
-    p_logging=True
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_visualize=visualize,
+        p_logging=logging 
 )
 
 
-
-
-# 4 Train agent in scenario 
-now             = datetime.now()
-
-training        = Training(
-    p_scenario=myscenario,
-    p_episode_limit=1,
-    p_cycle_limit=100,
-    p_collect_states=True,
-    p_collect_actions=True,
-    p_collect_rewards=True,
-    p_collect_training=True,
-    p_logging=True
+# 3.4 Create and run training object
+training = RLTraining(
+        p_scenario=myscenario,
+        p_cycle_limit=100,
+        p_max_adaptations=0,
+        p_max_stagnations=0,
+        p_path=path,
+        p_logging=logging
 )
 
 training.run()
-
-
-
-
-# 5 Save training data in user home directory
-ts              = '%04d-%02d-%02d  %02d%02d%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
-dest_path       = str(Path.home()) + os.sep + 'ccb rl - howto 05' + os.sep + ts
-training.save_data(dest_path, "\t")

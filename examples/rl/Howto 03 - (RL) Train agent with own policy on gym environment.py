@@ -15,16 +15,17 @@
 ## -- 2021-09-29  1.2.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-06  1.2.3     DA       Refactoring 
 ## -- 2021-10-18  1.2.4     DA       Refactoring 
-## -- 2021-11-14  1.2.5     DA       Refactoring 
+## -- 2021-11-15  1.3.0     DA       Refactoring 
 ### -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.5 (2021-11-14)
+Ver. 1.3.0 (2021-11-15)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """
 
 
+from sys import path
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
@@ -39,7 +40,6 @@ from pathlib import Path
 class MyPolicy (Policy):
 
     C_NAME      = 'MyPolicy'
-
 
     def set_random_seed(self, p_seed=None):
         random.seed(p_seed)
@@ -77,7 +77,7 @@ class MyScenario (RLScenario):
         gym_env     = gym.make('CartPole-v1')
         self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
-        # 2 Setup standard single-agent with own policy
+        # 2 Setup and return standard single-agent with own policy
         return Agent(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space(),
@@ -95,42 +95,38 @@ class MyScenario (RLScenario):
 
 
 
-# 3 Create and train scenario
+# 3 Create scenario and start training
+
 if __name__ == "__main__":
-    # 3.1 Demo mode
-    myscenario  = MyScenario(
-        p_mode=Mode.C_MODE_SIM,
-        p_ada=True,
-        p_visualize=True,
-        p_logging=Log.C_LOG_ALL
-    )
-
-    training = RLTraining(
-        p_scenario=myscenario,
-        p_cycle_limit=100,
-        p_max_adaptations=0,
-        p_max_stagnations=0,
-        p_path=str(Path.home()),
-        p_logging=Log.C_LOG_ALL
-    )
-
+    # 3.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    path        = str(Path.home())
+ 
 else:
-    # 3.2 Unit test mode
-    myscenario  = MyScenario(
+    # 3.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    path        = None
+
+
+# 3.3 Create your scenario
+myscenario  = MyScenario(
         p_mode=Mode.C_MODE_SIM,
         p_ada=True,
-        p_visualize=False,
-        p_logging=Log.C_LOG_NOTHING
-    )
+        p_visualize=visualize,
+        p_logging=logging 
+)
 
-    training = RLTraining(
+
+# 3.4 Create and run training object
+training = RLTraining(
         p_scenario=myscenario,
         p_cycle_limit=100,
         p_max_adaptations=0,
         p_max_stagnations=0,
-        p_path=None,
-        p_logging=Log.C_LOG_NOTHING
-    )
-
+        p_path=path,
+        p_logging=logging
+)
 
 training.run()

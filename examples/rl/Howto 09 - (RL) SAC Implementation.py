@@ -11,10 +11,11 @@
 ## --                                folder structer
 ## -- 2021-09-29  1.0.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-18  1.0.3     DA       Refactoring
+## -- 2021-11-15  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2021-10-18)
+Ver. 1.1.0 (2021-11-15)
 
 This module shows how to implement SAC from the pool
 """
@@ -30,7 +31,7 @@ import random
 from pathlib import Path
 
 # 1 Implement your own RL scenario
-class MyScenario(Scenario):
+class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
 
@@ -42,7 +43,7 @@ class MyScenario(Scenario):
         # self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
 
         # 2 Setup standard single-agent with own policy
-        self._agent = Agent(
+        return Agent(
             p_policy=SAC(
                 p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
@@ -59,34 +60,38 @@ class MyScenario(Scenario):
 
 
 
-# 2 Instantiate scenario
+# 2 Create scenario and start training
+
+if __name__ == "__main__":
+    # 2.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    path        = str(Path.home())
+ 
+else:
+    # 2.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    path        = None
+
+
+# 2.3 Create your scenario
 myscenario  = MyScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=False,
-    p_logging=False
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_visualize=visualize,
+        p_logging=logging 
 )
 
 
-
-
-# 3 Train agent in scenario 
-now             = datetime.now()
-
-training        = Training(
-    p_scenario=myscenario,
-    p_episode_limit=2,
-    p_cycle_limit=100,
-    p_collect_states=True,
-    p_collect_actions=True,
-    p_collect_rewards=True,
-    p_collect_training=True,
-    p_logging=True
+# 2.4 Create and run training object
+training = RLTraining(
+        p_scenario=myscenario,
+        p_cycle_limit=100,
+        p_max_adaptations=0,
+        p_max_stagnations=0,
+        p_path=path,
+        p_logging=logging
 )
 
 training.run()
-
-# 4 Saving
-ts              = '%04d-%02d-%02d  %02d%02d%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
-dest_path       = str(Path.home()) + os.sep + 'ccb rl - howto 06' + os.sep + ts

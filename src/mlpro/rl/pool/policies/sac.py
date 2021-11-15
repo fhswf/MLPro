@@ -11,13 +11,14 @@
 ## --                                adjustment on the critic loss calculation
 ## -- 2021-09-27  1.0.1     WB       Bug Fix
 ## -- 2021-10-18  1.0.2     DA       Refactoring
+## -- 2021-11-15  1.0.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 ## -- Reference
 ## -- https://github.com/DLR-RM/stable-baselines3
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-1018)
+Ver. 1.0.3 (2021-11-15)
 
 This module provide SAC Algorithm based on reference.
 """
@@ -250,7 +251,7 @@ class DQNetwork(torch.nn.Module):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SAC(Policy):
+class SAC (Policy):
     """
     Implementation of SAC Policy Algorithm
     """

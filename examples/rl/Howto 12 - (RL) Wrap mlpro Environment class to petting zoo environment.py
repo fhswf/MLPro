@@ -8,10 +8,11 @@
 ## -- 2021-10-02  0.0.0     SY       Creation
 ## -- 2021-10-02  1.0.0     SY       Released first version
 ## -- 2021-10-04  1.0.1     DA       Minor fix
+## -- 2021-11-15  1.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-10-04)
+Ver. 1.0.2 (2021-11-15)
 
 This module shows how to wrap mlpro's Environment class to petting zoo compatible.
 """
@@ -25,7 +26,7 @@ import random
 
 from pettingzoo.test import api_test
 
-mlpro_env   = BGLP(p_logging=True)
+mlpro_env   = BGLP(p_logging=Mode.C_LOG_ALL)
 env         = WrEnvMLPro2PZoo(mlpro_env, p_num_agents=5, p_state_space=None, p_action_space=None).pzoo_env
 try:
     api_test(env, num_cycles=10, verbose_progress=False)

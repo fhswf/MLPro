@@ -11,11 +11,11 @@
 ## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
 ## -- 2021-09-29  1.1.1     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-05  1.1.2     SY       Update following new attributes done and broken in State
-## -- 2021-11-13  1.1.3     DA       Added done/broken detection
+## -- 2021-11-15  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2021-11-13)
+Ver. 1.2.0 (2021-11-15)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -33,7 +33,7 @@ import gym
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiCartPole(Environment):
+class MultiCartPole (Environment):
     """
     This environment multivariate space and action spaces by duplicating the
     OpenAI Gym environment 'CartPole-v1'. The number of internal CartPole
@@ -116,13 +116,12 @@ class MultiCartPole(Environment):
             if seed is not None:
                 seed += 1
 
-        self._state = self.collect_substates()
+        self._set_state( self.collect_substates() )
   
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_action: Action) -> None:
-
-        self._state.set_done(True)
+    def simulate_reaction(self, p_state:State, p_action:Action) -> State:
+        done = True
 
         for agent_id in p_action.get_agent_ids():
             action_elem = p_action.get_elem(agent_id)
@@ -133,20 +132,19 @@ class MultiCartPole(Environment):
                 action_elem_env.set_value(action_id, action_elem.get_value(action_id))
                 action_env      = Action()
                 action_env.add_elem(agent_id, action_elem_env)
-                env._simulate_reaction(action_env)
-                done_flag       = self.get_done() and env.get_done()
-                self._state.set_done(done_flag)
+                env._set_state(env.simulate_reaction(None, action_env))
+                done            = done and env.get_done()
 
-        self._state = self.collect_substates()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _evaluate_state(self) -> None: 
-        for env in self._envs: env._evaluate_state()
+        new_state = self.collect_substates()
+        new_state.set_done(done)
+        return new_state
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self) -> Reward:
+    def compute_reward(self, p_state:State=None) -> Reward:
+        if p_state is not None:
+            raise NotImplementedError
+
         reward = Reward(self._reward_type)
 
         if self._reward_type == Reward.C_TYPE_OVERALL:
@@ -173,6 +171,22 @@ class MultiCartPole(Environment):
                     reward.add_agent_reward(agent_id, r_agent)
 
         return reward
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_done(self, p_state:State=None) -> bool:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self.get_done()
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state:State=None) -> bool:
+        if p_state is not None:
+            raise NotImplementedError
+            
+        return self.get_broken()
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -10,17 +10,18 @@
 ## -- 2021-08-28  1.0.1     DA       Adjustments after changings on rl models
 ## -- 2021-09-11  1.0.1     MRD      Change Header information to match our new library name
 ## -- 2021-10-06  1.0.2     DA       Adjustments after changings on rl models
+## -- 2021-11-15  1.1.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-10-06)
+Ver. 1.1.0 (2021-11-15)
 
 This module shows how to run an own multi-player with the enhanced multi-action game board 
 MultiCartPole based on the OpenAI Gym CartPole environment.
 """
 
 
-from mlpro.rl.models import State, Action, Reward, Policy
+from mlpro.rl.models import *
 from mlpro.gt.models import *
 from mlpro.gt.pool.boards.multicartpole import MultiCartPolePGT
 import random
@@ -31,9 +32,13 @@ import numpy as np
 
 
 # 1 Implement your own agent policy
-class MyPolicy(Policy):
+class MyPolicy (Policy):
 
     C_NAME      = 'MyPolicy'
+
+    def set_random_seed(self, p_seed=None):
+        random.seed(p_seed)
+
 
     def compute_action(self, p_state: State) -> Action:
         # 1 Create a numpy array for your action values 
@@ -58,77 +63,85 @@ class MyPolicy(Policy):
 
 
 # 2 Implement your own game
-class MyGame(Game):
+class MyGame (Game):
 
     C_NAME      = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
 
         # 1 Setup Multi-Player Environment (consisting of 3 OpenAI Gym Cartpole envs)
-        self._env   = MultiCartPolePGT(p_num_envs=3, p_logging=True)
+        self._env   = MultiCartPolePGT(p_num_envs=3, p_logging=p_logging)
 
 
         # 2 Setup Multi-Player
 
         # 2.1 Create empty Multi-Player
-        self._agent     = MultiPlayer(
+        multi_player = MultiPlayer(
             p_name='Human Beings',
             p_ada=True,
-            p_logging=True
+            p_logging=p_logging
         )
 
         # 2.2 Add Single-Player #1 with own policy (controlling sub-environment #1)
-        self._agent.add_player(
+        multi_player.add_player(
             p_player=Player(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([0,1,2,3]),
                     p_action_space=self._env.get_action_space().spawn([0]),
                     p_ada=True,
-                    p_logging=True
+                    p_logging=p_logging
                 ),
                 p_name='Neo',
                 p_id=0,
                 p_ada=True,
-                p_logging=True
+                p_logging=p_logging
             ),
             p_weight=0.3
         )
 
 
-        # 2.2 Add Single-Player #2 with own policy (controlling sub-environments #2,#3)
-        self._agent.add_player(
+        # 2.3 Add Single-Player #2 with own policy (controlling sub-environments #2,#3)
+        multi_player.add_player(
             p_player=Player(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
                     p_action_space=self._env.get_action_space().spawn([1,2]),
                     p_ada=True,
-                    p_logging=True
+                    p_logging=p_logging
                 ),
                 p_name='Trinity',
                 p_id=1,
                 p_ada=True,
-                p_logging=True
+                p_logging=p_logging
             ),
             p_weight=0.7
         )
 
+        # 2.4 Adaptive ML model (here: our multi-player) is returned
+        return multi_player
 
 
 
-# 3 Instantiate game
+
+# 3 Create game and run some cycles
+
+if __name__ == "__main__":
+    # 3.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+  
+else:
+    # 3.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+
+
 mygame  = MyGame(
-    p_mode=GameBoard.C_MODE_SIM,
+    p_mode=Mode.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=False,
-    p_logging=True
+    p_visualize=visualize,
+    p_logging=logging
 )
 
-
-
-
-# 4 Run max. 100 cycles
-mygame.run(
-    p_exit_when_broken=True,
-    p_exit_when_done=True
-)
+mygame.run()

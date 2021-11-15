@@ -23,13 +23,14 @@
 ## --                                - new method set_log_level()
 ## -- 2021-10-25  1.7.0     SY       Add new class ScientificObject
 ## -- 2021-11-03  1.7.1     DA       Class Log: new type C_LOG_TYPE_SUCCESS for success messages 
-## -- 2021-11-13  1.7.2     DA       Class Log: 
+## -- 2021-11-15  1.7.2     DA       Class Log: 
 ## --                                - method set_log_level() removed
 ## --                                - parameter p_logging is the new log level now
+## --                                Class Saveable: new constant C_SUFFIX
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.2 (2021-11-13)
+Ver. 1.7.2 (2021-11-15)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer, ...
@@ -83,6 +84,8 @@ class Saveable:
     generated internally by implementing the method get_filename() or provided from outside otherwise.
     """
 
+    C_SUFFIX        = '.pkl'
+
 ## -------------------------------------------------------------------------------------------------
     def generate_filename(self):
         """
@@ -92,7 +95,7 @@ class Saveable:
             Returns an internal unique filename. 
         """
 
-        return None
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
