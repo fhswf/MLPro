@@ -19,6 +19,7 @@ Ver. 1.0.2 (2021-09-29)
 This module shows how to implement A2C from the pool
 """
 
+import os
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
@@ -28,6 +29,16 @@ from mlpro.rl.pool.policies.a2c import A2C
 import gym
 import random
 from pathlib import Path
+
+# Check Test or Not
+try:
+    print("Test Environment:", os.environ["MLPRO_TEST"])
+except KeyError:
+    episode_limit = 100
+    visualization = True
+else:
+    episode_limit = 2
+    visualization = False
 
 # 1 Implement your own RL scenario
 class MyScenario(Scenario):
@@ -64,7 +75,7 @@ myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=False,
+    p_visualize=visualization,
     p_logging=False
 )
 
@@ -76,7 +87,7 @@ now             = datetime.now()
 
 training        = Training(
     p_scenario=myscenario,
-    p_episode_limit=2,
+    p_episode_limit=episode_limit,
     p_cycle_limit=100,
     p_collect_states=True,
     p_collect_actions=True,
