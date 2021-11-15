@@ -19,7 +19,7 @@ This module shows how to run an own multi-player with the enhanced multi-action 
 MultiCartPole based on the OpenAI Gym CartPole environment.
 """
 
-
+import os
 from mlpro.rl.models import State, Action, Reward, Policy
 from mlpro.gt.models import *
 from mlpro.gt.pool.boards.multicartpole import MultiCartPolePGT
@@ -27,7 +27,13 @@ import random
 import numpy as np
 
 
-
+# Check Test or Not
+try:
+    print("Test Environment:", os.environ["MLPRO_TEST"])
+except KeyError:
+    visualization = True
+else:
+    visualization = False
 
 
 # 1 Implement your own agent policy
@@ -120,7 +126,7 @@ mygame  = MyGame(
     p_mode=GameBoard.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=False,
+    p_visualize=visualization,
     p_logging=True
 )
 

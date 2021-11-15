@@ -33,7 +33,15 @@ from pathlib import Path
 import os
 from datetime import datetime
 
-
+# Check Test or Not
+try:
+    print("Test Environment:", os.environ["MLPRO_TEST"])
+except KeyError:
+    episode_limit = 100
+    visualization = True
+else:
+    episode_limit = 2
+    visualization = False
 
 
 # 1 Implement your own agent policy
@@ -130,7 +138,7 @@ myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=False,
+    p_visualize=visualization,
     p_logging=True
 )
 
@@ -142,7 +150,7 @@ now             = datetime.now()
 
 training        = Training(
     p_scenario=myscenario,
-    p_episode_limit=1,
+    p_episode_limit=episode_limit,
     p_cycle_limit=100,
     p_collect_states=True,
     p_collect_actions=True,

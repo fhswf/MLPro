@@ -19,8 +19,6 @@ Ver. 1.0.2 (2021-09-29)
 This module shows how to implement A2C from the pool
 """
 
-import os
-
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro

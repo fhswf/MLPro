@@ -33,7 +33,15 @@ import os
 from datetime import datetime
 
 
-
+# Check Test or Not
+try:
+    print("Test Environment:", os.environ["MLPRO_TEST"])
+except KeyError:
+    visualization = True
+    episode_limit = 100
+else:
+    visualization = False
+    episode_limit = 2
 
 
 # 1 Implement your own agent policy
@@ -128,7 +136,7 @@ mygame  = MyGame(
     p_mode=GameBoard.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=False,
+    p_visualize=visualization,
     p_logging=True
 )
 
@@ -140,7 +148,7 @@ now             = datetime.now()
 
 training        = Training(
     p_game=mygame,
-    p_episode_limit=2,
+    p_episode_limit=episode_limit,
     p_cycle_limit=100,
     p_collect_states=True,
     p_collect_actions=True,

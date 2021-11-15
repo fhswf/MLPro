@@ -31,7 +31,13 @@ import gym
 import random
 from pathlib import Path
 
-
+# Check Test or Not
+try:
+    print("Test Environment:", os.environ["MLPRO_TEST"])
+except KeyError:
+    visualization = True
+else:
+    visualization = False
 
 
 # 1 Implement your own agent policy
@@ -94,7 +100,7 @@ myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=False,
+    p_visualize=visualization,
     p_logging=True
 )
 

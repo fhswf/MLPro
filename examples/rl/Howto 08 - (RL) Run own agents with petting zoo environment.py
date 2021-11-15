@@ -29,6 +29,13 @@ from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvPZOO2MLPro
 import random
 
+# Check Test or Not
+try:
+    print("Test Environment:", os.environ["MLPRO_TEST"])
+except KeyError:
+    visualization = True
+else:
+    visualization = False
 
 # Piston Ball Scenario
 """
@@ -137,7 +144,7 @@ myscenario  = PBScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=False,
+    p_visualize=visualization,
     p_logging=True
 )
 

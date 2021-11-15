@@ -25,6 +25,16 @@ from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
 from collections import deque
 
+# Check Test or Not
+try:
+    print("Test Environment:", os.environ["MLPRO_TEST"])
+except KeyError:
+    episode_limit = 100
+    visualization = True
+else:
+    episode_limit = 2
+    visualization = False
+
 # 1 Implement your own RL scenario
 class MyScenario(Scenario):
 
@@ -95,14 +105,14 @@ myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=-1,           # get cycle limit from environment
-    p_visualize=False,
+    p_visualize=visualization,
     p_logging=False
 )
 
 # 3 Instantiate training
 training        = Training(
     p_scenario=myscenario,
-    p_episode_limit=2,
+    p_episode_limit=episode_limit,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,

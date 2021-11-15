@@ -24,6 +24,14 @@ from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
 
+# Check Test or Not
+try:
+    print("Test Environment:", os.environ["MLPRO_TEST"])
+except KeyError:
+    visualization = True
+else:
+    visualization = False
+
 # 1 Parameter
 max_episode = 400
 mva_window = 1
@@ -79,7 +87,7 @@ myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=-1,           # get cycle limit from environment
-    p_visualize=False,
+    p_visualize=visualization,
     p_logging=False
 )
 
