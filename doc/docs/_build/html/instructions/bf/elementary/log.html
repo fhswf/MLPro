@@ -122,7 +122,55 @@
              
   <div class="section" id="logging">
 <h1>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h1>
-<p>Add text here!</p>
+<p>This class adds elementary log functionality to inherited classes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.bf.various</span> <span class="kn">import</span> <span class="n">Log</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="mlpro.bf.various.Log">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.bf.various.</code><code class="sig-name descname">Log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Log" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class adds elementry log functionality to inherited classes.</p>
+<dl class="py method">
+<dt id="mlpro.bf.various.Log.log">
+<code class="sig-name descname">log</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_type</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">p_args</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Log.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes log line to standard output in format:
+yyyy-mm-dd  hh:mm:ss.mmmmmm  [p_type  C_TYPE C_NAME]: [p_args]</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_type      type of log entry
+p_args      log informations</p>
+</dd>
+<dt>Returns: </dt><dd><p>Nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.bf.various.Log.set_log_level">
+<code class="sig-name descname">set_log_level</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_level</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Log.set_log_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the log level.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><dl class="simple">
+<dt>p_level         Possible values are </dt><dd><p>C_LOG_TYPE_I (everything will be looged) 
+C_LOG_TYPE_W (warnings and errors will be logged)
+C_LOG_TYPE_E (only errors will be logged)</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.bf.various.Log.switch_logging">
+<code class="sig-name descname">switch_logging</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_logging</span><span class="p">:</span> <span class="n">bool</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Log.switch_logging" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switches log functionality on/off.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_logging   switch for logging</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

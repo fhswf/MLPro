@@ -1,4 +1,10 @@
 Logging
 ----------------
+This class adds elementary log functionality to inherited classes.
 
-Add text here!
+.. code-block:: python
+
+    from mlpro.bf.various import Log
+
+.. autoclass:: mlpro.bf.various.Log
+  :members:
