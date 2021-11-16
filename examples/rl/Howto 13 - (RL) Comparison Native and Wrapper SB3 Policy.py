@@ -146,7 +146,7 @@ data_printing   = {"Cycle":        [False],
                     "Smith":        [True,-1]}
 
 
-_,_,_,mem = training.get_data()
+_,_,_,mem = training.get_results().ds_rewards
 mem_plot    = MyDataPlotting(mem, p_showing=False, p_printing=data_printing)
 mem_plot.get_plots()
 wrapper_plot = mem_plot.plots
