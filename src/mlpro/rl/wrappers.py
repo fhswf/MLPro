@@ -65,7 +65,7 @@ from pettingzoo.utils import wrappers
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvGYM2MLPro(Environment):
+class WrEnvGYM2MLPro (Environment):
     """
     This class is a ready to use wrapper class for OpenAI Gym environments. 
     Objects of this type can be treated as an environment object. Encapsulated 
@@ -293,10 +293,11 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self):
+    def reset(self, p_seed=None):
         self.log(self.C_LOG_TYPE_I, 'Reset')
         
         # 1 Reset Zoo environment and determine initial state
+        self._zoo_env.seed(p_seed)
         self._zoo_env.reset()
         observation, _, _, _ = self._zoo_env.last()
         obs     = DataObject(observation)

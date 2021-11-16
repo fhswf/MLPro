@@ -13,10 +13,12 @@
 ## -- 2021-10-06  1.1.2     DA       Refactoring 
 ## -- 2021-10-18  1.1.3     DA       Refactoring 
 ## -- 2021-11-15  1.1.4     DA       Refactoring 
+## -- 2021-11-15  1.1.4     DA       Refactoring 
+## -- 2021-11-16  1.1.5     DA       Added explicit scenario reset with constant seeding 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4 (2021-11-15)
+Ver. 1.1.5 (2021-11-16)
 
 This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
 the fhswf_at_ml framework.
@@ -167,4 +169,5 @@ myscenario  = PBScenario(
 # )
 
 
+myscenario.reset(1)
 myscenario.run() 
