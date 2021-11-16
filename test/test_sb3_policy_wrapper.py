@@ -116,7 +116,7 @@ def test_sb3_policy_wrapper(env_cls):
         p_collect_actions=True,
         p_collect_rewards=True,
         p_collect_training=True,
-        p_logging=True
+        p_logging=False
     )
 
     # 4 Train
