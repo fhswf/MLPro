@@ -13,6 +13,7 @@
 ## -- 2021-10-06  1.1.2     DA       Refactoring 
 ## -- 2021-10-18  1.1.3     DA       Refactoring 
 ## -- 2021-11-15  1.2.0     DA       Refactoring 
+## -- 2021-11-16  1.2.1     DA       Added explicit scenario reset with constant seeding 
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -109,4 +110,5 @@ myscenario  = MyScenario(
         p_logging=logging
 )
 
+myscenario.reset(p_seed=1)
 myscenario.run() 
