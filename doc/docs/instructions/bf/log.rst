@@ -1,4 +1,0 @@
-Logging
-================
-
-Add text here!
