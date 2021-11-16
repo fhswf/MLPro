@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 
 project = 'MLPro Documentations'
 copyright = '2021, FH-SWF Automatisierungstechnik und lernende Systeme'
-author = 'Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya'
+author = 'Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya, William Budiatmadjaja'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0.0'
