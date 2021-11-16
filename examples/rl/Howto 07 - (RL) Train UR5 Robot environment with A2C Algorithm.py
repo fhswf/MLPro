@@ -23,7 +23,7 @@ This module shows how to implement A2C on the UR5 Robot Environment
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
-from mlpro.rl.pool.policies import A2C 
+from mlpro.rl.pool.policies.a2c import A2C 
 import random
 from pathlib import Path
 
