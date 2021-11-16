@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Arend"
+  given-names: "Detlef"
+  orcid: "https://orcid.org/0000-0000-0000-0000"
+- family-names: "Yuwono"
+  given-names: "Steve"
+  orcid: "https://orcid.org/0000-0000-0000-0000"
+- family-names: "Diprasetya"
+  given-names: "Mochammad Rizky"
+  orcid: "https://orcid.org/0000-0000-0000-0000"
+- family-names: "Schwung"
+  given-names: "Andreas"
+  orcid: "https://orcid.org/0000-0000-0000-0000"
+title: "MLPro - A Synoptic Framework for Standardized Machine Learning Tasks in Python"
+version: 1.0.0
+doi: 10.5281/zenodo.1234
+date-released: 2021-10-30
+url: "https://github.com/fhswf/MLPro"

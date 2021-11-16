@@ -1,4 +1,4 @@
-Adaptivity
+Adaptive Functions
 -----------------------------------
 
 Add text here!

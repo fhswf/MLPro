@@ -23,7 +23,7 @@ from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
 from mlpro.rl.models import *
-from mlpro.rl.pool.envs.robotinhtm import RobotHTM
+from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.pool.policies.sac import SAC
 from mlpro.rl.pool.sarsbuffer.PrioritizedBuffer import PrioritizedBuffer
 from mlpro.rl.pool.sarsbuffer.RandomSARSBuffer import RandomSARSBuffer
@@ -37,18 +37,19 @@ from pathlib import Path
 ## -------------------------------------------------------------------------------------------------
 @pytest.mark.parametrize("buffer_cls", [PrioritizedBuffer, RandomSARSBuffer])
 def test_buffer(buffer_cls):    
-    class MyScenario(Scenario):
+    class MyScenario(RLScenario):
 
         C_NAME      = 'Matrix'
 
         def _setup(self, p_mode, p_ada, p_logging):
-            self._env   = RobotHTM(p_logging=False) 
+            gym_env     = gym.make('CartPole-v1')
+            self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
 
             class SACB(SAC):
                 C_BUFFER_CLS = buffer_cls
                 
             # 2 Setup standard single-agent with own policy
-            self._agent = Agent(
+            return Agent(
                 p_policy=SACB(
                     p_observation_space=self._env.get_state_space(),
                     p_action_space=self._env.get_action_space(),
@@ -70,10 +71,10 @@ def test_buffer(buffer_cls):
         p_visualize=True,
         p_logging=False,
     )
-    training        = Training(
+    training        = RLTraining(
         p_scenario=myscenario,
-        p_episode_limit=10,
-        p_cycle_limit=10,
+        p_cycle_limit=100,
+        p_max_stagnations=0,
         p_collect_states=True,
         p_collect_actions=True,
         p_collect_rewards=True,

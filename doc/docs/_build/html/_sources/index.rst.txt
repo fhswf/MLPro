@@ -39,7 +39,7 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: Introduction
+   :caption: 1 Introduction
    
    instructions/intro/overview
    instructions/intro/getstarted
@@ -48,38 +48,37 @@ Instructions for use
    
 .. toctree::
    :maxdepth: 2
-   :caption: MLPro-BF – Basic Functions
+   :caption: 2 MLPro-BF – Basic Functions
    
+   instructions/bf/elementary
    instructions/bf/math
    instructions/bf/ml
 
 .. toctree::
    :maxdepth: 3
-   :caption: MLPro-RL – Reinforcement Learning
+   :caption: 3 MLPro-RL – Reinforcement Learning
    
    instructions/rl/overview
    instructions/rl/agents
    instructions/rl/env
    instructions/rl/scenario
-   instructions/rl/pool
    instructions/rl/wrapper
-   instructions/rl/howto
 
 .. toctree::
    :maxdepth: 2
-   :caption: MLPro-GT – Game Theory
+   :caption: 4 MLPro-GT – Game Theory
    
-   instructions/gt/gt
+   instructions/gt/overview
 
 .. toctree::
    :maxdepth: 2
-   :caption: MLPro-UI – Interactive ML
+   :caption: 5 MLPro-UI – Interactive ML
    
    instructions/ui/sciui
 
 .. toctree::
    :maxdepth: 2
-   :caption: Project MLPro
+   :caption: 6 Project MLPro
    
    instructions/project/versions
    instructions/project/paper
@@ -87,9 +86,27 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: Quick Help
+   :caption: Appendix 1: List of Examples
    
-   instructions/project/help
+   instructions/append1/test
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Appendix 2: Pool Objects
+   
+   instructions/append2/test
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Appendix 3: 3rd Party Support
+   
+   instructions/append2/test
+
+.. toctree::
+   :maxdepth: 2
+   :caption: 7 Quick Help
+   
+   instructions/help/test
    
 Citing MLPro
 ------------------------
