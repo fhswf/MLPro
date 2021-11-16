@@ -35,10 +35,11 @@
 ## --                                and vice versa on WrEnvMLPro2GYM
 ## -- 2021-11-13  1.5.3     DA       Minor adjustments
 ## -- 2021-11-16  1.5.4     DA       Refactoring
+## -- 2021-11-16  1.5.5     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.4 (2021-11-16)
+Ver. 1.5.5 (2021-11-16)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -359,14 +360,6 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _evaluate_state(self):
-        if self.get_done():
-            self.goal_achievement = 1.0
-        else:
-            self.goal_achievement = 0.0
-
-
-## -------------------------------------------------------------------------------------------------
     def compute_reward(self, p_state:State=None) -> Reward:
         if p_state is not None:
             raise NotImplementedError
@@ -491,7 +484,6 @@ class WrEnvMLPro2GYM(gym.Env):
         
         self._mlpro_env.process_action(_action)
         reward          = self._mlpro_env.compute_reward()
-#        self._mlpro_env._evaluate_state
         
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):
@@ -609,7 +601,7 @@ class WrEnvMLPro2PZoo():
                 _action     = Action()
                 _act_set    = Set()
                 idx         = self._mlpro_env.get_action_space().get_num_dim()
-                if isinstance(self.observation_space, gym.spaces.Discrete):
+                if isinstance(self.observation_spaces, gym.spaces.Discrete):
                     action = np.array([action])
                 for i in range(idx):
                     _act_set.add_dim(Dimension(i,'action_'+str(i)))
@@ -619,7 +611,6 @@ class WrEnvMLPro2PZoo():
                 _action.add_elem('0', _act_elem)
                 
                 self._mlpro_env.process_action(_action)
-                self._mlpro_env._evaluate_state()
                 
             self.rewards[agent] = self._mlpro_env.compute_reward().get_agent_reward(agent)
             
