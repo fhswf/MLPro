@@ -68,7 +68,7 @@ def test_buffer(buffer_cls):
         p_mode=Environment.C_MODE_SIM,
         p_ada=True,
         p_cycle_limit=10,
-        p_visualize=True,
+        p_visualize=False,
         p_logging=False,
     )
     training        = RLTraining(
