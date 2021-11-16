@@ -262,8 +262,8 @@ class A2C (Policy):
         sar_data = self._buffer.get_all()
         
         # Remap the data from the buffer to its own variable
-        states = torch.Tensor([state.get_values() for state in sar_data["state"]])
-        actions = torch.Tensor([action.get_sorted_values() for action in sar_data["action"]])
+        states = torch.Tensor(np.array([state.get_values() for state in sar_data["state"]]))
+        actions = torch.Tensor(np.array([action.get_sorted_values() for action in sar_data["action"]]))
         rewards = torch.Tensor([reward.get_overall_reward() for reward in sar_data["reward"]]).flatten()
         values = torch.Tensor([value for value in sar_data["value"]]).flatten()
         dones = torch.Tensor([state.get_done() for state in sar_data["state"]]).flatten()
@@ -296,6 +296,7 @@ class A2C (Policy):
         
         # Compute Value Loss
         values = values.view(self._buffer._size , 1, 1)
+        returns = returns.view(self._buffer._size , 1, 1)
         value_loss = torch.nn.functional.mse_loss(returns, values)
 
         # Compute Action Loss
