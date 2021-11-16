@@ -89,7 +89,7 @@ myscenario  = MyScenario(
 # 4 Instantiate training
 training        = RLTraining(
     p_scenario=myscenario,
-    p_cycle_limit=100,      #p_episode_limit=max_episode,
+    p_cycle_limit=1000,      #p_episode_limit=max_episode,
     p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,
@@ -146,7 +146,7 @@ data_printing   = {"Cycle":        [False],
                     "Smith":        [True,-1]}
 
 
-_,_,_,mem = training.get_results().ds_rewards
+mem = training.get_results().ds_rewards
 mem_plot    = MyDataPlotting(mem, p_showing=False, p_printing=data_printing)
 mem_plot.get_plots()
 wrapper_plot = mem_plot.plots
@@ -162,13 +162,12 @@ class CustomCallback(BaseCallback, Log):
     C_TYPE                  = 'Wrapper'
     C_NAME                  = 'SB3 Policy'
 
-    def __init__(self, p_limit_episode, p_verbose=0):
+    def __init__(self, p_verbose=0):
         super(CustomCallback, self).__init__(p_verbose)
         reward_space = Set()
         reward_space.add_dim(Dimension(0, "Native"))
         self.ds_rewards  = RLDataStoring(reward_space)
         self.episode_num = 0
-        self.episode_limit = p_limit_episode
         self.total_cycle = 0
         self.cycles = 0
         self.plots = None
@@ -193,8 +192,6 @@ class CustomCallback(BaseCallback, Log):
             self.log(self.C_LOG_TYPE_I, '--------------------------------------\n\n')
             self.episode_num += 1
             self.total_cycle = 0
-            if self.episode_num >= self.episode_limit:
-                return False
             self.ds_rewards.add_episode(self.episode_num)
             self.log(self.C_LOG_TYPE_I, '--------------------------------------')
             self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'started...')
@@ -223,8 +220,8 @@ policy_sb3 = PPO(
                 policy_kwargs=policy_kwargs,
                 seed=1)
 
-cus_callback = CustomCallback(p_limit_episode=max_episode)
-policy_sb3.learn(total_timesteps=10000000, callback=cus_callback)
+cus_callback = CustomCallback()
+policy_sb3.learn(total_timesteps=1000, callback=cus_callback)
 native_plot = cus_callback.plots
 
 # 10 Difference Plot
