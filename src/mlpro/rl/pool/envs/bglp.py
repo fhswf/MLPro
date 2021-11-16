@@ -1,4 +1,4 @@
-## -------------------------------------------------------------------------------------------------
+ ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
 ## -- Module  : BGLP
@@ -15,10 +15,11 @@
 ## -- 2021-10-07  2.0.0     SY       Enable batch production scenario
 ## -- 2021-10-25  2.0.1     SY       Add scientific references related to the Environment
 ## -- 2021-11-15  2.1.0     DA       Refactoring
+## -- 2021-11-16  2.1.1     SY       Update following model improvements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2021-11-15)
+Ver. 2.1.1 (2021-11-16)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -676,21 +677,16 @@ class BGLP(Environment):
         """
         To reset environment
         """
-        random.seed(p_seed)
+        self.set_random_seed(p_seed)
         self.reset_levels()
         self.reset_actuators()
         obs                 = self.calc_state()
         self.t              = 0
         self.prod_reached   = 0
         self._state         = self.collect_substates()
+        self.get_state().set_done(False)
 
-
-    def simulate_reaction(self, p_state: State, p_action: Action) -> State:
-        if p_state is not None:
-            state = p_state
-        else:
-            state = self.get_state()
-
+    def simulate_reaction(self, p_state:State, p_action:Action) -> State:
         """
         To simulate the environment reacting selected actions
         """
@@ -720,58 +716,62 @@ class BGLP(Environment):
             self.t              += self.t_step
             x += 1
         self.set_actions(action)
-        # self._state.set_done(False)
-        # self._state.set_broken(False)
-        return self.collect_substates()
+        self._state.set_done(False)
+        self._state.set_broken(False)
+        self._state = self.collect_substates()
+        return self._state
 
+    def compute_done(self, p_state:State) -> bool:
+        """
+        Updates the goal achievement value in [0,1] and the flags done
+        based on the current state. Please redefine.
+   
+        Returns:
+          -
+        """
 
-    def compute_done(self, p_state: State) -> bool:
+        
         if self.prod_scenario == 'continuous':
+            self.goal_achievement = 0.0
             return False
         else:
             if self.prod_reached >= self.prod_target:
+                self.goal_achievement = 1.0
                 return True
             else:
+                self.goal_achievement = self.prod_reached/self.prod_target
                 return False
-
-
-    def compute_broken(self, p_state: State) -> bool:
+    
+    def compute_broken(self, p_state:State) -> bool:
+        """
+        Updates the goal achievement value in [0,1] and the flags broken
+        based on the current state. Please redefine.
+   
+        Returns:
+          -
+        """
         return False
+    
+    def _compute_goal_achievement(self, p_state:State=None):
+        """
+        Optional goal achievement computation.
 
+        Parameters:
+            p_state         Optional external state. If none, please use internal state.
 
-    def _compute_goal_achievement(self, p_state: State = None):
+        Returns:
+            Goal avievement value in interval [0,1].
+        """
+
         if self.prod_scenario == 'continuous':
-            return 0.0
+            self.goal_achievement = 0.0
         else:
             if self.prod_reached >= self.prod_target:
-                return 1.0
+                self.goal_achievement = 1.0
             else:
-                return self.prod_reached/self.prod_target
+                self.goal_achievement = self.prod_reached/self.prod_target
 
-
-    # def _evaluate_state(self) -> None: 
-    #     """
-    #     Updates the goal achievement value in [0,1] and the flags done and broken
-    #     based on the current state. Please redefine.
-   
-    #     Returns:
-    #       -
-    #     """
-
-    #     if self.prod_scenario == 'continuous':
-    #         self.goal_achievement = 0.0
-    #         self._state.set_done(False)
-    #         self._state.set_broken(False)
-    #     else:
-    #         if self.prod_reached >= self.prod_target:
-    #             self.goal_achievement = 1.0
-    #             self._state.set_done(True)
-    #         else:
-    #             self.goal_achievement = self.prod_reached/self.prod_target
-    #             self._state.set_done(False)
-    #             self._state.set_broken(False)
-
-    def compute_reward(self, p_state: State = None) -> Reward:
+    def compute_reward(self) -> Reward:
         """
         To calculate reward (can be redifined)
         """
@@ -798,7 +798,6 @@ class BGLP(Environment):
                     r_agent = r_agent / len(agent_action_ids)
                     reward.add_agent_reward(agent_id, r_agent)
         return reward
-
 
     def visualize(self) -> None:
         """
