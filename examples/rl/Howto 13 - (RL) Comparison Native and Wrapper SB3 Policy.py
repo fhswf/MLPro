@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-10-27  0.0.0     MRD      Creation
 ## -- 2021-10-27  1.0.0     MRD      Released first version
+## -- 2021-11-16  1.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-10-27)
+Ver. 1.0.1 (2021-11-16)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
@@ -32,7 +33,7 @@ policy_kwargs = dict(activation_fn=torch.nn.Tanh,
                      net_arch=[dict(pi=[10, 10], vf=[10, 10])])
 
 # 2 Implement your own RL scenario
-class MyScenario(Scenario):
+class MyScenario(RLScenario):
 
     C_NAME      = 'Matrix'
 
@@ -66,13 +67,15 @@ class MyScenario(Scenario):
                 p_logging=p_logging)
         
         # 4 Setup standard single-agent with own policy
-        self._agent = Agent(
+        return Agent(
             p_policy=self.policy_wrapped,   
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
             p_logging=p_logging
         )
+
+
 
 # 3 Instantiate scenario
 myscenario  = MyScenario(
@@ -84,14 +87,15 @@ myscenario  = MyScenario(
 )
 
 # 4 Instantiate training
-training        = Training(
+training        = RLTraining(
     p_scenario=myscenario,
-    p_episode_limit=max_episode,
+    p_cycle_limit=100,      #p_episode_limit=max_episode,
+    p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_logging=True
+    p_logging=Log.C_LOG_ALL
 )
 
 # 5 Train SB3 Wrapper
