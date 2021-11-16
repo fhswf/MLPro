@@ -29,7 +29,7 @@ from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [A2C, PPO])
+@pytest.mark.parametrize("env_cls", [A2C])
 def test_sb3_policy_wrapper(env_cls):
     buffer_size = 5
     policy_kwargs = dict(activation_fn=torch.nn.Tanh,
@@ -39,10 +39,24 @@ def test_sb3_policy_wrapper(env_cls):
         C_NAME      = 'Matrix'
 
         def _setup(self, p_mode, p_ada, p_logging):
+            class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
+                def reset(self, p_seed=None):
+                    self.log(self.C_LOG_TYPE_I, 'Reset')
+
+                    # 1 Reset Gym environment and determine initial state
+                    observation = self._gym_env.reset()
+                    obs         = DataObject(observation)
+
+                    # 2 Create state object from Gym observation
+                    state   = State(self._state_space)
+                    state.set_values(obs.get_data())
+                    state.set_done(True)
+                    self._set_state(state)
+
             # 1 Setup environment
             gym_env     = gym.make('CartPole-v1')
             gym_env.seed(2)
-            self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
+            self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
 
             if issubclass(env_cls, OnPolicyAlgorithm):
                 policy_sb3 = env_cls(
@@ -110,7 +124,7 @@ def test_sb3_policy_wrapper(env_cls):
     # 3 Instantiate training
     training        = RLTraining(
         p_scenario=myscenario,
-        p_cycle_limit=1000,
+        p_cycle_limit=100,
         p_max_stagnations=0,
         p_collect_states=True,
         p_collect_actions=True,
@@ -137,6 +151,7 @@ def test_sb3_policy_wrapper(env_cls):
                     self.loss_cnt.append(self.locals.get("self").logger.name_to_value["train/policy_loss"])
 
         def _on_step(self) -> bool:
+            print(self.locals.get("obs_tensor"))
             return super()._on_step()
 
         def _on_rollout_end(self) -> None:
@@ -164,7 +179,7 @@ def test_sb3_policy_wrapper(env_cls):
                     seed=2)
 
     cus_callback = CustomCallback()
-    policy_sb3.learn(total_timesteps=1000, callback=cus_callback)
+    policy_sb3.learn(total_timesteps=100, callback=cus_callback)
 
     assert cus_callback.loss_cnt is not empty, "No Loss on Native"
     assert myscenario.policy_wrapped.loss_cnt is not empty, "No Loss on Wrapper"

@@ -827,7 +827,7 @@ class WrPolicySB32MLPro(Policy):
             self.log(self.C_LOG_TYPE_I, 'Buffer is not full yet, keep collecting data!')
             return False
 
-        last_obs = torch.Tensor([self.last_buffer_element.get_data()["state_new"].get_values()]).to(self.sb3.device)
+        last_obs = torch.Tensor(np.array([self.last_buffer_element.get_data()["state_new"].get_values()])).to(self.sb3.device)
         last_done = np.array([self.last_buffer_element.get_data()["state_new"].get_done()])
 
         # Get the next value from the last observation
