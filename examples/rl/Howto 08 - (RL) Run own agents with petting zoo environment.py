@@ -12,10 +12,13 @@
 ## -- 2021-09-29  1.1.1     SY       Change name: WrEnvPZoo to WrEnvPZOO2MLPro
 ## -- 2021-10-06  1.1.2     DA       Refactoring 
 ## -- 2021-10-18  1.1.3     DA       Refactoring 
+## -- 2021-11-15  1.1.4     DA       Refactoring 
+## -- 2021-11-15  1.1.4     DA       Refactoring 
+## -- 2021-11-16  1.1.5     DA       Added explicit scenario reset with constant seeding 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2021-10-18)
+Ver. 1.1.5 (2021-11-16)
 
 This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
 the fhswf_at_ml framework.
@@ -34,7 +37,7 @@ import random
 """
 Reference : https://www.pettingzoo.ml/butterfly/pistonball
 """
-class ContRandPolicy(Policy):
+class ContRandPolicy (Policy):
 
     C_NAME      = 'ContRandPolicy'
 
@@ -50,7 +53,7 @@ class ContRandPolicy(Policy):
         return False
     
     
-class PBScenario(Scenario):
+class PBScenario (RLScenario):
 
     C_NAME      = 'Pistonball V4'
 
@@ -58,7 +61,7 @@ class PBScenario(Scenario):
         zoo_env             = pistonball_v4.env()
         self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=True)
         
-        self._agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_logging=True)
+        multi_agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_logging=True)
         agent_id            = 0
         for k in self._env._zoo_env.action_spaces:
             agent_name      = "Agent_"+str(agent_id)
@@ -76,15 +79,17 @@ class PBScenario(Scenario):
                                     p_ada=p_ada,
                                     p_logging=p_logging
                                     )
-            self._agent.add_agent(p_agent=agent)
+            multi_agent.add_agent(p_agent=agent)
             agent_id += 1
+
+        return multi_agent
     
     
 # Connect Four Scenario
 """
 https://www.pettingzoo.ml/classic/connect_four
 """
-class DiscRandPolicy(Policy):
+class DiscRandPolicy (Policy):
 
     C_NAME      = 'DiscRandPolicy'
 
@@ -100,7 +105,7 @@ class DiscRandPolicy(Policy):
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
         return False
     
-class C4Scenario(Scenario):
+class C4Scenario (RLScenario):
 
     C_NAME      = 'Connect Four V3'
 
@@ -108,7 +113,7 @@ class C4Scenario(Scenario):
         zoo_env             = connect_four_v3.env()
         self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=True)
         
-        self._agent         = MultiAgent(p_name='Connect4_Agents', p_ada=1, p_logging=True)
+        multi_agent         = MultiAgent(p_name='Connect4_Agents', p_ada=1, p_logging=True)
         agent_id            = 0
         for k in self._env._zoo_env.action_spaces:
             agent_name      = "Agent_"+str(agent_id)
@@ -126,30 +131,43 @@ class C4Scenario(Scenario):
                                     p_ada=p_ada,
                                     p_logging=p_logging
                                     )
-            self._agent.add_agent(p_agent=agent)
+            multi_agent.add_agent(p_agent=agent)
             agent_id += 1
 
+        return multi_agent
 
 
-# 3 Instantiate scenario
 
+# 3 Create scenario and run some cycles
+
+if __name__ == "__main__":
+    # 3.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+  
+else:
+    # 3.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+ 
+
+# 3.3 Create your scenario and run some cycles
 myscenario  = PBScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=False,
-    p_logging=True
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_cycle_limit=100,
+        p_visualize=visualize,
+        p_logging=logging
 )
 
 # myscenario  = C4Scenario(
-#     p_mode=Environment.C_MODE_SIM,
-#     p_ada=True,
-#     p_cycle_limit=100,
-#     p_visualize=False,
-#     p_logging=True
+#         p_mode=Mode.C_MODE_SIM,
+#         p_ada=True,
+#         p_cycle_limit=100,
+#         p_visualize=visualize,
+#         p_logging=logging
 # )
 
 
-
-# 4 Run some cycles
-myscenario.run()
+myscenario.reset(1)
+myscenario.run() 

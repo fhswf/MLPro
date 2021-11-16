@@ -10,10 +10,11 @@
 ## -- 2021-10-08  1.0.1     DA       Take over the cycle limit from the environment
 ## -- 2021-10-18  1.0.2     DA       Refactoring
 ## -- 2021-10-18  1.0.3     MRD      SB3 Off Policy Wrapper DQN, DDPG, SAC
+## -- 2021-11-15  1.0.4     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-10-18)
+Ver. 1.0.4 (2021-11-15)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
@@ -24,9 +25,12 @@ from mlpro.rl.models import *
 from mlpro.rl.wrappers import WrEnvGYM2MLPro
 from mlpro.rl.wrappers import WrPolicySB32MLPro
 from collections import deque
+from pathlib import Path
+
+
 
 # 1 Implement your own RL scenario
-class MyScenario(Scenario):
+class MyScenario(RLScenario):
 
     C_NAME      = 'Matrix'
 
@@ -82,7 +86,7 @@ class MyScenario(Scenario):
                 p_logging=p_logging)
         
         # 4 Setup standard single-agent with own policy
-        self._agent = Agent(
+        return Agent(
             p_policy=policy_wrapped,   
             p_envmodel=None,
             p_name='Smith',
@@ -90,25 +94,40 @@ class MyScenario(Scenario):
             p_logging=p_logging
         )
 
-# 2 Instantiate scenario
+
+
+# 2 Create scenario and start training
+
+if __name__ == "__main__":
+    # 2.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    path        = str(Path.home())
+ 
+else:
+    # 2.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    path        = None
+
+
+# 2.3 Create your scenario
 myscenario  = MyScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=-1,           # get cycle limit from environment
-    p_visualize=False,
-    p_logging=False
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_visualize=visualize,
+        p_logging=logging 
 )
 
-# 3 Instantiate training
-training        = Training(
-    p_scenario=myscenario,
-    p_episode_limit=2,
-    p_collect_states=True,
-    p_collect_actions=True,
-    p_collect_rewards=True,
-    p_collect_training=True,
-    p_logging=True
+
+# 2.4 Create and run training object
+training = RLTraining(
+        p_scenario=myscenario,
+        p_cycle_limit=100,
+        p_max_adaptations=0,
+        p_max_stagnations=0,
+        p_path=path,
+        p_logging=logging
 )
 
-# 4 Train
 training.run()

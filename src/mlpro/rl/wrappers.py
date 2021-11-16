@@ -1,3 +1,4 @@
+
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro.wrappers
@@ -24,7 +25,7 @@
 ## -- 2021-10-07  1.3.4     SY       Update WrEnvMLPro2PZoo() following above changes (ver. 1.3.3)
 ## -- 2021-10-07  1.4.0     MRD      Implement WrPolicySB32MLPro to wrap the policy from Stable-baselines3
 ## -- 2021-10-08  1.4.1     DA       Correction of wrapper WREnvGYM2MLPro
-## -- 2021-10-18  1.4.2     DA       Reefactoring class WrPolicySB32MLPro
+## -- 2021-10-18  1.4.2     DA       Refactoring class WrPolicySB32MLPro
 ## -- 2021-10-18  1.5.0     MRD      SB3 Off Policy Wrapper on WrPolicySB32MLPro
 ## -- 2021-10-27  1.5.1     MRD      Remove reset() on WREnvGYM2MLPro and WrEnvMLPro2GYM init() function
 ## --                                to prevent double reset, due to it will be reset later on Training Class
@@ -32,11 +33,13 @@
 ## -- 2021-11-03  1.5.2     SY       Remove reset() on WrEnvPZOO2MLPro and WrEnvMLPro2PZoo to avoid double reset
 ## --                                New static method for gym space transformation on WrEnvGYM2MLPro
 ## --                                and vice versa on WrEnvMLPro2GYM
+## -- 2021-11-13  1.5.3     DA       Minor adjustments
+## -- 2021-11-16  1.5.4     DA       Refactoring
+## -- 2021-11-16  1.5.5     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.2 (2021-11-03)
-
+Ver. 1.5.5 (2021-11-16)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -63,7 +66,7 @@ from pettingzoo.utils import wrappers
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvGYM2MLPro(Environment):
+class WrEnvGYM2MLPro (Environment):
     """
     This class is a ready to use wrapper class for OpenAI Gym environments. 
     Objects of this type can be treated as an environment object. Encapsulated 
@@ -73,16 +76,13 @@ class WrEnvGYM2MLPro(Environment):
     C_TYPE        = 'OpenAI Gym Env'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_gym_env, p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=True):
-        """
-        Parameters:
-            p_gym_env       Gym environment object
-            p_state_space   Optional external state space object that meets the
-                            state space of the gym environment
-            p_action_space  Optional external action space object that meets the
-                            state space of the gym environment
-            p_logging       Switch for logging
-        """
+    def __init__(self, 
+                 p_gym_env,                     # Gym environment object
+                 p_state_space:MSpace=None,     # Optional external state space object that meets the
+                                                # state space of the gym environment
+                 p_action_space:MSpace=None,    # ptional external action space object that meets the
+                                                # state space of the gym environment
+                 p_logging=Log.C_LOG_ALL):      # Log level (see constants of class Log)
 
         self._gym_env     = p_gym_env
         self.C_NAME       = 'Env "' + self._gym_env.spec.id + '"'
@@ -127,10 +127,11 @@ class WrEnvGYM2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self):
+    def reset(self, p_seed=None):
         self.log(self.C_LOG_TYPE_I, 'Reset')
 
         # 1 Reset Gym environment and determine initial state
+        self._gym_env.seed(p_seed)
         observation = self._gym_env.reset()
         obs         = DataObject(observation)
 
@@ -142,7 +143,7 @@ class WrEnvGYM2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_action:Action):
+    def simulate_reaction(self, p_state:State, p_action: Action) -> State:
 
         # 1 Convert action to Gym syntax
         action_sorted = p_action.get_sorted_values()
@@ -168,24 +169,46 @@ class WrEnvGYM2MLPro(Environment):
         state   = State(self._state_space)
         state.set_values(obs.get_data())
         state.set_done(done)
-        self._set_state(state)
 
-        # 4 Create and store reward object
-        self.reward = Reward(Reward.C_TYPE_OVERALL)
-        self.reward.set_overall_reward(reward_gym)
+        # 4 Create reward object
+        self._reward = Reward(Reward.C_TYPE_OVERALL)
+        self._reward.set_overall_reward(reward_gym)
 
-
-## -------------------------------------------------------------------------------------------------
-    def _evaluate_state(self):
-        if self.get_done():
-            self.goal_achievement = 1.0
-        else:
-            self.goal_achievement = 0.0
+        # 5 Return next state
+        return state
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self) -> Reward:
-        return self.reward
+    def compute_goal_achievement(self, p_state:State=None):
+        if p_state is not None:
+            raise NotImplementedError
+
+        if self.get_done(): return 1.0
+        return 0.0
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_reward(self, p_state:State=None) -> Reward:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self._reward
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_done(self, p_state:State=None) -> bool:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self.get_done()
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state:State=None) -> bool:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self.get_broken()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -271,10 +294,11 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self):
+    def reset(self, p_seed=None):
         self.log(self.C_LOG_TYPE_I, 'Reset')
         
         # 1 Reset Zoo environment and determine initial state
+        self._zoo_env.seed(p_seed)
         self._zoo_env.reset()
         observation, _, _, _ = self._zoo_env.last()
         obs     = DataObject(observation)
@@ -289,7 +313,9 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_action:Action):
+    def simulate_reaction(self, p_state:State, p_action:Action) -> State:
+
+        new_state = State(self._state_space)
 
         # 1 Convert action to Zoo syntax
         action_sorted = p_action.get_sorted_values()
@@ -320,29 +346,41 @@ class WrEnvPZOO2MLPro(Environment):
             agent_num += 1
 
         # 3 Create state object from Zoo observation
-            state = State(self._state_space)
             if isinstance(observation, dict):
-                state.set_values(obs.get_data()['observation'])
+                new_state.set_values(obs.get_data()['observation'])
             else:
-                state.set_values(obs.get_data())
-            self._set_state(state)
+                new_state.set_values(obs.get_data())
+
 
         # 4 Create and store reward object
-        self.reward = Reward(Reward.C_TYPE_OVERALL)
-        self.reward.set_overall_reward(reward_zoo)
+        self._reward = Reward(Reward.C_TYPE_OVERALL)
+        self._reward.set_overall_reward(reward_zoo)
+
+        return new_state
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _evaluate_state(self):
-        if self.get_done():
-            self.goal_achievement = 1.0
-        else:
-            self.goal_achievement = 0.0
+    def compute_reward(self, p_state:State=None) -> Reward:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self._reward
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self) -> Reward:
-        return self.reward
+    def compute_done(self, p_state:State=None) -> bool:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self.get_done()
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state:State=None) -> bool:
+        if p_state is not None:
+            raise NotImplementedError
+
+        return self.get_broken()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -446,7 +484,6 @@ class WrEnvMLPro2GYM(gym.Env):
         
         self._mlpro_env.process_action(_action)
         reward          = self._mlpro_env.compute_reward()
-        self._mlpro_env._evaluate_state
         
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):
@@ -564,7 +601,7 @@ class WrEnvMLPro2PZoo():
                 _action     = Action()
                 _act_set    = Set()
                 idx         = self._mlpro_env.get_action_space().get_num_dim()
-                if isinstance(self.observation_space, gym.spaces.Discrete):
+                if isinstance(self.observation_spaces, gym.spaces.Discrete):
                     action = np.array([action])
                 for i in range(idx):
                     _act_set.add_dim(Dimension(i,'action_'+str(i)))
@@ -574,7 +611,6 @@ class WrEnvMLPro2PZoo():
                 _action.add_elem('0', _act_elem)
                 
                 self._mlpro_env.process_action(_action)
-                self._mlpro_env._evaluate_state()
                 
             self.rewards[agent] = self._mlpro_env.compute_reward().get_agent_reward(agent)
             
@@ -791,7 +827,7 @@ class WrPolicySB32MLPro(Policy):
             self.log(self.C_LOG_TYPE_I, 'Buffer is not full yet, keep collecting data!')
             return False
 
-        last_obs = torch.Tensor([self.last_buffer_element.get_data()["state_new"].get_values()]).to(self.sb3.device)
+        last_obs = torch.Tensor(np.array([self.last_buffer_element.get_data()["state_new"].get_values()])).to(self.sb3.device)
         last_done = np.array([self.last_buffer_element.get_data()["state_new"].get_done()])
 
         # Get the next value from the last observation

@@ -1,19 +1,20 @@
-## -----------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
 ## -- Module  : robotinhtm
-## -----------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 ## -- History :
-## -- yyyy-mm-dd  Ver.  Auth.  Description
-## -- 2021-09-10  0.00  MRD    Creation
-## -- 2021-09-11  1.00  MRD    Release of first version
-## -- 2021-09-11  1.01  MRD    Change Header information to match our new library name
-## -- 2021-09-25  1.02  MRD    Minor fix for state space and action space recognition
-## -- 2021-10-05  1.03  SY     Update following new attributes done and broken in State
-## -----------------------------------------------------------------------------
+## -- yyyy-mm-dd  Ver.      Auth.    Description
+## -- 2021-09-10  0.0.0     MRD      Creation
+## -- 2021-09-11  1.0.0     MRD      Release of first version
+## -- 2021-09-11  1.0.1     MRD      Change Header information to match our new library name
+## -- 2021-09-25  1.0.2     MRD      Minor fix for state space and action space recognition
+## -- 2021-10-05  1.0.3     SY       Update following new attributes done and broken in State
+## -- 2021-11-15  1.1.0     DA       Refactoring of class RobotHTM
+## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.03 (2021-10-05)
+Ver. 1.1.0 (2021-11-15)
 
 This module provide an environment of a robot manipulator based on Homogeneous Matrix
 """
@@ -22,6 +23,8 @@ import numpy as np
 import random
 from mlpro.rl.models import *
 from mlpro.gt.models import *
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -156,9 +159,13 @@ class RobotArm3D:
     def update_theta(self, deltaTheta):
         self.thetas += deltaTheta.flatten()
 
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RobotHTM(Environment):
+class RobotHTM (Environment):
     """
     Custom environment for a arm robot represented as Homogeneous Matrix.
     The goal is to reach a certain point.
@@ -167,6 +174,7 @@ class RobotHTM(Environment):
     C_LATENCY   = timedelta(0,1,0)
     C_INFINITY  = np.finfo(np.float32).max
 
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_num_joints=3, p_target_mode="Random", p_logging=True):
         """
         Parameters:
@@ -237,6 +245,8 @@ class RobotHTM(Environment):
 
         self.reset()
     
+
+## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self):
         """
         Implement this method to enrich the state and action space with specific 
@@ -254,8 +264,10 @@ class RobotHTM(Environment):
         # 2 Setup action space
         for idx in range(self.num_joint):
             self._action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad/sec', '\frac{rad}{sec}', p_boundaries=[-np.pi,np.pi]))
-    
-    def _simulate_reaction(self, p_action: Action) -> None:
+
+
+## -------------------------------------------------------------------------------------------------
+    def simulate_reaction(self, p_state:State, p_action:Action) -> State:
         action = p_action.get_sorted_values()
         if not isinstance(action, torch.Tensor):
             action = torch.Tensor(action)
@@ -263,7 +275,10 @@ class RobotHTM(Environment):
         self.RobotArm1.update_joint_coords()
         self.jointangles = self.RobotArm1.thetas
         self._state = self.get_state()
-    
+        return self._state
+
+
+## -------------------------------------------------------------------------------------------------
     def get_state(self) -> State:
         obs = torch.cat([self.target, self.RobotArm1.joints[:3,[-1]].reshape(1,3)], dim=1)
         obs = obs.cpu().numpy().flatten()
@@ -272,18 +287,53 @@ class RobotHTM(Environment):
         return state
 
    
-    def _evaluate_state(self) -> None:
-        disterror = np.linalg.norm(self._state.get_values()[:3] - self._state.get_values()[3:])
-        if disterror <= 0.2:
-            self._state.set_done(True)
-            self.goal_achievement = 1.0
+## -------------------------------------------------------------------------------------------------
+    def _compute_goal_achievement(self, p_state:State=None):
+        if p_state is not None:
+            state = p_state
         else:
-            self._state.set_done(False)
-            self.goal_achievement = 0.0
+            state = self._state
+       
+        disterror = np.linalg.norm(state.get_values()[:3] - state.get_values()[3:])
+        if disterror <= 0.2:
+            return 1.0
+        else:
+            return 0.0
 
-    def compute_reward(self) -> Reward:
+
+## -------------------------------------------------------------------------------------------------
+    def compute_done(self, p_state:State) -> bool:
+        if p_state is not None:
+            state = p_state
+        else:
+            state = self._state
+
+        disterror = np.linalg.norm(state.get_values()[:3] - state.get_values()[3:])
+        if disterror <= 0.2:
+            return True
+        else:
+            return False
+        
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state:State) -> bool:
+        if p_state is not None:
+            state = p_state
+        else:
+            state = self._state
+
+        return False
+
+        
+## -------------------------------------------------------------------------------------------------
+    def compute_reward(self, p_state: State = None) -> Reward:
+        if p_state is not None:
+            state = p_state
+        else:
+            state = self._state
+
         reward = Reward(Reward.C_TYPE_OVERALL)
-        disterror = np.linalg.norm(self._state.get_values()[:3] - self._state.get_values()[3:])
+        disterror = np.linalg.norm(state.get_values()[:3] - state.get_values()[3:])
         
         rew = -disterror
         if disterror <= 0.2:
@@ -292,12 +342,17 @@ class RobotHTM(Environment):
         reward.set_overall_reward(rew)
         return reward
     
+
+## -------------------------------------------------------------------------------------------------
     def set_theta(self,theta):
         self.RobotArm1.thetas = theta.reshape(self.num_joint)
         self.RobotArm1.update_joint_coords()
         self.jointangles = self.RobotArm1.thetas
 
-    def reset(self):
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_seed=None) -> None:
+        self.set_random_seed(p_seed)
         theta = torch.zeros(self.RobotArm1.get_num_joint())
         self.RobotArm1.set_theta(theta)
         self.RobotArm1.update_joint_coords()
@@ -319,6 +374,4 @@ class RobotHTM(Environment):
             else:
                 self.target = torch.Tensor([[-0.5, -0.5, 0.5]])
                 self.init_distance = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.target)
-        self._state = self.get_state()
-        self._state.set_done(False)
-        self.goal_achievement = 0.0                
+        self.get_state().set_done(False)

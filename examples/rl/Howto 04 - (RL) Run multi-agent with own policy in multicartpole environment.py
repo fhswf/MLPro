@@ -12,11 +12,12 @@
 ## -- 2021 09-26  1.1.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
 ## -- 2021-10-06  1.1.2     DA       Refactoring 
-## -- 2021-10-18  1.1.3    DA       Refactoring 
+## -- 2021-10-18  1.1.3     DA       Refactoring 
+## -- 2021-11-15  1.2.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2021-10-18)
+Ver. 1.2.0 (2021-11-15)
 
 This module shows how to run an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -30,11 +31,14 @@ import random
 
 
 
-
 # 1 Implement your own agent policy
-class MyPolicy(Policy):
+class MyPolicy (Policy):
 
     C_NAME      = 'MyPolicy'
+
+    def set_random_seed(self, p_seed=None):
+        random.seed(p_seed)
+
 
     def compute_action(self, p_state: State) -> Action:
         # 1 Create a numpy array for your action values 
@@ -59,7 +63,7 @@ class MyPolicy(Policy):
 
 
 # 2 Implement your own RL scenario
-class MyScenario(Scenario):
+class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
 
@@ -72,68 +76,75 @@ class MyScenario(Scenario):
         # 2 Setup Multi-Agent 
 
         # 2.1 Create empty Multi-Agent
-        self._agent     = MultiAgent(
+        multi_agent = MultiAgent(
             p_name='Smith',
             p_ada=True,
-            p_logging=True
+            p_logging=p_logging
         )
 
         # 2.2 Add Single-Agent #1 with own policy (controlling sub-environment #1)
-        self._agent.add_agent(
+        multi_agent.add_agent(
             p_agent=Agent(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([0,1,2,3]),
                     p_action_space=self._env.get_action_space().spawn([0]),
                     p_buffer_size=1,
                     p_ada=True,
-                    p_logging=True
+                    p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-1',
                 p_id=0,
                 p_ada=True,
-                p_logging=True
+                p_logging=p_logging
             ),
             p_weight=0.3
         )
 
-
-        # 2.2 Add Single-Agent #2 with own policy (controlling sub-environments #2,#3)
-        self._agent.add_agent(
+        # 2.3 Add Single-Agent #2 with own policy (controlling sub-environments #2,#3)
+        multi_agent.add_agent(
             p_agent=Agent(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
                     p_action_space=self._env.get_action_space().spawn([1,2]),
                     p_buffer_size=1,
                     p_ada=True,
-                    p_logging=True
+                    p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-2',
                 p_id=1,
                 p_ada=True,
-                p_logging=True
+                p_logging=p_logging
             ),
             p_weight=0.7
         )
 
+        # 2.4 Adaptive ML model (here: our multi-agent) is returned
+        return multi_agent
 
 
 
-# 3 Instantiate scenario
+
+# 3 Create scenario and run some cycles
+
+if __name__ == "__main__":
+    # 3.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+  
+else:
+    # 3.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+ 
+
 myscenario  = MyScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=500,
-    p_visualize=False,
-    p_logging=True
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_cycle_limit=200,
+        p_visualize=visualize,
+        p_logging=logging
 )
 
-
-
-
-# 4 Run max. 100 cycles
-myscenario.run(
-    p_exit_when_broken=True,
-    p_exit_when_done=True
-)
+myscenario.run() 

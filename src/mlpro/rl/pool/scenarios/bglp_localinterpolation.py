@@ -15,17 +15,18 @@
 ## -- 2021-10-07  1.0.4     DA       Refactoring
 ## -- 2021 10-07  1.0.5     SY       Minor Improvements
 ## -- 2021-10-18  1.0.6     DA       Refactoring
+## -- 2021-11-14  1.0.7     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2021-10-18)
+Ver. 1.0.7 (2021-11-14)
 
 Environment : BGLP
 Algorithms  : SbPG - Local Interpolation (dummy)
 """
 
 
-from mlpro.rl.pool.envs import BGLP
+from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.models import *
 from mlpro.bf.various import *
 from mlpro.bf.math import *
@@ -173,13 +174,13 @@ class MyPolicy(Policy):
         
 #################################################################
 
-class MyScenario(Scenario):
+class MyScenario(RLScenario):
 
     C_NAME      = 'BGLP_Environement'
 
     def _setup(self, p_mode, p_ada, p_logging):
         self._env       = BGLP(p_logging=True)
-        self._agent     = MultiAgent(p_name='SbPG - Local Interpolation', p_ada=1, p_logging=False)
+        multiagent      = MultiAgent(p_name='SbPG - Local Interpolation', p_ada=1, p_logging=False)
         state_space     = self._env.get_state_space()
         action_space    = self._env.get_action_space()
         
@@ -190,7 +191,7 @@ class MyScenario(Scenario):
         agent_ospace    = state_space.spawn([0,1])
         agent_aspace    = action_space.spawn([0])
         agent_policy    = MyPolicy(p_observation_space=agent_ospace, p_action_space=agent_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
-        self._agent.add_agent(
+        multiagent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
                 p_envmodel=None,
@@ -208,7 +209,7 @@ class MyScenario(Scenario):
         agent_ospace    = state_space.spawn([1,2])
         agent_aspace    = action_space.spawn([1])
         agent_policy    = MyPolicy(p_observation_space=agent_ospace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
-        self._agent.add_agent(
+        multiagent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
                 p_envmodel=None,
@@ -226,7 +227,7 @@ class MyScenario(Scenario):
         agent_ospace    = state_space.spawn([2,3])
         agent_aspace    = action_space.spawn([2])
         agent_policy    = MyPolicy(p_observation_space=agent_ospace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
-        self._agent.add_agent(
+        multiagent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
                 p_envmodel=None,
@@ -244,7 +245,7 @@ class MyScenario(Scenario):
         agent_ospace    = state_space.spawn([3,4])
         agent_aspace    = action_space.spawn([3])
         agent_policy    = MyPolicy(p_observation_space=agent_ospace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
-        self._agent.add_agent(
+        multiagent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
                 p_envmodel=None,
@@ -262,7 +263,7 @@ class MyScenario(Scenario):
         agent_ospace    = state_space.spawn([4,5])
         agent_aspace    = action_space.spawn([4])
         agent_policy    = MyPolicy(p_observation_space=agent_ospace, p_action_space=agent_aspace, p_ada=1, p_logging=False, p_buffer_size=1)
-        self._agent.add_agent(
+        multiagent.add_agent(
             p_agent=Agent(
                 p_policy=agent_policy,
                 p_envmodel=None,
@@ -272,3 +273,5 @@ class MyScenario(Scenario):
                 p_logging=True),
             p_weight=1.0
             )
+
+        return multiagent

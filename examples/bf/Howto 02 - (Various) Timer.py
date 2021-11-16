@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-05-19  1.0.0     DA       Creation
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
+## -- 2021-11-13  1.0.1     DA       Minor fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-05-19)
+Ver. 1.0.1 (2021-11-13)
 
 This module demonstrates the Timer class functionality.
 """
@@ -25,14 +26,14 @@ from mlpro.bf.various import Timer, Log
 
 
 # Demo class
-class TimerDemo(Log):
+class TimerDemo (Log):
 
     C_TYPE  = 'Demo class'
     C_NAME  = 'Timer'
 
     def __init__(self, p_timer:Timer):
         self.timer = p_timer
-        super().__init__(self)
+        super().__init__()
 
 
     def log(self, p_type, *p_args):

@@ -1,23 +1,25 @@
-## -----------------------------------------------------------------------------
+ ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
 ## -- Module  : BGLP
-## -----------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 ## -- History :
-## -- yyyy-mm-dd  Ver.  Auth.  Description
-## -- 2021-06-07  0.00  SY     Creation
-## -- 2021-08-31  1.00  SY     Release of first version
-## -- 2021-09-01  1.01  SY     Minor improvements, code cleaning, add descriptions
-## -- 2021-09-06  1.02  SY     Minor improvements, combine bglp and BGLP classes
-## -- 2021-09-11  1.02  MRD    Change Header information to match our new library name
-## -- 2021-10-02  1.03  SY     Minor change
-## -- 2021-10-05  1.04  SY     Update following new attributes done and broken in State
-## -- 2021-10-07  2.00  SY     Enable batch production scenario
-## -- 2021-10-25  2.01  SY     Add scientific references related to the Environment
-## -----------------------------------------------------------------------------
+## -- yyyy-mm-dd  Ver.      Auth.    Description
+## -- 2021-06-07  0.0.0     SY       Creation
+## -- 2021-08-31  1.0.0     SY       Release of first version
+## -- 2021-09-01  1.0.1     SY       Minor improvements, code cleaning, add descriptions
+## -- 2021-09-06  1.0.2     SY       Minor improvements, combine bglp and BGLP classes
+## -- 2021-09-11  1.0.3     MRD      Change Header information to match our new library name
+## -- 2021-10-02  1.0.4     SY       Minor change
+## -- 2021-10-05  1.0.5     SY       Update following new attributes done and broken in State
+## -- 2021-10-07  2.0.0     SY       Enable batch production scenario
+## -- 2021-10-25  2.0.1     SY       Add scientific references related to the Environment
+## -- 2021-11-15  2.1.0     DA       Refactoring
+## -- 2021-11-16  2.1.1     SY       Update following model improvements
+## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.01 (2021-10-25)
+Ver. 2.1.1 (2021-11-16)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -671,18 +673,20 @@ class BGLP(Environment):
             state.set_value(i, sub_state_val[i])
         return state
     
-    def reset(self) -> None:
+    def reset(self, p_seed=None) -> None:
         """
         To reset environment
         """
+        self.set_random_seed(p_seed)
         self.reset_levels()
         self.reset_actuators()
         obs                 = self.calc_state()
         self.t              = 0
         self.prod_reached   = 0
         self._state         = self.collect_substates()
+        self.get_state().set_done(False)
 
-    def _simulate_reaction(self, p_action: Action) -> None:
+    def simulate_reaction(self, p_state:State, p_action:Action) -> State:
         """
         To simulate the environment reacting selected actions
         """
@@ -715,29 +719,57 @@ class BGLP(Environment):
         self._state.set_done(False)
         self._state.set_broken(False)
         self._state = self.collect_substates()
+        return self._state
 
-
-    def _evaluate_state(self) -> None: 
+    def compute_done(self, p_state:State) -> bool:
         """
-        Updates the goal achievement value in [0,1] and the flags done and broken
+        Updates the goal achievement value in [0,1] and the flags done
         based on the current state. Please redefine.
    
         Returns:
           -
         """
 
+        
         if self.prod_scenario == 'continuous':
             self.goal_achievement = 0.0
-            self._state.set_done(False)
-            self._state.set_broken(False)
+            return False
         else:
             if self.prod_reached >= self.prod_target:
                 self.goal_achievement = 1.0
-                self._state.set_done(True)
+                return True
             else:
                 self.goal_achievement = self.prod_reached/self.prod_target
-                self._state.set_done(False)
-                self._state.set_broken(False)
+                return False
+    
+    def compute_broken(self, p_state:State) -> bool:
+        """
+        Updates the goal achievement value in [0,1] and the flags broken
+        based on the current state. Please redefine.
+   
+        Returns:
+          -
+        """
+        return False
+    
+    def _compute_goal_achievement(self, p_state:State=None):
+        """
+        Optional goal achievement computation.
+
+        Parameters:
+            p_state         Optional external state. If none, please use internal state.
+
+        Returns:
+            Goal avievement value in interval [0,1].
+        """
+
+        if self.prod_scenario == 'continuous':
+            self.goal_achievement = 0.0
+        else:
+            if self.prod_reached >= self.prod_target:
+                self.goal_achievement = 1.0
+            else:
+                self.goal_achievement = self.prod_reached/self.prod_target
 
     def compute_reward(self) -> Reward:
         """

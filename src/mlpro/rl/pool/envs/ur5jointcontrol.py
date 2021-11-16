@@ -59,7 +59,7 @@ class UR5JointControl(Environment):
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
 
         self.env = StartOpenAI_ROS_Environment(
-                            'UR5RandomTargetTask-v0')
+                            'UR5LabSimpleTask-v0')
         self.reset()
                  
 ## -------------------------------------------------------------------------------------------------
@@ -90,15 +90,24 @@ class UR5JointControl(Environment):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def reset(self) -> None:
+    def reset(self, p_seed=None) -> None:
+        random.seed(p_seed)
         obs = self.env.reset()
         self._state = self._obs_to_state(obs)
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_action: Action) -> None:
-        obs, self.reward_gym, done, info = self.env.step(p_action.get_sorted_values())
-        self._state.set_done(done)
+    def simulate_reaction(self, p_state: State, p_action: Action) -> None:
+        obs, self.reward_gym, self.done, info = self.env.step(p_action.get_sorted_values())
         self._state = self._obs_to_state(obs)
+        return self._state
+
+## -------------------------------------------------------------------------------------------------
+    def compute_done(self, p_state: State) -> bool:
+        return self.done
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state: State) -> bool:
+        return False
 
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self) -> None: 

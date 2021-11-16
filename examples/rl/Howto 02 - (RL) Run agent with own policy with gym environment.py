@@ -12,10 +12,12 @@
 ## -- 2021-09-29  1.1.1     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-06  1.1.2     DA       Refactoring 
 ## -- 2021-10-18  1.1.3     DA       Refactoring 
+## -- 2021-11-15  1.2.0     DA       Refactoring 
+## -- 2021-11-16  1.2.1     DA       Added explicit scenario reset with constant seeding 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2021-10-18)
+Ver. 1.2.1 (2021-11-16)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 the fhswf_at_ml framework.
@@ -32,9 +34,13 @@ import random
 
 
 # 1 Implement your own agent policy
-class MyPolicy(Policy):
+class MyPolicy (Policy):
 
     C_NAME      = 'MyPolicy'
+
+    def set_random_seed(self, p_seed=None):
+        random.seed(p_seed)
+
 
     def compute_action(self, p_state: State) -> Action:
         # 1 Create a numpy array for your action values 
@@ -59,7 +65,7 @@ class MyPolicy(Policy):
 
 
 # 2 Implement your own RL scenario
-class MyScenario(Scenario):
+class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
 
@@ -69,37 +75,40 @@ class MyScenario(Scenario):
         self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
         # 2 Setup standard single-agent with own policy
-        self._agent = Agent(
-            p_policy=MyPolicy(
-                p_observation_space=self._env.get_state_space(),
-                p_action_space=self._env.get_action_space(),
-                p_buffer_size=1,
-                p_ada=p_ada,
-                p_logging=p_logging
-            ),    
-            p_envmodel=None,
-            p_name='Smith',
-            p_ada=p_ada,
-            p_logging=p_logging
-        )
+        return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),
+                                         p_action_space=self._env.get_action_space(),
+                                         p_buffer_size=1,
+                                         p_ada=p_ada,
+                                         p_logging=p_logging),    
+                      p_envmodel=None,
+                      p_name='Smith',
+                      p_ada=p_ada,
+                      p_logging=p_logging)
 
 
 
 
-# 3 Instantiate scenario
+# 3 Create scenario and run some cycles
+
+if __name__ == "__main__":
+    # 3.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+  
+else:
+    # 3.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+ 
+
+# 3.3 Create your scenario and run some cycles
 myscenario  = MyScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=False,
-    p_logging=True
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_cycle_limit=100,
+        p_visualize=visualize,
+        p_logging=logging
 )
 
-
-
-
-# 4 Run max. 100 cycles
-myscenario.run(
-    p_exit_when_broken=True,
-    p_exit_when_done=True
-)
+myscenario.reset(p_seed=1)
+myscenario.run() 

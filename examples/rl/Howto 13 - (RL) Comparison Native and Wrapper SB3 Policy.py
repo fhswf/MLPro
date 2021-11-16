@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-10-27  0.0.0     MRD      Creation
 ## -- 2021-10-27  1.0.0     MRD      Released first version
+## -- 2021-11-16  1.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-10-27)
+Ver. 1.0.1 (2021-11-16)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
@@ -32,7 +33,7 @@ policy_kwargs = dict(activation_fn=torch.nn.Tanh,
                      net_arch=[dict(pi=[10, 10], vf=[10, 10])])
 
 # 2 Implement your own RL scenario
-class MyScenario(Scenario):
+class MyScenario(RLScenario):
 
     C_NAME      = 'Matrix'
 
@@ -66,13 +67,15 @@ class MyScenario(Scenario):
                 p_logging=p_logging)
         
         # 4 Setup standard single-agent with own policy
-        self._agent = Agent(
+        return Agent(
             p_policy=self.policy_wrapped,   
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
             p_logging=p_logging
         )
+
+
 
 # 3 Instantiate scenario
 myscenario  = MyScenario(
@@ -84,14 +87,15 @@ myscenario  = MyScenario(
 )
 
 # 4 Instantiate training
-training        = Training(
+training        = RLTraining(
     p_scenario=myscenario,
-    p_episode_limit=max_episode,
+    p_cycle_limit=1000,      #p_episode_limit=max_episode,
+    p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_logging=True
+    p_logging=Log.C_LOG_ALL
 )
 
 # 5 Train SB3 Wrapper
@@ -142,7 +146,7 @@ data_printing   = {"Cycle":        [False],
                     "Smith":        [True,-1]}
 
 
-_,_,_,mem = training.get_data()
+mem = training.get_results().ds_rewards
 mem_plot    = MyDataPlotting(mem, p_showing=False, p_printing=data_printing)
 mem_plot.get_plots()
 wrapper_plot = mem_plot.plots
@@ -158,13 +162,12 @@ class CustomCallback(BaseCallback, Log):
     C_TYPE                  = 'Wrapper'
     C_NAME                  = 'SB3 Policy'
 
-    def __init__(self, p_limit_episode, p_verbose=0):
+    def __init__(self, p_verbose=0):
         super(CustomCallback, self).__init__(p_verbose)
         reward_space = Set()
         reward_space.add_dim(Dimension(0, "Native"))
         self.ds_rewards  = RLDataStoring(reward_space)
         self.episode_num = 0
-        self.episode_limit = p_limit_episode
         self.total_cycle = 0
         self.cycles = 0
         self.plots = None
@@ -189,8 +192,6 @@ class CustomCallback(BaseCallback, Log):
             self.log(self.C_LOG_TYPE_I, '--------------------------------------\n\n')
             self.episode_num += 1
             self.total_cycle = 0
-            if self.episode_num >= self.episode_limit:
-                return False
             self.ds_rewards.add_episode(self.episode_num)
             self.log(self.C_LOG_TYPE_I, '--------------------------------------')
             self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'started...')
@@ -219,8 +220,8 @@ policy_sb3 = PPO(
                 policy_kwargs=policy_kwargs,
                 seed=1)
 
-cus_callback = CustomCallback(p_limit_episode=max_episode)
-policy_sb3.learn(total_timesteps=10000000, callback=cus_callback)
+cus_callback = CustomCallback()
+policy_sb3.learn(total_timesteps=1000, callback=cus_callback)
 native_plot = cus_callback.plots
 
 # 10 Difference Plot

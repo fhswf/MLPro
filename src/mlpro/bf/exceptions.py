@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-27  1.0.0     DA       Creation
+## -- 2021-11-10  1.0.1     DA       Added new exception ImplementationError
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-27)
+Ver. 1.0.1 (2021-11-10)
 
 This module provides exception classes.
 """
@@ -22,5 +23,14 @@ This module provides exception classes.
 class ParamError(Exception):
     """
     To be raised on a parameter error...
+    """
+    pass
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class ImplementationError(Exception):
+    """
+    To be raised on an implementation error in a child class of MLPro...
     """
     pass

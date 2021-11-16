@@ -16,14 +16,13 @@ Unit test classes for various basic functions.
 """
 
 
-import unittest
+import pytest
 from mlpro.bf.various import Log
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-
 class MyLog(Log):
     C_TYPE      = 'Test class'
     C_NAME      = 'MyLog'
@@ -32,32 +31,43 @@ class MyLog(Log):
         Log.__init__(self)
 
 
-
 ## -------------------------------------------------------------------------------------------------
-
-## -------------------------------------------------------------------------------------------------
-
-class TestVarious(unittest.TestCase):
+def test_logging(capsys):
     """
-    Unit tests for module various.py.
+    Method description.
     """
 
-## -------------------------------------------------------------------------------------------------
-
-    def test_logging(self):
-        """
-        Method description.
-        """
-
-        lo_log = MyLog()
-        self.assertTrue(lo_log.logging)
-        lo_log.log(Log.C_LOG_TYPE_I, 'Hello World!')
-        lo_log.switch_logging(False)
-        self.assertFalse(lo_log.logging)
-        lo_log.log(Log.C_LOG_TYPE_I, 'Hello World2!')
-
-       
-
-
-
-if __name__ == '__main__': unittest.main()
+    lo_log = MyLog()
+    lo_log.log(Log.C_LOG_TYPE_I, 'Information')
+    lo_log.log(Log.C_LOG_TYPE_W, 'Warning')
+    lo_log.log(Log.C_LOG_TYPE_E, 'Error')
+    captured = capsys.readouterr()
+    assert 'Information' in captured.out
+    assert 'Warning' in captured.out
+    assert 'Error' in captured.out
+    lo_log.switch_logging(Log.C_LOG_NOTHING)
+    lo_log.log(Log.C_LOG_TYPE_I, 'Information')
+    lo_log.log(Log.C_LOG_TYPE_W, 'Warning')
+    lo_log.log(Log.C_LOG_TYPE_E, 'Error')
+    captured = capsys.readouterr()
+    assert 'Information' not in captured.out
+    assert 'Warning' not in captured.out
+    assert 'Error' not in captured.out
+    lo_log.switch_logging(Log.C_LOG_WE)
+    lo_log.log(Log.C_LOG_TYPE_I, 'Information')
+    lo_log.log(Log.C_LOG_TYPE_W, 'Warning')
+    lo_log.log(Log.C_LOG_TYPE_E, 'Error')
+    captured = capsys.readouterr()
+    assert 'Information' not in captured.out
+    assert 'Warning' in captured.out
+    assert 'Error' in captured.out
+    lo_log.switch_logging(Log.C_LOG_E)
+    lo_log.log(Log.C_LOG_TYPE_I, 'Information')
+    lo_log.log(Log.C_LOG_TYPE_W, 'Warning')
+    lo_log.log(Log.C_LOG_TYPE_E, 'Error')
+    captured = capsys.readouterr()
+    assert 'Information' not in captured.out
+    assert 'Warning' not in captured.out
+    assert 'Error' in captured.out
+    
+        
