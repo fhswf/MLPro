@@ -139,7 +139,7 @@ else:
 mygame  = MyGame(
     p_mode=Mode.C_MODE_SIM,
     p_ada=True,
-    p_cycle_limit=100,
+    p_cycle_limit=200,
     p_visualize=visualize,
     p_logging=logging
 )

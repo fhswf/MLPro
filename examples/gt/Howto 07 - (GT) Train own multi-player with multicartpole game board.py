@@ -13,17 +13,18 @@
 ## -- 2021-09-11  1.1.2     MRD      Change Header information to match our new library name
 ## -- 2021-09-28  1.1.3     SY       Adjustment due to implementation of SAR Buffer on player
 ## -- 2021-10-06  1.1.4     DA       Refactoring 
+## -- 2021-11-16  1.2.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4 (2021-10-06)
-
+Ver. 1.2.0 (2021-11-16)
+ 
 This module shows how to train an own multi-player with the enhanced multi-action
 game board MultiCartPole based on the OpenAI Gym CartPole environment.
 """
 
 
-from mlpro.rl.models import State, Action, Reward, Policy
+from mlpro.rl.models import *
 from mlpro.gt.models import *
 from mlpro.gt.pool.boards.multicartpole import MultiCartPolePGT
 import random
@@ -71,90 +72,94 @@ class MyGame(Game):
     def _setup(self, p_mode, p_ada, p_logging):
 
         # 1 Setup Multi-Player Environment (consisting of 3 OpenAI Gym Cartpole envs)
-        self._env   = MultiCartPolePGT(p_num_envs=3, p_logging=True)
+        self._env   = MultiCartPolePGT(p_num_envs=3, p_logging=p_logging)
 
 
         # 2 Setup Multi-Player
 
         # 2.1 Create empty Multi-Player
-        self._agent     = MultiPlayer(
+        multi_player = MultiPlayer(
             p_name='Human Beings',
-            p_ada=True,
-            p_logging=True
+            p_ada=p_ada,
+            p_logging=p_logging
         )
 
         # 2.2 Add Single-Player #1 with own policy (controlling sub-environment #1)
-        self._agent.add_player(
+        multi_player.add_player(
             p_player=Player(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([0,1,2,3]),
                     p_action_space=self._env.get_action_space().spawn([0]),
                     p_buffer_size=1,
-                    p_ada=True,
-                    p_logging=True
+                    p_ada=p_ada,
+                    p_logging=p_logging
                 ),
                 p_name='Neo',
                 p_id=0,
-                p_ada=True,
-                p_logging=True
+                p_ada=p_ada,
+                p_logging=p_logging
             ),
             p_weight=0.3
         )
 
 
         # 2.2 Add Single-Player #2 with own policy (controlling sub-environments #2,#3)
-        self._agent.add_player(
+        multi_player.add_player(
             p_player=Player(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
                     p_action_space=self._env.get_action_space().spawn([1,2]),
                     p_buffer_size=1,
-                    p_ada=True,
-                    p_logging=True
+                    p_ada=p_ada,
+                    p_logging=p_logging
                 ),
                 p_name='Trinity',
                 p_id=1,
-                p_ada=True,
-                p_logging=True
+                p_ada=p_ada,
+                p_logging=p_logging
             ),
             p_weight=0.7
         )
 
 
+        # 2.3 Return multi-player as adaptive model
+        return multi_player
 
 
-# 3 Instantiate game
+
+
+# 3 Create game and run some cycles
+
+if __name__ == "__main__":
+    # 3.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    path        = str(Path.home())
+ 
+else:
+    # 3.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    path        = None
+
+
+# 3.3 Create your game
 mygame  = MyGame(
-    p_mode=GameBoard.C_MODE_SIM,
+    p_mode=Mode.C_MODE_SIM,
     p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=False,
-    p_logging=True
+    p_visualize=visualize,
+    p_logging=logging
 )
 
 
-
-
-# 4 Train agent in scenario 
-now             = datetime.now()
-
-training        = Training(
-    p_game=mygame,
-    p_episode_limit=2,
-    p_cycle_limit=100,
-    p_collect_states=True,
-    p_collect_actions=True,
-    p_collect_rewards=True,
-    p_collect_training=True,
-    p_logging=True
+# 3.4 Create and run training object
+training = GTTraining(
+        p_game=mygame,
+        p_cycle_limit=200,
+        p_max_adaptations=0,
+        p_max_stagnations=0,
+        p_path=path,
+        p_logging=logging
 )
 
 training.run()
-
-
-
-
-# 5 Save training data in user home directory
-ts              = '%04d-%02d-%02d  %02d%02d%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
-dest_path       = str(Path.home()) + os.sep + 'ccb gt - howto 07' + os.sep + ts
-training.save_data(dest_path, "\t")

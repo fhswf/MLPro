@@ -1,3 +1,4 @@
+
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro.wrappers
@@ -32,12 +33,12 @@
 ## -- 2021-11-03  1.5.2     SY       Remove reset() on WrEnvPZOO2MLPro and WrEnvMLPro2PZoo to avoid double reset
 ## --                                New static method for gym space transformation on WrEnvGYM2MLPro
 ## --                                and vice versa on WrEnvMLPro2GYM
-## -- 2021-11-13  1.5.2     DA       Minor adjustments
+## -- 2021-11-13  1.5.3     DA       Minor adjustments
+## -- 2021-11-16  1.5.4     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.2 (2021-11-13)
-
+Ver. 1.5.4 (2021-11-16)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
