@@ -40,7 +40,7 @@ jobs:
     - name: Build the Documentation
       run: |
         cd doc/rtd
-        make html 
+        sphinx-apidoc -o content/append4 ../../src/mlpro --ext-autodoc -E -T -f
     
     - name: Check for modified files
       id: git-check

@@ -1,4 +1,0 @@
-Policy
---------------
-
-Add text here!

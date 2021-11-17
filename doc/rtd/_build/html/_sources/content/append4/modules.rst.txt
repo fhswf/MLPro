@@ -1,7 +1,0 @@
-mlpro
-=====
-
-.. toctree::
-   :maxdepth: 4
-
-   mlpro
