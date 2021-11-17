@@ -13,13 +13,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Checkout Codes
     - uses: actions/checkout@v2
       with:
         ref: ${{ github.head_ref }}
+    
     - name: Set up Python 
       uses: actions/setup-python@v2
       with:
         python-version: 3.7
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -38,9 +41,11 @@ jobs:
       run: |
         cd doc/rtd
         make html 
+    
     - name: Check for modified files
-        id: git-check
-        run: echo ::set-output name=modified::$(if [ $(git diff-index HEAD | wc -l) -eq 1 ]; then echo "false"; else echo "true"; fi)
+      id: git-check
+      run: echo ::set-output name=modified::$(if [ $(git diff-index HEAD | wc -l) -eq 1 ]; then echo "false"; else echo "true"; fi)
+
     - name: Push changes
     - uses: stefanzweifel/git-auto-commit-action@v4
         if: steps.git-check.outputs.modified == 'true'
