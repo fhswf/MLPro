@@ -48,6 +48,6 @@ jobs:
 
     - name: Push changes
       uses: stefanzweifel/git-auto-commit-action@v4
-        if: steps.git-check.outputs.modified == 'true'
-        with:
-          commit_message: Automated Documentation
+      if: steps.git-check.outputs.modified == 'true'
+      with:
+        commit_message: Automated Documentation
