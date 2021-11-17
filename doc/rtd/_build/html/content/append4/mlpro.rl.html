@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlpro.rl package &mdash; MLPro Documentations 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mlpro.rl.pool package" href="mlpro.rl.pool.html" />
+    <link rel="prev" title="mlpro.gt.pool.players package" href="mlpro.gt.pool.players.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> MLPro Documentations
+            <img src="../../_static/logo_fh-at.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">1 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">1.1 What is MLPro?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/getstarted.html">1.2 Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/architecture.html">1.3 Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/dependencies.html">1.4 Dependencies</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">2 MLPro-BF – Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bf/elementary.html">2.1 Elementary Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bf/math.html">2.2 Mathematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bf/ml.html">2.3 Machine Learning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">3 MLPro-RL – Reinforcement Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../rl/overview.html">3.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/agents.html">3.2 Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/env.html">3.3 Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/scenario.html">3.4 Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/wrapper.html">3.5 3rd Party Support</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">4 MLPro-GT – Game Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gt/overview.html">4.1 Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">5 MLPro-UI – Interactive ML</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ui/sciui.html">5.1 UI Framework SciUI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">6 Project MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project/versions.html">6.1 Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project/paper.html">6.2 Papers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project/cont.html">6.3 Contribution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 1: List of Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append1/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 2: Pool Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append2/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 3: 3rd Party Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append2/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 4: API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="mlpro.html">mlpro package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mlpro.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mlpro.bf.html">mlpro.bf package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.gt.html">mlpro.gt package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">mlpro.rl package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-mlpro.rl.models">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-mlpro.rl">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.ui.html">mlpro.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.html#module-mlpro">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">7 Quick Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../help/test.html">7.1 Test</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="mlpro.html">mlpro package</a> &raquo;</li>
+      <li>mlpro.rl package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/append4/mlpro.rl.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mlpro-rl-package">
+<h1>mlpro.rl package<a class="headerlink" href="#mlpro-rl-package" title="Permalink to this headline"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mlpro.rl.pool.html">mlpro.rl.pool package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.rl.pool.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.actionplanner.html">mlpro.rl.pool.actionplanner package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.actionplanner.html#module-mlpro.rl.pool.actionplanner">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.afunctions.html">mlpro.rl.pool.afunctions package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.afunctions.html#module-mlpro.rl.pool.afunctions">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.envmodels.html">mlpro.rl.pool.envmodels package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.envmodels.html#module-mlpro.rl.pool.envmodels">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.envs.html">mlpro.rl.pool.envs package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.envs.html#module-mlpro.rl.pool.envs.bglp">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.envs.html#module-mlpro.rl.pool.envs">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.policies.html">mlpro.rl.pool.policies package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.policies.html#module-mlpro.rl.pool.policies.a2c">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.policies.html#module-mlpro.rl.pool.policies">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.sarsbuffer.html">mlpro.rl.pool.sarsbuffer package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.sarsbuffer.html#module-mlpro.rl.pool.sarsbuffer.PrioritizedBuffer">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.sarsbuffer.html#module-mlpro.rl.pool.sarsbuffer">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.scenarios.html">mlpro.rl.pool.scenarios package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.scenarios.html#module-mlpro.rl.pool.scenarios.bglp_localinterpolation">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.scenarios.html#module-mlpro.rl.pool.scenarios">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.rl.pool.html#module-mlpro.rl.pool">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-mlpro.rl.models">
+<span id="submodules"></span><h2>Submodules<a class="headerlink" href="#module-mlpro.rl.models" title="Permalink to this headline"></a></h2>
+<p>This module provides model classes for reinforcement learning tasks. See sub-mdules for further
+information.</p>
+<span class="target" id="module-mlpro.rl.models_agents"></span><p>Ver. 1.3.0 (2021-11-14)</p>
+<p>This module provides model classes for policies, model-free and model-based agents and multi-agents.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.ActionPlanner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_agents.</span></span><span class="sig-name descname"><span class="pre">ActionPlanner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.ActionPlanner" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.various.Log" title="mlpro.bf.various.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.Log</span></code></a></p>
+<p>Template class for action planning algorithms to be used as part of planning agents.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.ActionPlanner.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Action</span> <span class="pre">Planner'</span></em><a class="headerlink" href="#mlpro.rl.models_agents.ActionPlanner.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.ActionPlanner.clear_action_path">
+<span class="sig-name descname"><span class="pre">clear_action_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.ActionPlanner.clear_action_path" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.ActionPlanner.compute_action">
+<span class="sig-name descname"><span class="pre">compute_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_agents.Policy" title="mlpro.rl.models_agents.Policy"><span class="pre">mlpro.rl.models_agents.Policy</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_envmodel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_env.EnvModel" title="mlpro.rl.models_env.EnvModel"><span class="pre">mlpro.rl.models_env.EnvModel</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_width</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_agents.ActionPlanner.compute_action" title="Permalink to this definition"></a></dt>
+<dd><p>Computes a path of actions with defined length that maximizes the reward of the given 
+environment model.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_state             Current state of environment
+p_policy            Poliy of an agent
+p_envmodel          Environment model
+p_depth             Planning depth (=length of action path to be predicted)
+p_width             Planning width (=number of alternative actions per planning level)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_agents.</span></span><span class="sig-name descname"><span class="pre">Agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_policy</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_agents.Policy" title="mlpro.rl.models_agents.Policy"><span class="pre">mlpro.rl.models_agents.Policy</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_envmodel</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_env.EnvModel" title="mlpro.rl.models_env.EnvModel"><span class="pre">mlpro.rl.models_env.EnvModel</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_em_mat_thsld</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_planner</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_agents.ActionPlanner" title="mlpro.rl.models_agents.ActionPlanner"><span class="pre">mlpro.rl.models_agents.ActionPlanner</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_planning_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_planning_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Agent" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_agents.Policy" title="mlpro.rl.models_agents.Policy"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_agents.Policy</span></code></a></p>
+<p>This class represents a single agent model.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.rl.models_agents.Agent.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Agent'</span></em><a class="headerlink" href="#mlpro.rl.models_agents.Agent.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.clear_buffer">
+<span class="sig-name descname"><span class="pre">clear_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Agent.clear_buffer" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.compute_action">
+<span class="sig-name descname"><span class="pre">compute_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_agents.Agent.compute_action" title="Permalink to this definition"></a></dt>
+<dd><p>Default implementation of a single agent.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_state         State of the related environment</p>
+</dd>
+<dt>Returns:</dt><dd><p>Action object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.get_action_space">
+<span class="sig-name descname"><span class="pre">get_action_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_agents.Agent.get_action_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.get_name">
+<span class="sig-name descname"><span class="pre">get_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Agent.get_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.get_observation_space">
+<span class="sig-name descname"><span class="pre">get_observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_agents.Agent.get_observation_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.set_id">
+<span class="sig-name descname"><span class="pre">set_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Agent.set_id" title="Permalink to this definition"></a></dt>
+<dd><p>The unique agent id will be defined while instantiation and can’t be changed any more.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.set_log_level">
+<span class="sig-name descname"><span class="pre">set_log_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Agent.set_log_level" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.set_name">
+<span class="sig-name descname"><span class="pre">set_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Agent.set_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.set_random_seed">
+<span class="sig-name descname"><span class="pre">set_random_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Agent.set_random_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the internal random generator using the given seed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Agent.switch_logging">
+<span class="sig-name descname"><span class="pre">switch_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Agent.switch_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Switches log functionality on/off.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_logging     Log level (see constants for log levels)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_agents.</span></span><span class="sig-name descname"><span class="pre">MultiAgent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_agents.Agent" title="mlpro.rl.models_agents.Agent"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_agents.Agent</span></code></a></p>
+<p>This class implements a reinforcement learning multi-agent model.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.C_SUFFIX">
+<span class="sig-name descname"><span class="pre">C_SUFFIX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.cfg'</span></em><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.C_SUFFIX" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Multi-Agent'</span></em><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.add_agent">
+<span class="sig-name descname"><span class="pre">add_agent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_agent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_agents.Agent" title="mlpro.rl.models_agents.Agent"><span class="pre">mlpro.rl.models_agents.Agent</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.add_agent" title="Permalink to this definition"></a></dt>
+<dd><p>Adds agent object to internal list of agents.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_agent           Agent object
+p_weight          Optional weight for the agent</p>
+</dd>
+<dt>Returns:</dt><dd><p>Nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.clear_buffer">
+<span class="sig-name descname"><span class="pre">clear_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.clear_buffer" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.compute_action">
+<span class="sig-name descname"><span class="pre">compute_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.compute_action" title="Permalink to this definition"></a></dt>
+<dd><p>Default implementation of a single agent.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_state         State of the related environment</p>
+</dd>
+<dt>Returns:</dt><dd><p>Action object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.get_action_space">
+<span class="sig-name descname"><span class="pre">get_action_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.get_action_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.get_agents">
+<span class="sig-name descname"><span class="pre">get_agents</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.get_agents" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.get_filename">
+<span class="sig-name descname"><span class="pre">get_filename</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.get_filename" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.get_observation_space">
+<span class="sig-name descname"><span class="pre">get_observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.get_observation_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.init_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Doesn’t support embedded plot of underlying agent hierarchy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.load" title="Permalink to this definition"></a></dt>
+<dd><p>Loads content from the given path and file name. If file does not exist, it returns None.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_path          Path that contains the file 
+p_filename      File name</p>
+</dd>
+<dt>Returns: </dt><dd><p>A loaded object, if file content was loaded successfully. None otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.save" title="Permalink to this definition"></a></dt>
+<dd><p>Saves content to the given path and file name. If file name is None, a unique file name will
+be generated by calling method generate_filename(). If it returns False then the saving method is failed.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_path          Path where file will be saved
+p_filename      File name (if None an internal filename will be generated)</p>
+</dd>
+<dt>Returns: </dt><dd><p>True, if file content was saved successfully. False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.set_log_level">
+<span class="sig-name descname"><span class="pre">set_log_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.set_log_level" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.set_random_seed">
+<span class="sig-name descname"><span class="pre">set_random_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.set_random_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the internal random generator using the given seed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.switch_logging">
+<span class="sig-name descname"><span class="pre">switch_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.switch_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Switches log functionality on/off.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_logging     Log level (see constants for log levels)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.MultiAgent.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.MultiAgent.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Policy">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_agents.</span></span><span class="sig-name descname"><span class="pre">Policy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_observation_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Policy" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.Model" title="mlpro.bf.ml.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.Model</span></code></a></p>
+<p>This class represents the policy of a single-agent. It is adaptive and can be trained with
+State-Action-Reward (SAR) data that will be expected as a SAR buffer object. 
+The three main learning paradigms of machine learning to train a policy are supported:</p>
+<p>a) Training by Supervised Learning
+The entire SAR data set inside the SAR buffer shall be adapted.</p>
+<p>b) Training by Reinforcement Learning
+The latest SAR data record inside the SAR buffer shall be adapted.</p>
+<p>c) Training by Unsupervised Learning
+All state data inside the SAR buffer shall be adapted.</p>
+<p>Furthermore a policy class can compute actions from states.</p>
+<p>Hyperparameters of the policy should be stored in the internal object self._hp_list, so that
+they can be tuned from outside. Optionally a policy-specific callback method can be called on 
+changes. For more information see class HyperParameterList.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Policy.C_BUFFER_CLS">
+<span class="sig-name descname"><span class="pre">C_BUFFER_CLS</span></span><a class="headerlink" href="#mlpro.rl.models_agents.Policy.C_BUFFER_CLS" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#mlpro.rl.models_sar.SARSBuffer" title="mlpro.rl.models_sar.SARSBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_sar.SARSBuffer</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Policy.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.rl.models_agents.Policy.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Policy.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Policy'</span></em><a class="headerlink" href="#mlpro.rl.models_agents.Policy.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Policy.compute_action">
+<span class="sig-name descname"><span class="pre">compute_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_obs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_agents.Policy.compute_action" title="Permalink to this definition"></a></dt>
+<dd><p>Specific action computation method to be redefined.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_obs       Observation data</p>
+</dd>
+<dt>Returns:</dt><dd><p>Action object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Policy.get_action_space">
+<span class="sig-name descname"><span class="pre">get_action_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_agents.Policy.get_action_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Policy.get_id">
+<span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Policy.get_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Policy.get_observation_space">
+<span class="sig-name descname"><span class="pre">get_observation_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_agents.Policy.get_observation_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_agents.Policy.set_id">
+<span class="sig-name descname"><span class="pre">set_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_agents.Policy.set_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.rl.models_env"></span><p>Ver. 1.2.0 (2021-11-dd)</p>
+<p>This module provides model classes for environments and environnment models.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctBroken">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">AFctBroken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_afct_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.AFctBroken" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.Model" title="mlpro.bf.ml.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.Model</span></code></a></p>
+<p>Adaptive function for environment broken state prediction, based on universal adaptive function.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctBroken.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AFct</span> <span class="pre">Broken'</span></em><a class="headerlink" href="#mlpro.rl.models_env.AFctBroken.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctBroken.compute_broken">
+<span class="sig-name descname"><span class="pre">compute_broken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.AFctBroken.compute_broken" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctDone">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">AFctDone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_afct_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.AFctDone" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.Model" title="mlpro.bf.ml.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.Model</span></code></a></p>
+<p>Adaptive function for environment done state prediction, based on universal adaptive function.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctDone.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AFct</span> <span class="pre">Done'</span></em><a class="headerlink" href="#mlpro.rl.models_env.AFctDone.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctDone.compute_done">
+<span class="sig-name descname"><span class="pre">compute_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.AFctDone.compute_done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctReward">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">AFctReward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_afct_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.AFctReward" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.Model" title="mlpro.bf.ml.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.Model</span></code></a></p>
+<p>Adaptive function for reward prediction, based on universal adaptive function.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctReward.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AFct</span> <span class="pre">Reward'</span></em><a class="headerlink" href="#mlpro.rl.models_env.AFctReward.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctReward.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><span class="pre">mlpro.rl.models_sar.Reward</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_env.AFctReward.compute_reward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctSTrans">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">AFctSTrans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_afct_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.AFctSTrans" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.AdaptiveFunction" title="mlpro.bf.ml.AdaptiveFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.AdaptiveFunction</span></code></a></p>
+<p>Adaptive function for state transition prediction to be used inside the EnvModel class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctSTrans.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'AFct</span> <span class="pre">STrans'</span></em><a class="headerlink" href="#mlpro.rl.models_env.AFctSTrans.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.AFctSTrans.simulate_reaction">
+<span class="sig-name descname"><span class="pre">simulate_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_env.AFctSTrans.simulate_reaction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">EnvBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_latency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.timedelta</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_env.FctReward" title="mlpro.rl.models_env.FctReward"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.FctReward</span></code></a>, <a class="reference internal" href="#mlpro.rl.models_env.FctDone" title="mlpro.rl.models_env.FctDone"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.FctDone</span></code></a>, <a class="reference internal" href="#mlpro.rl.models_env.FctBroken" title="mlpro.rl.models_env.FctBroken"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.FctBroken</span></code></a>, <a class="reference internal" href="mlpro.bf.html#mlpro.bf.plot.Plottable" title="mlpro.bf.plot.Plottable"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.plot.Plottable</span></code></a>, <a class="reference internal" href="mlpro.bf.html#mlpro.bf.various.ScientificObject" title="mlpro.bf.various.ScientificObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.ScientificObject</span></code></a></p>
+<p>Base class for all environment classes. It defines the interface and elementry properties for
+an environment in the context of reinforcement learning.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.C_LATENCY">
+<span class="sig-name descname"><span class="pre">C_LATENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=1)</span></em><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.C_LATENCY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.C_REWARD_TYPE">
+<span class="sig-name descname"><span class="pre">C_REWARD_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.C_REWARD_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.C_SCIREF_TYPE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.C_SCIREF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Environment</span> <span class="pre">Base'</span></em><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.get_action_space">
+<span class="sig-name descname"><span class="pre">get_action_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.get_action_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.get_broken">
+<span class="sig-name descname"><span class="pre">get_broken</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.get_broken" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.get_done">
+<span class="sig-name descname"><span class="pre">get_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.get_done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.get_goal_achievement">
+<span class="sig-name descname"><span class="pre">get_goal_achievement</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.get_goal_achievement" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.get_latency">
+<span class="sig-name descname"><span class="pre">get_latency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime.timedelta</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.get_latency" title="Permalink to this definition"></a></dt>
+<dd><p>Returns latency of environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.get_reward_type">
+<span class="sig-name descname"><span class="pre">get_reward_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.get_reward_type" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>Returns current state of environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.get_state_space">
+<span class="sig-name descname"><span class="pre">get_state_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.get_state_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.process_action">
+<span class="sig-name descname"><span class="pre">process_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.process_action" title="Permalink to this definition"></a></dt>
+<dd><p>Processes given action and updates the state of the environment.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_action      Action to be processed</p>
+</dd>
+<dt>Returns:</dt><dd><p>True, if action processing was successfull. False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets environment to initial state. Please redefine.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.set_latency">
+<span class="sig-name descname"><span class="pre">set_latency</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_latency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.timedelta</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.set_latency" title="Permalink to this definition"></a></dt>
+<dd><p>Sets latency of environment. If p_latency is None latency will be reset
+to internal value of attribute C_LATENCY.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_latency       New latency</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvBase.set_random_seed">
+<span class="sig-name descname"><span class="pre">set_random_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.EnvBase.set_random_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the internal random generator using the given seed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvModel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">EnvModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_afct_strans</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_env.AFctSTrans" title="mlpro.rl.models_env.AFctSTrans"><span class="pre">mlpro.rl.models_env.AFctSTrans</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_afct_reward</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_env.AFctReward" title="mlpro.rl.models_env.AFctReward"><span class="pre">mlpro.rl.models_env.AFctReward</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_afct_done</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_env.AFctDone" title="mlpro.rl.models_env.AFctDone"><span class="pre">mlpro.rl.models_env.AFctDone</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_afct_broken</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_env.AFctBroken" title="mlpro.rl.models_env.AFctBroken"><span class="pre">mlpro.rl.models_env.AFctBroken</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.EnvModel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_env.EnvBase" title="mlpro.rl.models_env.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.EnvBase</span></code></a>, <a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.Model" title="mlpro.bf.ml.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.Model</span></code></a></p>
+<p>Template class for an environment model to be used for model based agents.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvModel.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'EnvModel'</span></em><a class="headerlink" href="#mlpro.rl.models_env.EnvModel.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvModel.clear_buffer">
+<span class="sig-name descname"><span class="pre">clear_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.EnvModel.clear_buffer" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvModel.get_functions">
+<span class="sig-name descname"><span class="pre">get_functions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.EnvModel.get_functions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvModel.get_maturity">
+<span class="sig-name descname"><span class="pre">get_maturity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.EnvModel.get_maturity" title="Permalink to this definition"></a></dt>
+<dd><p>Returns maturity of environment model.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.EnvModel.process_action">
+<span class="sig-name descname"><span class="pre">process_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.EnvModel.process_action" title="Permalink to this definition"></a></dt>
+<dd><p>Processes given action and updates the state of the environment.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_action      Action to be processed</p>
+</dd>
+<dt>Returns:</dt><dd><p>True, if action processing was successfull. False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.Environment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">Environment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_latency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.timedelta</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.Environment" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_env.EnvBase" title="mlpro.rl.models_env.EnvBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.EnvBase</span></code></a>, <a class="reference internal" href="#mlpro.rl.models_env.FctSTrans" title="mlpro.rl.models_env.FctSTrans"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.FctSTrans</span></code></a>, <a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.Mode" title="mlpro.bf.ml.Mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.Mode</span></code></a></p>
+<p>This class represents the central environment model to be reused/inherited in own rl projects.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.Environment.C_CYCLE_LIMIT">
+<span class="sig-name descname"><span class="pre">C_CYCLE_LIMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.models_env.Environment.C_CYCLE_LIMIT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.Environment.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Environment'</span></em><a class="headerlink" href="#mlpro.rl.models_env.Environment.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.Environment.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><span class="pre">mlpro.rl.models_sar.Reward</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_env.Environment.compute_reward" title="Permalink to this definition"></a></dt>
+<dd><p>Computes reward based on given or current state.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_state         State object. If None, please use internal state.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Reward object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.Environment.get_cycle_limit">
+<span class="sig-name descname"><span class="pre">get_cycle_limit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.Environment.get_cycle_limit" title="Permalink to this definition"></a></dt>
+<dd><p>Returns limit of cycles per training episode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.Environment.process_action">
+<span class="sig-name descname"><span class="pre">process_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.Environment.process_action" title="Permalink to this definition"></a></dt>
+<dd><p>Processes given action and updates the state of the environment.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_action      Action to be processed</p>
+</dd>
+<dt>Returns:</dt><dd><p>True, if action processing was successfull. False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctBroken">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">FctBroken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_afct_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.FctBroken" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_env.AFctBroken" title="mlpro.rl.models_env.AFctBroken"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.AFctBroken</span></code></a></p>
+<p>Non-adaptive function for environment broken state computation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctBroken.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Fct</span> <span class="pre">Broken'</span></em><a class="headerlink" href="#mlpro.rl.models_env.FctBroken.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctBroken.compute_broken">
+<span class="sig-name descname"><span class="pre">compute_broken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.FctBroken.compute_broken" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctDone">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">FctDone</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_afct_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.FctDone" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_env.AFctDone" title="mlpro.rl.models_env.AFctDone"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.AFctDone</span></code></a></p>
+<p>Non-adaptive function for environment done state computation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctDone.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Fct</span> <span class="pre">Done'</span></em><a class="headerlink" href="#mlpro.rl.models_env.FctDone.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctDone.compute_done">
+<span class="sig-name descname"><span class="pre">compute_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_env.FctDone.compute_done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctReward">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">FctReward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_afct_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.FctReward" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_env.AFctReward" title="mlpro.rl.models_env.AFctReward"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.AFctReward</span></code></a></p>
+<p>Non-adaptive function for reward computation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctReward.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Fct</span> <span class="pre">Reward'</span></em><a class="headerlink" href="#mlpro.rl.models_env.FctReward.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctReward.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><span class="pre">mlpro.rl.models_sar.Reward</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_env.FctReward.compute_reward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctSTrans">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_env.</span></span><span class="sig-name descname"><span class="pre">FctSTrans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_afct_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_env.FctSTrans" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_env.AFctSTrans" title="mlpro.rl.models_env.AFctSTrans"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.AFctSTrans</span></code></a></p>
+<p>Non-adaptive function for state transition computation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctSTrans.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Fct</span> <span class="pre">STrans'</span></em><a class="headerlink" href="#mlpro.rl.models_env.FctSTrans.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_env.FctSTrans.simulate_reaction">
+<span class="sig-name descname"><span class="pre">simulate_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.models_env.FctSTrans.simulate_reaction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.rl.models_sar"></span><p>Ver. 1.0.7 (2021-10-05)</p>
+<p>This module provides model classes for state, action and reward data and their buffering.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Action">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_sar.</span></span><span class="sig-name descname"><span class="pre">Action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_agent_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_values</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.Action" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.ElementList" title="mlpro.bf.math.ElementList"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.math.ElementList</span></code></a>, <a class="reference internal" href="mlpro.bf.html#mlpro.bf.various.TStamp" title="mlpro.bf.various.TStamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.TStamp</span></code></a></p>
+<p>Objects of this class represent actions of (multi-)agents. Every element
+of the internal list is related to an agent and it’s partial subaction.
+Action values for the first agent can be added while object instantiation.
+Action values of further agents can be added by using method self.add_elem().</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Action.get_agent_ids">
+<span class="sig-name descname"><span class="pre">get_agent_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.Action.get_agent_ids" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Action.get_sorted_values">
+<span class="sig-name descname"><span class="pre">get_sorted_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#mlpro.rl.models_sar.Action.get_sorted_values" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.ActionElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_sar.</span></span><span class="sig-name descname"><span class="pre">ActionElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.Set" title="mlpro.bf.math.Set"><span class="pre">mlpro.bf.math.Set</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.ActionElement" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.math.Element</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.ActionElement.get_weight">
+<span class="sig-name descname"><span class="pre">get_weight</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.ActionElement.get_weight" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.ActionElement.set_weight">
+<span class="sig-name descname"><span class="pre">set_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_weight</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.ActionElement.set_weight" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_sar.</span></span><span class="sig-name descname"><span class="pre">Reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.Reward" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.various.TStamp" title="mlpro.bf.various.TStamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.TStamp</span></code></a></p>
+<p>Objects of this class represent rewards of environments. The internal structure
+depends of the reward type. Three types are supported as listed below.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.C_TYPE_EVERY_ACTION">
+<span class="sig-name descname"><span class="pre">C_TYPE_EVERY_ACTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2</span></em><a class="headerlink" href="#mlpro.rl.models_sar.Reward.C_TYPE_EVERY_ACTION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.C_TYPE_EVERY_AGENT">
+<span class="sig-name descname"><span class="pre">C_TYPE_EVERY_AGENT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#mlpro.rl.models_sar.Reward.C_TYPE_EVERY_AGENT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.C_TYPE_OVERALL">
+<span class="sig-name descname"><span class="pre">C_TYPE_OVERALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.models_sar.Reward.C_TYPE_OVERALL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.add_action_reward">
+<span class="sig-name descname"><span class="pre">add_action_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_reward</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_sar.Reward.add_action_reward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.add_agent_reward">
+<span class="sig-name descname"><span class="pre">add_agent_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_reward</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_sar.Reward.add_agent_reward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.get_action_reward">
+<span class="sig-name descname"><span class="pre">get_action_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_agent_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.Reward.get_action_reward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.get_agent_reward">
+<span class="sig-name descname"><span class="pre">get_agent_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_agent_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.Reward.get_agent_reward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.get_overall_reward">
+<span class="sig-name descname"><span class="pre">get_overall_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.Reward.get_overall_reward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.get_type">
+<span class="sig-name descname"><span class="pre">get_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.Reward.get_type" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.is_rewarded">
+<span class="sig-name descname"><span class="pre">is_rewarded</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_agent_id</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_sar.Reward.is_rewarded" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.Reward.set_overall_reward">
+<span class="sig-name descname"><span class="pre">set_overall_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_reward</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_sar.Reward.set_overall_reward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.SARSBuffer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_sar.</span></span><span class="sig-name descname"><span class="pre">SARSBuffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.SARSBuffer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.data.Buffer" title="mlpro.bf.data.Buffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.data.Buffer</span></code></a></p>
+<p>State-Action-Reward-State-Buffer in dictionary.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.SARSElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_sar.</span></span><span class="sig-name descname"><span class="pre">SARSElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_reward</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><span class="pre">mlpro.rl.models_sar.Reward</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_new</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.SARSElement" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.data.BufferElement" title="mlpro.bf.data.BufferElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.data.BufferElement</span></code></a></p>
+<p>Element of a SARSBuffer.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.State">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_sar.</span></span><span class="sig-name descname"><span class="pre">State</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.State" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.math.Element</span></code></a>, <a class="reference internal" href="mlpro.bf.html#mlpro.bf.various.TStamp" title="mlpro.bf.various.TStamp"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.TStamp</span></code></a></p>
+<p>Objects of this class represent states of a given metric state space.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.State.get_broken">
+<span class="sig-name descname"><span class="pre">get_broken</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_sar.State.get_broken" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.State.get_done">
+<span class="sig-name descname"><span class="pre">get_done</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_sar.State.get_done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.State.set_broken">
+<span class="sig-name descname"><span class="pre">set_broken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_broken</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.State.set_broken" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_sar.State.set_done">
+<span class="sig-name descname"><span class="pre">set_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_done</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_sar.State.set_done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.rl.models_train"></span><p>Ver. 1.3.0 (2021-11-13)</p>
+<p>This module provides model classes to define and run rl scenarios and to train agents inside them.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_train.</span></span><span class="sig-name descname"><span class="pre">RLDataStoring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.Set" title="mlpro.bf.math.Set"><span class="pre">mlpro.bf.math.Set</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.data.DataStoring" title="mlpro.bf.data.DataStoring"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.data.DataStoring</span></code></a></p>
+<p>Derivate of basic class DataStoring that is specialized to store episodical training data in the
+context of reinforcement learning.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.C_VAR0">
+<span class="sig-name descname"><span class="pre">C_VAR0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Episode</span> <span class="pre">ID'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.C_VAR0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.C_VAR_CYCLE">
+<span class="sig-name descname"><span class="pre">C_VAR_CYCLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Cycle'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.C_VAR_CYCLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.C_VAR_DAY">
+<span class="sig-name descname"><span class="pre">C_VAR_DAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Day'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.C_VAR_DAY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.C_VAR_ENV_BROKEN">
+<span class="sig-name descname"><span class="pre">C_VAR_ENV_BROKEN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Env</span> <span class="pre">broken'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.C_VAR_ENV_BROKEN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.C_VAR_ENV_DONE">
+<span class="sig-name descname"><span class="pre">C_VAR_ENV_DONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Goal</span> <span class="pre">reached'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.C_VAR_ENV_DONE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.C_VAR_MICROSEC">
+<span class="sig-name descname"><span class="pre">C_VAR_MICROSEC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Microsecond'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.C_VAR_MICROSEC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.C_VAR_NUM_CYCLES">
+<span class="sig-name descname"><span class="pre">C_VAR_NUM_CYCLES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Number</span> <span class="pre">of</span> <span class="pre">cycles'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.C_VAR_NUM_CYCLES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.C_VAR_SEC">
+<span class="sig-name descname"><span class="pre">C_VAR_SEC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Second'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.C_VAR_SEC" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.add_episode">
+<span class="sig-name descname"><span class="pre">add_episode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_episode_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.add_episode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.get_space">
+<span class="sig-name descname"><span class="pre">get_space</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.get_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.get_variables">
+<span class="sig-name descname"><span class="pre">get_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.get_variables" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLDataStoring.memorize_row">
+<span class="sig-name descname"><span class="pre">memorize_row</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_cycle_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tstamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.timedelta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLDataStoring.memorize_row" title="Permalink to this definition"></a></dt>
+<dd><p>Memorizes an episodical data row.</p>
+<dl class="simple">
+<dt>Parameters: </dt><dd><p>p_cycle_id          Cycle id
+p_tstamp            Time stamp
+p_data              Data that meet the dimensionality of the related space</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLScenario">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_train.</span></span><span class="sig-name descname"><span class="pre">RLScenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_cycle_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.timedelta</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_cycle_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_visualize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLScenario" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.Scenario" title="mlpro.bf.ml.Scenario"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.Scenario</span></code></a></p>
+<p>Template class for an RL scenario consisting of an environment and an agent.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLScenario.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLScenario.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLScenario.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RL-Scenario'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLScenario.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLScenario.connect_data_logger">
+<span class="sig-name descname"><span class="pre">connect_data_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_ds_states</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_train.RLDataStoring" title="mlpro.rl.models_train.RLDataStoring"><span class="pre">mlpro.rl.models_train.RLDataStoring</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ds_actions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_train.RLDataStoring" title="mlpro.rl.models_train.RLDataStoring"><span class="pre">mlpro.rl.models_train.RLDataStoring</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ds_rewards</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_train.RLDataStoring" title="mlpro.rl.models_train.RLDataStoring"><span class="pre">mlpro.rl.models_train.RLDataStoring</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLScenario.connect_data_logger" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLScenario.get_agent">
+<span class="sig-name descname"><span class="pre">get_agent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLScenario.get_agent" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLScenario.get_env">
+<span class="sig-name descname"><span class="pre">get_env</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLScenario.get_env" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLScenario.get_latency">
+<span class="sig-name descname"><span class="pre">get_latency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime.timedelta</span></span></span><a class="headerlink" href="#mlpro.rl.models_train.RLScenario.get_latency" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the latency of the scenario. To be implemented in child class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLScenario.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLScenario.init_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes the plot. Optionally the plot itself will be embedded in a matplotlib figure.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_figure            Optional MatPlotLib host figure, where the plot shall be embedded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLScenario.switch_logging">
+<span class="sig-name descname"><span class="pre">switch_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLScenario.switch_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Switches log functionality on/off.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_logging     Log level (see constants for log levels)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLScenario.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLScenario.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTraining">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_train.</span></span><span class="sig-name descname"><span class="pre">RLTraining</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_train.RLScenario" title="mlpro.rl.models_train.RLScenario"><span class="pre">mlpro.rl.models_train.RLScenario</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_cycle_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_max_cycles_per_episode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_max_adaptations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_max_stagnations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_eval_frequency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_eval_grp_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_hpt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.HyperParamTuner" title="mlpro.bf.ml.HyperParamTuner"><span class="pre">mlpro.bf.ml.HyperParamTuner</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_hpt_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_collect_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_collect_actions</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_collect_rewards</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_collect_training</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'W'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLTraining" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.Training" title="mlpro.bf.ml.Training"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.Training</span></code></a></p>
+<p>This class performs an episodical training on a (multi-)agent in a given environment. Both are 
+expected as parts of a reinforcement learning scenario (see class Scenario for more details).
+The class optionally collects all relevant data like environmenal states and rewards or agents
+actions. Furthermore overarching training data will be collected.</p>
+<p>The class provides the three methods run(), run_episode(), run_cycle() that can be called in 
+any order to proceed the training.</p>
+<p><a class="reference external" href="https://github.com/fhswf/MLPro/issues/146">https://github.com/fhswf/MLPro/issues/146</a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTraining.C_CLS_RESULTS">
+<span class="sig-name descname"><span class="pre">C_CLS_RESULTS</span></span><a class="headerlink" href="#mlpro.rl.models_train.RLTraining.C_CLS_RESULTS" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#mlpro.rl.models_train.RLTrainingResults" title="mlpro.rl.models_train.RLTrainingResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_train.RLTrainingResults</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTraining.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RL'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLTraining.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTraining.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Training'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLTraining.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTrainingResults">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.models_train.</span></span><span class="sig-name descname"><span class="pre">RLTrainingResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.Scenario" title="mlpro.bf.ml.Scenario"><span class="pre">mlpro.bf.ml.Scenario</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_cycle_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLTrainingResults" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.ml.TrainingResults" title="mlpro.bf.ml.TrainingResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.TrainingResults</span></code></a></p>
+<p>Results of a RL training.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTrainingResults.C_CPAR_NUM_ADAPT">
+<span class="sig-name descname"><span class="pre">C_CPAR_NUM_ADAPT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Number</span> <span class="pre">of</span> <span class="pre">adaptations'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLTrainingResults.C_CPAR_NUM_ADAPT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTrainingResults.C_CPAR_NUM_EPI">
+<span class="sig-name descname"><span class="pre">C_CPAR_NUM_EPI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Number</span> <span class="pre">of</span> <span class="pre">episodes'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLTrainingResults.C_CPAR_NUM_EPI" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTrainingResults.C_CPAR_NUM_EVAL">
+<span class="sig-name descname"><span class="pre">C_CPAR_NUM_EVAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Number</span> <span class="pre">of</span> <span class="pre">evaluations'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLTrainingResults.C_CPAR_NUM_EVAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTrainingResults.C_FNAME_AGENT_ACTIONS">
+<span class="sig-name descname"><span class="pre">C_FNAME_AGENT_ACTIONS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'agent_actions'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLTrainingResults.C_FNAME_AGENT_ACTIONS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTrainingResults.C_FNAME_ENV_REWARDS">
+<span class="sig-name descname"><span class="pre">C_FNAME_ENV_REWARDS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'env_rewards'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLTrainingResults.C_FNAME_ENV_REWARDS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTrainingResults.C_FNAME_ENV_STATES">
+<span class="sig-name descname"><span class="pre">C_FNAME_ENV_STATES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'env_states'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLTrainingResults.C_FNAME_ENV_STATES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTrainingResults.C_FNAME_TRAINING">
+<span class="sig-name descname"><span class="pre">C_FNAME_TRAINING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'training'</span></em><a class="headerlink" href="#mlpro.rl.models_train.RLTrainingResults.C_FNAME_TRAINING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTrainingResults.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_cycle_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.models_train.RLTrainingResults.close" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.models_train.RLTrainingResults.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'summary.txt'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.models_train.RLTrainingResults.save" title="Permalink to this definition"></a></dt>
+<dd><p>Saves a training summary in the given path.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.rl.wrappers"></span><p>Ver. 1.5.5 (2021-11-16)
+This module provides wrapper classes for reinforcement learning tasks.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.wrappers.</span></span><span class="sig-name descname"><span class="pre">WrEnvGYM2MLPro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_gym_env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<p>This class is a ready to use wrapper class for OpenAI Gym environments. 
+Objects of this type can be treated as an environment object. Encapsulated 
+gym environment must be compatible to class gym.Env.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'OpenAI</span> <span class="pre">Gym</span> <span class="pre">Env'</span></em><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.compute_broken">
+<span class="sig-name descname"><span class="pre">compute_broken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.compute_broken" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.compute_done">
+<span class="sig-name descname"><span class="pre">compute_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.compute_done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.compute_goal_achievement">
+<span class="sig-name descname"><span class="pre">compute_goal_achievement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.compute_goal_achievement" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><span class="pre">mlpro.rl.models_sar.Reward</span></a></span></span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.compute_reward" title="Permalink to this definition"></a></dt>
+<dd><p>Computes reward based on given or current state.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_state         State object. If None, please use internal state.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Reward object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.get_cycle_limit">
+<span class="sig-name descname"><span class="pre">get_cycle_limit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.get_cycle_limit" title="Permalink to this definition"></a></dt>
+<dd><p>Returns limit of cycles per training episode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.init_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes the plot. Optionally the plot itself will be embedded in a matplotlib figure.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_figure            Optional MatPlotLib host figure, where the plot shall be embedded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.recognize_space">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recognize_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_gym_space</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.ESpace" title="mlpro.bf.math.ESpace"><span class="pre">mlpro.bf.math.ESpace</span></a></span></span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.recognize_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets environment to initial state. Please redefine.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.simulate_reaction">
+<span class="sig-name descname"><span class="pre">simulate_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.simulate_reaction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvGYM2MLPro.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvGYM2MLPro.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2GYM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.wrappers.</span></span><span class="sig-name descname"><span class="pre">WrEnvMLPro2GYM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mlpro_env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2GYM" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gym.core.Env</span></code></p>
+<p>This class is a ready to use wrapper class for MLPro to OpenAI Gym environments. 
+Objects of this type can be treated as an gym.Env object. Encapsulated 
+MLPro environment must be compatible to class Environment.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2GYM.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MLPro</span> <span class="pre">to</span> <span class="pre">Gym</span> <span class="pre">Env'</span></em><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2GYM.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2GYM.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2GYM.close" title="Permalink to this definition"></a></dt>
+<dd><p>Override close in your subclass to perform any necessary cleanup.</p>
+<p>Environments will automatically close() themselves when
+garbage collected or when the program exits.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2GYM.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'render.modes':</span> <span class="pre">['human']}</span></em><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2GYM.metadata" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2GYM.recognize_space">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">recognize_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mlpro_space</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2GYM.recognize_space" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2GYM.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'human'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2GYM.render" title="Permalink to this definition"></a></dt>
+<dd><p>Renders the environment.</p>
+<p>The set of supported modes varies per environment. (And some
+environments do not support rendering at all.) By convention,
+if mode is:</p>
+<ul class="simple">
+<li><p>human: render to the current display or terminal and
+return nothing. Usually for human consumption.</p></li>
+<li><p>rgb_array: Return an numpy.ndarray with shape (x, y, 3),
+representing RGB values for an x-by-y pixel image, suitable
+for turning into a video.</p></li>
+<li><p>ansi: Return a string (str) or StringIO.StringIO containing a
+terminal-style text representation. The text can include newlines
+and ANSI escape sequences (e.g. for colors).</p></li>
+</ul>
+<dl class="simple">
+<dt>Note:</dt><dd><dl class="simple">
+<dt>Make sure that your class’s metadata ‘render.modes’ key includes</dt><dd><p>the list of supported modes. It’s recommended to call super()
+in implementations to use the functionality of this method.</p>
+</dd>
+</dl>
+</dd>
+<dt>Args:</dt><dd><p>mode (str): the mode to render with</p>
+</dd>
+</dl>
+<p>Example:</p>
+<dl>
+<dt>class MyEnv(Env):</dt><dd><p>metadata = {‘render.modes’: [‘human’, ‘rgb_array’]}</p>
+<dl class="simple">
+<dt>def render(self, mode=’human’):</dt><dd><dl class="simple">
+<dt>if mode == ‘rgb_array’:</dt><dd><p>return np.array(…) # return RGB frame suitable for video</p>
+</dd>
+<dt>elif mode == ‘human’:</dt><dd><p>… # pop up a window and render</p>
+</dd>
+<dt>else:</dt><dd><p>super(MyEnv, self).render(mode=mode) # just raise an exception</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2GYM.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2GYM.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the environment to an initial state and returns an initial
+observation.</p>
+<p>Note that this function should not reset the environment’s random
+number generator(s); random variables in the environment’s state should
+be sampled independently between multiple calls to <cite>reset()</cite>. In other
+words, each call of <cite>reset()</cite> should yield an environment suitable for
+a new episode, independent of previous episodes.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>observation (object): the initial observation.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2GYM.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2GYM.step" title="Permalink to this definition"></a></dt>
+<dd><p>Run one timestep of the environment’s dynamics. When end of
+episode is reached, you are responsible for calling <cite>reset()</cite>
+to reset this environment’s state.</p>
+<p>Accepts an action and returns a tuple (observation, reward, done, info).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>action (object): an action provided by the agent</p>
+</dd>
+<dt>Returns:</dt><dd><p>observation (object): agent’s observation of the current environment
+reward (float) : amount of reward returned after previous action
+done (bool): whether the episode has ended, in which case further step() calls will return undefined results
+info (dict): contains auxiliary diagnostic information (helpful for debugging, and sometimes learning)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2PZoo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.wrappers.</span></span><span class="sig-name descname"><span class="pre">WrEnvMLPro2PZoo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mlpro_env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_num_agents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2PZoo" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class is a ready to use wrapper class for MLPro to PettingZoo environments. 
+Objects of this type can be treated as an AECEnv object. Encapsulated 
+MLPro environment must be compatible to class Environment.
+To be noted, this wrapper is not capable for parallel environment yet.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2PZoo.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MLPro</span> <span class="pre">to</span> <span class="pre">PZoo</span> <span class="pre">Env'</span></em><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2PZoo.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">raw_env</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mlpro_env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_num_agents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">pettingzoo.utils.env.AECEnv</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.close" title="Permalink to this definition"></a></dt>
+<dd><p>Closes the rendering window, subprocesses, network connections, or any other resources
+that should be released.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'name':</span> <span class="pre">'pzoo_custom',</span> <span class="pre">'render.modes':</span> <span class="pre">['human']}</span></em><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.metadata" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.observe">
+<span class="sig-name descname"><span class="pre">observe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agent_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.observe" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the observation an agent currently can make. <cite>last()</cite> calls this function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.render">
+<span class="sig-name descname"><span class="pre">render</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'human'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.render" title="Permalink to this definition"></a></dt>
+<dd><p>Displays a rendered frame from the environment, if supported.
+Alternate render modes in the default environments are <cite>‘rgb_array’</cite>
+which returns a numpy array and is supported by all environments outside of classic,
+and <cite>‘ansi’</cite> which returns the strings printed (specific to classic environments).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the environment to a starting state.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.step">
+<span class="sig-name descname"><span class="pre">step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvMLPro2PZoo.raw_env.step" title="Permalink to this definition"></a></dt>
+<dd><p>Receives a dictionary of actions keyed by the agent name.
+Returns the observation dictionary, reward dictionary, done dictionary, and info dictionary,
+where each dictionary is keyed by the agent.</p>
+</dd></dl>
+
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvPZOO2MLPro">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.wrappers.</span></span><span class="sig-name descname"><span class="pre">WrEnvPZOO2MLPro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_zoo_env</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_state_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvPZOO2MLPro" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<p>This class is a ready to use wrapper class for Petting Zoo environments. 
+Objects of this type can be treated as an environment object. Encapsulated 
+petting zoo environment must be compatible to class pettingzoo.env.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvPZOO2MLPro.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Petting</span> <span class="pre">Zoo</span> <span class="pre">Env'</span></em><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvPZOO2MLPro.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvPZOO2MLPro.compute_broken">
+<span class="sig-name descname"><span class="pre">compute_broken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvPZOO2MLPro.compute_broken" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvPZOO2MLPro.compute_done">
+<span class="sig-name descname"><span class="pre">compute_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvPZOO2MLPro.compute_done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvPZOO2MLPro.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><span class="pre">mlpro.rl.models_sar.Reward</span></a></span></span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvPZOO2MLPro.compute_reward" title="Permalink to this definition"></a></dt>
+<dd><p>Computes reward based on given or current state.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_state         State object. If None, please use internal state.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Reward object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvPZOO2MLPro.get_cycle_limit">
+<span class="sig-name descname"><span class="pre">get_cycle_limit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvPZOO2MLPro.get_cycle_limit" title="Permalink to this definition"></a></dt>
+<dd><p>Returns limit of cycles per training episode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvPZOO2MLPro.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvPZOO2MLPro.init_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes the plot. Optionally the plot itself will be embedded in a matplotlib figure.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_figure            Optional MatPlotLib host figure, where the plot shall be embedded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvPZOO2MLPro.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvPZOO2MLPro.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets environment to initial state. Please redefine.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvPZOO2MLPro.simulate_reaction">
+<span class="sig-name descname"><span class="pre">simulate_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvPZOO2MLPro.simulate_reaction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrEnvPZOO2MLPro.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrEnvPZOO2MLPro.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrPolicySB32MLPro">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.wrappers.</span></span><span class="sig-name descname"><span class="pre">WrPolicySB32MLPro</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_sb3_policy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_observation_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.wrappers.WrPolicySB32MLPro" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.models_agents.Policy" title="mlpro.rl.models_agents.Policy"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_agents.Policy</span></code></a></p>
+<p>This class provides a policy wrapper from Standard Baselines 3 (SB3).
+Especially On-Policy Algorithm</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.wrappers.WrPolicySB32MLPro.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SB3</span> <span class="pre">Policy'</span></em><a class="headerlink" href="#mlpro.rl.wrappers.WrPolicySB32MLPro.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mlpro.rl">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mlpro.rl" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mlpro.gt.pool.players.html" class="btn btn-neutral float-left" title="mlpro.gt.pool.players package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mlpro.rl.pool.html" class="btn btn-neutral float-right" title="mlpro.rl.pool package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, FH-SWF Automatisierungstechnik und lernende Systeme.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

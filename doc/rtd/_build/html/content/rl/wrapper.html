@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>3.5 3rd Party Support &mdash; MLPro Documentations 1.0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -120,7 +121,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="rd-party-support">
+  <section id="rd-party-support">
 <span id="target-package"></span><h1>3.5 3rd Party Support<a class="headerlink" href="#rd-party-support" title="Permalink to this headline"></a></h1>
 <p>Add text here!</p>
 <p><a class="reference external" href="https://github.com/fhswf/MLPro.git">MLPro</a> allows you to reuse widely-used packages and
@@ -129,7 +130,7 @@ integrate them to MLPro interface by calling wrapper classes.</p>
 However, it has not been very stable yet and some minor improvements might be needed.</p>
 <p>In the near future, we are going to add wrapper classes for PettingZoo and Ray RLlib.</p>
 <p>Soure code of available wrappers: <a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/wrappers.py">https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/wrappers.py</a></p>
-<div class="section" id="openai-gym-environments">
+<section id="openai-gym-environments">
 <h2>OpenAI Gym Environments<a class="headerlink" href="#openai-gym-environments" title="Permalink to this headline"></a></h2>
 <p>Our wrapper class for gym environment is pretty straightforward. You can just simply apply
 a command to setup a gym-based environment, while creating a scenario.</p>
@@ -139,8 +140,8 @@ a command to setup a gym-based environment, while creating a scenario.</p>
 </pre></div>
 </div>
 <p>For more information, please check our how to files <span class="xref std std-ref">here</span>.</p>
-</div>
-<div class="section" id="pettingzoo-environments">
+</section>
+<section id="pettingzoo-environments">
 <h2>PettingZoo Environments<a class="headerlink" href="#pettingzoo-environments" title="Permalink to this headline"></a></h2>
 <p>Under construction. The wrapper will be available soon.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.rl.wrappers</span> <span class="kn">import</span> <span class="n">WrEnvPZoo</span>
@@ -148,8 +149,8 @@ a command to setup a gym-based environment, while creating a scenario.</p>
 <span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">WrEnvPZoo</span><span class="p">([</span><span class="n">zoo</span> <span class="n">environment</span> <span class="nb">object</span><span class="p">],</span> <span class="n">p_state_space</span><span class="p">:</span><span class="n">MSpace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_action_space</span><span class="p">:</span><span class="n">MSpace</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="stable-baselines3">
+</section>
+<section id="stable-baselines3">
 <h2>Stable-Baselines3<a class="headerlink" href="#stable-baselines3" title="Permalink to this headline"></a></h2>
 <p>The stable-baselines3 can be used also in MLPro interface. The wrapper provides both the On-Policy and Off-Policy from stable-baselines3.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
@@ -182,8 +183,8 @@ a command to setup a gym-based environment, while creating a scenario.</p>
 </pre></div>
 </div>
 <p>For more information, please check our how to files <a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2010%20-%20(RL)%20Train%20using%20SB3%20Wrapper.py">here</a>.</p>
-</div>
-<div class="section" id="ray-rllib">
+</section>
+<section id="ray-rllib">
 <h2>Ray RLlib<a class="headerlink" href="#ray-rllib" title="Permalink to this headline"></a></h2>
 <p>Under construction. The wrapper will be available soon.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.rl.wrappers</span> <span class="kn">import</span> <span class="n">wrPolicyRay</span>
@@ -191,8 +192,8 @@ a command to setup a gym-based environment, while creating a scenario.</p>
 <span class="n">wrPolicyRay</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>

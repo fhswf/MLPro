@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlpro.bf package &mdash; MLPro Documentations 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mlpro.gt package" href="mlpro.gt.html" />
+    <link rel="prev" title="mlpro package" href="mlpro.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> MLPro Documentations
+            <img src="../../_static/logo_fh-at.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">1 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">1.1 What is MLPro?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/getstarted.html">1.2 Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/architecture.html">1.3 Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/dependencies.html">1.4 Dependencies</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">2 MLPro-BF – Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bf/elementary.html">2.1 Elementary Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bf/math.html">2.2 Mathematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bf/ml.html">2.3 Machine Learning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">3 MLPro-RL – Reinforcement Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../rl/overview.html">3.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/agents.html">3.2 Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/env.html">3.3 Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/scenario.html">3.4 Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/wrapper.html">3.5 3rd Party Support</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">4 MLPro-GT – Game Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gt/overview.html">4.1 Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">5 MLPro-UI – Interactive ML</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ui/sciui.html">5.1 UI Framework SciUI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">6 Project MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project/versions.html">6.1 Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project/paper.html">6.2 Papers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project/cont.html">6.3 Contribution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 1: List of Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append1/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 2: Pool Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append2/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 3: 3rd Party Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append2/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 4: API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="mlpro.html">mlpro package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mlpro.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">mlpro.bf package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-mlpro.bf.data">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-mlpro.bf">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.gt.html">mlpro.gt package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.html">mlpro.rl package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.ui.html">mlpro.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.html#module-mlpro">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">7 Quick Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../help/test.html">7.1 Test</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="mlpro.html">mlpro package</a> &raquo;</li>
+      <li>mlpro.bf package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/append4/mlpro.bf.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mlpro-bf-package">
+<h1>mlpro.bf package<a class="headerlink" href="#mlpro-bf-package" title="Permalink to this headline"></a></h1>
+<section id="module-mlpro.bf.data">
+<span id="submodules"></span><h2>Submodules<a class="headerlink" href="#module-mlpro.bf.data" title="Permalink to this headline"></a></h2>
+<p>Ver. 1.3.0 (2021-09-22)</p>
+<p>This module provides various elementary data management classes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.data.Buffer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.data.</span></span><span class="sig-name descname"><span class="pre">Buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.Buffer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class implementation for buffer management.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.Buffer.add_element">
+<span class="sig-name descname"><span class="pre">add_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_elem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.data.BufferElement" title="mlpro.bf.data.BufferElement"><span class="pre">mlpro.bf.data.BufferElement</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.Buffer.add_element" title="Permalink to this definition"></a></dt>
+<dd><p>Add element to the buffer.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_elem (BufferElement): Element of Buffer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.Buffer.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.Buffer.clear" title="Permalink to this definition"></a></dt>
+<dd><p>Resets buffer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.Buffer.get_all">
+<span class="sig-name descname"><span class="pre">get_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.Buffer.get_all" title="Permalink to this definition"></a></dt>
+<dd><p>Return all buffered elements.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.Buffer.get_latest">
+<span class="sig-name descname"><span class="pre">get_latest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.Buffer.get_latest" title="Permalink to this definition"></a></dt>
+<dd><p>Returns latest buffered element.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.Buffer.get_sample">
+<span class="sig-name descname"><span class="pre">get_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.Buffer.get_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Sample some element from the buffer.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_num (int): Number of sample</p>
+</dd>
+<dt>Returns:</dt><dd><p>Samples in dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.Buffer.is_full">
+<span class="sig-name descname"><span class="pre">is_full</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.bf.data.Buffer.is_full" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the buffer is full.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>True, if the buffer is full</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.data.BufferElement">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.data.</span></span><span class="sig-name descname"><span class="pre">BufferElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.BufferElement" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class implementation for buffer element</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.BufferElement.add_value_element">
+<span class="sig-name descname"><span class="pre">add_value_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_val</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.BufferElement.add_value_element" title="Permalink to this definition"></a></dt>
+<dd><p>Adding new value to the element container</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_val (dict): Elements in dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.BufferElement.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.BufferElement.get_data" title="Permalink to this definition"></a></dt>
+<dd><p>Get the buffer element.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Returns the buffer element.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.data.BufferRnd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.data.</span></span><span class="sig-name descname"><span class="pre">BufferRnd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.BufferRnd" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.data.Buffer" title="mlpro.bf.data.Buffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.data.Buffer</span></code></a></p>
+<p>Buffer implmentation with random sampling</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.data.DataStoring">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.data.</span></span><span class="sig-name descname"><span class="pre">DataStoring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_variables</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.DataStoring" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.various.LoadSave" title="mlpro.bf.various.LoadSave"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.LoadSave</span></code></a></p>
+<p>This class provides a functionality to store values of variables during
+training/simulation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.data.DataStoring.C_VAR0">
+<span class="sig-name descname"><span class="pre">C_VAR0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Frame</span> <span class="pre">ID'</span></em><a class="headerlink" href="#mlpro.bf.data.DataStoring.C_VAR0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.DataStoring.add_frame">
+<span class="sig-name descname"><span class="pre">add_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_frame_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.DataStoring.add_frame" title="Permalink to this definition"></a></dt>
+<dd><p>To store unique sections in a variable (e.g episodes in RL, etc.)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.DataStoring.compress">
+<span class="sig-name descname"><span class="pre">compress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_chunksize</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.DataStoring.compress" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.DataStoring.get_values">
+<span class="sig-name descname"><span class="pre">get_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_frame_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.DataStoring.get_values" title="Permalink to this definition"></a></dt>
+<dd><p>To obtain value from the memory</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.DataStoring.list_to_chunks">
+<span class="sig-name descname"><span class="pre">list_to_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_chunksize</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.DataStoring.list_to_chunks" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.DataStoring.load_data">
+<span class="sig-name descname"><span class="pre">load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\t'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.bf.data.DataStoring.load_data" title="Permalink to this definition"></a></dt>
+<dd><p>To load data from a readable file format and store them into the DataStoring class format</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.DataStoring.memorize">
+<span class="sig-name descname"><span class="pre">memorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_frame_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.data.DataStoring.memorize" title="Permalink to this definition"></a></dt>
+<dd><p>To store a particular variable into a memory</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.data.DataStoring.save_data">
+<span class="sig-name descname"><span class="pre">save_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'\t'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.bf.data.DataStoring.save_data" title="Permalink to this definition"></a></dt>
+<dd><p>To save stored data in memory_dict as a readable file format</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.bf.exceptions"></span><p>Ver. 1.0.1 (2021-11-10)</p>
+<p>This module provides exception classes.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="mlpro.bf.exceptions.ImplementationError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.exceptions.</span></span><span class="sig-name descname"><span class="pre">ImplementationError</span></span><a class="headerlink" href="#mlpro.bf.exceptions.ImplementationError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised on an implementation error in a child class of MLPro…</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="mlpro.bf.exceptions.ParamError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.exceptions.</span></span><span class="sig-name descname"><span class="pre">ParamError</span></span><a class="headerlink" href="#mlpro.bf.exceptions.ParamError" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>To be raised on a parameter error…</p>
+</dd></dl>
+
+<span class="target" id="module-mlpro.bf.math"></span><p>Ver. 1.3.0 (2021-10-25)</p>
+<p>This module provides basic mathematical classes.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.math.DataObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.math.</span></span><span class="sig-name descname"><span class="pre">DataObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">p_meta_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.DataObject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Container class for (big) data objects of any type with optional additional meta data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.DataObject.get_data">
+<span class="sig-name descname"><span class="pre">get_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.DataObject.get_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.DataObject.get_meta_data">
+<span class="sig-name descname"><span class="pre">get_meta_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#mlpro.bf.math.DataObject.get_meta_data" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.math.</span></span><span class="sig-name descname"><span class="pre">Dimension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_name_short</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_base_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'R'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_name_long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_name_latex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_unit_latex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_boundaries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Dimension" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Objects of this type specify properties of a dimension of a set.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.C_BASE_SET_DO">
+<span class="sig-name descname"><span class="pre">C_BASE_SET_DO</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DO'</span></em><a class="headerlink" href="#mlpro.bf.math.Dimension.C_BASE_SET_DO" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.C_BASE_SET_N">
+<span class="sig-name descname"><span class="pre">C_BASE_SET_N</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'N'</span></em><a class="headerlink" href="#mlpro.bf.math.Dimension.C_BASE_SET_N" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.C_BASE_SET_R">
+<span class="sig-name descname"><span class="pre">C_BASE_SET_R</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'R'</span></em><a class="headerlink" href="#mlpro.bf.math.Dimension.C_BASE_SET_R" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.C_BASE_SET_Z">
+<span class="sig-name descname"><span class="pre">C_BASE_SET_Z</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Z'</span></em><a class="headerlink" href="#mlpro.bf.math.Dimension.C_BASE_SET_Z" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.get_base_set">
+<span class="sig-name descname"><span class="pre">get_base_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Dimension.get_base_set" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.get_boundaries">
+<span class="sig-name descname"><span class="pre">get_boundaries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Dimension.get_boundaries" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.get_description">
+<span class="sig-name descname"><span class="pre">get_description</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Dimension.get_description" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.get_id">
+<span class="sig-name descname"><span class="pre">get_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Dimension.get_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.get_name_latex">
+<span class="sig-name descname"><span class="pre">get_name_latex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Dimension.get_name_latex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.get_name_long">
+<span class="sig-name descname"><span class="pre">get_name_long</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Dimension.get_name_long" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.get_name_short">
+<span class="sig-name descname"><span class="pre">get_name_short</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Dimension.get_name_short" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.get_unit">
+<span class="sig-name descname"><span class="pre">get_unit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Dimension.get_unit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Dimension.get_unit_latex">
+<span class="sig-name descname"><span class="pre">get_unit_latex</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Dimension.get_unit_latex" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.math.ESpace">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.math.</span></span><span class="sig-name descname"><span class="pre">ESpace</span></span><a class="headerlink" href="#mlpro.bf.math.ESpace" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.math.MSpace</span></code></a></p>
+<p>Objects of this type represent an Euclidian space. The distance method
+implements the Euclidian norm.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.ESpace.distance">
+<span class="sig-name descname"><span class="pre">distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_e1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><span class="pre">mlpro.bf.math.Element</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_e2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><span class="pre">mlpro.bf.math.Element</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.ESpace.distance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.math.Element">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.math.</span></span><span class="sig-name descname"><span class="pre">Element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Set" title="mlpro.bf.math.Set"><span class="pre">mlpro.bf.math.Set</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Element" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Element of a (multivariate) set.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Element.get_dim_ids">
+<span class="sig-name descname"><span class="pre">get_dim_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#mlpro.bf.math.Element.get_dim_ids" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Element.get_related_set">
+<span class="sig-name descname"><span class="pre">get_related_set</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.bf.math.Set" title="mlpro.bf.math.Set"><span class="pre">mlpro.bf.math.Set</span></a></span></span><a class="headerlink" href="#mlpro.bf.math.Element.get_related_set" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Element.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_dim_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Element.get_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Element.get_values">
+<span class="sig-name descname"><span class="pre">get_values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Element.get_values" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Element.set_value">
+<span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_dim_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Element.set_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Element.set_values">
+<span class="sig-name descname"><span class="pre">set_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Element.set_values" title="Permalink to this definition"></a></dt>
+<dd><p>Overwrites the values of all components of the element.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_values        Something iterable with same length as number of element dimensions.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.math.ElementList">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.math.</span></span><span class="sig-name descname"><span class="pre">ElementList</span></span><a class="headerlink" href="#mlpro.bf.math.ElementList" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>List of Element objects.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.ElementList.add_elem">
+<span class="sig-name descname"><span class="pre">add_elem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_elem</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><span class="pre">mlpro.bf.math.Element</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.ElementList.add_elem" title="Permalink to this definition"></a></dt>
+<dd><p>Adds an element object under it’s id in the internal element list.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_id        Unique id of the element
+p_elem      Element object to be added</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.ElementList.get_elem">
+<span class="sig-name descname"><span class="pre">get_elem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_id</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><span class="pre">mlpro.bf.math.Element</span></a></span></span><a class="headerlink" href="#mlpro.bf.math.ElementList.get_elem" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.ElementList.get_elem_ids">
+<span class="sig-name descname"><span class="pre">get_elem_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#mlpro.bf.math.ElementList.get_elem_ids" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.math.Function">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.math.</span></span><span class="sig-name descname"><span class="pre">Function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_input_space:</span> <span class="pre">mlpro.bf.math.MSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_output_space:</span> <span class="pre">mlpro.bf.math.MSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_output_elem_cls=&lt;class</span> <span class="pre">'mlpro.bf.math.Element'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Function" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Model class for an elementary bi-multivariate mathematical function that maps elements of a
+multivariate input space to elements of a multivariate output space.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Function.map">
+<span class="sig-name descname"><span class="pre">map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><span class="pre">mlpro.bf.math.Element</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><span class="pre">mlpro.bf.math.Element</span></a></span></span><a class="headerlink" href="#mlpro.bf.math.Function.map" title="Permalink to this definition"></a></dt>
+<dd><p>Maps a multivariate abscissa/input element to a multivariate ordinate/output element.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.math.MSpace">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.math.</span></span><span class="sig-name descname"><span class="pre">MSpace</span></span><a class="headerlink" href="#mlpro.bf.math.MSpace" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.math.Set" title="mlpro.bf.math.Set"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.math.Set</span></code></a></p>
+<p>Objects of this type represent a metric space. The method distance implements the metric of the 
+space.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.MSpace.distance">
+<span class="sig-name descname"><span class="pre">distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_e1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><span class="pre">mlpro.bf.math.Element</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_e2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><span class="pre">mlpro.bf.math.Element</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.MSpace.distance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.math.Set">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.math.</span></span><span class="sig-name descname"><span class="pre">Set</span></span><a class="headerlink" href="#mlpro.bf.math.Set" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Objects of this type describe a (multivariate) set in a mathematical sense.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Set.add_dim">
+<span class="sig-name descname"><span class="pre">add_dim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_dim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Dimension" title="mlpro.bf.math.Dimension"><span class="pre">mlpro.bf.math.Dimension</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Set.add_dim" title="Permalink to this definition"></a></dt>
+<dd><p>Raises the dimensionality of the set by adding a new dimension.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_dim       Dimension to be added</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Set.get_dim">
+<span class="sig-name descname"><span class="pre">get_dim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_id</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.bf.math.Dimension" title="mlpro.bf.math.Dimension"><span class="pre">mlpro.bf.math.Dimension</span></a></span></span><a class="headerlink" href="#mlpro.bf.math.Set.get_dim" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the dimension specified by it’s unique id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Set.get_dim_ids">
+<span class="sig-name descname"><span class="pre">get_dim_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Set.get_dim_ids" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the unique ids of the related dimensions.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Set.get_num_dim">
+<span class="sig-name descname"><span class="pre">get_num_dim</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Set.get_num_dim" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the dimensionality of the set (=number of dimensions of the set).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.math.Set.spawn">
+<span class="sig-name descname"><span class="pre">spawn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_id_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.math.Set.spawn" title="Permalink to this definition"></a></dt>
+<dd><p>Spawns a new class with same type and a subset of dimensions specified
+by an index list.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_id_list       List of indices of dimensions to be adopted</p>
+</dd>
+<dt>Returns:</dt><dd><p>New object with subset of dimensions</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.bf.ml"></span><p>Ver. 1.2.0 (2021-11-15)</p>
+<p>This module provides fundamental machine learning templates, functionalities and properties.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.ml.AdaptiveFunction">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.ml.</span></span><span class="sig-name descname"><span class="pre">AdaptiveFunction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_input_space:</span> <span class="pre">mlpro.bf.math.MSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_output_space:</span> <span class="pre">mlpro.bf.math.MSpace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_output_elem_cls=&lt;class</span> <span class="pre">'mlpro.bf.math.Element'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_threshold=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size=0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging=True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.AdaptiveFunction" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.ml.Model" title="mlpro.bf.ml.Model"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.Model</span></code></a>, <a class="reference internal" href="#mlpro.bf.math.Function" title="mlpro.bf.math.Function"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.math.Function</span></code></a></p>
+<p>Model class for an adaptive bi-multivariate mathematical function.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.AdaptiveFunction.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.bf.ml.AdaptiveFunction.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.AdaptiveFunction.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Model</span> <span class="pre">Fct'</span></em><a class="headerlink" href="#mlpro.bf.ml.AdaptiveFunction.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.AdaptiveFunction.adapt">
+<span class="sig-name descname"><span class="pre">adapt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_input</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><span class="pre">mlpro.bf.math.Element</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><span class="pre">mlpro.bf.math.Element</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.bf.ml.AdaptiveFunction.adapt" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Parameters:</dt><dd><p>p_input         Abscissa/input element object (type Element)
+p_output        Setpoint ordinate/output element (type Element)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.AdaptiveFunction.get_maturity">
+<span class="sig-name descname"><span class="pre">get_maturity</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.AdaptiveFunction.get_maturity" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the maturity of the adaptive function. The maturity is defined as the relation 
+between the number of successful mapped inputs and the total number of mappings since the 
+last adaptation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.ml.HyperParam">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.ml.</span></span><span class="sig-name descname"><span class="pre">HyperParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_name_short</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_base_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'R'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_name_long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_name_latex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_unit_latex</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_boundaries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.HyperParam" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.math.Dimension" title="mlpro.bf.math.Dimension"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.math.Dimension</span></code></a></p>
+<p>…</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.HyperParam.callback_on_change">
+<span class="sig-name descname"><span class="pre">callback_on_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.HyperParam.callback_on_change" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.HyperParam.register_callback">
+<span class="sig-name descname"><span class="pre">register_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_cb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.HyperParam.register_callback" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.ml.HyperParamSpace">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.ml.</span></span><span class="sig-name descname"><span class="pre">HyperParamSpace</span></span><a class="headerlink" href="#mlpro.bf.ml.HyperParamSpace" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.math.ESpace" title="mlpro.bf.math.ESpace"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.math.ESpace</span></code></a></p>
+<p>…</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.ml.HyperParamTuner">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.ml.</span></span><span class="sig-name descname"><span class="pre">HyperParamTuner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.HyperParamTuner" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.various.Log" title="mlpro.bf.various.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.Log</span></code></a></p>
+<p>Template class for hyperparameter tuning (HPT).</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.HyperParamTuner.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.bf.ml.HyperParamTuner.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.HyperParamTuner.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'HyperParam</span> <span class="pre">Tuner'</span></em><a class="headerlink" href="#mlpro.bf.ml.HyperParamTuner.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.HyperParamTuner.maximize">
+<span class="sig-name descname"><span class="pre">maximize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_ofct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.ml.Model" title="mlpro.bf.ml.Model"><span class="pre">mlpro.bf.ml.Model</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_num_trials</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.bf.ml.TrainingResults" title="mlpro.bf.ml.TrainingResults"><span class="pre">mlpro.bf.ml.TrainingResults</span></a></span></span><a class="headerlink" href="#mlpro.bf.ml.HyperParamTuner.maximize" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Parameters:</dt><dd><p>p_ofct          Objective function to be maximized
+p_model         Model object to be tuned
+p_num_trials    Number of trials</p>
+</dd>
+<dt>Returns:</dt><dd><p>Training results of the best tuned model (see class TrainingResults)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.ml.HyperParamTupel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.ml.</span></span><span class="sig-name descname"><span class="pre">HyperParamTupel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_set</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.math.Set" title="mlpro.bf.math.Set"><span class="pre">mlpro.bf.math.Set</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.HyperParamTupel" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.math.Element" title="mlpro.bf.math.Element"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.math.Element</span></code></a></p>
+<p>…</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.HyperParamTupel.set_value">
+<span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_dim_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.HyperParamTupel.set_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Mode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.ml.</span></span><span class="sig-name descname"><span class="pre">Mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Mode" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.various.Log" title="mlpro.bf.various.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.Log</span></code></a></p>
+<p>Property class that adds a mode and related methods to a child class.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Mode.C_MODE_INITIAL">
+<span class="sig-name descname"><span class="pre">C_MODE_INITIAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#mlpro.bf.ml.Mode.C_MODE_INITIAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Mode.C_MODE_REAL">
+<span class="sig-name descname"><span class="pre">C_MODE_REAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#mlpro.bf.ml.Mode.C_MODE_REAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Mode.C_MODE_SIM">
+<span class="sig-name descname"><span class="pre">C_MODE_SIM</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.bf.ml.Mode.C_MODE_SIM" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Mode.C_VALID_MODES">
+<span class="sig-name descname"><span class="pre">C_VALID_MODES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0,</span> <span class="pre">1]</span></em><a class="headerlink" href="#mlpro.bf.ml.Mode.C_VALID_MODES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Mode.get_mode">
+<span class="sig-name descname"><span class="pre">get_mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Mode.get_mode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Mode.set_mode">
+<span class="sig-name descname"><span class="pre">set_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Mode.set_mode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.ml.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Model" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.various.Log" title="mlpro.bf.various.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.Log</span></code></a>, <a class="reference internal" href="#mlpro.bf.various.LoadSave" title="mlpro.bf.various.LoadSave"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.LoadSave</span></code></a>, <a class="reference internal" href="#mlpro.bf.plot.Plottable" title="mlpro.bf.plot.Plottable"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.plot.Plottable</span></code></a>, <a class="reference internal" href="#mlpro.bf.various.ScientificObject" title="mlpro.bf.various.ScientificObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.ScientificObject</span></code></a></p>
+<dl class="simple">
+<dt>Fundamental template class for adaptive ML models. Supports especially</dt><dd><ul class="simple">
+<li><p>Adaptivity</p></li>
+<li><p>Data buffering</p></li>
+<li><p>Hyperparameter management</p></li>
+<li><p>Plotting</p></li>
+<li><p>Scientific referencing on source code level</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model.C_BUFFER_CLS">
+<span class="sig-name descname"><span class="pre">C_BUFFER_CLS</span></span><a class="headerlink" href="#mlpro.bf.ml.Model.C_BUFFER_CLS" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#mlpro.bf.data.Buffer" title="mlpro.bf.data.Buffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.data.Buffer</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.bf.ml.Model.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model.C_SCIREF_TYPE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.ml.Model.C_SCIREF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Model'</span></em><a class="headerlink" href="#mlpro.bf.ml.Model.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model.adapt">
+<span class="sig-name descname"><span class="pre">adapt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">p_args</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.bf.ml.Model.adapt" title="Permalink to this definition"></a></dt>
+<dd><p>Adapts something inside in the sense of machine learning. Please redefine and describe the 
+protected method _adapt() that is called here.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_args          All parameters that are needed for the adaption.</p>
+</dd>
+<dt>Returns:</dt><dd><p>True, if something has been adapted. False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model.clear_buffer">
+<span class="sig-name descname"><span class="pre">clear_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Model.clear_buffer" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model.get_adapted">
+<span class="sig-name descname"><span class="pre">get_adapted</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.bf.ml.Model.get_adapted" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model.get_hyperparam">
+<span class="sig-name descname"><span class="pre">get_hyperparam</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.bf.ml.HyperParamTupel" title="mlpro.bf.ml.HyperParamTupel"><span class="pre">mlpro.bf.ml.HyperParamTupel</span></a></span></span><a class="headerlink" href="#mlpro.bf.ml.Model.get_hyperparam" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model.set_random_seed">
+<span class="sig-name descname"><span class="pre">set_random_seed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Model.set_random_seed" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the internal random generator using the given seed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Model.switch_adaptivity">
+<span class="sig-name descname"><span class="pre">switch_adaptivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Model.switch_adaptivity" title="Permalink to this definition"></a></dt>
+<dd><p>Switches adaption functionality on/off.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_ada               Boolean switch for adaptivity</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.ml.</span></span><span class="sig-name descname"><span class="pre">Scenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_cycle_len</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.timedelta</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_cycle_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_visualize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Scenario" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.ml.Mode" title="mlpro.bf.ml.Mode"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.Mode</span></code></a>, <a class="reference internal" href="#mlpro.bf.various.LoadSave" title="mlpro.bf.various.LoadSave"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.LoadSave</span></code></a>, <a class="reference internal" href="#mlpro.bf.plot.Plottable" title="mlpro.bf.plot.Plottable"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.plot.Plottable</span></code></a></p>
+<p>Template class for a common ML scenario with an adaptive model inside. To be inherited and 
+specialized in higher ML subtopic layers.</p>
+<dl class="simple">
+<dt>The following key features are included:</dt><dd><ul class="simple">
+<li><p>Operation mode</p></li>
+<li><p>Cycle management</p></li>
+<li><p>Timer</p></li>
+<li><p>Latency</p></li>
+<li><p>Explicit handling of an adaptive ML model inside</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.bf.ml.Scenario.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Scenario'</span></em><a class="headerlink" href="#mlpro.bf.ml.Scenario.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.get_cycle_id">
+<span class="sig-name descname"><span class="pre">get_cycle_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Scenario.get_cycle_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.get_latency">
+<span class="sig-name descname"><span class="pre">get_latency</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime.timedelta</span></span></span><a class="headerlink" href="#mlpro.bf.ml.Scenario.get_latency" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the latency of the scenario. To be implemented in child class.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.get_model">
+<span class="sig-name descname"><span class="pre">get_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.bf.ml.Model" title="mlpro.bf.ml.Model"><span class="pre">mlpro.bf.ml.Model</span></a></span></span><a class="headerlink" href="#mlpro.bf.ml.Scenario.get_model" title="Permalink to this definition"></a></dt>
+<dd><p>Returns the adaptive model object inside the scenario.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Scenario.init_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes the plot. Optionally the plot itself will be embedded in a matplotlib figure.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_figure            Optional MatPlotLib host figure, where the plot shall be embedded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Scenario.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets the scenario and especially the ML model inside. Internal random generators are seed 
+with the given value. Custom reset actions can be implemented in method _reset().</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_seed          Seed value for internal random generator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_term_on_success</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_term_on_error</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_term_on_timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Scenario.run" title="Permalink to this definition"></a></dt>
+<dd><p>Runs the scenario as a sequence of single process steps until a terminating event occures.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>success         True on success. False otherwise.
+error           True on error. False otherwise.
+timeout         True on timeout. False otherwise.
+limit           True, if cycle limit has reached. False otherwise.
+num_cycle       Number of cycles.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.run_cycle">
+<span class="sig-name descname"><span class="pre">run_cycle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Scenario.run_cycle" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a single process cycle.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>success         True on success. False otherwise.
+error           True on error. False otherwise.
+timeout         True on timeout. False otherwise.
+limit           True, if cycle limit has reached. False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.set_cycle_limit">
+<span class="sig-name descname"><span class="pre">set_cycle_limit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_limit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Scenario.set_cycle_limit" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.set_mode">
+<span class="sig-name descname"><span class="pre">set_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Scenario.set_mode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.switch_logging">
+<span class="sig-name descname"><span class="pre">switch_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Scenario.switch_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Switches log functionality on/off.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_logging     Log level (see constants for log levels)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Scenario.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Scenario.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Training">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.ml.</span></span><span class="sig-name descname"><span class="pre">Training</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.ml.Scenario" title="mlpro.bf.ml.Scenario"><span class="pre">mlpro.bf.ml.Scenario</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_cycle_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_hpt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#mlpro.bf.ml.HyperParamTuner" title="mlpro.bf.ml.HyperParamTuner"><span class="pre">mlpro.bf.ml.HyperParamTuner</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_hpt_trials</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'W'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.Training" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.various.Log" title="mlpro.bf.various.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.Log</span></code></a></p>
+<p>Template class for a ML training and hyperparameter tuning.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Training.C_CLS_RESULTS">
+<span class="sig-name descname"><span class="pre">C_CLS_RESULTS</span></span><a class="headerlink" href="#mlpro.bf.ml.Training.C_CLS_RESULTS" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="#mlpro.bf.ml.TrainingResults" title="mlpro.bf.ml.TrainingResults"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.TrainingResults</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Training.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.bf.ml.Training.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Training.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Training'</span></em><a class="headerlink" href="#mlpro.bf.ml.Training.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Training.get_results">
+<span class="sig-name descname"><span class="pre">get_results</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.bf.ml.TrainingResults" title="mlpro.bf.ml.TrainingResults"><span class="pre">mlpro.bf.ml.TrainingResults</span></a></span></span><a class="headerlink" href="#mlpro.bf.ml.Training.get_results" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Training.get_scenario">
+<span class="sig-name descname"><span class="pre">get_scenario</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.bf.ml.Scenario" title="mlpro.bf.ml.Scenario"><span class="pre">mlpro.bf.ml.Scenario</span></a></span></span><a class="headerlink" href="#mlpro.bf.ml.Training.get_scenario" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Training.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#mlpro.bf.ml.TrainingResults" title="mlpro.bf.ml.TrainingResults"><span class="pre">mlpro.bf.ml.TrainingResults</span></a></span></span><a class="headerlink" href="#mlpro.bf.ml.Training.run" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a training and returns the results of the best trained/tuned agent.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.Training.run_cycle">
+<span class="sig-name descname"><span class="pre">run_cycle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.bf.ml.Training.run_cycle" title="Permalink to this definition"></a></dt>
+<dd><p>Runs a single training cycle.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>True, if training run has finished. False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.ml.TrainingResults">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.ml.</span></span><span class="sig-name descname"><span class="pre">TrainingResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.ml.Scenario" title="mlpro.bf.ml.Scenario"><span class="pre">mlpro.bf.ml.Scenario</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_run</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_cycle_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.TrainingResults" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.various.Saveable" title="mlpro.bf.various.Saveable"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.Saveable</span></code></a></p>
+<p>Results of a training (see class Training).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.TrainingResults.add_custom_result">
+<span class="sig-name descname"><span class="pre">add_custom_result</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.TrainingResults.add_custom_result" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.TrainingResults.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_cycle_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.ml.TrainingResults.close" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.ml.TrainingResults.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'summary.txt'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.bf.ml.TrainingResults.save" title="Permalink to this definition"></a></dt>
+<dd><p>Saves a training summary in the given path.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.bf.plot"></span><p>Ver. 1.0.1 (2021-10-25)</p>
+<p>This module provides various classes related to data plotting.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.plot.DataPlotting">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.plot.</span></span><span class="sig-name descname"><span class="pre">DataPlotting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.bf.data.DataStoring" title="mlpro.bf.data.DataStoring"><span class="pre">mlpro.bf.data.DataStoring</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Episodic'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_window</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_showing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_printing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_figsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(7,</span> <span class="pre">7)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'darkblue'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.various.LoadSave" title="mlpro.bf.various.LoadSave"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.LoadSave</span></code></a></p>
+<p>This class provides a functionality to plot the stored values of variables.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.plot.DataPlotting.C_PLOT_TYPE_CY">
+<span class="sig-name descname"><span class="pre">C_PLOT_TYPE_CY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Cyclic'</span></em><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.C_PLOT_TYPE_CY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.plot.DataPlotting.C_PLOT_TYPE_EP">
+<span class="sig-name descname"><span class="pre">C_PLOT_TYPE_EP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Episodic'</span></em><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.C_PLOT_TYPE_EP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.plot.DataPlotting.C_PLOT_TYPE_EP_M">
+<span class="sig-name descname"><span class="pre">C_PLOT_TYPE_EP_M</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Episodic</span> <span class="pre">Mean'</span></em><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.C_PLOT_TYPE_EP_M" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.plot.DataPlotting.get_plots">
+<span class="sig-name descname"><span class="pre">get_plots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.get_plots" title="Permalink to this definition"></a></dt>
+<dd><p>A function to plot data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.plot.DataPlotting.moving_mean">
+<span class="sig-name descname"><span class="pre">moving_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_window</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.moving_mean" title="Permalink to this definition"></a></dt>
+<dd><p>To create a series of averages of different subsets of the full data set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.plot.DataPlotting.plots_type_cy">
+<span class="sig-name descname"><span class="pre">plots_type_cy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.plots_type_cy" title="Permalink to this definition"></a></dt>
+<dd><p>A function to plot data per cycle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.plot.DataPlotting.plots_type_ep">
+<span class="sig-name descname"><span class="pre">plots_type_ep</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.plots_type_ep" title="Permalink to this definition"></a></dt>
+<dd><p>A function to plot data per episode by extending the cyclic plots in one plot</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.plot.DataPlotting.plots_type_ep_mean">
+<span class="sig-name descname"><span class="pre">plots_type_ep_mean</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.plots_type_ep_mean" title="Permalink to this definition"></a></dt>
+<dd><p>A function to plot data per episode according to its mean value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.plot.DataPlotting.save_plots">
+<span class="sig-name descname"><span class="pre">save_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_dpi_mul</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.save_plots" title="Permalink to this definition"></a></dt>
+<dd><p>This method is used to save generated plots.</p>
+<dl>
+<dt>Parameters:</dt><dd><p>p_path          Path where file will be saved
+p_format        Format of the saved file.</p>
+<blockquote>
+<div><p>Options: ‘eps’, ‘jpg’, ‘png’, ‘pdf’, ‘svg’</p>
+</div></blockquote>
+<p>p_dpi_mul       Saving plots parameter</p>
+</dd>
+<dt>Returns: </dt><dd><p>True, if plots where saved successfully. False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.plot.Plottable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.plot.</span></span><span class="sig-name descname"><span class="pre">Plottable</span></span><a class="headerlink" href="#mlpro.bf.plot.Plottable" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Property class that inherits the ability to be plottable.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.plot.Plottable.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.Plottable.init_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes the plot. Optionally the plot itself will be embedded in a matplotlib figure.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_figure            Optional MatPlotLib host figure, where the plot shall be embedded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.plot.Plottable.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.Plottable.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.bf.various"></span><p>Ver. 1.7.2 (2021-11-15)</p>
+<p>This module provides various classes with elementry functionalities for reuse in higher level classes. 
+For example: logging, load/save, timer, …</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.various.LoadSave">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.various.</span></span><span class="sig-name descname"><span class="pre">LoadSave</span></span><a class="headerlink" href="#mlpro.bf.various.LoadSave" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.bf.various.Loadable" title="mlpro.bf.various.Loadable"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.Loadable</span></code></a>, <a class="reference internal" href="#mlpro.bf.various.Saveable" title="mlpro.bf.various.Saveable"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.Saveable</span></code></a></p>
+<p>This abstract class adds the ability to be loadable and saveable to inherited classes. The 
+filename can be generated internally by implementing the method generate_filename() or provided 
+from outside otherwise. See classes Loadable and Saveable for further information.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.various.Loadable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.various.</span></span><span class="sig-name descname"><span class="pre">Loadable</span></span><a class="headerlink" href="#mlpro.bf.various.Loadable" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This abstract class adds the ability to be loadable to inherited classes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Loadable.load">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Loadable.load" title="Permalink to this definition"></a></dt>
+<dd><p>Loads content from the given path and file name. If file does not exist, it returns None.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_path          Path that contains the file 
+p_filename      File name</p>
+</dd>
+<dt>Returns: </dt><dd><p>A loaded object, if file content was loaded successfully. None otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.various.</span></span><span class="sig-name descname"><span class="pre">Log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Log" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class adds elementry log functionality to inherited classes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_COL_ERROR">
+<span class="sig-name descname"><span class="pre">C_COL_ERROR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[91m'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_COL_ERROR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_COL_RESET">
+<span class="sig-name descname"><span class="pre">C_COL_RESET</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[0m'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_COL_RESET" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_COL_SUCCESS">
+<span class="sig-name descname"><span class="pre">C_COL_SUCCESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[32m'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_COL_SUCCESS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_COL_WARNING">
+<span class="sig-name descname"><span class="pre">C_COL_WARNING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'\x1b[93m'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_COL_WARNING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_LOG_ALL">
+<span class="sig-name descname"><span class="pre">C_LOG_ALL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_LOG_ALL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_LOG_E">
+<span class="sig-name descname"><span class="pre">C_LOG_E</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'E'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_LOG_E" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_LOG_LEVELS">
+<span class="sig-name descname"><span class="pre">C_LOG_LEVELS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[True,</span> <span class="pre">False,</span> <span class="pre">'W',</span> <span class="pre">'E']</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_LOG_LEVELS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_LOG_NOTHING">
+<span class="sig-name descname"><span class="pre">C_LOG_NOTHING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_LOG_NOTHING" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_LOG_TYPES">
+<span class="sig-name descname"><span class="pre">C_LOG_TYPES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['I',</span> <span class="pre">'W',</span> <span class="pre">'E',</span> <span class="pre">'S']</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_LOG_TYPES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_LOG_TYPE_E">
+<span class="sig-name descname"><span class="pre">C_LOG_TYPE_E</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'E'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_LOG_TYPE_E" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_LOG_TYPE_I">
+<span class="sig-name descname"><span class="pre">C_LOG_TYPE_I</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'I'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_LOG_TYPE_I" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_LOG_TYPE_S">
+<span class="sig-name descname"><span class="pre">C_LOG_TYPE_S</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'S'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_LOG_TYPE_S" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_LOG_TYPE_W">
+<span class="sig-name descname"><span class="pre">C_LOG_TYPE_W</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'W'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_LOG_TYPE_W" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_LOG_WE">
+<span class="sig-name descname"><span class="pre">C_LOG_WE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'W'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_LOG_WE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.bf.various.Log.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.log">
+<span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_type</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">p_args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Log.log" title="Permalink to this definition"></a></dt>
+<dd><p>Writes log line to standard output in format:
+yyyy-mm-dd  hh:mm:ss.mmmmmm  [p_type  C_TYPE C_NAME]: [p_args]</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_type      type of log entry
+p_args      log informations</p>
+</dd>
+<dt>Returns: </dt><dd><p>Nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Log.switch_logging">
+<span class="sig-name descname"><span class="pre">switch_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Log.switch_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Switches log functionality on/off.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_logging     Log level (see constants for log levels)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.various.Saveable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.various.</span></span><span class="sig-name descname"><span class="pre">Saveable</span></span><a class="headerlink" href="#mlpro.bf.various.Saveable" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This abstract class adds the ability to be saveable to inherited classes. The filename can be
+generated internally by implementing the method get_filename() or provided from outside otherwise.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Saveable.C_SUFFIX">
+<span class="sig-name descname"><span class="pre">C_SUFFIX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'.pkl'</span></em><a class="headerlink" href="#mlpro.bf.various.Saveable.C_SUFFIX" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Saveable.generate_filename">
+<span class="sig-name descname"><span class="pre">generate_filename</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Saveable.generate_filename" title="Permalink to this definition"></a></dt>
+<dd><p>To be redefined in case of use of internal generated file names.</p>
+<dl class="simple">
+<dt>Returns: </dt><dd><p>Returns an internal unique filename.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Saveable.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.bf.various.Saveable.save" title="Permalink to this definition"></a></dt>
+<dd><p>Saves content to the given path and file name. If file name is None, a unique file name will
+be generated by calling method generate_filename(). If it returns False then the saving method is failed.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_path          Path where file will be saved
+p_filename      File name (if None an internal filename will be generated)</p>
+</dd>
+<dt>Returns: </dt><dd><p>True, if file content was saved successfully. False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.various.</span></span><span class="sig-name descname"><span class="pre">ScientificObject</span></span><a class="headerlink" href="#mlpro.bf.various.ScientificObject" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class provides elementary functionality for storing a scientific reference.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_ABSTRACT">
+<span class="sig-name descname"><span class="pre">C_SCIREF_ABSTRACT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_ABSTRACT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_AUTHOR">
+<span class="sig-name descname"><span class="pre">C_SCIREF_AUTHOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_AUTHOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_BOOKTITLE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_BOOKTITLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_BOOKTITLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_CHAPTER">
+<span class="sig-name descname"><span class="pre">C_SCIREF_CHAPTER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_CHAPTER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_CITY">
+<span class="sig-name descname"><span class="pre">C_SCIREF_CITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_CITY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_CONFERENCE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_CONFERENCE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_CONFERENCE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_COUNTRY">
+<span class="sig-name descname"><span class="pre">C_SCIREF_COUNTRY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_COUNTRY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_DAY">
+<span class="sig-name descname"><span class="pre">C_SCIREF_DAY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_DAY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_DOI">
+<span class="sig-name descname"><span class="pre">C_SCIREF_DOI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_DOI" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_INSTITUTION">
+<span class="sig-name descname"><span class="pre">C_SCIREF_INSTITUTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_INSTITUTION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_ISBN">
+<span class="sig-name descname"><span class="pre">C_SCIREF_ISBN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_ISBN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_JOURNAL">
+<span class="sig-name descname"><span class="pre">C_SCIREF_JOURNAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_JOURNAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_KEYWORDS">
+<span class="sig-name descname"><span class="pre">C_SCIREF_KEYWORDS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_KEYWORDS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_MONTH">
+<span class="sig-name descname"><span class="pre">C_SCIREF_MONTH</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_MONTH" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_NOTES">
+<span class="sig-name descname"><span class="pre">C_SCIREF_NOTES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_NOTES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_NUMBER">
+<span class="sig-name descname"><span class="pre">C_SCIREF_NUMBER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_NUMBER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_PAGES">
+<span class="sig-name descname"><span class="pre">C_SCIREF_PAGES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_PAGES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_PUBLISHER">
+<span class="sig-name descname"><span class="pre">C_SCIREF_PUBLISHER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_PUBLISHER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_SERIES">
+<span class="sig-name descname"><span class="pre">C_SCIREF_SERIES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_SERIES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_TITLE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TITLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_TITLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_TYPE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_ARTICLE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE_ARTICLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Journal</span> <span class="pre">Article'</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_ARTICLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_BOOK">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE_BOOK</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Book'</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_BOOK" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_NONE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE_NONE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_NONE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_ONLINE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE_ONLINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Online'</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_ONLINE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_PROCEEDINGS">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE_PROCEEDINGS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Proceedings'</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_PROCEEDINGS" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_TECHREPORT">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE_TECHREPORT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Technical</span> <span class="pre">Report'</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_TECHREPORT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_UNPUBLISHED">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE_UNPUBLISHED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Unpublished'</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_TYPE_UNPUBLISHED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_URL">
+<span class="sig-name descname"><span class="pre">C_SCIREF_URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_URL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_VOLUME">
+<span class="sig-name descname"><span class="pre">C_SCIREF_VOLUME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_VOLUME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.ScientificObject.C_SCIREF_YEAR">
+<span class="sig-name descname"><span class="pre">C_SCIREF_YEAR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#mlpro.bf.various.ScientificObject.C_SCIREF_YEAR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.various.TStamp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.various.</span></span><span class="sig-name descname"><span class="pre">TStamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_tstamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.timedelta</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.TStamp" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class provides elementry time stamp functionality for inherited classes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.TStamp.get_tstamp">
+<span class="sig-name descname"><span class="pre">get_tstamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime.timedelta</span></span></span><a class="headerlink" href="#mlpro.bf.various.TStamp.get_tstamp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.TStamp.set_tstamp">
+<span class="sig-name descname"><span class="pre">set_tstamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_tstamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.timedelta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.TStamp.set_tstamp" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.bf.various.Timer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.bf.various.</span></span><span class="sig-name descname"><span class="pre">Timer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_lap_duration</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.timedelta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_lap_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">999999</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Timer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Timer class in two time modes (real/virtual) and with simple lap management.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Timer.C_LAP_LIMIT">
+<span class="sig-name descname"><span class="pre">C_LAP_LIMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">999999</span></em><a class="headerlink" href="#mlpro.bf.various.Timer.C_LAP_LIMIT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Timer.C_MODE_REAL">
+<span class="sig-name descname"><span class="pre">C_MODE_REAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.bf.various.Timer.C_MODE_REAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.bf.various.Timer.C_MODE_VIRTUAL">
+<span class="sig-name descname"><span class="pre">C_MODE_VIRTUAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#mlpro.bf.various.Timer.C_MODE_VIRTUAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Timer.add_time">
+<span class="sig-name descname"><span class="pre">add_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_delta</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">datetime.timedelta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Timer.add_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Timer.finish_lap">
+<span class="sig-name descname"><span class="pre">finish_lap</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.bf.various.Timer.finish_lap" title="Permalink to this definition"></a></dt>
+<dd><p>Finishes the current lap. In timer mode C_MODE_REAL the remaining time
+until the end of the lap will be paused.</p>
+<dl class="simple">
+<dt>Returns: </dt><dd><p>True, if the remaining time to the next lap was positive. False, if 
+the timer timed out.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Timer.get_lap_id">
+<span class="sig-name descname"><span class="pre">get_lap_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Timer.get_lap_id" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Timer.get_lap_time">
+<span class="sig-name descname"><span class="pre">get_lap_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime.timedelta</span></span></span><a class="headerlink" href="#mlpro.bf.various.Timer.get_lap_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Timer.get_time">
+<span class="sig-name descname"><span class="pre">get_time</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">datetime.timedelta</span></span></span><a class="headerlink" href="#mlpro.bf.various.Timer.get_time" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.bf.various.Timer.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mlpro.bf.various.Timer.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets timer.</p>
+<dl class="simple">
+<dt>Returns: </dt><dd><p>Nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mlpro.bf">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mlpro.bf" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mlpro.html" class="btn btn-neutral float-left" title="mlpro package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mlpro.gt.html" class="btn btn-neutral float-right" title="mlpro.gt package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, FH-SWF Automatisierungstechnik und lernende Systeme.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

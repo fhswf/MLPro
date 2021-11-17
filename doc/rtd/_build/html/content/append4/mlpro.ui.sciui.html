@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlpro.ui.sciui package &mdash; MLPro Documentations 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mlpro.ui.sciui.pool package" href="mlpro.ui.sciui.pool.html" />
+    <link rel="prev" title="mlpro.ui package" href="mlpro.ui.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> MLPro Documentations
+            <img src="../../_static/logo_fh-at.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">1 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">1.1 What is MLPro?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/getstarted.html">1.2 Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/architecture.html">1.3 Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/dependencies.html">1.4 Dependencies</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">2 MLPro-BF – Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bf/elementary.html">2.1 Elementary Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bf/math.html">2.2 Mathematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bf/ml.html">2.3 Machine Learning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">3 MLPro-RL – Reinforcement Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../rl/overview.html">3.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/agents.html">3.2 Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/env.html">3.3 Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/scenario.html">3.4 Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/wrapper.html">3.5 3rd Party Support</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">4 MLPro-GT – Game Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gt/overview.html">4.1 Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">5 MLPro-UI – Interactive ML</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ui/sciui.html">5.1 UI Framework SciUI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">6 Project MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project/versions.html">6.1 Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project/paper.html">6.2 Papers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project/cont.html">6.3 Contribution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 1: List of Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append1/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 2: Pool Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append2/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 3: 3rd Party Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append2/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 4: API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="mlpro.html">mlpro package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mlpro.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mlpro.bf.html">mlpro.bf package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.gt.html">mlpro.gt package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.html">mlpro.rl package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="mlpro.ui.html">mlpro.ui package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="mlpro.ui.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.ui.html#module-mlpro.ui">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.html#module-mlpro">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">7 Quick Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../help/test.html">7.1 Test</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="mlpro.html">mlpro package</a> &raquo;</li>
+          <li><a href="mlpro.ui.html">mlpro.ui package</a> &raquo;</li>
+      <li>mlpro.ui.sciui package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/append4/mlpro.ui.sciui.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mlpro-ui-sciui-package">
+<h1>mlpro.ui.sciui package<a class="headerlink" href="#mlpro-ui-sciui-package" title="Permalink to this headline"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mlpro.ui.sciui.pool.html">mlpro.ui.sciui.pool package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.ui.sciui.pool.html#module-mlpro.ui.sciui.pool.iis">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.ui.sciui.pool.html#module-mlpro.ui.sciui.pool">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mlpro.ui.sciui.templates.html">mlpro.ui.sciui.templates package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.ui.sciui.templates.html#module-mlpro.ui.sciui.templates.scenario_test">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.ui.sciui.templates.html#module-mlpro.ui.sciui.templates">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="module-mlpro.ui.sciui.framework">
+<span id="submodules"></span><h2>Submodules<a class="headerlink" href="#module-mlpro.ui.sciui.framework" title="Permalink to this headline"></a></h2>
+<p>Ver. 1.1.0 (2021-07-29)</p>
+<p>SciUI framework classes to be reused in own SciUI scenarios. Needs Matplotlib 3.3 or higher.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUIComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_shared_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUISharedDB" title="mlpro.ui.sciui.framework.SciUISharedDB"><span class="pre">mlpro.ui.sciui.framework.SciUISharedDB</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIComponent" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIRoot" title="mlpro.ui.sciui.framework.SciUIRoot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUIRoot</span></code></a></p>
+<p>Elementry screen object in SciUI framework.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIComponent.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIComponent.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIComponent.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SciUI</span> <span class="pre">Component'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIComponent.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIComponent.get_name">
+<span class="sig-name descname"><span class="pre">get_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIComponent.get_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIComponent.init_component">
+<span class="sig-name descname"><span class="pre">init_component</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIComponent.init_component" title="Permalink to this definition"></a></dt>
+<dd><p>Initialization of component-specific elements at instance creation time. To be redefined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIComponent.refresh">
+<span class="sig-name descname"><span class="pre">refresh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_parent_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIComponent.refresh" title="Permalink to this definition"></a></dt>
+<dd><p>Refresh of all component-specific elements. To be redefined. Please call super().refresh()
+at the beginning of your own implementation.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_parent_frame      Parent frame object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUICursor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUICursor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizOn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertOn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">useblit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">lineprops</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUICursor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIRoot" title="mlpro.ui.sciui.framework.SciUIRoot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUIRoot</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.widgets.Cursor</span></code></p>
+<p>Enriched matplotlib cursor widget.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUICursor.connect_event">
+<span class="sig-name descname"><span class="pre">connect_event</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">callback</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUICursor.connect_event" title="Permalink to this definition"></a></dt>
+<dd><p>Connect a callback function with an event.</p>
+<p>This should be used in lieu of <code class="docutils literal notranslate"><span class="pre">figure.canvas.mpl_connect</span></code> since this
+function stores callback ids for later clean up.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUICursor.onbuttonpressed">
+<span class="sig-name descname"><span class="pre">onbuttonpressed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUICursor.onbuttonpressed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUICursor.onbuttonreleased">
+<span class="sig-name descname"><span class="pre">onbuttonreleased</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUICursor.onbuttonreleased" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUICursor.onmove">
+<span class="sig-name descname"><span class="pre">onmove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUICursor.onmove" title="Permalink to this definition"></a></dt>
+<dd><p>Internal event handler to draw the cursor when the mouse moves.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUICursor.set_event_status">
+<span class="sig-name descname"><span class="pre">set_event_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUICursor.set_event_status" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrame">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUIFrame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_shared_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUISharedDB" title="mlpro.ui.sciui.framework.SciUISharedDB"><span class="pre">mlpro.ui.sciui.framework.SciUISharedDB</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_width_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_height_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_padx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_pady</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_sticky</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrame" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIComponent" title="mlpro.ui.sciui.framework.SciUIComponent"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUIComponent</span></code></a></p>
+<p>Enriched wrapper class for the Tkinter (Label-)Frame class, based on the Tkinter grid positioning model.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrame.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrame.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrame.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SciUI</span> <span class="pre">Frame'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrame.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrame.add_component">
+<span class="sig-name descname"><span class="pre">add_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIComponent" title="mlpro.ui.sciui.framework.SciUIComponent"><span class="pre">mlpro.ui.sciui.framework.SciUIComponent</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrame.add_component" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrame.cb_popup_menu">
+<span class="sig-name descname"><span class="pre">cb_popup_menu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrame.cb_popup_menu" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrame.determine_frame_size">
+<span class="sig-name descname"><span class="pre">determine_frame_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrame.determine_frame_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrame.init_component">
+<span class="sig-name descname"><span class="pre">init_component</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrame.init_component" title="Permalink to this definition"></a></dt>
+<dd><p>Initialization of component-specific elements at instance creation time. To be redefined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrame.init_popup_menu">
+<span class="sig-name descname"><span class="pre">init_popup_menu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrame.init_popup_menu" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes popup menu of the component. To be redefined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrame.refresh">
+<span class="sig-name descname"><span class="pre">refresh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_parent_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrame.refresh" title="Permalink to this definition"></a></dt>
+<dd><p>Refresh of all component-specific elements. To be redefined. Please call super().refresh()
+at the beginning of your own implementation.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_parent_frame      Parent frame object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrameParam">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUIFrameParam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_shared_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUISharedDB" title="mlpro.ui.sciui.framework.SciUISharedDB"><span class="pre">mlpro.ui.sciui.framework.SciUISharedDB</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_width_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_height_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_padx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_pady</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_sticky</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrameParam" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIFrame" title="mlpro.ui.sciui.framework.SciUIFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUIFrame</span></code></a></p>
+<p>Class for parameter/text frames.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrameParam.C_FONT_FAMILY">
+<span class="sig-name descname"><span class="pre">C_FONT_FAMILY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Lucida</span> <span class="pre">Grande'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrameParam.C_FONT_FAMILY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrameParam.C_FONT_SIZE">
+<span class="sig-name descname"><span class="pre">C_FONT_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrameParam.C_FONT_SIZE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrameParam.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrameParam.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrameParam.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SciUI</span> <span class="pre">Parameter</span> <span class="pre">Frame'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrameParam.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIFrameParam.init_component">
+<span class="sig-name descname"><span class="pre">init_component</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIFrameParam.init_component" title="Permalink to this definition"></a></dt>
+<dd><p>Initialization of component-specific elements at instance creation time. To be redefined.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIRoot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUIRoot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIRoot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.various.Log" title="mlpro.bf.various.Log"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.Log</span></code></a></p>
+<p>SciUI root class with overarching properties.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIScenario">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUIScenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_shared_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUISharedDB" title="mlpro.ui.sciui.framework.SciUISharedDB"><span class="pre">mlpro.ui.sciui.framework.SciUISharedDB</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIScenario" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIFrame" title="mlpro.ui.sciui.framework.SciUIFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUIFrame</span></code></a></p>
+<p>Top level class for an entire SciUI scenario that can be registered by the SciUI application 
+class. SciUI scenarios are visible and chooseable if the switches C_RELEASED and C_VISIBLE are
+set to True.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIScenario.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIScenario.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIScenario.C_RELEASED">
+<span class="sig-name descname"><span class="pre">C_RELEASED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIScenario.C_RELEASED" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIScenario.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SciUI</span> <span class="pre">Scenario'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIScenario.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIScenario.C_VERSION">
+<span class="sig-name descname"><span class="pre">C_VERSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.0.0'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIScenario.C_VERSION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIScenario.C_VISIBLE">
+<span class="sig-name descname"><span class="pre">C_VISIBLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIScenario.C_VISIBLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISharedDB">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUISharedDB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISharedDB" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Container for scenario-internal data exchange and communication. Can be extended while runtime 
+by consuming classes.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISharedDB.start_global_refresh">
+<span class="sig-name descname"><span class="pre">start_global_refresh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISharedDB.start_global_refresh" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot2D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUISubplot2D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_shared_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUISharedDB" title="mlpro.ui.sciui.framework.SciUISharedDB"><span class="pre">mlpro.ui.sciui.framework.SciUISharedDB</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_width_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_height_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_padx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_pady</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_sticky</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot2D" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUISubplotRoot" title="mlpro.ui.sciui.framework.SciUISubplotRoot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUISubplotRoot</span></code></a></p>
+<p>Specialized frame class that embedds a 2D matplotlib figure with one subplot into a Tkinter 
+frame. A cross hair cursor functinality with mouse event handling can be switched on/off via
+class constant C_AX_CURSOR.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot2D.C_AX_CURSOR">
+<span class="sig-name descname"><span class="pre">C_AX_CURSOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot2D.C_AX_CURSOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot2D.C_AX_CURSOR_COLOR">
+<span class="sig-name descname"><span class="pre">C_AX_CURSOR_COLOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'blue'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot2D.C_AX_CURSOR_COLOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot2D.C_AX_RECTANGLE">
+<span class="sig-name descname"><span class="pre">C_AX_RECTANGLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0.1,</span> <span class="pre">0.1,</span> <span class="pre">0.85,</span> <span class="pre">0.85]</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot2D.C_AX_RECTANGLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot2D.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SciUI</span> <span class="pre">2D</span> <span class="pre">Subplot'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot2D.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot2D.cb_mbutton_pressed">
+<span class="sig-name descname"><span class="pre">cb_mbutton_pressed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot2D.cb_mbutton_pressed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot2D.cb_mbutton_released">
+<span class="sig-name descname"><span class="pre">cb_mbutton_released</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot2D.cb_mbutton_released" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot2D.cb_mouse_moved">
+<span class="sig-name descname"><span class="pre">cb_mouse_moved</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot2D.cb_mouse_moved" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot2D.create_subplot">
+<span class="sig-name descname"><span class="pre">create_subplot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot2D.create_subplot" title="Permalink to this definition"></a></dt>
+<dd><p>Internally used to create a suitable subplot. New subplot needs to be bound to self.ax. To be
+redefined.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot3D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUISubplot3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_shared_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUISharedDB" title="mlpro.ui.sciui.framework.SciUISharedDB"><span class="pre">mlpro.ui.sciui.framework.SciUISharedDB</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_width_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_height_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_padx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_pady</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_sticky</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot3D" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUISubplotRoot" title="mlpro.ui.sciui.framework.SciUISubplotRoot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUISubplotRoot</span></code></a></p>
+<p>Specialized frame class that embedds a 3D matplotlib figure with one subplot into a Tkinter frame.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot3D.C_AX_RECTANGLE">
+<span class="sig-name descname"><span class="pre">C_AX_RECTANGLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0.1,</span> <span class="pre">0.1,</span> <span class="pre">0.85,</span> <span class="pre">0.85]</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot3D.C_AX_RECTANGLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot3D.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SciUI</span> <span class="pre">3D</span> <span class="pre">Subplot'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot3D.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplot3D.create_subplot">
+<span class="sig-name descname"><span class="pre">create_subplot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplot3D.create_subplot" title="Permalink to this definition"></a></dt>
+<dd><p>Internally used to create a suitable subplot. New subplot needs to be bound to self.ax. To be
+redefined.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUISubplotRoot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_shared_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUISharedDB" title="mlpro.ui.sciui.framework.SciUISharedDB"><span class="pre">mlpro.ui.sciui.framework.SciUISharedDB</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_width_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_height_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_padx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_pady</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_sticky</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIFrame" title="mlpro.ui.sciui.framework.SciUIFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUIFrame</span></code></a></p>
+<p>Root class for specialized frame classes that embedd a matplotlib figure with one subplot into a
+Tkinter frame. Not intended for direct reuse. Please use inherited classes SciUISubplot2D, 
+SciUISubplot3D instead.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.C_AX_FACECOLOR">
+<span class="sig-name descname"><span class="pre">C_AX_FACECOLOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'white'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.C_AX_FACECOLOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.C_AX_FRAME">
+<span class="sig-name descname"><span class="pre">C_AX_FRAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.C_AX_FRAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.C_AX_RECTANGLE">
+<span class="sig-name descname"><span class="pre">C_AX_RECTANGLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0.1,</span> <span class="pre">0.1,</span> <span class="pre">0.85,</span> <span class="pre">0.85]</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.C_AX_RECTANGLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.C_BACKEND">
+<span class="sig-name descname"><span class="pre">C_BACKEND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'TkAgg'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.C_BACKEND" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.C_FIG_FACECOLOR">
+<span class="sig-name descname"><span class="pre">C_FIG_FACECOLOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'white'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.C_FIG_FACECOLOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SciUI</span> <span class="pre">Subplot'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.add_component">
+<span class="sig-name descname"><span class="pre">add_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_component</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.add_component" title="Permalink to this definition"></a></dt>
+<dd><p>Adding further subcomponents is disabled here.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.cb_save_plot">
+<span class="sig-name descname"><span class="pre">cb_save_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.cb_save_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.create_subplot">
+<span class="sig-name descname"><span class="pre">create_subplot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.create_subplot" title="Permalink to this definition"></a></dt>
+<dd><p>Internally used to create a suitable subplot. New subplot needs to be bound to self.ax. To be
+redefined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.determine_frame_size">
+<span class="sig-name descname"><span class="pre">determine_frame_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.determine_frame_size" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.init_component">
+<span class="sig-name descname"><span class="pre">init_component</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.init_component" title="Permalink to this definition"></a></dt>
+<dd><p>Initialization of component-specific elements at instance creation time. To be redefined.
+Please call super().init_component() at beginning of your implementation.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.init_popup_menu">
+<span class="sig-name descname"><span class="pre">init_popup_menu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.init_popup_menu" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes popup menu of the component. To be redefined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.refresh">
+<span class="sig-name descname"><span class="pre">refresh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_parent_frame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.refresh" title="Permalink to this definition"></a></dt>
+<dd><p>Refresh of all component-specific elements. To be redefined. Please call super().refresh()
+at the beginning of your own implementation.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_parent_frame      Parent frame object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.refresh_custom">
+<span class="sig-name descname"><span class="pre">refresh_custom</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.refresh_custom" title="Permalink to this definition"></a></dt>
+<dd><p>Additional refresh activities. To be redefined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotRoot.set_flush_events">
+<span class="sig-name descname"><span class="pre">set_flush_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_flush</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotRoot.set_flush_events" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotSaveDLG">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUISubplotSaveDLG</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_xpos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ypos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">300</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotSaveDLG" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIWindow" title="mlpro.ui.sciui.framework.SciUIWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUIWindow</span></code></a></p>
+<p>Small SciUI window application to choose folder and file name for saving a SciUI subplot.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotSaveDLG.C_FILENAME">
+<span class="sig-name descname"><span class="pre">C_FILENAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'myplot'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotSaveDLG.C_FILENAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotSaveDLG.C_FONT_FAMILY">
+<span class="sig-name descname"><span class="pre">C_FONT_FAMILY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Lucida</span> <span class="pre">Grande'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotSaveDLG.C_FONT_FAMILY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotSaveDLG.C_FONT_SIZE">
+<span class="sig-name descname"><span class="pre">C_FONT_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">10</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotSaveDLG.C_FONT_SIZE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotSaveDLG.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Save</span> <span class="pre">Plot'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotSaveDLG.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotSaveDLG.C_SUFFIXES">
+<span class="sig-name descname"><span class="pre">C_SUFFIXES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['.pdf',</span> <span class="pre">'.png',</span> <span class="pre">'.svg']</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotSaveDLG.C_SUFFIXES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUISubplotSaveDLG.get_filename">
+<span class="sig-name descname"><span class="pre">get_filename</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUISubplotSaveDLG.get_filename" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITabCTRL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUITabCTRL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_shared_db</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUISharedDB" title="mlpro.ui.sciui.framework.SciUISharedDB"><span class="pre">mlpro.ui.sciui.framework.SciUISharedDB</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_width_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_height_perc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_visible</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_padx</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_pady</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_sticky</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'NW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITabCTRL" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIFrame" title="mlpro.ui.sciui.framework.SciUIFrame"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUIFrame</span></code></a></p>
+<p>Enriched wrapper class for the Tkinter tab control.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITabCTRL.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SciUI</span> <span class="pre">Tabs'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITabCTRL.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITabCTRL.add_component">
+<span class="sig-name descname"><span class="pre">add_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIComponent" title="mlpro.ui.sciui.framework.SciUIComponent"><span class="pre">mlpro.ui.sciui.framework.SciUIComponent</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITabCTRL.add_component" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITabCTRL.add_tab">
+<span class="sig-name descname"><span class="pre">add_tab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_tab_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_component</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIComponent" title="mlpro.ui.sciui.framework.SciUIComponent"><span class="pre">mlpro.ui.sciui.framework.SciUIComponent</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITabCTRL.add_tab" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITabCTRL.init_component">
+<span class="sig-name descname"><span class="pre">init_component</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITabCTRL.init_component" title="Permalink to this definition"></a></dt>
+<dd><p>Initialization of component-specific elements at instance creation time. To be redefined.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITabCTRL.refresh">
+<span class="sig-name descname"><span class="pre">refresh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_parent_frame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITabCTRL.refresh" title="Permalink to this definition"></a></dt>
+<dd><p>Refresh of all component-specific elements. To be redefined. Please call super().refresh()
+at the beginning of your own implementation.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_parent_frame      Parent frame object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITooltip">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUITooltip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'widget</span> <span class="pre">info'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITooltip" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Enriched tooltip class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITooltip.enter">
+<span class="sig-name descname"><span class="pre">enter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITooltip.enter" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITooltip.hidetip">
+<span class="sig-name descname"><span class="pre">hidetip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITooltip.hidetip" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITooltip.leave">
+<span class="sig-name descname"><span class="pre">leave</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITooltip.leave" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITooltip.schedule">
+<span class="sig-name descname"><span class="pre">schedule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITooltip.schedule" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITooltip.showtip">
+<span class="sig-name descname"><span class="pre">showtip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITooltip.showtip" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUITooltip.unschedule">
+<span class="sig-name descname"><span class="pre">unschedule</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUITooltip.unschedule" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIWindow">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.framework.</span></span><span class="sig-name descname"><span class="pre">SciUIWindow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIWindow" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIRoot" title="mlpro.ui.sciui.framework.SciUIRoot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUIRoot</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">tkinter.Tk</span></code></p>
+<p>Root class for SciUI window apllications.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIWindow.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'????'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIWindow.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIWindow.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SciUI</span> <span class="pre">Window'</span></em><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIWindow.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.framework.SciUIWindow.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.framework.SciUIWindow.start" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.ui.sciui.main"></span><p>Ver. 0.6.0 (2021-07-05)</p>
+<p>Provides the SciUI application class.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.main.SciUI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.ui.sciui.main.</span></span><span class="sig-name descname"><span class="pre">SciUI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_fullscreen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_autoscan_scenarios</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_start_immediately</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.main.SciUI" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIWindow" title="mlpro.ui.sciui.framework.SciUIWindow"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.ui.sciui.framework.SciUIWindow</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.main.SciUI.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SciUI'</span></em><a class="headerlink" href="#mlpro.ui.sciui.main.SciUI.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.main.SciUI.C_TYPE">
+<span class="sig-name descname"><span class="pre">C_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Application'</span></em><a class="headerlink" href="#mlpro.ui.sciui.main.SciUI.C_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.main.SciUI.C_VERSION">
+<span class="sig-name descname"><span class="pre">C_VERSION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0.6.0'</span></em><a class="headerlink" href="#mlpro.ui.sciui.main.SciUI.C_VERSION" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.main.SciUI.register_scenario">
+<span class="sig-name descname"><span class="pre">register_scenario</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_scenario</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#mlpro.ui.sciui.framework.SciUIScenario" title="mlpro.ui.sciui.framework.SciUIScenario"><span class="pre">mlpro.ui.sciui.framework.SciUIScenario</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_recursive</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_sort</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.main.SciUI.register_scenario" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.ui.sciui.main.SciUI.start">
+<span class="sig-name descname"><span class="pre">start</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.ui.sciui.main.SciUI.start" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mlpro.ui.sciui">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mlpro.ui.sciui" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mlpro.ui.html" class="btn btn-neutral float-left" title="mlpro.ui package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mlpro.ui.sciui.pool.html" class="btn btn-neutral float-right" title="mlpro.ui.sciui.pool package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, FH-SWF Automatisierungstechnik und lernende Systeme.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

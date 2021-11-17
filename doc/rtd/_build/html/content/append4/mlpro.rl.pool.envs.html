@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlpro.rl.pool.envs package &mdash; MLPro Documentations 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mlpro.rl.pool.policies package" href="mlpro.rl.pool.policies.html" />
+    <link rel="prev" title="mlpro.rl.pool.envmodels package" href="mlpro.rl.pool.envmodels.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> MLPro Documentations
+            <img src="../../_static/logo_fh-at.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">1 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">1.1 What is MLPro?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/getstarted.html">1.2 Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/architecture.html">1.3 Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/dependencies.html">1.4 Dependencies</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">2 MLPro-BF – Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bf/elementary.html">2.1 Elementary Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bf/math.html">2.2 Mathematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bf/ml.html">2.3 Machine Learning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">3 MLPro-RL – Reinforcement Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../rl/overview.html">3.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/agents.html">3.2 Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/env.html">3.3 Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/scenario.html">3.4 Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/wrapper.html">3.5 3rd Party Support</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">4 MLPro-GT – Game Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gt/overview.html">4.1 Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">5 MLPro-UI – Interactive ML</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ui/sciui.html">5.1 UI Framework SciUI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">6 Project MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project/versions.html">6.1 Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project/paper.html">6.2 Papers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project/cont.html">6.3 Contribution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 1: List of Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append1/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 2: Pool Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append2/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 3: 3rd Party Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append2/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 4: API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="mlpro.html">mlpro package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mlpro.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mlpro.bf.html">mlpro.bf package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.gt.html">mlpro.gt package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="mlpro.rl.html">mlpro.rl package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="mlpro.rl.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.html#module-mlpro.rl.models">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.html#module-mlpro.rl">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.ui.html">mlpro.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.html#module-mlpro">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">7 Quick Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../help/test.html">7.1 Test</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="mlpro.html">mlpro package</a> &raquo;</li>
+          <li><a href="mlpro.rl.html">mlpro.rl package</a> &raquo;</li>
+          <li><a href="mlpro.rl.pool.html">mlpro.rl.pool package</a> &raquo;</li>
+      <li>mlpro.rl.pool.envs package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/append4/mlpro.rl.pool.envs.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mlpro-rl-pool-envs-package">
+<h1>mlpro.rl.pool.envs package<a class="headerlink" href="#mlpro-rl-pool-envs-package" title="Permalink to this headline"></a></h1>
+<section id="module-mlpro.rl.pool.envs.bglp">
+<span id="submodules"></span><h2>Submodules<a class="headerlink" href="#module-mlpro.rl.pool.envs.bglp" title="Permalink to this headline"></a></h2>
+<p>Ver. 2.1.1 (2021-11-16)</p>
+<p>This module provides an environment of Bulk Good Laboratory Plant (BGLP).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">Actuator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masscoeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.action_max">
+<span class="sig-name descname"><span class="pre">action_max</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.action_max" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.action_min">
+<span class="sig-name descname"><span class="pre">action_min</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.action_min" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.cur_action">
+<span class="sig-name descname"><span class="pre">cur_action</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.cur_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.cur_mass_transport">
+<span class="sig-name descname"><span class="pre">cur_mass_transport</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.cur_mass_transport" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.cur_power">
+<span class="sig-name descname"><span class="pre">cur_power</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.cur_power" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.cur_speed">
+<span class="sig-name descname"><span class="pre">cur_speed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.cur_speed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.idx_a">
+<span class="sig-name descname"><span class="pre">idx_a</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.idx_a" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.mass_coeff">
+<span class="sig-name descname"><span class="pre">mass_coeff</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.mass_coeff" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.power_coeff">
+<span class="sig-name descname"><span class="pre">power_coeff</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.power_coeff" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.power_max">
+<span class="sig-name descname"><span class="pre">power_max</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.power_max" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.power_min">
+<span class="sig-name descname"><span class="pre">power_min</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.power_min" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.reg_a">
+<span class="sig-name descname"><span class="pre">reg_a</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.reg_a" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.status">
+<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.status" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.t_activated">
+<span class="sig-name descname"><span class="pre">t_activated</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.t_activated" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.t_end">
+<span class="sig-name descname"><span class="pre">t_end</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.t_end" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.type_">
+<span class="sig-name descname"><span class="pre">type_</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.type_" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">BGLP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_reward_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_margin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_demand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_energy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.2,</span> <span class="pre">0.8,</span> <span class="pre">4]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prod_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prod_scenario</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'continuous'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.C_INFINITY">
+<span class="sig-name descname"><span class="pre">C_INFINITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.4028235e+38</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.C_INFINITY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.C_LATENCY">
+<span class="sig-name descname"><span class="pre">C_LATENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=1)</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.C_LATENCY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BGLP'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.acts">
+<span class="sig-name descname"><span class="pre">acts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.acts" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.blts">
+<span class="sig-name descname"><span class="pre">blts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.blts" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.calc_energy">
+<span class="sig-name descname"><span class="pre">calc_energy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.calc_energy" title="Permalink to this definition"></a></dt>
+<dd><p>To calculate power consumptions per actuator</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.calc_margin">
+<span class="sig-name descname"><span class="pre">calc_margin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.calc_margin" title="Permalink to this definition"></a></dt>
+<dd><p>To calculate margin level for every reservoir</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.calc_mass_flows">
+<span class="sig-name descname"><span class="pre">calc_mass_flows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.calc_mass_flows" title="Permalink to this definition"></a></dt>
+<dd><p>To calculate mass flow transported by actuators</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.calc_reward">
+<span class="sig-name descname"><span class="pre">calc_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.calc_reward" title="Permalink to this definition"></a></dt>
+<dd><p>To calculate the utility/reward</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.calc_state">
+<span class="sig-name descname"><span class="pre">calc_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.calc_state" title="Permalink to this definition"></a></dt>
+<dd><p>To get current levels of reservoirs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.collect_substates">
+<span class="sig-name descname"><span class="pre">collect_substates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.collect_substates" title="Permalink to this definition"></a></dt>
+<dd><p>To provide a method that set the value of a state, which will be used
+for reset method</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.compute_broken">
+<span class="sig-name descname"><span class="pre">compute_broken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.compute_broken" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the goal achievement value in [0,1] and the flags broken
+based on the current state. Please redefine.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.compute_done">
+<span class="sig-name descname"><span class="pre">compute_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.compute_done" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the goal achievement value in [0,1] and the flags done
+based on the current state. Please redefine.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><ul class="simple">
+<li></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><span class="pre">mlpro.rl.models_sar.Reward</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.compute_reward" title="Permalink to this definition"></a></dt>
+<dd><p>To calculate reward (can be redifined)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.con_act_to_res">
+<span class="sig-name descname"><span class="pre">con_act_to_res</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.con_act_to_res" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.demand">
+<span class="sig-name descname"><span class="pre">demand</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.demand" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.demand_t">
+<span class="sig-name descname"><span class="pre">demand_t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.demand_t" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.energy">
+<span class="sig-name descname"><span class="pre">energy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.energy" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.energy_t">
+<span class="sig-name descname"><span class="pre">energy_t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.energy_t" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.get_status">
+<span class="sig-name descname"><span class="pre">get_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demandval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.get_status" title="Permalink to this definition"></a></dt>
+<dd><p>To calculate overflow, demand, energy, transport, and margin.
+This function will be called every time step.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.hops">
+<span class="sig-name descname"><span class="pre">hops</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.hops" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.levels_init">
+<span class="sig-name descname"><span class="pre">levels_init</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.levels_init" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.lr_demand">
+<span class="sig-name descname"><span class="pre">lr_demand</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.lr_demand" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.lr_energy">
+<span class="sig-name descname"><span class="pre">lr_energy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.lr_energy" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.lr_margin">
+<span class="sig-name descname"><span class="pre">lr_margin</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.lr_margin" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.m_param">
+<span class="sig-name descname"><span class="pre">m_param</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.m_param" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.margin_t">
+<span class="sig-name descname"><span class="pre">margin_t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.margin_t" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.overflow">
+<span class="sig-name descname"><span class="pre">overflow</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.overflow" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.overflow_t">
+<span class="sig-name descname"><span class="pre">overflow_t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.overflow_t" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.prod_reached">
+<span class="sig-name descname"><span class="pre">prod_reached</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.prod_reached" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.prod_scenario">
+<span class="sig-name descname"><span class="pre">prod_scenario</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.prod_scenario" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.prod_target">
+<span class="sig-name descname"><span class="pre">prod_target</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.prod_target" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.reset" title="Permalink to this definition"></a></dt>
+<dd><p>To reset environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.reset_actuators">
+<span class="sig-name descname"><span class="pre">reset_actuators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.reset_actuators" title="Permalink to this definition"></a></dt>
+<dd><p>To reset actuators</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.reset_levels">
+<span class="sig-name descname"><span class="pre">reset_levels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.reset_levels" title="Permalink to this definition"></a></dt>
+<dd><p>To reset reservoirs</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.ress">
+<span class="sig-name descname"><span class="pre">ress</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.ress" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.reward">
+<span class="sig-name descname"><span class="pre">reward</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.reward" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.set_actions">
+<span class="sig-name descname"><span class="pre">set_actions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.set_actions" title="Permalink to this definition"></a></dt>
+<dd><p>To set up actions for actuators.
+This function will be called every time set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.set_volume_changes">
+<span class="sig-name descname"><span class="pre">set_volume_changes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">demandval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.set_volume_changes" title="Permalink to this definition"></a></dt>
+<dd><p>To set up volume changes for every reservoir</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.sils">
+<span class="sig-name descname"><span class="pre">sils</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.sils" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.simulate_reaction">
+<span class="sig-name descname"><span class="pre">simulate_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.simulate_reaction" title="Permalink to this definition"></a></dt>
+<dd><p>To simulate the environment reacting selected actions</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.t">
+<span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.t" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.t_step">
+<span class="sig-name descname"><span class="pre">t_step</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.t_step" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.transport">
+<span class="sig-name descname"><span class="pre">transport</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.transport" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.transport_t">
+<span class="sig-name descname"><span class="pre">transport_t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.transport_t" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">demandval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.update" title="Permalink to this definition"></a></dt>
+<dd><p>To set up volume changes, update reservoirs’ level, and update actuators’</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.update_actuators">
+<span class="sig-name descname"><span class="pre">update_actuators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.update_actuators" title="Permalink to this definition"></a></dt>
+<dd><p>To update actuators</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.update_levels">
+<span class="sig-name descname"><span class="pre">update_levels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.update_levels" title="Permalink to this definition"></a></dt>
+<dd><p>To update current reservoirs’ level’</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.vacs">
+<span class="sig-name descname"><span class="pre">vacs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.vacs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.visualize" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the visualization of the environment. Please redefine.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">Belt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actiontype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masscoeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.envs.bglp.Actuator" title="mlpro.rl.pool.envs.bglp.Actuator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.envs.bglp.Actuator</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.actiontype">
+<span class="sig-name descname"><span class="pre">actiontype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.actiontype" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.calc_energy">
+<span class="sig-name descname"><span class="pre">calc_energy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.calc_energy" title="Permalink to this definition"></a></dt>
+<dd><p>current power consumption</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.calc_mass">
+<span class="sig-name descname"><span class="pre">calc_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.calc_mass" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>now<span class="classifier">Numeric Types</span></dt><dd><p>current_simulation time</p>
+</dd>
+</dl>
+<p>current transported mass</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.deactivate">
+<span class="sig-name descname"><span class="pre">deactivate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.deactivate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.idx_b">
+<span class="sig-name descname"><span class="pre">idx_b</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.idx_b" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.reg_b">
+<span class="sig-name descname"><span class="pre">reg_b</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.reg_b" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.speed">
+<span class="sig-name descname"><span class="pre">speed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.speed" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.start_t">
+<span class="sig-name descname"><span class="pre">start_t</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.start_t" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>now<span class="classifier">Numeric Types</span></dt><dd><p>current_simulation time</p>
+</dd>
+<dt>duration<span class="classifier">Numeric Types</span></dt><dd><p>time set parameter.</p>
+</dd>
+<dt>speed<span class="classifier">Numeric Types (0 to 1)</span></dt><dd><p>the selected action by an agent</p>
+</dd>
+<dt>overwrite<span class="classifier">Boolean, optional</span></dt><dd><p>to select whether the actuator is already activated or not</p>
+</dd>
+</dl>
+<p>None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.update" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>now<span class="classifier">Numeric Types</span></dt><dd><p>current_simulation time</p>
+</dd>
+</dl>
+<p>None.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Hopper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">Hopper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_cur</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'abs'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Hopper" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.envs.bglp.Reservoir" title="mlpro.rl.pool.envs.bglp.Reservoir"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.envs.bglp.Reservoir</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Hopper.idx_h">
+<span class="sig-name descname"><span class="pre">idx_h</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Hopper.idx_h" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Hopper.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Hopper.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Hopper.reg_h">
+<span class="sig-name descname"><span class="pre">reg_h</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Hopper.reg_h" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Hopper.type_">
+<span class="sig-name descname"><span class="pre">type_</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Hopper.type_" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">Reservoir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vol_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_init_abs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.change">
+<span class="sig-name descname"><span class="pre">change</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.change" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.idx_r">
+<span class="sig-name descname"><span class="pre">idx_r</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.idx_r" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.reg_r">
+<span class="sig-name descname"><span class="pre">reg_r</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.reg_r" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.set_change">
+<span class="sig-name descname"><span class="pre">set_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vol_change</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.set_change" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>vol_change<span class="classifier">Numeric Types</span></dt><dd><p>volume change for each time step</p>
+</dd>
+</dl>
+<p>None.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.update" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.vol_cur_abs">
+<span class="sig-name descname"><span class="pre">vol_cur_abs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.vol_cur_abs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.vol_cur_rel">
+<span class="sig-name descname"><span class="pre">vol_cur_rel</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.vol_cur_rel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.vol_init_abs">
+<span class="sig-name descname"><span class="pre">vol_init_abs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.vol_init_abs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.vol_max">
+<span class="sig-name descname"><span class="pre">vol_max</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.vol_max" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Silo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">Silo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_cur</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'abs'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Silo" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.envs.bglp.Reservoir" title="mlpro.rl.pool.envs.bglp.Reservoir"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.envs.bglp.Reservoir</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Silo.idx_s">
+<span class="sig-name descname"><span class="pre">idx_s</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Silo.idx_s" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Silo.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Silo.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Silo.reg_s">
+<span class="sig-name descname"><span class="pre">reg_s</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Silo.reg_s" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Silo.type_">
+<span class="sig-name descname"><span class="pre">type_</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Silo.type_" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">VacuumPump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masscoeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.envs.bglp.Actuator" title="mlpro.rl.pool.envs.bglp.Actuator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.envs.bglp.Actuator</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.calc_energy">
+<span class="sig-name descname"><span class="pre">calc_energy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.calc_energy" title="Permalink to this definition"></a></dt>
+<dd><p>current power consumption</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.calc_mass">
+<span class="sig-name descname"><span class="pre">calc_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.calc_mass" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>now<span class="classifier">Numeric Types</span></dt><dd><p>current_simulation time</p>
+</dd>
+</dl>
+<p>current transported mass</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.deactivate">
+<span class="sig-name descname"><span class="pre">deactivate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.deactivate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.idx_v">
+<span class="sig-name descname"><span class="pre">idx_v</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.idx_v" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.reg_v">
+<span class="sig-name descname"><span class="pre">reg_v</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.reg_v" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.start_t">
+<span class="sig-name descname"><span class="pre">start_t</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.start_t" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>now<span class="classifier">Numeric Types</span></dt><dd><p>current_simulation time</p>
+</dd>
+<dt>duration<span class="classifier">Numeric Types (0 to 1)</span></dt><dd><p>the selected action by an agent</p>
+</dd>
+<dt>overwrite<span class="classifier">Boolean, optional</span></dt><dd><p>to select whether the actuator is already activated or not</p>
+</dd>
+</dl>
+<p>None.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.t_end_max">
+<span class="sig-name descname"><span class="pre">t_end_max</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.t_end_max" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.update" title="Permalink to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>now<span class="classifier">Numeric Types</span></dt><dd><p>current_simulation time</p>
+</dd>
+</dl>
+<p>None.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.rl.pool.envs.gridworld"></span><p>Ver. 1.0.5 (2021-11-15)</p>
+<p>This module provides an environment of customizable Gridworld.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.gridworld.</span></span><span class="sig-name descname"><span class="pre">GridWorld</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(8,</span> <span class="pre">8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_start_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_goal_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<p>Custom environment of an n-D grid world where the agent 
+has to go to a random target.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.C_INFINITY">
+<span class="sig-name descname"><span class="pre">C_INFINITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.4028235e+38</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.C_INFINITY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.C_LATENCY">
+<span class="sig-name descname"><span class="pre">C_LATENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=1)</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.C_LATENCY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GridWorld'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.compute_broken">
+<span class="sig-name descname"><span class="pre">compute_broken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.compute_broken" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.compute_done">
+<span class="sig-name descname"><span class="pre">compute_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.compute_done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><span class="pre">mlpro.rl.models_sar.Reward</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.compute_reward" title="Permalink to this definition"></a></dt>
+<dd><p>Computes reward based on given or current state.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_state         State object. If None, please use internal state.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Reward object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>Returns current state of environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.reset" title="Permalink to this definition"></a></dt>
+<dd><p>To reset environment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.simulate_reaction">
+<span class="sig-name descname"><span class="pre">simulate_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.simulate_reaction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.rl.pool.envs.multicartpole"></span><p>Ver. 1.2.0 (2021-11-15)</p>
+<p>This module provides an environment with multivariate state and action spaces based on the 
+OpenAI Gym environment ‘CartPole-v1’.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.multicartpole.</span></span><span class="sig-name descname"><span class="pre">MultiCartPole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_num_envs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_reward_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<p>This environment multivariate space and action spaces by duplicating the
+OpenAI Gym environment ‘CartPole-v1’. The number of internal CartPole
+sub-enironments can be parameterized.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_INFINITY">
+<span class="sig-name descname"><span class="pre">C_INFINITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.4028235e+38</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_INFINITY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_LATENCY">
+<span class="sig-name descname"><span class="pre">C_LATENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=1)</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_LATENCY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MultiCartPole'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.collect_substates">
+<span class="sig-name descname"><span class="pre">collect_substates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.collect_substates" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.compute_broken">
+<span class="sig-name descname"><span class="pre">compute_broken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.compute_broken" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.compute_done">
+<span class="sig-name descname"><span class="pre">compute_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.compute_done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><span class="pre">mlpro.rl.models_sar.Reward</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.compute_reward" title="Permalink to this definition"></a></dt>
+<dd><p>Computes reward based on given or current state.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_state         State object. If None, please use internal state.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Reward object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.init_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes the plot. Optionally the plot itself will be embedded in a matplotlib figure.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_figure            Optional MatPlotLib host figure, where the plot shall be embedded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets environment to initial state. Please redefine.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.simulate_reaction">
+<span class="sig-name descname"><span class="pre">simulate_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.simulate_reaction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.switch_logging">
+<span class="sig-name descname"><span class="pre">switch_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.switch_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Switches log functionality on/off.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_logging     Log level (see constants for log levels)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mlpro.rl.pool.envs.robotinhtm"></span><p>Ver. 1.1.0 (2021-11-15)</p>
+<p>This module provide an environment of a robot manipulator based on Homogeneous Matrix</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.robotinhtm.</span></span><span class="sig-name descname"><span class="pre">RobotArm3D</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Auxilary class for the implementation of robotinhtm.
+Generate the Kinematic of a pre-defined robot in Homogeneous Matrix.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D.add_link_joint">
+<span class="sig-name descname"><span class="pre">add_link_joint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">jointAxis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lvector</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thetaInit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjustRot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjustTheta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D.add_link_joint" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_homogeneous">
+<span class="sig-name descname"><span class="pre">get_homogeneous</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_homogeneous" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_homogeneous_eef">
+<span class="sig-name descname"><span class="pre">get_homogeneous_eef</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_homogeneous_eef" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_joint">
+<span class="sig-name descname"><span class="pre">get_joint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_joint" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_num_joint">
+<span class="sig-name descname"><span class="pre">get_num_joint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_num_joint" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_orientation">
+<span class="sig-name descname"><span class="pre">get_orientation</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_orientation" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_transformation_matrix">
+<span class="sig-name descname"><span class="pre">get_transformation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lvector</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotAxis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjustRots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">adjustThetas</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D.get_transformation_matrix" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D.set_theta">
+<span class="sig-name descname"><span class="pre">set_theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D.set_theta" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D.update_joint_coords">
+<span class="sig-name descname"><span class="pre">update_joint_coords</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D.update_joint_coords" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotArm3D.update_theta">
+<span class="sig-name descname"><span class="pre">update_theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deltaTheta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotArm3D.update_theta" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.robotinhtm.</span></span><span class="sig-name descname"><span class="pre">RobotHTM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_num_joints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_target_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<p>Custom environment for a arm robot represented as Homogeneous Matrix.
+The goal is to reach a certain point.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM.C_INFINITY">
+<span class="sig-name descname"><span class="pre">C_INFINITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.4028235e+38</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM.C_INFINITY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM.C_LATENCY">
+<span class="sig-name descname"><span class="pre">C_LATENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=1)</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM.C_LATENCY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'RobotHTM'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM.compute_broken">
+<span class="sig-name descname"><span class="pre">compute_broken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM.compute_broken" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM.compute_done">
+<span class="sig-name descname"><span class="pre">compute_done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM.compute_done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM.compute_reward">
+<span class="sig-name descname"><span class="pre">compute_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><span class="pre">mlpro.rl.models_sar.Reward</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM.compute_reward" title="Permalink to this definition"></a></dt>
+<dd><p>Computes reward based on given or current state.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_state         State object. If None, please use internal state.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Reward object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>Returns current state of environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM.reset">
+<span class="sig-name descname"><span class="pre">reset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM.reset" title="Permalink to this definition"></a></dt>
+<dd><p>Resets environment to initial state. Please redefine.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM.set_theta">
+<span class="sig-name descname"><span class="pre">set_theta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM.set_theta" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.robotinhtm.RobotHTM.simulate_reaction">
+<span class="sig-name descname"><span class="pre">simulate_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.robotinhtm.RobotHTM.simulate_reaction" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mlpro.rl.pool.envs">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mlpro.rl.pool.envs" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mlpro.rl.pool.envmodels.html" class="btn btn-neutral float-left" title="mlpro.rl.pool.envmodels package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mlpro.rl.pool.policies.html" class="btn btn-neutral float-right" title="mlpro.rl.pool.policies package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, FH-SWF Automatisierungstechnik und lernende Systeme.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

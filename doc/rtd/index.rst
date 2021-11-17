@@ -103,6 +103,12 @@ Instructions for use
    content/append2/test
 
 .. toctree::
+   :maxdepth: 4
+   :caption: Appendix 4: API
+   
+   content/append4/mlpro
+
+.. toctree::
    :maxdepth: 2
    :caption: 7 Quick Help
    

@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mlpro.rl.pool.policies package &mdash; MLPro Documentations 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="mlpro.rl.pool.sarsbuffer package" href="mlpro.rl.pool.sarsbuffer.html" />
+    <link rel="prev" title="mlpro.rl.pool.envs package" href="mlpro.rl.pool.envs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> MLPro Documentations
+            <img src="../../_static/logo_fh-at.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">1 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../intro/overview.html">1.1 What is MLPro?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/getstarted.html">1.2 Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/architecture.html">1.3 Architecture</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../intro/dependencies.html">1.4 Dependencies</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">2 MLPro-BF – Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../bf/elementary.html">2.1 Elementary Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bf/math.html">2.2 Mathematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../bf/ml.html">2.3 Machine Learning</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">3 MLPro-RL – Reinforcement Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../rl/overview.html">3.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/agents.html">3.2 Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/env.html">3.3 Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/scenario.html">3.4 Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../rl/wrapper.html">3.5 3rd Party Support</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">4 MLPro-GT – Game Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gt/overview.html">4.1 Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">5 MLPro-UI – Interactive ML</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../ui/sciui.html">5.1 UI Framework SciUI</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">6 Project MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../project/versions.html">6.1 Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project/paper.html">6.2 Papers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../project/cont.html">6.3 Contribution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 1: List of Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append1/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 2: Pool Objects</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append2/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 3: 3rd Party Support</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../append2/test.html">Test</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 4: API</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="mlpro.html">mlpro package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="mlpro.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mlpro.bf.html">mlpro.bf package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.gt.html">mlpro.gt package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="mlpro.rl.html">mlpro.rl package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="mlpro.rl.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.html#module-mlpro.rl.models">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.html#module-mlpro.rl">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.ui.html">mlpro.ui package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mlpro.html#module-mlpro">Module contents</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">7 Quick Help</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../help/test.html">7.1 Test</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="mlpro.html">mlpro package</a> &raquo;</li>
+          <li><a href="mlpro.rl.html">mlpro.rl package</a> &raquo;</li>
+          <li><a href="mlpro.rl.pool.html">mlpro.rl.pool package</a> &raquo;</li>
+      <li>mlpro.rl.pool.policies package</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/append4/mlpro.rl.pool.policies.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="mlpro-rl-pool-policies-package">
+<h1>mlpro.rl.pool.policies package<a class="headerlink" href="#mlpro-rl-pool-policies-package" title="Permalink to this headline"></a></h1>
+<section id="module-mlpro.rl.pool.policies.a2c">
+<span id="submodules"></span><h2>Submodules<a class="headerlink" href="#module-mlpro.rl.pool.policies.a2c" title="Permalink to this headline"></a></h2>
+<p>Ver. 1.0.3 (2021-11-15)</p>
+<p>This module provide A2C Algorithm based on reference.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.A2C">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.a2c.</span></span><span class="sig-name descname"><span class="pre">A2C</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_observation_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_use_gae</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_gae_lambda</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_value_loss_coef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_entropy_coef</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.A2C" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_agents.Policy" title="mlpro.rl.models_agents.Policy"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_agents.Policy</span></code></a></p>
+<p>Implementation of A2C Policy Algorithm</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.A2C.C_BUFFER_CLS">
+<span class="sig-name descname"><span class="pre">C_BUFFER_CLS</span></span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.A2C.C_BUFFER_CLS" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.SARSBuffer" title="mlpro.rl.models_sar.SARSBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_sar.SARSBuffer</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.A2C.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'A2C'</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.A2C.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.A2C.add_buffer">
+<span class="sig-name descname"><span class="pre">add_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_buffer_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.SARSElement" title="mlpro.rl.models_sar.SARSElement"><span class="pre">mlpro.rl.models_sar.SARSElement</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.A2C.add_buffer" title="Permalink to this definition"></a></dt>
+<dd><p>Intended to save the data to the buffer. By default it save the SARS data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.A2C.clear_buffer">
+<span class="sig-name descname"><span class="pre">clear_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.A2C.clear_buffer" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.A2C.compute_action">
+<span class="sig-name descname"><span class="pre">compute_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.A2C.compute_action" title="Permalink to this definition"></a></dt>
+<dd><p>Specific action computation method to be redefined.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_obs       Observation data</p>
+</dd>
+<dt>Returns:</dt><dd><p>Action object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.ActorCriticMLP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.a2c.</span></span><span class="sig-name descname"><span class="pre">ActorCriticMLP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_num_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_num_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_dist_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.ActorCriticMLP" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Implemention of Actor Critic network based on Feed Forward Network</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.ActorCriticMLP.evaluate_action">
+<span class="sig-name descname"><span class="pre">evaluate_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.ActorCriticMLP.evaluate_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.ActorCriticMLP.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.ActorCriticMLP.get_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.ActorCriticMLP.sample_action">
+<span class="sig-name descname"><span class="pre">sample_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.ActorCriticMLP.sample_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.ActorCriticMLP.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.ActorCriticMLP.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.AddBias">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.a2c.</span></span><span class="sig-name descname"><span class="pre">AddBias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.AddBias" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.AddBias.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.AddBias.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.AddBias.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.AddBias.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.CategoricalDistribution">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.a2c.</span></span><span class="sig-name descname"><span class="pre">CategoricalDistribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.CategoricalDistribution" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Categorical Distribution for Discrete Action</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.CategoricalDistribution.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.CategoricalDistribution.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.CategoricalDistribution.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.CategoricalDistribution.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.DiagGaussianDistribution">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.a2c.</span></span><span class="sig-name descname"><span class="pre">DiagGaussianDistribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.DiagGaussianDistribution" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Diagonal Gaussian for Continuous Action</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.DiagGaussianDistribution.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.DiagGaussianDistribution.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.DiagGaussianDistribution.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.DiagGaussianDistribution.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.FixedCategorical">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.a2c.</span></span><span class="sig-name descname"><span class="pre">FixedCategorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.FixedCategorical" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.distributions.categorical.Categorical</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.FixedCategorical.entropy">
+<span class="sig-name descname"><span class="pre">entropy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.FixedCategorical.entropy" title="Permalink to this definition"></a></dt>
+<dd><p>Returns entropy of distribution, batched over batch_shape.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Tensor of shape batch_shape.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.FixedCategorical.log_probs">
+<span class="sig-name descname"><span class="pre">log_probs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.FixedCategorical.log_probs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.FixedCategorical.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.FixedCategorical.mode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.FixedNormal">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.a2c.</span></span><span class="sig-name descname"><span class="pre">FixedNormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.FixedNormal" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.distributions.normal.Normal</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.FixedNormal.entropy">
+<span class="sig-name descname"><span class="pre">entropy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.FixedNormal.entropy" title="Permalink to this definition"></a></dt>
+<dd><p>Method to compute the entropy using Bregman divergence of the log normalizer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.FixedNormal.log_probs">
+<span class="sig-name descname"><span class="pre">log_probs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.FixedNormal.log_probs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.FixedNormal.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.FixedNormal.mode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.MLPBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.a2c.</span></span><span class="sig-name descname"><span class="pre">MLPBase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.MLPBase" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.MLPBase.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.MLPBase.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.MLPBase.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.MLPBase.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.a2c.init">
+<span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.a2c.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.a2c.init" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<span class="target" id="module-mlpro.rl.pool.policies.sac"></span><p>Ver. 1.0.3 (2021-11-15)</p>
+<p>This module provide SAC Algorithm based on reference.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.ActorGaussianMLP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">ActorGaussianMLP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_dist_cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.ActorGaussianMLP" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Class provides Actor MLP</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.ActorGaussianMLP.evaluate_action">
+<span class="sig-name descname"><span class="pre">evaluate_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.ActorGaussianMLP.evaluate_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.ActorGaussianMLP.sample_action">
+<span class="sig-name descname"><span class="pre">sample_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deterministic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.ActorGaussianMLP.sample_action" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.ActorGaussianMLP.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.sac.ActorGaussianMLP.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.AddBias">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">AddBias</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bias</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.AddBias" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.AddBias.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.AddBias.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.AddBias.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.sac.AddBias.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.CategoricalDistribution">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">CategoricalDistribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.CategoricalDistribution" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Categorical Distribution for Discrete Action</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.CategoricalDistribution.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.CategoricalDistribution.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.CategoricalDistribution.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.sac.CategoricalDistribution.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.DQNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">DQNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.DQNetwork" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Class provides Double Q Network</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.DQNetwork.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.DQNetwork.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.DQNetwork.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.sac.DQNetwork.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.DiagGaussianDistribution">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">DiagGaussianDistribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.DiagGaussianDistribution" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Diagonal Gaussian for Continuous Action</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.DiagGaussianDistribution.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.DiagGaussianDistribution.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.DiagGaussianDistribution.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.sac.DiagGaussianDistribution.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.FixedCategorical">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">FixedCategorical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.FixedCategorical" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.distributions.categorical.Categorical</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.FixedCategorical.entropy">
+<span class="sig-name descname"><span class="pre">entropy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.FixedCategorical.entropy" title="Permalink to this definition"></a></dt>
+<dd><p>Returns entropy of distribution, batched over batch_shape.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Tensor of shape batch_shape.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.FixedCategorical.log_probs">
+<span class="sig-name descname"><span class="pre">log_probs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.FixedCategorical.log_probs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.FixedCategorical.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.FixedCategorical.mode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.FixedNormal">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">FixedNormal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate_args</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.FixedNormal" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.distributions.normal.Normal</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.FixedNormal.entropy">
+<span class="sig-name descname"><span class="pre">entropy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.FixedNormal.entropy" title="Permalink to this definition"></a></dt>
+<dd><p>Method to compute the entropy using Bregman divergence of the log normalizer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.FixedNormal.log_probs">
+<span class="sig-name descname"><span class="pre">log_probs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.FixedNormal.log_probs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.FixedNormal.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.FixedNormal.mode" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.MLPActor">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">MLPActor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.MLPActor" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.MLPActor.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inputs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.MLPActor.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.MLPActor.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.sac.MLPActor.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.QNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">QNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_inputs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_actions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_dim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.QNetwork" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Class provides Single Q Network</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.QNetwork.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.QNetwork.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.QNetwork.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.sac.QNetwork.training" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.SAC">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">SAC</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_observation_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action_space</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.math.MSpace" title="mlpro.bf.math.MSpace"><span class="pre">mlpro.bf.math.MSpace</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_buffer_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ada</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">64</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_explore_chance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_qnet_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Q'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_tau</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.99</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_gradient_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_target_update_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_warm_up_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_automatic_entropy_tuning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_actor_lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_critic_lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.SAC" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_agents.Policy" title="mlpro.rl.models_agents.Policy"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_agents.Policy</span></code></a></p>
+<p>Implementation of SAC Policy Algorithm</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.SAC.C_BUFFER_CLS">
+<span class="sig-name descname"><span class="pre">C_BUFFER_CLS</span></span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.SAC.C_BUFFER_CLS" title="Permalink to this definition"></a></dt>
+<dd><p>alias of <a class="reference internal" href="mlpro.rl.pool.sarsbuffer.html#mlpro.rl.pool.sarsbuffer.RandomSARSBuffer.RandomSARSBuffer" title="mlpro.rl.pool.sarsbuffer.RandomSARSBuffer.RandomSARSBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.sarsbuffer.RandomSARSBuffer.RandomSARSBuffer</span></code></a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.SAC.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'SAC'</span></em><a class="headerlink" href="#mlpro.rl.pool.policies.sac.SAC.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.SAC.add_buffer">
+<span class="sig-name descname"><span class="pre">add_buffer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_buffer_element</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.SARSElement" title="mlpro.rl.models_sar.SARSElement"><span class="pre">mlpro.rl.models_sar.SARSElement</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.SAC.add_buffer" title="Permalink to this definition"></a></dt>
+<dd><p>Intended to save the data to the buffer. By default it save the SARS data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.SAC.clear_buffer">
+<span class="sig-name descname"><span class="pre">clear_buffer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.SAC.clear_buffer" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.SAC.compute_action">
+<span class="sig-name descname"><span class="pre">compute_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.SAC.compute_action" title="Permalink to this definition"></a></dt>
+<dd><p>Specific action computation method to be redefined.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_obs       Observation data</p>
+</dd>
+<dt>Returns:</dt><dd><p>Action object</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.hard_update">
+<span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">hard_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.hard_update" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.init">
+<span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">module</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gain</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.init" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mlpro.rl.pool.policies.sac.soft_update">
+<span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.policies.sac.</span></span><span class="sig-name descname"><span class="pre">soft_update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tau</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.policies.sac.soft_update" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mlpro.rl.pool.policies">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-mlpro.rl.pool.policies" title="Permalink to this headline"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mlpro.rl.pool.envs.html" class="btn btn-neutral float-left" title="mlpro.rl.pool.envs package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mlpro.rl.pool.sarsbuffer.html" class="btn btn-neutral float-right" title="mlpro.rl.pool.sarsbuffer package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, FH-SWF Automatisierungstechnik und lernende Systeme.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
