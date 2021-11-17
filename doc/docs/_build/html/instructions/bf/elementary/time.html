@@ -122,7 +122,37 @@
              
   <div class="section" id="time-management">
 <h1>Time Management<a class="headerlink" href="#time-management" title="Permalink to this headline">¶</a></h1>
-<p>Add text here!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.bf.various</span> <span class="kn">import</span> <span class="n">Timer</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt id="mlpro.bf.various.Timer">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.bf.various.</code><code class="sig-name descname">Timer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_mode</span></em>, <em class="sig-param"><span class="n">p_lap_duration</span><span class="p">:</span> <span class="n">datetime.timedelta</span></em>, <em class="sig-param"><span class="n">p_lap_limit</span><span class="o">=</span><span class="default_value">999999</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.various.Timer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Timer class in two time modes (real/virtual) and with simple lap management.</p>
+<dl class="py method">
+<dt id="mlpro.bf.various.Timer.finish_lap">
+<code class="sig-name descname">finish_lap</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#mlpro.bf.various.Timer.finish_lap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finishes the current lap. In timer mode C_MODE_REAL the remaining time
+until the end of the lap will be paused.</p>
+<dl class="simple">
+<dt>Returns: </dt><dd><p>True, if the remaining time to the next lap was positive. False, if 
+the timer timed out.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.bf.various.Timer.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mlpro.bf.various.Timer.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets timer.</p>
+<dl class="simple">
+<dt>Returns: </dt><dd><p>Nothing</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 

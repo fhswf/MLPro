@@ -1,11 +1,10 @@
 Data Management
 ----------------
 
-Add text here!
-
-.. code-block:: bash
+.. code-block:: python
 
     from mlpro.bf.data import * 
     
-    
-Add text here!
+
+.. automodule:: mlpro.bf.data
+  :members:

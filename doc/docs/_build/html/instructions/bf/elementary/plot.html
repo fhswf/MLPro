@@ -122,7 +122,86 @@
              
   <div class="section" id="plotting">
 <h1>Plotting<a class="headerlink" href="#plotting" title="Permalink to this headline">¶</a></h1>
-<p>Add text here!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.bf.plot</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<span class="target" id="module-mlpro.bf.plot"></span><p>Ver. 1.0.1 (2021-10-25)</p>
+<p>This module provides various classes related to data plotting.</p>
+<dl class="py class">
+<dt id="mlpro.bf.plot.DataPlotting">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.bf.plot.</code><code class="sig-name descname">DataPlotting</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_data</span><span class="p">:</span> <span class="n"><a class="reference internal" href="data.html#mlpro.bf.data.DataStoring" title="mlpro.bf.data.DataStoring">mlpro.bf.data.DataStoring</a></span></em>, <em class="sig-param"><span class="n">p_type</span><span class="o">=</span><span class="default_value">'Episodic'</span></em>, <em class="sig-param"><span class="n">p_window</span><span class="o">=</span><span class="default_value">100</span></em>, <em class="sig-param"><span class="n">p_showing</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">p_printing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_figsize</span><span class="o">=</span><span class="default_value">7, 7</span></em>, <em class="sig-param"><span class="n">p_color</span><span class="o">=</span><span class="default_value">'darkblue'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class provides a functionality to plot the stored values of variables.</p>
+<dl class="py method">
+<dt id="mlpro.bf.plot.DataPlotting.get_plots">
+<code class="sig-name descname">get_plots</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.get_plots" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to plot data</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.bf.plot.DataPlotting.moving_mean">
+<code class="sig-name descname">moving_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_inputs</span></em>, <em class="sig-param"><span class="n">p_window</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.moving_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>To create a series of averages of different subsets of the full data set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.bf.plot.DataPlotting.plots_type_cy">
+<code class="sig-name descname">plots_type_cy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.plots_type_cy" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to plot data per cycle</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.bf.plot.DataPlotting.plots_type_ep">
+<code class="sig-name descname">plots_type_ep</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.plots_type_ep" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to plot data per episode by extending the cyclic plots in one plot</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.bf.plot.DataPlotting.plots_type_ep_mean">
+<code class="sig-name descname">plots_type_ep_mean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.plots_type_ep_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function to plot data per episode according to its mean value</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.bf.plot.DataPlotting.save_plots">
+<code class="sig-name descname">save_plots</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_path</span></em>, <em class="sig-param"><span class="n">p_format</span></em>, <em class="sig-param"><span class="n">p_dpi_mul</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.DataPlotting.save_plots" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is used to save generated plots.</p>
+<dl>
+<dt>Parameters:</dt><dd><p>p_path          Path where file will be saved
+p_format        Format of the saved file.</p>
+<blockquote>
+<div><p>Options: ‘eps’, ‘jpg’, ‘png’, ‘pdf’, ‘svg’</p>
+</div></blockquote>
+<p>p_dpi_mul       Saving plots parameter</p>
+</dd>
+<dt>Returns: </dt><dd><p>True, if plots where saved successfully. False otherwise.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.bf.plot.Plottable">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.bf.plot.</code><code class="sig-name descname">Plottable</code><a class="headerlink" href="#mlpro.bf.plot.Plottable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Property class that inherits the ability to be plottable.</p>
+<dl class="py method">
+<dt id="mlpro.bf.plot.Plottable.init_plot">
+<code class="sig-name descname">init_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_figure</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.Plottable.init_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the plot. Optionally the plot itself will be embedded in a matplotlib figure.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><p>p_figure            Optional MatPlotLib host figure, where the plot shall be embedded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.bf.plot.Plottable.update_plot">
+<code class="sig-name descname">update_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.bf.plot.Plottable.update_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
