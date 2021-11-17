@@ -16,10 +16,12 @@
 ## -- 2021-10-25  2.0.1     SY       Add scientific references related to the Environment
 ## -- 2021-11-15  2.1.0     DA       Refactoring
 ## -- 2021-11-16  2.1.1     SY       Update following model improvements
+## -- 2021-11-16  2.1.2     SY       Add data storing for overflow, demand, energy
+## -- 2021-11-17  2.1.3     SY       Random initial states
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.1 (2021-11-16)
+Ver. 2.1.3 (2021-11-17)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -644,6 +646,10 @@ class BGLP(Environment):
         self.reward             = torch.zeros((len(self.acts),1))
         self.con_res_to_act     = [[-1,0],[0,1],[1,2],[2,3],[3,4],[4,-1]]
         
+        self.data_lists         = ["time","overflow","energy","demand"]
+        self.data_storing       = DataStoring(self.data_lists)
+        self.data_frame         = None
+        
         self.reset()
             
     def _setup_spaces(self):
@@ -657,10 +663,12 @@ class BGLP(Environment):
         self._state_space.add_dim(Dimension(3, 'E-0 LvlHopperB', 'R', 'Env-0 Level of Hopper B', '', 'L', 'L',[0, levels_max[3]]))
         self._state_space.add_dim(Dimension(4, 'E-0 LvlSiloC', 'R', 'Env-0 Level of Silo C', '', 'L', 'L',[0, levels_max[4]]))
         self._state_space.add_dim(Dimension(5, 'E-0 LvlHopperC', 'R', 'Env-0 Level of Hopper C', '', 'L', 'L',[0, levels_max[5]]))
-            
-        for i in range(self.num_envs):
-            env_str = str(i)
-            self._action_space.add_dim(Dimension(i, 'E-' + env_str + ' Act', 'R', 'Env-' + env_str + ' Actuator Control', '', '', '', [0,1]))
+        
+        self._action_space.add_dim(Dimension(0, 'E-0 Act', 'R', 'Env-0 Actuator Control', '', '', '', [0,1]))
+        self._action_space.add_dim(Dimension(1, 'E-1 Act', 'R', 'Env-1 Actuator Control', '', '', '', [0,1]))
+        self._action_space.add_dim(Dimension(2, 'E-2 Act', 'Z', 'Env-2 Actuator Control', '', '', '', [0,1]))
+        self._action_space.add_dim(Dimension(3, 'E-3 Act', 'R', 'Env-3 Actuator Control', '', '', '', [0,1]))
+        self._action_space.add_dim(Dimension(4, 'E-4 Act', 'R', 'Env-4 Actuator Control', '', '', '', [0,1]))
 
     def collect_substates(self) -> State:
         """
@@ -685,6 +693,11 @@ class BGLP(Environment):
         self.prod_reached   = 0
         self._state         = self.collect_substates()
         self.get_state().set_done(False)
+        if self.data_frame == None:
+            self.data_frame = 0
+        else:
+            self.data_frame += 1
+        self.data_storing.add_frame(str(self.data_frame))
 
     def simulate_reaction(self, p_state:State, p_action:Action) -> State:
         """
@@ -705,6 +718,7 @@ class BGLP(Environment):
         self.energy_t           = torch.zeros((len(self.acts),1))
         self.transport_t        = torch.zeros((len(self.acts),1))
         self.margin_t           = torch.zeros((len(self.ress),1))
+        
         x = 0
         while x < (self.t_set//self.t_step):
             overflow_diff, demand_diff, energy_diff, transport_diff, margin_diff = self.get_status(self.t, self._demand)
@@ -715,10 +729,17 @@ class BGLP(Environment):
             self.margin_t       += margin_diff
             self.t              += self.t_step
             x += 1
+            
         self.set_actions(action)
         self._state.set_done(False)
         self._state.set_broken(False)
         self._state = self.collect_substates()
+        
+        self.data_storing.memorize("time",str(self.data_frame),self.t)
+        self.data_storing.memorize("overflow",str(self.data_frame), (sum(self.overflow_t[:])/self.t_set).item())
+        self.data_storing.memorize("energy",str(self.data_frame), (sum(self.energy_t[:])/self.t_set).item())
+        self.data_storing.memorize("demand",str(self.data_frame), (self.demand_t[-1]/self.t_set).item())
+
         return self._state
 
     def compute_done(self, p_state:State) -> bool:
@@ -732,14 +753,11 @@ class BGLP(Environment):
 
         
         if self.prod_scenario == 'continuous':
-            self.goal_achievement = 0.0
             return False
         else:
             if self.prod_reached >= self.prod_target:
-                self.goal_achievement = 1.0
                 return True
             else:
-                self.goal_achievement = self.prod_reached/self.prod_target
                 return False
     
     def compute_broken(self, p_state:State) -> bool:
@@ -882,6 +900,7 @@ class BGLP(Environment):
         """
         To reset reservoirs
         """
+        self.levels_init = torch.rand(6,1)
         for resnum in range(len(self.ress)):
             res = self.ress[resnum]
             res.vol_cur_abs = self.levels_init[resnum]*res.vol_max
