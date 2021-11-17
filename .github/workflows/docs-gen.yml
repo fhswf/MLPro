@@ -41,13 +41,8 @@ jobs:
       run: |
         cd doc/rtd
         sphinx-apidoc -o content/append4 ../../src/mlpro --ext-autodoc -E -T -f
-    
-    - name: Check for modified files
-      id: git-check
-      run: echo ::set-output name=modified::$(if [ $(git diff-index HEAD | wc -l) -eq 1 ]; then echo "false"; else echo "true"; fi)
 
     - name: Push changes
       uses: stefanzweifel/git-auto-commit-action@v4
-      if: steps.git-check.outputs.modified == 'true'
       with:
         commit_message: Automated Documentation
