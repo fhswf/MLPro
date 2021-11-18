@@ -123,7 +123,7 @@ myscenario  = MyScenario(
 # 2.4 Create and run training object
 training = RLTraining(
         p_scenario=myscenario,
-        p_cycle_limit=100,
+        p_cycle_limit=1000,
         p_max_adaptations=0,
         p_max_stagnations=0,
         p_path=path,

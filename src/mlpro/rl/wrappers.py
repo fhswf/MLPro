@@ -36,10 +36,11 @@
 ## -- 2021-11-13  1.5.3     DA       Minor adjustments
 ## -- 2021-11-16  1.5.4     DA       Refactoring
 ## -- 2021-11-16  1.5.5     SY       Refactoring
+## -- 2021-11-18  1.5.6     MRD      Put DummyEnv class outside the WrPolicySB32MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.5 (2021-11-16)
+Ver. 1.5.6 (2021-11-18)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -666,9 +667,19 @@ class WrEnvMLPro2PZoo():
             self._mlpro_env.__del__()
             
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class DummyEnv(gym.Env):
+    """
+    Dummy class for Environment. This is required due to some of the SB3 Policy Algorithm requires to have
+    an Environment. As for now, it only needs the observation space and the action space.
+    """
+    def __init__(self, p_observation_space, p_action_space) -> None:
+        super().__init__()
+        self.observation_space = p_observation_space
+        self.action_space = p_action_space
 
-
-
+## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class WrPolicySB32MLPro(Policy):
     """
@@ -689,15 +700,6 @@ class WrPolicySB32MLPro(Policy):
             p_ada (bool, optional): Adaptability. Defaults to True.
             p_logging (bool, optional): Logging. Defaults to True.
         """
-        class DummyEnv(gym.Env):
-            """
-            Dummy class for Environment. This is required due to some of the SB3 Policy Algorithm requires to have
-            an Environment. As for now, it only needs the observation space and the action space.
-            """
-            def __init__(self, p_observation_space, p_action_space) -> None:
-                super().__init__()
-                self.observation_space = p_observation_space
-                self.action_space = p_action_space
 
         super().__init__(p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
         
