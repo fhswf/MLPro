@@ -5,6 +5,3 @@ Data Management
 
     from mlpro.bf.data import * 
     
-
-.. automodule:: mlpro.bf.data
-  :members:
