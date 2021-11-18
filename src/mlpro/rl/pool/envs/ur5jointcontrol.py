@@ -55,11 +55,22 @@ class UR5JointControl(Environment):
         roscore = subprocess.Popen('roscore')
         rospy.init_node('ur5_lab_training_start',
                     anonymous=True, log_level=rospy.WARN)
+
+        LoadYamlFileParamsTest(rospackage_name="ur5_lab",
+                               rel_path_from_package_to_file="config",
+                               yaml_file_name="ur5_simple_task_param.yaml")
                     
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
 
-        self.env = StartOpenAI_ROS_Environment(
-                            'UR5LabSimpleTask-v0')
+        # Init OpenAI_ROS ENV
+        task_and_robot_environment_name = rospy.get_param(
+        '/ur5_lab/task_and_robot_environment_name')
+    
+        max_step_episode = rospy.get_param(
+        '/ur5_lab/max_iterations')
+
+        self.env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
+        
         self.reset()
                  
 ## -------------------------------------------------------------------------------------------------
@@ -72,21 +83,21 @@ class UR5JointControl(Environment):
     def _setup_spaces(self):
         # Setup state space
         self._state_space.add_dim(Dimension(0, 'Px', 'PositionX', '', 'm', 'm', 
-                                [-math.inf,math.inf]))
+                                p_boundaries=[-math.inf,math.inf]))
         self._state_space.add_dim(Dimension(1, 'Py', 'PositionY', '', 'm', 'm', 
-                                [-math.inf,math.inf]))
+                                p_boundaries=[-math.inf,math.inf]))
         self._state_space.add_dim(Dimension(2, 'Pz', 'PositionZ', '', 'm', 'm', 
-                                [-math.inf,math.inf]))
+                                p_boundaries=[-math.inf,math.inf]))
         self._state_space.add_dim(Dimension(3, 'Tx', 'Targetx', '', 'm', 'm', 
-                                [-math.inf,math.inf]))
+                                p_boundaries=[-math.inf,math.inf]))
         self._state_space.add_dim(Dimension(4, 'Ty', 'Targety', '', 'm', 'm', 
-                                [-math.inf,math.inf]))
+                                p_boundaries=[-math.inf,math.inf]))
         self._state_space.add_dim(Dimension(5, 'Tz', 'Targetz', '', 'm', 'm', 
-                                [-math.inf,math.inf]))
+                                p_boundaries=[-math.inf,math.inf]))
             
         # Setup action space
         for idx in range(6):
-            self._action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad', 'rad', [-np.pi,np.pi]))
+            self._action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad', 'rad', p_boundaries=[-0.1,0.1]))
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -115,7 +126,7 @@ class UR5JointControl(Environment):
         
         close = np.allclose(a=obs[:3], 
                             b=obs[3:], 
-                            atol=0.2)
+                            atol=0.05)
         if close:
             self._state.set_done(True)
             self.goal_achievement = 1.0
