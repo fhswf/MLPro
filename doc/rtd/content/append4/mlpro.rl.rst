@@ -1,57 +1,40 @@
-mlpro.rl package
+Reinforcement Learning
 ================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   mlpro.rl.pool
-
-Submodules
-----------
-
-
-.. automodule:: mlpro.rl.models
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-.. automodule:: mlpro.rl.models_agents
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Model Environment
+------------------
 
 
 .. automodule:: mlpro.rl.models_env
    :members:
    :undoc-members:
    :show-inheritance:
+   
+Model Agents
+------------------
 
 
-.. automodule:: mlpro.rl.models_sar
+.. automodule:: mlpro.rl.models_agents
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-.. automodule:: mlpro.rl.models_train
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   
+Wrappers
+------------------
 
 
 .. automodule:: mlpro.rl.wrappers
    :members:
    :undoc-members:
    :show-inheritance:
+   
+Pool
+------------------
 
-Module contents
----------------
 
-.. automodule:: mlpro.rl
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 4
+
+   mlpro.rl.pool.envs
+   mlpro.rl.pool.policies
+   mlpro.rl.pool.sarsbuffer

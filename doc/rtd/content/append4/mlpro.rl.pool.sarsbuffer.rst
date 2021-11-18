@@ -1,8 +1,5 @@
-mlpro.rl.pool.sarsbuffer package
+SARS Buffer Pool
 ================================
-
-Submodules
-----------
 
 
 .. automodule:: mlpro.rl.pool.sarsbuffer.PrioritizedBuffer
@@ -16,10 +13,3 @@ Submodules
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: mlpro.rl.pool.sarsbuffer
-   :members:
-   :undoc-members:
-   :show-inheritance:

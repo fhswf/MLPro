@@ -104,9 +104,11 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 4
-   :caption: Appendix 4: API
+   :caption: Appendix 4: API Reference
    
-   content/append4/mlpro
+   content/append4/mlpro.bf
+   content/append4/mlpro.gt
+   content/append4/mlpro.rl
 
 .. toctree::
    :maxdepth: 2

@@ -1,8 +1,5 @@
-mlpro.gt.pool.boards package
-============================
-
-Submodules
-----------
+Board Pool
+================
 
 
 .. automodule:: mlpro.gt.pool.boards.bglp
@@ -12,14 +9,6 @@ Submodules
 
 
 .. automodule:: mlpro.gt.pool.boards.multicartpole
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: mlpro.gt.pool.boards
    :members:
    :undoc-members:
    :show-inheritance:

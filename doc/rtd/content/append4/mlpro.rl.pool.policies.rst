@@ -1,8 +1,5 @@
-mlpro.rl.pool.policies package
+Policiy Pool
 ==============================
-
-Submodules
-----------
 
 
 .. automodule:: mlpro.rl.pool.policies.a2c
@@ -16,10 +13,3 @@ Submodules
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: mlpro.rl.pool.policies
-   :members:
-   :undoc-members:
-   :show-inheritance:

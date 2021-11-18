@@ -1,27 +1,19 @@
-mlpro.gt package
+Game Theory
 ================
 
-Subpackages
+Models
 -----------
-
-.. toctree::
-   :maxdepth: 4
-
-   mlpro.gt.pool
-
-Submodules
-----------
 
 
 .. automodule:: mlpro.gt.models
    :members:
    :undoc-members:
    :show-inheritance:
+   
+Pool
+-----------
 
-Module contents
----------------
+.. toctree::
+   :maxdepth: 4
 
-.. automodule:: mlpro.gt
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   mlpro.gt.pool.boards

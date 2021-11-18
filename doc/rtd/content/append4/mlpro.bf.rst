@@ -1,27 +1,17 @@
-mlpro.bf package
+Basic Functions
 ================
 
-Submodules
-----------
-
-
-.. automodule:: mlpro.bf.data
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-.. automodule:: mlpro.bf.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Math
+----------------
 
 
 .. automodule:: mlpro.bf.math
    :members:
    :undoc-members:
    :show-inheritance:
-
+   
+Machine Learning
+----------------
 
 .. automodule:: mlpro.bf.ml
    :members:
@@ -29,21 +19,10 @@ Submodules
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.plot
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+Various
+----------------
 
 .. automodule:: mlpro.bf.various
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: mlpro.bf
    :members:
    :undoc-members:
    :show-inheritance:

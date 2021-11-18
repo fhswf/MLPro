@@ -1,8 +1,5 @@
-mlpro.rl.pool.envs package
+Environment Pool
 ==========================
-
-Submodules
-----------
 
 
 .. automodule:: mlpro.rl.pool.envs.bglp
@@ -34,10 +31,3 @@ Submodules
    :undoc-members:
    :show-inheritance:
 
-Module contents
----------------
-
-.. automodule:: mlpro.rl.pool.envs
-   :members:
-   :undoc-members:
-   :show-inheritance:
