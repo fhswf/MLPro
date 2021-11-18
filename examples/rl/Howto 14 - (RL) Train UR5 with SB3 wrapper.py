@@ -1,21 +1,18 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : Howto 07 - Train UR5 Robot environment with A2C Algorithm
+## -- Module  : Howto 14 - Train UR5 with SB3 wrapper
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-09-23  0.0.0     WB       Creation
-## -- 2021-09-23  1.0.0     WB       Released first version
-## -- 2021 09-26  1.0.1     MRD      Change the import module due to the change of the pool
-## --                                folder structer
-## -- 2021-10-18  1.0.2     DA       Refactoring
+## -- 2021-11-18  0.0.0     MRD      Creation
+## -- 2021-11-18  1.0.0     MRD      Initial Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-10-18)
+Ver. 1.0.0 (2021-11-18)
 
-This module shows how to implement A2C on the UR5 Robot Environment
+This module shows how to use SB3 wrapper to train UR5 robot
 """
 
 
