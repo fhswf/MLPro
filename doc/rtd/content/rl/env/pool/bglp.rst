@@ -6,6 +6,10 @@
     
         import mlpro.rl.pool.envs.bglp
     
+    - **3rd Party Dependencies**
+    
+    add text here!
+    
     - **Overview**
     
     add text here!
@@ -62,4 +66,4 @@
       year={2021},
       volume={152},
       pages={107382}
-    }
+      }
