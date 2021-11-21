@@ -587,7 +587,7 @@ class BGLP(Environment):
         self.lr_energy      = lr_energy
         self.prod_target    = prod_target
         self.prod_scenario  = prod_scenario
-        self.levels_init    = np.ones(6,1)*0.5
+        self.levels_init    = np.ones((6,1))*0.5
         self.sils           = []
         self.hops           = []
         self.ress           = []
