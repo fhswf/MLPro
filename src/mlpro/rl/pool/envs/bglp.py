@@ -18,10 +18,11 @@
 ## -- 2021-11-16  2.1.1     SY       Update following model improvements
 ## -- 2021-11-16  2.1.2     SY       Add data storing for overflow, demand, energy
 ## -- 2021-11-17  2.1.3     SY       Random initial states
+## -- 2021-11-21  2.1.4     SY       Remove dependency from torch
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.3 (2021-11-17)
+Ver. 2.1.4 (2021-11-21)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -29,7 +30,6 @@ This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 from mlpro.rl.models import *
 from mlpro.bf.various import *
 import numpy as np
-import torch
 import random
         
         
@@ -587,7 +587,7 @@ class BGLP(Environment):
         self.lr_energy      = lr_energy
         self.prod_target    = prod_target
         self.prod_scenario  = prod_scenario
-        self.levels_init    = torch.ones(6,1)*0.5
+        self.levels_init    = np.ones((6,1))*0.5
         self.sils           = []
         self.hops           = []
         self.ress           = []
@@ -633,17 +633,17 @@ class BGLP(Environment):
         self.acts.append(belt_c)
         
         self.margin_p           = margin_p
-        self.margin             = torch.zeros((len(self.ress),1))
-        self.overflow           = torch.zeros((len(self.ress),1))
-        self.demand             = torch.zeros((len(self.ress),1))
-        self.energy             = torch.zeros((len(self.acts),1))
-        self.transport          = torch.zeros((len(self.acts),1))
-        self.overflow_t         = torch.zeros((len(self.ress),1))
-        self.demand_t           = torch.zeros((len(self.ress),1))
-        self.energy_t           = torch.zeros((len(self.acts),1))
-        self.transport_t        = torch.zeros((len(self.acts),1))
-        self.margin_t           = torch.zeros((len(self.ress),1))
-        self.reward             = torch.zeros((len(self.acts),1))
+        self.margin             = np.zeros((len(self.ress),1))
+        self.overflow           = np.zeros((len(self.ress),1))
+        self.demand             = np.zeros((len(self.ress),1))
+        self.energy             = np.zeros((len(self.acts),1))
+        self.transport          = np.zeros((len(self.acts),1))
+        self.overflow_t         = np.zeros((len(self.ress),1))
+        self.demand_t           = np.zeros((len(self.ress),1))
+        self.energy_t           = np.zeros((len(self.acts),1))
+        self.transport_t        = np.zeros((len(self.acts),1))
+        self.margin_t           = np.zeros((len(self.ress),1))
+        self.reward             = np.zeros((len(self.acts),1))
         self.con_res_to_act     = [[-1,0],[0,1],[1,2],[2,3],[3,4],[4,-1]]
         
         self.data_lists         = ["time","overflow","energy","demand"]
@@ -713,11 +713,11 @@ class BGLP(Environment):
                 action_env.add_elem(agent_id, action_elem_env)
                 action.append(action_elem_env.get_value(action_id))
         
-        self.overflow_t         = torch.zeros((len(self.ress),1))
-        self.demand_t           = torch.zeros((len(self.ress),1))
-        self.energy_t           = torch.zeros((len(self.acts),1))
-        self.transport_t        = torch.zeros((len(self.acts),1))
-        self.margin_t           = torch.zeros((len(self.ress),1))
+        self.overflow_t         = np.zeros((len(self.ress),1))
+        self.demand_t           = np.zeros((len(self.ress),1))
+        self.energy_t           = np.zeros((len(self.acts),1))
+        self.transport_t        = np.zeros((len(self.acts),1))
+        self.margin_t           = np.zeros((len(self.ress),1))
         
         x = 0
         while x < (self.t_set//self.t_step):
@@ -900,7 +900,7 @@ class BGLP(Environment):
         """
         To reset reservoirs
         """
-        self.levels_init = torch.rand(6,1)
+        self.levels_init = np.random.rand(6,1)
         for resnum in range(len(self.ress)):
             res = self.ress[resnum]
             res.vol_cur_abs = self.levels_init[resnum]*res.vol_max
