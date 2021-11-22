@@ -1,4 +1,4 @@
-Core Functionalities
+Core Functions
 ================
 
 

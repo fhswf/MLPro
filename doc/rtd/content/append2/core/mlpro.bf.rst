@@ -1,11 +1,37 @@
 Basic Functions
 ================
 
-Math
+Various
+----------------
+
+.. automodule:: mlpro.bf.various
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+Mathematics
 ----------------
 
 
 .. automodule:: mlpro.bf.math
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+Data Management
+----------------
+
+
+.. automodule:: mlpro.bf.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+Data Plotting
+----------------
+
+
+.. automodule:: mlpro.bf.plot
    :members:
    :undoc-members:
    :show-inheritance:
@@ -17,12 +43,13 @@ Machine Learning
    :members:
    :undoc-members:
    :show-inheritance:
-
-
-Various
+   
+Exceptions
 ----------------
 
-.. automodule:: mlpro.bf.various
+.. automodule:: mlpro.bf.exceptions
    :members:
    :undoc-members:
    :show-inheritance:
+
+

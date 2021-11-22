@@ -12,6 +12,10 @@ Reinforcement Learning
    pool/rl/mlpro.rl.pool.envs
    pool/rl/mlpro.rl.pool.policies
    pool/rl/ mlpro.rl.pool.sarsbuffer
+   pool/rl/mlpro.rl.pool.scenarios
+   pool/rl/mlpro.rl.pool.actionplanner
+   pool/rl/mlpro.rl.pool.afunctions
+   pool/rl/mlpro.rl.pool.envmodels
    
 
 Game Theory
@@ -22,3 +26,4 @@ Game Theory
    :maxdepth: 4
 
    pool/gt/mlpro.gt.pool.boards
+   pool/gt/mlpro.gt.pool.players

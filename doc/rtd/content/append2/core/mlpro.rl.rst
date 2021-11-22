@@ -1,25 +1,7 @@
 Reinforcement Learning
 ================
 
-Model Environment
-------------------
-
-
-.. automodule:: mlpro.rl.models_env
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   
-Model Agents
-------------------
-
-
-.. automodule:: mlpro.rl.models_agents
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   
-Model SAR
+States, Actions, Rewards
 ------------------
 
 
@@ -28,7 +10,26 @@ Model SAR
    :undoc-members:
    :show-inheritance:
    
-Model Train
+Environments
+------------------
+
+
+.. automodule:: mlpro.rl.models_env
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+Agents
+------------------
+
+
+.. automodule:: mlpro.rl.models_agents
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+   
+Training and Tuning
 ------------------
 
 
