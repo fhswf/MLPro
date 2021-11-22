@@ -1,4 +1,4 @@
-State, Action, Reward Buffer Pool
+State, Action, Reward Buffers
 ==========================
 
 Random SAR Buffer

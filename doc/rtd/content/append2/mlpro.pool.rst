@@ -26,4 +26,3 @@ Game Theory
    :maxdepth: 4
 
    pool/gt/mlpro.gt.pool.boards
-   pool/gt/mlpro.gt.pool.players

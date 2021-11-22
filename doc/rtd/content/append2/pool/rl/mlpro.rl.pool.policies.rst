@@ -1,4 +1,4 @@
-Policy Pool
+Policies
 ==========================
 
 Advantage Actor Critic - A2C

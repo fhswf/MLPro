@@ -1,4 +1,4 @@
-Adaptive Functions Pool
+Adaptive Functions
 ================================
 
 
