@@ -1,11 +1,8 @@
-SARS Buffer Pool
-================================
+State, Action, Reward Buffer Pool
+==========================
 
-
-.. automodule:: mlpro.rl.pool.sarsbuffer.PrioritizedBuffer
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Random SAR Buffer
+----------------
 
 
 .. automodule:: mlpro.rl.pool.sarsbuffer.RandomSARSBuffer
@@ -13,3 +10,11 @@ SARS Buffer Pool
    :undoc-members:
    :show-inheritance:
 
+Prioritized Buffer
+----------------
+
+
+.. automodule:: mlpro.rl.pool.sarsbuffer.PrioritizedBuffer
+   :members:
+   :undoc-members:
+   :show-inheritance:
