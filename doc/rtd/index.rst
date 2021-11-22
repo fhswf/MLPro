@@ -91,24 +91,12 @@ Instructions for use
    content/append1/test
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Appendix 2: Pool Objects
-   
-   content/append2/test
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Appendix 3: 3rd Party Support
-   
-   content/append2/test
-
-.. toctree::
    :maxdepth: 4
-   :caption: Appendix 4: API Reference
+   :caption: Appendix 2: API Reference
    
-   content/append4/mlpro.bf
-   content/append4/mlpro.gt
-   content/append4/mlpro.rl
+   content/append2/mlpro.core
+   content/append2/mlpro.wrappers
+   content/append2/mlpro.pool
 
 .. toctree::
    :maxdepth: 2

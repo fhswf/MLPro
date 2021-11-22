@@ -19,22 +19,20 @@ Model Agents
    :undoc-members:
    :show-inheritance:
    
-Wrappers
+Model SAR
 ------------------
 
 
-.. automodule:: mlpro.rl.wrappers
+.. automodule:: mlpro.rl.models_sar
    :members:
    :undoc-members:
    :show-inheritance:
    
-Pool
+Model Train
 ------------------
 
 
-.. toctree::
-   :maxdepth: 4
-
-   mlpro.rl.pool.envs
-   mlpro.rl.pool.policies
-   mlpro.rl.pool.sarsbuffer
+.. automodule:: mlpro.rl.models_train
+   :members:
+   :undoc-members:
+   :show-inheritance:
