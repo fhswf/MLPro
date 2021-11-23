@@ -1,4 +1,4 @@
-Policy
+Policies
 --------------
 
 Add text here!

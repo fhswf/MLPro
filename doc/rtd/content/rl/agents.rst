@@ -1,4 +1,4 @@
-3.2 Agents
+3.3 Agents
 ================
 
 Add text here!
@@ -6,7 +6,7 @@ Add text here!
 .. toctree::
    :maxdepth: 1
    
-   agent/policy
+   agent/policies
    agent/mbagents   
    agent/multiagents
    agent/customalg
