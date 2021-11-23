@@ -59,8 +59,8 @@ Instructions for use
    :caption: 3 MLPro-RL – Reinforcement Learning
    
    content/rl/overview
-   content/rl/agents
    content/rl/env
+   content/rl/agents
    content/rl/scenario
    content/rl/wrapper
 

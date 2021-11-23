@@ -6,6 +6,6 @@ Add text here!
 .. toctree::
    :maxdepth: 1
    
-   env/multienv
    env/customenv
+   env/envmodel
    env/pool
