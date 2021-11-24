@@ -1,6 +1,8 @@
 Custom Environments
 --------------
 
+.. image:: images/MLPro-RL-Env_class_Environment_commented.svg
+
 - **Environment Creation for Simulation Mode**
 
     To create an environment that satisfies MLPro interface is immensly simple and straigtforward.
