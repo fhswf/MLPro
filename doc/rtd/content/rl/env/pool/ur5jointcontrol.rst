@@ -2,7 +2,7 @@
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     This ???? environment can be installed via:
 
-    .. code-block:: pythom
+    .. code-block:: python
     
         import mlpro.rl.pool.envs.ur5jointcontrol
     
