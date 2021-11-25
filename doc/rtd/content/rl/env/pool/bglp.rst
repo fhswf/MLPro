@@ -8,12 +8,31 @@
     
     - **3rd Party Dependencies**
     
-    add text here!
+        - NumPy
     
     - **Overview**
     
-    add text here!
-      
+    text-align:justify
+    The BGLP illustrates a smart production system with high flexibility and distributed control to transport bulk raw materials.
+    One of the advantages of this laboratory test belt is the modularity in design, as depicted schematically below:
+    
+    .. image:: images/BGLP_Scheme.jpg
+        :width: 400
+    
+    The BGLP consists of four modules, which are loading, storing, weighing, and filling stations respectively, and has conveying and dosing units as integral parts of the system.
+    The interface between the modules is assembled via a mini hopper placed in the prior module. 
+    Then, the next module is fed by a vacuum pump, which operates in a discontinuous manner, before the goods are temporary stored in a silo of the next module. 
+    The filling station has no silo because the main purpose of the station is to occupy the transport containers.
+    
+    We utilize dissimilar actuators in modules 1-3 to transport the goods from the silo to the mini hopper. 
+    Module 1 utilizes a belt conveyor, that operates between 0 and 1800 rpm. 
+    Module 2 uses a vibratory conveyor, which can be completely switched on and off. 
+    Lastly, Module 3 utilizes a rotary feeder, that operates between 0 and 1450 rpm.
+    
+    In RL context, we consider the BGLP as a multi-agents system, where each actuator of the system is pointed as an agent or a player.
+    The states information for each agent are the fill level of the prior reservoir and the fill level of the next reservoir.
+    
+        
     - **General information**
     
     +------------------------------------+-------------------------------------------------------+
