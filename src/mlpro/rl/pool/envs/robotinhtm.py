@@ -329,7 +329,7 @@ class RobotHTM (Environment):
             state = self._state
 
         reward = Reward(Reward.C_TYPE_OVERALL)
-        disterror = np.linalg.norm(p_state.get_values()[:3] - p_state.get_values()[3:])
+        disterror = np.linalg.norm(state.get_values()[:3] - state.get_values()[3:])
         
         ratio = disterror/self.init_distance.item()
         rew = -np.ones(1)*ratio
