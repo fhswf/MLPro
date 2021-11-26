@@ -19,10 +19,11 @@
 ## -- 2021-11-16  2.1.2     SY       Add data storing for overflow, demand, energy
 ## -- 2021-11-17  2.1.3     SY       Random initial states
 ## -- 2021-11-21  2.1.4     SY       Remove dependency from torch
+## -- 2021-11-26  2.1.5     SY       Update reward type
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.4 (2021-11-21)
+Ver. 2.1.5 (2021-11-26)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -545,7 +546,7 @@ class BGLP(Environment):
     prod_target         = 0
     prod_scenario       = 0
 
-    def __init__(self, p_reward_type=Reward.C_TYPE_OVERALL, p_logging=True,
+    def __init__(self, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_logging=True,
                  t_step=0.5, t_set=10.0, demand=0.1, lr_margin=1.0, lr_demand=4.0,
                  lr_energy=0.0010, margin_p=[0.2,0.8,4], prod_target=10000,
                  prod_scenario='continuous'):
