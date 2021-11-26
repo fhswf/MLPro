@@ -1,6 +1,7 @@
 Environments
 ==========================
 
+.. _api-ref-bglp:
 Bulk Goods Plant
 ----------------
 

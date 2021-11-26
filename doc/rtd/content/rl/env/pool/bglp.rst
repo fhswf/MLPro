@@ -12,7 +12,6 @@
     
     - **Overview**
     
-    text-align:justify
     The BGLP illustrates a smart production system with high flexibility and distributed control to transport bulk raw materials.
     One of the advantages of this laboratory test belt is the modularity in design, as depicted schematically below:
     
@@ -61,7 +60,14 @@
     +------------------------------------+-------------------------------------------------------+
     | Reward Structure                   | Individual reward for each agent                      |
     +------------------------------------+-------------------------------------------------------+
-      
+    
+    .. note::
+    
+    	You can change the configurations of the BGLP simulation, for instance, production demand (L/s), production target for batch operation (L),
+    	learning rates for reward calculation, and production scenario (batch or continuous). The detailed explanations are available in the API reference
+    	section, see :ref:`here <api-ref-bglp>`.
+    	
+    
     - **Action space**
     
     In this environment, we consider 5 actuators to be controlled. 
@@ -120,7 +126,30 @@
       
     - **Reward structure**
     
-    add text here!
+    The reward structure is implemented according to `this paper <https://www.researchgate.net/publication/351939505_Decentralized_Learning_of_Energy_Optimal_Production_Policies_using_PLC-informed_Reinforcement_Learning>`_.
+    You can also find the source code of the reward structure, `here <https://github.com/fhswf/MLPro/blob/13b7b8a82d90b626f40ea7c268706e43889b9e00/src/mlpro/rl/pool/envs/bglp.py#L971-L982>`_.
+    The given reward is an individual scalar reward for each agent. To be noted, this reward function is more suitable for a continuous production scenario.
+    
+    If you would like to implement a customize reward function, you can follow these line of codes:
+    
+    .. code-block:: python
+    
+        class MyBGLP(BGLP):
+        
+            def calc_reward(self):
+            
+                # Each agent has an individual reward
+                if self.reward_type == Reward.C_TYPE_EVERY_AGENT:
+                    for actnum in range(len(self.acts)):
+                        acts = self.acts[actnum]
+                        self.reward[actnum] = 0
+                    return self.reward[:]
+                    
+                # Overall reward
+                elif self.reward_type == Reward.C_TYPE_OVERALL:
+                    self.overall_reward = 0
+                    return self.overall_reward
+     
       
     - **Version structure**
     
@@ -137,5 +166,6 @@
       journal={Comput. Chem. Eng.},
       year={2021},
       volume={152},
-      pages={107382}
+      pages={107382},
+      doi={10.1016/j.compchemeng.2021.107382}
       }
