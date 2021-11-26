@@ -88,7 +88,7 @@ class AFctSTrans (Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctReward(Model):
+class AFctReward (Model):
     """
     Special adaptive function for reward prediction.
 
@@ -171,9 +171,25 @@ class AFctReward(Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctDone(Model):
+class AFctDone (Model):
     """
     Special adaptive function for environment done state prediction.
+
+    Parameters
+    ----------
+    p_afct_cls : str
+        Name of an adaptive function class (compatible to class AdaptiveFunction)
+    p_state_space : MSpace
+        State space    
+    p_threshold : float
+        See description of class AdaptiveFunction
+    p_buffer_size: int
+        Initial size of internal data buffer (0=no buffering)
+    p_ada : bool
+        Boolean switch for adaptivity
+    p_logging 
+        Log level (see class Log for more details)
+
     """
 
     C_TYPE          = 'AFct Done'
@@ -217,9 +233,25 @@ class AFctDone(Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctBroken(Model):
+class AFctBroken (Model):
     """
     Special adaptive function for environment broken state prediction.
+
+    Parameters
+    ----------
+    p_afct_cls : str
+        Name of an adaptive function class (compatible to class AdaptiveFunction)
+    p_state_space : MSpace
+        State space    
+    p_threshold : float
+        See description of class AdaptiveFunction
+    p_buffer_size: int
+        Initial size of internal data buffer (0=no buffering)
+    p_ada : bool
+        Boolean switch for adaptivity
+    p_logging 
+        Log level (see class Log for more details)
+
     """
 
     C_TYPE          = 'AFct Broken'
