@@ -196,16 +196,7 @@ class AFctDone (Model):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_afct_cls          Name of an adaptive function class (compatible to class AdaptiveFunction)
-            p_state_space       State space
-            p_threshold         See description of class AdaptiveFunction
-            p_buffer_size       Initial size of internal data buffer (0=no buffering)
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
-        """
-         
+
         # concatenate state and action space to input space
         # ...
         output_space = None 
@@ -258,16 +249,6 @@ class AFctBroken (Model):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_afct_cls          Name of an adaptive function class (compatible to class AdaptiveFunction)
-            p_state_space       State space
-            p_threshold         See description of class AdaptiveFunction
-            p_buffer_size       Initial size of internal data buffer (0=no buffering)
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
-        """
-         
         # concatenate state and action space to input space
         # ...
         output_space = None 
@@ -296,10 +277,17 @@ class AFctBroken (Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class EnvBase (FctReward, FctDone, FctBroken, Plottable, ScientificObject):
+class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, ScientificObject):
     """
     Base class for all environment classes. It defines the interface and elementry properties for
     an environment in the context of reinforcement learning.
+
+    Parameters
+    ----------
+    p_latency : timedelta
+        Optional: latency of environment. If not provided, the internal value C_LATENCY will be used 
+        by default.
+
     """
 
     C_TYPE          = 'Environment Base'
@@ -313,8 +301,7 @@ class EnvBase (FctReward, FctDone, FctBroken, Plottable, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_latency:timedelta=None,      # Optional: latency of environment. If not provided
-                                                # internal value C_LATENCY will be used by default.
+                 p_latency:timedelta=None,      
                  p_logging=Log.C_LOG_ALL):      # Log level (see constants of class Log)
 
         Log.__init__(self, p_logging=p_logging)
@@ -439,7 +426,7 @@ class EnvBase (FctReward, FctDone, FctBroken, Plottable, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Environment (EnvBase, FctSTrans, Mode):
+class Environment (EnvBase, Mode):
     """
     This class represents the central environment model to be reused/inherited in own rl projects.
     """
