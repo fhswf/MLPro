@@ -13,7 +13,7 @@ States, Actions, Rewards
 Environments
 ------------------
 
-
+.. image:: images/rl/02_environments/MLPro-RL-Env_class_diagram.png
 .. automodule:: mlpro.rl.models_env
    :members:
    :undoc-members:
