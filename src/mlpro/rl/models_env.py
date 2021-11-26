@@ -285,8 +285,8 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
     Parameters
     ----------
     p_latency : timedelta
-        Optional: latency of environment. If not provided, the internal value C_LATENCY will be used 
-        by default.
+        Optional latency of environment. If not provided, the internal value of constant C_LATENCY 
+        is used by default.
 
     """
 
