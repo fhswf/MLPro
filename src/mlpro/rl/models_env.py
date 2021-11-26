@@ -16,6 +16,7 @@
 ## -- 2021-10-25  1.1.5     SY       Enhancement of class EnvBase by adding ScientificObject.
 ## -- 2021-11-26  1.2.0     DA       Redesign:
 ## --                                - Introduction of special adaptive function classes AFct*
+## --                                - Rework of classes EnvBase, Environment, EnvModel
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -54,6 +55,13 @@ class AFctSTrans (Model):
     p_logging 
         Log level (see class Log for more details)
 
+    Attributes
+    ----------
+    _state_space : MSpace
+        State space
+    _action_space : MSpace
+        Action space
+
     """
 
     C_TYPE          = 'AFct STrans'
@@ -61,11 +69,24 @@ class AFctSTrans (Model):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_afct_cls, p_state_space:MSpace, p_action_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL):
          
+        self._state_space   = p_state_space
+        self._action_space  = p_action_space
+
         # concatenate state and action space to input space
         # ...
         input_space = None 
 
         self._afct = p_afct_cls(p_input_space=input_space, p_output_space=p_state_space, p_output_elem_cls=State, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_state_space(self) -> MSpace:
+        return self._state_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_action_space(self) -> MSpace:
+        return self._action_space
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -80,7 +101,6 @@ class AFctSTrans (Model):
         # 
         #
         pass
-
 
 
 
@@ -107,18 +127,31 @@ class AFctReward (Model):
     p_logging 
         Log level (see class Log for more details)
 
+    Attributes
+    ----------
+    _state_space : MSpace
+        State space
+
     """
 
     C_TYPE          = 'AFct Reward'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL):
+
+        self._state_space   = p_state_space
+
         # concatenate state and action space to input space
         # ...
         input_space     = None 
         output_space    = None
 
         self._afct = p_afct_cls(p_input_space=input_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_state_space(self) -> MSpace:
+        return self._state_space
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -190,6 +223,11 @@ class AFctDone (Model):
     p_logging 
         Log level (see class Log for more details)
 
+    Attributes
+    ----------
+    _state_space : MSpace
+        State space
+
     """
 
     C_TYPE          = 'AFct Done'
@@ -197,11 +235,18 @@ class AFctDone (Model):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
 
+        self._state_space   = p_state_space
+
         # concatenate state and action space to input space
         # ...
         output_space = None 
 
         self._afct = p_afct_cls(p_input_space=p_state_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_state_space(self) -> MSpace:
+        return self._state_space
 
 
 # -------------------------------------------------------------------------------------------------
@@ -243,17 +288,30 @@ class AFctBroken (Model):
     p_logging 
         Log level (see class Log for more details)
 
+    Attributes
+    ----------
+    _state_space : MSpace
+        State space
+
     """
 
     C_TYPE          = 'AFct Broken'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
+
+        self._state_space   = p_state_space
+
         # concatenate state and action space to input space
         # ...
         output_space = None 
 
         self._afct = p_afct_cls(p_input_space=p_state_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_state_space(self) -> MSpace:
+        return self._state_space
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -287,6 +345,33 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
     p_latency : timedelta
         Optional latency of environment. If not provided, the internal value of constant C_LATENCY 
         is used by default.
+    p_afct_strans : AFctSTrans
+        Optional external adaptive function for state transition 
+    p_afct_reward : AFctReward
+        Optional external adaptive function for reward computation
+    p_afct_done : AFctDone
+        Optional external adaptive function for state evaluation 'done'
+    p_afct_broken : AFctBroken
+        Optional external adaptive function for state evaluation 'broken'
+    p_logging 
+        Log level (see class Log for more details)
+
+    Attributes
+    ----------
+    _state : State
+        Current state of environment
+    _latency : timedelta
+        Latency of the environment
+    _last_action : Action
+        Last action
+    _afct_strans : AFctSTrans
+        Internal adaptive state transition function
+    _afct_reward : AFctReward
+        Internal adaptive reward function
+    _afct_done : AFctDone
+        Internal adaptive function for state evaluation 'done'
+    _afct_broken : AFctBroken
+        Internal adaptive function for state evaluation 'broken'
 
     """
 
@@ -301,26 +386,23 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_latency:timedelta=None,      
-                 p_logging=Log.C_LOG_ALL):      # Log level (see constants of class Log)
+                 p_latency:timedelta=None, 
+                 p_afct_strans:AFctSTrans=None,
+                 p_afct_reward:AFctReward=None,
+                 p_afct_done:AFctDone=None,
+                 p_afct_broken:AFctBroken=None,     
+                 p_logging=Log.C_LOG_ALL): 
 
         Log.__init__(self, p_logging=p_logging)
-        self._state_space      = ESpace()           # Euclidian space as default
-        self._action_space     = ESpace()           # Euclidian space as default
-        self._state            = None
-        self._last_action      = None
-        self._goal_achievement = 0.0
+        self._afct_strans       = p_afct_strans
+        self._afct_reward       = p_afct_reward
+        self._afct_done         = p_afct_done
+        self._afct_broken       = p_afct_broken
+        self._state_space       = None
+        self._action_space      = None
+        self._state             = None
+        self._last_action       = None
         self.set_latency(p_latency)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_state_space(self):
-        return self._state_space
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_action_space(self):
-        return self._action_space
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -338,8 +420,10 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         Sets latency of environment. If p_latency is None latency will be reset
         to internal value of attribute C_LATENCY.
 
-        Parameters:
-          p_latency       New latency 
+        Parameters
+        ----------
+        p_latency : timedelta
+            New latency value 
         """
 
         if p_latency is None:
@@ -384,11 +468,6 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_goal_achievement(self):
-        return self._goal_achievement
-
-
-## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
         """
         Resets the internal random generator using the given seed.
@@ -411,11 +490,24 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         """
         Processes given action and updates the state of the environment.
 
-        Parameters:
-            p_action      Action to be processed
+        Parameters
+        ----------
+        p_action : Action
+            Action to be processed
 
-        Returns:
+        Returns
+        -------
+        bool
             True, if action processing was successfull. False otherwise.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def adapt(self, *p_args) -> bool:
+        """
+        Adaptivity is switched off here. 
         """
 
         raise NotImplementedError
@@ -429,6 +521,25 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 class Environment (EnvBase, Mode):
     """
     This class represents the central environment model to be reused/inherited in own rl projects.
+
+    Parameters
+    ----------
+    p_mode 
+        Mode of environment. Possible values are Mode.C_MODE_SIM(default) or Mode.C_MODE_REAL.
+    p_latency : timedelta
+        Optional latency of environment. If not provided, the internal value of constant C_LATENCY 
+        is used by default.
+    p_afct_strans : AFctSTrans
+        Optional external adaptive function for state transition 
+    p_afct_reward : AFctReward
+        Optional external adaptive function for reward computation
+    p_afct_done : AFctDone
+        Optional external adaptive function for state evaluation 'done'
+    p_afct_broken : AFctBroken
+        Optional external adaptive function for state evaluation 'broken'
+    p_logging 
+        Log level (see class Log for more details)
+
     """
 
     C_TYPE          = 'Environment'
@@ -437,14 +548,42 @@ class Environment (EnvBase, Mode):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_mode=Mode.C_MODE_SIM,        # Mode of environment (simulation/real)
-                 p_latency:timedelta=None,      # Optional: latency of environment. If not provided
-                                                # internal value C_LATENCY will be used by default
-                 p_logging=Log.C_LOG_ALL):      # Log level (see constants of class Log)
+                 p_mode=Mode.C_MODE_SIM,        
+                 p_latency:timedelta=None, 
+                 p_afct_strans:AFctSTrans=None,
+                 p_afct_reward:AFctReward=None,
+                 p_afct_done:AFctDone=None,
+                 p_afct_broken:AFctBroken=None,     
+                 p_logging=Log.C_LOG_ALL): 
 
-        EnvBase.__init__(self, p_latency, False)
+        EnvBase.__init__(self, 
+                         p_latency=p_latency, 
+                         p_afct_strans=p_afct_strans, 
+                         p_afct_reward=p_afct_reward,
+                         p_afct_done=p_afct_done,
+                         p_afct_broken=p_afct_broken,
+                         p_logging=p_logging)
+
         Mode.__init__(self, p_mode, p_logging)
-        self._setup_spaces()
+        self._state_space, self._action_space = self.setup_spaces()
+
+
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def setup_spaces():
+        """
+        Static template method to setup and return state and action space of environment.
+        
+        Returns
+        -------
+        MSpace
+            State space object
+        MSpace
+            Action space object
+
+        """
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -457,30 +596,18 @@ class Environment (EnvBase, Mode):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self):
-        """
-        Implement this method to enrich the state and action space with specific dimensions. 
-        """
-
-        # 1 Setup state space
-        # self._state_space.add_dim(Dimension(0, 'Pos', 'Position', '', 'm', 'm', [-50,50]))
-        # self._state_space.add_dim(Dimension(1, 'Vel', 'Velocity', '', 'm/sec', '\frac{m}{sec}', [-50,50]))
-
-        # 2 Setup action space
-        # self.action_space.add_dim(Dimension(0, 'Rot', 'Rotation', '', '1/sec', '\frac{1}{sec}', [-50,50]))
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
     def process_action(self, p_action:Action) -> bool:
         """
         Processes given action and updates the state of the environment.
 
-        Parameters:
-            p_action      Action to be processed
+        Parameters
+        ----------
+        p_action : Action
+            Action to be processed
 
-        Returns:
+        Returns
+        -------
+        bool
             True, if action processing was successfull. False otherwise.
         """
 
@@ -494,10 +621,7 @@ class Environment (EnvBase, Mode):
         # 1 State transition
         if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
-            state  = self.get_state()
-            new_state = self.simulate_reaction(state, p_action)
-            self._set_state(new_state)
-            # self._set_state( self.simulate_reaction(self.get_state(), p_action))
+            self._set_state( self.simulate_reaction( self.get_state(), p_action ) )
 
         elif self._mode == self.C_MODE_REAL:
             # 1.2 Real state transition
@@ -518,9 +642,8 @@ class Environment (EnvBase, Mode):
 
         # 2 State evaluation
         state = self.get_state()
-        state.set_done( self.compute_done(None) )
-        state.set_broken( self.compute_broken(None) )
-        self._goal_achievement = self._compute_goal_achievement()
+        state.set_done(self.compute_done(state))
+        state.set_broken(self.compute_broken(state))
         
 
         # 3 Outro
@@ -529,16 +652,67 @@ class Environment (EnvBase, Mode):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def simulate_reaction(self, p_state:State, p_action:Action) -> State:
+        """
+        Simulates a state transition by either calling the pretrained adaptive function or by calling
+        a custom implementation in method _simulate_reaction().
+
+        Parameters
+        ----------
+        p_state : State
+            Current state of environment
+        p_action : Action
+            Action of an agent
+        
+        Returns
+        -------
+        State
+            Subsequent state
+        """
+
+        if self._afct_strans is not None:
+            return self._afct_strans.simulate_reaction(p_state, p_action)
+        else:
+            return self._simulate_reaction(p_state, p_action)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
+        """
+        Custom implementation for a simulated state transition. To be redefined in own environment.
+
+        Parameters
+        ----------
+        p_state : State
+            Current state of environment
+        p_action : Action
+            Action of an agent
+        
+        Returns
+        -------
+        State
+            Subsequent state
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
     def _export_action(self, p_action:Action) -> bool:
         """
         Mode C_MODE_REAL only: exports given action to be processed externally 
         (for instance by a real hardware). Please redefine. 
 
-        Parameters:
-            p_action      Action to be exported
+        Parameters
+        ----------
+        p_action : Action
+            Action to be exported
 
-        Returns:
+        Returns
+        -------
+        bool
             True, if action export was successful. False otherwise.
+
         """
 
         raise NotImplementedError
@@ -550,45 +724,147 @@ class Environment (EnvBase, Mode):
         Mode C_MODE_REAL only: imports state from an external system (for instance a real hardware). 
         Please redefine. Please use method set_state() for internal update.
 
-        Returns:
-          True, if state import was successful. False otherwise.
+        Returns
+        -------
+        bool
+            True, if state import was successful. False otherwise.
+
         """
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_goal_achievement(self, p_state:State=None):
+    def compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         """
-        Optional goal achievement computation.
+        Computes a reward by either calling the pretrained adaptive function or by calling a custom 
+        implementation in method _compute_reward().
 
-        Parameters:
-            p_state         Optional external state. If none, please use internal state.
-
-        Returns:
-            Goal avievement value in interval [0,1].
-        """
-
-        return 0.0
-
-
-## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state:State=None) -> Reward:
-        """
-        Computes reward based on given or current state.
-
-        Parameters:
-            p_state         State object. If None, please use internal state.
-
-        Returns:
+        Parameters
+        ----------
+        p_state_old : State
+            Old state (before state transition)
+        p_state_new : State
+            New state (after state transition)
+        
+        Returns
+        -------
+        Reward
             Reward object
         """
 
-        # if p_state is not None:
-        #     state = p_state
-        # else:
-        #     state = self.get_state()
+        if self._afct_reward is not None:
+            return self._afct_reward.compute_reward(p_state_old, p_state_new)
+        else:
+            return self._compute_reward(p_state_old, p_state_new)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
+        """
+        Custom implementation for reward computation. To be redefined in own environment.
+
+        Parameters
+        ----------
+        p_state_old : State
+            Old state (before state transition)
+        p_state_new : State
+            New state (after state transition)
         
+        Returns
+        -------
+        Reward
+            Reward object
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_done(self, p_state:State) -> bool:
+        """
+        Evaluates a given state as done state by either calling the pretrained adaptive function or
+        by calling a custom implementation in method _compute_done().
+
+        Parameters
+        ----------
+        p_state : State
+            State of environment
+        
+        Returns
+        -------
+        bool
+            True, if given state is a done state. False otherwise.
+
+        """
+
+        if self._afct_done is not None:
+            return self._afct_done.compute_done(p_state)
+        else:
+            return self._compute_done(p_state)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_done(self, p_state:State) -> bool:
+        """
+        Custom implementation for state evaluation 'done'. To be redefined in own environment.
+
+        Parameters
+        ----------
+        p_state : State
+            State of environment
+        
+        Returns
+        -------
+        bool
+            True, if given state is a done state. False otherwise.
+
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state:State) -> bool:
+        """
+        Evaluates a given state as broken state by either calling the pretrained adaptive function or
+        by calling a custom implementation in method _compute_broken().
+
+        Parameters
+        ----------
+        p_state : State
+            State of environment
+        
+        Returns
+        -------
+        bool
+            True, if given state is a broken state. False otherwise.
+
+        """
+
+        if self._afct_broken is not None:
+            return self._afct_broken.compute_broken(p_state)
+        else:
+            return self._compute_broken(p_state)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_broken(self, p_state:State) -> bool:
+        """
+        Custom implementation for state evaluation 'broken'. To be redefined in own environment.
+
+        Parameters
+        ----------
+        p_state : State
+            State of environment
+        
+        Returns
+        -------
+        bool
+            True, if given state is a broken state. False otherwise.
+
+        """
+
         raise NotImplementedError
 
 
@@ -599,33 +875,56 @@ class Environment (EnvBase, Mode):
 ## -------------------------------------------------------------------------------------------------
 class EnvModel(EnvBase, Model):
     """
-    Template class for an environment model to be used for model based agents.
+    Environment model class as part of a model-based agent.
+
+    Parameters
+    ----------
+    p_latency : timedelta
+        Latency of related environment.
+    p_afct_strans : AFctSTrans
+        Optional external adaptive function for state transition 
+    p_afct_reward : AFctReward
+        Optional external adaptive function for reward computation
+    p_afct_done : AFctDone
+        Optional external adaptive function for state evaluation 'done'
+    p_afct_broken : AFctBroken
+        Optional external adaptive function for state evaluation 'broken'
+    p_ada : bool
+        Boolean switch for adaptivity
+    p_logging 
+        Log level (see class Log for more details)
+
     """
 
     C_TYPE          = 'EnvModel'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_state_space:MSpace, p_action_space:MSpace, p_afct_strans:AFctSTrans, p_afct_reward:AFctReward, p_afct_done:AFctDone, p_afct_broken:AFctBroken, p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_state_space           State space
-            p_action_space          Action space
-            p_afct_strans           Adaptive function for state transition prediction
-            p_afct_reward           Adaptive function for reward prediction
-            p_afct_done             Adaptive function for done prediction
-            p_afct_broken           Adaptive function for broken prediction
-            p_ada                   Boolean switch for adaptivity
-            p_logging               Boolean switch for logging functionality
-        """
+    def __init__(self, 
+                 p_latency:timedelta,
+                 p_afct_strans:AFctSTrans, 
+                 p_afct_reward:AFctReward, 
+                 p_afct_done:AFctDone, 
+                 p_afct_broken:AFctBroken, 
+                 p_ada=True, 
+                 p_logging=Log.C_LOG_ALL):
 
-        EnvBase.__init__(self, p_logging=p_logging)
+        EnvBase.__init__(self, 
+                         p_latency=p_latency, 
+                         p_afct_strans=p_afct_strans,
+                         p_afct_reward=p_afct_reward,
+                         p_afct_done=p_afct_done,
+                         p_afct_broken=p_afct_broken,
+                         p_logging=p_logging )
+
         Model.__init__(self, p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
-        self._state_space   = p_state_space
-        self._action_space  = p_action_space
+
         self._afct_strans   = p_afct_strans
         self._afct_reward   = p_afct_reward
         self._afct_done     = p_afct_done
         self._afct_broken   = p_afct_broken
+
+        self._state_space   = self._afct_strans.get_state_space()
+        self._action_space  = self._afct_strans.get_action_space()
 
 
 ## -------------------------------------------------------------------------------------------------
