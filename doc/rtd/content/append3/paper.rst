@@ -1,4 +1,4 @@
-Quick Help
+Papers
 ================
 
 Add text here!

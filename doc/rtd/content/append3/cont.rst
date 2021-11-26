@@ -1,4 +1,4 @@
-6.3 Contribution
+Contribution
 ================
 
 We look forward to your contributions to MLPro improvements. You can report any bugs, propose

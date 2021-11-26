@@ -1,4 +1,4 @@
-Custom Algorithms
+Custom Policies
 --------------
 
 - **Policy Creation**

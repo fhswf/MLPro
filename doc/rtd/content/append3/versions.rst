@@ -1,4 +1,4 @@
-6.1 Release Notes
+Release Notes
 ================
 
 Version XX.XX.XX

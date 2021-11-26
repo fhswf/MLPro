@@ -6,7 +6,6 @@ Add text here!
 .. toctree::
    :maxdepth: 1
    
-   agent/policies
+   agent/custompolicies
    agent/mbagents   
    agent/multiagents
-   agent/customalg

@@ -78,14 +78,6 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: 6 Project MLPro
-   
-   content/project/versions
-   content/project/paper
-   content/project/cont
-
-.. toctree::
-   :maxdepth: 2
    :caption: Appendix 1: List of Examples
    
    content/append1/test
@@ -100,9 +92,11 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: 7 Quick Help
+   :caption: Appendix 3: Project MLPro
    
-   content/help/test
+   content/append3/versions
+   content/append3/paper
+   content/append3/cont
    
 Citing MLPro
 ------------------------
