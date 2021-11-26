@@ -69,6 +69,8 @@ Instructions for use
    :caption: 4 MLPro-GT – Game Theory
    
    content/gt/overview
+   content/gt/players
+   content/gt/gameboard
 
 .. toctree::
    :maxdepth: 2
