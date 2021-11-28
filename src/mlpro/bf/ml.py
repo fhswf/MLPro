@@ -21,16 +21,19 @@
 ## -- 2021-11-15  1.2.0     DA       - Class Adaptive renamed to Model
 ## --                                - New classes Mode, Scenario, TrainingResults, Training, 
 ## --                                  HyperParamTuner
+## -- 2021-11-28  1.2.1     DA       - Classes Model, AdaptiveFunction: new opt. parameters **p_par
+## --                                - Docstrings reformatted to numpy style
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-15)
+Ver. 1.2.1 (2021-11-28)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
 
 import sys
+from typing import Dict
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
@@ -39,11 +42,12 @@ import random
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class HyperParam (Dimension):
     """
-    ...
+    Hyperparameter definition class. See class Dimension for further descriptions.
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -66,7 +70,7 @@ class HyperParam (Dimension):
 ## -------------------------------------------------------------------------------------------------
 class HyperParamSpace (ESpace):
     """
-    ...
+    Hyperparameter space, which is just an Euclidian space.
     """
 
     pass
@@ -79,7 +83,7 @@ class HyperParamSpace (ESpace):
 ## -------------------------------------------------------------------------------------------------
 class HyperParamTupel (Element):
     """
-    ...
+    Tupel of hyperparameters, which is an element of a hyperparameter space
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -101,6 +105,18 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
       - Hyperparameter management
       - Plotting
       - Scientific referencing on source code level
+
+    Parameters
+    ----------
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_par : Dict
+        Futher model specific parameters (to be defined in chhild class).
+
     """
 
     C_TYPE          = 'Model'
@@ -111,17 +127,14 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
     C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_NONE     
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_buffer_size=0,           # Initial size of internal data buffer (0=no buffering)
-                 p_ada=True,                # Boolean switch for adaptivity
-                 p_logging=Log.C_LOG_ALL):  # Log level (see constants of class Log)
+    def __init__(self, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL, **p_par):  
 
         Log.__init__(self, p_logging=p_logging)
         self._adapted           = False
         self.switch_adaptivity(p_ada)
         self._hyperparam_space  = HyperParamSpace()
         self._hyperparam_tupel  = None
-        self._init_hyperparam()
+        self._init_hyperparam(**p_par)
 
         if p_buffer_size > 0:
             self._buffer = self.C_BUFFER_CLS(p_size=p_buffer_size)
@@ -130,13 +143,19 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_hyperparam(self):
+    def _init_hyperparam(self, **p_par):
         """
         Implementation specific hyperparameters can be added here. Please follow these steps:
         a) Add each hyperparameter as an object of type HyperParam to the internal hyperparameter
            space object self._hyperparam_space
         b) Create hyperparameter tuple and bind to self._hyperparam_tupel
         c) Set default value for each hyperparameter
+
+        Parameters
+        ----------
+        p_par : Dict
+            Futher model specific parameters, that are passed through constructor.
+
         """
 
         pass
@@ -144,6 +163,10 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def get_hyperparam(self) -> HyperParamTupel:
+        """
+        Returns the internal hyperparameter tupel to get access to single values.
+        """
+
         return self._hyperparam_tupel
 
 
@@ -152,8 +175,11 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
         """
         Switches adaption functionality on/off.
         
-        Parameters:
-            p_ada               Boolean switch for adaptivity
+        Parameters
+        ----------
+        p_ada : bool
+            Boolean switch for adaptivity
+
         """
 
         self._adaptivity = p_ada
@@ -174,25 +200,37 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def get_adapted(self) -> bool:
+        """
+        Returns True, if the model was adapted at least once. False otherwise.
+        """
+
         return self._adapted
 
 
 ## -------------------------------------------------------------------------------------------------
     def _set_adapted(self, p_adapted:bool):
+        """
+        Sets the adapted flag. Internal use only.
+        """
+
         self._adapted = p_adapted
 
 
 ## -------------------------------------------------------------------------------------------------
     def adapt(self, *p_args) -> bool:
         """
-        Adapts something inside in the sense of machine learning. Please redefine and describe the 
-        protected method _adapt() that is called here. 
+        Adapts the model by calling the custom method _adapt().
 
-        Parameters:
-            p_args          All parameters that are needed for the adaption. 
+        Parameters
+        ----------
+        p_args
+            All parameters that are needed for the adaption. Depends on the specific higher context.
 
-        Returns:
+        Returns
+        -------
+        bool
             True, if something has been adapted. False otherwise.
+
         """
 
         if not self._adaptivity: return False
@@ -204,17 +242,22 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
         """
-        Please redefine and implement your specific adaptation algorithm. Furthermore please describe 
-        the type and purpose of all parameters needed by your implementation. This method will be 
-        called by public method adapt() if adaptivity is switched on. 
+        Custom implementation of the adaptation algorithm. Please describe the type and purpose of 
+        all parameters needed by your implementation. This method will be called by public method 
+        adapt() if adaptivity is switched on. 
 
-        Parameters:
-            p_args[0]           ...
-            p_args[1]           ...
+        Parameters
+        ----------
+        p_args[0]           
+            ...
+        p_args[1]           
             ...
 
-        Returns:
+        Returns
+        -------
+        bool
             True, if something has been adapted. False otherwise.
+
         """
 
         raise NotImplementedError
@@ -222,6 +265,10 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
+        """
+        Clears internal buffer (if buffering is active).
+        """
+
         if self._buffer is not None: self._buffer.clear()
 
 
@@ -232,27 +279,46 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
 ## -------------------------------------------------------------------------------------------------
 class AdaptiveFunction (Model, Function):
     """
-    Model class for an adaptive bi-multivariate mathematical function.
+    Template class for an adaptive bi-multivariate mathematical function that adapts by supervised
+    learning.
+
+    Parameters
+    ----------
+    p_input_space : MSpace
+        Input space of function
+    p_output_space : MSpace
+        Output space of function
+    p_output_elem_classname : str
+        Name of output element class (compatible to/inherited from class Element)
+    p_threshold : float
+        Threshold for the difference between a setpoint and a computed output. Computed outputs with 
+        a difference less than this threshold will be assessed as 'good' outputs. Default = 0.
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_par : Dict
+        Futher model specific parameters (to be specified in chhild class).
+
     """
 
-    C_TYPE          = 'Model Fct'
+    C_TYPE          = 'Adaptive Function'
     C_NAME          = '????'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_input_space:MSpace,          # Input space
-                 p_output_space:MSpace,         # Output space
-                 p_output_elem_cls=Element,     # Name of output element class (compatible to class 
-                                                # Element)
-                 p_threshold=0,                 # Threshold for the difference between a setpoint and
-                                                # a computed output. Computed outputs with a difference
-                                                # less than this threshold will be assessed as 'good'
-                                                # outputs.
-                 p_buffer_size=0,               # Initial size of internal data buffer (0=no buffering)
-                 p_ada=True,                    # Boolean switch for adaptivity
-                 p_logging=Log.C_LOG_ALL):      # Log level (see constants of class Log)
+                 p_input_space:MSpace,          
+                 p_output_space:MSpace,        
+                 p_output_elem_cls=Element,     
+                 p_threshold=0,                 
+                 p_buffer_size=0,               
+                 p_ada=True,                   
+                 p_logging=Log.C_LOG_ALL,
+                 **p_par):      
 
-        Model.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+        Model.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging, **p_par)
         Function.__init__(self, p_input_space=p_input_space, p_output_space=p_output_space, p_output_elem_cls=p_output_elem_cls)
         self._threshold         = p_threshold
         self._mappings_total    = 0             # Number of mappings since last adaptation
@@ -262,9 +328,15 @@ class AdaptiveFunction (Model, Function):
 ## -------------------------------------------------------------------------------------------------
     def adapt(self, p_input:Element, p_output:Element) -> bool:
         """
-        Parameters:
-            p_input         Abscissa/input element object (type Element)
-            p_output        Setpoint ordinate/output element (type Element)
+        Adaption by supervised learning.
+        
+        Parameters
+        ----------
+        p_input : Element
+            Abscissa/input element object (type Element)
+        p_output : Element
+            Setpoint ordinate/output element (type Element)
+
         """
 
         if not self._adaptivity: return False
@@ -291,7 +363,15 @@ class AdaptiveFunction (Model, Function):
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_input:Element, p_output:Element) -> bool:
         """
-        Protected custom adaptation algorithm that is called by public adaptation method. Please redefine.
+        Custom adaptation algorithm that is called by public adaptation method. Please redefine.
+
+        Parameters
+        ----------
+        p_input : Element
+            Abscissa/input element object (type Element)
+        p_output : Element
+            Setpoint ordinate/output element (type Element)
+
         """
 
         raise NotImplementedError
@@ -317,6 +397,14 @@ class AdaptiveFunction (Model, Function):
 class Mode (Log):
     """
     Property class that adds a mode and related methods to a child class.
+
+    Parameters
+    ----------
+    p_mode
+        Operation mode. Valid values are stored in constant C_VALID_MODES.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+
     """
 
     C_MODE_INITIAL  = -1
@@ -334,11 +422,25 @@ class Mode (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_mode(self):
+        """
+        Returns current mode.
+        """
+
         return self._mode
 
 
 ## -------------------------------------------------------------------------------------------------
     def set_mode(self, p_mode):
+        """
+        Sets new mode.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. Valid values are stored in constant C_VALID_MODES.
+
+        """
+
         if not p_mode in self.C_VALID_MODES: raise ParamError('Invalid mode')
         if self._mode == p_mode: return
         self._mode = p_mode
@@ -361,6 +463,21 @@ class Scenario (Mode, LoadSave, Plottable):
       - Timer
       - Latency 
       - Explicit handling of an adaptive ML model inside
+
+    Parameters
+    ----------
+    p_mode
+        Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
+    p_ada : bool
+        Boolean switch for adaptivity. Default = True
+    p_cycle_len : timedelta
+        Optional fixed cycle duration 
+    p_cycle_limit : int
+        Maximum number of cycles. Default = 0 (no limit)
+    p_visualization : bool
+        Boolean switch for env/agent visualisation. Default = True
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
     
     """
 
@@ -369,12 +486,12 @@ class Scenario (Mode, LoadSave, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_mode=Mode.C_MODE_SIM,        # Operation mode (see class Mode)
-                 p_ada:bool=True,               # Boolean switch for adaptivity of internal model
-                 p_cycle_len:timedelta=None,    # Fixed cycle duration (optional)
-                 p_cycle_limit=0,               # Maximum number of cycles (0=no limit)
-                 p_visualize=True,              # Boolean switch for env/agent visualisation
-                 p_logging=Log.C_LOG_ALL ):     # Log level (see constants of class Log)
+                 p_mode=Mode.C_MODE_SIM,       
+                 p_ada:bool=True,               
+                 p_cycle_len:timedelta=None,    
+                 p_cycle_limit=0,              
+                 p_visualize=True,              
+                 p_logging=Log.C_LOG_ALL ):    
 
         # 0 Intro
         self._cycle_len     = p_cycle_len
@@ -415,14 +532,20 @@ class Scenario (Mode, LoadSave, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_logging) -> Model:
         """
-        Setup the ML scenario by redefinition.
+        Custom setup of ML scenario.
 
-        Parameters:
-            p_mode          Operation mode (see class Mode)
-            p_ada           Boolean switch for adaptivity of internal model
-            p_logging       Log level (see constants of class Log)
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
+        p_ada : bool
+            Boolean switch for adaptivity.
+        p_logging
+            Log level (see constants of class Log). 
 
-        Returns:
+        Returns
+        -------
+        Model
             Adaptive model inside the ML scenario
         """
 
@@ -483,8 +606,11 @@ class Scenario (Mode, LoadSave, Plottable):
         Resets the scenario and especially the ML model inside. Internal random generators are seed 
         with the given value. Custom reset actions can be implemented in method _reset().
 
-        Parameters:
-            p_seed          Seed value for internal random generator
+        Parameters
+        ----------
+        p_seed : int          
+            Seed value for internal random generator
+
         """
 
         # 0 Intro
@@ -516,11 +642,17 @@ class Scenario (Mode, LoadSave, Plottable):
         """
         Runs a single process cycle.
 
-        Returns:
-            success         True on success. False otherwise.
-            error           True on error. False otherwise.
-            timeout         True on timeout. False otherwise.
-            limit           True, if cycle limit has reached. False otherwise.
+        Returns
+        -------
+        bool
+            True on success. False otherwise.
+        bool
+            True on error. False otherwise.
+        bool
+            True on timeout. False otherwise.
+        bool
+            True, if cycle limit has reached. False otherwise.
+
         """
 
         # 1 Run a single custom cycle
@@ -559,9 +691,13 @@ class Scenario (Mode, LoadSave, Plottable):
         """
         Custom implementation of a single process cycle. To be redefined.
 
-        Returns:
-            success         True on success. False otherwise.
-            error           True on error. False otherwise.
+        Returns
+        -------
+        bool
+            True on success. False otherwise.
+        bool
+            True on error. False otherwise.
+
         """
 
         raise NotImplementedError
@@ -569,23 +705,43 @@ class Scenario (Mode, LoadSave, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def get_cycle_id(self):
+        """
+        Returns current cycle id.
+        """
+
         return self._cycle_id
 
 
 ## -------------------------------------------------------------------------------------------------
     def run(self, 
-            p_term_on_success:bool=True,        # If True then process terminates on success
-            p_term_on_error:bool=True,          # If True then process terminates on error
-            p_term_on_timeout:bool=False ):     # If True then process terminates on timeout
+            p_term_on_success:bool=True,        
+            p_term_on_error:bool=True,          
+            p_term_on_timeout:bool=False ):    
         """
         Runs the scenario as a sequence of single process steps until a terminating event occures.
 
-        Returns:
-            success         True on success. False otherwise.
-            error           True on error. False otherwise.
-            timeout         True on timeout. False otherwise.
-            limit           True, if cycle limit has reached. False otherwise.
-            num_cycle       Number of cycles.
+        Parameters
+        ----------
+        p_term_on_success : bool
+            If True, the run terminates on success. Default = True.
+        p_term_on_error : bool
+            If True, the run terminates on error. Default = True.
+        p_term_on_timeout : bool
+            If True, the run terminates on timeout. Default = False.
+
+        Returns
+        -------
+        bool
+            True on success. False otherwise.
+        bool
+            True on error. False otherwise.
+        bool
+            True on timeout. False otherwise.
+        bool
+            True, if cycle limit has reached. False otherwise.
+        int
+            Number of cycles.
+
         """
 
         self._cycle_id = 0
@@ -611,6 +767,18 @@ class Scenario (Mode, LoadSave, Plottable):
 class TrainingResults (Saveable):
     """
     Results of a training (see class Training).
+
+    Parameters
+    ----------
+    p_scenario : Scenario
+        Related scenario.
+    p_run : int
+        Run id.
+    p_cycle_id : int
+        Id of first cycle of this run.
+    p_path : str
+        Destination path to store the results.
+
     """
 
     def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_path=None):
@@ -653,6 +821,19 @@ class TrainingResults (Saveable):
     def save(self, p_path, p_filename='summary.txt') -> bool:
         """
         Saves a training summary in the given path.
+
+        Parameters
+        ----------
+        p_path : str
+            Destination folder
+        p_filename  :string
+            Name of summary file. Default = 'summary.txt'
+
+        Returns
+        -------
+        bool
+            True, if summary file was created successfully. False otherwise.
+
         """
 
         filename = p_path + os.sep + p_filename
@@ -696,14 +877,22 @@ class HyperParamTuner (Log):
 ## -------------------------------------------------------------------------------------------------
     def maximize(self, p_ofct, p_model:Model, p_num_trials) -> TrainingResults:
         """
+        ...
 
-        Parameters:
-            p_ofct          Objective function to be maximized
-            p_model         Model object to be tuned
-            p_num_trials    Number of trials
+        Parameters
+        ----------
+        p_ofct 
+            Objective function to be maximized.
+        p_model : Model
+            Model object to be tuned.
+        p_num_trials : int    
+            Number of trials
 
-        Returns:
-            Training results of the best tuned model (see class TrainingResults)
+        Returns
+        -------
+        TrainingResults
+            Training results of the best tuned model (see class TrainingResults).
+
         """
 
         self._ofct          = p_ofct
@@ -725,6 +914,22 @@ class HyperParamTuner (Log):
 class Training (Log):
     """
     Template class for a ML training and hyperparameter tuning.
+
+    Parameters
+    ----------
+    p_scenario : Scenario
+        ML scenario (see class Scenario) with model to be trained.
+    p_cycle_limit : int
+        Maximum number of training cycles (0=no limit)
+    p_hpt : HyperParamTuner
+        Optional hyperparameter tuner (see class HyperParamTuner). Default = None.
+    p_hpt_trials : int
+        Optional number of hyperparameter tuning trials. Default = 0.        
+    p_path : str
+        Optional destination path to store training data. Default = None.
+    p_logging
+        Log level (see constants of class Log). Default = Log.C_LOG_WE.
+
     """
 
     C_TYPE          = 'Training'
@@ -734,12 +939,12 @@ class Training (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_scenario:Scenario,           # ML scenario (see class Scenario)
-                 p_cycle_limit=0,               # Maximum number of training cycles (0=no limit)
-                 p_hpt:HyperParamTuner=None,    # Optional hyperparameter tuner (see class HyperParamTuner)
-                 p_hpt_trials=0,                # Optional number of hyperparameter tuning trials
-                 p_path=None,                   # Optional destination path to store training data
-                 p_logging=Log.C_LOG_WE):       # Log level (see constants of class Log)
+                 p_scenario:Scenario,           
+                 p_cycle_limit=0,               
+                 p_hpt:HyperParamTuner=None,    
+                 p_hpt_trials=0,                
+                 p_path=None,                  
+                 p_logging=Log.C_LOG_WE):      
 
         super().__init__(p_logging=p_logging)
 
@@ -811,8 +1016,11 @@ class Training (Log):
         """
         Runs a single training cycle.
         
-        Returns:
+        Returns
+        -------
+        bool
             True, if training run has finished. False otherwise.
+
         """
 
         # 1 Intro
@@ -867,8 +1075,11 @@ class Training (Log):
         Single custom trainig cycle to be redefined. Custom training results can be added to using
         self._results.add_custom_result(p_name, p_value).
 
-        Returns:
+        Returns
+        -------
+        bool
             True, if training has finished. False otherwise.
+
         """
 
         raise NotImplementedError
@@ -878,6 +1089,12 @@ class Training (Log):
     def run(self) -> TrainingResults:
         """
         Runs a training and returns the results of the best trained/tuned agent.
+
+        Returns
+        -------
+        TrainingResults
+            Object with training results.
+
         """
 
         if self._hpt is None:
