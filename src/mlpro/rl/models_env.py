@@ -14,19 +14,36 @@
 ## -- 2021-10-05  1.1.3     DA       Introduction of method Environment.get_cycle_limit()
 ## -- 2021-10-05  1.1.4     SY       Bugfixes and minor improvements
 ## -- 2021-10-25  1.1.5     SY       Enhancement of class EnvBase by adding ScientificObject.
-## -- 2021-11-26  1.2.0     DA       Redesign:
+## -- 2021-11-27  1.2.0     DA       Redesign:
 ## --                                - Introduction of special adaptive function classes AFct*
 ## --                                - Rework of classes EnvBase, Environment, EnvModel
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-26)
+Ver. 1.2.0 (2021-11-27)
 
 This module provides model classes for environments and environnment models.
 """
 
 
 from mlpro.rl.models_sar import *
+
+
+
+
+class AFctBase (Model):
+    """
+    ...
+    """
+
+    def __init__(self, 
+                 p_afct_classname:str,
+                 p_state_space:MSpace,
+                 p_threshold=0,
+                 p_buffer_size=0,
+                 p_ada=True,
+                 p_logging=Log.C_LOG_ALL):
+        pass
 
 
 
@@ -90,7 +107,11 @@ class AFctSTrans (Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state:State, p_action:Action) -> State:
+    def simulate_reaction(self, *p_par ) -> State:
+        pass
+
+## -------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
         input = None
         return super().map(input)
 
