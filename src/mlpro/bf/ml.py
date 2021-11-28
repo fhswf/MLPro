@@ -8,14 +8,9 @@
 ## -- 2021-08-20  0.0.0     DA       Creation 
 ## -- 2021-08-25  1.0.0     DA       Release of first version
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
-## -- 2021-09-18  1.0.1     MRD      Buffer Class Implementation. Add new parameter buffer
-## --                                to the Adaptive Class
-## -- 2021-09-19  1.0.1     MRD      Improvement on Buffer Class. Implement new base class
-## --                                Buffer Element and BufferRnd
-## -- 2021-09-25  1.0.2     MRD      Add __len__ functionality for SARBuffer
-## -- 2021-10-06  1.0.3     DA       Extended class Adaptive by new methods _adapt(), get_adapted(),
+## -- 2021-10-06  1.0.1     DA       Extended class Adaptive by new methods _adapt(), get_adapted(),
 ## --                                _set_adapted(); moved Buffer classes to mlpro.bf.data.py
-## -- 2021-10-25  1.0.4     SY       Enhancement of class Adaptive by adding ScientificObject.
+## -- 2021-10-25  1.0.2     SY       Enhancement of class Adaptive by adding ScientificObject.
 ## -- 2021-10-26  1.1.0     DA       New class AdaptiveFunction
 ## -- 2021-10-29  1.1.1     DA       New method Adaptive.set_random_seed()
 ## -- 2021-11-15  1.2.0     DA       - Class Adaptive renamed to Model
