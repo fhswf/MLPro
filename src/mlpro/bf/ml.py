@@ -283,8 +283,8 @@ class AdaptiveFunction (Model, Function):
         Input space of function
     p_output_space : MSpace
         Output space of function
-    p_output_elem_classname : str
-        Name of output element class (compatible to/inherited from class Element)
+    p_output_elem_cls 
+        Output element class (compatible to/inherited from class Element)
     p_threshold : float
         Threshold for the difference between a setpoint and a computed output. Computed outputs with 
         a difference less than this threshold will be assessed as 'good' outputs. Default = 0.

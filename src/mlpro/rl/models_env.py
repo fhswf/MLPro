@@ -14,13 +14,13 @@
 ## -- 2021-10-05  1.1.3     DA       Introduction of method Environment.get_cycle_limit()
 ## -- 2021-10-05  1.1.4     SY       Bugfixes and minor improvements
 ## -- 2021-10-25  1.1.5     SY       Enhancement of class EnvBase by adding ScientificObject.
-## -- 2021-11-27  1.2.0     DA       Redesign:
+## -- 2021-11-29  1.2.0     DA       Redesign:
 ## --                                - Introduction of special adaptive function classes AFct*
 ## --                                - Rework of classes EnvBase, Environment, EnvModel
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-27)
+Ver. 1.2.0 (2021-11-29)
 
 This module provides model classes for environments and environnment models.
 """
@@ -31,19 +31,171 @@ from mlpro.rl.models_sar import *
 
 
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class AFctBase (Model):
     """
-    ...
+    Base class for all special adaptive functions (state transition, reward, done, broken). 
+
+    Parameters
+    ----------
+    p_afct_cls 
+        Adaptive function class (compatible to class AdaptiveFunction)
+    p_state_space : MSpace
+        State space of an environment or observation space of an agent
+    p_action_space : MSpace
+        Action space of an environment or agent
+    p_output_elem_cls 
+        Output element class (compatible to/inherited from class Element)
+    p_threshold : float
+        Threshold for the difference between a setpoint and a computed output. Computed outputs with 
+        a difference less than this threshold will be assessed as 'good' outputs. Default = 0.
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_par : Dict
+        Futher model specific parameters (to be specified in chhild class).
+
+    Attributes
+    ----------
+    _state_space : MSpace
+        State space
+    _action_space : MSpace
+        Action space
+    _input_space : MSpace
+        Input space of embedded adaptive function
+    _output_space : MSpace
+        Output space oof embedded adaptive function
+    _afct : AdaptiveFunction
+        Embedded adaptive function
+
     """
 
+    C_TYPE          = 'AFct Base'
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_afct_classname:str,
+                 p_afct_cls,
                  p_state_space:MSpace,
+                 p_action_space:MSpace,
+                 p_output_elem_cls=Element,     
                  p_threshold=0,
                  p_buffer_size=0,
                  p_ada=True,
-                 p_logging=Log.C_LOG_ALL):
+                 p_logging=Log.C_LOG_ALL,
+                 **p_par ):
+
+        self._state_space   = p_state_space
+        self._action_space  = p_action_space
+        self._input_space, self._output_space = self._setup_spaces()        
+        
+        try:
+            self._afct = p_afct_cls( p_input_space=self._input_space,
+                                     p_output_space=self._output_space,
+                                     p_output_elem_cls=p_output_elem_cls,
+                                     p_threshold=p_threshold,
+                                     p_buffer_size=p_buffer_size,
+                                     p_ada=p_ada,
+                                     p_logging=p_logging,
+                                     **p_par )
+        except:
+            raise ParamError('Class ' + str(p_afct_cls) + ' is not compatible to class AdaptiveFunction')
+
+        super().__init__(p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_spaces(self, p_state_space:MSpace, p_action_space:MSpace):
+        """
+        Custom method to setup input and output space of the adaptive function inside.
+
+        Parameters
+        ----------
+        p_state_space : MSpace
+            State space of an environment or observation space of an agent
+        p_action_space : MSpace
+            Action space of an environment or agent
+
+        Returns
+        -------
+        MSpace
+            Input space
+        MSpace
+            Output space
+
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_afct(self) -> AdaptiveFunction:
+        return self._afct
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_state_space(self) -> MSpace:
+        return self._state_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_action_space(self) -> MSpace:
+        return self._action_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_hyperparam(self, **p_par):
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_hyperparam(self) -> HyperParamTupel:
+        return self._afct.get_hyperparam()
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_adaptivity(self, p_ada:bool):
+        super().switch_adaptivity(p_ada)
+        self._afct.switch_adaptivity(p_ada)
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging):
+        super().switch_logging(p_logging)
+        if self._afct is not None: self._afct.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        self._afct.set_random_seed(p_seed=p_seed)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_adapted(self) -> bool:
+        return self._afct.get_adapted()
+
+
+## -------------------------------------------------------------------------------------------------
+    def adapt(self, *p_args) -> bool:
+        return self._afct.adapt(*p_args)
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_buffer(self):
+        self._afct.clear_buffer()
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure=None):
+        self._afct.init_plot(p_figure=p_figure)
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self):
+        self._afct.update_plot()
 
 
 
@@ -57,8 +209,8 @@ class AFctSTrans (Model):
 
     Parameters
     ----------
-    p_afct_cls : str
-        Name of an adaptive function class (compatible to class AdaptiveFunction)
+    p_afct_cls 
+        Adaptive function class (compatible to class AdaptiveFunction)
     p_state_space : MSpace
         State space    
     p_action_space: MSpace
