@@ -14,7 +14,7 @@
 ## -----------------------------------------------------------------------------
 
 """
-Ver. 1.02 (2021-11-29)
+Ver. 1.0.4 (2021-11-29)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP)
 following GT interface. This module provides game board classed based on BGLP
