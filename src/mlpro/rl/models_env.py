@@ -14,13 +14,13 @@
 ## -- 2021-10-05  1.1.3     DA       Introduction of method Environment.get_cycle_limit()
 ## -- 2021-10-05  1.1.4     SY       Bugfixes and minor improvements
 ## -- 2021-10-25  1.1.5     SY       Enhancement of class EnvBase by adding ScientificObject.
-## -- 2021-11-29  1.2.0     DA       Redesign:
+## -- 2021-11-dd  1.2.0     DA       Redesign:
 ## --                                - Introduction of special adaptive function classes AFct*
 ## --                                - Rework of classes EnvBase, Environment, EnvModel
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-29)
+Ver. 1.2.0 (2021-11-dd)
 
 This module provides model classes for environments and environnment models.
 """
@@ -189,6 +189,11 @@ class AFctBase (Model):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_maturity(self):
+        return self._afct.get_maturity()
+
+
+## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         self._afct.init_plot(p_figure=p_figure)
 
@@ -203,77 +208,23 @@ class AFctBase (Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctSTrans (Model):
-    """
-    Special adaptive function for state transition prediction.
-
-    Parameters
-    ----------
-    p_afct_cls 
-        Adaptive function class (compatible to class AdaptiveFunction)
-    p_state_space : MSpace
-        State space    
-    p_action_space: MSpace
-        Action space
-    p_threshold : float
-        See description of class AdaptiveFunction
-    p_buffer_size: int
-        Initial size of internal data buffer (0=no buffering)
-    p_ada : bool
-        Boolean switch for adaptivity
-    p_logging 
-        Log level (see class Log for more details)
-
-    Attributes
-    ----------
-    _state_space : MSpace
-        State space
-    _action_space : MSpace
-        Action space
-
-    """
+class AFctSTrans (AFctBase): 
 
     C_TYPE          = 'AFct STrans'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_afct_cls, p_state_space:MSpace, p_action_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL):
-         
-        self._state_space   = p_state_space
-        self._action_space  = p_action_space
-
-        # concatenate state and action space to input space
-        # ...
-        input_space = None 
-
-        self._afct = p_afct_cls(p_input_space=input_space, p_output_space=p_state_space, p_output_elem_cls=State, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace):
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_state_space(self) -> MSpace:
-        return self._state_space
+    def simulate_reaction(self, p_state:State=None, p_action:Action=None) -> State:
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_action_space(self) -> MSpace:
-        return self._action_space
-
-
-## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, *p_par ) -> State:
-        pass
-
-## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
-        input = None
-        return super().map(input)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state:State, p_action:Action) -> bool:
-        # to be implemented...
-        # 
-        #
-        pass
+    def _adapt(self, *p_args) -> bool:
+        raise NotImplementedError
 
 
 
@@ -281,229 +232,141 @@ class AFctSTrans (Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctReward (Model):
-    """
-    Special adaptive function for reward prediction.
-
-    Parameters
-    ----------
-    p_afct_cls : str
-        Name of an adaptive function class (compatible to class AdaptiveFunction)
-    p_state_space : MSpace
-        State space    
-    p_threshold : float
-        See description of class AdaptiveFunction
-    p_buffer_size: int
-        Initial size of internal data buffer (0=no buffering)
-    p_ada : bool
-        Boolean switch for adaptivity
-    p_logging 
-        Log level (see class Log for more details)
-
-    Attributes
-    ----------
-    _state_space : MSpace
-        State space
-
-    """
+class AFctReward (AFctBase):
 
     C_TYPE          = 'AFct Reward'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL):
+    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace):
 
-        self._state_space   = p_state_space
+        # 1 Setup input space
+        ispace      = ESpace()
+        dim_id_new  = 0
 
-        # concatenate state and action space to input space
-        # ...
-        input_space     = None 
-        output_space    = None
+        for n in range(0,2,1):
+            for dim_id in p_state_space.get_dim_ids():
+                dim = p_state_space.get_dim(dim_id)
+                ispace.add_dim( Dimension( p_id=dim_id_new,  
+                                           p_name_short=dim.get_name_short(),
+                                           p_base_set=dim.get_base_set(),
+                                           p_name_long=dim.get_name_long(),
+                                           p_name_latex=dim.get_name_latex(),
+                                           p_unit=dim.get_unit(),
+                                           p_unit_latex=dim.get_unit_latex(),
+                                           p_boundaries=dim.get_boundaries(),
+                                           p_description=dim.get_description() ) )
+                dim_id_new += 1
 
-        self._afct = p_afct_cls(p_input_space=input_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+
+        # 2 Setup output space
+        ospace = ESpace()
+        ospace.add_dim( Dimension(p_id=0, p_name_short='Rwd', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Reward') )
+
+
+        # 3 Return both spaces
+        return ispace, ospace
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_state_space(self) -> MSpace:
-        return self._state_space
+    def compute_reward(self, p_state_old:State=None, p_state_new:State=None ) -> Reward:
+        if ( p_state_old is None ) or ( p_state_new is None ):
+            raise ParamError('Both parameters p_state_old and p_state_new are needed to compute the reward')
+
+        # 1 Create input vector from both states
+        input_values = p_state_old.get_values().copy()
+        input_values.append(p_state_new.get_values())
+        input = Element(self._input_space)
+        input.set_values(input_values)
+
+        # 2 Compute and return reward
+        output = self._afct.map(input)
+        reward = output.get_values()[0]
+        return Reward(p_type=Reward.C_TYPE_OVERALL, p_value=reward)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
+    def _adapt(self, *p_args) -> bool:
         """
-        Predicts the reward based on two consecutive states using the given adaptive function.
+        Triggers adaptation of embedded adaptive function.
 
         Parameters
         ----------
-        p_state_old : State
-            State before last action
-        p_state_new : State
-            State after last action
+        p_args[0] : State
+            Old state
+        p_args[1] : State
+            New state
+        p_args[2] : Reward
+            Setpoint reward
 
         Returns
         -------
-        Reward
-            Object of type Reward
+        bool
+            True, if something was adapted. False otherwise.
         """
 
-        # to be implemented...
-        # 
-        #
-        pass
+        # 1 Create input vector from both states
+        input_values = p_args[0].get_values().copy()
+        input_values.append(p_args[1].get_values())
+        input = Element(self._input_space)
+        input.set_values(input_values)
+
+        # 2 Create setpoint output vector
+        output = Element(self._output_space)
+        output.set_value(0, p_args[2].get_overall_reward())
+
+        # 3 Trigger adaptation of embedded adaptive function
+        return self._afct.adapt(input, output)
 
 
-## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state:State, p_action:Action, p_reward:Reward) -> bool:
-        """
-        Adapts the adaptive function inside.
-
-        Parameters
-        ----------
-        p_state : State
-            State
-        p_action : Action
-            Action
-        p_reward : Reward
-            Target value for the reward
-        """
-
-        # to be implemented...
-        # 
-        #
-        pass
-
-
-
+       
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctDone (Model):
-    """
-    Special adaptive function for environment done state prediction.
-
-    Parameters
-    ----------
-    p_afct_cls : str
-        Name of an adaptive function class (compatible to class AdaptiveFunction)
-    p_state_space : MSpace
-        State space    
-    p_threshold : float
-        See description of class AdaptiveFunction
-    p_buffer_size: int
-        Initial size of internal data buffer (0=no buffering)
-    p_ada : bool
-        Boolean switch for adaptivity
-    p_logging 
-        Log level (see class Log for more details)
-
-    Attributes
-    ----------
-    _state_space : MSpace
-        State space
-
-    """
+class AFctDone (AFctBase): 
 
     C_TYPE          = 'AFct Done'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
-
-        self._state_space   = p_state_space
-
-        # concatenate state and action space to input space
-        # ...
-        output_space = None 
-
-        self._afct = p_afct_cls(p_input_space=p_state_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace):
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_state_space(self) -> MSpace:
-        return self._state_space
-
-
-# -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state:State) -> bool:
-        # to be implemented...
-        # 
-        #
-        pass
+    def compute_done(self, p_state:State=None) -> bool:
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
-        # to be implemented...
-        # 
-        #
-        pass
+        raise NotImplementedError
+
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctBroken (Model):
-    """
-    Special adaptive function for environment broken state prediction.
-
-    Parameters
-    ----------
-    p_afct_cls : str
-        Name of an adaptive function class (compatible to class AdaptiveFunction)
-    p_state_space : MSpace
-        State space    
-    p_threshold : float
-        See description of class AdaptiveFunction
-    p_buffer_size: int
-        Initial size of internal data buffer (0=no buffering)
-    p_ada : bool
-        Boolean switch for adaptivity
-    p_logging 
-        Log level (see class Log for more details)
-
-    Attributes
-    ----------
-    _state_space : MSpace
-        State space
-
-    """
+class AFctBroken (AFctBase): 
 
     C_TYPE          = 'AFct Broken'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_afct_cls, p_state_space:MSpace, p_threshold=0, p_buffer_size=0, p_ada=True, p_logging=True):
-
-        self._state_space   = p_state_space
-
-        # concatenate state and action space to input space
-        # ...
-        output_space = None 
-
-        self._afct = p_afct_cls(p_input_space=p_state_space, p_output_space=output_space, p_output_elem_cls=Element, p_threshold=p_threshold, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace):
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_state_space(self) -> MSpace:
-        return self._state_space
-
-
-## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state:State) -> bool:
-        # to be implemented...
-        # 
-        #
-        pass
+    def compute_broken(self, p_state:State=None) -> bool:
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
-        # to be implemented...
-        # 
-        #
-        pass
+        raise NotImplementedError
 
 
-       
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -579,6 +442,24 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 
 ## -------------------------------------------------------------------------------------------------
+    def adapt(self, *p_args) -> bool:
+        """
+        Adaptivity is switched off here. If called, then something went wrong. 
+        """
+
+        raise NotImplementedError('Environments are not adaptive!')
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging):
+        super().switch_logging(p_logging)
+        if self._afct_strans is not None: self._afct_strans.switch_logging(p_logging)
+        if self._afct_reward is not None: self._afct_reward.switch_logging(p_logging)
+        if self._afct_done is not None: self._afct_done.switch_logging(p_logging)
+        if self._afct_broken is not None: self._afct_broken.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
     def get_latency(self) -> timedelta:
         """
         Returns latency of environment.
@@ -641,6 +522,11 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_functions(self):
+        return self._afct_strans, self._afct_reward, self._afct_done, self._afct_broken
+
+
+## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
         """
         Resets the internal random generator using the given seed.
@@ -672,15 +558,6 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         -------
         bool
             True, if action processing was successfull. False otherwise.
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
-        """
-        Adaptivity is switched off here. 
         """
 
         raise NotImplementedError

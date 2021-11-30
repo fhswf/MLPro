@@ -16,12 +16,13 @@
 ## -- 2021-11-15  1.2.0     DA       - Class Adaptive renamed to Model
 ## --                                - New classes Mode, Scenario, TrainingResults, Training, 
 ## --                                  HyperParamTuner
-## -- 2021-11-28  1.2.1     DA       - Classes Model, AdaptiveFunction: new opt. parameters **p_par
+## -- 2021-11-30  1.2.1     DA       - Classes Model, AdaptiveFunction: new opt. parameters **p_par
 ## --                                - Docstrings reformatted to numpy style
+## --                                - Class Model: new method get_maturity()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2021-11-28)
+Ver. 1.2.1 (2021-11-30)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -265,6 +266,20 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
         """
 
         if self._buffer is not None: self._buffer.clear()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_maturity(self):
+        """
+        Computes the maturity of the model.
+
+        Returns
+        -------
+        float
+            Maturity of the model as a scalar value in interval [0,1]
+        """
+
+        raise NotImplementedError
 
 
 
