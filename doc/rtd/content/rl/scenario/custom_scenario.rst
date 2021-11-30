@@ -1,4 +1,4 @@
-Run a Scenario
+Custom Scenario
 --------------
 
 .. image:: images/MLPro-RL-Scenario_Class_Commented.svg

@@ -1,6 +1,6 @@
 .. _target-package:
 
-3.5 3rd Party Support
+3.6 3rd Party Support
 ================
 
 Add text here!

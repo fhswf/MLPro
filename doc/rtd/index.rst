@@ -62,6 +62,7 @@ Instructions for use
    content/rl/env
    content/rl/agents
    content/rl/scenario
+   content/rl/train
    content/rl/wrapper
 
 .. toctree::

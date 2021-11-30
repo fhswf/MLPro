@@ -1,4 +1,4 @@
-3.4 Scenarios
+3.4 RL-Scenarios
 ================
 
 Add text here!
@@ -6,5 +6,4 @@ Add text here!
 .. toctree::
    :maxdepth: 1
    
-   scenario/runsce
-   scenario/train
+   scenario/custom_scenario
