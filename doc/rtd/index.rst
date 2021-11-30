@@ -24,7 +24,7 @@ Main Contributions
 --------------
 
 - Test-driven development
-- Clean code
+- Clean code and constructed through Object-Oriented Programming
 - Ready-to-use functionalities
 - Usability in scientific, industrial and educational contexts
 - Extensible, maintainable, understandable
