@@ -12,10 +12,10 @@ MLPro was developed in 2021 by `Automation Technology and Learning Systems team 
 
 MLPro provides complete, standardized, and reusable functionalities to support your scientific research, educational task, or industrial project in machine learning.
 
-In the first version of MLPro, we provide a standarized Python package for reinforcement learning (RL) and game
+In the first version of MLPro, we provide a standardized Python package for reinforcement learning (RL) and game
 theoretical (GT) approaches, including environments, algorithms, multi-agent RL (MARL), model-based RL (MBRL) and many more.
 Additionally, we incorporate the available third party packages by developing wrapper classes
-to enable our users reuse the third party packages in MLPro.
+to enable our users to reuse the third party packages in MLPro.
 
 Github repository: https://github.com/fhswf/MLPro.git
 
@@ -23,7 +23,7 @@ Github repository: https://github.com/fhswf/MLPro.git
 Main Contributions
 --------------
 
-- Test-driven development
+- Test-driven development (CI/CD concept)
 - Clean code and constructed through Object-Oriented Programming
 - Ready-to-use functionalities
 - Usability in scientific, industrial and educational contexts

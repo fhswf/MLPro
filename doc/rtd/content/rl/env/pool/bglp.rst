@@ -20,7 +20,7 @@
     
     The BGLP consists of four modules, which are loading, storing, weighing, and filling stations respectively, and has conveying and dosing units as integral parts of the system.
     The interface between the modules is assembled via a mini hopper placed in the prior module. 
-    Then, the next module is fed by a vacuum pump, which operates in a discontinuous manner, before the goods are temporary stored in a silo of the next module. 
+    Then, the next module is fed by a vacuum pump, which operates in a discontinuous manner, before the goods are temporarily stored in a silo of the next module. 
     The filling station has no silo because the main purpose of the station is to occupy the transport containers.
     
     We utilize dissimilar actuators in modules 1-3 to transport the goods from the silo to the mini hopper. 
@@ -28,13 +28,13 @@
     Module 2 uses a vibratory conveyor, which can be completely switched on and off. 
     Lastly, Module 3 utilizes a rotary feeder, that operates between 0 and 1450 rpm.
     
-    In RL context, we consider the BGLP as a multi-agents system, where each actuator of the system is pointed as an agent or a player.
-    The states information for each agent are the fill level of the prior reservoir and the fill level of the next reservoir.
+    In theRL context, we consider the BGLP as a multi-agent system, where each actuator of the system is pointed as an agent or a player.
+    The states information for each agent is the fill level of the prior reservoir and the fill level of the next reservoir.
     
     .. note::
     
-    	In this simulation, we assume that the actuator in Module D has a constant flow, which automatically match the production demand in L/s.
-    	This parameter can be defined, while setting up the BGLP environment.
+    	In this simulation, we assume that the actuator in Module D has a constant flow, which automatically matches the production demand in L/s.
+    	This parameter can be defined while setting up the BGLP environment.
     	Therefore, 5 actuators are involved in this simulation instead of 6 actuators.
         
     - **General information**
@@ -66,7 +66,7 @@
     	You can change the configurations of the BGLP simulation, for instance, production demand (L/s), production target for batch operation (L),
     	learning rates for reward calculation, and production scenario (batch or continuous).
     	Batch production scenario refers to a process to satisfy a specific order in a sequence, thus the production target in L must be set.
-    	Meanwhile, continuos production scenario refers to a process to control a constant flow within a horizon, thus the production target (L) is not necessary
+    	Meanwhile, continuous production scenario refers to a process to control a constant flow within a horizon, thus the production target (L) is not necessary
     	and the target is fulfilled the production demand (L/s).
     	The detailed explanations are available in the API reference
     	section, see :ref:`here <api-ref-bglp>`.
@@ -78,8 +78,8 @@
     Thus, there are 5 agents and 5 joint actions because each agent requires an action.
     Every action is normalized within a range between 0 and 1, except for Agent 3.
     0 means the minimum possible action and 1 means the maximum possible action.
-    For Agent 3, the vibratory conveyor has different characteristic than other actuators, which mostly perform in a continuous manner.
-    The vibratory conveyor can only be either fully switched-on or switched-off. Therefore the base set of action for Agent 3 is integer (0/1).
+    For Agent 3, the vibratory conveyor has a different character than other actuators, which mostly perform in a continuous manner.
+    The vibratory conveyor can only be either fully switched-on or switched-off. Therefore the base set of action for Agent 3 is an integer (0/1).
     0 means off and 1 means on.
     
     +-------+-------------------+--------+-------------------+--------------+
@@ -98,9 +98,9 @@
       
     - **State space**
     
-    The state information in the BGLP are the fill levels of the reservoirs.
+    The state information in the BGLP is the fill levels of the reservoirs.
     Each agent is always placed in between two reservoirs, e.g. between a silo and a hopper or vice versa.
-    Therefore, each agent has two state information, which are shared with their neighbours.
+    Therefore, each agent has two state information, which is shared with their neighbours.
     Every state is normalized within a range between 0 and 1.
     0 means the minimum fill-level and 1 means the maximum fill-level.
     
@@ -134,7 +134,7 @@
     You can also find the source code of the reward structure, `here <https://github.com/fhswf/MLPro/blob/13b7b8a82d90b626f40ea7c268706e43889b9e00/src/mlpro/rl/pool/envs/bglp.py#L971-L982>`_.
     The given reward is an individual scalar reward for each agent. To be noted, this reward function is more suitable for a continuous production scenario.
     
-    If you would like to implement a customize reward function, you can follow these line of codes:
+    If you would like to implement a customized reward function, you can follow these lines of codes:
     
     .. code-block:: python
     
