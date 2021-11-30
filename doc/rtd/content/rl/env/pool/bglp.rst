@@ -64,7 +64,11 @@
     .. note::
     
     	You can change the configurations of the BGLP simulation, for instance, production demand (L/s), production target for batch operation (L),
-    	learning rates for reward calculation, and production scenario (batch or continuous). The detailed explanations are available in the API reference
+    	learning rates for reward calculation, and production scenario (batch or continuous).
+    	Batch production scenario refers to a process to satisfy a specific order in a sequence, thus the production target in L must be set.
+    	Meanwhile, continuos production scenario refers to a process to control a constant flow within a horizon, thus the production target (L) is not necessary
+    	and the target is fulfilled the production demand (L/s).
+    	The detailed explanations are available in the API reference
     	section, see :ref:`here <api-ref-bglp>`.
     	
     
