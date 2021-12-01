@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : ml
 ## -------------------------------------------------------------------------------------------------
@@ -87,7 +87,7 @@ class Example:
                 
         Returns
         -------
-        p_arg1 : TYPE
+        TYPE
             Description of the returned value.
         """
         return p_arg1
