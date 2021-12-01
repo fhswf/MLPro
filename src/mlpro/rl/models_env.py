@@ -96,7 +96,10 @@ class AFctBase (Model):
 
         self._state_space   = p_state_space
         self._action_space  = p_action_space
-        self._input_space, self._output_space = self._setup_spaces()        
+        self._input_space   = p_input_space_cls()
+        self._output_space  = p_output_space_cls()
+
+        self._setup_spaces(self._state_space, self._action_space, self._input_space, self._output_space)        
         
         try:
             self._afct = p_afct_cls( p_input_space=self._input_space,
@@ -114,23 +117,22 @@ class AFctBase (Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space:MSpace, p_action_space:MSpace):
+    def _setup_spaces(self, p_state_space:MSpace, p_action_space:MSpace, p_input_space:MSpace, p_output_space:MSpace):
         """
-        Custom method to setup input and output space of the adaptive function inside.
+        Custom method to setup the input and output space of the embedded adaptive function. Use the
+        method add_dimension() of the empty spaces p_input_space and p_output_space to enrich them
+        with suitable dimensions.
 
         Parameters
         ----------
         p_state_space : MSpace
-            State space of an environment or observation space of an agent
+            State space of an environment respectively observation space of an agent.
         p_action_space : MSpace
-            Action space of an environment or agent
-
-        Returns
-        -------
-        MSpace
-            Input space
-        MSpace
-            Output space
+            Action space of an environment or agent.
+        p_input_space : MSpace
+            Empty input space of embedded adaptive function to be enriched with dimension.
+        p_output_space : MSpace
+            Empty output space of embedded adaptive function to be enriched with dimension.
 
         """
 
@@ -219,8 +221,42 @@ class AFctSTrans (AFctBase):
     C_TYPE          = 'AFct STrans'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace):
-        raise NotImplementedError
+    def _setup_spaces(self, p_state_space:MSpace, p_action_space:MSpace, p_input_space:MSpace, p_output_space:MSpace):
+        
+        # 1 Add dimensions of state space to input and output space of adaptive function
+        dim_id_new = 0
+        for dim_id in p_state_space.get_dim_ids():
+            dim     = p_state_space.get_dim(dim_id)
+            dim_new = Dimension( p_id=dim_id_new,  
+                                 p_name_short=dim.get_name_short(),
+                                 p_base_set=dim.get_base_set(),
+                                 p_name_long=dim.get_name_long(),
+                                 p_name_latex=dim.get_name_latex(),
+                                 p_unit=dim.get_unit(),
+                                 p_unit_latex=dim.get_unit_latex(),
+                                 p_boundaries=dim.get_boundaries(),
+                                 p_description=dim.get_description() )
+
+            p_input_space.add_dim(dim_new)
+            p_output_space.add_dim(dim_new)
+            dim_id_new += 1
+
+
+        # 2 Add dimensions of action space to input space of adaptive function
+        for dim_id in p_action_space.get_dim_ids():
+            dim     = p_action_space.get_dim(dim_id)
+            dim_new = Dimension( p_id=dim_id_new,  
+                                 p_name_short=dim.get_name_short(),
+                                 p_base_set=dim.get_base_set(),
+                                 p_name_long=dim.get_name_long(),
+                                 p_name_latex=dim.get_name_latex(),
+                                 p_unit=dim.get_unit(),
+                                 p_unit_latex=dim.get_unit_latex(),
+                                 p_boundaries=dim.get_boundaries(),
+                                 p_description=dim.get_description() )
+
+            p_input_space.add_dim(dim_new)
+            dim_id_new += 1
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -243,34 +279,28 @@ class AFctReward (AFctBase):
     C_TYPE          = 'AFct Reward'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace):
+    def _setup_spaces(self, p_state_space:MSpace, p_action_space:MSpace, p_input_space:MSpace, p_output_space:MSpace):
 
         # 1 Setup input space
-        ispace      = ESpace()
         dim_id_new  = 0
 
         for n in range(0,2,1):
             for dim_id in p_state_space.get_dim_ids():
                 dim = p_state_space.get_dim(dim_id)
-                ispace.add_dim( Dimension( p_id=dim_id_new,  
-                                           p_name_short=dim.get_name_short(),
-                                           p_base_set=dim.get_base_set(),
-                                           p_name_long=dim.get_name_long(),
-                                           p_name_latex=dim.get_name_latex(),
-                                           p_unit=dim.get_unit(),
-                                           p_unit_latex=dim.get_unit_latex(),
-                                           p_boundaries=dim.get_boundaries(),
-                                           p_description=dim.get_description() ) )
+                p_input_space.add_dim( Dimension( p_id=dim_id_new,  
+                                                  p_name_short=dim.get_name_short(),
+                                                  p_base_set=dim.get_base_set(),
+                                                  p_name_long=dim.get_name_long(),
+                                                  p_name_latex=dim.get_name_latex(),
+                                                  p_unit=dim.get_unit(),
+                                                  p_unit_latex=dim.get_unit_latex(),
+                                                  p_boundaries=dim.get_boundaries(),
+                                                  p_description=dim.get_description() ) )
                 dim_id_new += 1
 
 
         # 2 Setup output space
-        ospace = ESpace()
-        ospace.add_dim( Dimension(p_id=0, p_name_short='Rwd', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Reward') )
-
-
-        # 3 Return both spaces
-        return ispace, ospace
+        p_output_space.add_dim( Dimension(p_id=0, p_name_short='Rwd', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Reward') )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -334,7 +364,7 @@ class AFctDone (AFctBase):
     C_TYPE          = 'AFct Done'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace):
+    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace, p_output_space: MSpace):
         raise NotImplementedError
 
 
@@ -358,7 +388,7 @@ class AFctBroken (AFctBase):
     C_TYPE          = 'AFct Broken'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace):
+    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace, p_output_space: MSpace):
         raise NotImplementedError
 
 
