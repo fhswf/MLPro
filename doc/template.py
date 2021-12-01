@@ -37,6 +37,10 @@ class Example:
     Public attributes of classes are documented inisde Attributes section.
     Returns attronites are documented in the Returns section.
     
+    A few examples of data types: int / str / bool / list of str / tuple of int / float / None / dict.
+    If the parameters have default values, you should add "TYPE, optional" as part of the type
+    and "The default is ...." as part of the description.
+    
     .. _Further_formatting_information: 
         https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html#example-numpy
         https://numpydoc.readthedocs.io/en/latest/format.html
@@ -47,20 +51,22 @@ class Example:
     
     Parameters
     ----------
-    p_arg1 : int
+    p_arg1 : TYPE
         explanation of the first parameter.
-    p_arg2 : bool
-        explanation of the second parameter.
+    p_arg2 : TYPE, optional
+        explanation of the second parameter. The default is True.
         
     Attributes
     ----------
-    attr1: int
+    attr1: TYPE
         explanation of the public attribute attr1.
 
     """
+    
+    attr1 = None
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_arg1, p_arg2):
+    def __init__(self, p_arg1, p_arg2=True):
         self.attr1 = p_arg1
         pass
 
@@ -77,12 +83,12 @@ class Example:
         
         Parameters
         ----------
-        p_arg1 : int
+        p_arg1 : TYPE
             explanation of the first parameter.
                 
         Returns
         -------
-        int
+        p_arg1 : TYPE
             Description of the returned value.
         """
         return p_arg1
@@ -99,7 +105,7 @@ class Example:
         
         Parameters
         ----------
-        p_arg1 : int
+        p_arg1 : TYPE
             explanation of the first parameter.
                 
         """
