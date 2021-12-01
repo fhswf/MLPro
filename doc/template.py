@@ -42,7 +42,6 @@ class Example:
     and "The default is ...." as part of the description.
     
     .. _Further_formatting_information: 
-        https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_numpy.html#example-numpy
         https://numpydoc.readthedocs.io/en/latest/format.html
     
     Notes
