@@ -45,6 +45,10 @@ class AFctBase (Model):
         State space of an environment or observation space of an agent
     p_action_space : MSpace
         Action space of an environment or agent
+    p_input_space_cls
+        Space class that is used for the generated input space of the embedded adaptive function (compatible to class MSpace)
+    p_output_space_cls
+        Space class that is used for the generated output space of the embedded adaptive function (compatible to class MSpace)
     p_output_elem_cls 
         Output element class (compatible to/inherited from class Element)
     p_threshold : float
@@ -81,6 +85,8 @@ class AFctBase (Model):
                  p_afct_cls,
                  p_state_space:MSpace,
                  p_action_space:MSpace,
+                 p_input_space_cls=ESpace,
+                 p_output_space_cls=ESpace,
                  p_output_elem_cls=Element,     
                  p_threshold=0,
                  p_buffer_size=0,
