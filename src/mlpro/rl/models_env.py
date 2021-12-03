@@ -14,13 +14,13 @@
 ## -- 2021-10-05  1.1.3     DA       Introduction of method Environment.get_cycle_limit()
 ## -- 2021-10-05  1.1.4     SY       Bugfixes and minor improvements
 ## -- 2021-10-25  1.1.5     SY       Enhancement of class EnvBase by adding ScientificObject.
-## -- 2021-12-dd  1.2.0     DA       Redesign:
+## -- 2021-12-03  1.2.0     DA       Redesign:
 ## --                                - Introduction of special adaptive function classes AFct*
 ## --                                - Rework of classes EnvBase, Environment, EnvModel
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-12-dd)
+Ver. 1.2.0 (2021-12-03)
 
 This module provides model classes for environments and environnment models.
 """
@@ -221,52 +221,82 @@ class AFctSTrans (AFctBase):
     C_TYPE          = 'AFct STrans'
 
 ## -------------------------------------------------------------------------------------------------
+    def __init__(self, 
+                 p_afct_cls, 
+                 p_state_space:MSpace, 
+                 p_action_space:MSpace, 
+                 p_input_space_cls=ESpace, 
+                 p_output_space_cls=ESpace, 
+                 p_output_elem_cls=State,           # Specific output element type
+                 p_threshold=0, 
+                 p_buffer_size=0, 
+                 p_ada=True, 
+                 p_logging=Log.C_LOG_ALL, 
+                 **p_par):
+
+        super().__init__( p_afct_cls, 
+                          p_state_space, 
+                          p_action_space, 
+                          p_input_space_cls=p_input_space_cls, 
+                          p_output_space_cls=p_output_space_cls, 
+                          p_output_elem_cls=p_output_elem_cls, 
+                          p_threshold=p_threshold, 
+                          p_buffer_size=p_buffer_size, 
+                          p_ada=p_ada, 
+                          p_logging=p_logging, 
+                          **p_par )
+
+
+## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self, p_state_space:MSpace, p_action_space:MSpace, p_input_space:MSpace, p_output_space:MSpace):
-        
-        # 1 Add dimensions of state space to input and output space of adaptive function
-        dim_id_new = 0
-        for dim_id in p_state_space.get_dim_ids():
-            dim     = p_state_space.get_dim(dim_id)
-            dim_new = Dimension( p_id=dim_id_new,  
-                                 p_name_short=dim.get_name_short(),
-                                 p_base_set=dim.get_base_set(),
-                                 p_name_long=dim.get_name_long(),
-                                 p_name_latex=dim.get_name_latex(),
-                                 p_unit=dim.get_unit(),
-                                 p_unit_latex=dim.get_unit_latex(),
-                                 p_boundaries=dim.get_boundaries(),
-                                 p_description=dim.get_description() )
 
-            p_input_space.add_dim(dim_new)
-            p_output_space.add_dim(dim_new)
-            dim_id_new += 1
+        # 1 Setup input space
+        p_input_space.append(p_state_space)
+        p_input_space.append(p_action_space)
 
-
-        # 2 Add dimensions of action space to input space of adaptive function
-        for dim_id in p_action_space.get_dim_ids():
-            dim     = p_action_space.get_dim(dim_id)
-            dim_new = Dimension( p_id=dim_id_new,  
-                                 p_name_short=dim.get_name_short(),
-                                 p_base_set=dim.get_base_set(),
-                                 p_name_long=dim.get_name_long(),
-                                 p_name_latex=dim.get_name_latex(),
-                                 p_unit=dim.get_unit(),
-                                 p_unit_latex=dim.get_unit_latex(),
-                                 p_boundaries=dim.get_boundaries(),
-                                 p_description=dim.get_description() )
-
-            p_input_space.add_dim(dim_new)
-            dim_id_new += 1
+        # 2 Setup output space
+        p_output_space.append(p_state_space)
 
 
 ## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state:State, p_action:Action) -> State:
-        raise NotImplementedError
+
+        # 1 Create input vector from given state and action
+        input_values = p_state.get_values().copy()
+        input_values.append(p_action.get_values())
+        input = Element(self._input_space)
+        input.set_values(input_values)
+
+        # 2 Compute and return new state
+        return self._afct.map(input)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State, p_action:Action, p_state_new:State) -> bool:
-        raise NotImplementedError
+        """
+        Triggers adaptation of the embedded adaptive function.
+
+        Parameters
+        ----------
+        p_state : State
+            State.
+        p_action : Action
+            Action
+        p_state_new : State
+            New state
+
+        Returns
+        -------
+        bool
+            True, if something was adapted. False otherwise.
+        """
+
+        input_values = p_state.get_values().copy()
+        input_values.append(p_action.get_values())
+        input = Element(self._input_space)
+        input.set_values(input_values)
+
+        return self._afct.adapt(input, p_state_new)
 
 
 
@@ -282,22 +312,8 @@ class AFctReward (AFctBase):
     def _setup_spaces(self, p_state_space:MSpace, p_action_space:MSpace, p_input_space:MSpace, p_output_space:MSpace):
 
         # 1 Setup input space
-        dim_id_new  = 0
-
-        for n in range(0,2,1):
-            for dim_id in p_state_space.get_dim_ids():
-                dim = p_state_space.get_dim(dim_id)
-                p_input_space.add_dim( Dimension( p_id=dim_id_new,  
-                                                  p_name_short=dim.get_name_short(),
-                                                  p_base_set=dim.get_base_set(),
-                                                  p_name_long=dim.get_name_long(),
-                                                  p_name_latex=dim.get_name_latex(),
-                                                  p_unit=dim.get_unit(),
-                                                  p_unit_latex=dim.get_unit_latex(),
-                                                  p_boundaries=dim.get_boundaries(),
-                                                  p_description=dim.get_description() ) )
-                dim_id_new += 1
-
+        p_input_space.append(p_state_space)
+        p_input_space.append(p_state_space)
 
         # 2 Setup output space
         p_output_space.add_dim( Dimension(p_id=0, p_name_short='Rwd', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Reward') )
@@ -323,7 +339,7 @@ class AFctReward (AFctBase):
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State, p_state_new:State, p_reward:Reward) -> bool:
         """
-        Triggers adaptation of embedded adaptive function.
+        Triggers adaptation of the embedded adaptive function.
 
         Parameters
         ----------
@@ -364,18 +380,32 @@ class AFctDone (AFctBase):
     C_TYPE          = 'AFct Done'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace, p_output_space: MSpace):
-        raise NotImplementedError
+    def _setup_spaces(self, p_state_space:MSpace, p_action_space:MSpace, p_input_space:MSpace, p_output_space:MSpace):
+
+        # 1 Setup input space
+        p_input_space.append(p_state_space)
+
+        # 2 Setup output space
+        p_output_space.add_dim( Dimension( p_id=0, p_name_short='Done', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Done', p_boundaries=[0,1]) )
 
 
 ## -------------------------------------------------------------------------------------------------
     def compute_done(self, p_state:State) -> bool:
-        raise NotImplementedError
+        output = self._afct.map(p_state)
+
+        if output.get_values()[0] >= 0.5: return True
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State) -> bool:
-        raise NotImplementedError
+        output = Element(self._output_space)
+        if p_state.get_done():
+            output.set_value(0,1)
+        else:
+            output.set_value(0,0)
+
+        return self._afct.adapt(p_state, output)
 
 
 
@@ -388,18 +418,32 @@ class AFctBroken (AFctBase):
     C_TYPE          = 'AFct Broken'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace, p_output_space: MSpace):
-        raise NotImplementedError
+    def _setup_spaces(self, p_state_space:MSpace, p_action_space:MSpace, p_input_space:MSpace, p_output_space:MSpace):
+
+        # 1 Setup input space
+        p_input_space.append(p_state_space)
+
+        # 2 Setup output space
+        p_output_space.add_dim( Dimension( p_id=0, p_name_short='Done', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Done', p_boundaries=[0,1]) )
 
 
 ## -------------------------------------------------------------------------------------------------
     def compute_broken(self, p_state:State) -> bool:
-        raise NotImplementedError
+        output = self._afct.map(p_state)
+
+        if output.get_values()[0] >= 0.5: return True
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State) -> bool:
-        raise NotImplementedError
+        output = Element(self._output_space)
+        if p_state.get_done():
+            output.set_value(0,1)
+        else:
+            output.set_value(0,0)
+
+        return self._afct.adapt(p_state, output)
 
 
 
