@@ -12,16 +12,12 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: python:3.8-slim-buster
-      steps:
-        # - name: Checkout Codes
-        - uses: actions/checkout@v2
-          with:
-            ref: ${{ github.head_ref }}
-        - name: Test Command
-          run: |
-            ls
+    container: python:3.8-slim-buster
+    steps:
+      - name: Test
+        run: |
+          ls
+      
     # - name: Install dependencies
     #   run: |
     #     python -m pip install --upgrade pip
