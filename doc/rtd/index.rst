@@ -8,15 +8,14 @@ MLPro - Machine Learning Professional
 
 `MLPro <https://github.com/fhswf/MLPro.git>`_ is a synoptic framework for standardized machine learning tasks in Python!
 
-MLPro was developed in 2021 by `Automation Technology team at Fachhochschule Südwestfalen <https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php>`_.
+MLPro was developed in 2021 by `Automation Technology and Learning Systems team at Fachhochschule Südwestfalen <https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php>`_.
 
-MLPro provides complete, standardized, and reusable functionalities to support your scientific research or industrial project in machine learning.
+MLPro provides complete, standardized, and reusable functionalities to support your scientific research, educational task, or industrial project in machine learning.
 
-In MLPro, we provide a standarized Python package for conducting research in reinforcement learning (RL) and game
-theoretical (GT) approaches, including environments, algorithms, multi-agent RL (MARL), and many more. Additionally, we
-enable our users to reuse the available packages by developing wrapper classes.
-
-Moreover, MLPro focuses not only on Model-Free but also Model-Based RL problem.
+In the first version of MLPro, we provide a standardized Python package for reinforcement learning (RL) and game
+theoretical (GT) approaches, including environments, algorithms, multi-agent RL (MARL), model-based RL (MBRL) and many more.
+Additionally, we incorporate the available third party packages by developing wrapper classes
+to enable our users to reuse the third party packages in MLPro.
 
 Github repository: https://github.com/fhswf/MLPro.git
 
@@ -24,12 +23,12 @@ Github repository: https://github.com/fhswf/MLPro.git
 Main Contributions
 --------------
 
-- Test-driven development
-- Clean code
+- Test-driven development (CI/CD concept)
+- Clean code and constructed through Object-Oriented Programming
 - Ready-to-use functionalities
 - Usability in scientific, industrial and educational contexts
 - Extensible, maintainable, understandable
-- Attractive UI support
+- Attractive UI support (available soon)
 - Reuse of available state-of-the-art implementations
 - Clear documentations
 
@@ -62,6 +61,7 @@ Instructions for use
    content/rl/env
    content/rl/agents
    content/rl/scenario
+   content/rl/train
    content/rl/wrapper
 
 .. toctree::
@@ -91,6 +91,7 @@ Instructions for use
    content/append2/mlpro.core
    content/append2/mlpro.wrappers
    content/append2/mlpro.pool
+   content/append2/mlpro.template
 
 .. toctree::
    :maxdepth: 2
