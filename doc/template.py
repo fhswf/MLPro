@@ -77,8 +77,9 @@ class Example:
         
         Notes
         -----
-            The name of the return value is optional, but the type is always 
-            required. 
+            The name of the return value is required for better understanding 
+            of the code. The return value is parsed similarly as parameters 
+            value, meaning that multiple return value is also possible.
         
         Parameters
         ----------
@@ -87,7 +88,7 @@ class Example:
                 
         Returns
         -------
-        TYPE
+        p_arg1: TYPE
             Description of the returned value.
         """
         return p_arg1
