@@ -91,6 +91,7 @@ Instructions for use
    content/append2/mlpro.core
    content/append2/mlpro.wrappers
    content/append2/mlpro.pool
+   content/append2/mlpro.template
 
 .. toctree::
    :maxdepth: 2
