@@ -23,7 +23,7 @@ from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGYM2MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.rl.pool.policies.sac import SAC
 from mlpro.rl.pool.sarsbuffer.PrioritizedBuffer import PrioritizedBuffer
 from mlpro.rl.pool.sarsbuffer.RandomSARSBuffer import RandomSARSBuffer
