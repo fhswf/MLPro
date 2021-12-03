@@ -12,7 +12,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: python:3.8-slim-buster
+    container: rizkydiprasetya/mlproaction:latest
     steps:
       - name: Checkout Codes
         uses: actions/checkout@v2
