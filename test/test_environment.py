@@ -59,6 +59,4 @@ def test_environment(env_cls):
     
     assert isinstance(reward, Reward)
 
-    env._compute_goal_achievement()
-
     env.reset()
