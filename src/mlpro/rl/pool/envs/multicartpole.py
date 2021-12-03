@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
-## -- Module  : multicartpole
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.rl.pool.envs
+## -- Module  : multicartpole.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -154,10 +154,7 @@ class MultiCartPole (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state_old:State=None, p_state_new:State=None) -> Reward:
-        if ( p_state_old is not None ) or ( p_state_new is not None ):
-            raise NotImplementedError
-
+    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         reward = Reward(self._reward_type)
 
         if self._reward_type == Reward.C_TYPE_OVERALL:

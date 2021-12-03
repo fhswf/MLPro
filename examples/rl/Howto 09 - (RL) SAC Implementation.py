@@ -12,10 +12,11 @@
 ## -- 2021-09-29  1.0.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-18  1.0.3     DA       Refactoring
 ## -- 2021-11-15  1.1.0     DA       Refactoring
+## -- 2021-12-03  1.1.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-11-15)
+Ver. 1.1.1 (2021-12-03)
 
 This module shows how to implement SAC from the pool
 """
@@ -23,12 +24,14 @@ This module shows how to implement SAC from the pool
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGYM2MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.rl.pool.policies.sac import SAC
 import gym
 import random
 from pathlib import Path
+
+
 
 # 1 Implement your own RL scenario
 class MyScenario (RLScenario):

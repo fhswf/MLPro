@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 12 - (RL) Wrap mlpro Environment class to petting zoo environment
 ## -------------------------------------------------------------------------------------------------
@@ -9,10 +9,11 @@
 ## -- 2021-10-02  1.0.0     SY       Released first version
 ## -- 2021-10-04  1.0.1     DA       Minor fix
 ## -- 2021-11-15  1.0.2     DA       Refactoring
+## -- 2021-12-03  1.0.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-11-15)
+Ver. 1.0.3 (2021-12-03)
 
 This module shows how to wrap mlpro's Environment class to petting zoo compatible.
 """
@@ -20,7 +21,7 @@ This module shows how to wrap mlpro's Environment class to petting zoo compatibl
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvMLPro2PZoo
+from mlpro.wrappers.pettingzoo import WrEnvMLPro2PZoo
 from mlpro.rl.pool.envs.bglp import BGLP
 import random
 

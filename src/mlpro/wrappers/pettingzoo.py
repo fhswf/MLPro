@@ -48,7 +48,7 @@ class WrEnvPZOO2MLPro(Environment):
     C_TYPE        = 'Petting Zoo Env'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_zoo_env, p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=True):
+    def __init__(self, p_zoo_env, p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=Log.C_LOG_ALL):
         """
         Parameters:
             p_pzoo_env      Petting Zoo environment object
@@ -61,7 +61,7 @@ class WrEnvPZOO2MLPro(Environment):
 
         self._zoo_env     = p_zoo_env
         self.C_NAME       = 'Env "' + self._zoo_env.metadata['name'] + '"'
-        Environment.__init__(self, Environment.C_MODE_SIM, None, p_logging)
+        Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         
         if p_state_space is not None: 
             self._state_space = p_state_space
@@ -76,7 +76,11 @@ class WrEnvPZOO2MLPro(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def __del__(self):
-        self._zoo_env.close()
+        try:
+            self._zoo_env.close()
+        except:
+            pass
+        
         self.log(self.C_LOG_TYPE_I, 'Closed')
 
 
@@ -96,8 +100,9 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self):
-        pass
+    @staticmethod
+    def setup_spaces():
+        return None, None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -167,26 +172,20 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state:State=None) -> Reward:
-        if p_state is not None:
+    def compute_reward(self, p_state_old:State=None, p_state_new:State=None) -> Reward:
+        if ( p_state_old is not None ) or ( p_state_new is not None ):
             raise NotImplementedError
 
         return self._reward
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state:State=None) -> bool:
-        if p_state is not None:
-            raise NotImplementedError
-
+    def compute_done(self, p_state:State) -> bool:
         return self.get_done()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state:State=None) -> bool:
-        if p_state is not None:
-            raise NotImplementedError
-
+    def compute_broken(self, p_state:State) -> bool:
         return self.get_broken()
 
 

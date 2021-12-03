@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : robotinhtm
 ## -------------------------------------------------------------------------------------------------
@@ -11,10 +11,11 @@
 ## -- 2021-09-25  1.0.2     MRD      Minor fix for state space and action space recognition
 ## -- 2021-10-05  1.0.3     SY       Update following new attributes done and broken in State
 ## -- 2021-11-15  1.1.0     DA       Refactoring of class RobotHTM
+## -- 2021-12-03  1.1.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-11-15)
+Ver. 1.1.1 (2021-12-03)
 
 This module provide an environment of a robot manipulator based on Homogeneous Matrix
 """
@@ -45,6 +46,7 @@ class RobotArm3D:
         self.HM = torch.Tensor([])
         self.HMeef = None
 
+## -------------------------------------------------------------------------------------------------
     def add_link_joint(self, jointAxis=None, lvector=None, thetaInit=None, adjustRot=None, adjustTheta=None):
         self.joints = torch.cat([self.joints, torch.Tensor([[0,0,0,1]]).T], dim=1)
         self.jointAxis.append(jointAxis)
@@ -60,6 +62,7 @@ class RobotArm3D:
             self.num_joint = self.num_joint + 1
 
 
+## -------------------------------------------------------------------------------------------------
     def get_transformation_matrix(self, theta, lvector, rotAxis, adjustRots=None, adjustThetas=None):
         transformationMatrix = torch.Tensor([])
             
@@ -116,6 +119,7 @@ class RobotArm3D:
         transformationMatrix = torch.cat([transformationMatrix,torch.Tensor([[0,0,0,1]])], dim=0)
         return transformationMatrix
 
+## -------------------------------------------------------------------------------------------------
     def update_joint_coords(self):
         self.HM = torch.Tensor([])
         T = torch.eye(4)
@@ -137,25 +141,37 @@ class RobotArm3D:
         self.HMeef = T
 
     
-
+## -------------------------------------------------------------------------------------------------
     def get_joint(self):
         return self.joints
 
+
+## -------------------------------------------------------------------------------------------------
     def get_num_joint(self):
         return self.num_joint
-    
+
+
+## -------------------------------------------------------------------------------------------------
     def set_theta(self, theta):
         self.thetas = theta.flatten()
-        
+
+
+## -------------------------------------------------------------------------------------------------
     def get_homogeneous(self):
         return self.HM
-    
+
+
+## -------------------------------------------------------------------------------------------------
     def get_homogeneous_eef(self):
         return self.HMeef
 
+
+## -------------------------------------------------------------------------------------------------
     def get_orientation(self):
         return self.orientation
     
+
+## -------------------------------------------------------------------------------------------------
     def update_theta(self, deltaTheta):
         self.thetas += deltaTheta.flatten()
 
@@ -170,12 +186,13 @@ class RobotHTM (Environment):
     Custom environment for a arm robot represented as Homogeneous Matrix.
     The goal is to reach a certain point.
     """
-    C_NAME      = 'RobotHTM'
-    C_LATENCY   = timedelta(0,1,0)
-    C_INFINITY  = np.finfo(np.float32).max
+    C_NAME          = 'RobotHTM'
+    C_REWARD_TYPE   = Reward.C_TYPE_OVERALL        
+    C_LATENCY       = timedelta(0,1,0)
+    C_INFINITY      = np.finfo(np.float32).max
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_num_joints=4, p_target_mode="Random", p_logging=True):
+    def __init__(self, p_num_joints=4, p_target_mode="Random", p_logging=Log.C_LOG_ALL):
         """
         Parameters:
             p_logging               Boolean switch for logging
@@ -219,8 +236,8 @@ class RobotHTM (Environment):
         self.reach = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.RobotArm1.joints[:3,[-1]].reshape(1,3))
         self.last_distance = None
 
-        super().__init__(p_mode=Environment.C_MODE_SIM,
-                                p_logging=p_logging)
+        super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+        self._state_space, self._action_space = self._setup_spaces()
 
         if self.mode == "random":
             num = random.random()
@@ -247,6 +264,12 @@ class RobotHTM (Environment):
     
 
 ## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def setup_spaces():
+        return None, None
+
+
+## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self):
         """
         Implement this method to enrich the state and action space with specific 
@@ -254,20 +277,24 @@ class RobotHTM (Environment):
         """
 
         # 1 Setup state space
-        self._state_space.add_dim(Dimension(0, 'Tx', 'Targetx', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
-        self._state_space.add_dim(Dimension(1, 'Ty', 'Targety', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
-        self._state_space.add_dim(Dimension(2, 'Tz', 'Targetz', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
-        self._state_space.add_dim(Dimension(3, 'Px', 'Positionx', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
-        self._state_space.add_dim(Dimension(4, 'Py', 'Positiony', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
-        self._state_space.add_dim(Dimension(5, 'Pz', 'Positionz', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        state_space = ESpace()
+        state_space.add_dim(Dimension(0, 'Tx', 'Targetx', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        state_space.add_dim(Dimension(1, 'Ty', 'Targety', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        state_space.add_dim(Dimension(2, 'Tz', 'Targetz', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        state_space.add_dim(Dimension(3, 'Px', 'Positionx', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        state_space.add_dim(Dimension(4, 'Py', 'Positiony', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
+        state_space.add_dim(Dimension(5, 'Pz', 'Positionz', '', 'm', 'm', p_boundaries=[-np.inf,np.inf]))
 
         # 2 Setup action space
+        action_space = ESpace()
         for idx in range(self.num_joint):
-            self._action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad/sec', '\frac{rad}{sec}', p_boundaries=[-np.pi,np.pi]))
+            action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad/sec', '\frac{rad}{sec}', p_boundaries=[-np.pi,np.pi]))
+
+        return state_space, action_space
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state:State, p_action:Action) -> State:
+    def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
         action = p_action.get_sorted_values()
         if not isinstance(action, torch.Tensor):
             action = torch.Tensor(action)
@@ -284,27 +311,8 @@ class RobotHTM (Environment):
    
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_goal_achievement(self, p_state:State=None):
-        if p_state is not None:
-            state = p_state
-        else:
-            state = self._state
-       
-        disterror = np.linalg.norm(state.get_values()[:3] - state.get_values()[3:])
-        if disterror <= 0.01:
-            return 1.0
-        else:
-            return 0.0
-
-
-## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state:State=None) -> bool:
-        if p_state is not None:
-            state = p_state
-        else:
-            state = self._state
-
-        disterror = np.linalg.norm(state.get_values()[:3] - state.get_values()[3:])
+    def _compute_done(self, p_state:State=None) -> bool:
+        disterror = np.linalg.norm(p_state.get_values()[:3] - p_state.get_values()[3:])
         if disterror <= 0.1:
             return True
         else:
@@ -312,24 +320,14 @@ class RobotHTM (Environment):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state:State) -> bool:
-        if p_state is not None:
-            state = p_state
-        else:
-            state = self._state
-
+    def _compute_broken(self, p_state:State) -> bool:
         return False
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state: State = None) -> Reward:
-        if p_state is not None:
-            state = p_state
-        else:
-            state = self._state
-
-        reward = Reward(Reward.C_TYPE_OVERALL)
-        disterror = np.linalg.norm(state.get_values()[:3] - state.get_values()[3:])
+    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
+        reward = Reward(self.C_REWARD_TYPE)
+        disterror = np.linalg.norm(p_state_new.get_values()[:3] - p_state_new.get_values()[3:])
         
         ratio = disterror/self.init_distance.item()
         rew = -np.ones(1)*ratio
@@ -377,3 +375,13 @@ class RobotHTM (Environment):
         self._state = State(self._state_space)
         self._state.set_values(obs)
         self._state.set_done(True)
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure=None):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self):
+        pass

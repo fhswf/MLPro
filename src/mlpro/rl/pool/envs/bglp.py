@@ -1,7 +1,7 @@
- ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
-## -- Module  : BGLP
+## -------------------------------------------------------------------------------------------------
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.rl.envs
+## -- Module  : bglp.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -20,10 +20,11 @@
 ## -- 2021-11-17  2.1.3     SY       Random initial states
 ## -- 2021-11-21  2.1.4     SY       Remove dependency from torch
 ## -- 2021-11-26  2.1.5     SY       Update reward type
+## -- 2021-12-03  2.1.6     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.5 (2021-11-26)
+Ver. 2.1.6 (2021-12-03)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -39,7 +40,6 @@ import random
         
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-
 class Actuator:
     reg_a               = []
     idx_a               = 0
@@ -58,9 +58,9 @@ class Actuator:
     cur_speed           = 0
     type_               = ""
     
+## -------------------------------------------------------------------------------------------------
     def __init__(self, minpower, maxpower, minaction, maxaction, masscoeff):
-        """
-        
+        """      
 
         Parameters
         ----------
@@ -95,13 +95,13 @@ class Actuator:
         
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-    
-class VacuumPump(Actuator):
+class VacuumPump (Actuator):
     reg_v       = []
     idx_v       = 0
     name        = ""
     t_end_max   = 0
     
+## -------------------------------------------------------------------------------------------------
     def __init__(self, name, minpower, maxpower, minaction, maxaction, masscoeff):    
         """
         
@@ -130,6 +130,8 @@ class VacuumPump(Actuator):
         self.name   = name
         self.type_  = "VAC"
         
+
+## -------------------------------------------------------------------------------------------------
     def start_t(self, now, duration, overwrite = False): 
         """
         
@@ -160,6 +162,8 @@ class VacuumPump(Actuator):
                 self.t_end      = now + duration * self.action_max    
                 self.status     = True
                 
+
+## -------------------------------------------------------------------------------------------------
     def calc_mass(self, now):
         """
         
@@ -180,6 +184,8 @@ class VacuumPump(Actuator):
                 self.cur_mass_transport = (2*self.mass_coeff[1]) + self.mass_coeff[0]
         return self.cur_mass_transport        
         
+
+## -------------------------------------------------------------------------------------------------
     def calc_energy(self):
         """
         
@@ -193,6 +199,8 @@ class VacuumPump(Actuator):
             self.cur_power = self.power_max
         return self.cur_power / 1000.0
         
+
+## -------------------------------------------------------------------------------------------------
     def update(self, now):
         """
         
@@ -211,6 +219,8 @@ class VacuumPump(Actuator):
             if self.t_end < now or self.t_end_max < now:
                 self.deactivate()
     
+
+## -------------------------------------------------------------------------------------------------
     def deactivate(self):
         self.status             = False
         self.cur_mass_transport = 0
@@ -222,7 +232,6 @@ class VacuumPump(Actuator):
         
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-        
 class Belt(Actuator):
     reg_b       = []
     idx_b       = 0
@@ -230,6 +239,7 @@ class Belt(Actuator):
     actiontype  = ""
     speed       = 0
     
+## -------------------------------------------------------------------------------------------------
     def __init__(self, name, actiontype, minpower, maxpower, minaction, maxaction, masscoeff):
         """
         
@@ -262,6 +272,8 @@ class Belt(Actuator):
         self.speed = 0
         self.type_ = "BLT"
         
+
+## -------------------------------------------------------------------------------------------------
     def start_t(self, now, duration, speed = 0, overwrite = False):
         """
         
@@ -298,6 +310,8 @@ class Belt(Actuator):
                 self.cur_action = duration * self.action_max
             self.status = True
             
+
+## -------------------------------------------------------------------------------------------------
     def calc_mass(self, now = 0):
         """
 
@@ -319,6 +333,8 @@ class Belt(Actuator):
                self.cur_mass_transport = self.mass_coeff*self.speed
         return self.cur_mass_transport
     
+
+## -------------------------------------------------------------------------------------------------
     def calc_energy(self):
         """
 
@@ -335,6 +351,8 @@ class Belt(Actuator):
                 self.cur_power = self.power_max
         return self.cur_power / 1000.0
         
+
+## -------------------------------------------------------------------------------------------------
     def update(self, now):
         """
 
@@ -353,6 +371,8 @@ class Belt(Actuator):
             if self.t_end < now:
                 self.deactivate()
     
+
+## -------------------------------------------------------------------------------------------------
     def deactivate(self):
         self.status             == False
         self.cur_mass_transport = 0
@@ -365,7 +385,6 @@ class Belt(Actuator):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-
 class Reservoir:
     reg_r           = []
     idx_r           = []
@@ -375,6 +394,7 @@ class Reservoir:
     vol_cur_rel     = 0
     change          = 0
 
+## -------------------------------------------------------------------------------------------------
     def __init__(self, vol_max, vol_init_abs=0):
         """
         
@@ -399,6 +419,8 @@ class Reservoir:
         self.vol_cur_rel    = self.vol_cur_abs / self.vol_max
         self.change         = 0
         
+
+## -------------------------------------------------------------------------------------------------
     def set_change(self, vol_change):
         """
         
@@ -415,6 +437,8 @@ class Reservoir:
         """
         self.change = vol_change
             
+
+## -------------------------------------------------------------------------------------------------
     def update(self):
         self.vol_cur_abs += self.change
         self.vol_cur_rel = self.vol_cur_abs / self.vol_max
@@ -425,13 +449,13 @@ class Reservoir:
     
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-        
 class Silo(Reservoir):
     reg_s   = []
     idx_s   = []
     name    = ""
     type_   = ""
     
+## -------------------------------------------------------------------------------------------------
     def __init__(self, name, vol_max, vol_cur = 0, mode = "abs"):
         """
         
@@ -465,15 +489,16 @@ class Silo(Reservoir):
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-    
-class Hopper(Reservoir):
+class Hopper (Reservoir):
     reg_h   = []
     idx_h   = []
     name    = ""
     type_   = ""
     
+## -------------------------------------------------------------------------------------------------
     def __init__(self, name, vol_max, vol_cur = 0, mode = "abs"):
         """
         
@@ -511,11 +536,11 @@ class Hopper(Reservoir):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-
-class BGLP(Environment):
+class BGLP (Environment):
     C_NAME              = "BGLP"
     C_LATENCY           = timedelta(0,1,0)    
     C_INFINITY          = np.finfo(np.float32).max
+    C_REWARD_TYPE       = Reward.C_TYPE_EVERY_AGENT
     sils                = []
     hops                = []
     ress                = []
@@ -546,7 +571,8 @@ class BGLP(Environment):
     prod_target         = 0
     prod_scenario       = 0
 
-    def __init__(self, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_logging=True,
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_logging=Log.C_LOG_ALL,
                  t_step=0.5, t_set=10.0, demand=0.1, lr_margin=1.0, lr_demand=4.0,
                  lr_energy=0.0010, margin_p=[0.2,0.8,4], prod_target=10000,
                  prod_scenario='continuous'):
@@ -653,24 +679,32 @@ class BGLP(Environment):
         
         self.reset()
             
-    def _setup_spaces(self):
-        """
-        To enrich the state and action space with specific dimensions. 
-        """
-        levels_max = [17.42, 9.10, 17.42, 9.10, 17.42, 9.10]
-        self._state_space.add_dim(Dimension(0, 'E-0 LvlSiloA', 'R', 'Env-0 Level of Silo A', '', 'L', 'L',[0, levels_max[0]]))
-        self._state_space.add_dim(Dimension(1, 'E-0 LvlHopperA', 'R', 'Env-0 Level of Hopper A', '', 'L', 'L',[0, levels_max[1]]))
-        self._state_space.add_dim(Dimension(2, 'E-0 LvlSiloB', 'R', 'Env-0 Level of Silo B', '', 'L', 'L',[0, levels_max[2]]))
-        self._state_space.add_dim(Dimension(3, 'E-0 LvlHopperB', 'R', 'Env-0 Level of Hopper B', '', 'L', 'L',[0, levels_max[3]]))
-        self._state_space.add_dim(Dimension(4, 'E-0 LvlSiloC', 'R', 'Env-0 Level of Silo C', '', 'L', 'L',[0, levels_max[4]]))
-        self._state_space.add_dim(Dimension(5, 'E-0 LvlHopperC', 'R', 'Env-0 Level of Hopper C', '', 'L', 'L',[0, levels_max[5]]))
-        
-        self._action_space.add_dim(Dimension(0, 'E-0 Act', 'R', 'Env-0 Actuator Control', '', '', '', [0,1]))
-        self._action_space.add_dim(Dimension(1, 'E-1 Act', 'R', 'Env-1 Actuator Control', '', '', '', [0,1]))
-        self._action_space.add_dim(Dimension(2, 'E-2 Act', 'Z', 'Env-2 Actuator Control', '', '', '', [0,1]))
-        self._action_space.add_dim(Dimension(3, 'E-3 Act', 'R', 'Env-3 Actuator Control', '', '', '', [0,1]))
-        self._action_space.add_dim(Dimension(4, 'E-4 Act', 'R', 'Env-4 Actuator Control', '', '', '', [0,1]))
 
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def setup_spaces():
+
+        state_space     = ESpace()
+        action_space    = ESpace()
+        levels_max      = [17.42, 9.10, 17.42, 9.10, 17.42, 9.10]
+
+        state_space.add_dim(Dimension(0, 'E-0 LvlSiloA', 'R', 'Env-0 Level of Silo A', '', 'L', 'L',[0, levels_max[0]]))
+        state_space.add_dim(Dimension(1, 'E-0 LvlHopperA', 'R', 'Env-0 Level of Hopper A', '', 'L', 'L',[0, levels_max[1]]))
+        state_space.add_dim(Dimension(2, 'E-0 LvlSiloB', 'R', 'Env-0 Level of Silo B', '', 'L', 'L',[0, levels_max[2]]))
+        state_space.add_dim(Dimension(3, 'E-0 LvlHopperB', 'R', 'Env-0 Level of Hopper B', '', 'L', 'L',[0, levels_max[3]]))
+        state_space.add_dim(Dimension(4, 'E-0 LvlSiloC', 'R', 'Env-0 Level of Silo C', '', 'L', 'L',[0, levels_max[4]]))
+        state_space.add_dim(Dimension(5, 'E-0 LvlHopperC', 'R', 'Env-0 Level of Hopper C', '', 'L', 'L',[0, levels_max[5]]))
+        
+        action_space.add_dim(Dimension(0, 'E-0 Act', 'R', 'Env-0 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension(1, 'E-1 Act', 'R', 'Env-1 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension(2, 'E-2 Act', 'Z', 'Env-2 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension(3, 'E-3 Act', 'R', 'Env-3 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension(4, 'E-4 Act', 'R', 'Env-4 Actuator Control', '', '', '', [0,1]))
+
+        return state_space, action_space
+
+
+## -------------------------------------------------------------------------------------------------
     def collect_substates(self) -> State:
         """
         To provide a method that set the value of a state, which will be used
@@ -682,6 +716,8 @@ class BGLP(Environment):
             state.set_value(i, sub_state_val[i])
         return state
     
+
+## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None) -> None:
         """
         To reset environment
@@ -700,7 +736,9 @@ class BGLP(Environment):
             self.data_frame += 1
         self.data_storing.add_frame(str(self.data_frame))
 
-    def simulate_reaction(self, p_state:State, p_action:Action) -> State:
+
+## -------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
         """
         To simulate the environment reacting selected actions
         """
@@ -743,7 +781,9 @@ class BGLP(Environment):
 
         return self._state
 
-    def compute_done(self, p_state:State) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_done(self, p_state:State) -> bool:
         """
         Updates the goal achievement value in [0,1] and the flags done
         based on the current state. Please redefine.
@@ -751,7 +791,6 @@ class BGLP(Environment):
         Returns:
           -
         """
-
         
         if self.prod_scenario == 'continuous':
             return False
@@ -761,7 +800,9 @@ class BGLP(Environment):
             else:
                 return False
     
-    def compute_broken(self, p_state:State) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_broken(self, p_state:State) -> bool:
         """
         Updates the goal achievement value in [0,1] and the flags broken
         based on the current state. Please redefine.
@@ -771,26 +812,9 @@ class BGLP(Environment):
         """
         return False
     
-    def _compute_goal_achievement(self, p_state:State=None):
-        """
-        Optional goal achievement computation.
 
-        Parameters:
-            p_state         Optional external state. If none, please use internal state.
-
-        Returns:
-            Goal avievement value in interval [0,1].
-        """
-
-        if self.prod_scenario == 'continuous':
-            self.goal_achievement = 0.0
-        else:
-            if self.prod_reached >= self.prod_target:
-                self.goal_achievement = 1.0
-            else:
-                self.goal_achievement = self.prod_reached/self.prod_target
-
-    def compute_reward(self) -> Reward:
+## -------------------------------------------------------------------------------------------------
+    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         """
         To calculate reward (can be redifined)
         """
@@ -818,13 +842,8 @@ class BGLP(Environment):
                     reward.add_agent_reward(agent_id, r_agent)
         return reward
 
-    def visualize(self) -> None:
-        """
-        Updates the visualization of the environment. Please redefine.
-        """
-        
-        pass
   
+## -------------------------------------------------------------------------------------------------
     def calc_mass_flows(self):
         """
         To calculate mass flow transported by actuators
@@ -832,6 +851,8 @@ class BGLP(Environment):
         for act_num in range(len(self.acts)):
             self.transport[act_num] = self.acts[act_num].calc_mass(self.t)*self.t_step
 
+
+## -------------------------------------------------------------------------------------------------
     def calc_energy(self):
         """
         To calculate power consumptions per actuator
@@ -839,6 +860,8 @@ class BGLP(Environment):
         for act_num in range(len(self.acts)):
             self.energy[act_num] = self.acts[act_num].calc_energy()*self.t_step
                 
+
+## -------------------------------------------------------------------------------------------------
     def calc_margin(self):   
         """
         To calculate margin level for every reservoir
@@ -852,6 +875,8 @@ class BGLP(Environment):
             else:
                 self.margin[i] = 0.0
                 
+
+## -------------------------------------------------------------------------------------------------
     def set_volume_changes(self, demandval): 
         """
         To set up volume changes for every reservoir
@@ -885,6 +910,8 @@ class BGLP(Environment):
             if resnum == len(self.ress)-1:
                 self.prod_reached += outs
 
+
+## -------------------------------------------------------------------------------------------------
     def update_levels(self):
         """
         To update current reservoirs' level'
@@ -897,6 +924,8 @@ class BGLP(Environment):
                     res.vol_cur_abs = self.levels_init[resnum]*res.vol_max
                     res.vol_cur_rel = self.levels_init[resnum]
 
+
+## -------------------------------------------------------------------------------------------------
     def reset_levels(self):
         """
         To reset reservoirs
@@ -907,6 +936,8 @@ class BGLP(Environment):
             res.vol_cur_abs = self.levels_init[resnum]*res.vol_max
             res.vol_cur_rel = self.levels_init[resnum]
     
+
+## -------------------------------------------------------------------------------------------------
     def reset_actuators(self):
         """
         To reset actuators
@@ -914,6 +945,8 @@ class BGLP(Environment):
         for act in self.acts:
             act.deactivate()
 
+
+## -------------------------------------------------------------------------------------------------
     def update_actuators(self):
         """
         To update actuators
@@ -921,6 +954,8 @@ class BGLP(Environment):
         for act in self.acts:
             act.update(self.t)
                 
+
+## -------------------------------------------------------------------------------------------------
     def update(self, demandval):
         """
         To set up volume changes, update reservoirs' level, and update actuators'
@@ -929,6 +964,8 @@ class BGLP(Environment):
         self.update_levels()
         self.update_actuators()
         
+
+## -------------------------------------------------------------------------------------------------
     def get_status(self, t, demandval):
         """
         To calculate overflow, demand, energy, transport, and margin.
@@ -941,6 +978,8 @@ class BGLP(Environment):
         self.update(demandval)        
         return self.overflow, self.demand, self.energy, self.transport, self.margin
             
+
+## -------------------------------------------------------------------------------------------------
     def set_actions(self, actions):   
         """
         To set up actions for actuators.
@@ -959,6 +998,8 @@ class BGLP(Environment):
                         actions[actnum] = 0
                 act.start_t(self.t, t_set, actions[actnum])
     
+
+## -------------------------------------------------------------------------------------------------
     def calc_state(self):
         """
         To get current levels of reservoirs
@@ -969,6 +1010,8 @@ class BGLP(Environment):
             levels[resnum] = res.vol_cur_rel
         return levels
             
+
+## -------------------------------------------------------------------------------------------------
     def calc_reward(self):
         """
         To calculate the utility/reward
@@ -981,3 +1024,13 @@ class BGLP(Environment):
             else:
                 self.reward[actnum] += 1/(1+self.lr_margin*self.margin_t[actnum+1])
         return self.reward[:]
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure=None):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self):
+        pass

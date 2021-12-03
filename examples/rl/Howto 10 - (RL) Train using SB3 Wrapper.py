@@ -11,6 +11,7 @@
 ## -- 2021-10-18  1.0.2     DA       Refactoring
 ## -- 2021-10-18  1.0.3     MRD      SB3 Off Policy Wrapper DQN, DDPG, SAC
 ## -- 2021-11-15  1.0.4     DA       Refactoring
+## -- 2021-12-03  1.0.5     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -22,8 +23,8 @@ This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 import gym
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGYM2MLPro
-from mlpro.rl.wrappers import WrPolicySB32MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from collections import deque
 from pathlib import Path
 
@@ -38,7 +39,7 @@ class MyScenario(RLScenario):
         # 1 Setup environment
         # self._env   = RobotHTM(p_logging=False)
         gym_env     = gym.make('CartPole-v1')
-        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
+        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
         # 2 Instatiate Policy From SB3
         # env is set to None, it will be set up later inside the wrapper

@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
 ## -- Module  : Howto 06 - Train using A2C from the pool
 ## -------------------------------------------------------------------------------------------------

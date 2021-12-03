@@ -680,6 +680,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         state               = self.get_state()
         result              = self._process_action(p_action)
         self._prev_state    = state
+        self._last_action   = p_action
 
         if result:
             self.log(self.C_LOG_TYPE_I, 'Action processing finished successfully')

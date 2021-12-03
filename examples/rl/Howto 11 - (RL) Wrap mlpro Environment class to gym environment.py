@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 11 - (RL) Wrap mlpro Environment class to gym environment 
 ## -------------------------------------------------------------------------------------------------
@@ -19,7 +19,7 @@ This module shows how to wrap mlpro's Environment class to gym compatible.
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvMLPro2GYM, WrEnvGYM2MLPro
+from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM, WrEnvGYM2MLPro
 from mlpro.rl.pool.envs.gridworld import GridWorld
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 import random

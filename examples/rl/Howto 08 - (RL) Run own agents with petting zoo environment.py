@@ -60,7 +60,7 @@ class PBScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         zoo_env             = pistonball_v4.env()
-        self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=True)
+        self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=p_logging)
         
         multi_agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_logging=True)
         agent_id            = 0
