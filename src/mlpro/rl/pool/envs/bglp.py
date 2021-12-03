@@ -826,8 +826,8 @@ class BGLP (Environment):
             reward.set_overall_reward(r_overall)
 
         else:
-           for agent_id in self.last_action.get_agent_ids():
-                agent_action_elem   = self.last_action.get_elem(agent_id)
+           for agent_id in self._last_action.get_agent_ids():
+                agent_action_elem   = self._last_action.get_elem(agent_id)
                 agent_action_ids    = agent_action_elem.get_dim_ids()
                 r_agent             = 0
                 r_reward            = self.calc_reward()
