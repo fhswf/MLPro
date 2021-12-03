@@ -25,4 +25,3 @@ data plotting functionalities.
 
 Add text here!
 
-.. image:: images/MLPro-BF-Math_class_diagram.svg

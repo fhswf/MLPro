@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
-## -- Module  : multicartpole
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.rl.pool.envs
+## -- Module  : multicartpole.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,10 +12,11 @@
 ## -- 2021-09-29  1.1.1     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-05  1.1.2     SY       Update following new attributes done and broken in State
 ## -- 2021-11-15  1.2.0     DA       Refactoring
+## -- 2021-12-03  1.2.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-15)
+Ver. 1.2.1 (2021-12-03)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -23,7 +24,7 @@ OpenAI Gym environment 'CartPole-v1'.
 
 
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGYM2MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import numpy as np
 import gym
 
@@ -54,6 +55,7 @@ class MultiCartPole (Environment):
         self._num_envs       = p_num_envs
         self._reward_type    = p_reward_type
         super().__init__(p_mode=Mode.C_MODE_SIM, p_logging=p_logging)
+        self._state_space, self._action_space = self._setup_spaces()
 
         for i in range(self._num_envs): 
             state_space_env  = self._state_space.spawn([i*4, i*4+1, i*4+2, i*4+3])
@@ -72,17 +74,28 @@ class MultiCartPole (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def setup_spaces():
+        return None, None
+
+
+## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self):
+        state_space = ESpace()
+        action_space = ESpace()
+
         for i in range(self._num_envs):
             # Add a set of state dimensions for each sub-environment
             env_str = str(i)
-            self._state_space.add_dim(Dimension(i*4, 'E-' + env_str + ' CPos', 'Env-' + env_str + ' Cart Position', '', 'm', 'm',[-4.8, 4.8]))
-            self._state_space.add_dim(Dimension(i*4+1, 'E-' + env_str + ' CVel', 'Env-' + env_str + ' Cart Velocity', '', 'm/sec', '\frac{m}{sec}',[-self.C_INFINITY,self.C_INFINITY]))
-            self._state_space.add_dim(Dimension(i*4+2, 'E-' + env_str + ' PAng', 'Env-' + env_str + ' Pole Angle', '', 'rad', 'rad',[-0.418, 0.418]))
-            self._state_space.add_dim(Dimension(i*4+3, 'E-' + env_str + ' PAVel', 'Env-' + env_str + ' Pole Angular Velocity', '', 'rad/sec', '\frac{rad}{sec}',[-self.C_INFINITY,self.C_INFINITY]))
+            state_space.add_dim(Dimension( p_id=i*4, p_name_short='E-' + env_str + ' CPos', p_name_long='Env-' + env_str + ' Cart Position', p_unit='m', p_boundaries=[-4.8, 4.8]))
+            state_space.add_dim(Dimension( p_id=i*4+1, p_name_short='E-' + env_str + ' CVel', p_name_long='Env-' + env_str + ' Cart Velocity', p_unit='m/sec', p_unit_latex='\frac{m}{sec}', p_boundaries=[-self.C_INFINITY,self.C_INFINITY]))
+            state_space.add_dim(Dimension( p_id=i*4+2, p_name_short='E-' + env_str + ' PAng', p_name_long='Env-' + env_str + ' Pole Angle', p_unit='rad', p_boundaries=[-0.418, 0.418]))
+            state_space.add_dim(Dimension( p_id=i*4+3, p_name_short='E-' + env_str + ' PAVel', p_name_long='Env-' + env_str + ' Pole Angular Velocity', p_unit='rad/sec', p_unit_latex='\frac{rad}{sec}',p_boundaries=[-self.C_INFINITY,self.C_INFINITY]))
             
             # Add an action dimension for each sub-environment
-            self._action_space.add_dim(Dimension(i, 'E-' + env_str + ' Push', 'Env-' + env_str + ' Push Cart Left/Right', '', '', '', [0,1]))
+            action_space.add_dim(Dimension( p_id=i, p_name_short='E-' + env_str + ' Push', p_name_long='Env-' + env_str + ' Push Cart Left/Right', p_boundaries=[0,1]))
+
+        return state_space, action_space
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -141,10 +154,7 @@ class MultiCartPole (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state:State=None) -> Reward:
-        if p_state is not None:
-            raise NotImplementedError
-
+    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         reward = Reward(self._reward_type)
 
         if self._reward_type == Reward.C_TYPE_OVERALL:
@@ -155,8 +165,8 @@ class MultiCartPole (Environment):
             reward.set_overall_reward(r_overall)
 
         else:
-           for agent_id in self.last_action.get_agent_ids():
-                agent_action_elem = self.last_action.get_elem(agent_id)
+           for agent_id in self._last_action.get_agent_ids():
+                agent_action_elem = self._last_action.get_elem(agent_id)
                 agent_action_ids  = agent_action_elem.get_dim_ids()
                 r_agent = 0
                 for action_id in agent_action_ids:
@@ -174,18 +184,12 @@ class MultiCartPole (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state:State=None) -> bool:
-        if p_state is not None:
-            raise NotImplementedError
-
+    def compute_done(self, p_state:State) -> bool:
         return self.get_done()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state:State=None) -> bool:
-        if p_state is not None:
-            raise NotImplementedError
-            
+    def compute_broken(self, p_state:State) -> bool:
         return self.get_broken()
 
 

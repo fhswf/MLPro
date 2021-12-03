@@ -39,6 +39,7 @@ Data Plotting
 Machine Learning
 ----------------
 
+.. image:: images/bf/MLPro-BF-ML_class_diagram.png
 .. automodule:: mlpro.bf.ml
    :members:
    :undoc-members:

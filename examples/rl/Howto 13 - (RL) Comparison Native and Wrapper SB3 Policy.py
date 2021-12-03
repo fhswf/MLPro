@@ -22,8 +22,8 @@ import torch
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGYM2MLPro
-from mlpro.rl.wrappers import WrPolicySB32MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 
 # 1 Parameter
 max_episode = 400
@@ -42,7 +42,7 @@ class MyScenario(RLScenario):
         gym_env     = gym.make('CartPole-v1')
         gym_env.seed(1)
         # self._env   = mlpro_env
-        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
+        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
         # 2 Instatiate Policy From SB3
         # env is set to None, it will be set up later inside the wrapper

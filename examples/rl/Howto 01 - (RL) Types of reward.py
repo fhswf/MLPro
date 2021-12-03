@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 01 - (RL) Types of reward
 ## -------------------------------------------------------------------------------------------------
@@ -11,7 +11,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-05-31)
+Ver. 1.0.0 (2021-09-11)
 
 This module shows how to create and interprete reward objects in own projects.
 """

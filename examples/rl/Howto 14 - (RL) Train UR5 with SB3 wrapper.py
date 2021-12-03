@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 14 - Train UR5 with SB3 wrapper
 ## -------------------------------------------------------------------------------------------------
@@ -20,7 +20,7 @@ from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
 from stable_baselines3 import PPO
-from mlpro.rl.wrappers import WrPolicySB32MLPro
+from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 import random
 from pathlib import Path
 
@@ -34,7 +34,7 @@ class ScenarioUR5A2C(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        self._env   = UR5JointControl(p_logging=True)
+        self._env   = UR5JointControl(p_logging=p_logging)
 
         policy_sb3 = PPO(
                     policy="MlpPolicy",

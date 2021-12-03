@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl
 ## -- Module  : models_agents.py
 ## -------------------------------------------------------------------------------------------------
@@ -26,10 +26,11 @@
 ## -- 2021-10-18  1.2.3     DA       Refactoring Policy/Agent/MultiAgent: state space renamed to 
 ## --                                observation space
 ## -- 2021-11-14  1.3.0     DA       Model-based Agent functionality 
+## -- 2021-11-26  1.3.1     DA       Minor changes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-11-14)
+Ver. 1.3.1 (2021-11-26)
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -182,6 +183,7 @@ class ActionPlanner (Log):
 class Agent(Policy):
     """
     This class represents a single agent model.
+
     """
 
     C_TYPE          = 'Agent'
@@ -209,8 +211,8 @@ class Agent(Policy):
         else:
             self.set_name(self.C_NAME)
 
-        if ( ( p_envmodel is not None ) and ( p_action_planner is None ) ) or ( ( p_envmodel is None ) and ( p_action_planner is not None ) ):
-           raise ParamError('Model-based agents need an env model and an action planner')
+        if   ( p_action_planner is not None ) and ( p_envmodel is None ):
+           raise ParamError('Agents using an action planner also need an environment model')
            
         self._previous_observation  = None
         self._previous_action       = None

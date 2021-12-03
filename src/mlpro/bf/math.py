@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : math
+## -- Module  : math.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -14,12 +14,13 @@
 ## --                                - new base set type 'D' in class Dimension
 ## --                                - changes in class Element: list instead of np.array
 ## -- 2021-10-25  1.3.0     DA       New class Function
+## -- 2021-12-03  1.3.1     DA       New methods Dimension.copy(), Set.copy(), Set.append()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-10-25)
+Ver. 1.3.1 (2021-12-03)
 
-This module provides basic mathematical classes.
+This module provides basic mathematical classes .
 """
 
 
@@ -34,6 +35,28 @@ from itertools import repeat
 class Dimension:
     """
     Objects of this type specify properties of a dimension of a set.
+
+    Parameters:
+    -----------
+    p_id : int
+        Id of the dimension that is unique in the related set
+    p_name_short : str
+        Short name of dimension
+    p_base_set 
+        Base set of dimension. See constants C_BASE_SET_*. Default = C_BASE_SET_R.
+    p_name_long :str
+        Long name of dimension (optional)
+    p_name_latex : str
+        LaTeX name of dimension (optional)
+    p_unit : str
+        Unit (optional)
+    p_unit_latex : str
+        LaTeX code of unit (optional)
+    p_boundaries : List
+        List with minimum and maximum value (optional)
+    p_description : str
+        Description of dimension (optional)
+
     """
 
     C_BASE_SET_R    = 'R'       # real numbers
@@ -43,20 +66,6 @@ class Dimension:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_id, p_name_short, p_base_set=C_BASE_SET_R, p_name_long='', p_name_latex='', p_unit='', p_unit_latex='', p_boundaries=[], p_description='') -> None:
-        """
-        Parameters:
-            p_id                Id of the dimension that is unique in the 
-                                related set
-            p_name_short        Short name of dimension
-            p_base_set          Base set (real numbers by default)
-            p_name_long         Long name of dimension (optional)
-            p_name_latex        LaTeX name of dimension (optional)
-            p_unit              Unit (optional)
-            p_unit_latex        LaTeX code of unit (optional)
-            p_boundaries        List with minimum and maximum value (optional)
-            p_description       Description of dimension (optional)
-        """
-
         self._id            = p_id
         self._name_short    = p_name_short
         self._base_set      = p_base_set
@@ -111,6 +120,24 @@ class Dimension:
 ## -------------------------------------------------------------------------------------------------
     def get_description(self):
         return self._description
+
+
+## -------------------------------------------------------------------------------------------------
+    def copy(self, p_dim_id=None):
+        if p_dim_id is not None:
+            dim_id = p_dim_id
+        else:
+            dim_id = self._id
+
+        return self.__class__( p_id=dim_id, 
+                               p_name_short=self._name_short,
+                               p_base_set=self._base_set, 
+                               p_name_long=self._name_long, 
+                               p_name_latex=self._name_latex, 
+                               p_unit=self._unit, 
+                               p_unit_latex=self._unit_latex, 
+                               p_boundaries=self._boundaries, 
+                               p_description=self._description )
 
 
 
@@ -187,6 +214,31 @@ class Set:
             new_set.add_dim(self._dim_list[self._dim_ids.index(i)])
  
         return new_set
+
+
+## -------------------------------------------------------------------------------------------------
+    def copy(self, p_new_dim_ids=True):
+        new_set = self.__class__()
+
+        if p_new_dim_ids:
+            dim_id_new = 0
+            for dim_id in self.get_dim_ids():
+                new_set.add_dim( self.get_dim(dim_id).copy(dim_id_new) )
+                dim_id_new += 1
+        else:
+            for dim_id in self.get_dim_ids():
+                new_set.add_dim( self.get_dim(dim_id).copy() )
+
+        return new_set
+
+
+## -------------------------------------------------------------------------------------------------
+    def append(self, p_set):
+        dim_id_new = max(self.get_dim_ids()) + 1
+
+        for dim_id in p_set.get_dim_ids():
+            self.add_dim( p_set.get_dim(dim_id).copy(dim_id_new) )
+            dim_id_new += 1
 
 
 

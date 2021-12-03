@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 03 - (Math) Spaces, subspaces and elements
 ## -------------------------------------------------------------------------------------------------
@@ -8,10 +8,11 @@
 ## -- 2021-05-28  1.0.0     DA       Creation/Release
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
 ## -- 2021-09-23  1.0.1     DA       Adaption to changes in class Element
+## -- 2021-12-03  1.0.2     DA       New method copy_append_spaces()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-09-23)
+Ver. 1.0.2 (2021-12-03)
 
 This module demonstrates how to create a space and subspaces and to spawn elements.
 """
@@ -41,6 +42,7 @@ class MathDemo(Log):
     def __init__(self, p_logging=True):
         super().__init__(p_logging=p_logging)
         self.create_euclidian_space()
+        self.copy_append_spaces()
         self.create_subspace1()
         self.create_subspace2()
         self.create_subspace3()
@@ -52,13 +54,20 @@ class MathDemo(Log):
 ## -------------------------------------------------------------------------------------------------
     def create_euclidian_space(self):
         self.espace = ESpace()
-        self.espace.add_dim(Dimension(self.C_POS, 'Pos', 'Position', '', 'm', 'm', [0,100]))
-        self.espace.add_dim(Dimension(self.C_VEL, 'Vel', 'Velocity', '', 'm/s', '\frac{m}{s}', [-100,100]))
-        self.espace.add_dim(Dimension(self.C_ACC, 'Acc', 'Acceleration', '', 'm/qs', '\frac{m}{s^2}', [-100,100]))
-        self.espace.add_dim(Dimension(self.C_ANG, 'Ang', 'Angle', '', 'deg', 'deg', [-45,45]))
-        self.espace.add_dim(Dimension(self.C_AVEL, 'AVel', 'Angle Velocity', '', 'deg/s', '\frac{deg}{s}', [-100,100]))
-        self.espace.add_dim(Dimension(self.C_AACC, 'AAcc', 'Angle Acceleration', '', 'deg/qs', '\frac{deg}{s^2}', [-100,100]))
+        self.espace.add_dim(Dimension( p_id=self.C_POS, p_name_short='Pos', p_name_long='Position', p_unit='m', p_unit_latex='m', p_boundaries=[0,100]))
+        self.espace.add_dim(Dimension( p_id=self.C_VEL, p_name_short='Vel', p_name_long='Velocity', p_unit='m/s', p_unit_latex='\frac{m}{s}', p_boundaries=[-100,100]))
+        self.espace.add_dim(Dimension( p_id=self.C_ACC, p_name_short='Acc', p_name_long='Acceleration', p_unit='m/qs', p_unit_latex='\frac{m}{s^2}', p_boundaries=[-100,100]))
+        self.espace.add_dim(Dimension( p_id=self.C_ANG, p_name_short='Ang', p_name_long='Angle', p_unit='deg', p_unit_latex='deg', p_boundaries=[-45,45]))
+        self.espace.add_dim(Dimension( p_id=self.C_AVEL, p_name_short='AVel', p_name_long='Angle Velocity', p_unit='deg/s', p_unit_latex='\frac{deg}{s}', p_boundaries=[-100,100]))
+        self.espace.add_dim(Dimension( p_id=self.C_AACC, p_name_short='AAcc', p_name_long='Angle Acceleration', p_unit='deg/qs', p_unit_latex='\frac{deg}{s^2}', p_boundaries=[-100,100]))
         self.log(self.C_LOG_TYPE_I, '6-dimensional Euclidian space created')
+
+
+## -------------------------------------------------------------------------------------------------
+    def copy_append_spaces(self):
+        new_space = self.espace.copy(True)
+        new_space.append(self.espace)
+        self.log(self.C_LOG_TYPE_I, str(new_space.get_num_dim()) + '-dimensional Euclidian space created')
 
 
 ## -------------------------------------------------------------------------------------------------

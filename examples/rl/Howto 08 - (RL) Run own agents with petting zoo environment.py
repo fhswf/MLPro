@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 08 - (RL) Run own agents with petting zoo environment
 ## -------------------------------------------------------------------------------------------------
@@ -15,13 +15,14 @@
 ## -- 2021-11-15  1.1.4     DA       Refactoring 
 ## -- 2021-11-15  1.1.4     DA       Refactoring 
 ## -- 2021-11-16  1.1.5     DA       Added explicit scenario reset with constant seeding 
+## -- 2021-12-03  1.1.6     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.5 (2021-11-16)
+Ver. 1.1.6 (2021-12-03)
 
 This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
-the fhswf_at_ml framework.
+the mlpro framework.
 """
 
 
@@ -29,7 +30,7 @@ from pettingzoo.butterfly import pistonball_v4
 from pettingzoo.classic import connect_four_v3
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvPZOO2MLPro
+from mlpro.wrappers.pettingzoo import WrEnvPZOO2MLPro
 import random
 
 
@@ -59,7 +60,7 @@ class PBScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         zoo_env             = pistonball_v4.env()
-        self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=True)
+        self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=p_logging)
         
         multi_agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_logging=True)
         agent_id            = 0

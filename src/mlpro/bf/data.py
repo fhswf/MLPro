@@ -12,11 +12,16 @@
 ## -- 2021-06-21  1.2.0     SY       Add extensions in classes Loadable,
 ## --                                Saveable, DataPlotting & DataStoring.
 ## -- 2021-08-28  1.2.1     DA       Added constant C_VAR0 to class DataStoring
+## -- 2021-09-18  1.2.1     MRD      Buffer Class Implementation. Add new parameter buffer
+## --                                to the Adaptive Class
+## -- 2021-09-19  1.2.2     MRD      Improvement on Buffer Class. Implement new base class
+## --                                Buffer Element and BufferRnd
 ## -- 2021-09-22  1.3.0     MRD      New classes BufferElement, Buffer, BufferRnd
+## -- 2021-09-25  1.3.1     MRD      Add __len__ functionality for SARBuffer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-09-22)
+Ver. 1.3.1 (2021-09-25)
 
 This module provides various elementary data management classes.
 """

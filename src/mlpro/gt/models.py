@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro.models
-## -- Module  : gt
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.gt
+## -- Module  : models.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,10 +12,11 @@
 ## -- 2021-08-28  1.0.3     DA       Adjustments after changings on rl models
 ## -- 2021-09-11  1.0.3     MRD      Change Header information to match our new library name
 ## -- 2021-11-16  1.1.0     DA       Refactoring
+## -- 2021-12-03  1.1.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-11-16)
+Ver. 1.1.1 (2021-12-03)
 
 This module provides model classes for tasks related to cooperative Game Theory.
 """
@@ -23,40 +24,33 @@ This module provides model classes for tasks related to cooperative Game Theory.
 
 from datetime import timedelta
 from mlpro.bf.various import Log
-import mlpro.rl.models as rl
+from mlpro.rl.models import *
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GameBoard(rl.Environment):
+class GameBoard (Environment):
     """
     Model class for a game theoretical game board. See super class for more information.
     """
 
     C_TYPE              = 'Game Board'
-    C_REWARD_TYPE       = rl.Reward.C_TYPE_EVERY_AGENT
+    C_REWARD_TYPE       = Reward.C_TYPE_EVERY_AGENT
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state:rl.State=None) -> rl.Reward:
-        if self._last_action is None: return None
+    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
+        reward = Reward(self.get_reward_type())
 
-        if p_state is not None:
-            state = p_state
-        else:
-            state = self.get_state()
-
-        reward = rl.Reward(self.get_reward_type())
-
-        for player_id in self.last_action.get_agent_ids():
-            reward.add_agent_reward(player_id, self._utility_fct(state, player_id))
+        for player_id in self._last_action.get_agent_ids():
+            reward.add_agent_reward(player_id, self._utility_fct(p_state_new, player_id))
 
         return reward
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _utility_fct(self, p_state:rl.State, p_player_id):
+    def _utility_fct(self, p_state:State, p_player_id):
         """
         Computes utility of given player. To be redefined.
         """
@@ -69,7 +63,7 @@ class GameBoard(rl.Environment):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PGameBoard(GameBoard):
+class PGameBoard (GameBoard):
     """
     Model class for a potential game theoretical game board. See super class for more information.
     """
@@ -85,8 +79,8 @@ class PGameBoard(GameBoard):
         if self._last_action == None: return 0
         self.potential = 0
 
-        for player_id in self.last_action.get_agent_ids():
-            self.potential = self.potential + ( self._utility_fct(player_id) * self.last_action.get_elem(player_id).get_weight() )
+        for player_id in self._last_action.get_agent_ids():
+            self.potential = self.potential + ( self._utility_fct(player_id) * self._last_action.get_elem(player_id).get_weight() )
         
         return self.potential
 
@@ -96,7 +90,7 @@ class PGameBoard(GameBoard):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Player(rl.Agent):
+class Player (Agent):
     """
     This class implements a game theoretical player model. See super class for more information.
     """
@@ -109,7 +103,7 @@ class Player(rl.Agent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiPlayer(rl.MultiAgent):
+class MultiPlayer (MultiAgent):
     """
     This class implements a game theoretical model for a team of players. See super class for more 
     information.
@@ -127,7 +121,7 @@ class MultiPlayer(rl.MultiAgent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Game(rl.RLScenario):
+class Game (RLScenario):
     """
     This class implements a game consisting of a game board and a (multi-)player. See super class for 
     more information.
@@ -139,10 +133,9 @@ class Game(rl.RLScenario):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTTraining(rl.RLTraining): 
+class GTTraining (RLTraining): 
     """
     This class implements a standardized episodical training process. See super class for more 
     information.
@@ -159,7 +152,7 @@ class GTTraining(rl.RLTraining):
                  p_max_stagnations=5, 
                  p_eval_frequency=100, 
                  p_eval_grp_size=50, 
-                 p_hpt:rl.HyperParamTuner=None, 
+                 p_hpt:HyperParamTuner=None, 
                  p_hpt_trials=0, 
                  p_path=None, 
                  p_collect_states=True, 
