@@ -20,7 +20,8 @@ from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from stable_baselines3 import PPO
-from mlpro.rl.wrappers import WrPolicySB32MLPro
+from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+from pathlib import Path
 
 # 1 Implement your own RL scenario
 class ScenarioRobotHTM(RLScenario):
@@ -53,7 +54,23 @@ class ScenarioRobotHTM(RLScenario):
             p_logging=p_logging
         )
 
+# 2 Create scenario and start training
 
+if __name__ == "__main__":
+    # 2.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    path        = str(Path.home())
+    plotting    = True
+    timestep    = 300000
+ 
+else:
+    # 2.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    path        = None
+    plotting    = False
+    timestep    = 200
 
 
 # 3 Instantiate scenario
@@ -61,8 +78,8 @@ myscenario  = ScenarioRobotHTM(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=100,
-    p_visualize=True,
-    p_logging=False
+    p_visualize=visualize,
+    p_logging=logging
 )
 
 # 4 Train agent in scenario 
@@ -70,14 +87,15 @@ now             = datetime.now()
 
 training        = RLTraining(
     p_scenario=myscenario,
-    p_cycle_limit=300000,
+    p_cycle_limit=timestep,
     p_max_cycles_per_episode=100,
     p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_logging=True
+    p_path=path,
+    p_logging=logging
 )
 
 training.run()
@@ -128,5 +146,5 @@ data_printing   = {"Cycle":        [False],
 
 
 mem = training.get_results().ds_rewards
-mem_plot    = MyDataPlotting(mem, p_showing=True, p_printing=data_printing)
+mem_plot    = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
 mem_plot.get_plots()

@@ -24,9 +24,25 @@ from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+from pathlib import Path
 
 # 1 Parameter
-max_episode = 400
+# 2 Create scenario and start training
+
+if __name__ == "__main__":
+    # 2.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    path        = str(Path.home())
+    max_episode = 400
+ 
+else:
+    # 2.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    path        = None
+    max_episode = 200
+
 mva_window = 1
 buffer_size = 100
 policy_kwargs = dict(activation_fn=torch.nn.Tanh,
@@ -38,11 +54,25 @@ class MyScenario(RLScenario):
     C_NAME      = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
+        class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
+            def reset(self, p_seed=None):
+                self.log(self.C_LOG_TYPE_I, 'Reset')
+
+                # 1 Reset Gym environment and determine initial state
+                observation = self._gym_env.reset()
+                obs         = DataObject(observation)
+
+                # 2 Create state object from Gym observation
+                state   = State(self._state_space)
+                state.set_values(obs.get_data())
+                state.set_done(True)
+                self._set_state(state)
+
         # 1 Setup environment
         gym_env     = gym.make('CartPole-v1')
         gym_env.seed(1)
         # self._env   = mlpro_env
-        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
+        self._env   = CustomWrapperFixedSeed(gym_env, p_logging=p_logging) 
 
         # 2 Instatiate Policy From SB3
         # env is set to None, it will be set up later inside the wrapper
@@ -75,15 +105,13 @@ class MyScenario(RLScenario):
             p_logging=p_logging
         )
 
-
-
 # 3 Instantiate scenario
 myscenario  = MyScenario(
     p_mode=Environment.C_MODE_SIM,
     p_ada=True,
     p_cycle_limit=-1,           # get cycle limit from environment
-    p_visualize=False,
-    p_logging=False
+    p_visualize=visualize,
+    p_logging=logging
 )
 
 # 4 Instantiate training
@@ -95,7 +123,8 @@ training        = RLTraining(
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_logging=Log.C_LOG_ALL
+    p_path=path,
+    p_logging=logging
 )
 
 # 5 Train SB3 Wrapper
@@ -236,4 +265,6 @@ plt.plot(smoothed_wrapper, label="Wrapper")
 plt.xlabel("Episode")
 plt.ylabel("Reward")
 plt.legend()
-plt.show()
+
+if __name__ == "__main__":
+    plt.show()
