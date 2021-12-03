@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : math
+## -- Module  : math.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -14,11 +14,11 @@
 ## --                                - new base set type 'D' in class Dimension
 ## --                                - changes in class Element: list instead of np.array
 ## -- 2021-10-25  1.3.0     DA       New class Function
-## -- 2021-12-02  1.3.1     DA       New methods Dimension.copy(), Set.copy(), Set.append()
+## -- 2021-12-03  1.3.1     DA       New methods Dimension.copy(), Set.copy(), Set.append()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-02)
+Ver. 1.3.1 (2021-12-03)
 
 This module provides basic mathematical classes .
 """
@@ -228,6 +228,8 @@ class Set:
         else:
             for dim_id in self.get_dim_ids():
                 new_set.add_dim( self.get_dim(dim_id).copy() )
+
+        return new_set
 
 
 ## -------------------------------------------------------------------------------------------------

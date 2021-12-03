@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 06 - Train using A2C from the pool
 ## -------------------------------------------------------------------------------------------------
@@ -23,7 +23,7 @@ This module shows how to implement A2C from the pool
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGYM2MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.rl.pool.policies.a2c import A2C 
 import gym

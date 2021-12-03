@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 05 - (ML) Hyperparameters setup
 ## -------------------------------------------------------------------------------------------------
@@ -11,7 +11,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-01)
+Ver. 1.0.0 (2021-09-11)
 
 This module demonstrates how to set-up hyperparameters using available
 HyperParamTupel, HyperParamSpace, and HyperParam classes.

@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl
 ## -- Module  : models_env.py
 ## -------------------------------------------------------------------------------------------------
@@ -511,7 +511,6 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
                  p_afct_broken:AFctBroken=None,     
                  p_logging=Log.C_LOG_ALL): 
 
-        Log.__init__(self, p_logging=p_logging)
         self._afct_strans   = p_afct_strans
         self._afct_reward   = p_afct_reward
         self._afct_done     = p_afct_done
@@ -521,6 +520,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         self._state         = None
         self._prev_state    = None
         self._last_action   = None
+        Log.__init__(self, p_logging=p_logging)
         self.set_latency(p_latency)
 
 
@@ -553,7 +553,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
-        super().switch_logging(p_logging)
+        Log.switch_logging(self, p_logging)
         if self._afct_strans is not None: self._afct_strans.switch_logging(p_logging)
         if self._afct_reward is not None: self._afct_reward.switch_logging(p_logging)
         if self._afct_done is not None: self._afct_done.switch_logging(p_logging)
@@ -789,7 +789,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state: State) -> bool:
+    def compute_done(self, p_state:State) -> bool:
         """
         Assesses the given state whether it is a 'done' state. Assessment is carried out either by
         a custom implementation in method _compute_done() or by an embedded adaptive function.
@@ -813,7 +813,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_done(self, p_state: State) -> bool:
+    def _compute_done(self, p_state:State) -> bool:
         """
         Custom method for state evaluation 'done'. See method compute_done() for further details.
         """
@@ -822,7 +822,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: State) -> bool:
+    def compute_broken(self, p_state:State) -> bool:
         """
         Assesses the given state whether it is a 'broken' state. Assessment is carried out either by
         a custom implementation in method _compute_broken() or by an embedded adaptive function.
@@ -846,7 +846,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state: State) -> bool:
+    def _compute_broken(self, p_state:State) -> bool:
         """
         Custom method for state evaluation 'broken'. See method compute_broken() for further details.
         """
@@ -932,9 +932,9 @@ class Environment (EnvBase, Mode):
         
         Returns
         -------
-        MSpace
+        state_space : MSpace
             State space object
-        MSpace
+        action_space : MSpace
             Action space object
 
         """

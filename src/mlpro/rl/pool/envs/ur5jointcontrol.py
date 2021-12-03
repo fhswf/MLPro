@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : urjointcontrol
+## -- Module  : urjointcontrol.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -10,10 +10,11 @@
 ## -- 2021-09-13  1.0.1     WB       Instantiated without WrEnvGym
 ## -- 2021-09-23  1.0.2     WB       Increased C_LATENCY
 ## -- 2021-10-05  1.0.3     SY       Update following new attributes done and broken in State
+## -- 2021-12-03  1.0.4     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2021-10-05)
+Ver. 1.0.4 (2021-12-03)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
@@ -45,7 +46,6 @@ class UR5JointControl(Environment):
     C_LATENCY   = timedelta(0,5,0)
     C_INFINITY  = np.finfo(np.float32).max      
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=True):
         """
@@ -72,32 +72,41 @@ class UR5JointControl(Environment):
         self.env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
         
         self.reset()
-                 
+                
+                
 ## -------------------------------------------------------------------------------------------------
     def _obs_to_state(self, observation):
         state = State(self._state_space)
         state.set_values(observation)
         return state
         
+
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self):
+    @staticmethod
+    def setup_spaces():
         # Setup state space
-        self._state_space.add_dim(Dimension(0, 'Px', 'PositionX', '', 'm', 'm', 
+        state_space = ESpace()
+
+        state_space.add_dim(Dimension(0, 'Px', 'PositionX', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(1, 'Py', 'PositionY', '', 'm', 'm', 
+        state_space.add_dim(Dimension(1, 'Py', 'PositionY', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(2, 'Pz', 'PositionZ', '', 'm', 'm', 
+        state_space.add_dim(Dimension(2, 'Pz', 'PositionZ', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(3, 'Tx', 'Targetx', '', 'm', 'm', 
+        state_space.add_dim(Dimension(3, 'Tx', 'Targetx', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(4, 'Ty', 'Targety', '', 'm', 'm', 
+        state_space.add_dim(Dimension(4, 'Ty', 'Targety', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
-        self._state_space.add_dim(Dimension(5, 'Tz', 'Targetz', '', 'm', 'm', 
+        state_space.add_dim(Dimension(5, 'Tz', 'Targetz', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
             
         # Setup action space
+        action_space = ESpace()
+
         for idx in range(6):
-            self._action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad', 'rad', p_boundaries=[-0.1,0.1]))
+            action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad', 'rad', p_boundaries=[-0.1,0.1]))
+
+        return state_space, action_space
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -106,19 +115,23 @@ class UR5JointControl(Environment):
         obs = self.env.reset()
         self._state = self._obs_to_state(obs)
 
+
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State, p_action: Action) -> None:
+    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
         obs, self.reward_gym, self.done, info = self.env.step(p_action.get_sorted_values())
         self._state = self._obs_to_state(obs)
         return self._state
 
-## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state: State) -> bool:
-        return self.done
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: State) -> bool:
+    def _compute_done(self, p_state:State) -> bool:
+        return self.get_done()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_broken(self, p_state:State) -> bool:
         return False
+
 
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self) -> None: 
@@ -129,12 +142,10 @@ class UR5JointControl(Environment):
                             atol=0.05)
         if close:
             self._state.set_done(True)
-            self.goal_achievement = 1.0
-        else:
-            self.goal_achievement = 0.0
+
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self) -> Reward:
+    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         reward = Reward(Reward.C_TYPE_OVERALL)
         reward.set_overall_reward(self.reward_gym)
         self.reward = reward

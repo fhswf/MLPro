@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 02 - Run agent with own policy with gym environment
 ## -------------------------------------------------------------------------------------------------
@@ -14,10 +14,11 @@
 ## -- 2021-10-18  1.1.3     DA       Refactoring 
 ## -- 2021-11-15  1.2.0     DA       Refactoring 
 ## -- 2021-11-16  1.2.1     DA       Added explicit scenario reset with constant seeding 
+## -- 2021-12-03  1.2.2     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2021-11-16)
+Ver. 1.2.2 (2021-12-03)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 the fhswf_at_ml framework.
@@ -26,7 +27,7 @@ the fhswf_at_ml framework.
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGYM2MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import gym
 import random
 

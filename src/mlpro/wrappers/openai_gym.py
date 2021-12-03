@@ -25,10 +25,11 @@
 ## -- 2021-11-13  1.2.6     DA       Minor adjustments
 ## -- 2021-11-16  1.2.7     DA       Refactoring
 ## -- 2021-11-16  1.2.8     SY       Refactoring
+## -- 2021-12-03  1.2.9     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.8 (2021-11-16)
+Ver. 1.2.9 (2021-12-03)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -62,8 +63,8 @@ class WrEnvGYM2MLPro (Environment):
 
         self._gym_env     = p_gym_env
         self.C_NAME       = 'Env "' + self._gym_env.spec.id + '"'
-        Environment.__init__(self, Environment.C_MODE_SIM, None, p_logging)
-        
+        super().__init__(p_mode=Environment.C_MODE_SIM, p_latency=None, p_logging=p_logging)
+
         if p_state_space is not None: 
             self._state_space = p_state_space
         else:
@@ -98,8 +99,9 @@ class WrEnvGYM2MLPro (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self):
-        pass
+    @staticmethod
+    def setup_spaces():
+        return None, None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -155,35 +157,20 @@ class WrEnvGYM2MLPro (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_goal_achievement(self, p_state:State=None):
-        if p_state is not None:
-            raise NotImplementedError
-
-        if self.get_done(): return 1.0
-        return 0.0
-
-
-## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state:State=None) -> Reward:
-        if p_state is not None:
+    def compute_reward(self, p_state_old:State=None, p_state_new:State=None) -> Reward:
+        if ( p_state_old is not None ) or ( p_state_new is not None ):
             raise NotImplementedError
 
         return self._reward
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state:State=None) -> bool:
-        if p_state is not None:
-            raise NotImplementedError
-
+    def compute_done(self, p_state:State) -> bool:
         return self.get_done()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state:State=None) -> bool:
-        if p_state is not None:
-            raise NotImplementedError
-
+    def compute_broken(self, p_state:State) -> bool:
         return self.get_broken()
 
 

@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 03 - Train agent with own policy on gym environment
 ## -------------------------------------------------------------------------------------------------
@@ -16,10 +16,11 @@
 ## -- 2021-10-06  1.2.3     DA       Refactoring 
 ## -- 2021-10-18  1.2.4     DA       Refactoring 
 ## -- 2021-11-15  1.3.0     DA       Refactoring 
-### -------------------------------------------------------------------------------------------------
+## -- 2021-12-03  1.3.1     DA       Refactoring 
+## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-11-15)
+Ver. 1.3.1 (2021-12-03)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """
@@ -28,7 +29,7 @@ This module shows how to train an agent with a custom policy inside on an OpenAI
 from sys import path
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGYM2MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import gym
 import random
 from pathlib import Path
