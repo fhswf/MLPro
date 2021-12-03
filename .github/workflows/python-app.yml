@@ -20,7 +20,7 @@ jobs:
           ref: ${{ github.head_ref }}
       - name: Install dependencies
         run: |
-    #     pip install stable-baselines3
+          pip install stable-baselines3
     # - name: Lint with flake8
     #   run: |
     #     # stop the build if there are Python syntax errors or undefined names
