@@ -22,8 +22,8 @@ import pytest
 import gym
 import torch
 from mlpro.rl.models import *
-from mlpro.rl.wrappers import WrEnvGYM2MLPro
-from mlpro.rl.wrappers import WrPolicySB32MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from stable_baselines3 import A2C, PPO
 from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback
