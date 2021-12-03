@@ -151,3 +151,12 @@ class UR5JointControl(Environment):
         self.reward = reward
         return self.reward
 
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure=None):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self):
+        pass
