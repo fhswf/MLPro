@@ -16,9 +16,9 @@ jobs:
       image: python:3.8-slim-buster
       steps:
         # - name: Checkout Codes
-        #   uses: actions/checkout@v2
-        #   with:
-        #     ref: ${{ github.head_ref }}
+        - uses: actions/checkout@v2
+          with:
+            ref: ${{ github.head_ref }}
         - name: Test Command
           run: |
             ls
