@@ -26,7 +26,7 @@ the mlpro framework.
 """
 
 
-from pettingzoo.butterfly import pistonball_v4
+from pettingzoo.butterfly import pistonball_v5
 from pettingzoo.classic import connect_four_v3
 from mlpro.bf.math import *
 from mlpro.rl.models import *
@@ -59,7 +59,7 @@ class PBScenario (RLScenario):
     C_NAME      = 'Pistonball V4'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        zoo_env             = pistonball_v4.env()
+        zoo_env             = pistonball_v5.env()
         self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=p_logging)
         
         multi_agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_logging=True)
