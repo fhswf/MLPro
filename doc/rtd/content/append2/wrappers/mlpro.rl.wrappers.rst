@@ -1,5 +1,5 @@
 Reinforcement Learning
-================
+========================
 
 
 .. automodule:: mlpro.rl.wrappers

@@ -1,5 +1,5 @@
 UI Framework - SciUI
-================
+=====================
 
 
 .. automodule:: mlpro.ui.sciui.framework

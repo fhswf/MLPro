@@ -1,5 +1,5 @@
 5.1 UI Framework SciUI
-================
+===========================
 
 - Platform-independend framework for creation of own UI scenarios
 - Ready-to-run application „SciUI“ detects and starts own scenarios

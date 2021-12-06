@@ -1,5 +1,5 @@
 `Multi-Cartpole <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/multicartpole.py>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     This ???? environment can be installed via:
 
     .. code-block:: python

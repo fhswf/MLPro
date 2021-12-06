@@ -3,7 +3,7 @@ Pool Objects
 
 
 Reinforcement Learning
-------------------
+------------------------
 
 
 .. toctree::

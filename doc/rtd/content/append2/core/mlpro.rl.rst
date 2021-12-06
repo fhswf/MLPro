@@ -1,8 +1,8 @@
 Reinforcement Learning
-================
+========================
 
 States, Actions, Rewards
-------------------
+-------------------------
 
 
 .. automodule:: mlpro.rl.models_sar
@@ -11,7 +11,7 @@ States, Actions, Rewards
    :show-inheritance:
    
 Environments
-------------------
+-------------------
 
 .. image:: images/rl/02_environments/MLPro-RL-Env_class_diagram.png
 .. automodule:: mlpro.rl.models_env
@@ -30,7 +30,7 @@ Agents
    
    
 Training and Tuning
-------------------
+---------------------
 
 
 .. automodule:: mlpro.rl.models_train

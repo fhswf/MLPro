@@ -4,7 +4,7 @@ Examples
 ================
 
 Basic Functions
---------------
+-------------------
 
 We provide some examples of `MLPro <https://github.com/fhswf/MLPro.git>`_'s basic funcionalities implementation, which is available on our GitHub file.
 
@@ -16,7 +16,7 @@ We provide some examples of `MLPro <https://github.com/fhswf/MLPro.git>`_'s basi
 Moreover, you can find the UML diagram of MLPro's basic funcionalities `here <https://github.com/fhswf/MLPro/tree/main/doc/bf>`_.
 
 Reinforcement Learning
---------------
+-------------------------
 
 We provide some examples of `MLPro <https://github.com/fhswf/MLPro.git>`_'s RL funcionalities implementation, which is available on our GitHub file.
 
@@ -41,7 +41,7 @@ We provide some examples of `MLPro <https://github.com/fhswf/MLPro.git>`_'s GT i
 Moreover, you can find the UML diagram of MLPro's GT funcionalities `here <https://github.com/fhswf/MLPro/tree/main/doc/gt>`_.
 
 User Interface
---------------
+----------------
 
 We provide some examples of `MLPro <https://github.com/fhswf/MLPro.git>`_'s SciUI funcionalities implementation, which is available on our GitHub file.
 
