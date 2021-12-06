@@ -17,10 +17,11 @@
 ## -- 2021-12-03  1.2.0     DA       Redesign:
 ## --                                - Introduction of special adaptive function classes AFct*
 ## --                                - Rework of classes EnvBase, Environment, EnvModel
+## -- 2021-12-06  1.2.1     DA       Class AFctBase: correction by removing own method adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-12-03)
+Ver. 1.2.1 (2021-12-06)
 
 This module provides model classes for environments and environnment models.
 """
@@ -184,11 +185,6 @@ class AFctBase (Model):
 ## -------------------------------------------------------------------------------------------------
     def get_adapted(self) -> bool:
         return self._afct.get_adapted()
-
-
-## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
-        return self._afct.adapt(*p_args)
 
 
 ## -------------------------------------------------------------------------------------------------
