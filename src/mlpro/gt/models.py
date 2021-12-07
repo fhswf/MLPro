@@ -13,10 +13,11 @@
 ## -- 2021-09-11  1.0.3     MRD      Change Header information to match our new library name
 ## -- 2021-11-16  1.1.0     DA       Refactoring
 ## -- 2021-12-03  1.1.1     DA       Refactoring
+## -- 2021-12-07  1.1.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2021-12-03)
+Ver. 1.1.2 (2021-12-07)
 
 This module provides model classes for tasks related to cooperative Game Theory.
 """
@@ -145,7 +146,7 @@ class GTTraining (RLTraining):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_game:Game, 
+                 p_game_cls, 
                  p_cycle_limit=0, 
                  p_max_cycles_per_episode=-1, 
                  p_max_adaptations=0, 
@@ -159,20 +160,22 @@ class GTTraining (RLTraining):
                  p_collect_actions=True, 
                  p_collect_rewards=True, 
                  p_collect_training=True, 
+                 p_visualize=False,
                  p_logging=Log.C_LOG_ALL):
 
-        super().__init__(p_scenario=p_game, 
-                         p_cycle_limit=p_cycle_limit, 
-                         p_max_cycles_per_episode=p_max_cycles_per_episode, 
-                         p_max_adaptations=p_max_adaptations, 
-                         p_max_stagnations=p_max_stagnations, 
-                         p_eval_frequency=p_eval_frequency, 
-                         p_eval_grp_size=p_eval_grp_size, 
-                         p_hpt=p_hpt, 
-                         p_hpt_trials=p_hpt_trials, 
-                         p_path=p_path, 
-                         p_collect_states=p_collect_states, 
-                         p_collect_actions=p_collect_actions, 
-                         p_collect_rewards=p_collect_rewards, 
-                         p_collect_training=p_collect_training, 
-                         p_logging=p_logging)
+        super().__init__( p_scenario_cls=p_game_cls, 
+                          p_cycle_limit=p_cycle_limit, 
+                          p_max_cycles_per_episode=p_max_cycles_per_episode, 
+                          p_max_adaptations=p_max_adaptations, 
+                          p_max_stagnations=p_max_stagnations, 
+                          p_eval_frequency=p_eval_frequency, 
+                          p_eval_grp_size=p_eval_grp_size, 
+                          p_hpt=p_hpt, 
+                          p_hpt_trials=p_hpt_trials, 
+                          p_path=p_path, 
+                          p_collect_states=p_collect_states, 
+                          p_collect_actions=p_collect_actions, 
+                          p_collect_rewards=p_collect_rewards, 
+                          p_collect_training=p_collect_training, 
+                          p_visualize=p_visualize,
+                          p_logging=p_logging )

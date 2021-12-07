@@ -141,7 +141,6 @@ mygame  = MyGame(
     p_ada=True,
     p_cycle_limit=200,
     p_visualize=visualize,
-    p_logging=logging
-)
+    p_logging=logging )
 
 mygame.run()
