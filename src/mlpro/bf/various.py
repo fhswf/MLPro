@@ -27,10 +27,11 @@
 ## --                                - method set_log_level() removed
 ## --                                - parameter p_logging is the new log level now
 ## --                                Class Saveable: new constant C_SUFFIX
+## -- 2021-12-07  1.7.3     SY       Add a new attribute in ScientificObject
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.2 (2021-11-15)
+Ver. 1.7.3 (2021-12-07)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer, ...
@@ -445,3 +446,4 @@ class ScientificObject:
     C_SCIREF_INSTITUTION        = None
     C_SCIREF_CONFERENCE         = None
     C_SCIREF_NOTES              = None
+    C_SCIREF_EDITOR             = None

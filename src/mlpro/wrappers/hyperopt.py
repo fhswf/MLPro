@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-07  0.0.0     SY       Creation 
+## -- 2021-12-07  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2021-12-07)
+Ver. 1.0.0 (2021-12-07)
 This module provides a wrapper class for hyperparameter tuning by reusinng Hyperopt framework
 """
 
@@ -17,13 +18,14 @@ This module provides a wrapper class for hyperparameter tuning by reusinng Hyper
 from hyperopt import *
 from mlpro.bf.ml import *
 from mlpro.bf.math import *
+from mlpro.bf.various import *
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrHPTHyperopt(HyperParamTuner):
+class WrHPTHyperopt(HyperParamTuner, ScientificObject):
     """
     This class is a ready to use wrapper class for Hyperopt framework. 
     Objects of this type can be treated as a hyperparameter tuner object.
@@ -45,41 +47,25 @@ class WrHPTHyperopt(HyperParamTuner):
         Refer to Random Grid Search algorithm.
     """
     
-    C_NAME          = 'Hyperopt'
+    C_NAME              = 'Hyperopt'
     
-    C_ALGO_TPE      = 'TPE'
-    C_ALGO_RAND     = 'RND'
-
-## -------------------------------------------------------------------------------------------------
-    # def maximize(self, p_ofct, p_model:Model, p_num_trials) -> TrainingResults:
-    #     """
-    #     ...
-
-    #     Parameters
-    #     ----------
-    #     p_ofct 
-    #         Objective function to be maximized.
-    #     p_model : Model
-    #         Model object to be tuned.
-    #     p_num_trials : int    
-    #         Number of trials
-
-    #     Returns
-    #     -------
-    #     TrainingResults
-    #         Training results of the best tuned model (see class TrainingResults).
-
-    #     """
-
-    #     self._ofct          = p_ofct
-    #     self._model         = p_model
-    #     self._num_trials    = p_num_trials
-    #     return self._maximize()
+    C_ALGO_TPE          = 'TPE'
+    C_ALGO_RAND         = 'RND'
+        
+    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_PROCEEDINGS
+    C_SCIREF_AUTHOR     = "James Bergstra, Dan Yamins, David D. Cox"
+    C_SCIREF_TITLE      = "Hyperopt: A Python Library for Otimizing the Hyperparameters of Machine Learning Algorithms"
+    C_SCIREF_CONFERENCE = "Proceedings of the 12th Python in Science Conference"
+    C_SCIREF_YEAR       = "2013"
+    C_SCIREF_PAGES      = "13-19"
+    C_SCIREF_DOI        = "10.25080/Majora-8b375195-003"
+    C_SCIREF_EDITOR     = "Stefan van der Walt, Jarrod Millman, Katy Huff"
+    
 
 ## -------------------------------------------------------------------------------------------------
     def maximize(self, p_ofct, p_model:Model, p_num_trials, p_algo=C_ALGO_RAND, p_ids=None) -> TrainingResults:
         """
-        ...
+        Redefined from its super claass.
 
         Parameters
         ----------
@@ -109,21 +95,35 @@ class WrHPTHyperopt(HyperParamTuner):
 
 ## -------------------------------------------------------------------------------------------------
     def _maximize(self) -> TrainingResults:
+        """
+        This method is a place to setup a hp tuner based on hp structure of the model
+        and run the hp tuner.
+
+        Returns
+        -------
+        best_result : float
+            The best result after a number of evaluations.
+
+        """
         spaces              = self.SetupSpaces()
         if self._algo == 'TPE':
             self.algo       = tpe.suggest()
         elif self._algo == 'RND':
             self.algo       = rand.suggest()
             
-        best                = fmin(self.Objective, spaces, self.algo, self._num_trials, trials=Trials())
-        raise NotImplementedError
+        best_result         = fmin(self.Objective, spaces, self.algo, self._num_trials, trials=Trials())
+        return best_result
 
 ## -------------------------------------------------------------------------------------------------
     def Objective(self, p_params):
-        # bglp_algorithm = "GlobalInterpolation"
-        # ExplorationHalf, LR_MARGIN, LR_DEMAND, LR_ENERGY = args
-        # sum_potential = BGLP_Run(ExplorationHalf, LR_MARGIN, LR_DEMAND, LR_ENERGY, bglp_algorithm)
-        # return sum_potential
+        """
+        This method is a place to run the evaluations by getting next set of hps from the tuner,
+        inducting hps to the model, and running the the objective function.
+        """
+        for i in range(len(self._ids)):
+            self._model._hyperparam_tupel.set_value(self._ids[i], p_params[i])
+        
+        # missing running the model / the objective function??
         raise NotImplementedError
 
 ## -------------------------------------------------------------------------------------------------
@@ -153,7 +153,7 @@ class WrHPTHyperopt(HyperParamTuner):
             hp_boundaries   = hp_set.get_boundaries()
             hp_name_short   = hp_set.get_name_short()
             if not hp_boundaries:
-                raise NameError('Missing boundaries of a hyperparameter!')
+                raise ImplementationError('Missing boundary of a hyperparameter!')
             else:
                 hp_low      = hp_boundaries[0]
                 hp_high     = hp_boundaries[1]
