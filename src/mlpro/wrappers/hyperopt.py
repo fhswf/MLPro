@@ -5,21 +5,16 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-mm-dd  0.0.0     FN       Creation 
+## -- 2021-12-07  0.0.0     SY       Creation 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2021-mm-dd)
-This module provides ...
+Ver. 0.0.0 (2021-12-07)
+This module provides a wrapper class for hyperparameter tuning by reusinng Hyperopt framework
 """
 
 
-# import sys
-# from mlpro.bf.various import *
-# from mlpro.bf.math import *
-# from mlpro.bf.data import Buffer
-# from mlpro.bf.plot import *
-# import random
+import hyperopt
 
 
 
