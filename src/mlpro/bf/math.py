@@ -235,7 +235,7 @@ class Set:
 
 ## -------------------------------------------------------------------------------------------------
     def append(self, p_set):
-        dim_id_new = max([id for id in (self.get_dim_ids() or [0])]) + 1
+        dim_id_new = max(self.get_dim_ids() or [0]) + 1
 
         for dim_id in p_set.get_dim_ids():
             self.add_dim( p_set.get_dim(dim_id).copy(dim_id_new) )
