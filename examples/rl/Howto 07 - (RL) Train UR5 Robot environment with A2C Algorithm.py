@@ -10,11 +10,12 @@
 ## -- 2021 09-26  1.0.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structure
 ## -- 2021-10-18  1.0.2     DA       Refactoring
-## -- 2021-11.15  1.0.3     DA       Refactoring
+## -- 2021-11-15  1.0.3     DA       Refactoring
+## -- 2021-12-07  1.0.4     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2021-11-15)
+Ver. 1.0.4 (2021-12-07)
 
 This module shows how to implement A2C on the UR5 Robot Environment
 """
@@ -72,19 +73,9 @@ else:
     path        = None
 
 
-# 3.3 Create scenario UR5/A2C
-myscenario  = ScenarioUR5A2C(
-    p_mode=Mode.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=visualize,
-    p_logging=logging
-)
-
-
-# 3.4 Create and run training object
+# 3.3 Create and run training object
 training = RLTraining(
-        p_scenario=myscenario,
+        p_scenario_cls=ScenarioUR5A2C,
         p_cycle_limit=2000,
         p_max_adaptations=0,
         p_max_stagnations=0,

@@ -12,10 +12,11 @@
 ## -- 2021-09-29  1.0.2     SY       Change name: WrEnvGym to WrEnvGYM2MLPro
 ## -- 2021-10-18  1.0.3     DA       Refactoring
 ## -- 2021-11-15  1.1.0     DA       Refactoring
+## -- 2021-12-07  1.1.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-11-15)
+Ver. 1.1.1 (2021-12-07)
 
 This module shows how to implement A2C from the pool
 """
@@ -77,24 +78,13 @@ else:
     path        = None
 
 
-# 2.3 Create your scenario
-myscenario  = MyScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=visualize,
-    p_logging=logging
-)
-
-
-# 2.4 Create and run training object
+# 2.3 Create and run training object
 training = RLTraining(
-        p_scenario=myscenario,
+        p_scenario_cls=MyScenario,
         p_cycle_limit=100,
         p_max_adaptations=0,
         p_max_stagnations=0,
         p_path=path,
-        p_logging=logging
-)
+        p_logging=logging )
 
 training.run()

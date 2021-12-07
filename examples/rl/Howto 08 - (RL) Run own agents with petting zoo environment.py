@@ -153,21 +153,21 @@ else:
  
 
 # 3.3 Create your scenario and run some cycles
-myscenario  = PBScenario(
-        p_mode=Mode.C_MODE_SIM,
-        p_ada=True,
-        p_cycle_limit=100,
-        p_visualize=visualize,
-        p_logging=logging
-)
-
-# myscenario  = C4Scenario(
+# myscenario  = PBScenario(
 #         p_mode=Mode.C_MODE_SIM,
 #         p_ada=True,
 #         p_cycle_limit=100,
 #         p_visualize=visualize,
 #         p_logging=logging
 # )
+
+myscenario  = C4Scenario(
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_cycle_limit=100,
+        p_visualize=visualize,
+        p_logging=logging
+)
 
 
 myscenario.reset(1)

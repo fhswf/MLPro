@@ -8,10 +8,11 @@
 ## -- 2021-10-27  0.0.0     MRD      Creation
 ## -- 2021-10-27  1.0.0     MRD      Released first version
 ## -- 2021-11-16  1.0.1     DA       Refactoring
+## -- 2021-12-07  1.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-11-16)
+Ver. 1.0.2 (2021-12-07)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
@@ -105,18 +106,10 @@ class MyScenario(RLScenario):
             p_logging=p_logging
         )
 
-# 3 Instantiate scenario
-myscenario  = MyScenario(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=-1,           # get cycle limit from environment
-    p_visualize=visualize,
-    p_logging=logging
-)
 
-# 4 Instantiate training
+# 3 Instantiate training
 training        = RLTraining(
-    p_scenario=myscenario,
+    p_scenario_cls=MyScenario,
     p_cycle_limit=1000,      #p_episode_limit=max_episode,
     p_max_stagnations=0,
     p_collect_states=True,
@@ -124,13 +117,15 @@ training        = RLTraining(
     p_collect_rewards=True,
     p_collect_training=True,
     p_path=path,
-    p_logging=logging
-)
+    p_visualize=visualize,
+    p_logging=logging )
 
-# 5 Train SB3 Wrapper
+
+# 4 Train SB3 Wrapper
 training.run()
 
-# 6 Create Plotting Class
+
+# 5 Create Plotting Class
 class MyDataPlotting(DataPlotting):
     def get_plots(self):
         """
@@ -167,7 +162,7 @@ class MyDataPlotting(DataPlotting):
                 else:
                     plt.close(fig)
 
-# 7 Plotting 1 MLpro    
+# 6 Plotting 1 MLpro    
 data_printing   = {"Cycle":        [False],
                     "Day":          [False],
                     "Second":       [False],
@@ -180,7 +175,7 @@ mem_plot    = MyDataPlotting(mem, p_showing=False, p_printing=data_printing)
 mem_plot.get_plots()
 wrapper_plot = mem_plot.plots
 
-# 8 Create Callback for the SB3 Training
+# 7 Create Callback for the SB3 Training
 class CustomCallback(BaseCallback, Log):
     """
     A custom callback that derives from ``BaseCallback``.
@@ -238,7 +233,7 @@ class CustomCallback(BaseCallback, Log):
         mem_plot.get_plots()
         self.plots = mem_plot.plots
 
-# 9 Run the SB3 Training Native
+# 8 Run the SB3 Training Native
 gym_env     = gym.make('CartPole-v1')
 gym_env.seed(1)
 policy_sb3 = PPO(
@@ -253,7 +248,7 @@ cus_callback = CustomCallback()
 policy_sb3.learn(total_timesteps=1000, callback=cus_callback)
 native_plot = cus_callback.plots
 
-# 10 Difference Plot
+# 9 Difference Plot
 native_ydata = native_plot[1][0].lines[0].get_ydata()
 wrapper_ydata = wrapper_plot[1][0].lines[0].get_ydata()
 smoothed_native = pd.Series.rolling(pd.Series(native_ydata), mva_window).mean()
