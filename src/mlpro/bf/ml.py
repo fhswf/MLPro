@@ -1119,7 +1119,7 @@ class Training (Log):
             self._results = self._run()
 
         else:
-            # 2 Training 
+            # 2 Training with hyperparameter tuning
             self.log(self.C_LOG_TYPE_I, 'Training started (with hyperparameter tuning)')
             self._results = self._hpt.maximize(p_ofct=self._run, p_model=self._scenario.get_model(), p_num_trials=self._hpt_trials)
 
