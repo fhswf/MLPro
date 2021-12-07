@@ -76,7 +76,7 @@ class WrHPTHyperopt(HyperParamTuner):
     #     return self._maximize()
 
 ## -------------------------------------------------------------------------------------------------
-    def maximize(self, p_ofct, p_model:Model, p_num_trials, p_algo) -> TrainingResults:
+    def maximize(self, p_ofct, p_model:Model, p_num_trials, p_algo=C_ALGO_RAND) -> TrainingResults:
         """
         ...
 
@@ -105,7 +105,13 @@ class WrHPTHyperopt(HyperParamTuner):
 
 ## -------------------------------------------------------------------------------------------------
     def _maximize(self) -> TrainingResults:
-        self.SetupSpaces()
+        space       = self.SetupSpaces()
+        if self._algo == 'TPE':
+            self.algo = tpe.suggest()
+        elif self._algo == 'RND':
+            self.algo = rand.suggest()
+            
+        best        = fmin(self.Objective, space, self.algo, self._num_trials, trials=Trials())
         raise NotImplementedError
 
 ## -------------------------------------------------------------------------------------------------
@@ -122,47 +128,3 @@ class WrHPTHyperopt(HyperParamTuner):
         
         # 2. setup algo
         raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def example_method(self, p_arg1):
-        """
-        Example on how to document return type. 
-        
-        Notes
-        -----
-            The name of the return value is required for better understanding 
-            of the code. The return value is parsed similarly as parameters 
-            value, meaning that multiple return value is also possible.
-        
-        Parameters
-        ----------
-        p_arg1 : TYPE
-            explanation of the first parameter.
-                
-        Returns
-        -------
-        p_arg1: TYPE
-            Description of the returned value.
-        """
-        return p_arg1
-        
-
-## -------------------------------------------------------------------------------------------------
-    def example_method_no_return(self, p_arg1):
-        """
-        Example on how to document return type. 
-        
-        Notes
-        -----
-            When there is no item to be returned, the return section is omitted.
-        
-        Parameters
-        ----------
-        p_arg1 : TYPE
-            explanation of the first parameter.
-                
-        """
-        return 
-        """
-        pass
