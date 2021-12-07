@@ -19,10 +19,12 @@
 ## -- 2021-11-30  1.2.1     DA       - Classes Model, AdaptiveFunction: new opt. parameters **p_par
 ## --                                - Docstrings reformatted to numpy style
 ## --                                - Class Model: new method get_maturity()
+## -- 2021-12-07  1.2.2     DA       - Method Scenario.__init__(): param p_cycle_len removed
+## --                                - Method Training.__init__(): par p_scenario replaced by p_scenario_cls
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2021-11-30)
+Ver. 1.2.2 (2021-12-07)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -477,17 +479,15 @@ class Scenario (Mode, LoadSave, Plottable):
     Parameters
     ----------
     p_mode
-        Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
+        Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
     p_ada : bool
-        Boolean switch for adaptivity. Default = True
-    p_cycle_len : timedelta
-        Optional fixed cycle duration 
+        Boolean switch for adaptivity. Default = True.
     p_cycle_limit : int
-        Maximum number of cycles. Default = 0 (no limit)
-    p_visualization : bool
-        Boolean switch for env/agent visualisation. Default = True
+        Maximum number of cycles. Default = 0 (no limit).
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = True.
     p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     
     """
 
@@ -498,13 +498,11 @@ class Scenario (Mode, LoadSave, Plottable):
     def __init__(self, 
                  p_mode=Mode.C_MODE_SIM,       
                  p_ada:bool=True,               
-                 p_cycle_len:timedelta=None,    
                  p_cycle_limit=0,              
                  p_visualize=True,              
                  p_logging=Log.C_LOG_ALL ):    
 
         # 0 Intro
-        self._cycle_len     = p_cycle_len
         self._cycle_max     = sys.maxsize
         self._cycle_id      = 0
         self._visualize     = p_visualize
@@ -525,12 +523,8 @@ class Scenario (Mode, LoadSave, Plottable):
         else:
             t_mode = Timer.C_MODE_REAL
 
-        if self._cycle_len is not None:
-            t_lap_duration = p_cycle_len
-        else:
-            t_lap_duration = self.get_latency()
-
-        self._timer  = Timer(t_mode, t_lap_duration, self._cycle_limit)
+        self._cycle_len = self.get_latency()
+        self._timer     = Timer(t_mode, self._cycle_len, self._cycle_limit)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -928,8 +922,8 @@ class Training (Log):
 
     Parameters
     ----------
-    p_scenario : Scenario
-        ML scenario (see class Scenario) with model to be trained.
+    p_scenario_cls 
+        Name of ML scenario class, compatible to/inherited from class Scenario.
     p_cycle_limit : int
         Maximum number of training cycles (0=no limit)
     p_hpt : HyperParamTuner
@@ -938,6 +932,8 @@ class Training (Log):
         Optional number of hyperparameter tuning trials. Default = 0.        
     p_path : str
         Optional destination path to store training data. Default = None.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = True
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_WE.
 
@@ -950,16 +946,25 @@ class Training (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_scenario:Scenario,           
-                 p_cycle_limit=0,               
+                 p_scenario_cls,           
+                 p_cycle_limit=0,   
                  p_hpt:HyperParamTuner=None,    
                  p_hpt_trials=0,                
-                 p_path=None,                  
-                 p_logging=Log.C_LOG_WE):      
+                 p_path=None,           
+                 p_visualize:bool=False,       
+                 p_logging=Log.C_LOG_WE ):      
 
         super().__init__(p_logging=p_logging)
 
-        self._scenario          = p_scenario
+        try:
+            self._scenario = p_scenario_cls( p_mode=Mode.C_MODE_SIM, 
+                                             p_ada=True,
+                                             p_cycle_limit=p_cycle_limit,
+                                             p_visualize=p_visualize,
+                                             p_logging=p_logging )
+        except:
+            raise ParamError('Par p_scenario_cls: class "' + p_scenario_cls + '" not compatible')
+
         self._num_cycles        = 0
         self._cycle_limit       = p_cycle_limit
         self._hpt               = p_hpt

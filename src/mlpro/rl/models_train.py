@@ -18,11 +18,13 @@
 ## -- 2021-10-08  1.2.4     DA       Class Scenario/constructor/param p_cycle_limit: new value -1
 ## --                                lets class get the cycle limit from the env
 ## -- 2021-10-28  1.2.5     DA       Bugfix method Scenario.reset(): agent's buffer was not cleared
-## -- 2021-11-13  1.3.0     DA       Rework/improvement of class Training
+## -- 2021-11-13  1.3.0     DA       Rework/improvement of class RLTraining
+## -- 2021-12-07  1.3.1     DA       - Method RLScenario.__init__(): param p_cycle_len removed
+## --                                - Method RLTraining.__init__(): par p_scenario replaced by p_scenario_cls
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-11-13)
+Ver. 1.3.1 (2021-12-07)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -141,14 +143,13 @@ class RLScenario (Scenario):
     def __init__(self, 
                  p_mode=Mode.C_MODE_SIM,        # Operation mode (see class Mode)
                  p_ada:bool=True,               # Boolean switch for adaptivity of internal model
-                 p_cycle_len:timedelta=None,    # Fixed cycle duration (optional)
                  p_cycle_limit=0,               # Maximum number of cycles (0=no limit, -1=get from env)
                  p_visualize=True,              # Boolean switch for env/agent visualisation
                  p_logging=Log.C_LOG_ALL ):     # Log level (see constants of class Log)
 
         # 1 Setup entire scenario
         self._env   = None
-        super().__init__(p_mode=p_mode, p_ada=p_ada, p_cycle_len=p_cycle_len, p_cycle_limit=p_cycle_limit, p_visualize=p_visualize, p_logging=p_logging)
+        super().__init__(p_mode=p_mode, p_ada=p_ada, p_cycle_limit=p_cycle_limit, p_visualize=p_visualize, p_logging=p_logging)
         if self._env is None: 
             raise ImplementationError('Please bind your RL environment to self._env')
 
@@ -368,40 +369,69 @@ class RLTrainingResults (TrainingResults):
 class RLTraining (Training):
     """
     This class performs an episodical training on a (multi-)agent in a given environment. Both are 
-    expected as parts of a reinforcement learning scenario (see class Scenario for more details).
+    expected as parts of a reinforcement learning scenario (see class RLScenario for more details).
     The class optionally collects all relevant data like environmenal states and rewards or agents
     actions. Furthermore overarching training data will be collected.
 
-    The class provides the three methods run(), run_episode(), run_cycle() that can be called in 
-    any order to proceed the training.
+    Parameters
+    ----------
+    p_scenario_cls 
+        Name of RL scenario class, compatible to/inherited from class RLScenario.
+    p_cycle_limit : int
+        Maximum number of training cycles (0=no limit). Default = 0.
+    p_max_cycles_per_episode : int
+        Optional limit of cycles per episode (0=no limit, -1=get environment limit). Default = -1.    
+    p_max_adaptations : int
+        Optional limit of adaptations (0=no limit). Default = 0.
+    p_max_stagnations : int
+        Optional limit of consecutive evaluations without training progress. Default = 5.
+    p_eval_frequency : int
+        Optional evaluation frequency (0=no evaluation). Default = 100.
+    p_eval_grp_size : int
+        Number of evaluation episodes (eval group). Default = 50.
+    p_hpt : HyperParamTuner
+        Optional hyperparameter tuner (see class mlpro.bf.ml.HyperParamTuner). Default = None.
+    p_hpt_trials : int
+        Optional number of hyperparameter tuning trials. Default = 0. Must be > 0 if p_hpt is supplied.
+    p_path : str
+        Optional destination path to store training data. Default = None.
+    p_collect_states : bool
+        If True, the environment states will be collected. Default = True.
+    p_collect_actions : bool
+        If True, the agent actions will be collected. Default = True.
+    p_collect_rewards : bool
+        If True, the environment reward will be collected. Default = True.
+    p_collect_training : bool
+        If True, global training data will be collected. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
+    p_logging
+        Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
 
-    https://github.com/fhswf/MLPro/issues/146
     """
 
-    C_TYPE                  = 'Training'
     C_NAME                  = 'RL'
 
     C_CLS_RESULTS           = RLTrainingResults
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_scenario:RLScenario,         # RL scenario object 
-                 p_cycle_limit=0,               # Maximum number of training cycles (0=no limit)
-                 p_max_cycles_per_episode=-1,   # Optional limit for cycles per episode
-                                                # (0=no limit, -1=get environment limit)
-                 p_max_adaptations=0,           # Optional limit for total number of adaptations
-                 p_max_stagnations=5,           # Optional length of a sequence of evaluations without
-                                                # training progress
-                 p_eval_frequency=100,          # Optional evaluation frequency (0=no evaluation)
-                 p_eval_grp_size=50,            # Number of evaluation episodes (eval group)
-                 p_hpt:HyperParamTuner=None,    # Optional hyperparameter tuner (see class HyperParamTuner)
-                 p_hpt_trials=0,                # Optional number of hyperparameter tuning trials
-                 p_path=None,                   # Optional destination path to store training data
-                 p_collect_states=True,         # If True, the environment states will be collected
-                 p_collect_actions=True,        # If True, the agent actions will be collected
-                 p_collect_rewards=True,        # If True, the environment reward will be collected
-                 p_collect_training=True,       # If True, global training data will be collected
-                 p_logging=Log.C_LOG_WE):       # Log level (see constants of class Log)
+                 p_scenario_cls,         
+                 p_cycle_limit=0,               
+                 p_max_cycles_per_episode=-1,   
+                 p_max_adaptations=0,           
+                 p_max_stagnations=5,           
+                 p_eval_frequency=100,          
+                 p_eval_grp_size=50,            
+                 p_hpt:HyperParamTuner=None,    
+                 p_hpt_trials=0,                
+                 p_path=None,                   
+                 p_collect_states=True,         
+                 p_collect_actions=True,       
+                 p_collect_rewards=True,        
+                 p_collect_training=True,  
+                 p_visualize=False,     
+                 p_logging=Log.C_LOG_WE):
 
         if ( p_cycle_limit <= 0 ) and ( p_max_adaptations <= 0 ) and ( p_max_stagnations <= 0 ):
             raise ParamError('Please define a termination criterion')
@@ -412,7 +442,13 @@ class RLTraining (Training):
         if p_max_adaptations > 0: raise NotImplementedError
         if p_max_stagnations > 0: raise NotImplementedError
 
-        super().__init__(p_scenario, p_cycle_limit=p_cycle_limit, p_hpt=p_hpt, p_hpt_trials=p_hpt_trials, p_path=p_path, p_logging=p_logging)
+        super().__init__( p_scenario_cls=p_scenario_cls, 
+                          p_cycle_limit=p_cycle_limit, 
+                          p_hpt=p_hpt, 
+                          p_hpt_trials=p_hpt_trials, 
+                          p_path=p_path, 
+                          p_visualize=p_visualize,
+                          p_logging=p_logging)
  
         self._env                   = self._scenario.get_env()
         self._agent                 = self._scenario.get_agent()
