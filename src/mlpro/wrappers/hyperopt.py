@@ -14,33 +14,18 @@ This module provides a wrapper class for hyperparameter tuning by reusinng Hyper
 """
 
 
-import hyperopt
+from hyperopt import *
+from mlpro.bf.ml import *
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Example:
+class WrHPTHyperopt(HyperParamTuner):
     """
-    The __init__ method should be documented in the class level docstring and the docstring itself
-    should not go beyond 100 characters length (within the dash separator). Sections inside the 
-    docstring can be seperated like the reStructuredText format.
-    
-    Parameters are documented in the Parameters section.
-    Public attributes of classes are documented inisde Attributes section.
-    Returns attronites are documented in the Returns section.
-    
-    A few examples of data types: int / str / bool / list of str / tuple of int / float / None / dict.
-    If the parameters have default values, you should add "TYPE, optional" as part of the type
-    and "The default is ...." as part of the description.
-    
-    .. _Further_formatting_information: 
-        https://numpydoc.readthedocs.io/en/latest/format.html
-    
-    Notes
-    -----
-        The content inside the section should be indented. 
+    This class is a ready to use wrapper class for Hyperopt framework. 
+    Objects of this type can be treated as a hyperparameter tuner object.
     
     Parameters
     ----------
@@ -51,16 +36,92 @@ class Example:
         
     Attributes
     ----------
-    attr1: TYPE
-        explanation of the public attribute attr1.
+    C_NAME: str
+        Name of the class.
+    C_ALGO_TPE: str
+        Refer to Tree of Parzen Estimators (TPE) algorithm.
+    C_ALGO_RAND: str
+        Refer to Random Grid Search algorithm.
     """
     
-    attr1 = None
+    C_NAME          = 'Hyperopt'
+    
+    C_ALGO_TPE      = 'TPE'
+    C_ALGO_RAND     = 'RND'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_arg1, p_arg2=True):
-        self.attr1 = p_arg1
-        pass
+    # def maximize(self, p_ofct, p_model:Model, p_num_trials) -> TrainingResults:
+    #     """
+    #     ...
+
+    #     Parameters
+    #     ----------
+    #     p_ofct 
+    #         Objective function to be maximized.
+    #     p_model : Model
+    #         Model object to be tuned.
+    #     p_num_trials : int    
+    #         Number of trials
+
+    #     Returns
+    #     -------
+    #     TrainingResults
+    #         Training results of the best tuned model (see class TrainingResults).
+
+    #     """
+
+    #     self._ofct          = p_ofct
+    #     self._model         = p_model
+    #     self._num_trials    = p_num_trials
+    #     return self._maximize()
+
+## -------------------------------------------------------------------------------------------------
+    def maximize(self, p_ofct, p_model:Model, p_num_trials, p_algo) -> TrainingResults:
+        """
+        ...
+
+        Parameters
+        ----------
+        p_ofct 
+            Objective function to be maximized.
+        p_model : Model
+            Model object to be tuned.
+        p_num_trials : int    
+            Number of trials
+        p_algo : str    
+            Selection of a hyperparameter tuning algorithm
+
+        Returns
+        -------
+        TrainingResults
+            Training results of the best tuned model (see class TrainingResults).
+
+        """
+        super().maximize(p_ofct, p_model, p_num_trials)
+
+        self._algo          = p_algo
+        return self._maximize()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _maximize(self) -> TrainingResults:
+        self.SetupSpaces()
+        raise NotImplementedError
+
+## -------------------------------------------------------------------------------------------------
+    def Objective(self, p_params):
+        # bglp_algorithm = "GlobalInterpolation"
+        # ExplorationHalf, LR_MARGIN, LR_DEMAND, LR_ENERGY = args
+        # sum_potential = BGLP_Run(ExplorationHalf, LR_MARGIN, LR_DEMAND, LR_ENERGY, bglp_algorithm)
+        # return sum_potential
+        raise NotImplementedError
+
+## -------------------------------------------------------------------------------------------------
+    def SetupSpaces(self):
+        # 1. setup boundaries
+        
+        # 2. setup algo
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -103,25 +164,5 @@ class Example:
                 
         """
         return 
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Example2:
-    """
-    ...
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_arg1, p_arg2):
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def example_method(self, p_arg1):
-        """
         """
         pass
