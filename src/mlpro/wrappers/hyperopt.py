@@ -111,11 +111,11 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
         elif self._algo == 'RND':
             self.algo       = rand.suggest()
             
-        best_result         = fmin(self.Objective, spaces, self.algo, self._num_trials, trials=Trials())
-        return best_result
+        best_result         = fmin(self._ofct_hyperopt, spaces, self.algo, self._num_trials, trials=Trials())
+        return -best_result
 
 ## -------------------------------------------------------------------------------------------------
-    def Objective(self, p_params):
+    def _ofct_hyperopt(self, p_params):
         """
         This method is a place to run the evaluations by getting next set of hps from the tuner,
         inducting hps to the model, and running the the objective function.
@@ -123,8 +123,8 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
         for i in range(len(self._ids)):
             self._model._hyperparam_tupel.set_value(self._ids[i], p_params[i])
         
-        # missing running the model / the objective function??
-        raise NotImplementedError
+        best_result = self._ofct()
+        return -best_result
 
 ## -------------------------------------------------------------------------------------------------
     def SetupSpaces(self):
