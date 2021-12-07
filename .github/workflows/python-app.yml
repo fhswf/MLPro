@@ -41,6 +41,7 @@ jobs:
         pip install pygame
         pip install sphinx
         pip install sphinx-rtd-theme
+        pip install hyperopt
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
