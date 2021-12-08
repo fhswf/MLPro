@@ -79,13 +79,14 @@ Instructions for use
    content/ui/sciui
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
    :caption: Appendix 1: List of Examples
    
    content/append1/howto.bf
    content/append1/howto.rl
    content/append1/howto.gt
    content/append1/howto.ui
+   content/append1/howto.template
 
 .. toctree::
    :maxdepth: 4

@@ -5,11 +5,21 @@ We provide some examples of `MLPro <https://github.com/fhswf/MLPro.git>`_'s basi
 
 `Howto 01 - (Various) Logging <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2001%20-%20(Various)%20Logging.py>`_
 -----------------
+Ver. 1.1.1 (2021-11-13)
+
 This module demonstrates the Log class functionality.
+
+Expected Results
+`````````````````
+Descriptions, plots, images, screenshots of expected results.
+
+Source with code box
+`````````````````
 
 .. literalinclude:: ../../../../examples/bf/Howto 01 - (Various) Logging.py
     :language: python
         
+
 `Howto 02 - (Various) Timer <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2002%20-%20(Various)%20Timer.py>`_
 -----------------
 This module demonstrates the Timer class functionality.
