@@ -12,6 +12,7 @@
 
 """
 Ver. 1.0.1 (2021-12-08)
+
 This module shows how to use SB3 wrapper to train Robothtm
 """
 
