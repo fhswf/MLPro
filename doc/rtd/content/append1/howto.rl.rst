@@ -1,7 +1,7 @@
 Reinforcement Learning
 ================
 
-We provide some examples of `MLPro <https://github.com/fhswf/MLPro.git>`_'s RL funcionalities implementation, which is available on our GitHub file.
+We provide some examples of MLPro's RL funcionalities implementation, which is available on our GitHub file.
 
 .. toctree::
    :maxdepth: 1
