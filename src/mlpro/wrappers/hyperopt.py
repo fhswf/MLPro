@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-07  0.0.0     SY       Creation 
-## -- 2021-12-07  1.0.0     SY       Release of first version
+## -- 2021-12-08  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-07)
+Ver. 1.0.0 (2021-12-08)
 This module provides a wrapper class for hyperparameter tuning by reusinng Hyperopt framework
 """
 
@@ -19,6 +19,8 @@ from hyperopt import *
 from mlpro.bf.ml import *
 from mlpro.bf.math import *
 from mlpro.bf.various import *
+from mlpro.rl.models import *
+from mlpro.gt.models import *
 
 
 
@@ -63,35 +65,20 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def maximize(self, p_ofct, p_model:Model, p_num_trials, p_algo=C_ALGO_RAND, p_ids=None) -> TrainingResults:
+    def __init__(self, p_logging=Log.C_LOG_ALL, p_algo=C_ALGO_RAND, p_ids=None):
         """
-        Redefined from its super claass.
-
-        Parameters
-        ----------
-        p_ofct 
-            Objective function to be maximized.
-        p_model : Model
-            Model object to be tuned.
-        p_num_trials : int    
-            Number of trials
+        Parameters:
+            p_logging     Log level (see constants for log levels)
         p_algo : str, optional    
             Selection of a hyperparameter tuning algorithm, default: C_ALGO_RAND
-        p_algo : list of str, optional
+        p_ids : list of str, optional
             List of hyperparameter ids to be tuned, otherwise all hyperparameters, default: None
-
-        Returns
-        -------
-        TrainingResults
-            Training results of the best tuned model (see class TrainingResults).
-
         """
-        super().maximize(p_ofct, p_model, p_num_trials)
+        super().__init__(p_logging=p_logging)
 
         self._algo          = p_algo
         self._ids           = p_ids
-        return self._maximize()
-
+    
 
 ## -------------------------------------------------------------------------------------------------
     def _maximize(self) -> TrainingResults:
@@ -107,9 +94,9 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
         """
         spaces              = self.SetupSpaces()
         if self._algo == 'TPE':
-            self.algo       = tpe.suggest()
+            self.algo       = tpe.suggest
         elif self._algo == 'RND':
-            self.algo       = rand.suggest()
+            self.algo       = rand.suggest
             
         best_result         = fmin(self._ofct_hyperopt, spaces, self.algo, self._num_trials, trials=Trials())
         return -best_result
@@ -119,12 +106,34 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
         """
         This method is a place to run the evaluations by getting next set of hps from the tuner,
         inducting hps to the model, and running the the objective function.
+
+        Returns
+        -------
+        result : float
+            The result of an evaluations.
+            
         """
-        for i in range(len(self._ids)):
-            self._model._hyperparam_tupel.set_value(self._ids[i], p_params[i])
+        param_id                = 0
+        for x in range(len(self.hp_tupel)):
+            if not self._ids:
+                _id             = self.hp_tupel[x].get_dim_ids()
+            else:
+                _id             = self_ids
+                
+            for i in range(len(_id)):
+                if isinstance(self._model, MultiAgent) or isinstance(self._model, MultiPlayer):
+                    for x in range(len(self._model.get_agents())):
+                        self._model.get_agents()[x][0]._policy._hyperparam_tupel.set_value(_id[i], p_params[param_id])
+                elif isinstance(self._model, Agent) or isinstance(self._model, Player):
+                    self._model._policy._hyperparam_tupel.set_value(_id[i], p_params[param_id])
+                else:
+                    try:
+                        self._model._hyperparam_tupel.set_value(_id[i], p_params[param_id])
+                    except:
+                        raise NotImplementedError
         
-        best_result = self._ofct()
-        return -best_result
+        result                  = self._ofct()
+        return -(result.highscore)
 
 ## -------------------------------------------------------------------------------------------------
     def SetupSpaces(self):
@@ -142,25 +151,39 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
             List of parameter expressions.
 
         """
-        hp_tupel            = self._model._hyperparam_tupel
-        if not self._ids:
-            self._ids       = hp_tupel.get_dim_ids()
-        spaces              = []
-        for i in range(len(self._ids)):
-            hp_id           = self._ids[i]
-            hp_set          = hp_tupel.get_related_set().get_dim(hp_id)
-            hp_base_set     = hp_set._base_set
-            hp_boundaries   = hp_set.get_boundaries()
-            hp_name_short   = hp_set.get_name_short()
-            if not hp_boundaries:
-                raise ImplementationError('Missing boundary of a hyperparameter!')
+        self.hp_tupel            = []
+        if isinstance(self._model, MultiAgent) or isinstance(self._model, MultiPlayer):
+            for x in range(len(self._model.get_agents())):
+                self.hp_tupel.append(self._model.get_agents()[x][0]._policy._hyperparam_tupel)
+        elif isinstance(self._model, Agent) or isinstance(self._model, Player):
+            self.hp_tupel.append(self._model._policy._hyperparam_tupel)
+        else:
+            try:
+                self.hp_tupel.append(self._model._hyperparam_tupel)
+            except:
+                raise NotImplementedError
+        
+        spaces                  = []
+        for x in range(len(self.hp_tupel)):
+            if not self._ids:
+                _id             = self.hp_tupel[x].get_dim_ids()
             else:
-                hp_low      = hp_boundaries[0]
-                hp_high     = hp_boundaries[1]
-                if hp_boundaries == Dimension.C_BASE_SET_N or hp_boundaries == Dimension.C_BASE_SET_Z:
-                    spaces.append(hp.quniform(hp_name_short,hp_low,hp_high,1))
-                elif hp_boundaries == Dimension.C_BASE_SET_Z:
-                    spaces.append(hp.uniform(hp_name_short,hp_low,hp_high))
+                _id             = self_ids
+            for i in range(len(_id)):
+                hp_id           = _id[i]
+                hp_set          = self.hp_tupel[x].get_related_set().get_dim(hp_id)
+                hp_base_set     = hp_set._base_set
+                hp_boundaries   = hp_set.get_boundaries()
+                hp_name_short   = hp_set.get_name_short()
+                if not hp_boundaries:
+                    raise ImplementationError('Missing boundary of a hyperparameter!')
                 else:
-                    raise NotImplementedError
+                    hp_low      = hp_boundaries[0]
+                    hp_high     = hp_boundaries[1]
+                    if hp_base_set == Dimension.C_BASE_SET_N or hp_base_set == Dimension.C_BASE_SET_Z:
+                        spaces.append(hp.quniform(hp_name_short+'_'+str(x),hp_low,hp_high,1))
+                    elif hp_base_set == Dimension.C_BASE_SET_R:
+                        spaces.append(hp.uniform(hp_name_short+'_'+str(x),hp_low,hp_high))
+                    else:
+                        raise NotImplementedError
         return spaces

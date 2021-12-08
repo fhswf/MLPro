@@ -969,8 +969,8 @@ class Training (Log):
         self._results           = None
         self._best_results      = None
 
-        if self._hpt is not None: 
-            raise NotImplementedError('Hyperparameter Tuning not yet implemented')
+        # if self._hpt is not None: 
+        #     raise NotImplementedError('Hyperparameter Tuning not yet implemented')
 
         if ( self._hpt is not None ) and ( p_hpt_trials <= 0 ):
             raise ParamError('Please check number of trials for hyperparameter tuning')
