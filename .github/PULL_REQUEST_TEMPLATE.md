@@ -25,7 +25,7 @@
 ## Checklist:
 <!--- Please go over the checklist, and make sure you follow the guidelines -->
 <!--- If you have any question, please ask -->
-- [ ] Read the [CONTRIBUTION](https://www.google.com) guide (**required**)
+- [ ] Read the [CONTRIBUTION](https://github.com/fhswf/MLPro/blob/master/CONTRIBUTING.md) guide.
 - [ ] Update the history on the source code (**required**).
 - [ ] This change requires a change to the documentation.
 - [ ] Update the tests accordingly.
