@@ -24,7 +24,7 @@ from mlpro.bf.math import *
 from mlpro.bf.ml import *
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
-from mlpro.rl.pool.policies.sac import SAC
+# from mlpro.rl.pool.policies.sac import SAC
 from mlpro.rl.pool.sarsbuffer.PrioritizedBuffer import PrioritizedBuffer
 from mlpro.rl.pool.sarsbuffer.RandomSARSBuffer import RandomSARSBuffer
 import gym
@@ -35,53 +35,53 @@ from pathlib import Path
 
             
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("buffer_cls", [PrioritizedBuffer, RandomSARSBuffer])
-def test_buffer(buffer_cls):    
-    class MyScenario(RLScenario):
+# @pytest.mark.parametrize("buffer_cls", [PrioritizedBuffer, RandomSARSBuffer])
+# def test_buffer(buffer_cls):    
+#     class MyScenario(RLScenario):
 
-        C_NAME      = 'Matrix'
+#         C_NAME      = 'Matrix'
 
-        def _setup(self, p_mode, p_ada, p_logging):
-            gym_env     = gym.make('CartPole-v1')
-            self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
+#         def _setup(self, p_mode, p_ada, p_logging):
+#             gym_env     = gym.make('CartPole-v1')
+#             self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
 
-            class SACB(SAC):
-                C_BUFFER_CLS = buffer_cls
+#             class SACB(SAC):
+#                 C_BUFFER_CLS = buffer_cls
                 
-            # 2 Setup standard single-agent with own policy
-            return Agent(
-                p_policy=SACB(
-                    p_observation_space=self._env.get_state_space(),
-                    p_action_space=self._env.get_action_space(),
-                    p_batch_size=10,
-                    p_buffer_size=10,
-                    p_ada=p_ada,
-                    p_logging=p_logging
-                ),    
-                p_envmodel=None,
-                p_name='Smith',
-                p_ada=p_ada,
-                p_logging=p_logging
-            )
+#             # 2 Setup standard single-agent with own policy
+#             return Agent(
+#                 p_policy=SACB(
+#                     p_observation_space=self._env.get_state_space(),
+#                     p_action_space=self._env.get_action_space(),
+#                     p_batch_size=10,
+#                     p_buffer_size=10,
+#                     p_ada=p_ada,
+#                     p_logging=p_logging
+#                 ),    
+#                 p_envmodel=None,
+#                 p_name='Smith',
+#                 p_ada=p_ada,
+#                 p_logging=p_logging
+#             )
             
-    myscenario  = MyScenario(
-        p_mode=Environment.C_MODE_SIM,
-        p_ada=True,
-        p_cycle_limit=10,
-        p_visualize=False,
-        p_logging=False,
-    )
-    training        = RLTraining(
-        p_scenario=myscenario,
-        p_cycle_limit=100,
-        p_max_stagnations=0,
-        p_collect_states=True,
-        p_collect_actions=True,
-        p_collect_rewards=True,
-        p_collect_training=True,
-        p_logging=False
-    )
+#     myscenario  = MyScenario(
+#         p_mode=Environment.C_MODE_SIM,
+#         p_ada=True,
+#         p_cycle_limit=10,
+#         p_visualize=False,
+#         p_logging=False,
+#     )
+#     training        = RLTraining(
+#         p_scenario=myscenario,
+#         p_cycle_limit=100,
+#         p_max_stagnations=0,
+#         p_collect_states=True,
+#         p_collect_actions=True,
+#         p_collect_rewards=True,
+#         p_collect_training=True,
+#         p_logging=False
+#     )
 
-    training.run()
+#     training.run()
     
 
