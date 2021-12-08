@@ -15,6 +15,7 @@
 ## --                                - changes in class Element: list instead of np.array
 ## -- 2021-10-25  1.3.0     DA       New class Function
 ## -- 2021-12-03  1.3.1     DA       New methods Dimension.copy(), Set.copy(), Set.append()
+## -- 2021-12-03  1.3.2     MRDS     Fix Set.append() due to the usage of max() on empty list
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -234,7 +235,7 @@ class Set:
 
 ## -------------------------------------------------------------------------------------------------
     def append(self, p_set):
-        dim_id_new = max(self.get_dim_ids()) + 1
+        dim_id_new = max(self.get_dim_ids() or [0]) + 1
 
         for dim_id in p_set.get_dim_ids():
             self.add_dim( p_set.get_dim(dim_id).copy(dim_id_new) )
