@@ -15,12 +15,14 @@ This module provide Policy Dummy for unittest purpose.
 """
 
 from mlpro.rl.models import *
+from mlpro.rl.pool.sarsbuffer.RandomSARSBuffer import RandomSARSBuffer
 
 class MyDummyPolicy(Policy):
     """
     Creates a policy that satisfies mlpro interface.
     """
     C_NAME          = 'MyPolicy'
+    C_BUFFER_CLS    = RandomSARSBuffer
 
     def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size, p_batch_size=5, p_warm_up_step=10, p_ada=True, p_logging=True):
         """
