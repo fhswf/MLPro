@@ -3,7 +3,7 @@ Reinforcement Learning
 
 We provide some examples of `MLPro <https://github.com/fhswf/MLPro.git>`_'s RL funcionalities implementation, which is available on our GitHub file.
 
-`Types of reward <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2001%20-%20(RL)%20Types%20of%20reward.py>`_
+`Howto 01 - (RL) Types of reward <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2001%20-%20(RL)%20Types%20of%20reward.py>`_
 -----------------
 This module shows how to create and interprete reward objects in own projects.
 
@@ -11,7 +11,7 @@ This module shows how to create and interprete reward objects in own projects.
     :language: python
 
 
-`Run agent with own policy with gym environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2002%20-%20(RL)%20Run%20agent%20with%20own%20policy%20with%20gym%20environment.py>`_
+`Howto 02 - (RL) Run agent with own policy with gym environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2002%20-%20(RL)%20Run%20agent%20with%20own%20policy%20with%20gym%20environment.py>`_
 -----------------
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 the fhswf_at_ml framework.
@@ -20,7 +20,7 @@ the fhswf_at_ml framework.
     :language: python
 
 
-`Train agent with own policy on gym environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2003%20-%20(RL)%20Train%20agent%20with%20own%20policy%20on%20gym%20environment.py>`_
+`Howto 03 - (RL) Train agent with own policy on gym environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2003%20-%20(RL)%20Train%20agent%20with%20own%20policy%20on%20gym%20environment.py>`_
 -----------------
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """
@@ -29,7 +29,7 @@ This module shows how to train an agent with a custom policy inside on an OpenAI
     :language: python
 
 
-`Run multi-agent with own policy in multicartpole environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2004%20-%20(RL)%20Run%20multi-agent%20with%20own%20policy%20in%20multicartpole%20environment.py>`_
+`Howto 04 - (RL) Run multi-agent with own policy in multicartpole environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2004%20-%20(RL)%20Run%20multi-agent%20with%20own%20policy%20in%20multicartpole%20environment.py>`_
 -----------------
 This module shows how to run an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -38,7 +38,7 @@ MultiCartPole based on the OpenAI Gym CartPole environment.
     :language: python
 
 
-`Train multi-agent with own policy on multicartpole environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2005%20-%20(RL)%20Train%20multi-agent%20with%20own%20policy%20on%20multicartpole%20environment.py>`_
+`Howto 05 - (RL) Train multi-agent with own policy on multicartpole environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2005%20-%20(RL)%20Train%20multi-agent%20with%20own%20policy%20on%20multicartpole%20environment.py>`_
 -----------------
 This module shows how to train an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -47,7 +47,7 @@ MultiCartPole based on the OpenAI Gym CartPole environment.
     :language: python
 
 
-`A2C Implementation <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2006%20-%20(RL)%20A2C%20Implementation.py>`_
+`Howto 06 - (RL) A2C Implementation <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2006%20-%20(RL)%20A2C%20Implementation.py>`_
 -----------------
 This module shows how to implement A2C from the pool
 
@@ -55,7 +55,7 @@ This module shows how to implement A2C from the pool
     :language: python
 
 
-`Train UR5 Robot environment with A2C Algorithm <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2007%20-%20(RL)%20Train%20UR5%20Robot%20environment%20with%20A2C%20Algorithm.py>`_
+`Howto 07 - (RL) Train UR5 Robot environment with A2C Algorithm <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2007%20-%20(RL)%20Train%20UR5%20Robot%20environment%20with%20A2C%20Algorithm.py>`_
 -----------------
 This module shows how to implement A2C on the UR5 Robot Environment
 """
@@ -64,7 +64,7 @@ This module shows how to implement A2C on the UR5 Robot Environment
     :language: python
 
 
-`Run own agents with petting zoo environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2008%20-%20(RL)%20Run%20own%20agents%20with%20petting%20zoo%20environment.py>`_
+`Howto 08 - (RL) Run own agents with petting zoo environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2008%20-%20(RL)%20Run%20own%20agents%20with%20petting%20zoo%20environment.py>`_
 -----------------
 This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
 the mlpro framework.
@@ -73,7 +73,7 @@ the mlpro framework.
     :language: python
 
 
-`SAC Implementation <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2009%20-%20(RL)%20SAC%20Implementation.py>`_
+`Howto 09 - (RL) SAC Implementation <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2009%20-%20(RL)%20SAC%20Implementation.py>`_
 -----------------
 This module shows how to implement SAC from the pool
 
@@ -81,7 +81,7 @@ This module shows how to implement SAC from the pool
     :language: python
 
 
-`Train using SB3 Wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2010%20-%20(RL)%20Train%20using%20SB3%20Wrapper.py>`_
+`Howto 10 - (RL) Train using SB3 Wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2010%20-%20(RL)%20Train%20using%20SB3%20Wrapper.py>`_
 -----------------
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 
@@ -89,7 +89,7 @@ This module shows how to train with SB3 Wrapper for On-Policy Algorithm
     :language: python
 
 
-`Wrap mlpro Environment class to gym environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2011%20-%20(RL)%20Wrap%20mlpro%20Environment%20class%20to%20gym%20environment.py>`_
+`Howto 11 - (RL) Wrap mlpro Environment class to gym environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2011%20-%20(RL)%20Wrap%20mlpro%20Environment%20class%20to%20gym%20environment.py>`_
 -----------------
 This module shows how to wrap mlpro's Environment class to gym compatible.
 
@@ -97,7 +97,7 @@ This module shows how to wrap mlpro's Environment class to gym compatible.
     :language: python
 
 
-`Wrap mlpro Environment class to petting zoo environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2012%20-%20(RL)%20Wrap%20mlpro%20Environment%20class%20to%20petting%20zoo%20environment.py>`_
+`Howto 12 - (RL) Wrap mlpro Environment class to petting zoo environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2012%20-%20(RL)%20Wrap%20mlpro%20Environment%20class%20to%20petting%20zoo%20environment.py>`_
 -----------------
 This module shows how to wrap mlpro's Environment class to petting zoo compatible.
 
@@ -105,7 +105,7 @@ This module shows how to wrap mlpro's Environment class to petting zoo compatibl
     :language: python
 
 
-`Comparison Native and Wrapper SB3 Policy <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2013%20-%20(RL)%20Comparison%20Native%20and%20Wrapper%20SB3%20Policy.py>`_
+`Howto 13 - (RL) Comparison Native and Wrapper SB3 Policy <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2013%20-%20(RL)%20Comparison%20Native%20and%20Wrapper%20SB3%20Policy.py>`_
 -----------------
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 
@@ -113,7 +113,7 @@ This module shows how to train with SB3 Wrapper for On-Policy Algorithm
     :language: python
 
 
-`Train UR5 with SB3 wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2014%20-%20(RL)%20Train%20UR5%20with%20SB3%20wrapper.py>`_
+`Howto 14 - (RL) Train UR5 with SB3 wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2014%20-%20(RL)%20Train%20UR5%20with%20SB3%20wrapper.py>`_
 -----------------
 This module shows how to use SB3 wrapper to train UR5 robot
 
@@ -121,7 +121,7 @@ This module shows how to use SB3 wrapper to train UR5 robot
     :language: python
 
 
-`Train Robothtm with SB3 Wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2015%20-%20(RL)%20Train%20Robothtm%20with%20SB3%20Wrapper.py>`_
+`Howto 15 - (RL) Train Robothtm with SB3 Wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2015%20-%20(RL)%20Train%20Robothtm%20with%20SB3%20Wrapper.py>`_
 -----------------
 This module shows how to use SB3 wrapper to train Robothtm
 
