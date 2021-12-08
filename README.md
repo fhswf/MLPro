@@ -9,5 +9,26 @@ MLPro provides complete, standardized, and reusable functionalities to support y
 
 In the first version of MLPro, we provide a standardized Python package for reinforcement learning (RL) and game theoretical (GT) approaches, including environments, algorithms, multi-agent RL (MARL), model-based RL (MBRL) and many more. Additionally, we incorporate the available third party packages by developing wrapper classes to enable our users to reuse the third party packages in MLPro.
 
+# Main Features
+
+-   Test-driven development (CI/CD concept)
+-   Clean code and constructed through Object-Oriented Programming
+-   Ready-to-use functionalities
+-   Usability in scientific, industrial and educational contexts
+-   Extensible, maintainable, understandable
+-   Attractive UI support (available soon)
+-   Reuse of available state-of-the-art implementations
+-   Clear documentations
+
+# Documentation
+
+The Documentation is available on : [MLPRORTD](https://www.google.com)
+
+# Installation
+
+# Example
+
+# Implemented Wrappers
+
 # How to contribute
 If you want to contribute, please read [CONTRIBUTING.md](https://github.com/fhswf/MLPro/blob/master/CONTRIBUTING.md)
