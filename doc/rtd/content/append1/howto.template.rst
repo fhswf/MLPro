@@ -10,20 +10,25 @@ Ver. 0.0.0 (YYYY-MM-DD)
 
 This module description ...
 
-Dependencies
+Prerequisites
 `````````````````
-- :ref:`MLPro <Installation>`
-
-When necessary, additional information
-about dependencies needed to run the examples should be located here.
-
-Expected Results
-`````````````````
-Descriptions, plots, images, screenshots of expected results.
-
+Please install the following packages to run this examples properly:
+    - :ref:`MLPro <Installation>`
+    ..
+      `OpenAI Gym <https://pypi.org/project/gym/>`_
+      `PettingZoo <https://pypi.org/project/PettingZoo/>`_
+      `Stable Baselines 3 <https://pypi.org/project/stable-baselines3/>`_
+      `Optuna <https://pypi.org/project/optuna/>`_
+      `Hyperopt <https://pypi.org/project/hyperopt/>`_
+      `ROS <http://wiki.ros.org/noetic/Installation>`_
+    
 
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../template.py
     :language: python
+
+Results
+`````````````````
+Descriptions, plots, images, screenshots of expected results.
