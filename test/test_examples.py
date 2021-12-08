@@ -35,7 +35,7 @@ howto_list = {
     "rl_11": "examples.rl.Howto 11 - (RL) Wrap mlpro Environment class to gym environment",
     "rl_12": "examples.rl.Howto 12 - (RL) Wrap mlpro Environment class to petting zoo environment",
     "rl_13": "examples.rl.Howto 13 - (RL) Comparison Native and Wrapper SB3 Policy",
-    "rl_15": "examples.rl.Howto 15a - (RL) Train Robothtm with SB3 Wrapper",
+    "rl_15": "examples.rl.Howto 15 - (RL) Train Robothtm with SB3 Wrapper",
     "sciui_01": "examples.sciui.Howto 01 (SciUI) - Reuse of interactive 2D,3D input space"
 }
 
