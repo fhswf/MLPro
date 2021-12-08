@@ -14,6 +14,11 @@ Expected Results
 `````````````````
 Descriptions, plots, images, screenshots of expected results.
 
+Dependencies
+`````````````````
+When necessary, an additional section called dependencies should contain all the information
+about dependencies needed to run the examples.
+
 Source with code box
 `````````````````
 
