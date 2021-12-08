@@ -4,4 +4,4 @@
 Machine Learning Professional - A Synoptic Framework for Standardized Machine Learning Tasks in Python
 
 # How to contribute
-If you want to contribute, please read [CONTRIBUTING.md](https://www.google.com)
+If you want to contribute, please read [CONTRIBUTING.md](https://github.com/fhswf/MLPro/blob/master/CONTRIBUTING.md)
