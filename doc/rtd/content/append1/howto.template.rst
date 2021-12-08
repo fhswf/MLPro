@@ -10,16 +10,19 @@ Ver. 0.0.0 (YYYY-MM-DD)
 
 This module description ...
 
+Dependencies
+`````````````````
+- :ref:`MLPro <Installation>`
+
+When necessary, additional information
+about dependencies needed to run the examples should be located here.
+
 Expected Results
 `````````````````
 Descriptions, plots, images, screenshots of expected results.
 
-Dependencies
-`````````````````
-When necessary, an additional section called dependencies should contain all the information
-about dependencies needed to run the examples.
 
-Source with code box
+Example Code
 `````````````````
 
 .. literalinclude:: ../../../template.py

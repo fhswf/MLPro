@@ -79,8 +79,8 @@ Instructions for use
    content/ui/sciui
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Appendix 1: List of Examples
+   :maxdepth: 1
+   :caption: Appendix 1: Examples
    
    content/append1/howto.bf
    content/append1/howto.rl

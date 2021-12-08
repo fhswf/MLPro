@@ -9,11 +9,15 @@ Ver. 1.1.1 (2021-11-13)
 
 This module demonstrates the Log class functionality.
 
+Dependencies
+`````````````````
+- :ref:`MLPro <Installation>`
+
 Expected Results
 `````````````````
 Descriptions, plots, images, screenshots of expected results.
 
-Source with code box
+Example Code
 `````````````````
 
 .. literalinclude:: ../../../../examples/bf/Howto 01 - (Various) Logging.py
