@@ -1,4 +1,4 @@
-Template
+Code Template
 ================
 
 The code developed using MLPro is strongly advised to follow the template below.
