@@ -1,23 +1,23 @@
 Reinforcement Learning
 ================
 
-We provide some examples of `MLPro <https://github.com/fhswf/MLPro.git>`_'s RL funcionalities implementation, which is available on our GitHub file.
+We provide some examples of MLPro's RL funcionalities implementation, which is available on our GitHub file.
 
 .. toctree::
    :maxdepth: 1
    
-   bf/howto.bf.001
-   bf/howto.bf.002
-   bf/howto.bf.003
-   bf/howto.bf.004
-   bf/howto.bf.005
-   bf/howto.bf.006
-   bf/howto.bf.007
-   bf/howto.bf.008
-   bf/howto.bf.009
-   bf/howto.bf.010
-   bf/howto.bf.011
-   bf/howto.bf.012
-   bf/howto.bf.013
-   bf/howto.bf.014
-   bf/howto.bf.015
+   rl/howto.rl.001
+   rl/howto.rl.002
+   rl/howto.rl.003
+   rl/howto.rl.004
+   rl/howto.rl.005
+   rl/howto.rl.006
+   rl/howto.rl.007
+   rl/howto.rl.008
+   rl/howto.rl.009
+   rl/howto.rl.010
+   rl/howto.rl.011
+   rl/howto.rl.012
+   rl/howto.rl.013
+   rl/howto.rl.014
+   rl/howto.rl.015
