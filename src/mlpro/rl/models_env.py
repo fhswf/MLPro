@@ -27,6 +27,7 @@ This module provides model classes for environments and environnment models.
 """
 
 
+from mlpro.sl.models import AdaptiveFunction
 from mlpro.rl.models_sar import *
 
 
