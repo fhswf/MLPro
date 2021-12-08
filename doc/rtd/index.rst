@@ -79,7 +79,7 @@ Instructions for use
    content/ui/sciui
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Appendix 1: Examples
    
    content/append1/howto.bf

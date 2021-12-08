@@ -14,13 +14,24 @@ Prerequisites
 `````````````````
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
-    ..
-      `OpenAI Gym <https://pypi.org/project/gym/>`_
-      `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-      `Stable Baselines 3 <https://pypi.org/project/stable-baselines3/>`_
-      `Optuna <https://pypi.org/project/optuna/>`_
-      `Hyperopt <https://pypi.org/project/hyperopt/>`_
-      `ROS <http://wiki.ros.org/noetic/Installation>`_
+  ..
+    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
+  ..
+    - `NumPy <https://pypi.org/project/numpy/>`_
+  ..
+    - `Pytorch <https://pypi.org/project/torch/>`_
+  ..
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
+  ..
+    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
+  ..
+    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
+  ..
+    - `Optuna <https://pypi.org/project/optuna/>`_
+  ..
+    - `Hyperopt <https://pypi.org/project/hyperopt/>`_
+  ..
+    - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
 Example Code
