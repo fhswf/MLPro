@@ -7,11 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-01  0.0.0     MRD      Creation
 ## -- 2021-12-01  1.0.0     MRD      First Release
-## -- 2021-12-08  1.0.1     MRD      Add parameter to change the hidden layer of the policy
+## -- 2021-12-07  1.0.1     DA       Refactoring
+## -- 2021-12-08  1.0.2     MRD      Add parameter to change the hidden layer of the policy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-12-08)
+Ver. 1.0.2 (2021-12-08)
 
 This module shows how to use SB3 wrapper to train Robothtm
 """
@@ -64,7 +65,7 @@ class ScenarioRobotHTM(RLScenario):
 
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    logging     = Log.C_LOG_ALL
+    logging     = Log.C_LOG_NOTHING
     visualize   = True
     path        = str(Path.home())
     plotting    = True
@@ -79,20 +80,12 @@ else:
     timestep    = 200
 
 
-# 3 Instantiate scenario
-myscenario  = ScenarioRobotHTM(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=visualize,
-    p_logging=False
-)
 
-# 4 Train agent in scenario 
+# 3 Train agent in scenario 
 now             = datetime.now()
 
 training        = RLTraining(
-    p_scenario=myscenario,
+    p_scenario_cls=ScenarioRobotHTM,
     p_cycle_limit=timestep,
     p_max_cycles_per_episode=100,
     p_max_stagnations=0,
@@ -101,12 +94,15 @@ training        = RLTraining(
     p_collect_rewards=True,
     p_collect_training=True,
     p_path=path,
+    p_visualize=visualize,
     p_logging=logging
 )
 
 training.run()
 
-# 6 Create Plotting Class
+
+
+# 4 Create Plotting Class
 class MyDataPlotting(DataPlotting):
     def get_plots(self):
         """
@@ -143,7 +139,8 @@ class MyDataPlotting(DataPlotting):
                 else:
                     plt.close(fig)
 
-# 7 Plotting 1 MLpro    
+
+# 5 Plotting 1 MLpro    
 data_printing   = {"Cycle":        [False],
                     "Day":          [False],
                     "Second":       [False],
