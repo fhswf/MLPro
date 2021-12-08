@@ -7,15 +7,16 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-01  0.0.0     MRD      Creation
 ## -- 2021-12-01  1.0.0     MRD      First Release
+## -- 2021-12-08  1.0.1     MRD      Add parameter to change the hidden layer of the policy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-01)
+Ver. 1.0.1 (2021-12-08)
 
 This module shows how to use SB3 wrapper to train Robothtm
 """
 
-
+import torch
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
@@ -32,11 +33,16 @@ class ScenarioRobotHTM(RLScenario):
         # 1 Setup environment
         self._env   = RobotHTM(p_logging=True)
 
+        policy_kwargs = dict(activation_fn=torch.nn.Tanh,
+                     net_arch=[dict(pi=[128, 128], vf=[128, 128])])
+
         policy_sb3 = PPO(
                     policy="MlpPolicy",
                     n_steps=100, 
                     env=None,
-                    _init_setup_model=False)
+                    _init_setup_model=False,
+                    policy_kwargs=policy_kwargs,
+                    seed=1)
 
         policy_wrapped = WrPolicySB32MLPro(
                 p_sb3_policy=policy_sb3, 
@@ -79,7 +85,7 @@ myscenario  = ScenarioRobotHTM(
     p_ada=True,
     p_cycle_limit=100,
     p_visualize=visualize,
-    p_logging=logging
+    p_logging=False
 )
 
 # 4 Train agent in scenario 
