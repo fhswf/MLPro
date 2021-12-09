@@ -21,26 +21,79 @@
 ## -- 2021-11-21  2.1.4     SY       Remove dependency from torch
 ## -- 2021-11-26  2.1.5     SY       Update reward type
 ## -- 2021-12-03  2.1.6     DA       Refactoring
+## -- 2021-12-09  2.1.7     SY       Clean code assurance
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.6 (2021-12-03)
+Ver. 2.1.7 (2021-12-09)
 
-This module provides an environment of Bulk Good Laboratory Plant (BGLP).
+This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
+
 
 from mlpro.rl.models import *
 from mlpro.bf.various import *
 import numpy as np
 import random
-        
-        
-        
-        
-        
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Actuator:
+    """
+    This class serves as a parent class of different types of actuators, which provides the main 
+    attributes of an actuator in the BGLP environment.
+
+    Parameters
+    ----------
+    minpower : float
+        minimum power of an actuator
+    maxpower : float
+        maximum power of an actuator
+    minaction : float
+        minimum action of an actuator
+    maxaction : float
+        maximum action of an actuator
+    masscoeff : float
+        mass transport coefficient of an actuator.
+        
+    Attributes
+    ----------
+    reg_a: list of objects
+        list of existing actuators in the environment.
+    idx_a: int
+        length of reg_a.
+    power_max: float
+        maximum power of an actuator.
+    power_min: float
+        minimum power of an actuator.
+    power_coeff: float
+        power coefficient of an actuator, if necessary.
+    action_max: float
+        maximum action of an actuator.
+    action_min: float
+        minimum action of an actuator.
+    mass_coeff: float
+        mass transport coefficient of an actuator.
+    t_activated: float
+        a time indicator about an actuator is activated.
+    t_end: float
+        a time indicator about the end of an activation sequence of the actuator.
+    status: bool
+        status of an actuator, false means inactive and true means active.
+    cur_mass_transport: float
+        current transported mass of an actuator.
+    cur_power: float
+        current power consumption of an actuator.
+    cur_action: float
+        current taken action of an actuator in RL context.
+    cur_speed: float
+        current speed of an actuator.
+    type_: str
+        a short name for an actuator, usually 3 capital letters.
+    """
     reg_a               = []
     idx_a               = 0
     power_max           = 0
@@ -60,24 +113,6 @@ class Actuator:
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, minpower, maxpower, minaction, maxaction, masscoeff):
-        """      
-
-        Parameters
-        ----------
-        maxpower : Numeric Types
-            the maximum power of an actuator
-        minaction : Numeric Types
-            the minimum action of an actuator
-        maxaction : Numeric Types
-            the maximum action of an actuator
-        masscoeff : Numeric Types
-            the mass transport coefficient of an actuator.
-
-        Returns
-        -------
-        None.
-
-        """
         self.idx_a              = len(self.reg_a)
         self.reg_a.append(self)
         self.power_max          = maxpower
@@ -89,10 +124,10 @@ class Actuator:
         self.cur_power          = 0
         self.cur_action         = 0
         self.cur_speed          = 0
-        
-        
-        
-        
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class VacuumPump (Actuator):
@@ -225,11 +260,10 @@ class VacuumPump (Actuator):
         self.status             = False
         self.cur_mass_transport = 0
         self.cur_power          = 0
-        
-        
-        
-        
-        
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Belt(Actuator):
@@ -377,11 +411,9 @@ class Belt(Actuator):
         self.status             == False
         self.cur_mass_transport = 0
         self.cur_power          = 0
-        
-    
-        
-        
- 
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -442,11 +474,10 @@ class Reservoir:
     def update(self):
         self.vol_cur_abs += self.change
         self.vol_cur_rel = self.vol_cur_abs / self.vol_max
-        
-    
-    
-    
-    
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Silo(Reservoir):
@@ -489,7 +520,6 @@ class Silo(Reservoir):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Hopper (Reservoir):
@@ -528,8 +558,6 @@ class Hopper (Reservoir):
         self.idx_h  = len(self.reg_h)
         self.reg_h.append(self)
         self.type_  = "HOP" 
-
-
 
 
 
