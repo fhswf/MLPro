@@ -25,10 +25,73 @@ In the first version of MLPro, we provide a standardized Python package for rein
 The Documentation is available on : [MLPRORTD](https://www.google.com)
 
 # Installation
+```bash
+pip install mlpro
+```
 
 # Example
+This examples shows how to train CartPole-V1 with Stable-Baselines3 wrapper
+
+```python
+import gym
+
+from stable_baselines3 import PPO
+
+from mlpro.rl.models import *
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+
+class MyScenario(RLScenario):
+
+    C_NAME      = 'Matrix'
+
+    def _setup(self, p_mode, p_ada, p_logging):
+        gym_env     = gym.make('CartPole-v1')
+        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
+
+        policy_sb3 = PPO(
+                    policy="MlpPolicy",
+                    n_steps=5, 
+                    env=None,
+                    _init_setup_model=False)
+
+        policy_wrapped = WrPolicySB32MLPro(
+                p_sb3_policy=policy_sb3, 
+                p_observation_space=self._env.get_state_space(),
+                p_action_space=self._env.get_action_space(),
+                p_ada=p_ada,
+                p_logging=p_logging)
+        
+        return Agent(
+            p_policy=policy_wrapped,   
+            p_envmodel=None,
+            p_name='Smith',
+            p_ada=p_ada,
+            p_logging=p_logging
+        )
+
+training = RLTraining(
+        p_scenario_cls=MyScenario,
+        p_cycle_limit=1000,
+        p_max_adaptations=0,
+        p_max_stagnations=0,
+        p_visualize=True,
+        p_logging=Log.C_LOG_ALL )
+
+training.run()
+```
 
 # Implemented Wrappers
+
+| **Features**                | **Stable-Baselines3** |
+| --------------------------- | ----------------------|
+| OpenAI-Gym | :heavy_check_mark: |
+| Stable-Baselines3               | :heavy_check_mark: |
+| PettingZoo         | :heavy_check_mark: |
+| Hyperopt             | :heavy_check_mark: |
+
+# Mainteners
+MLPro is currently maintained by [Detlef Arend](https://github.com/detlefarend), [M Rizky Diprasetya](https://github.com/rizkydiprasetya), [Steve Yuwono](https://github.com/steveyuwono), [William Budiatmadjaja](https://github.com/budiatmadjajaWill)
 
 # How to contribute
 If you want to contribute, please read [CONTRIBUTING.md](https://github.com/fhswf/MLPro/blob/master/CONTRIBUTING.md)
