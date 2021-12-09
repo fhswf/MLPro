@@ -22,10 +22,11 @@
 ## -- 2021-12-07  1.2.2     DA       - Method Scenario.__init__(): param p_cycle_len removed
 ## --                                - Method Training.__init__(): par p_scenario replaced by p_scenario_cls
 ## -- 2021-12-08  1.2.3     DA       Moved class AdaptiveFunction to new subtopic package sl
+## -- 2021-12-09  1.2.4     DA       Class Training: introduced dynamic parameters **p_kwargs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2021-12-08)
+Ver. 1.2.4 (2021-12-09)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -809,7 +810,7 @@ class Training (Log):
     p_scenario_cls 
         Name of ML scenario class, compatible to/inherited from class Scenario.
     p_cycle_limit : int
-        Maximum number of training cycles (0=no limit)
+        Maximum number of training cycles (0=no limit). Default = 0.
     p_hpt : HyperParamTuner
         Optional hyperparameter tuner (see class HyperParamTuner). Default = None.
     p_hpt_trials : int
@@ -817,7 +818,7 @@ class Training (Log):
     p_path : str
         Optional destination path to store training data. Default = None.
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = True
+        Boolean switch for env/agent visualisation. Default = False
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_WE.
 
@@ -829,45 +830,87 @@ class Training (Log):
     C_CLS_RESULTS   = TrainingResults
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_scenario_cls,           
-                 p_cycle_limit=0,   
-                 p_hpt:HyperParamTuner=None,    
-                 p_hpt_trials=0,                
-                 p_path=None,           
-                 p_visualize:bool=False,       
-                 p_logging=Log.C_LOG_WE ):      
+    def __init__(self, **p_kwargs):
+ 
+        # 1 Check and completion of parameters
+        self._kwargs = p_kwargs.copy()
 
-        super().__init__(p_logging=p_logging)
-
+        # 1.1 Mandatory parameter p_scenario_cls
         try:
-            self._scenario = p_scenario_cls( p_mode=Mode.C_MODE_SIM, 
-                                             p_ada=True,
-                                             p_cycle_limit=p_cycle_limit,
-                                             p_visualize=p_visualize,
-                                             p_logging=p_logging )
+            scenario_cls = self._kwargs['p_scenario_cls']
         except:
-            raise ParamError('Par p_scenario_cls: class "' + p_scenario_cls + '" not compatible')
+            raise ParamError('Mandatory parameter p_scenario_cls not supplied')
+
+        # 1.2 Optional parameter p_cycle_limit
+        try:
+            self._cycle_limit = self._kwargs['p_cycle_limit']
+        except:
+            self._cycle_limit = 0
+            self._kwargs['p_cycle_limit'] = self._cycle_limit
+
+        # 1.3 Optional parameter p_hpt
+        try:
+            self._hpt = self._kwargs['p_hpt']
+        except:
+            self._hpt = None
+            self._kwargs['p_hpt'] = self._hpt
+
+        # 1.4 Optional parameter p_hpt_trials
+        try:
+            self._hpt_trials = self._kwargs['p_hpt_trials']
+        except:
+            self._hpt_trials = 0
+            self._kwargs['p_hpt_trials'] = self._hpt_trials 
+
+        if ( self._hpt is not None ) and ( self._hpt_trials <= 0 ):
+            raise ParamError('Please supply parameter p_hpt_trials with a number >0')
+
+        # 1.5 Optional file path
+        try:
+            path = self._kwargs['p_path']
+        except:
+            path = None
+            self._kwargs['p_path'] = path
+
+        # 1.6 Optional parameter for visualization
+        try:
+            visualize = self._kwargs['p_visualize']
+        except:
+            visualize = False
+            self._kwargs['p_visualize'] = visualize
+
+        # 1.7 Optional log level
+        try:
+            logging = self._kwargs['p_logging']
+        except:
+            logging = Log.C_LOG_WE
+            self._kwargs['p_logging'] = logging
+
+
+        # 2 Initialization
+        super().__init__(p_logging=logging)
 
         self._num_cycles        = 0
-        self._cycle_limit       = p_cycle_limit
-        self._hpt               = p_hpt
-        self._hpt_trials        = p_hpt_trials
-        self._current_path      = None
         self._current_run       = 0
+        self._new_run           = True
         self._results           = None
         self._best_results      = None
+        self._root_path         = self._gen_root_path(path)
+        self._current_path      = None
+        self._scenario          = None
 
-        # if self._hpt is not None: 
-        #     raise NotImplementedError('Hyperparameter Tuning not yet implemented')
 
-        if ( self._hpt is not None ) and ( p_hpt_trials <= 0 ):
-            raise ParamError('Please check number of trials for hyperparameter tuning')
-
-        self._root_path         = self._gen_root_path(p_path)
-        self._scenario.set_cycle_limit(self._cycle_limit)
-
-        self._new_run           = True
+        # 3 Setup scenario
+        if self._hpt is None:
+            try:
+                self._scenario = scenario_cls( p_mode=Mode.C_MODE_SIM, 
+                                               p_ada=True,
+                                               p_cycle_limit=self._cycle_limit,
+                                               p_visualize=visualize,
+                                               p_logging=logging )
+                self._scenario.set_cycle_limit(self._cycle_limit)
+            except:
+                raise ParamError('Par p_scenario_cls: class "' + scenario_cls + '" not compatible')
 
 
 ## -------------------------------------------------------------------------------------------------

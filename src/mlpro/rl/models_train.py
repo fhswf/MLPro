@@ -21,10 +21,11 @@
 ## -- 2021-11-13  1.3.0     DA       Rework/improvement of class RLTraining
 ## -- 2021-12-07  1.3.1     DA       - Method RLScenario.__init__(): param p_cycle_len removed
 ## --                                - Method RLTraining.__init__(): par p_scenario replaced by p_scenario_cls
+## -- 2021-12-09  1.3.2     DA       Class RLTraining: introduced dynamic parameters **p_kwargs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-07)
+Ver. 1.3.2 (2021-12-09)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -415,60 +416,98 @@ class RLTraining (Training):
     C_CLS_RESULTS           = RLTrainingResults
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_scenario_cls,         
-                 p_cycle_limit=0,               
-                 p_max_cycles_per_episode=-1,   
-                 p_max_adaptations=0,           
-                 p_max_stagnations=5,           
-                 p_eval_frequency=100,          
-                 p_eval_grp_size=50,            
-                 p_hpt:HyperParamTuner=None,    
-                 p_hpt_trials=0,                
-                 p_path=None,                   
-                 p_collect_states=True,         
-                 p_collect_actions=True,       
-                 p_collect_rewards=True,        
-                 p_collect_training=True,  
-                 p_visualize=False,     
-                 p_logging=Log.C_LOG_WE):
+    def __init__(self, **p_kwargs):
 
-        if ( p_cycle_limit <= 0 ) and ( p_max_adaptations <= 0 ) and ( p_max_stagnations <= 0 ):
+        # 1 Initialization of elementary training functionalities
+        super().__init__( **p_kwargs )
+
+
+        # 2 Check and completion of RL-specific parameters
+
+        # 2.1 Optional parameter p_max_cycles_per_episode
+        try:
+            self._max_cycles_per_epi = self._kwargs['p_max_cycles_per_episode']
+        except:
+            self._max_cycles_per_epi = -1
+
+        # 2.2 Optional parameter p_max_adaptations
+        try:
+            self._max_adaptations = self._kwargs['p_max_adaptations']
+        except:
+            self._max_adaptations = 0
+            self._kwargs['p_max_adaptations'] = self._max_adaptations
+
+        # 2.3 Optional parameter p_max_stagnations
+        try:
+            self._max_stagnations = self._kwargs['p_max_stagnations']
+        except:
+            self._max_stagnations = 5
+            self._kwargs['p_max_stagnations'] = self._max_stagnations
+
+        # 2.4 Optional parameter p_eval_frequency
+        try:
+            self._eval_frequency = self._kwargs['p_eval_frequency']
+        except:
+            self._eval_frequency = 100
+            self._kwargs['p_eval_frequency'] = self._eval_frequency
+
+        # 2.5 Optional parameter p_eval_grp_size
+        try:
+            self._eval_grp_size = self._kwargs['p_eval_grp_size']
+        except:
+            self._eval_grp_size = 50
+            self._kwargs['p_eval_grp_size'] = self._eval_grp_size
+
+        # 2.6 Optional parameter p_collect_states
+        try:
+            self._collect_states = self._kwargs['p_collect_states']
+        except:
+            self._collect_states = True
+            self._kwargs['p_collect_states'] = self._collect_states
+
+        # 2.7 Optional parameter p_collect_actions
+        try:
+            self._collect_actions = self._kwargs['p_collect_actions']
+        except:
+            self._collect_actions = True
+            self._kwargs['p_collect_actions'] = self._collect_actions
+
+        # 2.8 Optional parameter p_collect_rewards
+        try:
+            self._collect_rewards = self._kwargs['p_collect_rewards']
+        except:
+            self._collect_rewards = True
+            self._kwargs['p_collect_rewards'] = self._collect_rewards
+
+        # 2.9 Optional parameter p_collect_training
+        try:
+            self._collect_training = self._kwargs['p_collect_training']
+        except:
+            self._collect_training = True
+            self._kwargs['p_collect_training'] = self._collect_training
+
+
+        # 3 Check for further restrictions
+        if self._max_adaptations > 0: raise NotImplementedError
+        if self._max_stagnations > 0: raise NotImplementedError
+        
+        if ( self._cycle_limit <= 0 ) and ( self._max_adaptations <= 0 ) and ( self._max_stagnations <= 0 ):
             raise ParamError('Please define a termination criterion')
 
-        if ( p_max_stagnations > 0 ) and ( ( p_eval_frequency <= 0) or ( p_eval_grp_size <= 0 ) ):
+        if ( self._max_stagnations > 0 ) and ( ( self._eval_frequency <= 0) or ( self._eval_grp_size <= 0 ) ):
             raise ParamError('Stagnation detection needs an eval freqency and eval group size > 0')
 
-        if p_max_adaptations > 0: raise NotImplementedError
-        if p_max_stagnations > 0: raise NotImplementedError
-
-        super().__init__( p_scenario_cls=p_scenario_cls, 
-                          p_cycle_limit=p_cycle_limit, 
-                          p_hpt=p_hpt, 
-                          p_hpt_trials=p_hpt_trials, 
-                          p_path=p_path, 
-                          p_visualize=p_visualize,
-                          p_logging=p_logging)
  
-        self._env                   = self._scenario.get_env()
-        self._agent                 = self._scenario.get_agent()
-
-        self._eval_frequency        = p_eval_frequency
-        self._eval_grp_size         = p_eval_grp_size
-        self._max_adaptation        = p_max_adaptations
-
-        if p_max_cycles_per_episode > 0:
-            self._max_cycles_per_epi = p_max_cycles_per_episode
-        else:
-            self._max_cycles_per_epi = self._env.get_cycle_limit()
-
-        self._collect_states        = p_collect_states
-        self._collect_actions       = p_collect_actions
-        self._collect_rewards       = p_collect_rewards
-        self._collect_training      = p_collect_training
-
+        # 4 Initialization of further rl-specific attributes
         self._cycles_episode        = 0
         self._eval_grp_id           = 0
+
+        if self._scenario is not None:
+            self._env   = self._scenario.get_env()
+            self._agent = self._scenario.get_agent()
+
+            if self._max_cycles_per_epi == -1:
+                self._max_cycles_per_epi = self._env.get_cycle_limit()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -577,8 +616,8 @@ class RLTraining (Training):
             
 
         # 4 Check: Training finished?
-        if ( self._max_adaptation > 0 ) and ( self._results.num_adaptations == self._max_adaptation ):
-            self.log(self.C_LOG_TYPE_I, 'Adaptation limit ', str(self._max_adaptation), ' reached')
+        if ( self._max_adaptations > 0 ) and ( self._results.num_adaptations == self._max_adaptations ):
+            self.log(self.C_LOG_TYPE_I, 'Adaptation limit ', str(self._max_adaptations), ' reached')
             eof_training = True
 
 
