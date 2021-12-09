@@ -61,37 +61,37 @@ class Actuator:
         
     Attributes
     ----------
-    reg_a: list of objects
+    reg_a : list of objects
         list of existing actuators in the environment.
-    idx_a: int
+    idx_a : int
         length of reg_a.
-    power_max: float
+    power_max : float
         maximum power of an actuator.
-    power_min: float
+    power_min : float
         minimum power of an actuator.
-    power_coeff: float
+    power_coeff : float
         power coefficient of an actuator, if necessary.
-    action_max: float
+    action_max : float
         maximum action of an actuator.
-    action_min: float
+    action_min : float
         minimum action of an actuator.
-    mass_coeff: float
+    mass_coeff : float
         mass transport coefficient of an actuator.
-    t_activated: float
+    t_activated : float
         a time indicator about an actuator is activated.
-    t_end: float
+    t_end : float
         a time indicator about the end of an activation sequence of the actuator.
-    status: bool
+    status : bool
         status of an actuator, false means inactive and true means active.
-    cur_mass_transport: float
+    cur_mass_transport : float
         current transported mass of an actuator.
-    cur_power: float
+    cur_power : float
         current power consumption of an actuator.
-    cur_action: float
+    cur_action : float
         current taken action of an actuator in RL context.
-    cur_speed: float
+    cur_speed : float
         current speed of an actuator.
-    type_: str
+    type_ : str
         a short name for an actuator, usually 3 capital letters (e.g VAC, BLT).
     """
     reg_a               = []
@@ -154,9 +154,9 @@ class VacuumPump (Actuator):
         
     Attributes
     ----------
-    reg_v: list of objects
+    reg_v : list of objects
         list of existing vacuum pumps.
-    idx_v: int
+    idx_v : int
         length of reg_v.
     name : str
         specific name or id of a vacuum pump.
@@ -301,9 +301,9 @@ class Belt(Actuator):
         
     Attributes
     ----------
-    reg_b: list of objects
+    reg_b : list of objects
         list of existing belts.
-    idx_b: int
+    idx_b : int
         length of reg_b.
     name : str
         specific name or id of a belt.
@@ -449,19 +449,19 @@ class Reservoir:
         
     Attributes
     ----------
-    reg_r: list of objects
+    reg_r : list of objects
         list of existing reservoirs in the environment.
-    idx_r: int
+    idx_r : int
         length of reg_r.
     vol_max : float
         maximum volume of a reservoir.
     vol_init_abs : float
         initial volume of a reservoir.
-    vol_cur_abs: float
+    vol_cur_abs : float
         current volume of a reservoir.
-    vol_cur_rel: float
+    vol_cur_rel : float
         current volume of a reservoir in percentage.
-    change: float
+    change : float
         volume change of a reservoir in a time step.
     """
     reg_r           = []
@@ -531,9 +531,9 @@ class Silo(Reservoir):
     
     Attributes
     ----------
-    reg_s: list of objects
+    reg_s : list of objects
         list of existing silos.
-    idx_s: int
+    idx_s : int
         length of reg_s.
     name : str
         specific name or id of a silo.
@@ -583,9 +583,9 @@ class Hopper (Reservoir):
     
     Attributes
     ----------
-    reg_h: list of objects
+    reg_h : list of objects
         list of existing silos.
-    idx_h: int
+    idx_h : int
         length of reg_h.
     name : str
         specific name or id of a hopper.
@@ -615,6 +615,100 @@ class Hopper (Reservoir):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class BGLP (Environment):
+    """
+    This is the main class of BGLP environment that inherits Environment class from MLPro.
+    
+    Parameters
+    ----------
+    p_reward_type : Reward, optional
+        rewarding type. The default is Reward.C_TYPE_EVERY_AGENT.
+    p_logging : Log, optional
+        logging functionalities. The default is Log.C_LOG_ALL.
+    t_step : float, optional
+        time for each time step (in seconds). The default is 0.5.
+    t_set : float, optional
+        time set for one horizon (in seconds). The default is 10.0.
+    demand : float, optional
+        the constant output flow from the system (in L/s). The default is 0.1.
+    lr_margin : float, optional
+        the learning rate for margin parameter, related to implemented reward function. The default is 1.0.
+    lr_demand : float, optional
+        the learning rate for production demand, related to implemented reward function. The default is 4.0.
+    lr_energy : float, optional
+        the learning rate for energy consumption, related to implemented reward function. The default is 0.0010.
+    margin_p : list of floats, optional
+        the margin parameter of reservoirs [low, high, multplicator]. The default is [0.2,0.8,4].
+    prod_target : float, optional
+        the production target for batch operation (in L). The default is 10000.
+    prod_scenario : str, optional
+        'batch' means batch production scenario and 'continuous' means continuous production scenario. The default is 'continuous'.
+
+    Attributes
+    ----------
+    C_NAME : str
+        name of the environment.
+    C_LATENCY : timedelta()
+        latency.
+    C_INFINITY : np.finfo()
+        infinity.
+    C_REWARD_TYPE : Reward
+        rewarding type.
+    sils : list of objects
+        list of existing silos.
+    hops : list of objects
+        list of existing hoppers.
+    ress : list of objects
+        list of existing reservoirs.
+    blts : list of objects
+        list of existing belts.
+    acts : list of objects
+        list of existing actuators.
+    vacs : list of objects
+        list of existing vacuum pumps.
+    con_act_to_res : list of lists of int
+        connection between actuators and reservoirs and setup the sequence.
+    m_param : list of floats
+        the margin parameter of reservoirs [low, high, multplicator].
+    _demand : float
+        the constant output flow from the system (in L/s).
+    t : float
+        current time of the system (in seconds).
+    t_step : float
+        time for each time step (in seconds).
+    lr_margin : float
+        the learning rate for margin parameter.
+    lr_demand : float
+        the learning rate for production demand.
+    lr_energy : float
+        the learning rate for energy consumption.
+    overflow : list of floats
+        current overflow.
+    energy : list of floats
+        current power consumption.
+    transport : list of floats
+        current transported mass flow.
+    reward : list of floats
+        current rewards.
+    levels_init : float
+        initial level of reservoirs.
+    overflow_t : float
+        current overflow for a specific buffer in a specific time.
+    demand_t : float
+        current demand for a specific buffer in a specific time.
+    energy_t : float
+        current power consumption for a specific actuator in a specific time.
+    transport_t : float
+        current transported material by a specific actuaor in a specific time.
+    margin_t : float
+        current margin for a specific buffer in a specific time.
+    prod_reached : float
+        current production reached in L for batch operation.
+    prod_target : float
+        the production target for batch operation (in L).
+    prod_scenario : str
+        'batch' means batch production scenario and 'continuous' means continuous production scenario.
+    
+    """
     C_NAME              = "BGLP"
     C_LATENCY           = timedelta(0,1,0)    
     C_INFINITY          = np.finfo(np.float32).max
@@ -654,21 +748,6 @@ class BGLP (Environment):
                  t_step=0.5, t_set=10.0, demand=0.1, lr_margin=1.0, lr_demand=4.0,
                  lr_energy=0.0010, margin_p=[0.2,0.8,4], prod_target=10000,
                  prod_scenario='continuous'):
-        """
-        Parameters:
-            p_reward_type   Reward type to be computed
-            p_logging       Boolean switch for logging
-            t_step          Time per step
-            t_set           A set of time to update action
-            demand          Production demand (L/s)
-            lr_margin       Learning rate for margin (rewarding)
-            lr_demand       Learning rate for demand (rewarding)
-            lr_energy       Learning rate for energy (rewarding)
-            margin_p        Margin parameters
-            prod_target     Production target in one episode (L)
-            prod_scenario   Production scenarion ('continuous'/'batch')
-        """
-        
         self.num_envs       = 5                                                 # Number of internal sub-environments
         self.reward_type    = p_reward_type
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
