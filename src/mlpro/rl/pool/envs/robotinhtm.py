@@ -295,10 +295,7 @@ class RobotHTM(Environment):
         self.target = None
         self.init_distance = None
         self.num_joint = self.RobotArm1.get_num_joint()
-        self.reach = torch.norm(
-            torch.Tensor([[0.0, 0.0, 0.0]])
-            - self.RobotArm1.joints[:3, [-1]].reshape(1, 3)
-        )
+        self.reach = torch.norm(torch.Tensor([[0.0, 0.0, 0.0]]) - self.RobotArm1.joints[:3, [-1]].reshape(1, 3))
         self.last_distance = None
 
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
