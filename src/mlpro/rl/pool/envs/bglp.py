@@ -180,21 +180,17 @@ class VacuumPump (Actuator):
 ## -------------------------------------------------------------------------------------------------
     def start_t(self, now, duration, overwrite = False): 
         """
-        
+        This method calculates the activation time and the end of activation time of the vacuum pump.
+        This method is called, if the vacuum pump would like to be activated or updated.
 
         Parameters
         ----------
-        now : Numeric Types
-            current_simulation time
-        duration : Numeric Types (0 to 1)
-            the selected action by an agent
-        overwrite : Boolean, optional
-            to select whether the actuator is already activated or not
-
-        Returns
-        -------
-        None.
-
+        now : float
+            current time of the system.
+        duration : float
+            duration of the vacuum pump being activated or the action by an agent in RL context.
+        overwrite : bool, optional
+            To indicate whether the current operation can be overwritten or not.
         """
         if self.status == False:
             self.t_activated    = now
@@ -212,16 +208,17 @@ class VacuumPump (Actuator):
 ## -------------------------------------------------------------------------------------------------
     def calc_mass(self, now):
         """
-        
+        This method calculates the transported mass flow by the vacuum pump for a time step.
 
         Parameters
         ----------
-        now : Numeric Types
-            current_simulation time
+        now : float
+            current time of the system.
 
         Returns
         -------
-        current transported mass
+        cur_mass_transport : float
+            current transported mass.
 
         """
         if self.status == True:
@@ -234,11 +231,12 @@ class VacuumPump (Actuator):
 ## -------------------------------------------------------------------------------------------------
     def calc_energy(self):
         """
-        
+        This method calculates the power consumption of a vacuum pump.
 
         Returns
         -------
-        current power consumption
+        cur_power : float
+            current power consumption.
 
         """
         if self.status == True:
@@ -249,16 +247,12 @@ class VacuumPump (Actuator):
 ## -------------------------------------------------------------------------------------------------
     def update(self, now):
         """
-        
+        This method calculates whether a vacuum pump must be deactived or not.
 
         Parameters
         ----------
-        now : Numeric Types
-            current_simulation time
-
-        Returns
-        -------
-        None.
+        now : float
+            current time of the system.
 
         """
         if self.status == True:
@@ -268,6 +262,9 @@ class VacuumPump (Actuator):
 
 ## -------------------------------------------------------------------------------------------------
     def deactivate(self):
+        """
+        This method is used to deactivate a vacuum pump.
+        """
         self.status             = False
         self.cur_mass_transport = 0
         self.cur_power          = 0
