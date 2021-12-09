@@ -536,7 +536,7 @@ class Silo(Reservoir):
     idx_s: int
         length of reg_s.
     name : str
-        specific name or id of a vacuum pump.
+        specific name or id of a silo.
     type_ : str
         a short name for a silo, usually 3 capital letters (e.g SIL).
     """
@@ -563,6 +563,35 @@ class Silo(Reservoir):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Hopper (Reservoir):
+    """
+    This class inherits Reservoir class and serves as a child class of Reservoir.
+    This class represents a type of buffers in the BGLP environment, namely Hopper.
+    Hoppers are used to temporary stored the transported materials.
+    However, the parameter of each hopper can be dissimilar to each other based on their settings.
+
+    Parameters
+    ----------
+    name : str
+        specific name or id of a hopper (e.g. Hop_A, etc.).
+    vol_max : float
+        maximum capacity of a hopper.
+    vol_cur : float
+        current volume of a hopper.
+    mode : str, optional
+        mode of measuring the current volume.
+        "abs" means absolute value, "rel" means percentage. The default is "abs".
+    
+    Attributes
+    ----------
+    reg_h: list of objects
+        list of existing silos.
+    idx_h: int
+        length of reg_h.
+    name : str
+        specific name or id of a hopper.
+    type_ : str
+        a short name for a hopper, usually 3 capital letters (e.g HOP).
+    """
     reg_h   = []
     idx_h   = []
     name    = ""
@@ -570,25 +599,6 @@ class Hopper (Reservoir):
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, name, vol_max, vol_cur = 0, mode = "abs"):
-        """
-        
-
-        Parameters
-        ----------
-        nname : Text Type
-            label for an actuator (e.g. Hopper_A, Silo_A, etc.)
-        vol_max : Numeric Types
-            maximum volume of an reservoir
-        vol_cur : Numeric Types
-            current volume of an reservoir
-        mode : Text Type
-            The default is "abs".
-
-        Returns
-        -------
-        None.
-
-        """
         if mode == "abs":
             vol_cur = vol_cur
         elif mode == "rel":
