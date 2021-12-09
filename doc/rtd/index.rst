@@ -86,7 +86,6 @@ Instructions for use
    content/append1/howto.rl
    content/append1/howto.gt
    content/append1/howto.ui
-   content/append1/howto.template
 
 .. toctree::
    :maxdepth: 4
