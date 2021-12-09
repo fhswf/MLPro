@@ -1,4 +1,6 @@
-![Build Status](https://github.com/fhswf/MLPro/workflows/pytesting/badge.svg)
+[![py37](https://github.com/fhswf/MLPro/actions/workflows/python37.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/python37.yml)
+[![py38](https://github.com/fhswf/MLPro/actions/workflows/python38.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/python38.yml)
+[![py39](https://github.com/fhswf/MLPro/actions/workflows/python39.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/python39.yml)
 [![Documentation Status](https://readthedocs.org/projects/mlpro/badge/?version=latest)](https://mlpro.readthedocs.io/en/latest/?badge=latest)
 # MLPro - Machine Learning Professional
 Machine Learning Professional - A Synoptic Framework for Standardized Machine Learning Tasks in Python
@@ -25,6 +27,9 @@ In the first version of MLPro, we provide a standardized Python package for rein
 The Documentation is available on : [MLPRORTD](https://www.google.com)
 
 # Installation
+
+## Prerequisites
+
 ```bash
 pip install mlpro
 ```
