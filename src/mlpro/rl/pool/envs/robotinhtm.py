@@ -70,9 +70,7 @@ class RobotArm3D:
             self.num_joint = self.num_joint + 1
 
     ## -------------------------------------------------------------------------------------------------
-    def get_transformation_matrix(
-        self, theta, lvector, rotAxis, adjustRots=None, adjustThetas=None
-    ):
+    def get_transformation_matrix(self, theta, lvector, rotAxis, adjustRots=None, adjustThetas=None):
         transformationMatrix = torch.Tensor([])
 
         if rotAxis == "rx":
@@ -160,9 +158,7 @@ class RobotArm3D:
             rotM = torch.mm(rotM, rotMsT)
 
         transformationMatrix = torch.cat([rotM, lvector.reshape(1, 3).T], dim=1)
-        transformationMatrix = torch.cat(
-            [transformationMatrix, torch.Tensor([[0, 0, 0, 1]])], dim=0
-        )
+        transformationMatrix = torch.cat([transformationMatrix, torch.Tensor([[0, 0, 0, 1]])], dim=0)
         return transformationMatrix
 
     ## -------------------------------------------------------------------------------------------------
@@ -260,9 +256,7 @@ class RobotHTM(Environment):
         jointType.append("f")
 
         for x in range(len(jointType)):
-            vectorLink = dict(
-                x=vectLinkLength[x][0], y=vectLinkLength[x][1], z=vectLinkLength[x][2]
-            )
+            vectorLink = dict(x=vectLinkLength[x][0], y=vectLinkLength[x][1], z=vectLinkLength[x][2])
             joint = dict(
                 Joint_name="Joint %d" % x,
                 Joint_type=jointType[x],
@@ -317,24 +311,12 @@ class RobotHTM(Environment):
 
         # 1 Setup state space
         state_space = ESpace()
-        state_space.add_dim(
-            Dimension(0, "Tx", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf])
-        )
-        state_space.add_dim(
-            Dimension(1, "Ty", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf])
-        )
-        state_space.add_dim(
-            Dimension(2, "Tz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf])
-        )
-        state_space.add_dim(
-            Dimension(3, "Px", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf])
-        )
-        state_space.add_dim(
-            Dimension(4, "Py", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf])
-        )
-        state_space.add_dim(
-            Dimension(5, "Pz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf])
-        )
+        state_space.add_dim(Dimension(0, "Tx", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension(1, "Ty", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension(2, "Tz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension(3, "Px", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension(4, "Py", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension(5, "Pz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
 
         for idx in range(self.num_joint):
             state_space.add_dim(
@@ -405,9 +387,7 @@ class RobotHTM(Environment):
     ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
-        disterror = np.linalg.norm(
-            p_state_new.get_values()[:3] - p_state_new.get_values()[3:6]
-        )
+        disterror = np.linalg.norm(p_state_new.get_values()[:3] - p_state_new.get_values()[3:6])
 
         ratio = disterror / self.init_distance.item()
         rew = -np.ones(1) * ratio
@@ -435,34 +415,22 @@ class RobotHTM(Environment):
             num = random.random()
             if num < 0.2:
                 self.target = torch.Tensor([[0.5, 0.5, 0.5]])
-                self.init_distance = torch.norm(
-                    self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target
-                )
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target)
             elif num < 0.4:
                 self.target = torch.Tensor([[0.0, 0.5, 0.5]])
-                self.init_distance = torch.norm(
-                    self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target
-                )
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target)
             elif num < 0.6:
                 self.target = torch.Tensor([[-0.5, 0.0, 0.5]])
-                self.init_distance = torch.norm(
-                    self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target
-                )
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target)
             elif num < 0.8:
                 self.target = torch.Tensor([[0.0, -0.5, 0.5]])
-                self.init_distance = torch.norm(
-                    self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target
-                )
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target)
             else:
                 self.target = torch.Tensor([[-0.5, -0.5, 0.5]])
-                self.init_distance = torch.norm(
-                    self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target
-                )
+                self.init_distance = torch.norm(self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target)
         else:
             self.target = torch.Tensor([[0.5, 0.5, 0.5]])
-            self.init_distance = torch.norm(
-                self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target
-            )
+            self.init_distance = torch.norm(self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target)
         obs = torch.cat(
             [
                 self.target,
