@@ -49,13 +49,13 @@ class Actuator:
     Parameters
     ----------
     minpower : float
-        minimum power of an actuator
+        minimum power of an actuator.
     maxpower : float
-        maximum power of an actuator
+        maximum power of an actuator.
     minaction : float
-        minimum action of an actuator
+        minimum action of an actuator.
     maxaction : float
-        maximum action of an actuator
+        maximum action of an actuator.
     masscoeff : float
         mass transport coefficient of an actuator.
         
@@ -131,6 +131,38 @@ class Actuator:
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class VacuumPump (Actuator):
+    """
+    This class inherits Actuator class and serves as a child class of Actuator.
+    This class represents a type of actuators in the BGLP environment, namely Vacuum Pump.
+    Vacuum Pump are mostly used to transport material from mini hoppers to silos.
+    However, the parameter of each vacuum pump can be dissimilar to each other based on their settings.
+
+    Parameters
+    ----------
+    name : str
+        specific name or id of a vacuum pump.
+    minpower : float
+        minimum power of a vacuum pump.
+    maxpower : float
+        maximum power of a vacuum pump.
+    minaction : float
+        minimum action of a vacuum pump.
+    maxaction : float
+        maximum action of a vacuum pump.
+    masscoeff : float
+        mass transport coefficient of a vacuum pump.
+        
+    Attributes
+    ----------
+    reg_v: list of objects
+        list of existing vacuum pumps.
+    idx_v: int
+        length of reg_v.
+    name : str
+        specific name or id of a vacuum pump.
+    t_end_max : float
+        maximum end of activation time of a vacuum pump with respect to current time.
+    """
     reg_v       = []
     idx_v       = 0
     name        = ""
@@ -138,27 +170,6 @@ class VacuumPump (Actuator):
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, name, minpower, maxpower, minaction, maxaction, masscoeff):    
-        """
-        
-
-        Parameters
-        ----------
-        name : Text Type
-            label for an actuator (e.g. Belt_A, Vac_A, etc.)
-        maxpower : Numeric Types
-            the maximum power of an actuator
-        minaction : Numeric Types
-            the minimum action of an actuator
-        maxaction : Numeric Types
-            the maximum action of an actuator
-        masscoeff : Numeric Types
-            the mass transport coefficient of an actuator.
-
-        Returns
-        -------
-        None.
-
-        """
         Actuator.__init__(self, minpower, maxpower, minaction, maxaction, masscoeff)
         self.idx_v  = len(self.reg_v)
         self.reg_v.append(self)
