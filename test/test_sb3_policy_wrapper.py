@@ -8,10 +8,11 @@
 ## -- 2021-09-11  1.0.0     MRD      Creation
 ## -- 2021-09-21  1.0.0     MRD      Release First Version
 ## -- 2021-10-27  1.0.1     MRD      Added Policy Loss Check between Native and Wrapper
+## -- 2021-12-08  1.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-21)
+Ver. 1.0.2 (2021-12-08)
 
 Unit test classes for environment.
 """
@@ -112,18 +113,18 @@ def test_sb3_policy_wrapper(env_cls):
                 p_logging=p_logging
             )
 
-    # 2 Instantiate scenario
-    myscenario  = MyScenario(
-        p_mode=Environment.C_MODE_SIM,
-        p_ada=True,
-        p_cycle_limit=-1,
-        p_visualize=False,
-        p_logging=False
-    )
+    # # 2 Instantiate scenario
+    # myscenario  = MyScenario(
+    #     p_mode=Environment.C_MODE_SIM,
+    #     p_ada=True,
+    #     p_cycle_limit=-1,
+    #     p_visualize=False,
+    #     p_logging=False
+    # )
 
     # 3 Instantiate training
     training        = RLTraining(
-        p_scenario=myscenario,
+        p_scenario_cls=MyScenario,
         p_cycle_limit=100,
         p_max_stagnations=0,
         p_collect_states=True,
@@ -182,6 +183,6 @@ def test_sb3_policy_wrapper(env_cls):
     policy_sb3.learn(total_timesteps=100, callback=cus_callback)
 
     assert cus_callback.loss_cnt is not empty, "No Loss on Native"
-    assert myscenario.policy_wrapped.loss_cnt is not empty, "No Loss on Wrapper"
-    length = min(len(cus_callback.loss_cnt), len(myscenario.policy_wrapped.loss_cnt))
-    assert np.linalg.norm(np.array(cus_callback.loss_cnt[:length])-np.array(myscenario.policy_wrapped.loss_cnt[:length])) == 0.0, "Mismatch Native and Wrapper"
+    assert training.get_scenario().policy_wrapped.loss_cnt is not empty, "No Loss on Wrapper"
+    length = min(len(cus_callback.loss_cnt), len(training.get_scenario().policy_wrapped.loss_cnt))
+    assert np.linalg.norm(np.array(cus_callback.loss_cnt[:length])-np.array(training.get_scenario().policy_wrapped.loss_cnt[:length])) == 0.0, "Mismatch Native and Wrapper"

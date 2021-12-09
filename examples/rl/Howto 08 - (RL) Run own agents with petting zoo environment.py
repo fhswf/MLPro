@@ -56,7 +56,7 @@ class ContRandPolicy (Policy):
     
 class PBScenario (RLScenario):
 
-    C_NAME      = 'Pistonball V4'
+    C_NAME      = 'Pistonball V5'
 
     def _setup(self, p_mode, p_ada, p_logging):
         zoo_env             = pistonball_v5.env()
@@ -101,10 +101,11 @@ class DiscRandPolicy (Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def adapt(self, *p_args) -> bool:
-        if not super().adapt(p_args): return False
+    def _adapt(self, *p_args) -> bool:
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
         return False
+
+
     
 class C4Scenario (RLScenario):
 
@@ -120,7 +121,7 @@ class C4Scenario (RLScenario):
             agent_name      = "Agent_"+str(agent_id)
             agent_sspace    = self._env.get_state_space()
             agent_asspace   = self._env.get_action_space().spawn([agent_id])
-            agent           = Agent(p_policy=DiscRandPolicy(p_state_space=agent_sspace,
+            agent           = Agent(p_policy=DiscRandPolicy(p_observation_space=agent_sspace,
                                                             p_action_space=agent_asspace,
                                                             p_buffer_size=10,
                                                             p_ada=p_ada,
@@ -153,21 +154,21 @@ else:
  
 
 # 3.3 Create your scenario and run some cycles
-myscenario  = PBScenario(
-        p_mode=Mode.C_MODE_SIM,
-        p_ada=True,
-        p_cycle_limit=100,
-        p_visualize=visualize,
-        p_logging=logging
-)
-
-# myscenario  = C4Scenario(
+# myscenario  = PBScenario(
 #         p_mode=Mode.C_MODE_SIM,
 #         p_ada=True,
 #         p_cycle_limit=100,
 #         p_visualize=visualize,
 #         p_logging=logging
 # )
+
+myscenario  = C4Scenario(
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_cycle_limit=100,
+        p_visualize=visualize,
+        p_logging=logging
+)
 
 
 myscenario.reset(1)

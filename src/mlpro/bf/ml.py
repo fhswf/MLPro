@@ -19,10 +19,13 @@
 ## -- 2021-11-30  1.2.1     DA       - Classes Model, AdaptiveFunction: new opt. parameters **p_par
 ## --                                - Docstrings reformatted to numpy style
 ## --                                - Class Model: new method get_maturity()
+## -- 2021-12-07  1.2.2     DA       - Method Scenario.__init__(): param p_cycle_len removed
+## --                                - Method Training.__init__(): par p_scenario replaced by p_scenario_cls
+## -- 2021-12-08  1.2.3     DA       Moved class AdaptiveFunction to new subtopic package sl
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2021-11-30)
+Ver. 1.2.3 (2021-12-08)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -287,123 +290,6 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AdaptiveFunction (Model, Function):
-    """
-    Template class for an adaptive bi-multivariate mathematical function that adapts by supervised
-    learning.
-
-    Parameters
-    ----------
-    p_input_space : MSpace
-        Input space of function
-    p_output_space : MSpace
-        Output space of function
-    p_output_elem_cls 
-        Output element class (compatible to/inherited from class Element)
-    p_threshold : float
-        Threshold for the difference between a setpoint and a computed output. Computed outputs with 
-        a difference less than this threshold will be assessed as 'good' outputs. Default = 0.
-    p_buffer_size : int
-        Initial size of internal data buffer. Defaut = 0 (no buffering).
-    p_ada : bool
-        Boolean switch for adaptivitiy. Default = True.
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_par : Dict
-        Futher model specific parameters (to be specified in chhild class).
-
-    """
-
-    C_TYPE          = 'Adaptive Function'
-    C_NAME          = '????'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_input_space:MSpace,          
-                 p_output_space:MSpace,        
-                 p_output_elem_cls=Element,     
-                 p_threshold=0,                 
-                 p_buffer_size=0,               
-                 p_ada=True,                   
-                 p_logging=Log.C_LOG_ALL,
-                 **p_par):      
-
-        Model.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging, **p_par)
-        Function.__init__(self, p_input_space=p_input_space, p_output_space=p_output_space, p_output_elem_cls=p_output_elem_cls)
-        self._threshold         = p_threshold
-        self._mappings_total    = 0             # Number of mappings since last adaptation
-        self._mappings_good     = 0             # Number of 'good' mappings since last adaptation
-
-
-## -------------------------------------------------------------------------------------------------
-    def adapt(self, p_input:Element, p_output:Element) -> bool:
-        """
-        Adaption by supervised learning.
-        
-        Parameters
-        ----------
-        p_input : Element
-            Abscissa/input element object (type Element)
-        p_output : Element
-            Setpoint ordinate/output element (type Element)
-
-        """
-
-        if not self._adaptivity: return False
-        self.log(self.C_LOG_TYPE_I, 'Adaptation started')
-
-        # Quality check
-        if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
-            # Quality of function ok. No need to adapt.
-            self._mappings_total    += 1
-            self._mappings_good     += 1
-
-        else:
-            # Quality of function not ok. Adapation is to be triggered.
-            self._set_adapted(self._adapt(p_input, p_output))
-            if self.get_adapted():
-                self._mappings_total    = 1
-                self._mappings_good     = 1
-            else:
-                self._mappings_total    += 1
-
-        return self.get_adapted()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_input:Element, p_output:Element) -> bool:
-        """
-        Custom adaptation algorithm that is called by public adaptation method. Please redefine.
-
-        Parameters
-        ----------
-        p_input : Element
-            Abscissa/input element object (type Element)
-        p_output : Element
-            Setpoint ordinate/output element (type Element)
-
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_maturity(self):
-        """
-        Returns the maturity of the adaptive function. The maturity is defined as the relation 
-        between the number of successful mapped inputs and the total number of mappings since the 
-        last adaptation.
-        """
-
-        if self._mappings_total == 0: return 0
-        return self._mappings_good / self._mappings_total
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
 class Mode (Log):
     """
     Property class that adds a mode and related methods to a child class.
@@ -477,17 +363,15 @@ class Scenario (Mode, LoadSave, Plottable):
     Parameters
     ----------
     p_mode
-        Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
+        Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
     p_ada : bool
-        Boolean switch for adaptivity. Default = True
-    p_cycle_len : timedelta
-        Optional fixed cycle duration 
+        Boolean switch for adaptivity. Default = True.
     p_cycle_limit : int
-        Maximum number of cycles. Default = 0 (no limit)
-    p_visualization : bool
-        Boolean switch for env/agent visualisation. Default = True
+        Maximum number of cycles. Default = 0 (no limit).
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = True.
     p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     
     """
 
@@ -498,13 +382,11 @@ class Scenario (Mode, LoadSave, Plottable):
     def __init__(self, 
                  p_mode=Mode.C_MODE_SIM,       
                  p_ada:bool=True,               
-                 p_cycle_len:timedelta=None,    
                  p_cycle_limit=0,              
                  p_visualize=True,              
                  p_logging=Log.C_LOG_ALL ):    
 
         # 0 Intro
-        self._cycle_len     = p_cycle_len
         self._cycle_max     = sys.maxsize
         self._cycle_id      = 0
         self._visualize     = p_visualize
@@ -525,12 +407,8 @@ class Scenario (Mode, LoadSave, Plottable):
         else:
             t_mode = Timer.C_MODE_REAL
 
-        if self._cycle_len is not None:
-            t_lap_duration = p_cycle_len
-        else:
-            t_lap_duration = self.get_latency()
-
-        self._timer  = Timer(t_mode, t_lap_duration, self._cycle_limit)
+        self._cycle_len = self.get_latency()
+        self._timer     = Timer(t_mode, self._cycle_len, self._cycle_limit)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -928,8 +806,8 @@ class Training (Log):
 
     Parameters
     ----------
-    p_scenario : Scenario
-        ML scenario (see class Scenario) with model to be trained.
+    p_scenario_cls 
+        Name of ML scenario class, compatible to/inherited from class Scenario.
     p_cycle_limit : int
         Maximum number of training cycles (0=no limit)
     p_hpt : HyperParamTuner
@@ -938,6 +816,8 @@ class Training (Log):
         Optional number of hyperparameter tuning trials. Default = 0.        
     p_path : str
         Optional destination path to store training data. Default = None.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = True
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_WE.
 
@@ -950,16 +830,25 @@ class Training (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_scenario:Scenario,           
-                 p_cycle_limit=0,               
+                 p_scenario_cls,           
+                 p_cycle_limit=0,   
                  p_hpt:HyperParamTuner=None,    
                  p_hpt_trials=0,                
-                 p_path=None,                  
-                 p_logging=Log.C_LOG_WE):      
+                 p_path=None,           
+                 p_visualize:bool=False,       
+                 p_logging=Log.C_LOG_WE ):      
 
         super().__init__(p_logging=p_logging)
 
-        self._scenario          = p_scenario
+        try:
+            self._scenario = p_scenario_cls( p_mode=Mode.C_MODE_SIM, 
+                                             p_ada=True,
+                                             p_cycle_limit=p_cycle_limit,
+                                             p_visualize=p_visualize,
+                                             p_logging=p_logging )
+        except:
+            raise ParamError('Par p_scenario_cls: class "' + p_scenario_cls + '" not compatible')
+
         self._num_cycles        = 0
         self._cycle_limit       = p_cycle_limit
         self._hpt               = p_hpt
@@ -1114,7 +1003,7 @@ class Training (Log):
             self._results = self._run()
 
         else:
-            # 2 Training 
+            # 2 Training with hyperparameter tuning
             self.log(self.C_LOG_TYPE_I, 'Training started (with hyperparameter tuning)')
             self._results = self._hpt.maximize(p_ofct=self._run, p_model=self._scenario.get_model(), p_num_trials=self._hpt_trials)
 

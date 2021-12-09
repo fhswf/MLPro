@@ -1,5 +1,5 @@
 `Grid World Problem <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/gridworld.py>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     This ???? environment can be installed via:
 
     .. code-block:: python

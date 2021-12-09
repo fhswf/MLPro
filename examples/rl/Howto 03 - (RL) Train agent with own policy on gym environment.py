@@ -17,10 +17,11 @@
 ## -- 2021-10-18  1.2.4     DA       Refactoring 
 ## -- 2021-11-15  1.3.0     DA       Refactoring 
 ## -- 2021-12-03  1.3.1     DA       Refactoring 
+## -- 2021-12-07  1.3.2     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-03)
+Ver. 1.3.2 (2021-12-07)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """
@@ -111,23 +112,14 @@ else:
     path        = None
 
 
-# 3.3 Create your scenario
-myscenario  = MyScenario(
-        p_mode=Mode.C_MODE_SIM,
-        p_ada=True,
-        p_visualize=visualize,
-        p_logging=logging 
-)
-
-
-# 3.4 Create and run training object
+# 3.3 Create and run training object
 training = RLTraining(
-        p_scenario=myscenario,
+        p_scenario_cls=MyScenario,
         p_cycle_limit=100,
         p_max_adaptations=0,
         p_max_stagnations=0,
         p_path=path,
-        p_logging=logging
-)
+        p_visualize=visualize,
+        p_logging=logging )
 
 training.run()

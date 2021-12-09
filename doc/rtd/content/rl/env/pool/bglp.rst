@@ -1,5 +1,5 @@
 `Bulk Good Laboratory Plant (BGLP) <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/bglp.py>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     This BGLP environment can be installed via:
 
     .. code-block:: python

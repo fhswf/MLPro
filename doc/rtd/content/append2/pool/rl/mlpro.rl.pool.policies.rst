@@ -2,7 +2,7 @@ Policies
 ==========================
 
 Advantage Actor Critic - A2C
-----------------
+-----------------------------------
 
 
 .. automodule:: mlpro.rl.pool.policies.a2c
@@ -11,7 +11,7 @@ Advantage Actor Critic - A2C
    :show-inheritance:
    
 Soft Actor Critic - SAC
-----------------
+-------------------------------
 
 
 .. automodule:: mlpro.rl.pool.policies.sac

@@ -1,5 +1,5 @@
 `Robot Manipulator on Homogeneous Matrix <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/robotinhtm.py>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     This robotinhtm environment can be installed via:
 
     .. code-block:: python

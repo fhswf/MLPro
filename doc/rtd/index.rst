@@ -21,7 +21,7 @@ Github repository: https://github.com/fhswf/MLPro.git
 
 
 Main Contributions
---------------
+----------------------
 
 - Test-driven development (CI/CD concept)
 - Clean code and constructed through Object-Oriented Programming
@@ -34,7 +34,7 @@ Main Contributions
 
 
 Instructions for use
---------------
+-------------------------
 
 .. toctree::
    :maxdepth: 2
@@ -80,9 +80,13 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: Appendix 1: List of Examples
+   :caption: Appendix 1: Examples
    
-   content/append1/test
+   content/append1/howto.bf
+   content/append1/howto.rl
+   content/append1/howto.gt
+   content/append1/howto.ui
+   content/append1/howto.template
 
 .. toctree::
    :maxdepth: 4

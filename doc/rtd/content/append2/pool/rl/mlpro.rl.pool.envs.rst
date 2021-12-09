@@ -3,7 +3,7 @@ Environments
 
 .. _api-ref-bglp:
 Bulk Goods Plant
-----------------
+------------------
 
 
 .. automodule:: mlpro.rl.pool.envs.bglp
@@ -12,7 +12,7 @@ Bulk Goods Plant
    :show-inheritance:
 
 Grid World
-----------------
+------------------
 
 
 .. automodule:: mlpro.rl.pool.envs.gridworld
@@ -21,7 +21,7 @@ Grid World
    :show-inheritance:
 
 Multi Cartpole
-----------------
+------------------
 
 
 .. automodule:: mlpro.rl.pool.envs.multicartpole
@@ -30,7 +30,7 @@ Multi Cartpole
    :show-inheritance:
 
 Robot Manipulator
-----------------
+------------------
 
 
 .. automodule:: mlpro.rl.pool.envs.robotinhtm

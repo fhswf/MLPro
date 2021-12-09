@@ -1,5 +1,5 @@
 2.1 Elementary Functions
-================
+=============================
 
 This section provides explanation on various classes with elementary 
 functionalities for reuse in higher level classes.
