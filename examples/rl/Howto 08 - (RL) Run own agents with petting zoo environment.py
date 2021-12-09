@@ -56,7 +56,7 @@ class ContRandPolicy (Policy):
     
 class PBScenario (RLScenario):
 
-    C_NAME      = 'Pistonball V4'
+    C_NAME      = 'Pistonball V5'
 
     def _setup(self, p_mode, p_ada, p_logging):
         zoo_env             = pistonball_v5.env()

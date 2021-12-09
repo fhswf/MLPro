@@ -1,7 +1,7 @@
 .. _target-package:
 
 3.6 3rd Party Support
-================
+=========================
 
 Add text here!
 
@@ -28,7 +28,7 @@ a command to setup a gym-based environment, while creating a scenario.
     
     self._env = WrEnvGym([gym environment object], p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=True)
 
-For more information, please check our how to files :ref:`here<target-howto-rl>`.
+For more information, please check our how to files.
 
 
 PettingZoo Environments

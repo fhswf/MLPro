@@ -1,8 +1,8 @@
 State, Action, Reward Buffers
-==========================
+===============================
 
 Random SAR Buffer
-----------------
+--------------------
 
 
 .. automodule:: mlpro.rl.pool.sarsbuffer.RandomSARSBuffer
@@ -11,7 +11,7 @@ Random SAR Buffer
    :show-inheritance:
 
 Prioritized Buffer
-----------------
+--------------------
 
 
 .. automodule:: mlpro.rl.pool.sarsbuffer.PrioritizedBuffer

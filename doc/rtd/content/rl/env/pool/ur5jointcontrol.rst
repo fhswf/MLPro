@@ -1,5 +1,5 @@
 `Universal Robots 5 Joint Control <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/ur5jointcontrol.py>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     This ???? environment can be installed via:
 
     .. code-block:: python

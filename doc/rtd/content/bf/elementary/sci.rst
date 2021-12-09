@@ -1,5 +1,5 @@
 Scientific Referencing
------------------
+-----------------------
 
 .. code-block:: python
 
