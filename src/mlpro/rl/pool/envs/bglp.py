@@ -134,13 +134,13 @@ class VacuumPump (Actuator):
     """
     This class inherits Actuator class and serves as a child class of Actuator.
     This class represents a type of actuators in the BGLP environment, namely Vacuum Pump.
-    Vacuum Pump are mostly used to transport material from mini hoppers to silos.
+    Vacuum Pumps are mostly used to transport material from mini hoppers to silos.
     However, the parameter of each vacuum pump can be dissimilar to each other based on their settings.
 
     Parameters
     ----------
     name : str
-        specific name or id of a vacuum pump (e.g. Belt_A, Vac_A, etc.).
+        specific name or id of a vacuum pump (e.g. Vac_A, etc.).
     minpower : float
         minimum power of a vacuum pump.
     maxpower : float
@@ -279,13 +279,13 @@ class Belt(Actuator):
     This class inherits Actuator class and serves as a child class of Actuator.
     This class represents a type of actuators in the BGLP environment, namely Belt.
     This class can be used for Conveyor Belt, Rotary Feeder, Vibratory Conveyor, or similar type of actuators.
-    Vacuum Pump are mostly used to transport material from silos to hoppers.
+    Belts are mostly used to transport material from silos to hoppers.
     However, the parameter of each actuator can be dissimilar to each other based on their settings.
 
     Parameters
     ----------
     name : str
-        specific name or id of a vacuum pump (e.g. Belt_A, Vac_A, etc.).
+        specific name or id of a vacuum pump (e.g. Belt_A, etc.).
     actiontype : str
         "C" for continuous action, "B" for binary action.
     minpower : float
@@ -511,6 +511,35 @@ class Reservoir:
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Silo(Reservoir):
+    """
+    This class inherits Reservoir class and serves as a child class of Reservoir.
+    This class represents a type of buffers in the BGLP environment, namely Silo.
+    Silos are used to temporary stored the transported materials.
+    However, the parameter of each silo can be dissimilar to each other based on their settings.
+
+    Parameters
+    ----------
+    name : str
+        specific name or id of a silo (e.g. Silo_A, etc.).
+    vol_max : float
+        maximum capacity of a silo.
+    vol_cur : float
+        current volume of a silo.
+    mode : str, optional
+        mode of measuring the current volume.
+        "abs" means absolute value, "rel" means percentage. The default is "abs".
+    
+    Attributes
+    ----------
+    reg_s: list of objects
+        list of existing silos.
+    idx_s: int
+        length of reg_s.
+    name : str
+        specific name or id of a vacuum pump.
+    type_ : str
+        a short name for a silo, usually 3 capital letters (e.g SIL).
+    """
     reg_s   = []
     idx_s   = []
     name    = ""
@@ -518,25 +547,6 @@ class Silo(Reservoir):
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, name, vol_max, vol_cur = 0, mode = "abs"):
-        """
-        
-
-        Parameters
-        ----------
-        nname : Text Type
-            label for an actuator (e.g. Hopper_A, Silo_A, etc.)
-        vol_max : Numeric Types
-            maximum volume of an reservoir
-        vol_cur : Numeric Types
-            current volume of an reservoir
-        mode : Text Type
-            The default is "abs".
-
-        Returns
-        -------
-        None.
-
-        """
         if mode == "abs":
             vol_cur = vol_cur
         elif mode == "rel":
