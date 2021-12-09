@@ -41,6 +41,7 @@ jobs:
         pip install pygame
         pip install sphinx
         pip install sphinx-rtd-theme
+        pip install sphinx-copybutton
         pip install hyperopt
     - name: Lint with flake8
       run: |
