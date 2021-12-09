@@ -92,7 +92,7 @@ class Actuator:
     cur_speed: float
         current speed of an actuator.
     type_: str
-        a short name for an actuator, usually 3 capital letters.
+        a short name for an actuator, usually 3 capital letters (e.g VAC, BLT).
     """
     reg_a               = []
     idx_a               = 0
@@ -140,7 +140,7 @@ class VacuumPump (Actuator):
     Parameters
     ----------
     name : str
-        specific name or id of a vacuum pump.
+        specific name or id of a vacuum pump (e.g. Belt_A, Vac_A, etc.).
     minpower : float
         minimum power of a vacuum pump.
     maxpower : float
@@ -275,6 +275,43 @@ class VacuumPump (Actuator):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Belt(Actuator):
+    """
+    This class inherits Actuator class and serves as a child class of Actuator.
+    This class represents a type of actuators in the BGLP environment, namely Belt.
+    This class can be used for Conveyor Belt, Rotary Feeder, Vibratory Conveyor, or similar type of actuators.
+    Vacuum Pump are mostly used to transport material from silos to hoppers.
+    However, the parameter of each actuator can be dissimilar to each other based on their settings.
+
+    Parameters
+    ----------
+    name : str
+        specific name or id of a vacuum pump (e.g. Belt_A, Vac_A, etc.).
+    actiontype : str
+        "C" for continuous action, "B" for binary action.
+    minpower : float
+        minimum power of a vacuum pump.
+    maxpower : float
+        maximum power of a vacuum pump.
+    minaction : float
+        minimum action of a vacuum pump.
+    maxaction : float
+        maximum action of a vacuum pump.
+    masscoeff : float
+        mass transport coefficient of a vacuum pump.
+        
+    Attributes
+    ----------
+    reg_b: list of objects
+        list of existing belts.
+    idx_b: int
+        length of reg_b.
+    name : str
+        specific name or id of a belt.
+    actiontype : str
+        "C" for continuous action, "B" for binary action.
+    speed : float
+        speed of a bel.
+    """
     reg_b       = []
     idx_b       = 0
     name        = ""
@@ -283,29 +320,6 @@ class Belt(Actuator):
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, name, actiontype, minpower, maxpower, minaction, maxaction, masscoeff):
-        """
-        
-
-        Parameters
-        ----------
-        name : Text Type
-            label for an actuator (e.g. Belt_A, Vac_A, etc.)
-        actiontype : Text Type
-            "C" for continuous action, "B" for binary action
-        maxpower : Numeric Types
-            the maximum power of an actuator
-        minaction : Numeric Types
-            the minimum action of an actuator
-        maxaction : Numeric Types
-            the maximum action of an actuator
-        masscoeff : Numeric Types
-            the mass transport coefficient of an actuator.
-
-        Returns
-        -------
-        None.
-
-        """
         Actuator.__init__(self, minpower, maxpower, minaction, maxaction, masscoeff)
         self.idx_b = len(self.reg_b)
         self.reg_b.append(self)
@@ -316,26 +330,21 @@ class Belt(Actuator):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def start_t(self, now, duration, speed = 0, overwrite = False):
+    def start_t(self, now, duration, speed, overwrite = False):
         """
-        
+        This method calculates the activation time and the end of activation time of the belt.
+        This method is called, if the belt would like to be activated or updated.
 
         Parameters
         ----------
-        
-        now : Numeric Types
-            current_simulation time
-        duration : Numeric Types
-            time set parameter.
-        speed : Numeric Types (0 to 1)
-            the selected action by an agent
-        overwrite : Boolean, optional
-            to select whether the actuator is already activated or not
-
-        Returns
-        -------
-        None.
-
+        now : float
+            current time of the system.
+        duration : float
+            duration of the belt being activated, which being defined by the time set.
+        speed : float
+            speed of the belt or the action by an agent in RL context.
+        overwrite : bool, optional
+            To indicate whether the current operation can be overwritten or not.
         """
         if speed > 1.0:
             self.speed = 1.0
@@ -354,18 +363,19 @@ class Belt(Actuator):
             
 
 ## -------------------------------------------------------------------------------------------------
-    def calc_mass(self, now = 0):
+    def calc_mass(self, now):
         """
-
+        This method calculates the transported mass flow by the belt for a time step.
 
         Parameters
         ----------
-        now : Numeric Types
-            current_simulation time
+        now : float
+            current time of the system.
 
         Returns
         -------
-        current transported mass
+        cur_mass_transport : float
+            current transported mass.
 
         """
         if self.status == True:
@@ -379,11 +389,12 @@ class Belt(Actuator):
 ## -------------------------------------------------------------------------------------------------
     def calc_energy(self):
         """
-
+        This method calculates the power consumption of a belt.
 
         Returns
         -------
-        current power consumption
+        cur_power : float
+            current power consumption.
 
         """
         if self.status == True:
@@ -397,16 +408,12 @@ class Belt(Actuator):
 ## -------------------------------------------------------------------------------------------------
     def update(self, now):
         """
-
+        This method calculates whether a belt must be deactived or not.
 
         Parameters
         ----------
-        now : Numeric Types
-            current_simulation time
-
-        Returns
-        -------
-        None.
+        now : float
+            current time of the system.
 
         """
         if self.status == True:
@@ -416,6 +423,9 @@ class Belt(Actuator):
 
 ## -------------------------------------------------------------------------------------------------
     def deactivate(self):
+        """
+        This method is used to deactivate a belt.
+        """
         self.status             == False
         self.cur_mass_transport = 0
         self.cur_power          = 0
