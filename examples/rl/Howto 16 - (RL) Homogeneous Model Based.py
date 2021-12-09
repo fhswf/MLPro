@@ -15,20 +15,42 @@ class ActualTraining(RLTraining):
 # Implement model based agent
 class MBAgent(Agent):
     def _adapt_policy_by_model(self):
-        # Instantiate scenario
-        simulated_scenario = ScenarioRobotHTMSimulated(
-            p_env=self._envmodel,
-            p_policy=self._policy,
-            p_mode=Environment.C_MODE_SIM,
-            p_ada=True,
-            p_cycle_limit=100,
-            p_visualize=False,
-            p_logging=False,
-        )
+        class ScenarioRobotHTMSimulated(RLScenario):
+            def __init__(
+                self,
+                p_env,
+                p_policy,
+                p_mode=Environment.C_MODE_SIM,
+                p_ada: bool = True,
+                p_cycle_len: timedelta = None,
+                p_cycle_limit=0,
+                p_visualize=False,
+                p_logging=True,
+            ):
+                self.env_ext = p_env
+                self.policy_ext = p_policy
+                super().__init__(
+                    p_mode=p_mode,
+                    p_ada=p_ada,
+                    p_cycle_len=p_cycle_len,
+                    p_cycle_limit=p_cycle_limit,
+                    p_visualize=p_visualize,
+                    p_logging=p_logging,
+                )
+
+            def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
+                self._env = self._envmodel
+                return Agent(
+                    p_policy=self._policy,
+                    p_envmodel=None,
+                    p_name="Smith2",
+                    p_ada=p_ada,
+                    p_logging=p_logging,
+                )
 
         # Instantiate training
         simulated_training = SimulatedTraining(
-            p_scenario=simulated_scenario,
+            p_scenario_cls=ScenarioRobotHTMSimulated,
             p_cycle_limit=100,
             p_max_cycles_per_episode=100,
             p_max_stagnations=0,
@@ -43,43 +65,9 @@ class MBAgent(Agent):
         simulated_training.run()
 
         # Save Policy to be used for actual
-        self._policy = simulated_scenario.get_agent()._policy
+        self._policy = simulated_training.get_scenario().get_agent()._policy
 
         return True
-
-# Implement RL Scenario for simulated Environment
-class ScenarioRobotHTMSimulated(RLScenario):
-    def __init__(
-        self,
-        p_env,
-        p_policy,
-        p_mode=Environment.C_MODE_SIM,
-        p_ada: bool = True,
-        p_cycle_len: timedelta = None,
-        p_cycle_limit=0,
-        p_visualize=False,
-        p_logging=True,
-    ):
-        self.env_ext = p_env
-        self.policy_ext = p_policy
-        super().__init__(
-            p_mode=p_mode,
-            p_ada=p_ada,
-            p_cycle_len=p_cycle_len,
-            p_cycle_limit=p_cycle_limit,
-            p_visualize=p_visualize,
-            p_logging=p_logging,
-        )
-
-    def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
-        self._env = self.env_ext
-        return Agent(
-            p_policy=self.policy_ext,
-            p_envmodel=None,
-            p_name="Smith2",
-            p_ada=p_ada,
-            p_logging=p_logging,
-        )
 
 
 # Implement RL Scenario for the actual environment to train the environment model
@@ -113,23 +101,12 @@ class ScenarioRobotHTMActual(RLScenario):
             p_logging=p_logging,
         )
 
-
-# 3 Instantiate scenario
-myscenario = ScenarioRobotHTMActual(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=100,
-    p_visualize=False,
-    p_logging=False,
-)
-
-
 # 4 Train agent in scenario
 now = datetime.now()
 
 
 training = ActualTraining(
-    p_scenario=myscenario,
+    p_scenario_cls=ScenarioRobotHTMActual,
     p_cycle_limit=300000,
     p_max_cycles_per_episode=100,
     p_max_stagnations=0,
