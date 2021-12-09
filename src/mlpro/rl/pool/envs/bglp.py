@@ -21,26 +21,79 @@
 ## -- 2021-11-21  2.1.4     SY       Remove dependency from torch
 ## -- 2021-11-26  2.1.5     SY       Update reward type
 ## -- 2021-12-03  2.1.6     DA       Refactoring
+## -- 2021-12-09  2.1.7     SY       Clean code assurance
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.6 (2021-12-03)
+Ver. 2.1.7 (2021-12-09)
 
-This module provides an environment of Bulk Good Laboratory Plant (BGLP).
+This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
+
 
 from mlpro.rl.models import *
 from mlpro.bf.various import *
 import numpy as np
 import random
-        
-        
-        
-        
-        
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Actuator:
+    """
+    This class serves as a parent class of different types of actuators, which provides the main 
+    attributes of an actuator in the BGLP environment.
+
+    Parameters
+    ----------
+    minpower : float
+        minimum power of an actuator.
+    maxpower : float
+        maximum power of an actuator.
+    minaction : float
+        minimum action of an actuator.
+    maxaction : float
+        maximum action of an actuator.
+    masscoeff : float
+        mass transport coefficient of an actuator.
+        
+    Attributes
+    ----------
+    reg_a : list of objects
+        list of existing actuators in the environment.
+    idx_a : int
+        length of reg_a.
+    power_max : float
+        maximum power of an actuator.
+    power_min : float
+        minimum power of an actuator.
+    power_coeff : float
+        power coefficient of an actuator, if necessary.
+    action_max : float
+        maximum action of an actuator.
+    action_min : float
+        minimum action of an actuator.
+    mass_coeff : float
+        mass transport coefficient of an actuator.
+    t_activated : float
+        a time indicator about an actuator is activated.
+    t_end : float
+        a time indicator about the end of an activation sequence of the actuator.
+    status : bool
+        status of an actuator, false means inactive and true means active.
+    cur_mass_transport : float
+        current transported mass of an actuator.
+    cur_power : float
+        current power consumption of an actuator.
+    cur_action : float
+        current taken action of an actuator in RL context.
+    cur_speed : float
+        current speed of an actuator.
+    type_ : str
+        a short name for an actuator, usually 3 capital letters (e.g VAC, BLT).
+    """
     reg_a               = []
     idx_a               = 0
     power_max           = 0
@@ -60,24 +113,6 @@ class Actuator:
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, minpower, maxpower, minaction, maxaction, masscoeff):
-        """      
-
-        Parameters
-        ----------
-        maxpower : Numeric Types
-            the maximum power of an actuator
-        minaction : Numeric Types
-            the minimum action of an actuator
-        maxaction : Numeric Types
-            the maximum action of an actuator
-        masscoeff : Numeric Types
-            the mass transport coefficient of an actuator.
-
-        Returns
-        -------
-        None.
-
-        """
         self.idx_a              = len(self.reg_a)
         self.reg_a.append(self)
         self.power_max          = maxpower
@@ -89,13 +124,45 @@ class Actuator:
         self.cur_power          = 0
         self.cur_action         = 0
         self.cur_speed          = 0
-        
-        
-        
-        
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class VacuumPump (Actuator):
+    """
+    This class inherits Actuator class and serves as a child class of Actuator.
+    This class represents a type of actuators in the BGLP environment, namely Vacuum Pump.
+    Vacuum Pumps are mostly used to transport material from mini hoppers to silos.
+    However, the parameter of each vacuum pump can be dissimilar to each other based on their settings.
+
+    Parameters
+    ----------
+    name : str
+        specific name or id of a vacuum pump (e.g. Vac_A, etc.).
+    minpower : float
+        minimum power of a vacuum pump.
+    maxpower : float
+        maximum power of a vacuum pump.
+    minaction : float
+        minimum action of a vacuum pump.
+    maxaction : float
+        maximum action of a vacuum pump.
+    masscoeff : float
+        mass transport coefficient of a vacuum pump.
+        
+    Attributes
+    ----------
+    reg_v : list of objects
+        list of existing vacuum pumps.
+    idx_v : int
+        length of reg_v.
+    name : str
+        specific name or id of a vacuum pump.
+    t_end_max : float
+        maximum end of activation time of a vacuum pump with respect to current time.
+    """
     reg_v       = []
     idx_v       = 0
     name        = ""
@@ -103,27 +170,6 @@ class VacuumPump (Actuator):
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, name, minpower, maxpower, minaction, maxaction, masscoeff):    
-        """
-        
-
-        Parameters
-        ----------
-        name : Text Type
-            label for an actuator (e.g. Belt_A, Vac_A, etc.)
-        maxpower : Numeric Types
-            the maximum power of an actuator
-        minaction : Numeric Types
-            the minimum action of an actuator
-        maxaction : Numeric Types
-            the maximum action of an actuator
-        masscoeff : Numeric Types
-            the mass transport coefficient of an actuator.
-
-        Returns
-        -------
-        None.
-
-        """
         Actuator.__init__(self, minpower, maxpower, minaction, maxaction, masscoeff)
         self.idx_v  = len(self.reg_v)
         self.reg_v.append(self)
@@ -134,21 +180,17 @@ class VacuumPump (Actuator):
 ## -------------------------------------------------------------------------------------------------
     def start_t(self, now, duration, overwrite = False): 
         """
-        
+        This method calculates the activation time and the end of activation time of the vacuum pump.
+        This method is called, if the vacuum pump would like to be activated or updated.
 
         Parameters
         ----------
-        now : Numeric Types
-            current_simulation time
-        duration : Numeric Types (0 to 1)
-            the selected action by an agent
-        overwrite : Boolean, optional
-            to select whether the actuator is already activated or not
-
-        Returns
-        -------
-        None.
-
+        now : float
+            current time of the system.
+        duration : float
+            duration of the vacuum pump being activated or the action by an agent in RL context.
+        overwrite : bool, optional
+            To indicate whether the current operation can be overwritten or not.
         """
         if self.status == False:
             self.t_activated    = now
@@ -166,16 +208,17 @@ class VacuumPump (Actuator):
 ## -------------------------------------------------------------------------------------------------
     def calc_mass(self, now):
         """
-        
+        This method calculates the transported mass flow by the vacuum pump for a time step.
 
         Parameters
         ----------
-        now : Numeric Types
-            current_simulation time
+        now : float
+            current time of the system.
 
         Returns
         -------
-        current transported mass
+        cur_mass_transport : float
+            current transported mass.
 
         """
         if self.status == True:
@@ -188,11 +231,12 @@ class VacuumPump (Actuator):
 ## -------------------------------------------------------------------------------------------------
     def calc_energy(self):
         """
-        
+        This method calculates the power consumption of a vacuum pump.
 
         Returns
         -------
-        current power consumption
+        cur_power : float
+            current power consumption.
 
         """
         if self.status == True:
@@ -203,16 +247,12 @@ class VacuumPump (Actuator):
 ## -------------------------------------------------------------------------------------------------
     def update(self, now):
         """
-        
+        This method calculates whether a vacuum pump must be deactived or not.
 
         Parameters
         ----------
-        now : Numeric Types
-            current_simulation time
-
-        Returns
-        -------
-        None.
+        now : float
+            current time of the system.
 
         """
         if self.status == True:
@@ -222,17 +262,56 @@ class VacuumPump (Actuator):
 
 ## -------------------------------------------------------------------------------------------------
     def deactivate(self):
+        """
+        This method is used to deactivate a vacuum pump.
+        """
         self.status             = False
         self.cur_mass_transport = 0
         self.cur_power          = 0
-        
-        
-        
-        
-        
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Belt(Actuator):
+    """
+    This class inherits Actuator class and serves as a child class of Actuator.
+    This class represents a type of actuators in the BGLP environment, namely Belt.
+    This class can be used for Conveyor Belt, Rotary Feeder, Vibratory Conveyor, or similar type of actuators.
+    Belts are mostly used to transport material from silos to hoppers.
+    However, the parameter of each actuator can be dissimilar to each other based on their settings.
+
+    Parameters
+    ----------
+    name : str
+        specific name or id of a vacuum pump (e.g. Belt_A, etc.).
+    actiontype : str
+        "C" for continuous action, "B" for binary action.
+    minpower : float
+        minimum power of a vacuum pump.
+    maxpower : float
+        maximum power of a vacuum pump.
+    minaction : float
+        minimum action of a vacuum pump.
+    maxaction : float
+        maximum action of a vacuum pump.
+    masscoeff : float
+        mass transport coefficient of a vacuum pump.
+        
+    Attributes
+    ----------
+    reg_b : list of objects
+        list of existing belts.
+    idx_b : int
+        length of reg_b.
+    name : str
+        specific name or id of a belt.
+    actiontype : str
+        "C" for continuous action, "B" for binary action.
+    speed : float
+        speed of a bel.
+    """
     reg_b       = []
     idx_b       = 0
     name        = ""
@@ -241,29 +320,6 @@ class Belt(Actuator):
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, name, actiontype, minpower, maxpower, minaction, maxaction, masscoeff):
-        """
-        
-
-        Parameters
-        ----------
-        name : Text Type
-            label for an actuator (e.g. Belt_A, Vac_A, etc.)
-        actiontype : Text Type
-            "C" for continuous action, "B" for binary action
-        maxpower : Numeric Types
-            the maximum power of an actuator
-        minaction : Numeric Types
-            the minimum action of an actuator
-        maxaction : Numeric Types
-            the maximum action of an actuator
-        masscoeff : Numeric Types
-            the mass transport coefficient of an actuator.
-
-        Returns
-        -------
-        None.
-
-        """
         Actuator.__init__(self, minpower, maxpower, minaction, maxaction, masscoeff)
         self.idx_b = len(self.reg_b)
         self.reg_b.append(self)
@@ -274,26 +330,21 @@ class Belt(Actuator):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def start_t(self, now, duration, speed = 0, overwrite = False):
+    def start_t(self, now, duration, speed, overwrite = False):
         """
-        
+        This method calculates the activation time and the end of activation time of the belt.
+        This method is called, if the belt would like to be activated or updated.
 
         Parameters
         ----------
-        
-        now : Numeric Types
-            current_simulation time
-        duration : Numeric Types
-            time set parameter.
-        speed : Numeric Types (0 to 1)
-            the selected action by an agent
-        overwrite : Boolean, optional
-            to select whether the actuator is already activated or not
-
-        Returns
-        -------
-        None.
-
+        now : float
+            current time of the system.
+        duration : float
+            duration of the belt being activated, which being defined by the time set.
+        speed : float
+            speed of the belt or the action by an agent in RL context.
+        overwrite : bool, optional
+            To indicate whether the current operation can be overwritten or not.
         """
         if speed > 1.0:
             self.speed = 1.0
@@ -312,18 +363,19 @@ class Belt(Actuator):
             
 
 ## -------------------------------------------------------------------------------------------------
-    def calc_mass(self, now = 0):
+    def calc_mass(self, now):
         """
-
+        This method calculates the transported mass flow by the belt for a time step.
 
         Parameters
         ----------
-        now : Numeric Types
-            current_simulation time
+        now : float
+            current time of the system.
 
         Returns
         -------
-        current transported mass
+        cur_mass_transport : float
+            current transported mass.
 
         """
         if self.status == True:
@@ -337,11 +389,12 @@ class Belt(Actuator):
 ## -------------------------------------------------------------------------------------------------
     def calc_energy(self):
         """
-
+        This method calculates the power consumption of a belt.
 
         Returns
         -------
-        current power consumption
+        cur_power : float
+            current power consumption.
 
         """
         if self.status == True:
@@ -355,16 +408,12 @@ class Belt(Actuator):
 ## -------------------------------------------------------------------------------------------------
     def update(self, now):
         """
-
+        This method calculates whether a belt must be deactived or not.
 
         Parameters
         ----------
-        now : Numeric Types
-            current_simulation time
-
-        Returns
-        -------
-        None.
+        now : float
+            current time of the system.
 
         """
         if self.status == True:
@@ -374,18 +423,47 @@ class Belt(Actuator):
 
 ## -------------------------------------------------------------------------------------------------
     def deactivate(self):
+        """
+        This method is used to deactivate a belt.
+        """
         self.status             == False
         self.cur_mass_transport = 0
         self.cur_power          = 0
-        
-    
-        
-        
- 
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Reservoir:
+    """
+    This class serves as a parent class of different types of reservoirs, which provides the main 
+    attributes of a buffer in the BGLP environment.
+
+    Parameters
+    ----------
+    vol_max : float
+        maximum volume of a reservoir.
+    vol_init_abs : float, optional
+        initial volume of a reservoir. The default is 0.
+        
+    Attributes
+    ----------
+    reg_r : list of objects
+        list of existing reservoirs in the environment.
+    idx_r : int
+        length of reg_r.
+    vol_max : float
+        maximum volume of a reservoir.
+    vol_init_abs : float
+        initial volume of a reservoir.
+    vol_cur_abs : float
+        current volume of a reservoir.
+    vol_cur_rel : float
+        current volume of a reservoir in percentage.
+    change : float
+        volume change of a reservoir in a time step.
+    """
     reg_r           = []
     idx_r           = []
     vol_max         = 0
@@ -396,21 +474,6 @@ class Reservoir:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, vol_max, vol_init_abs=0):
-        """
-        
-
-        Parameters
-        ----------
-        vol_max : Numeric Types
-            maximum volume of a reservoir
-        vol_init_abs : Numeric Types
-            absolute initial volume of a reservoir
-
-        Returns
-        -------
-        None.
-
-        """
         self.idx_r          = len(self.reg_r)
         self.reg_r.append(self)
         self.vol_max        = vol_max
@@ -423,33 +486,60 @@ class Reservoir:
 ## -------------------------------------------------------------------------------------------------
     def set_change(self, vol_change):
         """
-        
+        This method sets up a volume change of a reservoir.
 
         Parameters
         ----------
-        vol_change : Numeric Types
-            volume change for each time step
-
-        Returns
-        -------
-        None.
-
+        vol_change : float
+            volume change of a reservoir in a time step.
         """
         self.change = vol_change
             
 
 ## -------------------------------------------------------------------------------------------------
     def update(self):
+        """
+        This method calculates the current volume of a reservoir after volume changes are made.
+        
+        """
         self.vol_cur_abs += self.change
         self.vol_cur_rel = self.vol_cur_abs / self.vol_max
-        
-    
-    
-    
-    
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Silo(Reservoir):
+    """
+    This class inherits Reservoir class and serves as a child class of Reservoir.
+    This class represents a type of buffers in the BGLP environment, namely Silo.
+    Silos are used to temporary stored the transported materials.
+    However, the parameter of each silo can be dissimilar to each other based on their settings.
+
+    Parameters
+    ----------
+    name : str
+        specific name or id of a silo (e.g. Silo_A, etc.).
+    vol_max : float
+        maximum capacity of a silo.
+    vol_cur : float
+        current volume of a silo.
+    mode : str, optional
+        mode of measuring the current volume.
+        "abs" means absolute value, "rel" means percentage. The default is "abs".
+    
+    Attributes
+    ----------
+    reg_s : list of objects
+        list of existing silos.
+    idx_s : int
+        length of reg_s.
+    name : str
+        specific name or id of a silo.
+    type_ : str
+        a short name for a silo, usually 3 capital letters (e.g SIL).
+    """
     reg_s   = []
     idx_s   = []
     name    = ""
@@ -457,25 +547,6 @@ class Silo(Reservoir):
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, name, vol_max, vol_cur = 0, mode = "abs"):
-        """
-        
-
-        Parameters
-        ----------
-        nname : Text Type
-            label for an actuator (e.g. Hopper_A, Silo_A, etc.)
-        vol_max : Numeric Types
-            maximum volume of an reservoir
-        vol_cur : Numeric Types
-            current volume of an reservoir
-        mode : Text Type
-            The default is "abs".
-
-        Returns
-        -------
-        None.
-
-        """
         if mode == "abs":
             vol_cur = vol_cur
         elif mode == "rel":
@@ -489,10 +560,38 @@ class Silo(Reservoir):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Hopper (Reservoir):
+    """
+    This class inherits Reservoir class and serves as a child class of Reservoir.
+    This class represents a type of buffers in the BGLP environment, namely Hopper.
+    Hoppers are used to temporary stored the transported materials.
+    However, the parameter of each hopper can be dissimilar to each other based on their settings.
+
+    Parameters
+    ----------
+    name : str
+        specific name or id of a hopper (e.g. Hop_A, etc.).
+    vol_max : float
+        maximum capacity of a hopper.
+    vol_cur : float
+        current volume of a hopper.
+    mode : str, optional
+        mode of measuring the current volume.
+        "abs" means absolute value, "rel" means percentage. The default is "abs".
+    
+    Attributes
+    ----------
+    reg_h : list of objects
+        list of existing silos.
+    idx_h : int
+        length of reg_h.
+    name : str
+        specific name or id of a hopper.
+    type_ : str
+        a short name for a hopper, usually 3 capital letters (e.g HOP).
+    """
     reg_h   = []
     idx_h   = []
     name    = ""
@@ -500,25 +599,6 @@ class Hopper (Reservoir):
     
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, name, vol_max, vol_cur = 0, mode = "abs"):
-        """
-        
-
-        Parameters
-        ----------
-        nname : Text Type
-            label for an actuator (e.g. Hopper_A, Silo_A, etc.)
-        vol_max : Numeric Types
-            maximum volume of an reservoir
-        vol_cur : Numeric Types
-            current volume of an reservoir
-        mode : Text Type
-            The default is "abs".
-
-        Returns
-        -------
-        None.
-
-        """
         if mode == "abs":
             vol_cur = vol_cur
         elif mode == "rel":
@@ -532,11 +612,103 @@ class Hopper (Reservoir):
 
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class BGLP (Environment):
+    """
+    This is the main class of BGLP environment that inherits Environment class from MLPro.
+    
+    Parameters
+    ----------
+    p_reward_type : Reward, optional
+        rewarding type. The default is Reward.C_TYPE_EVERY_AGENT.
+    p_logging : Log, optional
+        logging functionalities. The default is Log.C_LOG_ALL.
+    t_step : float, optional
+        time for each time step (in seconds). The default is 0.5.
+    t_set : float, optional
+        time set for one horizon (in seconds). The default is 10.0.
+    demand : float, optional
+        the constant output flow from the system (in L/s). The default is 0.1.
+    lr_margin : float, optional
+        the learning rate for margin parameter, related to implemented reward function. The default is 1.0.
+    lr_demand : float, optional
+        the learning rate for production demand, related to implemented reward function. The default is 4.0.
+    lr_energy : float, optional
+        the learning rate for energy consumption, related to implemented reward function. The default is 0.0010.
+    margin_p : list of floats, optional
+        the margin parameter of reservoirs [low, high, multplicator]. The default is [0.2,0.8,4].
+    prod_target : float, optional
+        the production target for batch operation (in L). The default is 10000.
+    prod_scenario : str, optional
+        'batch' means batch production scenario and 'continuous' means continuous production scenario. The default is 'continuous'.
+
+    Attributes
+    ----------
+    C_NAME : str
+        name of the environment.
+    C_LATENCY : timedelta()
+        latency.
+    C_INFINITY : np.finfo()
+        infinity.
+    C_REWARD_TYPE : Reward
+        rewarding type.
+    sils : list of objects
+        list of existing silos.
+    hops : list of objects
+        list of existing hoppers.
+    ress : list of objects
+        list of existing reservoirs.
+    blts : list of objects
+        list of existing belts.
+    acts : list of objects
+        list of existing actuators.
+    vacs : list of objects
+        list of existing vacuum pumps.
+    con_act_to_res : list of lists of int
+        connection between actuators and reservoirs and setup the sequence.
+    m_param : list of floats
+        the margin parameter of reservoirs [low, high, multplicator].
+    _demand : float
+        the constant output flow from the system (in L/s).
+    t : float
+        current time of the system (in seconds).
+    t_step : float
+        time for each time step (in seconds).
+    lr_margin : float
+        the learning rate for margin parameter.
+    lr_demand : float
+        the learning rate for production demand.
+    lr_energy : float
+        the learning rate for energy consumption.
+    overflow : list of floats
+        current overflow.
+    energy : list of floats
+        current power consumption.
+    transport : list of floats
+        current transported mass flow.
+    reward : list of floats
+        current rewards.
+    levels_init : float
+        initial level of reservoirs.
+    overflow_t : float
+        current overflow for a specific buffer in a specific time.
+    demand_t : float
+        current demand for a specific buffer in a specific time.
+    energy_t : float
+        current power consumption for a specific actuator in a specific time.
+    transport_t : float
+        current transported material by a specific actuaor in a specific time.
+    margin_t : float
+        current margin for a specific buffer in a specific time.
+    prod_reached : float
+        current production reached in L for batch operation.
+    prod_target : float
+        the production target for batch operation (in L).
+    prod_scenario : str
+        'batch' means batch production scenario and 'continuous' means continuous production scenario.
+    
+    """
     C_NAME              = "BGLP"
     C_LATENCY           = timedelta(0,1,0)    
     C_INFINITY          = np.finfo(np.float32).max
@@ -576,21 +748,6 @@ class BGLP (Environment):
                  t_step=0.5, t_set=10.0, demand=0.1, lr_margin=1.0, lr_demand=4.0,
                  lr_energy=0.0010, margin_p=[0.2,0.8,4], prod_target=10000,
                  prod_scenario='continuous'):
-        """
-        Parameters:
-            p_reward_type   Reward type to be computed
-            p_logging       Boolean switch for logging
-            t_step          Time per step
-            t_set           A set of time to update action
-            demand          Production demand (L/s)
-            lr_margin       Learning rate for margin (rewarding)
-            lr_demand       Learning rate for demand (rewarding)
-            lr_energy       Learning rate for energy (rewarding)
-            margin_p        Margin parameters
-            prod_target     Production target in one episode (L)
-            prod_scenario   Production scenarion ('continuous'/'batch')
-        """
-        
         self.num_envs       = 5                                                 # Number of internal sub-environments
         self.reward_type    = p_reward_type
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
@@ -683,7 +840,17 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
+        """
+        This method is used to setup action and state spaces of the system.
 
+        Returns
+        -------
+        state_space : ESpace()
+            state space of the system.
+        action_space : ESpace()
+            action space of the system.
+
+        """
         state_space     = ESpace()
         action_space    = ESpace()
         levels_max      = [17.42, 9.10, 17.42, 9.10, 17.42, 9.10]
@@ -707,8 +874,13 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def collect_substates(self) -> State:
         """
-        To provide a method that set the value of a state, which will be used
-        for reset method
+        This method is called during resetting the environment.
+
+        Returns
+        -------
+        state : State
+            current states.
+
         """
         state = State(self._state_space)
         sub_state_val = self.calc_state()
@@ -720,7 +892,13 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None) -> None:
         """
-        To reset environment
+        This method is used to reset the environment.
+
+        Parameters
+        ----------
+        p_seed : int, optional
+            Not yet implemented. The default is None.
+
         """
         self.set_random_seed(p_seed)
         self.reset_levels()
@@ -740,7 +918,20 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
         """
-        To simulate the environment reacting selected actions
+        This method is used to calculate the next states of the system after a set of actions.
+
+        Parameters
+        ----------
+        p_state : State
+            State.
+        p_action : Action
+            ACtion.
+
+        Returns
+        -------
+        _state : State
+            current states.
+
         """
         action          = []
         for agent_id in p_action.get_agent_ids():
@@ -785,13 +976,19 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def _compute_done(self, p_state:State) -> bool:
         """
-        Updates the goal achievement value in [0,1] and the flags done
-        based on the current state. Please redefine.
-   
-        Returns:
-          -
-        """
-        
+        This method computes the done flag. This method can be redefined.
+
+        Parameters
+        ----------
+        p_state : State
+            state.
+
+        Returns
+        -------
+        bool
+            done or not done.
+
+        """        
         if self.prod_scenario == 'continuous':
             return False
         else:
@@ -804,19 +1001,39 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state:State) -> bool:
         """
-        Updates the goal achievement value in [0,1] and the flags broken
-        based on the current state. Please redefine.
-   
-        Returns:
-          -
-        """
+        This method computes the broken flag. This method can be redefined.
+
+        Parameters
+        ----------
+        p_state : State
+            state.
+
+        Returns
+        -------
+        bool
+            broken or not.
+
+        """ 
         return False
     
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         """
-        To calculate reward (can be redifined)
+        This method calculates the reward for different reward types.
+
+        Parameters
+        ----------
+        p_state_old : State
+            previous state.
+        p_state_new : State
+            new state.
+
+        Returns
+        -------
+        reward : Reward
+            reward values.
+
         """
         reward = Reward(self.reward_type)
 
@@ -846,7 +1063,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def calc_mass_flows(self):
         """
-        To calculate mass flow transported by actuators
+        This method calculates the mass flow transported by actuators.
+        
         """
         for act_num in range(len(self.acts)):
             self.transport[act_num] = self.acts[act_num].calc_mass(self.t)*self.t_step
@@ -855,7 +1073,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def calc_energy(self):
         """
-        To calculate power consumptions per actuator
+        This method calculates the power consumptions per actuator.
+        
         """
         for act_num in range(len(self.acts)):
             self.energy[act_num] = self.acts[act_num].calc_energy()*self.t_step
@@ -864,7 +1083,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def calc_margin(self):   
         """
-        To calculate margin level for every reservoir
+        This method calculates margin level for every reservoir.
+        
         """             
         for i in range(len(self.ress)):
             vol_rel = self.ress[i].vol_cur_rel
@@ -879,7 +1099,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def set_volume_changes(self, demandval): 
         """
-        To set up volume changes for every reservoir
+        This method sets up volume changes for every reservoir.
+        
         """
         for resnum in range(len(self.ress)):
             res = self.ress[resnum]
@@ -914,7 +1135,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def update_levels(self):
         """
-        To update current reservoirs' level'
+        This method updates the current level of reservoirs.
+        
         """
         for resnum in range(len(self.ress)):
             res = self.ress[resnum]
@@ -928,7 +1150,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def reset_levels(self):
         """
-        To reset reservoirs
+        This method resets reservoirs.
+        
         """
         self.levels_init = np.random.rand(6,1)
         for resnum in range(len(self.ress)):
@@ -940,7 +1163,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def reset_actuators(self):
         """
-        To reset actuators
+        This method resets actuators.
+        
         """
         for act in self.acts:
             act.deactivate()
@@ -949,7 +1173,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def update_actuators(self):
         """
-        To update actuators
+        This method updates actuators.
+        
         """
         for act in self.acts:
             act.update(self.t)
@@ -958,7 +1183,13 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def update(self, demandval):
         """
-        To set up volume changes, update reservoirs' level, and update actuators'
+        This method sets up volume changes, updates reservoirs' level, and updates actuators.
+        
+        Parameters
+        ----------
+        demandval : float
+            production outflow target in L/s.
+            
         """
         self.set_volume_changes(demandval)
         self.update_levels()
@@ -968,8 +1199,29 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def get_status(self, t, demandval):
         """
-        To calculate overflow, demand, energy, transport, and margin.
+        This method calculates overflow, demand, energy, transport, and margin.
         This function will be called every time step.
+        
+        Parameters
+        ----------
+        t : float
+            current time in sec.
+        demandval : float
+            production outflow target in L/s.
+
+        Returns
+        -------
+        overflow : list of floats
+            overflow levels.
+        demand : list of floats
+            demand fulfilled.
+        energy : list of floats
+            power consumptions.
+        transport : list of floats
+            transported materials.
+        margin : list of floats
+            margin levels.
+
         """
         self.t = t       
         self.calc_mass_flows()
@@ -982,8 +1234,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def set_actions(self, actions):   
         """
-        To set up actions for actuators.
-        This function will be called every time set.
+        This method sets up actions for actuators. This function will be called every time set.
+        
         """
         t_set = self.t_set-2*self.t_step  
         for actnum in range(len(self.acts)):
@@ -1002,7 +1254,13 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def calc_state(self):
         """
-        To get current levels of reservoirs
+        This method obtains current levels of reservoirs.
+
+        Returns
+        -------
+        levels : list of floats
+            level of each reservoir.
+        
         """
         levels = np.zeros((len(self.ress),1))
         for resnum in range(len(self.ress)):
@@ -1014,7 +1272,13 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def calc_reward(self):
         """
-        To calculate the utility/reward
+        This method calculates the reward. This method can be redifined!
+        The current reward function is suitable for continuous operation and scalar reward for individual agents.
+
+        Returns
+        -------
+        reward : list of floats
+            reward for each agent.
         """
         for actnum in range(len(self.acts)):
             acts = self.acts[actnum]
