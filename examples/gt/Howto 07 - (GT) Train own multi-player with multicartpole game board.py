@@ -14,10 +14,11 @@
 ## -- 2021-09-28  1.1.3     SY       Adjustment due to implementation of SAR Buffer on player
 ## -- 2021-10-06  1.1.4     DA       Refactoring 
 ## -- 2021-11-16  1.2.0     DA       Refactoring 
+## -- 2021-12-07  1.2.1     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-16)
+Ver. 1.2.1 (2021-12-07)
  
 This module shows how to train an own multi-player with the enhanced multi-action
 game board MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -143,23 +144,14 @@ else:
     path        = None
 
 
-# 3.3 Create your game
-mygame  = MyGame(
-    p_mode=Mode.C_MODE_SIM,
-    p_ada=True,
-    p_visualize=visualize,
-    p_logging=logging
-)
-
-
-# 3.4 Create and run training object
+# 3.3 Create and run training object
 training = GTTraining(
-        p_game=mygame,
+        p_game_cls=MyGame,
         p_cycle_limit=200,
         p_max_adaptations=0,
         p_max_stagnations=0,
         p_path=path,
-        p_logging=logging
-)
+        p_visualize=visualize,
+        p_logging=logging )
 
 training.run()

@@ -17,15 +17,17 @@
 ## -- 2021-11-13  1.2.5     DA       Minor adjustments
 ## -- 2021-11-16  1.2.6     DA       Refactoring
 ## -- 2021-11-16  1.2.7     SY       Refactoring
+## -- 2021-12-09  1.2.8     SY       Update process action procedure in WrEnvMLPro2PZoo()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.7 (2021-11-16)
+Ver. 1.2.8 (2021-12-09)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
 
 import gym
+import numpy as np
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM
 from pettingzoo import AECEnv
@@ -246,8 +248,8 @@ class WrEnvMLPro2PZoo():
 ## -------------------------------------------------------------------------------------------------
         def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
             self._mlpro_env             = p_mlpro_env
-            self.possible_agents        = ["agent_" + str(r) for r in range(p_num_agents)]
-            self.agent_name_mapping = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
+            self.possible_agents        = [str(r) for r in range(p_num_agents)]
+            self.agent_name_mapping     = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
             
             if p_state_space is not None: 
                 self.observation_spaces = p_state_space
@@ -278,26 +280,27 @@ class WrEnvMLPro2PZoo():
             agent = self.agent_selection
             self._cumulative_rewards[agent] = 0
             
-            if agent == "agent_0":
+            if agent == self.possible_agents[0]:
                 self.action_set = []
             self.action_set.append(action[self.agent_selection.index(agent)])
             
             if agent == self.possible_agents[-1]:
                 _action     = Action()
-                _act_set    = Set()
                 idx         = self._mlpro_env.get_action_space().get_num_dim()
                 if isinstance(self.observation_spaces, gym.spaces.Discrete):
                     action = np.array([action])
                 for i in range(idx):
+                    _act_set    = Set()
                     _act_set.add_dim(Dimension(i,'action_'+str(i)))
-                _act_elem   = Element(_act_set)
-                for i in range(idx):
+                    _act_elem   = Element(_act_set)
                     _act_elem.set_value(i, self.action_set[i])
-                _action.add_elem('0', _act_elem)
+                    _action.add_elem(self.possible_agents[i], _act_elem)
                 
                 self._mlpro_env.process_action(_action)
-                
-            self.rewards[agent] = self._mlpro_env.compute_reward().get_agent_reward(agent)
+                for i in range(idx):
+                    self.rewards[self.possible_agents[i]] = self._mlpro_env.compute_reward().get_agent_reward(self.possible_agents[i]).item()
+                    if not self.rewards[self.possible_agents[i]]:
+                        self.rewards[self.possible_agents[i]] = 0
             
             if self._mlpro_env.get_done():
                 self.dones = {agent: True for agent in self.agents}

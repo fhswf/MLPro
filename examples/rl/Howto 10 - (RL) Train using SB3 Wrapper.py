@@ -12,10 +12,11 @@
 ## -- 2021-10-18  1.0.3     MRD      SB3 Off Policy Wrapper DQN, DDPG, SAC
 ## -- 2021-11-15  1.0.4     DA       Refactoring
 ## -- 2021-12-03  1.0.5     DA       Refactoring
+## -- 2021-12-07  1.0.6     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2021-11-15)
+Ver. 1.0.6 (2021-12-07)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
@@ -112,23 +113,14 @@ else:
     path        = None
 
 
-# 2.3 Create your scenario
-myscenario  = MyScenario(
-        p_mode=Mode.C_MODE_SIM,
-        p_ada=True,
-        p_visualize=visualize,
-        p_logging=logging 
-)
-
-
-# 2.4 Create and run training object
+# 2.3 Create and run training object
 training = RLTraining(
-        p_scenario=myscenario,
+        p_scenario_cls=MyScenario,
         p_cycle_limit=1000,
         p_max_adaptations=0,
         p_max_stagnations=0,
         p_path=path,
-        p_logging=logging
-)
+        p_visualize=visualize,
+        p_logging=logging )
 
 training.run()

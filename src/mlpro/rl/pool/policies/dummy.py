@@ -15,14 +15,16 @@ This module provide Policy Dummy for unittest purpose.
 """
 
 from mlpro.rl.models import *
+from mlpro.rl.pool.sarsbuffer.RandomSARSBuffer import RandomSARSBuffer
 
 class MyDummyPolicy(Policy):
     """
     Creates a policy that satisfies mlpro interface.
     """
     C_NAME          = 'MyPolicy'
+    C_BUFFER_CLS    = RandomSARSBuffer
 
-    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size, p_ada=True, p_logging=True):
+    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size, p_batch_size=5, p_warm_up_step=10, p_ada=True, p_logging=True):
         """
          Parameters:
             p_state_space       State space object
@@ -34,7 +36,25 @@ class MyDummyPolicy(Policy):
         super().__init__(p_observation_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         self._state_space   = p_observation_space
         self._action_space  = p_action_space
+        self.warm_up_phase = p_warm_up_step
+        self.batch_size = p_batch_size
+        self.additional_buffer_element = {}
         self.set_id(0)
+
+    def add_buffer(self, p_buffer_element: SARSElement):
+        """
+        Intended to save the data to the buffer. By default it save the SARS data.
+        
+        """
+        buffer_element = self._add_additional_buffer(p_buffer_element)
+        self._buffer.add_element(buffer_element)
+
+    def _add_additional_buffer(self, p_buffer_element: SARSElement):
+        p_buffer_element.add_value_element(self.additional_buffer_element)
+        return p_buffer_element
+
+    def clear_buffer(self):
+        self._buffer.clear()
 
     def compute_action(self, p_state: State) -> Action:
         # 1 Create a numpy array for your action values 
@@ -50,7 +70,14 @@ class MyDummyPolicy(Policy):
 
     def _adapt(self, *p_args) -> bool:
         # 1 Adapting the internal policy is up to you...
-        self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
+        # Add data to buffer
+        self.add_buffer(p_args[0])
+
+        if len(self._buffer) < self.warm_up_phase:
+            self.log(self.C_LOG_TYPE_I, 'Buffer is not full yet, keep collecting data!')
+            return False
+
+        sar_data = self._buffer.get_sample(self.batch_size)
 
         # 2 Only return True if something has been adapted...
-        return False
+        return True

@@ -54,19 +54,9 @@ def test_pool_policies(policy_cls):
                 p_logging=p_logging
             )
 
-    # 2.3 Create your scenario
-    myscenario  = MyScenario(
-        p_mode=Environment.C_MODE_SIM,
-        p_ada=True,
-        p_cycle_limit=100,
-        p_visualize=False,
-        p_logging=False
-    )
-
-
     # 2.4 Create and run training object
     training = RLTraining(
-            p_scenario=myscenario,
+            p_scenario_cls=MyScenario,
             p_cycle_limit=100,
             p_max_adaptations=0,
             p_max_stagnations=0,

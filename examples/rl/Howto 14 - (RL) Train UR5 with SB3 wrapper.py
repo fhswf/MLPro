@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-11-18  0.0.0     MRD      Creation
 ## -- 2021-11-18  1.0.0     MRD      Initial Release
+## -- 2021-12-07  1.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-11-18)
+Ver. 1.0.1 (2021-12-07)
 
 This module shows how to use SB3 wrapper to train UR5 robot
 """
@@ -60,36 +61,25 @@ class ScenarioUR5A2C(RLScenario):
 
 
 
-
-# 3 Instantiate scenario
-myscenario  = ScenarioUR5A2C(
-    p_mode=Environment.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=20,
-    p_visualize=True,
-    p_logging=False
-)
-
-
-
-
-# 4 Train agent in scenario 
+# 3 Train agent in scenario 
 now             = datetime.now()
 
 training        = RLTraining(
-    p_scenario=myscenario,
+    p_scenario_cls=ScenarioUR5A2C,
     p_cycle_limit=100000,
     p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_logging=True
-)
+    p_visualize=True,
+    p_logging=Log.C_LOG_ALL )
 
 training.run()
 
-# 6 Create Plotting Class
+
+
+# 4 Create Plotting Class
 class MyDataPlotting(DataPlotting):
     def get_plots(self):
         """
@@ -126,7 +116,7 @@ class MyDataPlotting(DataPlotting):
                 else:
                     plt.close(fig)
 
-# 7 Plotting 1 MLpro    
+# 5 Plotting 1 MLpro    
 data_printing   = {"Cycle":        [False],
                     "Day":          [False],
                     "Second":       [False],

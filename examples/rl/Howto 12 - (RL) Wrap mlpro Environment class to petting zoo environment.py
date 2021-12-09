@@ -32,5 +32,8 @@ env         = WrEnvMLPro2PZoo(mlpro_env, p_num_agents=5, p_state_space=None, p_a
 try:
     api_test(env, num_cycles=10, verbose_progress=False)
     print("test completed")
+    assert True
 except:
-    print("test failed")     
+    print("test failed")  
+    assert False
+    
