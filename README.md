@@ -29,6 +29,7 @@ The Documentation is available on : [MLPRORTD](https://www.google.com)
 # Installation
 
 ## Prerequisites
+MLPro requires Python 3.7+
 
 ```bash
 pip install mlpro
@@ -88,7 +89,7 @@ training.run()
 
 # Implemented Wrappers
 
-| **Features**                | **Stable-Baselines3** |
+| **Features**                | **Status** |
 | --------------------------- | ----------------------|
 | OpenAI-Gym | :heavy_check_mark: |
 | Stable-Baselines3               | :heavy_check_mark: |
