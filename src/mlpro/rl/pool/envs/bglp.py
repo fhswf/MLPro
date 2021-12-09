@@ -436,6 +436,34 @@ class Belt(Actuator):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Reservoir:
+    """
+    This class serves as a parent class of different types of reservoirs, which provides the main 
+    attributes of a buffer in the BGLP environment.
+
+    Parameters
+    ----------
+    vol_max : float
+        maximum volume of a reservoir.
+    vol_init_abs : float, optional
+        initial volume of a reservoir. The default is 0.
+        
+    Attributes
+    ----------
+    reg_r: list of objects
+        list of existing reservoirs in the environment.
+    idx_r: int
+        length of reg_r.
+    vol_max : float
+        maximum volume of a reservoir.
+    vol_init_abs : float
+        initial volume of a reservoir.
+    vol_cur_abs: float
+        current volume of a reservoir.
+    vol_cur_rel: float
+        current volume of a reservoir in percentage.
+    change: float
+        volume change of a reservoir in a time step.
+    """
     reg_r           = []
     idx_r           = []
     vol_max         = 0
@@ -446,21 +474,6 @@ class Reservoir:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, vol_max, vol_init_abs=0):
-        """
-        
-
-        Parameters
-        ----------
-        vol_max : Numeric Types
-            maximum volume of a reservoir
-        vol_init_abs : Numeric Types
-            absolute initial volume of a reservoir
-
-        Returns
-        -------
-        None.
-
-        """
         self.idx_r          = len(self.reg_r)
         self.reg_r.append(self)
         self.vol_max        = vol_max
@@ -473,23 +486,22 @@ class Reservoir:
 ## -------------------------------------------------------------------------------------------------
     def set_change(self, vol_change):
         """
-        
+        This method sets up a volume change of a reservoir.
 
         Parameters
         ----------
-        vol_change : Numeric Types
-            volume change for each time step
-
-        Returns
-        -------
-        None.
-
+        vol_change : float
+            volume change of a reservoir in a time step.
         """
         self.change = vol_change
             
 
 ## -------------------------------------------------------------------------------------------------
     def update(self):
+        """
+        This method calculates the current volume of a reservoir after volume changes are made.
+        
+        """
         self.vol_cur_abs += self.change
         self.vol_cur_rel = self.vol_cur_abs / self.vol_max
 
