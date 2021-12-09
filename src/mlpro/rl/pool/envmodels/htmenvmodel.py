@@ -3,22 +3,11 @@ import transformations
 
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotArm3D
+from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.rl.pool.afunctions.htmafctrans import HTMAFctTrans
 
-# Create own MSpace
-class MyTorchSpace(MSpace):
-    def distance(self, p_e1: torch.Tensor, p_e2: torch.Tensor):
-        output = torch.Tensor([])
-        thets = torch.zeros(3)
-        for joint in range(p_e1.shape[1] - 1):
-            angle = torch.Tensor(transformations.euler_from_matrix(p_e1[-1][joint].detach().numpy(), "rxyz")) - thets
-            thets = torch.Tensor(transformations.euler_from_matrix(p_e1[-1][joint].detach().numpy(), "rxyz"))
-            output = torch.cat([output, torch.norm(angle).reshape(1, 1)], dim=1)
 
-        return torch.norm(output - p_e2).item()
-
-
-class HTMEnvModel(EnvModel):
+class HTMEnvModel(EnvModel, Mode):
     C_NAME = "HTM Env Model"
 
     def __init__(
@@ -26,7 +15,7 @@ class HTMEnvModel(EnvModel):
         p_num_joints=4,
         p_target_mode="Random",
         p_ada=True,
-        p_logging=True,
+        p_logging=False,
     ):
 
         # Define all the adaptive function here
@@ -85,14 +74,18 @@ class HTMEnvModel(EnvModel):
         # Setup space
         # 1 Setup state space
         obs_space = ESpace()
+
+        obs_space.add_dim(Dimension(0, "Tx", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension(1, "Ty", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension(2, "Tz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension(3, "Px", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension(4, "Py", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension(5, "Pz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+
         for idx in range(self.num_joint):
             obs_space.add_dim(
-                Dimension(idx, "J%i" % (idx), "Joint%i" % (idx), "", "deg", "deg", p_boundaries=[-np.inf, np.inf])
+                Dimension(idx + 6, "J%i" % (idx), "Joint%i" % (idx), "", "deg", "deg", p_boundaries=[-np.inf, np.inf])
             )
-
-        obs_space.add_dim(Dimension(idx + 1, "Tx", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        obs_space.add_dim(Dimension(idx + 2, "Ty", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        obs_space.add_dim(Dimension(idx + 3, "Tz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
 
         # 2 Setup action space
         action_space = ESpace()
@@ -115,18 +108,18 @@ class HTMEnvModel(EnvModel):
             HTMAFctTrans,
             p_state_space=obs_space,
             p_action_space=action_space,
-            p_input_space_cls=MyTorchSpace,
-            p_output_space_cls=MyTorchSpace,
             p_threshold=0.01,
             p_buffer_size=1000,
             p_ada=p_ada,
             p_logging=p_logging,
+            p_sim_env=self.RobotArmSim,
         )
 
-        super().__init__(
+        EnvModel.__init__(
+            self,
             p_observation_space=obs_space,
             p_action_space=action_space,
-            p_latency=self.dt,
+            p_latency=timedelta(seconds=self.dt),
             p_afct_strans=afct_strans,
             p_afct_reward=None,
             p_afct_done=None,
@@ -134,6 +127,8 @@ class HTMEnvModel(EnvModel):
             p_ada=p_ada,
             p_logging=p_logging,
         )
+
+        Mode.__init__(self, p_mode=Mode.C_MODE_SIM, p_logging=p_logging)
 
         if self.modes == "random":
             num = random.random()
@@ -157,6 +152,34 @@ class HTMEnvModel(EnvModel):
             self.init_distance = torch.norm(self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target)
 
         self.reset()
+
+    ## -------------------------------------------------------------------------------------------------
+    def _compute_done(self, p_state: State = None) -> bool:
+        # disterror = np.linalg.norm(p_state.get_values()[:3] - p_state.get_values()[3:6])
+        disterror = np.linalg.norm(np.array(p_state.get_values())[:3] - np.array(p_state.get_values())[3:6])
+        if disterror <= 0.1:
+            return True
+        else:
+            return False
+
+    ## -------------------------------------------------------------------------------------------------
+    def _compute_broken(self, p_state: State) -> bool:
+        return False
+
+    ## -------------------------------------------------------------------------------------------------
+    def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
+        reward = Reward(self.C_REWARD_TYPE)
+        # disterror = np.linalg.norm(p_state_new.get_values()[:3] - p_state_new.get_values()[3:6])
+        disterror = np.linalg.norm(np.array(p_state_new.get_values())[:3] - np.array(p_state_new.get_values())[3:6])
+
+        ratio = disterror / self.init_distance.item()
+        rew = -np.ones(1) * ratio
+        rew = rew - 10e-2
+        if disterror <= 0.1:
+            rew = rew + 1
+        rew = rew.astype("float64")
+        reward.set_overall_reward(rew)
+        return reward
 
     def set_theta(self, theta):
         self.RobotArm1.thetas = theta.reshape(self.num_joint)
@@ -186,8 +209,15 @@ class HTMEnvModel(EnvModel):
             else:
                 self.target = torch.Tensor([[-0.5, -0.5, 0.5]])
                 self.init_distance = torch.norm(self.RobotArm1.joints[:3, [-1]].reshape(1, 3) - self.target)
-        obs = torch.cat([self.RobotArm1.thetas.reshape(1, self.num_joint), self.target], dim=1)
-        obs = obs.cpu().numpy().flatten()
+        obs = torch.cat(
+            [
+                self.target,
+                self.RobotArm1.joints[:3, [-1]].reshape(1, 3),
+                self.RobotArm1.thetas.reshape(1, self.num_joint),
+            ],
+            dim=1,
+        )
+        obs = obs.cpu().flatten().tolist()
         self._state = State(self._state_space)
         self._state.set_values(obs)
         self._state.set_done(True)

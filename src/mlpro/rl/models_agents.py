@@ -373,7 +373,8 @@ class Agent(Policy):
             adapted = self._envmodel.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
 
             if self._envmodel.get_maturity() >= self._em_mat_thsld:
-                adapted = adapted or self._adapt_policy_by_model()
+                if adapted:
+                    self._adapt_policy_by_model()
 
         return adapted
 

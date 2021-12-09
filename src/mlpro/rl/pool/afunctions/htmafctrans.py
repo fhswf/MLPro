@@ -1,6 +1,8 @@
 import torch
 import transformations
 
+from collections import deque
+
 from mlpro.rl.models import *
 
 
@@ -461,37 +463,72 @@ class HTMAFctTrans(AdaptiveFunction):
             **p_par
         )
 
-        self.htm_model = HTMmodel(int(p_output_space.get_num_dim() - 3), 0.01)
+        self.joint_num = p_output_space.get_num_dim() - 6
+        self.htm_model = HTMmodel(self.joint_num, 0.01)
         self.optimizer = torch.optim.Adam(self.htm_model.parameters(), lr=3e-4)
         self.loss_dyn = torch.nn.MSELoss()
+        self.sim_env = p_par["p_sim_env"]
 
     def _map(self, p_input: Element, p_output: Element):
-        print(p_input.get_values())
-        print(p_output.get_values())
+        # Prediction
+        # Input [Tx, Ty, Tz, Px, Py, Pz, J1, J2, J3, J4, A1, A2, A3, A4]
+        # Model Input [A1, A2, A3, A4, J1, J2, J3, J4]
+        model_input = deque(p_input.get_values()[6:])
+        model_input.rotate(self.joint_num)
+        model_input = torch.Tensor([list(model_input)])
+        model_output = self.htm_model(model_input)
 
-    # def _add_buffer(self, p_buffer_element: IOElement):
-    #     # buffer_element = self._add_additional_buffer(p_buffer_element)
-    #     self._buffer.add_element(p_buffer_element)
+        # Model Output [HTM1, HTM2, HTM3, HTM4, HTMEE]
+        # Output [Tx, Ty, Tz, Px, Py, Pz, J1, J2, J3, J4]
 
-    # def _adapt(self, p_input: Element, p_output: Element) -> bool:
-    #     # Add to buffer
-    #     self._add_buffer(IOElement(p_input, p_output))
+        # Convert HTMEE to [Px, Py, Pz]
+        eef = torch.mm(model_output[-1][-1].detach(), torch.Tensor([[0, 0, 0, 1]]).T)
 
-    #     if self._buffer.get_internal_counter() % 100 != 0:
-    #         return False
+        # Convert [HTM1, HTM2, HTM3, HTM4] to [J1, J2, J3, J4]
+        angles = torch.Tensor([])
+        thets = torch.zeros(3)
+        for idx in range(self.joint_num):
+            angle = torch.Tensor(transformations.euler_from_matrix(model_output[-1][idx].detach().numpy())) - thets
+            thets = torch.Tensor(transformations.euler_from_matrix(model_output[-1][idx].detach().numpy()))
+            angles = torch.cat([angles, torch.norm(angle).reshape(1, 1)], dim=1)
 
-    #     inputs = self._buffer.get_all()["input"]
-    #     outputs = self._buffer.get_all()["output"]
+        # Combine Output
+        output = p_input.get_values()[:3].copy()
+        output.extend(eef[:3, [-1]].cpu().flatten().tolist())
+        output.extend(angles.cpu().flatten().tolist())
+        p_output.set_values(output)
 
-    #     inputs = torch.cat([input for input in inputs])
-    #     labels = torch.cat([output for output in outputs])
+    def _adapt(self, p_input: Element, p_output: Element) -> bool:
+        model_input = deque(p_input.get_values()[6:])
+        model_input.rotate(self.joint_num)
+        model_input = torch.Tensor([list(model_input)])
 
-    #     outputs = self.htm_model(inputs)
-    #     loss = self.loss_dyn(outputs, labels)
+        self.sim_env.set_theta(torch.Tensor([p_output.get_values()[6 : 6 + self.joint_num]]))
+        self.sim_env.update_joint_coords()
 
-    #     self.log(self.C_LOG_TYPE_I, "Loss", loss)
+        model_output = self.sim_env.get_homogeneous().reshape(1, self.joint_num + 1, 4, 4)
 
-    #     self.optimizer.zero_grad()
-    #     loss.backward()
-    #     self.optimizer.step()
-    #     return True
+        self._add_buffer(IOElement(model_input, model_output))
+
+        if self._buffer.get_internal_counter() % 100 != 0:
+            return False
+
+        inputs = self._buffer.get_all()["input"]
+        outputs = self._buffer.get_all()["output"]
+
+        inputs = torch.cat([input for input in inputs])
+        labels = torch.cat([output for output in outputs])
+
+        outputs = self.htm_model(inputs)
+        loss = self.loss_dyn(outputs, labels)
+
+        self.log(self.C_LOG_TYPE_I, "Loss", loss)
+
+        self.optimizer.zero_grad()
+        loss.backward()
+        self.optimizer.step()
+
+        return True
+
+    def _add_buffer(self, p_buffer_element: IOElement):
+        self._buffer.add_element(p_buffer_element)

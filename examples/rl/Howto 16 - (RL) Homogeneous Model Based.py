@@ -15,33 +15,13 @@ class ActualTraining(RLTraining):
 # Implement model based agent
 class MBAgent(Agent):
     def _adapt_policy_by_model(self):
+        env_ext = self._envmodel
+        pol_ext = self._policy
         class ScenarioRobotHTMSimulated(RLScenario):
-            def __init__(
-                self,
-                p_env,
-                p_policy,
-                p_mode=Environment.C_MODE_SIM,
-                p_ada: bool = True,
-                p_cycle_len: timedelta = None,
-                p_cycle_limit=0,
-                p_visualize=False,
-                p_logging=True,
-            ):
-                self.env_ext = p_env
-                self.policy_ext = p_policy
-                super().__init__(
-                    p_mode=p_mode,
-                    p_ada=p_ada,
-                    p_cycle_len=p_cycle_len,
-                    p_cycle_limit=p_cycle_limit,
-                    p_visualize=p_visualize,
-                    p_logging=p_logging,
-                )
-
             def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
-                self._env = self._envmodel
+                self._env = env_ext
                 return Agent(
-                    p_policy=self._policy,
+                    p_policy=pol_ext,
                     p_envmodel=None,
                     p_name="Smith2",
                     p_ada=p_ada,

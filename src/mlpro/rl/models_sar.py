@@ -131,7 +131,7 @@ class Action(ElementList, TStamp):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_sorted_values(self) -> np.ndarray:
+    def get_sorted_values(self) -> list:
         # 1 Determine overall dimensionality of action vector
         num_dim     = 0
         action_ids  = []
@@ -143,7 +143,7 @@ class Action(ElementList, TStamp):
         action_ids.sort()
 
         # 2 Transfer action values
-        action = np.zeros(num_dim)
+        action = list(repeat(0,num_dim))
 
         for elem in self._elem_list:
             for elem_action_id in elem.get_related_set().get_dim_ids():

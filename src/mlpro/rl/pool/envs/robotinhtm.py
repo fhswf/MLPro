@@ -365,7 +365,7 @@ class RobotHTM(Environment):
             ],
             dim=1,
         )
-        obs = obs.cpu().numpy().flatten()
+        obs = obs.cpu().flatten().tolist()
         state = State(self._state_space)
         state.set_values(obs)
 
@@ -373,8 +373,8 @@ class RobotHTM(Environment):
 
     ## -------------------------------------------------------------------------------------------------
     def _compute_done(self, p_state: State = None) -> bool:
-        disterror = np.linalg.norm(p_state.get_values()[:3] - p_state.get_values()[3:6])
-
+        # disterror = np.linalg.norm(p_state.get_values()[:3] - p_state.get_values()[3:6])
+        disterror = np.linalg.norm(np.array(p_state.get_values())[:3] - np.array(p_state.get_values())[3:6])
         if disterror <= 0.1:
             return True
         else:
@@ -387,7 +387,8 @@ class RobotHTM(Environment):
     ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
-        disterror = np.linalg.norm(p_state_new.get_values()[:3] - p_state_new.get_values()[3:6])
+        # disterror = np.linalg.norm(p_state_new.get_values()[:3] - p_state_new.get_values()[3:6])
+        disterror = np.linalg.norm(np.array(p_state_new.get_values())[:3] - np.array(p_state_new.get_values())[3:6])
 
         ratio = disterror / self.init_distance.item()
         rew = -np.ones(1) * ratio
@@ -439,7 +440,7 @@ class RobotHTM(Environment):
             ],
             dim=1,
         )
-        obs = obs.cpu().numpy().flatten()
+        obs = obs.cpu().flatten().tolist()
         self._state = State(self._state_space)
         self._state.set_values(obs)
         self._state.set_done(True)

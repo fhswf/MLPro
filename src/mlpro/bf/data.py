@@ -257,7 +257,7 @@ class Buffer:
                     self._data_buffer[key].append(p_elem.get_data()[key])
 
                 if len(self._data_buffer[key]) > self._size:
-                    self._data_buffer[key].pop(-len(self._data_buffer[key]))
+                    self._data_buffer[key].pop(0)
 
 
 ## -------------------------------------------------------------------------------------------------
