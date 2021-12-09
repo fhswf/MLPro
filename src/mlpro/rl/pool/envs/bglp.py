@@ -840,7 +840,17 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
+        """
+        This method is used to setup action and state spaces of the system.
 
+        Returns
+        -------
+        state_space : ESpace()
+            state space of the system.
+        action_space : ESpace()
+            action space of the system.
+
+        """
         state_space     = ESpace()
         action_space    = ESpace()
         levels_max      = [17.42, 9.10, 17.42, 9.10, 17.42, 9.10]
@@ -864,8 +874,13 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def collect_substates(self) -> State:
         """
-        To provide a method that set the value of a state, which will be used
-        for reset method
+        This method is called during resetting the environment.
+
+        Returns
+        -------
+        state : State
+            current states.
+
         """
         state = State(self._state_space)
         sub_state_val = self.calc_state()
@@ -877,7 +892,13 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None) -> None:
         """
-        To reset environment
+        This method is used to reset the environment.
+
+        Parameters
+        ----------
+        p_seed : int, optional
+            Not yet implemented. The default is None.
+
         """
         self.set_random_seed(p_seed)
         self.reset_levels()
@@ -897,7 +918,20 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
         """
-        To simulate the environment reacting selected actions
+        This method is used to calculate the next states of the system after a set of actions.
+
+        Parameters
+        ----------
+        p_state : State
+            State.
+        p_action : Action
+            ACtion.
+
+        Returns
+        -------
+        _state : State
+            current states.
+
         """
         action          = []
         for agent_id in p_action.get_agent_ids():
@@ -942,13 +976,19 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def _compute_done(self, p_state:State) -> bool:
         """
-        Updates the goal achievement value in [0,1] and the flags done
-        based on the current state. Please redefine.
-   
-        Returns:
-          -
-        """
-        
+        This method computes the done flag. This method can be redefined.
+
+        Parameters
+        ----------
+        p_state : State
+            state.
+
+        Returns
+        -------
+        bool
+            done or not done.
+
+        """        
         if self.prod_scenario == 'continuous':
             return False
         else:
@@ -961,19 +1001,39 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state:State) -> bool:
         """
-        Updates the goal achievement value in [0,1] and the flags broken
-        based on the current state. Please redefine.
-   
-        Returns:
-          -
-        """
+        This method computes the broken flag. This method can be redefined.
+
+        Parameters
+        ----------
+        p_state : State
+            state.
+
+        Returns
+        -------
+        bool
+            broken or not.
+
+        """ 
         return False
     
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         """
-        To calculate reward (can be redifined)
+        This method calculates the reward for different reward types.
+
+        Parameters
+        ----------
+        p_state_old : State
+            previous state.
+        p_state_new : State
+            new state.
+
+        Returns
+        -------
+        reward : Reward
+            reward values.
+
         """
         reward = Reward(self.reward_type)
 
@@ -1003,7 +1063,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def calc_mass_flows(self):
         """
-        To calculate mass flow transported by actuators
+        This method calculates the mass flow transported by actuators.
+        
         """
         for act_num in range(len(self.acts)):
             self.transport[act_num] = self.acts[act_num].calc_mass(self.t)*self.t_step
@@ -1012,7 +1073,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def calc_energy(self):
         """
-        To calculate power consumptions per actuator
+        This method calculates the power consumptions per actuator.
+        
         """
         for act_num in range(len(self.acts)):
             self.energy[act_num] = self.acts[act_num].calc_energy()*self.t_step
@@ -1021,7 +1083,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def calc_margin(self):   
         """
-        To calculate margin level for every reservoir
+        This method calculates margin level for every reservoir.
+        
         """             
         for i in range(len(self.ress)):
             vol_rel = self.ress[i].vol_cur_rel
@@ -1036,7 +1099,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def set_volume_changes(self, demandval): 
         """
-        To set up volume changes for every reservoir
+        This method sets up volume changes for every reservoir.
+        
         """
         for resnum in range(len(self.ress)):
             res = self.ress[resnum]
@@ -1071,7 +1135,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def update_levels(self):
         """
-        To update current reservoirs' level'
+        This method updates the current level of reservoirs.
+        
         """
         for resnum in range(len(self.ress)):
             res = self.ress[resnum]
@@ -1085,7 +1150,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def reset_levels(self):
         """
-        To reset reservoirs
+        This method resets reservoirs.
+        
         """
         self.levels_init = np.random.rand(6,1)
         for resnum in range(len(self.ress)):
@@ -1097,7 +1163,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def reset_actuators(self):
         """
-        To reset actuators
+        This method resets actuators.
+        
         """
         for act in self.acts:
             act.deactivate()
@@ -1106,7 +1173,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def update_actuators(self):
         """
-        To update actuators
+        This method updates actuators.
+        
         """
         for act in self.acts:
             act.update(self.t)
@@ -1115,7 +1183,13 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def update(self, demandval):
         """
-        To set up volume changes, update reservoirs' level, and update actuators'
+        This method sets up volume changes, updates reservoirs' level, and updates actuators.
+        
+        Parameters
+        ----------
+        demandval : float
+            production outflow target in L/s.
+            
         """
         self.set_volume_changes(demandval)
         self.update_levels()
@@ -1125,8 +1199,29 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def get_status(self, t, demandval):
         """
-        To calculate overflow, demand, energy, transport, and margin.
+        This method calculates overflow, demand, energy, transport, and margin.
         This function will be called every time step.
+        
+        Parameters
+        ----------
+        t : float
+            current time in sec.
+        demandval : float
+            production outflow target in L/s.
+
+        Returns
+        -------
+        overflow : list of floats
+            overflow levels.
+        demand : list of floats
+            demand fulfilled.
+        energy : list of floats
+            power consumptions.
+        transport : list of floats
+            transported materials.
+        margin : list of floats
+            margin levels.
+
         """
         self.t = t       
         self.calc_mass_flows()
@@ -1139,8 +1234,8 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def set_actions(self, actions):   
         """
-        To set up actions for actuators.
-        This function will be called every time set.
+        This method sets up actions for actuators. This function will be called every time set.
+        
         """
         t_set = self.t_set-2*self.t_step  
         for actnum in range(len(self.acts)):
@@ -1159,7 +1254,13 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def calc_state(self):
         """
-        To get current levels of reservoirs
+        This method obtains current levels of reservoirs.
+
+        Returns
+        -------
+        levels : list of floats
+            level of each reservoir.
+        
         """
         levels = np.zeros((len(self.ress),1))
         for resnum in range(len(self.ress)):
@@ -1171,7 +1272,13 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def calc_reward(self):
         """
-        To calculate the utility/reward
+        This method calculates the reward. This method can be redifined!
+        The current reward function is suitable for continuous operation and scalar reward for individual agents.
+
+        Returns
+        -------
+        reward : list of floats
+            reward for each agent.
         """
         for actnum in range(len(self.acts)):
             acts = self.acts[actnum]
