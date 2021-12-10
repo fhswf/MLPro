@@ -87,7 +87,7 @@ now = datetime.now()
 
 training = ActualTraining(
     p_scenario_cls=ScenarioRobotHTMActual,
-    p_cycle_limit=30, #0000,
+    p_cycle_limit=300000,
     p_max_cycles_per_episode=100,
     p_max_stagnations=0,
     p_collect_states=True,
@@ -143,7 +143,7 @@ data_printing = {
     "Day": [False],
     "Second": [False],
     "Microsecond": [False],
-    "Smith": [True, -1],
+    "Smith1": [True, -1],
 }
 
 
