@@ -162,7 +162,7 @@ class AFctBase (Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_hyperparam(self) -> HyperParamTupel:
+    def get_hyperparam(self) -> HyperParamTuple:
         return self._afct.get_hyperparam()
 
 

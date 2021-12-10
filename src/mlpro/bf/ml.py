@@ -82,7 +82,7 @@ class HyperParamSpace (ESpace):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamTupel (Element):
+class HyperParamTuple (Element):
     """
     Tuple of hyperparameters, which is an element of a hyperparameter space
     """
@@ -134,7 +134,7 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
         self._adapted           = False
         self.switch_adaptivity(p_ada)
         self._hyperparam_space  = HyperParamSpace()
-        self._hyperparam_tupel  = None
+        self._hyperparam_tuple  = None
         self._init_hyperparam(**p_par)
 
         if p_buffer_size > 0:
@@ -149,7 +149,7 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
         Implementation specific hyperparameters can be added here. Please follow these steps:
         a) Add each hyperparameter as an object of type HyperParam to the internal hyperparameter
            space object self._hyperparam_space
-        b) Create hyperparameter tuple and bind to self._hyperparam_tupel
+        b) Create hyperparameter tuple and bind to self._hyperparam_tuple
         c) Set default value for each hyperparameter
 
         Parameters
@@ -163,12 +163,12 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_hyperparam(self) -> HyperParamTupel:
+    def get_hyperparam(self) -> HyperParamTuple:
         """
-        Returns the internal hyperparameter tupel to get access to single values.
+        Returns the internal hyperparameter tuple to get access to single values.
         """
 
-        return self._hyperparam_tupel
+        return self._hyperparam_tuple
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -772,7 +772,7 @@ class HyperParamTuner (Log):
         Parameters
         ----------
         p_training_cls
-            Training class 
+            Training class to be instantiated/executed 
         p_num_trials : int    
             Number of trials
         p_training_param
