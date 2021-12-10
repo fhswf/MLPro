@@ -1,0 +1,288 @@
+2,29c2
+< <robot name="robotiq_arg2f_85" xmlns:xacro="http://ros.org/wiki/xacro">
+< 
+<   <xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_transmission.xacro" />
+< 
+<   <xacro:macro name="robotiq_arg2f_base_link" params="prefix">
+<     <link name="${prefix}robotiq_arg2f_base_link">
+<       <inertial>
+<         <origin xyz="8.625E-08 -4.6583E-06 0.03145" rpy="0 0 0" />
+<         <mass value="0.22652" />
+<         <inertia ixx="0.00020005" ixy="-4.2442E-10" ixz="-2.9069E-10" iyy="0.00017832" iyz="-3.4402E-08" izz="0.00013478" />
+<       </inertial>
+<       <visual>
+<         <origin xyz="0 0 0" rpy="0 0 0" />
+<         <geometry>
+<           <mesh filename="package://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_base_link.stl" scale="0.001 0.001 0.001"/>
+<         </geometry>
+<         <material name="">
+<           <color rgba="0.1 0.1 0.1 1" />
+<         </material>
+<       </visual>
+<       <collision>
+<         <origin xyz="0 0 0" rpy="0 0 0" />
+<         <geometry>
+<            <mesh filename="package://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_base_link.stl" />
+<         </geometry>
+<       </collision>
+<     </link>
+<   </xacro:macro>
+---
+> <robot name="robotiq_arg2f_140" xmlns:xacro="http://ros.org/wiki/xacro">
+30a4,30
+>   <xacro:include filename="$(find robotiq_2f_140_gripper_visualization)/urdf/robotiq_arg2f_transmission.xacro" />
+>  
+>   <xacro:macro name="robotiq_arg2f_base_link" params="prefix">
+>       <link name="${prefix}robotiq_arg2f_base_link">
+>         <inertial>
+>           <origin xyz="8.625E-08 -4.6583E-06 0.03145" rpy="0 0 0" />
+>           <mass value="0.22652" />
+>           <inertia ixx="0.00020005" ixy="-4.2442E-10" ixz="-2.9069E-10" iyy="0.00017832" iyz="-3.4402E-08" izz="0.00013478" />
+>         </inertial>
+>         <visual>
+>           <origin xyz="0 0 0" rpy="0 0 0" />
+>           <geometry>
+>             <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/visual/robotiq_arg2f_base_link.stl" />
+>           </geometry>
+>           <material name="">
+>             <color rgba="0.1 0.1 0.1 1" />
+>           </material>
+>         </visual>
+>         <collision>
+>           <origin xyz="0 0 0" rpy="0 0 0" />
+>           <geometry>
+>             <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/collision/robotiq_arg2f_base_link.stl" />
+>           </geometry>
+>         </collision>
+>       </link>
+>     </xacro:macro>
+>     
+36,37c36,43
+<         <inertia ixx="2.89328108496468E-06" ixy="-1.57935047237397E-19" ixz="-1.93980378593255E-19" iyy="1.86719750325683E-06" iyz="-1.21858577871576E-06" izz="1.21905238907251E-06" />
+<         </inertial> 
+---
+>         <inertia
+>             ixx="2.89328108496468E-06"
+>             ixy="-1.57935047237397E-19"
+>             ixz="-1.93980378593255E-19"
+>             iyy="1.86719750325683E-06"
+>             iyz="-1.21858577871576E-06"
+>             izz="1.21905238907251E-06" />
+>       </inertial>
+41c47
+<           <mesh filename="package://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_outer_knuckle.dae" scale="0.001 0.001 0.001"/>
+---
+>           <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/visual/robotiq_arg2f_${stroke}_outer_knuckle.stl" />
+50c56
+<           <mesh filename="package://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_outer_knuckle.dae" scale="0.001 0.001 0.001"/>
+---
+>           <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/collision/robotiq_arg2f_${stroke}_outer_knuckle.stl" />
+61,62c67,74
+<         <inertia ixx="1.52518312458174E-05" ixy="9.76583423954399E-10" ixz="-5.43838577022588E-10" iyy="6.17694243867776E-06" iyz="6.78636130740228E-06" izz="1.16494917907219E-05" />
+<         </inertial> 
+---
+>         <inertia
+>             ixx="1.52518312458174E-05"
+>             ixy="9.76583423954399E-10"
+>             ixz="-5.43838577022588E-10"
+>             iyy="6.17694243867776E-06"
+>             iyz="6.78636130740228E-06"
+>             izz="1.16494917907219E-05" />
+>       </inertial>
+66c78
+<           <mesh filename="package://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_outer_finger.dae" scale="0.001 0.001 0.001"/>
+---
+>           <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/visual/robotiq_arg2f_${stroke}_outer_finger.stl" />
+75c87
+<           <mesh filename="package://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_outer_finger.dae" scale="0.001 0.001 0.001"/>
+---
+>           <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/collision/robotiq_arg2f_${stroke}_outer_finger.stl" />
+85,87c97,105
+<        <mass value="0.0271177346495152" />
+<         <inertia ixx="2.61910379223783E-05" ixy="-2.43616858946494E-07" ixz="-6.37789906117123E-09" iyy="2.8270243746167E-06" iyz="-5.37200748039765E-07" izz="2.83695868220296E-05" />
+<         </inertial> 
+---
+>         <mass value="0.0271177346495152" />
+>         <inertia
+>             ixx="2.61910379223783E-05"
+>             ixy="-2.43616858946494E-07"
+>             ixz="-6.37789906117123E-09"
+>             iyy="2.8270243746167E-06"
+>             iyz="-5.37200748039765E-07"
+>             izz="2.83695868220296E-05" />
+>       </inertial>
+91c109
+<           <mesh filename="package://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_inner_knuckle.dae" scale="0.001 0.001 0.001"/>
+---
+>           <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/visual/robotiq_arg2f_${stroke}_inner_knuckle.stl" />
+100c118
+<           <mesh filename="package://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_inner_knuckle.dae" scale="0.001 0.001 0.001"/>
+---
+>           <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/collision/robotiq_arg2f_${stroke}_inner_knuckle.stl" />
+111,112c129,136
+<         <inertia ixx="2.71909453810972E-06" ixy="1.35402465472579E-21" ixz="-7.1817349065269E-22" iyy="7.69100314106116E-07" iyz="6.74715432769696E-07" izz="2.30315190420171E-06" />
+<         </inertial> 
+---
+>         <inertia
+>             ixx="2.71909453810972E-06"
+>             ixy="1.35402465472579E-21"
+>             ixz="-7.1817349065269E-22"
+>             iyy="7.69100314106116E-07"
+>             iyz="6.74715432769696E-07"
+>             izz="2.30315190420171E-06" />
+>       </inertial>
+116c140
+<           <mesh filename="package://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_inner_finger.dae" scale="0.001 0.001 0.001"/>
+---
+>           <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/visual/robotiq_arg2f_${stroke}_inner_finger.stl" />
+125c149
+<           <mesh filename="package://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_inner_finger.dae" scale="0.001 0.001 0.001" />
+---
+>           <mesh filename="package://robotiq_2f_140_gripper_visualization/meshes/collision/robotiq_arg2f_${stroke}_inner_finger.stl" />
+129,147d152
+<     
+<     
+<     <gazebo reference="${prefix}${fingerprefix}_inner_finger">
+<       <mu1>1e2</mu1>
+<       <mu2>1e2</mu2>
+<       <kp>1e6.0</kp>
+<       <kd>1e5.0</kd>
+<       <slip1>0</slip1>
+<      <slip2>0</slip2>
+<      <minDepth>0.0</minDepth>
+<      <maxVel>0.01</maxVel>
+<      <torsional>
+<         <coefficient>1e2</coefficient>
+<         <ode>
+<             <slip>0</slip>
+<         </ode>
+<     </torsional>
+<     </gazebo>
+<     
+150c155
+<    <!-- Finger pad link, the default are the "big pads" with rubber-->
+---
+>   <!-- Finger pad link, the default are the "big pads" with rubber-->
+156c161
+<           <box size="0.022 0.00635 0.0375"/>
+---
+>           <box size="0.027 0.065 0.0075"/>
+162c167
+<       <collision name="${prefix}${fingerprefix}_inner_finger_pad_collision">
+---
+>       <collision>
+165c170
+<            <box size="0.022 0.00635 0.0375"/>
+---
+>            <box size="0.03 0.07 0.0075"/>
+171d175
+< 
+173,176c177,188
+<     
+<     <gazebo reference="${prefix}${fingerprefix}_inner_finger_pad">
+<       <sensor name="${prefix}${fingerprefix}_inner_finger_pad_bumper" type="contact">
+<           <selfCollide>true</selfCollide>
+---
+>   </xacro:macro>
+> 
+>   <gazebo reference="${prefix}${fingerprefix}_inner_finger_pad">
+>     <sensor name="${prefix}${fingerprefix}_inner_finger_pad_bumper" type="contact">
+>         <selfCollide>true</selfCollide>
+>         <alwaysOn>true</alwaysOn>
+>         <updateRate>5.0</updateRate>
+>         <contact>
+>            <collision>${prefix}${fingerprefix}_inner_finger_pad_collision_collision_1</collision>
+>         </contact>
+>         
+>         <plugin name="${prefix}${fingerprefix}_inner_finger_pad_bumper_controller" filename="libgazebo_ros_bumper.so">
+179,192c191,196
+<           <contact>
+<              <collision>${prefix}${fingerprefix}_inner_finger_pad_collision_collision_1</collision>
+<           </contact>
+<           
+<           <plugin name="${prefix}${fingerprefix}_inner_finger_pad_bumper_controller" filename="libgazebo_ros_bumper.so">
+<             <alwaysOn>true</alwaysOn>
+<             <updateRate>5.0</updateRate>
+<             <bumperTopicName>${prefix}${fingerprefix}_inner_finger_pad_bumper</bumperTopicName>
+<             <frameName>world</frameName>
+<           </plugin>
+<       </sensor>
+<     </gazebo>
+<     
+<   </xacro:macro>
+---
+>           <bumperTopicName>${prefix}${fingerprefix}_inner_finger_pad_bumper</bumperTopicName>
+>           <frameName>world</frameName>
+>         </plugin>
+>     </sensor>
+>   </gazebo>
+> 
+196c200
+<       <origin xyz="0 0.0315 -0.0041" rpy="0 0 0"/>
+---
+>       <origin xyz="0 0.01821998610742 0.0260018192872234" rpy="0 0 0" />
+205,206c209
+<       <!-- <origin xyz="0 ${reflect * -0.0127} 0.06142" rpy="${pi / 2 + .725} 0 ${(reflect - 1) * pi / 2}" /> -->
+<       <origin xyz="0 ${reflect * -0.0127} 0.06142" rpy="0 0 ${(1 + reflect) * pi / 2}"/>
+---
+>       <origin xyz="0 ${reflect * -0.0127} 0.06142" rpy="${pi / 2 + .725} 0 ${(reflect - 1) * pi / 2}" />
+210,211c213,214
+<       <limit lower="0" upper="0.8757" velocity="1.0" effort="1e2" />
+<       <mimic joint="${prefix}finger_joint" multiplier="1" offset="0" />
+---
+>       <limit lower="0" upper="0.8757" velocity="2.0" effort="1000" />
+>       <mimic joint="${prefix}finger_joint" multiplier="-1" offset="0" />
+217c220
+<       <origin xyz="0 0.0061 0.0471" rpy="0 0 0"/>
+---
+>       <origin xyz="0 0.0817554015893473 -0.0282203446692936" rpy="-0.725 0 0" />
+221,222c224,225
+<       <limit lower="-0.8757" upper="0" velocity="1.0" effort="1e2" />
+<       <mimic joint="${prefix}finger_joint" multiplier="-1" offset="0" />
+---
+>       <limit lower="0" upper="0.8757" velocity="2.0" effort="1000" />
+>       <mimic joint="${prefix}finger_joint" multiplier="1" offset="0" />
+228c231
+<       <origin xyz="0 -0.0220203446692936 0.03242" rpy="0 0 0"/>
+---
+>       <origin xyz="0 0.0457554015893473 -0.0272203446692936" rpy="0 0 0" />
+234c237,239
+<   
+---
+> 
+>   <xacro:include filename="$(find robotiq_2f_140_gripper_visualization)/urdf/robotiq_arg2f.xacro" />
+> 
+237c242
+<       <origin xyz="0 -0.0306011 0.054904" rpy="0 0 ${pi}"/>
+---
+>       <origin xyz="0 -0.030601 0.054905" rpy="${pi / 2 + .725} 0 0" />
+240,241c245,246
+<       <axis xyz="1 0 0" />
+<       <limit lower="0" upper="0.8" velocity="1.0" effort="1e2" />
+---
+>       <axis xyz="-1 0 0" />
+>       <limit lower="0" upper="0.7" velocity="2.0" effort="1000" />
+248c253
+<       <origin xyz="0 0.0306011 0.054904" rpy="0 0 0"/>
+---
+>       <origin xyz="0 0.030601 0.054905" rpy="${pi / 2 + .725} 0 ${pi}" />
+252,254c257,258
+<       <limit lower="0" upper="0.81" velocity="1.0" effort="1e2" />
+< 
+<       <mimic joint="${prefix}finger_joint" multiplier="1" offset="0" />
+---
+>       <limit lower="0" upper="0.725" velocity="2.0" effort="1000" />
+>     <mimic joint="${prefix}finger_joint" multiplier="-1" offset="0" />
+273,275c277,278
+< 
+<   <!-- Initialization of all joints and links -->
+<   <xacro:macro name="robotiq_arg2f_85" params="prefix">
+---
+>   
+>   <xacro:macro name="robotiq_arg2f_140" params="prefix">
+277,278c280,281
+<     <xacro:finger_links prefix="${prefix}" fingerprefix="left" stroke="85"/>
+<     <xacro:finger_links prefix="${prefix}" fingerprefix="right" stroke="85"/>
+---
+>     <xacro:finger_links prefix="${prefix}" fingerprefix="left" stroke="140"/>
+>     <xacro:finger_links prefix="${prefix}" fingerprefix="right" stroke="140"/>

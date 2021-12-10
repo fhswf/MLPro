@@ -1,0 +1,9 @@
+[submodule "Universal_Robots_ROS_Driver"]
+	path = Universal_Robots_ROS_Driver
+	url = https://github.com/UniversalRobots/Universal_Robots_ROS_Driver.git
+[submodule "xacro"]
+	path = xacro
+	url = git@github.com:ros/xacro.git
+[submodule "ur_msgs"]
+	path = ur_msgs
+	url = git@github.com:ros-industrial/ur_msgs.git

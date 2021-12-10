@@ -1,0 +1,480 @@
+<sdf version='1.7'>
+  <model name='gripper'>
+    <joint name='gripper_joint' type='fixed'>
+      <pose relative_to='__model__'>0 0 0.01 0 -0 0</pose>
+      <parent>world</parent>
+      <child>robotiq_arg2f_base_link</child>
+    </joint>
+    <link name='robotiq_arg2f_base_link'>
+      <pose relative_to='gripper_joint'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 -5e-06 0.03145 0 -0 0</pose>
+        <mass>0.22652</mass>
+        <inertia>
+          <ixx>0.00020005</ixx>
+          <ixy>-4.2442e-10</ixy>
+          <ixz>-2.9069e-10</ixz>
+          <iyy>0.00017832</iyy>
+          <iyz>-3.4402e-08</iyz>
+          <izz>0.00013478</izz>
+        </inertia>
+      </inertial>
+      <collision name='robotiq_arg2f_base_link_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_base_link.stl</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='robotiq_arg2f_base_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_base_link.stl</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='finger_joint' type='revolute'>
+      <pose relative_to='robotiq_arg2f_base_link'>0 -0.030601 0.054904 0 -0 3.14159</pose>
+      <parent>robotiq_arg2f_base_link</parent>
+      <child>left_outer_knuckle</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.8</upper>
+          <effort>1000</effort>
+          <velocity>2</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_outer_knuckle'>
+      <pose relative_to='finger_joint'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.000164 0.055483 -0.010075 0 -0 0</pose>
+        <mass>0.0311462</mass>
+        <inertia>
+          <ixx>5.1136e-05</ixx>
+          <ixy>-1.50984e-07</ixy>
+          <ixz>1.67498e-07</ixz>
+          <iyy>2.6195e-05</iyy>
+          <iyz>2.19801e-05</iyz>
+          <izz>2.77118e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_outer_knuckle_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_outer_knuckle.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='left_outer_knuckle_fixed_joint_lump__left_outer_finger_collision_1'>
+        <pose>0 0.0315 -0.0041 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_outer_finger.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='left_outer_knuckle_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_outer_knuckle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='left_outer_knuckle_fixed_joint_lump__left_outer_finger_visual_1'>
+        <pose>0 0.0315 -0.0041 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_outer_finger.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='left_inner_finger_joint' type='revolute'>
+      <pose relative_to='left_outer_knuckle'>0 0.0376 0.043 0 -0 0</pose>
+      <parent>left_outer_knuckle</parent>
+      <child>left_inner_finger</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.8757</lower>
+          <upper>0.8757</upper>
+          <effort>1000</effort>
+          <velocity>2</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_inner_finger'>
+      <pose relative_to='left_inner_finger_joint'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.0003 0.016008 -0.013695 0 -0 0</pose>
+        <mass>0.0104003</mass>
+        <inertia>
+          <ixx>2.71909e-06</ixx>
+          <ixy>1.35402e-21</ixy>
+          <ixz>-7.18173e-22</ixz>
+          <iyy>7.691e-07</iyy>
+          <iyz>6.74715e-07</iyz>
+          <izz>2.30315e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_inner_finger_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_inner_finger.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='left_inner_finger_pad_collision_1'>
+        <pose>0 -0.02202 0.03242 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.022 0.00635 0.0375</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='left_inner_finger_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_inner_finger.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='left_inner_finger_pad_visual_1'>
+        <pose>0 -0.02202 0.03242 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.022 0.00635 0.0375</size>
+          </box>
+        </geometry>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <ode>
+        <kp>1000000.0</kp>
+        <kd>1.0</kd>
+        <minDepth>0.002</minDepth>
+        <maxVel>0</maxVel>
+        <mu>100</mu>
+        <mu2>100</mu2>
+      </ode>
+      <mu>100</mu>
+      <slip1>0</slip1>
+      <slip2>0</slip2>
+      <torsional>
+        <ode>
+          <coefficient>10</coefficient>
+          <slip>0</slip>
+        </ode>
+      </torsional>
+    </link>
+    <joint name='left_inner_knuckle_joint' type='revolute'>
+      <pose relative_to='robotiq_arg2f_base_link'>0 -0.0127 0.06142 0 -0 3.14159</pose>
+      <parent>robotiq_arg2f_base_link</parent>
+      <child>left_inner_knuckle</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.8757</upper>
+          <effort>1000</effort>
+          <velocity>2</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='left_inner_knuckle'>
+      <pose relative_to='left_inner_knuckle_joint'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.000123 0.050785 0.00104 0 -0 0</pose>
+        <mass>0.0271177</mass>
+        <inertia>
+          <ixx>2.6191e-05</ixx>
+          <ixy>-2.43617e-07</ixy>
+          <ixz>-6.3779e-09</ixz>
+          <iyy>2.82702e-06</iyy>
+          <iyz>-5.37201e-07</iyz>
+          <izz>2.83696e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='left_inner_knuckle_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_inner_knuckle.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='left_inner_knuckle_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_inner_knuckle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='right_inner_knuckle_joint' type='revolute'>
+      <pose relative_to='robotiq_arg2f_base_link'>0 0.0127 0.06142 0 -0 0</pose>
+      <parent>robotiq_arg2f_base_link</parent>
+      <child>right_inner_knuckle</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.8757</upper>
+          <effort>1000</effort>
+          <velocity>2</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_inner_knuckle'>
+      <pose relative_to='right_inner_knuckle_joint'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.000123 0.050785 0.00104 0 -0 0</pose>
+        <mass>0.0271177</mass>
+        <inertia>
+          <ixx>2.6191e-05</ixx>
+          <ixy>-2.43617e-07</ixy>
+          <ixz>-6.3779e-09</ixz>
+          <iyy>2.82702e-06</iyy>
+          <iyz>-5.37201e-07</iyz>
+          <izz>2.83696e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_inner_knuckle_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_inner_knuckle.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='right_inner_knuckle_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_inner_knuckle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='right_outer_knuckle_joint' type='revolute'>
+      <pose relative_to='robotiq_arg2f_base_link'>0 0.030601 0.054904 0 -0 0</pose>
+      <parent>robotiq_arg2f_base_link</parent>
+      <child>right_outer_knuckle</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>0</lower>
+          <upper>0.81</upper>
+          <effort>1000</effort>
+          <velocity>2</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_outer_knuckle'>
+      <pose relative_to='right_outer_knuckle_joint'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.000164 0.055483 -0.010075 0 -0 0</pose>
+        <mass>0.0311462</mass>
+        <inertia>
+          <ixx>5.1136e-05</ixx>
+          <ixy>-1.50984e-07</ixy>
+          <ixz>1.67498e-07</ixz>
+          <iyy>2.6195e-05</iyy>
+          <iyz>2.19801e-05</iyz>
+          <izz>2.77118e-05</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_outer_knuckle_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_outer_knuckle.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='right_outer_knuckle_fixed_joint_lump__right_outer_finger_collision_1'>
+        <pose>0 0.0315 -0.0041 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_outer_finger.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <visual name='right_outer_knuckle_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_outer_knuckle.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='right_outer_knuckle_fixed_joint_lump__right_outer_finger_visual_1'>
+        <pose>0 0.0315 -0.0041 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_outer_finger.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+    </link>
+    <joint name='right_inner_finger_joint' type='revolute'>
+      <pose relative_to='right_outer_knuckle'>0 0.0376 0.043 0 -0 0</pose>
+      <parent>right_outer_knuckle</parent>
+      <child>right_inner_finger</child>
+      <axis>
+        <xyz>1 0 0</xyz>
+        <limit>
+          <lower>-0.8757</lower>
+          <upper>0.8757</upper>
+          <effort>1000</effort>
+          <velocity>2</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='right_inner_finger'>
+      <pose relative_to='right_inner_finger_joint'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0.0003 0.016008 -0.013695 0 -0 0</pose>
+        <mass>0.0104003</mass>
+        <inertia>
+          <ixx>2.71909e-06</ixx>
+          <ixy>1.35402e-21</ixy>
+          <ixz>-7.18173e-22</ixz>
+          <iyy>7.691e-07</iyy>
+          <iyz>6.74715e-07</iyz>
+          <izz>2.30315e-06</izz>
+        </inertia>
+      </inertial>
+      <collision name='right_inner_finger_collision'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/collision/robotiq_arg2f_85_inner_finger.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <collision name='right_inner_finger_pad_collision_1'>
+        <pose>0 -0.02202 0.03242 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.022 0.00635 0.0375</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name='right_inner_finger_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.001 0.001 0.001</scale>
+            <uri>model://robotiq_2f_85_gripper_visualization/meshes/visual/robotiq_arg2f_85_inner_finger.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='right_inner_finger_pad_visual_1'>
+        <pose>0 -0.02202 0.03242 0 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.022 0.00635 0.0375</size>
+          </box>
+        </geometry>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+      <ode>
+        <kp>1000000.0</kp>
+        <kd>1.0</kd>
+        <minDepth>0.002</minDepth>
+        <maxVel>0</maxVel>
+        <mu>100</mu>
+        <mu2>100</mu2>
+      </ode>
+      <mu>100</mu>
+      <slip1>0</slip1>
+      <slip2>0</slip2>
+      <torsional>
+        <ode>
+          <coefficient>10</coefficient>
+          <slip>0</slip>
+        </ode>
+      </torsional>
+    </link>
+    <static>0</static>
+    <plugin name='mimic_robotiq_85_4' filename='libroboticsgroup_gazebo_mimic_joint_plugin.so'>
+      <joint>finger_joint</joint>
+      <mimicJoint>right_outer_knuckle_joint</mimicJoint>
+      <multiplier>1.0</multiplier>
+    </plugin>
+    <plugin name='mimic_robotiq_85_2' filename='libroboticsgroup_gazebo_mimic_joint_plugin.so'>
+      <joint>finger_joint</joint>
+      <mimicJoint>left_inner_finger_joint</mimicJoint>
+      <multiplier>-1.0</multiplier>
+    </plugin>
+    <plugin name='mimic_robotiq_85_1' filename='libroboticsgroup_gazebo_mimic_joint_plugin.so'>
+      <joint>finger_joint</joint>
+      <mimicJoint>right_inner_finger_joint</mimicJoint>
+      <multiplier>-1.0</multiplier>
+    </plugin>
+    <plugin name='mimic_robotiq_85_3' filename='libroboticsgroup_gazebo_mimic_joint_plugin.so'>
+      <joint>finger_joint</joint>
+      <mimicJoint>left_inner_knuckle_joint</mimicJoint>
+      <multiplier>1.0</multiplier>
+    </plugin>
+    <plugin name='mimic_robotiq_85_5' filename='libroboticsgroup_gazebo_mimic_joint_plugin.so'>
+      <joint>finger_joint</joint>
+      <mimicJoint>right_inner_knuckle_joint</mimicJoint>
+      <multiplier>1.0</multiplier>
+    </plugin>
+  </model>
+</sdf>
