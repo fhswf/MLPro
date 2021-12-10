@@ -23,10 +23,11 @@
 ## --                                - Method Training.__init__(): par p_scenario replaced by p_scenario_cls
 ## -- 2021-12-08  1.2.3     DA       Moved class AdaptiveFunction to new subtopic package sl
 ## -- 2021-12-09  1.2.4     DA       Class Training: introduced dynamic parameters **p_kwargs
+## -- 2021-12-10  1.2.5     DA       Class HyperParamTuner: changed interface of method maximize()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2021-12-09)
+Ver. 1.2.5 (2021-12-10)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -83,7 +84,7 @@ class HyperParamSpace (ESpace):
 ## -------------------------------------------------------------------------------------------------
 class HyperParamTupel (Element):
     """
-    Tupel of hyperparameters, which is an element of a hyperparameter space
+    Tuple of hyperparameters, which is an element of a hyperparameter space
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -764,18 +765,18 @@ class HyperParamTuner (Log):
     C_NAME      = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def maximize(self, p_ofct, p_model:Model, p_num_trials) -> TrainingResults:
+    def maximize(self, p_training_cls, p_num_trials, **p_training_param ) -> TrainingResults:
         """
         ...
 
         Parameters
         ----------
-        p_ofct 
-            Objective function to be maximized.
-        p_model : Model
-            Model object to be tuned.
+        p_training_cls
+            Training class 
         p_num_trials : int    
             Number of trials
+        p_training_param
+            Dictionary with training parameters
 
         Returns
         -------
@@ -784,9 +785,10 @@ class HyperParamTuner (Log):
 
         """
 
-        self._ofct          = p_ofct
-        self._model         = p_model
-        self._num_trials    = p_num_trials
+        self._training_cls      = p_training_cls
+        self._num_trials        = p_num_trials
+        self._training_pararm   = p_training_param
+
         return self._maximize()
 
 
@@ -1048,7 +1050,10 @@ class Training (Log):
         else:
             # 2 Training with hyperparameter tuning
             self.log(self.C_LOG_TYPE_I, 'Training started (with hyperparameter tuning)')
-            self._results = self._hpt.maximize(p_ofct=self._run, p_model=self._scenario.get_model(), p_num_trials=self._hpt_trials)
+            training_param  = self._kwargs.copy()
+            training_param.pop('p_hpt')
+            training_param.pop('p_hpt_trials')
+            self._results = self._hpt.maximize(p_training_cls=self.__class__(), p_num_trials=self._hpt_trials, p_training_param=training_param)
 
         self.log(self.C_LOG_TYPE_I, 'Training completed')
         return self.get_results()
