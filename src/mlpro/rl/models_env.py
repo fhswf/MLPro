@@ -541,6 +541,15 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_adapted(self) -> bool:
+        """
+        Adaptivity is switched off here. If called, then something went wrong. 
+        """
+
+        raise NotImplementedError('Classes of type ' + self.C_TYPE + ' are not adaptive!')
+
+
+## -------------------------------------------------------------------------------------------------
     def get_maturity(self):
         """
         Maturity computation is switched off here. If called, the something went wrong.
