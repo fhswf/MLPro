@@ -370,7 +370,8 @@ class Agent(Policy):
 
         else:
             # 3.2 Model-based adaptation
-            adapted = self._envmodel.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
+            selem = SARSElement(self._previous_observation, self._previous_action, reward, observation)
+            adapted = self._envmodel.adapt( selem )
 
             if self._envmodel.get_maturity() >= self._em_mat_thsld:
                 if adapted:

@@ -234,8 +234,10 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
 
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_I, 'Adaptation started')
-        self._set_adapted(self._adapt(*p_args))
-        return self.get_adapted()
+        result = self._adapt(*p_args)
+        self._set_adapted(result)
+        result = self.get_adapted()
+        return result
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -292,7 +292,7 @@ class AFctSTrans (AFctBase):
         input_values.extend(p_action.get_sorted_values())
         input = Element(self._input_space)
         input.set_values(input_values)
-        print(self._afct.adapt)
+        # print(self._afct.adapt)
         return self._afct.adapt(input, p_state_new)
 
 
@@ -1215,6 +1215,11 @@ class EnvModel(EnvBase, Model):
         if self._afct_broken is not None:
             adapted = adapted or self._afct_broken.adapt(state_new)
 
+        return adapted
+
+
+    def get_adapted(self) -> bool:
+        return Model.get_adapted(self)
 
 ## -------------------------------------------------------------------------------------------------
     def get_maturity(self):
