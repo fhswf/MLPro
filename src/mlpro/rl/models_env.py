@@ -18,7 +18,7 @@
 ## --                                - Introduction of special adaptive function classes AFct*
 ## --                                - Rework of classes EnvBase, Environment, EnvModel
 ## -- 2021-12-06  1.2.1     DA       Class AFctBase: correction by removing own method adapt()
-## -- 2021-12-10  1.2.2     DA       Code optimization
+## -- 2021-12-10  1.2.2     DA       Code optimization and bugfixes
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -1213,6 +1213,13 @@ class EnvModel(EnvBase, Model):
 
         if self._afct_broken is not None:
             adapted = adapted or self._afct_broken.adapt(state_new)
+
+        return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_adapted(self) -> bool:
+        return Model.get_adapted(self)
 
 
 ## -------------------------------------------------------------------------------------------------
