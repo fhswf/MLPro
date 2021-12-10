@@ -8,10 +8,11 @@
 ## -- 2021-10-06  1.0.0     DA       Creation and transfer of classes DataPlotting, Plottable from 
 ## --                                mlpro.bf.various
 ## -- 2021-10-25  1.0.1     SY       Improve get_plots() functionality, enable episodic plots
+## -- 2021-12-10  1.0.2     SY       Add errors and exceptions, if p_printing is None 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-10-25)
+Ver. 1.0.2 (2021-12-10)
 
 This module provides various classes related to data plotting.
 """
@@ -120,29 +121,32 @@ class DataPlotting(LoadSave):
         """
         for name in self.data.names:
             maxval  = 0
-            if self.printing[name][0]:
-                fig     = plt.figure(figsize=self.figsize)
-                lines   = []
-                label   = []
-                plt.title(name)
-                plt.grid(True, which="both", axis="both")
-                for fr in range(len(self.data.memory_dict[name])):
-                    fr_id = self.data.frame_id[name][fr]
-                    lines += plt.plot(self.moving_mean(self.data.get_values(name,fr_id),self.window), color=self.color, alpha=(fr+1.0)/(len(self.data.memory_dict[name])+1))
-                    if self.printing[name][2] == -1:
-                        maxval = max(max(self.data.get_values(name,fr_id)), maxval)
+            try:
+                if self.printing[name][0]:
+                    fig     = plt.figure(figsize=self.figsize)
+                    lines   = []
+                    label   = []
+                    plt.title(name)
+                    plt.grid(True, which="both", axis="both")
+                    for fr in range(len(self.data.memory_dict[name])):
+                        fr_id = self.data.frame_id[name][fr]
+                        lines += plt.plot(self.moving_mean(self.data.get_values(name,fr_id),self.window), color=self.color, alpha=(fr+1.0)/(len(self.data.memory_dict[name])+1))
+                        if self.printing[name][2] == -1:
+                            maxval = max(max(self.data.get_values(name,fr_id)), maxval)
+                        else:
+                            maxval = self.printing[name][2]
+                        label.append("%s"%fr_id)
+                    plt.ylim(self.printing[name][1], maxval)
+                    plt.xlabel("cycles")
+                    plt.legend(label, bbox_to_anchor = (1,0.5), loc = "center left")
+                    self.plots[0].append(name)
+                    self.plots[1].append(fig)
+                    if self.showing:
+                        plt.show()
                     else:
-                        maxval = self.printing[name][2]
-                    label.append("%s"%fr_id)
-                plt.ylim(self.printing[name][1], maxval)
-                plt.xlabel("cycles")
-                plt.legend(label, bbox_to_anchor = (1,0.5), loc = "center left")
-                self.plots[0].append(name)
-                self.plots[1].append(fig)
-                if self.showing:
-                    plt.show()
-                else:
-                    plt.close(fig)
+                        plt.close(fig)
+            except:
+                pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -152,28 +156,31 @@ class DataPlotting(LoadSave):
         """
         for name in self.data.names:
             maxval  = 0
-            if self.printing[name][0]:
-                fig     = plt.figure(figsize=self.figsize)
-                lines   = []
-                data    = []
-                plt.title(name)
-                plt.grid(True, which="both", axis="both")
-                for fr in range(len(self.data.memory_dict[name])):
-                    fr_id = self.data.frame_id[name][fr]
-                    data.extend(self.data.get_values(name,fr_id))
-                    if self.printing[name][2] == -1:
-                        maxval = max(max(self.data.get_values(name,fr_id)), maxval)
+            try:
+                if self.printing[name][0]:
+                    fig     = plt.figure(figsize=self.figsize)
+                    lines   = []
+                    data    = []
+                    plt.title(name)
+                    plt.grid(True, which="both", axis="both")
+                    for fr in range(len(self.data.memory_dict[name])):
+                        fr_id = self.data.frame_id[name][fr]
+                        data.extend(self.data.get_values(name,fr_id))
+                        if self.printing[name][2] == -1:
+                            maxval = max(max(self.data.get_values(name,fr_id)), maxval)
+                        else:
+                            maxval = self.printing[name][2]
+                    lines += plt.plot(self.moving_mean(data[:],self.window), color=self.color)
+                    plt.ylim(self.printing[name][1], maxval)
+                    plt.xlabel("continuous cycles")
+                    self.plots[0].append(name)
+                    self.plots[1].append(fig)
+                    if self.showing:
+                        plt.show()
                     else:
-                        maxval = self.printing[name][2]
-                lines += plt.plot(self.moving_mean(data[:],self.window), color=self.color)
-                plt.ylim(self.printing[name][1], maxval)
-                plt.xlabel("continuous cycles")
-                self.plots[0].append(name)
-                self.plots[1].append(fig)
-                if self.showing:
-                    plt.show()
-                else:
-                    plt.close(fig)
+                        plt.close(fig)
+            except:
+                pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -183,28 +190,31 @@ class DataPlotting(LoadSave):
         """
         for name in self.data.names:
             maxval  = 0
-            if self.printing[name][0]:
-                fig     = plt.figure(figsize=self.figsize)
-                lines   = []
-                data    = []
-                plt.title(name)
-                plt.grid(True, which="both", axis="both")
-                for fr in range(len(self.data.memory_dict[name])):
-                    fr_id = self.data.frame_id[name][fr]
-                    data.extend([statistics.mean(self.data.get_values(name,fr_id))])
-                if self.printing[name][2] == -1:
-                    maxval = max(max(data[:]), maxval)
-                else:
-                    maxval = self.printing[name][2]
-                lines += plt.plot(self.moving_mean(data[:],self.window), color=self.color)
-                plt.ylim(self.printing[name][1], maxval)
-                plt.xlabel("episodes")
-                self.plots[0].append(name)
-                self.plots[1].append(fig)
-                if self.showing:
-                    plt.show()
-                else:
-                    plt.close(fig)
+            try:
+                if self.printing[name][0]:
+                    fig     = plt.figure(figsize=self.figsize)
+                    lines   = []
+                    data    = []
+                    plt.title(name)
+                    plt.grid(True, which="both", axis="both")
+                    for fr in range(len(self.data.memory_dict[name])):
+                        fr_id = self.data.frame_id[name][fr]
+                        data.extend([statistics.mean(self.data.get_values(name,fr_id))])
+                    if self.printing[name][2] == -1:
+                        maxval = max(max(data[:]), maxval)
+                    else:
+                        maxval = self.printing[name][2]
+                    lines += plt.plot(self.moving_mean(data[:],self.window), color=self.color)
+                    plt.ylim(self.printing[name][1], maxval)
+                    plt.xlabel("episodes")
+                    self.plots[0].append(name)
+                    self.plots[1].append(fig)
+                    if self.showing:
+                        plt.show()
+                    else:
+                        plt.close(fig)
+            except:
+                pass
 
 
 ## -------------------------------------------------------------------------------------------------
