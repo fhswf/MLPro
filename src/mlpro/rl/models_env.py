@@ -18,10 +18,11 @@
 ## --                                - Introduction of special adaptive function classes AFct*
 ## --                                - Rework of classes EnvBase, Environment, EnvModel
 ## -- 2021-12-06  1.2.1     DA       Class AFctBase: correction by removing own method adapt()
+## -- 2021-12-10  1.2.2     DA       Code optimization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2021-12-06)
+Ver. 1.2.2 (2021-12-10)
 
 This module provides model classes for environments and environnment models.
 """
@@ -1202,9 +1203,7 @@ class EnvModel(EnvBase, Model):
         except:
             raise ParamError('Parameter must be of type SARSElement')
 
-        adapted     = False
-
-        adapted = adapted or self._afct_strans.adapt(state, action, state_new)
+        adapted = self._afct_strans.adapt(state, action, state_new)
 
         if self._afct_reward is not None:
             adapted = adapted or self._afct_reward.adapt(state, state_new, reward)
