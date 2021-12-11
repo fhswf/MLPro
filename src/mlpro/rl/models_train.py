@@ -22,10 +22,11 @@
 ## -- 2021-12-07  1.3.1     DA       - Method RLScenario.__init__(): param p_cycle_len removed
 ## --                                - Method RLTraining.__init__(): par p_scenario replaced by p_scenario_cls
 ## -- 2021-12-09  1.3.2     DA       Class RLTraining: introduced dynamic parameters **p_kwargs
+## -- 2021-12-11  1.3.3     DA       Class RLTraining: evaluation handling added
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2021-12-09)
+Ver. 1.3.3 (2021-12-11)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -415,6 +416,9 @@ class RLTraining (Training):
 
     C_CLS_RESULTS           = RLTrainingResults
 
+    C_EPI_MODE_TRAIN        = 1 
+    C_EPI_MODE_EVAL         = 2
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
 
@@ -488,17 +492,18 @@ class RLTraining (Training):
 
 
         # 3 Check for further restrictions
-        if self._max_adaptations > 0: raise NotImplementedError
-        if self._max_stagnations > 0: raise NotImplementedError
-        
         if ( self._cycle_limit <= 0 ) and ( self._max_adaptations <= 0 ) and ( self._max_stagnations <= 0 ):
             raise ParamError('Please define a termination criterion')
 
         if ( self._max_stagnations > 0 ) and ( ( self._eval_frequency <= 0) or ( self._eval_grp_size <= 0 ) ):
-            raise ParamError('Stagnation detection needs an eval freqency and eval group size > 0')
+            raise ParamError('For stagnation detection both parameters p_eval_frequency and p_eval_grp_size must be > 0 as well')
+
+        if ( ( self._eval_frequency > 0 ) and ( self._eval_grp_size <= 0 ) ) or ( ( self._eval_frequency <= 0 ) and ( self._eval_grp_size > 0) ):
+            raise ParamError('For cyclic evaluation both parameters p_eval_frequency and p_eval_grp_size must be > 0') 
 
  
         # 4 Initialization of further rl-specific attributes
+        self._epi_mode              = self.C_EPI_MODE_TRAIN
         self._cycles_episode        = 0
         self._eval_grp_id           = 0
 
@@ -508,6 +513,12 @@ class RLTraining (Training):
 
             if self._max_cycles_per_epi == -1:
                 self._max_cycles_per_epi = self._env.get_cycle_limit()
+
+            if self._eval_frequency > 0:
+                # Training with evaluation starts with initial evaluation
+                self._counter_epi_train     = 0
+                self._counter_epi_eval      = 0
+                self._epi_mode              = self.C_EPI_MODE_EVAL
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -546,25 +557,90 @@ class RLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_episode(self):
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
-        self.log(self.C_LOG_TYPE_I, '-- Episode', self._results.num_episodes, 'started...')
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------\n')
 
+        # 1 Evaluation handling  
+        if self._eval_frequency > 0:
+
+            if self._epi_mode == self.C_EPI_MODE_TRAIN:
+
+                if self._counter_epi_train == 0:
+                    self._scenario.get_model().switch_adaptivity(True)
+
+                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                    self.log(self.C_LOG_TYPE_W, '-- Training period started...')
+                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+                self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
+
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'started...')
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+            else:
+                if self._counter_epi_eval == 0:
+                    self._scenario.get_model().switch_adaptivity(False)
+
+                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                    self.log(self.C_LOG_TYPE_W, '-- Evaluation period', self._results.num_evaluations, 'started...')
+                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+                self._scenario.reset(self._counter_epi_eval)
+
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, '-- Evaluation episode', self._counter_epi_eval, 'started...')
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+        else:
+            self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
+
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'started...')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+
+        # 3 Preparation of data logging for next episode 
         if self._results.ds_states is not None: self._results.ds_states.add_episode(self._results.num_episodes)
         if self._results.ds_actions is not None: self._results.ds_actions.add_episode(self._results.num_episodes)
         if self._results.ds_rewards is not None: self._results.ds_rewards.add_episode(self._results.num_episodes)
 
-        self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
-
 
 ## -------------------------------------------------------------------------------------------------
     def _close_episode(self):
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
-        self.log(self.C_LOG_TYPE_I, '-- Episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------\n\n')
 
-        self._cycles_episode         = 0
-        self._results.num_episodes  += 1
+        if self._eval_frequency > 0:
+
+            if self._epi_mode == self.C_EPI_MODE_TRAIN:
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+
+                self._results.num_episodes  += 1
+                self._counter_epi_train     += 1
+
+                if self._counter_epi_train >= self._eval_frequency:
+                    self._counter_epi_eval  = 0
+                    self._epi_mode          = self.C_EPI_MODE_EVAL
+
+            else:
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, '-- Evaluation episode', self._counter_epi_eval, 'finished after', str(self._cycles_episode), 'cycles')
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+
+                self._counter_epi_eval      += 1
+
+                if self._counter_epi_eval >= self._eval_grp_size:
+                    self._results.num_evaluations += 1
+                    self._counter_epi_train = 0
+                    self._epi_mode          = self.C_EPI_MODE_TRAIN
+        
+        else:
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+
+            self._results.num_episodes  += 1
+
+        self._cycles_episode = 0
 
 
 ## -------------------------------------------------------------------------------------------------
