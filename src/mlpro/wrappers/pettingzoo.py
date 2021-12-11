@@ -18,10 +18,11 @@
 ## -- 2021-11-16  1.2.6     DA       Refactoring
 ## -- 2021-11-16  1.2.7     SY       Refactoring
 ## -- 2021-12-09  1.2.8     SY       Update process action procedure in WrEnvMLPro2PZoo()
+## -- 2021-12-11  1.2.9     SY       Update WrEnvPZOO2MLPro() in setting up done flag
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.8 (2021-12-09)
+Ver. 1.2.8 (2021-12-11)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -147,10 +148,10 @@ class WrEnvPZOO2MLPro(Environment):
             
         # 2 Process step of Zoo environment that automatically switches control to the next agent.
             observation, reward_zoo, done, info = self._zoo_env.last()
-            self._state.set_done(done)
+            new_state.set_done(done)
             obs     = DataObject(observation)
             
-            if self.get_done():
+            if new_state.get_done():
                 self._zoo_env.step(None)
             else:
                 try:
