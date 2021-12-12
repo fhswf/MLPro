@@ -147,16 +147,16 @@ class GTTraining (RLTraining):
         Name of GT game class, compatible to/inherited from class Game.
     p_cycle_limit : int
         Maximum number of training cycles (0=no limit). Default = 0.
-    p_max_cycles_per_episode : int
+    p_cycles_per_epi_limit : int
         Optional limit of cycles per episode (0=no limit, -1=get environment limit). Default = -1.    
-    p_max_adaptations : int
-        Optional limit of adaptations (0=no limit). Default = 0.
-    p_max_stagnations : int
-        Optional limit of consecutive evaluations without training progress. Default = 5.
+    p_adaptation_limit : int
+        Maximum number of adaptations (0=no limit). Default = 0.
+    p_stagnation_limit : int
+        Optional limit of consecutive evaluations without training progress. Default = 0.
     p_eval_frequency : int
-        Optional evaluation frequency (0=no evaluation). Default = 100.
+        Optional evaluation frequency (0=no evaluation). Default = 0.
     p_eval_grp_size : int
-        Number of evaluation episodes (eval group). Default = 50.
+        Number of evaluation episodes (eval group). Default = 0.
     p_hpt : HyperParamTuner
         Optional hyperparameter tuner (see class mlpro.bf.ml.HyperParamTuner). Default = None.
     p_hpt_trials : int
@@ -175,6 +175,7 @@ class GTTraining (RLTraining):
         Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
+
     """
 
     C_NAME      = 'GT'
