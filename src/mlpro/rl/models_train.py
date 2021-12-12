@@ -249,11 +249,17 @@ class RLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
         """
-        Processes a single control cycle.
+        Processes a single cycle.
 
-        Returns:
-            success         True, if environment goal has reached. False otherwise.
-            error           True, if environment has broken. False otherwise.
+        Returns
+        -------
+        success : bool
+            True on success. False otherwise.
+        error : bool
+            True on error. False otherwise.
+        adapted : bool
+            True, if agent adapted something in this cycle. False otherwise.
+
         """
 
         # 1 Environment: get current state
@@ -296,7 +302,7 @@ class RLScenario (Scenario):
 
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
-        self._agent.adapt(self._env.get_state(), reward)
+        adapted = self._agent.adapt(self._env.get_state(), reward)
 
 
         # 6 Check for terminating events
@@ -309,7 +315,7 @@ class RLScenario (Scenario):
         if error:
             self.log(self.C_LOG_TYPE_E, 'Process time', self._timer.get_time(), ': Environment broken')
 
-        return success, error
+        return success, error, adapted
 
 
 
@@ -320,6 +326,18 @@ class RLScenario (Scenario):
 class RLTrainingResults (TrainingResults):
     """
     Results of a RL training.
+
+    Parameters
+    ----------
+    p_scenario : RLScenario
+        Related reinforcement learning scenario.
+    p_run : int
+        Run id.
+    p_cycle_id : int
+        Id of first cycle of this run.
+    p_path : str
+        Optional destination path to store the results.
+
     """
 
     C_FNAME_TRAINING        = 'training'
@@ -327,34 +345,31 @@ class RLTrainingResults (TrainingResults):
     C_FNAME_AGENT_ACTIONS   = 'agent_actions'
     C_FNAME_ENV_REWARDS     = 'env_rewards'
 
-    C_CPAR_NUM_EPI          = 'Number of episodes'
-    C_CPAR_NUM_EVAL         = 'Number of evaluations'
-    C_CPAR_NUM_ADAPT        = 'Number of adaptations'
+    C_CPAR_NUM_EPI          = 'Training Episodes'
+    C_CPAR_NUM_EVAL         = 'Evaluations'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario: Scenario, p_run, p_cycle_id, p_path=None):
+    def __init__(self, p_scenario:RLScenario, p_run, p_cycle_id, p_path=None):
         super().__init__(p_scenario, p_run, p_cycle_id, p_path=p_path)
 
-        self.num_episodes      = 0
-        self.num_adaptations   = 0
-        self.num_evaluations   = 0
-        self.ds_states         = None
-        self.ds_actions        = None
-        self.ds_rewards        = None
-        self.ds_training       = None
+        self.num_episodes       = 0
+        self.num_evaluations    = 0
+        self.ds_states          = None
+        self.ds_actions         = None
+        self.ds_rewards         = None
+        self.ds_training        = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def close(self, p_cycle_id):
-        super().close(p_cycle_id)
+    def close(self):
+        super().close()
 
         self.add_custom_result(self.C_CPAR_NUM_EPI, self.num_episodes)
         self.add_custom_result(self.C_CPAR_NUM_EVAL, self.num_evaluations)
-        self.add_custom_result(self.C_CPAR_NUM_ADAPT, self.num_adaptations)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def save(self, p_path, p_filename='summary.txt') -> bool:
+    def save(self, p_path, p_filename='summary.csv') -> bool:
         if not super().save(p_path, p_filename=p_filename): return False
 
         if self.ds_states is not None: self.ds_states.save_data(p_path, self.C_FNAME_ENV_STATES)
@@ -381,16 +396,16 @@ class RLTraining (Training):
         Name of RL scenario class, compatible to/inherited from class RLScenario.
     p_cycle_limit : int
         Maximum number of training cycles (0=no limit). Default = 0.
-    p_max_cycles_per_episode : int
+    p_cycles_per_epi_limit : int
         Optional limit of cycles per episode (0=no limit, -1=get environment limit). Default = -1.    
-    p_max_adaptations : int
-        Optional limit of adaptations (0=no limit). Default = 0.
-    p_max_stagnations : int
-        Optional limit of consecutive evaluations without training progress. Default = 5.
+    p_adaptation_limit : int
+        Maximum number of adaptations (0=no limit). Default = 0.
+    p_stagnation_limit : int
+        Optional limit of consecutive evaluations without training progress. Default = 0.
     p_eval_frequency : int
-        Optional evaluation frequency (0=no evaluation). Default = 100.
+        Optional evaluation frequency (0=no evaluation). Default = 0.
     p_eval_grp_size : int
-        Number of evaluation episodes (eval group). Default = 50.
+        Number of evaluation episodes (eval group). Default = 0.
     p_hpt : HyperParamTuner
         Optional hyperparameter tuner (see class mlpro.bf.ml.HyperParamTuner). Default = None.
     p_hpt_trials : int
@@ -416,9 +431,6 @@ class RLTraining (Training):
 
     C_CLS_RESULTS           = RLTrainingResults
 
-    C_EPI_MODE_TRAIN        = 1 
-    C_EPI_MODE_EVAL         = 2
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
 
@@ -428,62 +440,55 @@ class RLTraining (Training):
 
         # 2 Check and completion of RL-specific parameters
 
-        # 2.1 Optional parameter p_max_cycles_per_episode
+        # 2.1 Optional parameter p_cycles_per_epi_limit
         try:
-            self._max_cycles_per_epi = self._kwargs['p_max_cycles_per_episode']
+            self._cycles_per_epi_limit = self._kwargs['p_cycles_per_epi_limit']
         except:
-            self._max_cycles_per_epi = -1
+            self._cycles_per_epi_limit = -1
 
-        # 2.2 Optional parameter p_max_adaptations
+        # 2.2 Optional parameter p_stagnation_limit
         try:
-            self._max_adaptations = self._kwargs['p_max_adaptations']
+            self._stagnation_limit = self._kwargs['p_stagnation_limit']
         except:
-            self._max_adaptations = 0
-            self._kwargs['p_max_adaptations'] = self._max_adaptations
+            self._stagnation_limit = 0
+            self._kwargs['p_stagnation_limit'] = self._stagnation_limit
 
-        # 2.3 Optional parameter p_max_stagnations
-        try:
-            self._max_stagnations = self._kwargs['p_max_stagnations']
-        except:
-            self._max_stagnations = 5
-            self._kwargs['p_max_stagnations'] = self._max_stagnations
-
-        # 2.4 Optional parameter p_eval_frequency
+        # 2.3 Optional parameter p_eval_frequency
         try:
             self._eval_frequency = self._kwargs['p_eval_frequency']
         except:
-            self._eval_frequency = 100
+            self._eval_frequency = 0
             self._kwargs['p_eval_frequency'] = self._eval_frequency
 
-        # 2.5 Optional parameter p_eval_grp_size
+        # 2.4 Optional parameter p_eval_grp_size
         try:
             self._eval_grp_size = self._kwargs['p_eval_grp_size']
         except:
-            self._eval_grp_size = 50
+            self._eval_grp_size = 0
             self._kwargs['p_eval_grp_size'] = self._eval_grp_size
 
-        # 2.6 Optional parameter p_collect_states
+        # 2.5 Optional parameter p_collect_states
         try:
             self._collect_states = self._kwargs['p_collect_states']
         except:
             self._collect_states = True
             self._kwargs['p_collect_states'] = self._collect_states
 
-        # 2.7 Optional parameter p_collect_actions
+        # 2.6 Optional parameter p_collect_actions
         try:
             self._collect_actions = self._kwargs['p_collect_actions']
         except:
             self._collect_actions = True
             self._kwargs['p_collect_actions'] = self._collect_actions
 
-        # 2.8 Optional parameter p_collect_rewards
+        # 2.7 Optional parameter p_collect_rewards
         try:
             self._collect_rewards = self._kwargs['p_collect_rewards']
         except:
             self._collect_rewards = True
             self._kwargs['p_collect_rewards'] = self._collect_rewards
 
-        # 2.9 Optional parameter p_collect_training
+        # 2.8 Optional parameter p_collect_training
         try:
             self._collect_training = self._kwargs['p_collect_training']
         except:
@@ -492,10 +497,10 @@ class RLTraining (Training):
 
 
         # 3 Check for further restrictions
-        if ( self._cycle_limit <= 0 ) and ( self._max_adaptations <= 0 ) and ( self._max_stagnations <= 0 ):
-            raise ParamError('Please define a termination criterion')
+        if ( self._cycle_limit <= 0 ) and ( self._adaptation_limit <= 0 ) and ( self._stagnation_limit <= 0 ):
+            raise ParamError('Please define at least one termination criterion (p_cycle_limit, p_adaptation_limit, p_stagnation_limit')
 
-        if ( self._max_stagnations > 0 ) and ( ( self._eval_frequency <= 0) or ( self._eval_grp_size <= 0 ) ):
+        if ( self._stagnation_limit > 0 ) and ( ( self._eval_frequency <= 0) or ( self._eval_grp_size <= 0 ) ):
             raise ParamError('For stagnation detection both parameters p_eval_frequency and p_eval_grp_size must be > 0 as well')
 
         if ( ( self._eval_frequency > 0 ) and ( self._eval_grp_size <= 0 ) ) or ( ( self._eval_frequency <= 0 ) and ( self._eval_grp_size > 0) ):
@@ -503,7 +508,7 @@ class RLTraining (Training):
 
  
         # 4 Initialization of further rl-specific attributes
-        self._epi_mode              = self.C_EPI_MODE_TRAIN
+        self._mode                  = self.C_MODE_TRAIN
         self._cycles_episode        = 0
         self._eval_grp_id           = 0
 
@@ -511,14 +516,14 @@ class RLTraining (Training):
             self._env   = self._scenario.get_env()
             self._agent = self._scenario.get_agent()
 
-            if self._max_cycles_per_epi == -1:
-                self._max_cycles_per_epi = self._env.get_cycle_limit()
+            if self._cycles_per_epi_limit == -1:
+                self._cycles_per_epi_limit = self._env.get_cycle_limit()
 
             if self._eval_frequency > 0:
                 # Training with evaluation starts with initial evaluation
                 self._counter_epi_train     = 0
                 self._counter_epi_eval      = 0
-                self._epi_mode              = self.C_EPI_MODE_EVAL
+                self._mode                  = self.C_MODE_EVAL
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -561,7 +566,7 @@ class RLTraining (Training):
         # 1 Evaluation handling  
         if self._eval_frequency > 0:
 
-            if self._epi_mode == self.C_EPI_MODE_TRAIN:
+            if self._mode == self.C_MODE_TRAIN:
 
                 if self._counter_epi_train == 0:
                     self._scenario.get_model().switch_adaptivity(True)
@@ -609,7 +614,7 @@ class RLTraining (Training):
 
         if self._eval_frequency > 0:
 
-            if self._epi_mode == self.C_EPI_MODE_TRAIN:
+            if self._mode == self.C_MODE_TRAIN:
                 self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
                 self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
                 self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
@@ -619,7 +624,7 @@ class RLTraining (Training):
 
                 if self._counter_epi_train >= self._eval_frequency:
                     self._counter_epi_eval  = 0
-                    self._epi_mode          = self.C_EPI_MODE_EVAL
+                    self._mode          = self.C_MODE_EVAL
 
             else:
                 self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
@@ -631,7 +636,7 @@ class RLTraining (Training):
                 if self._counter_epi_eval >= self._eval_grp_size:
                     self._results.num_evaluations += 1
                     self._counter_epi_train = 0
-                    self._epi_mode          = self.C_EPI_MODE_TRAIN
+                    self._mode          = self.C_MODE_TRAIN
         
         else:
             self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
@@ -675,16 +680,32 @@ class RLTraining (Training):
 
 
         # 2 Run a cycle
-        success, error, timeout, limit = self._scenario.run_cycle()
+        success, error, timeout, limit, adapted = self._scenario.run_cycle()
         self._cycles_episode += 1
 
 
+        # Test code!!
+        if self._mode != self.C_MODE_EVAL:
+            adapted = True
+
+        if adapted: 
+            self._results.num_adaptations += 1
+
+
         # 3 Check: Episode finished?
-        if success or error: 
+        if success:
+            self.log(self.C_LOG_TYPE_I, 'Objective of environment reached')
             eof_episode = True
 
-        elif ( self._max_cycles_per_epi > 0 ) and ( self._cycles_episode == self._max_cycles_per_epi ):
-            self.log(self.C_LOG_TYPE_W, 'Episode cycle limit ', str(self._max_cycles_per_epi), ' reached')
+        if error:
+            self.log(self.C_LOG_TYPE_E, 'Environment broken')
+            eof_episode = True
+
+        if timeout:
+            self.log(self.C_LOG_TYPE_E, 'Timout detected')
+
+        if ( self._cycles_per_epi_limit > 0 ) and ( self._cycles_episode == self._cycles_per_epi_limit ):
+            self.log(self.C_LOG_TYPE_W, 'Episode cycle limit ', str(self._cycles_per_epi_limit), ' reached')
             eof_episode = True
 
         if eof_episode: 
@@ -692,8 +713,8 @@ class RLTraining (Training):
             
 
         # 4 Check: Training finished?
-        if ( self._max_adaptations > 0 ) and ( self._results.num_adaptations == self._max_adaptations ):
-            self.log(self.C_LOG_TYPE_I, 'Adaptation limit ', str(self._max_adaptations), ' reached')
+        if ( self._adaptation_limit > 0 ) and ( self._results.num_adaptations == self._adaptation_limit ):
+            self.log(self.C_LOG_TYPE_I, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
             eof_training = True
 
 

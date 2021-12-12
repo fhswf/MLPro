@@ -101,12 +101,14 @@ class MyScenario (RLScenario):
 
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
+    cycle_limit = 500
     logging     = Log.C_LOG_ALL
     visualize   = True
     path        = str(Path.home())
  
 else:
     # 3.2 Parameters for internal unit test
+    cycle_limit = 50
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     path        = None
@@ -115,9 +117,7 @@ else:
 # 3.3 Create and run training object
 training = RLTraining(
         p_scenario_cls=MyScenario,
-        p_cycle_limit=100,
-        p_max_adaptations=0,
-        p_max_stagnations=0,
+        p_cycle_limit=cycle_limit,
         p_path=path,
         p_visualize=visualize,
         p_logging=logging )

@@ -90,7 +90,7 @@ class MyScenario (RLScenario):
 
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    logging     = Log.C_LOG_WE
+    logging     = Log.C_LOG_ALL #WE
     visualize   = True
     path        = str(Path.home())
  
@@ -105,10 +105,10 @@ else:
 training = RLTraining(
         p_scenario_cls=MyScenario,
         p_cycle_limit=1000,
-        p_eval_frequency=10,
-        p_eval_grp_size=5,
-        p_max_adaptations=0,
-        p_max_stagnations=0,
+        p_adaptation_limit=50,
+        p_stagnation_limit=5,
+        p_eval_frequency=1,
+        p_eval_grp_size=1,
         p_path=path,
         p_visualize=visualize,
         p_logging=logging )
