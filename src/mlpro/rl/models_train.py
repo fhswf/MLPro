@@ -794,7 +794,7 @@ class RLTraining (Training):
                         self._eval_max_reward[i] = agent_reward
                 
         else:
-            raise Error('Reward type not yet supported')
+            raise Error('Reward type ' + str(reward_type) + ' not yet supported')
 
 
 ## -------------------------------------------------------------------------------------------------

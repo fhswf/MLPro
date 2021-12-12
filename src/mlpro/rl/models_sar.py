@@ -170,7 +170,7 @@ class Reward(TStamp):
     C_TYPE_EVERY_AGENT    = 1    # Reward is a scalar for every agent
     C_TYPE_EVERY_ACTION   = 2    # Reward is a scalar for every agent and action
 
-    C_VALID_TYPES         = [ C_TYPE_OVERALL, C_TYPE_EVERY_AGENT ]
+    C_VALID_TYPES         = [ C_TYPE_OVERALL, C_TYPE_EVERY_AGENT, C_TYPE_EVERY_ACTION ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_type=C_TYPE_OVERALL, p_value=0):
