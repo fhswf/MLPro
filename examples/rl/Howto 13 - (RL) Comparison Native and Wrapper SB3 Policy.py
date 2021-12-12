@@ -110,12 +110,11 @@ class MyScenario(RLScenario):
 # 3 Instantiate training
 training        = RLTraining(
     p_scenario_cls=MyScenario,
-    p_cycle_limit=1000,      #p_episode_limit=max_episode,
-    p_max_stagnations=0,
+    p_cycle_limit=1000,      
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
-    p_collect_training=True,
+    p_collect_eval=True,
     p_path=path,
     p_visualize=visualize,
     p_logging=logging )

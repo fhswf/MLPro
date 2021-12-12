@@ -17,10 +17,11 @@
 ## --                                be controlled from the policy
 ## -- 2021-10-05  1.0.6     DA       Class State: new attributes done, broken and related methods 
 ## -- 2021-10-05  1.0.7     SY       Bugfixes and minor improvements
+## -- 2021-12-12  1.0.8     DA       Reward type C_TYPE_EVERY_ACTION disabled
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2021-10-05)
+Ver. 1.0.7 (2021-12-12)
 
 This module provides model classes for state, action and reward data and their buffering.
 """
@@ -169,6 +170,8 @@ class Reward(TStamp):
     C_TYPE_EVERY_AGENT    = 1    # Reward is a scalar for every agent
     C_TYPE_EVERY_ACTION   = 2    # Reward is a scalar for every agent and action
 
+    C_VALID_TYPES         = [ C_TYPE_OVERALL, C_TYPE_EVERY_AGENT ]
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_type=C_TYPE_OVERALL, p_value=0):
         """
@@ -176,6 +179,9 @@ class Reward(TStamp):
             p_type          Reward type (default: C_TYPE_OVERALL)
             p_value         Overall reward value (reward type C_TYPE_OVERALL only)
         """
+
+        if p_type not in self.C_VALID_TYPES:
+            raise ParamError('Reward type ' + str(p_type) + ' not supported.')
 
         TStamp.__init__(self)
         self.type           = p_type

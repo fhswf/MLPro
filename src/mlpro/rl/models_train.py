@@ -22,11 +22,11 @@
 ## -- 2021-12-07  1.3.1     DA       - Method RLScenario.__init__(): param p_cycle_len removed
 ## --                                - Method RLTraining.__init__(): par p_scenario replaced by p_scenario_cls
 ## -- 2021-12-09  1.3.2     DA       Class RLTraining: introduced dynamic parameters **p_kwargs
-## -- 2021-12-11  1.3.3     DA       Class RLTraining: evaluation handling added
+## -- 2021-12-12  1.4.0     DA       Class RLTraining: evaluation and stagnation detection added
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2021-12-11)
+Ver. 1.4.0 (2021-12-12)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -38,13 +38,14 @@ from mlpro.bf.math import *
 from mlpro.bf.data import *
 from mlpro.bf.ml import *
 from mlpro.rl.models_env import *
+from statistics import mean
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RLDataStoring(DataStoring):
+class RLDataStoring (DataStoring):
     """
     Derivate of basic class DataStoring that is specialized to store episodical training data in the
     context of reinforcement learning.
@@ -52,11 +53,6 @@ class RLDataStoring(DataStoring):
 
     # Frame ID renamed
     C_VAR0              = 'Episode ID'
-
-    # Variables for training header data storage
-    C_VAR_NUM_CYCLES    = 'Number of cycles'
-    C_VAR_ENV_DONE      = 'Goal reached'
-    C_VAR_ENV_BROKEN    = 'Env broken'
 
     # Variables for episodical detail data storage
     C_VAR_CYCLE         = 'Cycle'
@@ -74,20 +70,15 @@ class RLDataStoring(DataStoring):
         
         self.space = p_space
 
-        if self.space is None:
-            # Initialization as a training header data storage
-            self.variables  = [ self.C_VAR_NUM_CYCLES, self.C_VAR_ENV_DONE, self.C_VAR_ENV_BROKEN ]
+        # Initalization as an episodical detail data storage
+        self.variables  = [ self.C_VAR_CYCLE, self.C_VAR_DAY, self.C_VAR_SEC, self.C_VAR_MICROSEC ]
+        self.var_space  = []
+  
+        for dim_id in self.space.get_dim_ids():
+            dim = self.space.get_dim(dim_id)
+            self.var_space.append(dim.get_name_short())
 
-        else:
-            # Initalization as an episodical detail data storage
-            self.variables  = [ self.C_VAR_CYCLE, self.C_VAR_DAY, self.C_VAR_SEC, self.C_VAR_MICROSEC ]
-            self.var_space  = []
-    
-            for dim_id in self.space.get_dim_ids():
-                dim = self.space.get_dim(dim_id)
-                self.var_space.append(dim.get_name_short())
-
-            self.variables.extend(self.var_space)
+        self.variables.extend(self.var_space)
 
         super().__init__(self.variables)
 
@@ -126,6 +117,86 @@ class RLDataStoring(DataStoring):
 
         for i, var in enumerate(self.var_space):
             self.memorize(var, self.current_episode, p_data[i])
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class RLDataStoringEval (DataStoring):
+    """
+    Derivate of basic class DataStoring that is specialized to store evaluation data of a training
+    in the context of reinforcement learning.
+    """
+
+    # Frame ID renamed
+    C_VAR0              = 'Evaluation ID'
+
+    # Variables for training header data storage
+    C_VAR_SCORE         = 'Score'
+    C_VAR_NUM_CYCLES    = 'Number of cycles'
+    C_VAR_NUM_DONE      = 'Env goal reached'
+    C_VAR_NUM_BROKEN    = 'Env broken'
+    C_VAR_NUM_LIMIT     = 'Env out of limit'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_space:Set=None):
+        """
+        Parameters:
+            p_space         Space object that provides dimensional information for raw data. If None
+                            a training header data object will be instantiated.
+        """
+        
+        self.space = p_space
+
+        # Initalization as an episodical detail data storage
+        self.variables  = [ self.C_VAR_SCORE, self.C_VAR_NUM_CYCLES, self.C_VAR_NUM_LIMIT, self.C_VAR_NUM_DONE, self.C_VAR_NUM_BROKEN ]
+        self.var_space  = []
+    
+        for dim_id in self.space.get_dim_ids():
+            dim = self.space.get_dim(dim_id)
+            self.var_space.append(dim.get_name_short())
+
+        self.variables.extend(self.var_space)
+
+        super().__init__(self.variables)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_variables(self):
+        return self.variables
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_space(self):
+        return self.space
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_evaluation(self, p_evaluation_id):
+        self.add_frame(p_evaluation_id)
+        self.current_evaluation = p_evaluation_id
+
+
+## -------------------------------------------------------------------------------------------------
+    def memorize_row(self, p_score, p_num_limit, p_num_cycles, p_num_done, p_num_broken, p_reward):
+        """
+        Memorizes an evaluation data row.
+
+        Parameters
+        ---------- 
+
+        """
+
+        self.memorize(self.C_VAR_SCORE, self.current_evaluation, p_score)
+        self.memorize(self.C_VAR_NUM_LIMIT, self.current_evaluation, p_num_limit)
+        self.memorize(self.C_VAR_NUM_CYCLES, self.current_evaluation, p_num_cycles)
+        self.memorize(self.C_VAR_NUM_DONE, self.current_evaluation, p_num_done)
+        self.memorize(self.C_VAR_NUM_BROKEN, self.current_evaluation, p_num_broken)
+
+        for i, var in enumerate(self.var_space):
+            self.memorize(var, self.current_evaluation, p_reward[i])
 
 
 
@@ -340,7 +411,7 @@ class RLTrainingResults (TrainingResults):
 
     """
 
-    C_FNAME_TRAINING        = 'training'
+    C_FNAME_EVAL            = 'evaluation'
     C_FNAME_ENV_STATES      = 'env_states'
     C_FNAME_AGENT_ACTIONS   = 'agent_actions'
     C_FNAME_ENV_REWARDS     = 'env_rewards'
@@ -357,7 +428,7 @@ class RLTrainingResults (TrainingResults):
         self.ds_states          = None
         self.ds_actions         = None
         self.ds_rewards         = None
-        self.ds_training        = None
+        self.ds_eval            = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -375,7 +446,7 @@ class RLTrainingResults (TrainingResults):
         if self.ds_states is not None: self.ds_states.save_data(p_path, self.C_FNAME_ENV_STATES)
         if self.ds_actions is not None: self.ds_actions.save_data(p_path, self.C_FNAME_AGENT_ACTIONS)
         if self.ds_rewards is not None: self.ds_rewards.save_data(p_path, self.C_FNAME_ENV_REWARDS)
-        if self.ds_training is not None: self.ds_training.save_data(p_path, self.C_FNAME_TRAINING)
+        if self.ds_eval is not None: self.ds_eval.save_data(p_path, self.C_FNAME_EVAL)
 
 
 
@@ -418,8 +489,8 @@ class RLTraining (Training):
         If True, the agent actions will be collected. Default = True.
     p_collect_rewards : bool
         If True, the environment reward will be collected. Default = True.
-    p_collect_training : bool
-        If True, global training data will be collected. Default = True.
+    p_collect_eval : bool
+        If True, global evaluation data will be collected. Default = True.
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = False.
     p_logging
@@ -488,12 +559,12 @@ class RLTraining (Training):
             self._collect_rewards = True
             self._kwargs['p_collect_rewards'] = self._collect_rewards
 
-        # 2.8 Optional parameter p_collect_training
+        # 2.8 Optional parameter p_collect_eval
         try:
-            self._collect_training = self._kwargs['p_collect_training']
+            self._collect_eval = self._kwargs['p_collect_eval']
         except:
-            self._collect_training = True
-            self._kwargs['p_collect_training'] = self._collect_training
+            self._collect_eval = True
+            self._kwargs['p_collect_eval'] = self._collect_eval
 
 
         # 3 Check for further restrictions
@@ -508,16 +579,23 @@ class RLTraining (Training):
 
  
         # 4 Initialization of further rl-specific attributes
-        self._mode                  = self.C_MODE_TRAIN
-        self._cycles_episode        = 0
-        self._eval_grp_id           = 0
-
         if self._scenario is not None:
+            self._mode                  = self.C_MODE_TRAIN
+            self._cycles_episode        = 0
+            self._eval_grp_id           = 0
+            self._eval_last_score       = None
+            self._eval_stagnations      = 0
+
             self._env   = self._scenario.get_env()
             self._agent = self._scenario.get_agent()
 
             if self._cycles_per_epi_limit == -1:
                 self._cycles_per_epi_limit = self._env.get_cycle_limit()
+
+            if self._cycles_per_epi_limit > 0:
+                self._eval_factor = self._cycles_per_epi_limit
+            else:
+                self._eval_factor = 100
 
             if self._eval_frequency > 0:
                 # Training with evaluation starts with initial evaluation
@@ -536,7 +614,7 @@ class RLTraining (Training):
         if self._collect_actions: 
             results.ds_actions = RLDataStoring(self._env.get_action_space())
 
-        if self._collect_rewards: 
+        if self._collect_rewards or self._collect_eval: 
             reward_type = self._env.get_reward_type()
 
             if ( reward_type == Reward.C_TYPE_OVERALL ) or ( reward_type == Reward.C_TYPE_EVERY_AGENT ):
@@ -549,11 +627,11 @@ class RLTraining (Training):
                 for agent, weight in agents:
                     reward_space.add_dim(Dimension(agent.get_id(), agent.get_name()))
 
-                if reward_space.get_num_dim() > 0:
+                if self._collect_rewards:
                     results.ds_rewards  = RLDataStoring(reward_space)
 
-        if self._collect_training:
-            results.ds_training = RLDataStoring()
+                if self._collect_eval:
+                    results.ds_eval = RLDataStoringEval(reward_space)
 
         self._scenario.connect_data_logger(p_ds_states=results.ds_states, p_ds_actions=results.ds_actions, p_ds_rewards=results.ds_rewards)
 
@@ -589,6 +667,8 @@ class RLTraining (Training):
                     self.log(self.C_LOG_TYPE_W, '-- Evaluation period', self._results.num_evaluations, 'started...')
                     self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
 
+                    self._init_evaluation()
+                    
                 self._scenario.reset(self._counter_epi_eval)
 
                 self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
@@ -624,7 +704,7 @@ class RLTraining (Training):
 
                 if self._counter_epi_train >= self._eval_frequency:
                     self._counter_epi_eval  = 0
-                    self._mode          = self.C_MODE_EVAL
+                    self._mode              = self.C_MODE_EVAL
 
             else:
                 self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
@@ -634,10 +714,15 @@ class RLTraining (Training):
                 self._counter_epi_eval      += 1
 
                 if self._counter_epi_eval >= self._eval_grp_size:
+
+                    score = self._close_evaluation()
+                    if ( self._results.highscore is None ) or ( score > self._results.highscore ):
+                        self._results.highscore = score
+
                     self._results.num_evaluations += 1
                     self._counter_epi_train = 0
-                    self._mode          = self.C_MODE_TRAIN
-        
+                    self._mode              = self.C_MODE_TRAIN
+       
         else:
             self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
             self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
@@ -649,15 +734,108 @@ class RLTraining (Training):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _progress_detected(self) -> bool:
+    def _init_evaluation(self):
         """
-        Determines training progress after finishing a control group loop.
-
-        Returns:
-            True, if there was a progress. False otherwise.
+        Initializes the next evaluation.
         """
 
-        raise NotImplementedError
+        if self._results.ds_eval is not None: self._results.ds_eval.add_evaluation(self._results.num_evaluations)
+
+        self._eval_num_cycles   = 0
+        self._eval_num_limit    = 0 
+        self._eval_num_done     = 0
+        self._eval_num_broken   = 0
+        self._eval_max_reward   = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_evaluation(self, p_success:bool, p_error:bool, p_cycle_limit:bool):
+        """
+        Updates evaluation statistics.
+
+        Parameters
+        ----------
+        p_success : bool
+            True on success. False otherwise.
+        p_error : bool
+            True on error. False otherwise.
+        p_cycle_limit : bool
+            True, if cycle limit has reached. False otherwise.
+
+        """
+
+        self._eval_num_cycles += 1
+        if p_cycle_limit: self._eval_num_limit += 1
+        if p_success: self._eval_num_done += 1
+        if p_error: self._eval_num_broken += 1
+
+        reward = self._env.get_last_reward()
+        if reward is None: return
+
+        reward_type = reward.get_type()
+
+        if reward_type == Reward.C_TYPE_OVERALL:
+            overall_reward = reward.get_overall_reward()
+            if self._eval_max_reward is None:
+                self._eval_max_reward = [ overall_reward ]
+            elif overall_reward > self._eval_max_reward[0]:
+                self._eval_max_reward[0] = overall_reward
+
+        elif reward_type == Reward.C_TYPE_EVERY_AGENT:
+            if self._eval_max_reward is None:
+                self._eval_max_reward = []
+                for agent_id in reward.agent_ids: 
+                    self._eval_max_reward.append(reward.get_agent_reward(agent_id))
+
+            else:
+                for i, agent_id in enumerate(reward.agent_ids): 
+                    agent_reward = reward.get_agent_reward(agent_id)
+                    if agent_reward > self._eval_max_reward[i]:
+                        self._eval_max_reward[i] = agent_reward
+                
+        else:
+            raise Error('Reward type not yet supported')
+
+
+## -------------------------------------------------------------------------------------------------
+    def _close_evaluation(self) -> float:
+        """
+        Closes the current evaluation and computes a related score.
+
+        Returns
+        -------
+        score : float
+            Score of current evalation.
+
+        """
+
+        # 1 Computation of score
+        score = max( self._eval_num_done - self._eval_num_limit - self._eval_num_broken, 0) * mean(self._eval_max_reward) * self._eval_factor / self._eval_num_cycles
+
+
+        # 2 Store evaluation statistics
+        if self._results.ds_eval is not None:
+            self._results.ds_eval.memorize_row( p_score=score, 
+                                                p_num_limit=self._eval_num_limit, 
+                                                p_num_cycles=self._eval_num_cycles, 
+                                                p_num_done=self._eval_num_done, 
+                                                p_num_broken=self._eval_num_broken, 
+                                                p_reward=self._eval_max_reward )
+
+
+        # 3 Stagnation detection
+        if self._eval_last_score is None:
+            self._eval_last_score = score
+
+        elif score <= self._eval_last_score:
+            self._eval_stagnations += 1
+        
+        else:
+            self._eval_stagnations = 0
+
+
+        # 4 Outro
+        return score
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -687,7 +865,12 @@ class RLTraining (Training):
             self._results.num_adaptations += 1
 
 
-        # 3 Check: Episode finished?
+        # 3 Update current evaluation
+        if self._mode == self.C_MODE_EVAL:
+            self._update_evaluation(success, error, limit)
+
+
+        # 4 Check: Episode finished?
         if success:
             self.log(self.C_LOG_TYPE_I, 'Objective of environment reached')
             eof_episode = True
@@ -707,11 +890,15 @@ class RLTraining (Training):
             self._close_episode()
             
 
-        # 4 Check: Training finished?
+        # 5 Check: Training finished?
         if ( self._adaptation_limit > 0 ) and ( self._results.num_adaptations == self._adaptation_limit ):
-            self.log(self.C_LOG_TYPE_I, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
+            self.log(self.C_LOG_TYPE_W, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
+            eof_training = True
+
+        if ( self._stagnation_limit > 0 ) and ( self._eval_stagnations >= self._stagnation_limit ):
+            self.log(self.C_LOG_TYPE_W, 'Stagnation limit ', str(self._stagnation_limit), ' reached')
             eof_training = True
 
 
-        # 5 Outro
+        # 6 Outro
         return eof_training

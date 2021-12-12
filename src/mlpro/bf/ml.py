@@ -509,7 +509,7 @@ class Scenario (Mode, LoadSave, Plottable):
         # 0 Intro
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Scenario reset with seed', str(p_seed))
 
-        # 1 Internal ML model is reset
+        # 1 Internal ML model reset
         self._model.set_random_seed(p_seed)
         if self._visualize: self._model.init_plot()
 
@@ -518,6 +518,9 @@ class Scenario (Mode, LoadSave, Plottable):
 
         # 3 Timer reset
         self._timer.reset()
+
+        # 4 Cycle counter reset
+        self._cycle_id = 0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1000,11 +1003,11 @@ class Training (Log):
             # 1.1 Start of new training run
             self._current_path  = self._gen_current_path(self._root_path, self._current_run)
             self._results       = self._init_results()
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
-            self.log(self.C_LOG_TYPE_I, '-- Training run', self._current_run, 'started...')
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------\n')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, '-- Training run', self._current_run, 'started...')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
             self._new_run = False
             
 
@@ -1023,22 +1026,22 @@ class Training (Log):
         # 3 Assess results
         if ( self._cycle_limit > 0 ) and ( self._results.num_cycles_train >= self._cycle_limit ):
             # 3.1 Cycle limit reached
-            self.log(self.C_LOG_TYPE_I, 'Cycle limit', self._cycle_limit, 'reached')
+            self.log(self.C_LOG_TYPE_W, 'Cycle limit', self._cycle_limit, 'reached')
             run_finished = True
 
         if run_finished:
             # 3.2 Training run finished
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
-            self.log(self.C_LOG_TYPE_I, '-- Training run', self._current_run, 'finished')
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------------------\n')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, '-- Training run', self._current_run, 'finished')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
             self._scenario.get_model().save(self._current_path, 'trained model.pkl')
             self._close_results(self._results)
             self._current_path = None
 
             if ( self._best_results is None ) or ( self._results.highscore > self._best_results.highscore ):
-                self.log(self.C_LOG_TYPE_S, 'Training run', str(self._current_run), ': New highscore', str(self._results.highscore))
+                self.log(self.C_LOG_TYPE_W, 'Training run', str(self._current_run), ': New highscore', str(self._results.highscore))
                 self._best_results = self._results
 
             self._current_run  += 1

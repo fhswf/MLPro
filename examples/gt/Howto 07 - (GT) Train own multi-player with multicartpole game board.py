@@ -57,7 +57,7 @@ class MyPolicy(Policy):
 
     def _adapt(self, *p_args) -> bool:
         # 1 Adapting the internal policy is up to you...
-        self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
+        self.log(self.C_LOG_TYPE_I, 'Sorry, I am a stupid agent...')
 
         # 2 Only return True if something has been adapted...
         return False
@@ -134,7 +134,7 @@ class MyGame(Game):
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
     cycle_limit = 200
-    logging     = Log.C_LOG_ALL
+    logging     = Log.C_LOG_WE
     visualize   = True
     path        = str(Path.home())
  
