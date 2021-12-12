@@ -683,11 +683,6 @@ class RLTraining (Training):
         success, error, timeout, limit, adapted = self._scenario.run_cycle()
         self._cycles_episode += 1
 
-
-        # Test code!!
-        if self._mode != self.C_MODE_EVAL:
-            adapted = True
-
         if adapted: 
             self._results.num_adaptations += 1
 
