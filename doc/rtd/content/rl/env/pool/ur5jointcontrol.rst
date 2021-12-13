@@ -22,7 +22,7 @@
                     sudo apt install ros-$ROS_DISTRO-moveit-resources-prbt-moveit-config
                     sudo apt install ros-$ROS_DISTRO-pilz-industrial-motion-planner
                     sudo apt install python3-pip
-                    pip3 install catkin_tools gym empy defusedxml pymodbus numpy
+                    pip3 install catkin_tools gym empy defusedxml pymodbus numpy netifaces pycryptodomex
                     
             5. Build the Environment:
                 .. code-block:: bash
