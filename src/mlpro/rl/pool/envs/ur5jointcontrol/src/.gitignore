@@ -1,6 +1,4 @@
 /CMakeLists.txt
-/ur_msgs
-/xacro
 *.pyc
 .vscode/
 __pycache__/
