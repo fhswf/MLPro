@@ -64,34 +64,40 @@ class ScenarioRobotHTM(RLScenario):
 # 2 Create scenario and start training
 
 if __name__ == "__main__":
-    # 2.1 Parameters for demo mode
-    logging     = Log.C_LOG_NOTHING
-    visualize   = True
-    path        = str(Path.home())
-    plotting    = True
-    timestep    = 300000
+    # 3.1 Parameters for demo mode
+    cycle_limit         = 5000
+    adaptation_limit    = 50
+    stagnation_limit    = 5
+    eval_frequency      = 5
+    eval_grp_size       = 5
+    logging             = Log.C_LOG_WE
+    visualize           = True
+    path                = str(Path.home())
+    plotting        = True
  
 else:
-    # 2.2 Parameters for internal unit test
-    logging     = Log.C_LOG_NOTHING
-    visualize   = False
-    path        = None
-    plotting    = False
-    timestep    = 200
-
-
+    # 3.2 Parameters for internal unit test
+    cycle_limit         = 50
+    adaptation_limit    = 5
+    stagnation_limit    = 5
+    eval_frequency      = 2
+    eval_grp_size       = 1
+    logging             = Log.C_LOG_NOTHING
+    visualize           = False
+    path                = None
+    plotting            = False
 
 # 3 Train agent in scenario 
 now             = datetime.now()
 
 training        = RLTraining(
     p_scenario_cls=ScenarioRobotHTM,
-    p_cycle_limit=timestep,
+    p_cycle_limit=cycle_limit,
     p_max_cycles_per_episode=100,
-    p_collect_states=True,
-    p_collect_actions=True,
-    p_collect_rewards=True,
-    p_collect_eval=True,
+    p_adaptation_limit=adaptation_limit,
+    p_stagnation_limit=stagnation_limit,
+    p_eval_frequency=eval_frequency,
+    p_eval_grp_size=eval_grp_size,
     p_path=path,
     p_visualize=visualize,
     p_logging=logging
