@@ -1,5 +1,5 @@
 **Installation Steps**
-1. Install ubuntu 20.04
+1. Install Ubuntu 20.04
 
 2. Install ROS: 
 	- http://wiki.ros.org/noetic/Installation/Ubuntu
