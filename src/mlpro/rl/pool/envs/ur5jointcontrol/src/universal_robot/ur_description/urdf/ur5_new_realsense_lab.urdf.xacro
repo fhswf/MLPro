@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="ur5_realsense" >
+  <xacro:arg name="use_nominal_extrinsics" default="true"/>
+  <xacro:arg name="sim" default="false"/>
+  
+  <xacro:arg name="joint_limits_parameters_file" default="$(find ur_description)/config/ur5/joint_limits.yaml"/>  
+  <xacro:arg name="prefix" default=""/>
+  <xacro:arg name="kinematics_parameters_file" default="$(find ur_description)/config/my_robot_calibration.yaml"/>
+  <xacro:arg name="physical_parameters_file" default="$(find ur_description)/config/ur5/physical_parameters.yaml"/>
+  <xacro:arg name="visual_parameters_file" default="$(find ur_description)/config/ur5/visual_parameters.yaml"/>
+  <xacro:arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface"/>
+  <xacro:arg name="safety_limits" default="false"/>
+  <xacro:arg name="safety_pos_margin" default="0.15"/>
+  <xacro:arg name="safety_k_position" default="20"/>
+  
+    <!-- UR5 and gripper-->    
+  <xacro:include filename="$(find ur_description)/urdf/inc/ur5_macro.xacro"/>
+ 
+  <xacro:include filename="$(find robotiq_2f_140_gripper_visualization)/urdf/robotiq_arg2f_140_model_macro.xacro" >
+    <arg name="prefix" default="$(arg prefix)"/>
+  </xacro:include>
+  
+  <!-- manipulator -->
+  <xacro:ur5_robot
+      prefix="$(arg prefix)"
+      joint_limits_parameters_file="$(arg joint_limits_parameters_file)"
+      kinematics_parameters_file="$(arg kinematics_parameters_file)"
+      physical_parameters_file="$(arg physical_parameters_file)"
+      visual_parameters_file="$(arg visual_parameters_file)"
+      transmission_hw_interface="$(arg transmission_hw_interface)"
+      safety_limits="$(arg safety_limits)"
+      safety_pos_margin="$(arg safety_pos_margin)"
+      safety_k_position="$(arg safety_k_position)"
+    />
+  
+  
+  <!-- endeffector -->
+  <xacro:robotiq_arg2f_140 prefix=""/>  
+  <joint name="gripper_joint" type="fixed">
+    <parent link="tool0" />
+    <child link = "robotiq_arg2f_base_link" />
+    <origin xyz="0.0 0.0 0.02" rpy="0.0 0.0 1.5708" />
+  </joint>
+  
+  <link name="world" />
+  <joint name="world_joint" type="fixed">
+    <parent link="world" />
+    <child link = "base_link" />
+    <origin xyz="0.0 0.0 0.648" rpy="0.0 0.0 0.0" />
+  </joint>
+
+  <link name="offset_dummy" />
+  <joint name="offset_dummy_joint" type="fixed">
+    <parent link="tool0" />
+    <child link = "offset_dummy" />
+    <origin xyz="0.0 0.0 0.2" rpy="0.0 0.0 0.0" />
+  </joint>
+  
+  <joint name="table_joint" type="fixed">
+    <parent link="world" />
+    <child link = "center_link" />
+    <origin xyz="-0.140 0.415 0" rpy="0.0 0.0 0.0" />
+  </joint>
+  
+  <link name="center_link">    
+    <collision name="table">
+      <geometry>
+          <mesh filename="package://ur_description/meshes/lab_table_with_wall.dae" />
+      </geometry>
+    </collision>
+    <visual name="table">
+      <geometry>
+          <mesh filename="package://ur_description/meshes/lab_table_with_wall.dae" />
+      </geometry>
+    </visual>
+  </link>
+</robot>
+
+

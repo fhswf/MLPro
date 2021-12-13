@@ -1,0 +1,32 @@
+ur5_lab: #namespace
+    # Task Realated parameters
+    max_iterations: 20
+        
+    init_pos: 
+      shoulder_pan_joint: 0.00
+      shoulder_lift_joint: -1.00
+      elbow_joint: -1.15
+      wrist_1_joint: -1.30
+      wrist_2_joint: 1.57
+      wrist_3_joint: 1.57
+      
+    goal_pos: #Validate that this pose is possible first
+      pose:
+          position: 
+            x: -0.32446811
+            y: 0.29049822
+            z: 1.16098099
+          orientation: 
+            x: -1
+            y: 0
+            z: 0
+            w: 0
+            
+      #TO DO: end with close gripper
+      #when gripper closed and position in goal position, reward high
+      #when gripper closed and position near goal position, reward mid
+      #when gripper not closed and position in goal position, reward mid
+      #when gripper closed and position far from goal position, punish
+      #when nowhere near goal position for a long tim, punish
+
+    reached_goal_reward: 100
