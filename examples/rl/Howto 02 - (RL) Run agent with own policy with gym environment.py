@@ -93,11 +93,13 @@ class MyScenario (RLScenario):
 
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
+    cycle_limit = 100
     logging     = Log.C_LOG_ALL
     visualize   = True
   
 else:
     # 3.2 Parameters for internal unit test
+    cycle_limit = 10
     logging     = Log.C_LOG_NOTHING
     visualize   = False
  
@@ -106,10 +108,10 @@ else:
 myscenario  = MyScenario(
         p_mode=Mode.C_MODE_SIM,
         p_ada=True,
-        p_cycle_limit=100,
+        p_cycle_limit=cycle_limit,
         p_visualize=visualize,
         p_logging=logging
 )
 
-myscenario.reset(p_seed=1)
+myscenario.reset(p_seed=3)
 myscenario.run() 

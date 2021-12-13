@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-08  0.0.0     DA       Creation 
-## -- 2021-12-08  0.1.0     DA       Took over class AdaptiveFunction from bf.ml
+## -- 2021-12-10  0.1.0     DA       Took over class AdaptiveFunction from bf.ml
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2021-12-08)
+Ver. 0.1.0 (2021-12-10)
 
 This module provides model classes for supervised learning tasks. 
 """
@@ -100,7 +100,13 @@ class AdaptiveFunction (Model, Function):
             self._set_adapted(self._adapt(p_input, p_output))
             if self.get_adapted():
                 self._mappings_total    = 1
-                self._mappings_good     = 1
+
+                # Second quality check after adaptation
+                if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
+                    self._mappings_good = 1
+                else:
+                    self._mappings_good = 0
+
             else:
                 self._mappings_total    += 1
 
@@ -145,7 +151,8 @@ class SLScenario (Scenario):
     """
     To be designed.
     """
-    pass
+
+    C_TYPE      = 'SL-Scenario'
 
 
 
@@ -157,4 +164,5 @@ class SLTraining (Training):
     """
     To be designed.
     """
-    pass
+
+    C_NAME      = 'SL'

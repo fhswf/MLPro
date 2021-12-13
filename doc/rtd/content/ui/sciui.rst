@@ -1,4 +1,4 @@
-5.1 UI Framework SciUI
+6.1 UI Framework SciUI
 ===========================
 
 - Platform-independend framework for creation of own UI scenarios

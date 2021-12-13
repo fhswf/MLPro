@@ -1,4 +1,4 @@
-4.1 Overview
+5.1 Overview
 ================
 
 Game Theory (GT) is well-known in economic studies as a theoretical approach to model the strategic

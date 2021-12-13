@@ -54,8 +54,14 @@ Instructions for use
    content/bf/ml
 
 .. toctree::
+   :maxdepth: 1
+   :caption: 3 MLPro-SL - Supervised Learning
+   
+   content/sl/overview
+
+.. toctree::
    :maxdepth: 3
-   :caption: 3 MLPro-RL – Reinforcement Learning
+   :caption: 4 MLPro-RL – Reinforcement Learning
    
    content/rl/overview
    content/rl/env
@@ -66,7 +72,7 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: 4 MLPro-GT – Game Theory
+   :caption: 5 MLPro-GT – Game Theory
    
    content/gt/overview
    content/gt/players
@@ -74,7 +80,7 @@ Instructions for use
 
 .. toctree::
    :maxdepth: 2
-   :caption: 5 MLPro-UI – Interactive ML
+   :caption: 6 MLPro-UI – Interactive ML
    
    content/ui/sciui
 

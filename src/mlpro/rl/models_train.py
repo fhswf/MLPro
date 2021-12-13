@@ -21,10 +21,12 @@
 ## -- 2021-11-13  1.3.0     DA       Rework/improvement of class RLTraining
 ## -- 2021-12-07  1.3.1     DA       - Method RLScenario.__init__(): param p_cycle_len removed
 ## --                                - Method RLTraining.__init__(): par p_scenario replaced by p_scenario_cls
+## -- 2021-12-09  1.3.2     DA       Class RLTraining: introduced dynamic parameters **p_kwargs
+## -- 2021-12-12  1.4.0     DA       Class RLTraining: evaluation and stagnation detection added
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-07)
+Ver. 1.4.0 (2021-12-12)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -36,13 +38,14 @@ from mlpro.bf.math import *
 from mlpro.bf.data import *
 from mlpro.bf.ml import *
 from mlpro.rl.models_env import *
+from statistics import mean
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RLDataStoring(DataStoring):
+class RLDataStoring (DataStoring):
     """
     Derivate of basic class DataStoring that is specialized to store episodical training data in the
     context of reinforcement learning.
@@ -50,11 +53,6 @@ class RLDataStoring(DataStoring):
 
     # Frame ID renamed
     C_VAR0              = 'Episode ID'
-
-    # Variables for training header data storage
-    C_VAR_NUM_CYCLES    = 'Number of cycles'
-    C_VAR_ENV_DONE      = 'Goal reached'
-    C_VAR_ENV_BROKEN    = 'Env broken'
 
     # Variables for episodical detail data storage
     C_VAR_CYCLE         = 'Cycle'
@@ -72,20 +70,15 @@ class RLDataStoring(DataStoring):
         
         self.space = p_space
 
-        if self.space is None:
-            # Initialization as a training header data storage
-            self.variables  = [ self.C_VAR_NUM_CYCLES, self.C_VAR_ENV_DONE, self.C_VAR_ENV_BROKEN ]
+        # Initalization as an episodical detail data storage
+        self.variables  = [ self.C_VAR_CYCLE, self.C_VAR_DAY, self.C_VAR_SEC, self.C_VAR_MICROSEC ]
+        self.var_space  = []
+  
+        for dim_id in self.space.get_dim_ids():
+            dim = self.space.get_dim(dim_id)
+            self.var_space.append(dim.get_name_short())
 
-        else:
-            # Initalization as an episodical detail data storage
-            self.variables  = [ self.C_VAR_CYCLE, self.C_VAR_DAY, self.C_VAR_SEC, self.C_VAR_MICROSEC ]
-            self.var_space  = []
-    
-            for dim_id in self.space.get_dim_ids():
-                dim = self.space.get_dim(dim_id)
-                self.var_space.append(dim.get_name_short())
-
-            self.variables.extend(self.var_space)
+        self.variables.extend(self.var_space)
 
         super().__init__(self.variables)
 
@@ -124,6 +117,86 @@ class RLDataStoring(DataStoring):
 
         for i, var in enumerate(self.var_space):
             self.memorize(var, self.current_episode, p_data[i])
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class RLDataStoringEval (DataStoring):
+    """
+    Derivate of basic class DataStoring that is specialized to store evaluation data of a training
+    in the context of reinforcement learning.
+    """
+
+    # Frame ID renamed
+    C_VAR0              = 'Evaluation ID'
+
+    # Variables for training header data storage
+    C_VAR_SCORE         = 'Score'
+    C_VAR_NUM_CYCLES    = 'Number of cycles'
+    C_VAR_NUM_DONE      = 'Env goal reached'
+    C_VAR_NUM_BROKEN    = 'Env broken'
+    C_VAR_NUM_LIMIT     = 'Env out of limit'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_space:Set=None):
+        """
+        Parameters:
+            p_space         Space object that provides dimensional information for raw data. If None
+                            a training header data object will be instantiated.
+        """
+        
+        self.space = p_space
+
+        # Initalization as an episodical detail data storage
+        self.variables  = [ self.C_VAR_SCORE, self.C_VAR_NUM_CYCLES, self.C_VAR_NUM_LIMIT, self.C_VAR_NUM_DONE, self.C_VAR_NUM_BROKEN ]
+        self.var_space  = []
+    
+        for dim_id in self.space.get_dim_ids():
+            dim = self.space.get_dim(dim_id)
+            self.var_space.append(dim.get_name_short())
+
+        self.variables.extend(self.var_space)
+
+        super().__init__(self.variables)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_variables(self):
+        return self.variables
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_space(self):
+        return self.space
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_evaluation(self, p_evaluation_id):
+        self.add_frame(p_evaluation_id)
+        self.current_evaluation = p_evaluation_id
+
+
+## -------------------------------------------------------------------------------------------------
+    def memorize_row(self, p_score, p_num_limit, p_num_cycles, p_num_done, p_num_broken, p_reward):
+        """
+        Memorizes an evaluation data row.
+
+        Parameters
+        ---------- 
+
+        """
+
+        self.memorize(self.C_VAR_SCORE, self.current_evaluation, p_score)
+        self.memorize(self.C_VAR_NUM_LIMIT, self.current_evaluation, p_num_limit)
+        self.memorize(self.C_VAR_NUM_CYCLES, self.current_evaluation, p_num_cycles)
+        self.memorize(self.C_VAR_NUM_DONE, self.current_evaluation, p_num_done)
+        self.memorize(self.C_VAR_NUM_BROKEN, self.current_evaluation, p_num_broken)
+
+        for i, var in enumerate(self.var_space):
+            self.memorize(var, self.current_evaluation, p_reward[i])
 
 
 
@@ -247,11 +320,17 @@ class RLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
         """
-        Processes a single control cycle.
+        Processes a single cycle.
 
-        Returns:
-            success         True, if environment goal has reached. False otherwise.
-            error           True, if environment has broken. False otherwise.
+        Returns
+        -------
+        success : bool
+            True on success. False otherwise.
+        error : bool
+            True on error. False otherwise.
+        adapted : bool
+            True, if agent adapted something in this cycle. False otherwise.
+
         """
 
         # 1 Environment: get current state
@@ -294,7 +373,7 @@ class RLScenario (Scenario):
 
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
-        self._agent.adapt(self._env.get_state(), reward)
+        adapted = self._agent.adapt(self._env.get_state(), reward)
 
 
         # 6 Check for terminating events
@@ -307,7 +386,7 @@ class RLScenario (Scenario):
         if error:
             self.log(self.C_LOG_TYPE_E, 'Process time', self._timer.get_time(), ': Environment broken')
 
-        return success, error
+        return success, error, adapted
 
 
 
@@ -318,47 +397,56 @@ class RLScenario (Scenario):
 class RLTrainingResults (TrainingResults):
     """
     Results of a RL training.
+
+    Parameters
+    ----------
+    p_scenario : RLScenario
+        Related reinforcement learning scenario.
+    p_run : int
+        Run id.
+    p_cycle_id : int
+        Id of first cycle of this run.
+    p_path : str
+        Optional destination path to store the results.
+
     """
 
-    C_FNAME_TRAINING        = 'training'
+    C_FNAME_EVAL            = 'evaluation'
     C_FNAME_ENV_STATES      = 'env_states'
     C_FNAME_AGENT_ACTIONS   = 'agent_actions'
     C_FNAME_ENV_REWARDS     = 'env_rewards'
 
-    C_CPAR_NUM_EPI          = 'Number of episodes'
-    C_CPAR_NUM_EVAL         = 'Number of evaluations'
-    C_CPAR_NUM_ADAPT        = 'Number of adaptations'
+    C_CPAR_NUM_EPI          = 'Training Episodes'
+    C_CPAR_NUM_EVAL         = 'Evaluations'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario: Scenario, p_run, p_cycle_id, p_path=None):
+    def __init__(self, p_scenario:RLScenario, p_run, p_cycle_id, p_path=None):
         super().__init__(p_scenario, p_run, p_cycle_id, p_path=p_path)
 
-        self.num_episodes      = 0
-        self.num_adaptations   = 0
-        self.num_evaluations   = 0
-        self.ds_states         = None
-        self.ds_actions        = None
-        self.ds_rewards        = None
-        self.ds_training       = None
+        self.num_episodes       = 0
+        self.num_evaluations    = 0
+        self.ds_states          = None
+        self.ds_actions         = None
+        self.ds_rewards         = None
+        self.ds_eval            = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def close(self, p_cycle_id):
-        super().close(p_cycle_id)
+    def close(self):
+        super().close()
 
         self.add_custom_result(self.C_CPAR_NUM_EPI, self.num_episodes)
         self.add_custom_result(self.C_CPAR_NUM_EVAL, self.num_evaluations)
-        self.add_custom_result(self.C_CPAR_NUM_ADAPT, self.num_adaptations)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def save(self, p_path, p_filename='summary.txt') -> bool:
+    def save(self, p_path, p_filename='summary.csv') -> bool:
         if not super().save(p_path, p_filename=p_filename): return False
 
         if self.ds_states is not None: self.ds_states.save_data(p_path, self.C_FNAME_ENV_STATES)
         if self.ds_actions is not None: self.ds_actions.save_data(p_path, self.C_FNAME_AGENT_ACTIONS)
         if self.ds_rewards is not None: self.ds_rewards.save_data(p_path, self.C_FNAME_ENV_REWARDS)
-        if self.ds_training is not None: self.ds_training.save_data(p_path, self.C_FNAME_TRAINING)
+        if self.ds_eval is not None: self.ds_eval.save_data(p_path, self.C_FNAME_EVAL)
 
 
 
@@ -379,16 +467,16 @@ class RLTraining (Training):
         Name of RL scenario class, compatible to/inherited from class RLScenario.
     p_cycle_limit : int
         Maximum number of training cycles (0=no limit). Default = 0.
-    p_max_cycles_per_episode : int
+    p_cycles_per_epi_limit : int
         Optional limit of cycles per episode (0=no limit, -1=get environment limit). Default = -1.    
-    p_max_adaptations : int
-        Optional limit of adaptations (0=no limit). Default = 0.
-    p_max_stagnations : int
-        Optional limit of consecutive evaluations without training progress. Default = 5.
+    p_adaptation_limit : int
+        Maximum number of adaptations (0=no limit). Default = 0.
+    p_stagnation_limit : int
+        Optional limit of consecutive evaluations without training progress. Default = 0.
     p_eval_frequency : int
-        Optional evaluation frequency (0=no evaluation). Default = 100.
+        Optional evaluation frequency (0=no evaluation). Default = 0.
     p_eval_grp_size : int
-        Number of evaluation episodes (eval group). Default = 50.
+        Number of evaluation episodes (eval group). Default = 0.
     p_hpt : HyperParamTuner
         Optional hyperparameter tuner (see class mlpro.bf.ml.HyperParamTuner). Default = None.
     p_hpt_trials : int
@@ -401,8 +489,8 @@ class RLTraining (Training):
         If True, the agent actions will be collected. Default = True.
     p_collect_rewards : bool
         If True, the environment reward will be collected. Default = True.
-    p_collect_training : bool
-        If True, global training data will be collected. Default = True.
+    p_collect_eval : bool
+        If True, global evaluation data will be collected. Default = True.
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = False.
     p_logging
@@ -415,60 +503,105 @@ class RLTraining (Training):
     C_CLS_RESULTS           = RLTrainingResults
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_scenario_cls,         
-                 p_cycle_limit=0,               
-                 p_max_cycles_per_episode=-1,   
-                 p_max_adaptations=0,           
-                 p_max_stagnations=5,           
-                 p_eval_frequency=100,          
-                 p_eval_grp_size=50,            
-                 p_hpt:HyperParamTuner=None,    
-                 p_hpt_trials=0,                
-                 p_path=None,                   
-                 p_collect_states=True,         
-                 p_collect_actions=True,       
-                 p_collect_rewards=True,        
-                 p_collect_training=True,  
-                 p_visualize=False,     
-                 p_logging=Log.C_LOG_WE):
+    def __init__(self, **p_kwargs):
 
-        if ( p_cycle_limit <= 0 ) and ( p_max_adaptations <= 0 ) and ( p_max_stagnations <= 0 ):
-            raise ParamError('Please define a termination criterion')
+        # 1 Initialization of elementary training functionalities
+        super().__init__( **p_kwargs )
 
-        if ( p_max_stagnations > 0 ) and ( ( p_eval_frequency <= 0) or ( p_eval_grp_size <= 0 ) ):
-            raise ParamError('Stagnation detection needs an eval freqency and eval group size > 0')
 
-        if p_max_adaptations > 0: raise NotImplementedError
-        if p_max_stagnations > 0: raise NotImplementedError
+        # 2 Check and completion of RL-specific parameters
 
-        super().__init__( p_scenario_cls=p_scenario_cls, 
-                          p_cycle_limit=p_cycle_limit, 
-                          p_hpt=p_hpt, 
-                          p_hpt_trials=p_hpt_trials, 
-                          p_path=p_path, 
-                          p_visualize=p_visualize,
-                          p_logging=p_logging)
+        # 2.1 Optional parameter p_cycles_per_epi_limit
+        try:
+            self._cycles_per_epi_limit = self._kwargs['p_cycles_per_epi_limit']
+        except:
+            self._cycles_per_epi_limit = -1
+
+        # 2.2 Optional parameter p_stagnation_limit
+        try:
+            self._stagnation_limit = self._kwargs['p_stagnation_limit']
+        except:
+            self._stagnation_limit = 0
+            self._kwargs['p_stagnation_limit'] = self._stagnation_limit
+
+        # 2.3 Optional parameter p_eval_frequency
+        try:
+            self._eval_frequency = self._kwargs['p_eval_frequency']
+        except:
+            self._eval_frequency = 0
+            self._kwargs['p_eval_frequency'] = self._eval_frequency
+
+        # 2.4 Optional parameter p_eval_grp_size
+        try:
+            self._eval_grp_size = self._kwargs['p_eval_grp_size']
+        except:
+            self._eval_grp_size = 0
+            self._kwargs['p_eval_grp_size'] = self._eval_grp_size
+
+        # 2.5 Optional parameter p_collect_states
+        try:
+            self._collect_states = self._kwargs['p_collect_states']
+        except:
+            self._collect_states = True
+            self._kwargs['p_collect_states'] = self._collect_states
+
+        # 2.6 Optional parameter p_collect_actions
+        try:
+            self._collect_actions = self._kwargs['p_collect_actions']
+        except:
+            self._collect_actions = True
+            self._kwargs['p_collect_actions'] = self._collect_actions
+
+        # 2.7 Optional parameter p_collect_rewards
+        try:
+            self._collect_rewards = self._kwargs['p_collect_rewards']
+        except:
+            self._collect_rewards = True
+            self._kwargs['p_collect_rewards'] = self._collect_rewards
+
+        # 2.8 Optional parameter p_collect_eval
+        try:
+            self._collect_eval = self._kwargs['p_collect_eval']
+        except:
+            self._collect_eval = True
+            self._kwargs['p_collect_eval'] = self._collect_eval
+
+
+        # 3 Check for further restrictions
+        if ( self._cycle_limit <= 0 ) and ( self._adaptation_limit <= 0 ) and ( self._stagnation_limit <= 0 ):
+            raise ParamError('Please define at least one termination criterion (p_cycle_limit, p_adaptation_limit, p_stagnation_limit')
+
+        if ( self._stagnation_limit > 0 ) and ( ( self._eval_frequency <= 0) or ( self._eval_grp_size <= 0 ) ):
+            raise ParamError('For stagnation detection both parameters p_eval_frequency and p_eval_grp_size must be > 0 as well')
+
+        if ( ( self._eval_frequency > 0 ) and ( self._eval_grp_size <= 0 ) ) or ( ( self._eval_frequency <= 0 ) and ( self._eval_grp_size > 0) ):
+            raise ParamError('For cyclic evaluation both parameters p_eval_frequency and p_eval_grp_size must be > 0') 
+
  
-        self._env                   = self._scenario.get_env()
-        self._agent                 = self._scenario.get_agent()
+        # 4 Initialization of further rl-specific attributes
+        if self._scenario is not None:
+            self._mode                  = self.C_MODE_TRAIN
+            self._cycles_episode        = 0
+            self._eval_grp_id           = 0
+            self._eval_last_score       = None
+            self._eval_stagnations      = 0
 
-        self._eval_frequency        = p_eval_frequency
-        self._eval_grp_size         = p_eval_grp_size
-        self._max_adaptation        = p_max_adaptations
+            self._env   = self._scenario.get_env()
+            self._agent = self._scenario.get_agent()
 
-        if p_max_cycles_per_episode > 0:
-            self._max_cycles_per_epi = p_max_cycles_per_episode
-        else:
-            self._max_cycles_per_epi = self._env.get_cycle_limit()
+            if self._cycles_per_epi_limit == -1:
+                self._cycles_per_epi_limit = self._env.get_cycle_limit()
 
-        self._collect_states        = p_collect_states
-        self._collect_actions       = p_collect_actions
-        self._collect_rewards       = p_collect_rewards
-        self._collect_training      = p_collect_training
+            if self._cycles_per_epi_limit > 0:
+                self._eval_factor = self._cycles_per_epi_limit
+            else:
+                self._eval_factor = 100
 
-        self._cycles_episode        = 0
-        self._eval_grp_id           = 0
+            if self._eval_frequency > 0:
+                # Training with evaluation starts with initial evaluation
+                self._counter_epi_train     = 0
+                self._counter_epi_eval      = 0
+                self._mode                  = self.C_MODE_EVAL
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -481,7 +614,7 @@ class RLTraining (Training):
         if self._collect_actions: 
             results.ds_actions = RLDataStoring(self._env.get_action_space())
 
-        if self._collect_rewards: 
+        if self._collect_rewards or self._collect_eval: 
             reward_type = self._env.get_reward_type()
 
             if ( reward_type == Reward.C_TYPE_OVERALL ) or ( reward_type == Reward.C_TYPE_EVERY_AGENT ):
@@ -494,11 +627,11 @@ class RLTraining (Training):
                 for agent, weight in agents:
                     reward_space.add_dim(Dimension(agent.get_id(), agent.get_name()))
 
-                if reward_space.get_num_dim() > 0:
+                if self._collect_rewards:
                     results.ds_rewards  = RLDataStoring(reward_space)
 
-        if self._collect_training:
-            results.ds_training = RLDataStoring()
+                if self._collect_eval:
+                    results.ds_eval = RLDataStoringEval(reward_space)
 
         self._scenario.connect_data_logger(p_ds_states=results.ds_states, p_ds_actions=results.ds_actions, p_ds_rewards=results.ds_rewards)
 
@@ -507,37 +640,202 @@ class RLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_episode(self):
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
-        self.log(self.C_LOG_TYPE_I, '-- Episode', self._results.num_episodes, 'started...')
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------\n')
 
+        # 1 Evaluation handling  
+        if self._eval_frequency > 0:
+
+            if self._mode == self.C_MODE_TRAIN:
+
+                if self._counter_epi_train == 0:
+                    self._scenario.get_model().switch_adaptivity(True)
+
+                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                    self.log(self.C_LOG_TYPE_W, '-- Training period started...')
+                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+                self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
+
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'started...')
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+            else:
+                if self._counter_epi_eval == 0:
+                    self._scenario.get_model().switch_adaptivity(False)
+
+                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                    self.log(self.C_LOG_TYPE_W, '-- Evaluation period', self._results.num_evaluations, 'started...')
+                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+                    self._init_evaluation()
+                    
+                self._scenario.reset(self._counter_epi_eval)
+
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, '-- Evaluation episode', self._counter_epi_eval, 'started...')
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+        else:
+            self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
+
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'started...')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+
+        # 3 Preparation of data logging for next episode 
         if self._results.ds_states is not None: self._results.ds_states.add_episode(self._results.num_episodes)
         if self._results.ds_actions is not None: self._results.ds_actions.add_episode(self._results.num_episodes)
         if self._results.ds_rewards is not None: self._results.ds_rewards.add_episode(self._results.num_episodes)
 
-        self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
-
 
 ## -------------------------------------------------------------------------------------------------
     def _close_episode(self):
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------')
-        self.log(self.C_LOG_TYPE_I, '-- Episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------------------\n\n')
 
-        self._cycles_episode         = 0
-        self._results.num_episodes  += 1
+        if self._eval_frequency > 0:
+
+            if self._mode == self.C_MODE_TRAIN:
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+
+                self._results.num_episodes  += 1
+                self._counter_epi_train     += 1
+
+                if self._counter_epi_train >= self._eval_frequency:
+                    self._counter_epi_eval  = 0
+                    self._mode              = self.C_MODE_EVAL
+
+            else:
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, '-- Evaluation episode', self._counter_epi_eval, 'finished after', str(self._cycles_episode), 'cycles')
+                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+
+                self._counter_epi_eval      += 1
+
+                if self._counter_epi_eval >= self._eval_grp_size:
+
+                    score = self._close_evaluation()
+                    if ( self._results.highscore is None ) or ( score > self._results.highscore ):
+                        self._results.highscore = score
+
+                    self._results.num_evaluations += 1
+                    self._counter_epi_train = 0
+                    self._mode              = self.C_MODE_TRAIN
+       
+        else:
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
+            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+
+            self._results.num_episodes  += 1
+
+        self._cycles_episode = 0
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _progress_detected(self) -> bool:
+    def _init_evaluation(self):
         """
-        Determines training progress after finishing a control group loop.
-
-        Returns:
-            True, if there was a progress. False otherwise.
+        Initializes the next evaluation.
         """
 
-        raise NotImplementedError
+        if self._results.ds_eval is not None: self._results.ds_eval.add_evaluation(self._results.num_evaluations)
+
+        self._eval_num_cycles   = 0
+        self._eval_num_limit    = 0 
+        self._eval_num_done     = 0
+        self._eval_num_broken   = 0
+        self._eval_max_reward   = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_evaluation(self, p_success:bool, p_error:bool, p_cycle_limit:bool):
+        """
+        Updates evaluation statistics.
+
+        Parameters
+        ----------
+        p_success : bool
+            True on success. False otherwise.
+        p_error : bool
+            True on error. False otherwise.
+        p_cycle_limit : bool
+            True, if cycle limit has reached. False otherwise.
+
+        """
+
+        self._eval_num_cycles += 1
+        if p_cycle_limit: self._eval_num_limit += 1
+        if p_success: self._eval_num_done += 1
+        if p_error: self._eval_num_broken += 1
+
+        reward = self._env.get_last_reward()
+        if reward is None: return
+
+        reward_type = reward.get_type()
+
+        if reward_type == Reward.C_TYPE_OVERALL:
+            overall_reward = reward.get_overall_reward()
+            if self._eval_max_reward is None:
+                self._eval_max_reward = [ overall_reward ]
+            elif overall_reward > self._eval_max_reward[0]:
+                self._eval_max_reward[0] = overall_reward
+
+        elif reward_type == Reward.C_TYPE_EVERY_AGENT:
+            if self._eval_max_reward is None:
+                self._eval_max_reward = []
+                for agent_id in reward.agent_ids: 
+                    self._eval_max_reward.append(reward.get_agent_reward(agent_id))
+
+            else:
+                for i, agent_id in enumerate(reward.agent_ids): 
+                    agent_reward = reward.get_agent_reward(agent_id)
+                    if agent_reward > self._eval_max_reward[i]:
+                        self._eval_max_reward[i] = agent_reward
+                
+        else:
+            raise Error('Reward type ' + str(reward_type) + ' not yet supported')
+
+
+## -------------------------------------------------------------------------------------------------
+    def _close_evaluation(self) -> float:
+        """
+        Closes the current evaluation and computes a related score.
+
+        Returns
+        -------
+        score : float
+            Score of current evalation.
+
+        """
+
+        # 1 Computation of score
+        score = max( self._eval_num_done - self._eval_num_limit - self._eval_num_broken, 0) * mean(self._eval_max_reward) * self._eval_factor / self._eval_num_cycles
+
+
+        # 2 Store evaluation statistics
+        if self._results.ds_eval is not None:
+            self._results.ds_eval.memorize_row( p_score=score, 
+                                                p_num_limit=self._eval_num_limit, 
+                                                p_num_cycles=self._eval_num_cycles, 
+                                                p_num_done=self._eval_num_done, 
+                                                p_num_broken=self._eval_num_broken, 
+                                                p_reward=self._eval_max_reward )
+
+
+        # 3 Stagnation detection
+        if self._eval_last_score is None:
+            self._eval_last_score = score
+
+        elif score <= self._eval_last_score:
+            self._eval_stagnations += 1
+        
+        else:
+            self._eval_stagnations = 0
+
+
+        # 4 Outro
+        return score
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -560,27 +858,47 @@ class RLTraining (Training):
 
 
         # 2 Run a cycle
-        success, error, timeout, limit = self._scenario.run_cycle()
+        success, error, timeout, limit, adapted = self._scenario.run_cycle()
         self._cycles_episode += 1
 
+        if adapted: 
+            self._results.num_adaptations += 1
 
-        # 3 Check: Episode finished?
-        if success or error: 
+
+        # 3 Update current evaluation
+        if self._mode == self.C_MODE_EVAL:
+            self._update_evaluation(success, error, limit)
+
+
+        # 4 Check: Episode finished?
+        if success:
+            self.log(self.C_LOG_TYPE_I, 'Objective of environment reached')
             eof_episode = True
 
-        elif ( self._max_cycles_per_epi > 0 ) and ( self._cycles_episode == self._max_cycles_per_epi ):
-            self.log(self.C_LOG_TYPE_W, 'Episode cycle limit ', str(self._max_cycles_per_epi), ' reached')
+        if error:
+            self.log(self.C_LOG_TYPE_E, 'Environment broken')
+            eof_episode = True
+
+        if timeout:
+            self.log(self.C_LOG_TYPE_E, 'Timout detected')
+
+        if ( self._cycles_per_epi_limit > 0 ) and ( self._cycles_episode == self._cycles_per_epi_limit ):
+            self.log(self.C_LOG_TYPE_W, 'Episode cycle limit ', str(self._cycles_per_epi_limit), ' reached')
             eof_episode = True
 
         if eof_episode: 
             self._close_episode()
             
 
-        # 4 Check: Training finished?
-        if ( self._max_adaptation > 0 ) and ( self._results.num_adaptations == self._max_adaptation ):
-            self.log(self.C_LOG_TYPE_I, 'Adaptation limit ', str(self._max_adaptation), ' reached')
+        # 5 Check: Training finished?
+        if ( self._adaptation_limit > 0 ) and ( self._results.num_adaptations == self._adaptation_limit ):
+            self.log(self.C_LOG_TYPE_W, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
+            eof_training = True
+
+        if ( self._stagnation_limit > 0 ) and ( self._eval_stagnations >= self._stagnation_limit ):
+            self.log(self.C_LOG_TYPE_W, 'Stagnation limit ', str(self._stagnation_limit), ' reached')
             eof_training = True
 
 
-        # 5 Outro
+        # 6 Outro
         return eof_training
