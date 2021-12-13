@@ -154,7 +154,7 @@ class GridWorld (Environment):
         if self.num_step >= self.max_step:
             rew -= self.max_step
         
-        reward.set_overall_reward(rew)
+        reward.set_overall_reward(rew.item())
         return reward
 
 
