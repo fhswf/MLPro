@@ -418,7 +418,7 @@ class RobotHTM(Environment):
         if disterror <= 0.1:
             rew = rew + 1
         rew = rew.astype("float64")
-        reward.set_overall_reward(rew)
+        reward.set_overall_reward(rew.item())
         return reward
 
     ## -------------------------------------------------------------------------------------------------
