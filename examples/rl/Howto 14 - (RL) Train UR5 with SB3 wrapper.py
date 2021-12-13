@@ -28,6 +28,20 @@ from pathlib import Path
 # 1 Make Sure training_env branch of ur_control is sourced:
     # request access to the ur_control project
 
+if __name__ == "__main__":
+    # 2.1 Parameters for demo mode
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    path        = str(Path.home())
+    max_episode = 400
+ 
+else:
+    # 2.2 Parameters for internal unit test
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    path        = None
+    max_episode = 200
+
 # 2 Implement your own RL scenario
 class ScenarioUR5A2C(RLScenario):
 
@@ -72,8 +86,9 @@ training        = RLTraining(
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_visualize=True,
-    p_logging=Log.C_LOG_ALL )
+    p_path=path,
+    p_visualize=visualize,
+    p_logging=logging )
 
 training.run()
 
