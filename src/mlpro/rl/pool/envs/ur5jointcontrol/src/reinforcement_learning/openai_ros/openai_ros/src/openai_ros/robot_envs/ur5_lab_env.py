@@ -2,9 +2,6 @@
 import rospy
 import rospkg
 import roslaunch
-import time
-import tf
-import open3d as o3d
 import numpy as np
 import sys
 
