@@ -292,7 +292,7 @@ class AFctSTrans (AFctBase):
         input_values.extend(p_action.get_sorted_values())
         input = Element(self._input_space)
         input.set_values(input_values)
-        # print(self._afct.adapt)
+
         return self._afct.adapt(input, p_state_new)
 
 

@@ -847,7 +847,7 @@ class Training (Log):
                                              p_ada=True,
                                              p_cycle_limit=p_cycle_limit,
                                              p_visualize=p_visualize,
-                                             p_logging=p_logging )
+                                             p_logging=False )
         except:
             raise ParamError('Par p_scenario_cls: class "' + p_scenario_cls + '" not compatible')
 

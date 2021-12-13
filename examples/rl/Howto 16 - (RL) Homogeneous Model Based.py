@@ -1,3 +1,5 @@
+import torch
+
 from mlpro.bf.ml import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
@@ -38,7 +40,7 @@ class MBAgent(Agent):
             p_collect_actions=False,
             p_collect_rewards=False,
             p_collect_training=False,
-            p_logging=True,
+            p_logging=False,
         )
 
         # Run Training
@@ -59,8 +61,11 @@ class ScenarioRobotHTMActual(RLScenario):
         # 1 Setup environment
         self._env = RobotHTM(p_logging=True)
 
+        policy_kwargs = dict(activation_fn=torch.nn.Tanh,
+                     net_arch=[dict(pi=[128, 128], vf=[128, 128])])
+
         policy_sb3 = PPO(
-            policy="MlpPolicy", n_steps=100, env=None, _init_setup_model=False
+            policy="MlpPolicy", n_steps=100, env=None, _init_setup_model=False, policy_kwargs=policy_kwargs
         )
 
         policy_wrapped = WrPolicySB32MLPro(
@@ -75,7 +80,7 @@ class ScenarioRobotHTMActual(RLScenario):
         return MBAgent(
             p_policy=policy_wrapped,
             p_envmodel=HTMEnvModel(),
-            p_em_mat_thsld=0,
+            p_em_mat_thsld=-1,
             p_name="Smith1",
             p_ada=p_ada,
             p_logging=p_logging,

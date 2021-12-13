@@ -1,4 +1,6 @@
+from statistics import mean
 import torch
+from torch.utils.data.sampler import SubsetRandomSampler
 import transformations
 
 from collections import deque
@@ -423,17 +425,20 @@ class IOElement(BufferElement):
 
 
 # Buffer
-class MyOwnBuffer(Buffer):
+class MyOwnBuffer(Buffer, torch.utils.data.Dataset):
     def __init__(self, p_size=1):
-        super().__init__(p_size=p_size)
+        Buffer.__init__(self, p_size=p_size)
         self._internal_counter = 0
 
     def add_element(self, p_elem: BufferElement):
-        super().add_element(p_elem)
+        Buffer.add_element(self, p_elem)
         self._internal_counter += 1
 
     def get_internal_counter(self):
         return self._internal_counter
+
+    def __getitem__(self,idx):
+        return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
 
 
 class HTMAFctTrans(AdaptiveFunction):
@@ -468,6 +473,7 @@ class HTMAFctTrans(AdaptiveFunction):
         self.optimizer = torch.optim.Adam(self.htm_model.parameters(), lr=3e-4)
         self.loss_dyn = torch.nn.MSELoss()
         self.sim_env = p_par["p_sim_env"]
+        self.train_model = True
 
     def _map(self, p_input: Element, p_output: Element):
         # Prediction
@@ -506,27 +512,48 @@ class HTMAFctTrans(AdaptiveFunction):
         self.sim_env.set_theta(torch.Tensor([p_output.get_values()[6 : 6 + self.joint_num]]))
         self.sim_env.update_joint_coords()
 
-        model_output = self.sim_env.get_homogeneous().reshape(1, self.joint_num + 1, 4, 4)
+        model_output = self.sim_env.get_homogeneous().reshape(self.joint_num + 1, 4, 4)
 
         self._add_buffer(IOElement(model_input, model_output))
 
         if self._buffer.get_internal_counter() % 100 != 0:
             return False
 
-        inputs = self._buffer.get_all()["input"]
-        outputs = self._buffer.get_all()["output"]
+        # Divide Test and Train
+        if self.train_model:
+            dataset_size = len(self._buffer)
+            indices = list(range(dataset_size))
+            split = int(np.floor(0.3 * dataset_size))
+            np.random.seed(random.randint(1,1000))
+            np.random.shuffle(indices)
+            train_indices, test_indices = indices[split:], indices[:split]
 
-        inputs = torch.cat([input for input in inputs])
-        labels = torch.cat([output for output in outputs])
+            train_sampler = SubsetRandomSampler(train_indices)
+            test_sampler = SubsetRandomSampler(test_indices)
+            trainer = torch.utils.data.DataLoader(self._buffer, batch_size=100, sampler=train_sampler)
+            tester = torch.utils.data.DataLoader(self._buffer, batch_size=100, sampler=test_sampler)
 
-        outputs = self.htm_model(inputs)
-        loss = self.loss_dyn(outputs, labels)
+            # Training
+            self.htm_model.train()
 
-        self.log(self.C_LOG_TYPE_I, "Loss", loss)
+            for i, (In, Label) in enumerate(trainer):
+                outputs = self.htm_model(In)
+                loss = self.loss_dyn(outputs, Label)
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
-        self.optimizer.zero_grad()
-        loss.backward()
-        self.optimizer.step()
+            test_loss = 0
+
+            self.htm_model.eval()
+            for i, (In, Label) in enumerate(tester):
+                outputs = self.htm_model(In)
+                loss = self.loss_dyn(outputs, Label)
+                test_loss += loss.item()
+
+            print(test_loss/len(tester))
+            if test_loss/len(tester) < 5e-9:
+                self.train_model = False
 
         return True
 

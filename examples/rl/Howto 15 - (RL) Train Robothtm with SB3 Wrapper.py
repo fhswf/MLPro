@@ -65,7 +65,7 @@ class ScenarioRobotHTM(RLScenario):
 
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    logging     = Log.C_LOG_NOTHING
+    logging     = Log.C_LOG_ALL
     visualize   = True
     path        = str(Path.home())
     plotting    = True
