@@ -50,7 +50,6 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
 
     def get_params(self):
         # get configuration parameters
-        self.n_max_iterations = rospy.get_param('/ur5_lab/max_iterations')
 
         init_pos_dict = rospy.get_param('/ur5_lab/init_pos')
         self.init_pos = [init_pos_dict["shoulder_pan_joint"],
