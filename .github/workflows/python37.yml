@@ -66,6 +66,7 @@ jobs:
         cd ..
         catkin_make
     - name: Test UR5
+      run: |
         pwd
     # - name: Lint with flake8
     #   run: |
