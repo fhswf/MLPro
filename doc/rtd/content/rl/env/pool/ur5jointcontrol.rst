@@ -128,10 +128,3 @@
     - **Version structure**
     
         + Version 1.0.0 : Initial version release in MLPro v. 0.0.0
-        
-    If you apply this environment in your research or work, please kindly cite the following related paper:
-    
-    .. code-block:: bibtex
-
-     @article{NoName2021
-      }
