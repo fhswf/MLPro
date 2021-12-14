@@ -58,7 +58,9 @@ jobs:
         sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential -y
         sudo rosdep init
         rosdep update
-        sudo apt install ros-noetic-ur-client-library ros-noetic-joint-trajectory-controller ros-noetic-moveit ros-noetic-scaled-controller ros-noetic-speed-scaling-interface ros-noetic-speed-scaling-state-controller ros-noetic-pass-through-controllers -y
+        sudo apt install ros-noetic-ur-client-library ros-noetic-joint-trajectory-controller ros-noetic-moveit ros-noetic-scaled-controllers ros-noetic-speed-scaling-interface ros-noetic-speed-scaling-state-controller ros-noetic-pass-through-controllers -y
+    - name: Build UR5
+      run: |
         cd src/mlpro/rl/pool/envs/ur5jointcontrol/src
         git submodule update --init
         cd ..
