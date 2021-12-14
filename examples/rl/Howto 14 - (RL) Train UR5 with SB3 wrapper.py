@@ -33,14 +33,14 @@ if __name__ == "__main__":
     logging     = Log.C_LOG_ALL
     visualize   = True
     path        = str(Path.home())
-    max_episode = 400
+    cycle_limit = 100000
  
 else:
     # 2.2 Parameters for internal unit test
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     path        = None
-    max_episode = 200
+    cycle_limit = 100
 
 # 2 Implement your own RL scenario
 class ScenarioUR5A2C(RLScenario):
