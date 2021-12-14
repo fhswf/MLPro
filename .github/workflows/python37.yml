@@ -61,6 +61,7 @@ jobs:
         sudo apt install ros-noetic-ur-client-library ros-noetic-joint-trajectory-controller ros-noetic-moveit ros-noetic-scaled-controllers ros-noetic-speed-scaling-interface ros-noetic-speed-scaling-state-controller ros-noetic-pass-through-controllers -y
     - name: Build UR5
       run: |
+        pip install rospkg
         cd src/mlpro/rl/pool/envs/ur5jointcontrol/src
         git submodule update --init
         cd ..
