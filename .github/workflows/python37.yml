@@ -69,7 +69,7 @@ jobs:
     - name: Test UR5
       run: |
         pwd
-        sed -i 's+/home/mrds/Documents/dev+/home/runner/work+'
+        sed -i 's+/home/mrds/Documents/dev+/home/runner/work+' src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
         cat src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
     # - name: Lint with flake8
     #   run: |
