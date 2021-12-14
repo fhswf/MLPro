@@ -10,9 +10,9 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-12-12)
+Ver. 1.0.0 (2021-12-14)
 
-Unit test for all examples available.
+Unit test for Howto with UR5.
 """
 
 import pytest

@@ -55,4 +55,5 @@ jobs:
         make html 
     - name: Test with pytest
       run: |
-        python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/
+        python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/ --ignore=test/test_examples_ur5.py
+
