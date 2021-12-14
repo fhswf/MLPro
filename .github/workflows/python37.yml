@@ -54,13 +54,13 @@ jobs:
         curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
         sudo apt update
         sudo apt install ros-noetic-desktop-full -y
-        source /opt/ros/noetic/setup.bash
         sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential -y
         sudo rosdep init
         rosdep update
         sudo apt install ros-noetic-ur-client-library ros-noetic-joint-trajectory-controller ros-noetic-moveit ros-noetic-scaled-controllers ros-noetic-speed-scaling-interface ros-noetic-speed-scaling-state-controller ros-noetic-pass-through-controllers -y
     - name: Build UR5
       run: |
+        source /opt/ros/noetic/setup.bash
         pip install rospkg
         cd src/mlpro/rl/pool/envs/ur5jointcontrol/src
         git submodule update --init
