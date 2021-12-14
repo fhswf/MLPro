@@ -61,11 +61,12 @@ jobs:
     - name: Build UR5
       run: |
         source /opt/ros/noetic/setup.bash
-        pip install rospkg
         cd src/mlpro/rl/pool/envs/ur5jointcontrol/src
         git submodule update --init
         cd ..
         catkin_make
+    - name: Test UR5
+        pwd
     # - name: Lint with flake8
     #   run: |
     #     # stop the build if there are Python syntax errors or undefined names
