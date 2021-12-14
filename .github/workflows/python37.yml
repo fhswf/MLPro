@@ -1,7 +1,7 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: py37
+name: py38
 
 on:
   push:
@@ -43,46 +43,16 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install hyperopt
-        pip install defusedxml
-        pip install empy
-        pip install netifaces
-        pip install pymodbus
-    - name: Install ROS
+    - name: Lint with flake8
       run: |
-        sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-        sudo apt install curl -y
-        curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
-        sudo apt update
-        sudo apt install ros-noetic-desktop-full -y
-        sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential -y
-        sudo rosdep init
-        rosdep update
-        sudo apt install ros-noetic-ur-client-library ros-noetic-joint-trajectory-controller ros-noetic-moveit ros-noetic-scaled-controllers ros-noetic-speed-scaling-interface ros-noetic-speed-scaling-state-controller ros-noetic-pass-through-controllers -y
-    - name: Build UR5
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --extend-exclude=src/mlpro/rl/pool/envs/ur5jointcontrol/src/
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Build the Documentation
       run: |
-        source /opt/ros/noetic/setup.bash
-        pip install rospkg
-        cd src/mlpro/rl/pool/envs/ur5jointcontrol/src
-        git submodule update --init
-        cd ..
-        catkin_make
-    - name: Test UR5
+        cd doc/rtd
+        make html 
+    - name: Test with pytest 
       run: |
-        sed -i 's+/home/mrds/Documents/dev+/home/runner/work+' src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
-        sed -i 's+name="gui" default="true" doc="Starts gazebo gui+name="gui" default="false" doc="Starts gazebo gui+' src/mlpro/rl/pool/envs/ur5jointcontrol/src/universal_robot/ur_gazebo/launch/ur5_lab_world.launch
-        source /opt/ros/noetic/setup.bash
-        source src/mlpro/rl/pool/envs/ur5jointcontrol/devel/setup.bash
         python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/
-    # - name: Lint with flake8
-    #   run: |
-    #     # stop the build if there are Python syntax errors or undefined names
-    #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --extend-exclude=src/mlpro/rl/pool/envs/ur5jointcontrol/src/
-    #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-    #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    # - name: Build the Documentation
-    #   run: |
-    #     cd doc/rtd
-    #     make html 
-    # - name: Test with pytest
-    #   run: |
-    #     python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/

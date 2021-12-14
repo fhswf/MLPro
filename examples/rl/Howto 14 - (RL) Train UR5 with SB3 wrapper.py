@@ -40,7 +40,7 @@ else:
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     path        = None
-    cycle_limit = 100
+    cycle_limit = 50
 
 # 2 Implement your own RL scenario
 class ScenarioUR5A2C(RLScenario):
@@ -80,7 +80,7 @@ now             = datetime.now()
 
 training        = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
-    p_cycle_limit=100000,
+    p_cycle_limit=cycle_limit,
     p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,
