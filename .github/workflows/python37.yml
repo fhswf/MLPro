@@ -30,19 +30,19 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        # pip install flake8 pytest
-        # pip install numpy
-        # pip install matplotlib
-        # pip install gym
-        # pip install PettingZoo
-        # pip install stable-baselines3
-        # pip install pyglet
-        # pip install pymunk
-        # pip install pygame
-        # pip install sphinx
-        # pip install sphinx-rtd-theme
-        # pip install sphinx-copybutton
-        # pip install hyperopt
+        pip install flake8 pytest
+        pip install numpy
+        pip install matplotlib
+        pip install gym
+        pip install PettingZoo
+        pip install stable-baselines3
+        pip install pyglet
+        pip install pymunk
+        pip install pygame
+        pip install sphinx
+        pip install sphinx-rtd-theme
+        pip install sphinx-copybutton
+        pip install hyperopt
         pip install defusedxml
         pip install empy
         pip install netifaces
@@ -68,9 +68,10 @@ jobs:
         catkin_make
     - name: Test UR5
       run: |
-        pwd
         sed -i 's+/home/mrds/Documents/dev+/home/runner/work+' src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
         cat src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
+        sed -i 's+name="gui" default="true" doc="Starts gazebo gui+name="gui" default="false" doc="Starts gazebo gui+' src/mlpro/rl/pool/envs/ur5jointcontrol/src/universal_robot/ur_gazebo/launch/ur5_lab_world.launch
+        python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/
     # - name: Lint with flake8
     #   run: |
     #     # stop the build if there are Python syntax errors or undefined names
