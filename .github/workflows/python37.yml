@@ -27,32 +27,39 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
+    # - name: Install dependencies
+    #   run: |
+    #     python -m pip install --upgrade pip
+    #     pip install flake8 pytest
+    #     pip install numpy
+    #     pip install matplotlib
+    #     pip install gym
+    #     pip install PettingZoo
+    #     pip install stable-baselines3
+    #     pip install pyglet
+    #     pip install pymunk
+    #     pip install pygame
+    #     pip install sphinx
+    #     pip install sphinx-rtd-theme
+    #     pip install sphinx-copybutton
+    #     pip install hyperopt
+    - name: Install ROS
       run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        pip install numpy
-        pip install matplotlib
-        pip install gym
-        pip install PettingZoo
-        pip install stable-baselines3
-        pip install pyglet
-        pip install pymunk
-        pip install pygame
-        pip install sphinx
-        pip install sphinx-rtd-theme
-        pip install sphinx-copybutton
-        pip install hyperopt
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --extend-exclude=src/mlpro/rl/pool/envs/ur5jointcontrol/src/
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Build the Documentation
-      run: |
-        cd doc/rtd
-        make html 
-    - name: Test with pytest
-      run: |
-        python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/
+        sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
+        sudo apt install curl -y
+        curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
+        sudo apt update
+        sudo apt install ros-noetic-desktop-full -y
+    # - name: Lint with flake8
+    #   run: |
+    #     # stop the build if there are Python syntax errors or undefined names
+    #     flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --extend-exclude=src/mlpro/rl/pool/envs/ur5jointcontrol/src/
+    #     # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+    #     flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    # - name: Build the Documentation
+    #   run: |
+    #     cd doc/rtd
+    #     make html 
+    # - name: Test with pytest
+    #   run: |
+    #     python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/
