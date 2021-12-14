@@ -61,6 +61,7 @@ jobs:
     - name: Build UR5
       run: |
         source /opt/ros/noetic/setup.bash
+        pip install rospkg
         cd src/mlpro/rl/pool/envs/ur5jointcontrol/src
         git submodule update --init
         cd ..
