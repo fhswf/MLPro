@@ -27,22 +27,26 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
-    # - name: Install dependencies
-    #   run: |
-    #     python -m pip install --upgrade pip
-    #     pip install flake8 pytest
-    #     pip install numpy
-    #     pip install matplotlib
-    #     pip install gym
-    #     pip install PettingZoo
-    #     pip install stable-baselines3
-    #     pip install pyglet
-    #     pip install pymunk
-    #     pip install pygame
-    #     pip install sphinx
-    #     pip install sphinx-rtd-theme
-    #     pip install sphinx-copybutton
-    #     pip install hyperopt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        # pip install flake8 pytest
+        # pip install numpy
+        # pip install matplotlib
+        # pip install gym
+        # pip install PettingZoo
+        # pip install stable-baselines3
+        # pip install pyglet
+        # pip install pymunk
+        # pip install pygame
+        # pip install sphinx
+        # pip install sphinx-rtd-theme
+        # pip install sphinx-copybutton
+        # pip install hyperopt
+        pip install defusedxml
+        pip install empy
+        pip install netifaces
+        pip install pymodbus
     - name: Install ROS
       run: |
         sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
@@ -50,6 +54,15 @@ jobs:
         curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | sudo apt-key add -
         sudo apt update
         sudo apt install ros-noetic-desktop-full -y
+        source /opt/ros/noetic/setup.bash
+        sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential -y
+        sudo rosdep init
+        rosdep update
+        sudo apt install ros-noetic-ur-client-library ros-noetic-joint-trajectory-controller ros-noetic-moveit ros-noetic-scaled-controller ros-noetic-speed-scaling-interface ros-noetic-speed-scaling-state-controller ros-noetic-pass-through-controllers -y
+        cd src/mlpro/rl/pool/envs/ur5jointcontrol/src
+        git submodule update --init
+        cd ..
+        catkin_make
     # - name: Lint with flake8
     #   run: |
     #     # stop the build if there are Python syntax errors or undefined names
