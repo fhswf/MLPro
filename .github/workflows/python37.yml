@@ -68,6 +68,7 @@ jobs:
         catkin_make
     - name: Test UR5
       run: |
+        source /opt/ros/noetic/setup.bash
         sed -i 's+/home/mrds/Documents/dev+/home/runner/work+' src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
         cat src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
         sed -i 's+name="gui" default="true" doc="Starts gazebo gui+name="gui" default="false" doc="Starts gazebo gui+' src/mlpro/rl/pool/envs/ur5jointcontrol/src/universal_robot/ur_gazebo/launch/ur5_lab_world.launch
