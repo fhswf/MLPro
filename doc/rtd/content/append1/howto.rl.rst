@@ -11,10 +11,7 @@ We provide some examples of MLPro's RL funcionalities implementation, which is a
    rl/howto.rl.003
    rl/howto.rl.004
    rl/howto.rl.005
-   rl/howto.rl.006
-   rl/howto.rl.007
    rl/howto.rl.008
-   rl/howto.rl.009
    rl/howto.rl.010
    rl/howto.rl.011
    rl/howto.rl.012
