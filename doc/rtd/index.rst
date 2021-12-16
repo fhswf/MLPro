@@ -6,34 +6,20 @@
 MLPro - Machine Learning Professional
 ================================================
 
-`MLPro <https://github.com/fhswf/MLPro.git>`_ is a synoptic framework for standardized machine learning tasks in Python!
+Welcome to MLPro - your synoptic framework for standardized machine learning tasks in Python!
 
-MLPro was developed in 2021 by `Automation Technology and Learning Systems team at Fachhochschule Südwestfalen <https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php>`_.
+MLPro provides complete, standardized and reusable functionalities to support your scientific research, 
+industrial project or educational task in machine learning.
 
-MLPro provides complete, standardized, and reusable functionalities to support your scientific research, educational task, or industrial project in machine learning.
-
-In the first version of MLPro, we provide a standardized Python package for reinforcement learning (RL) and game
-theoretical (GT) approaches, including environments, algorithms, multi-agent RL (MARL), model-based RL (MBRL) and many more.
-Additionally, we incorporate the available third party packages by developing wrapper classes
-to enable our users to reuse the third party packages in MLPro.
-
-Github repository: https://github.com/fhswf/MLPro.git
+The documentation is currently under construction, but we are working flat out to complete it. The framework 
+itself is ready for use and we are proud to offer you extensive functionalities, especially in the area of 
+reinforcement learning and game theory. A number of learning examples are available in Appendix 1 and 
+the API documentation in Appendix 2 is pretty complete. Try it out and get in touch with any questions or problems. 
+Have fun! 
 
 
-Main Contributions
-----------------------
 
-- Test-driven development (CI/CD concept)
-- Clean code and constructed through Object-Oriented Programming
-- Ready-to-use functionalities
-- Usability in scientific, industrial and educational contexts
-- Extensible, maintainable, understandable
-- Attractive UI support (available soon)
-- Reuse of available state-of-the-art implementations
-- Clear documentations
-
-
-Instructions for use
+Table of Content
 -------------------------
 
 .. toctree::
