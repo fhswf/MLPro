@@ -810,7 +810,7 @@ class RLTraining (Training):
         """
 
         # 1 Computation of score
-        score = max( self._eval_num_done - self._eval_num_limit - self._eval_num_broken, 0) * mean(self._eval_max_reward) * self._eval_factor / self._eval_num_cycles
+        score = ( self._eval_num_done - self._eval_num_limit - self._eval_num_broken ) * mean(self._eval_max_reward) * self._eval_factor / self._eval_num_cycles
 
 
         # 2 Store evaluation statistics
