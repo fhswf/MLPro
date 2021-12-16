@@ -1,5 +1,5 @@
 ur5_lab: #namespace
-    ros_ws_abspath: "/home/mrds/Documents/dev/MLPro/MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol"
+    ros_ws_abspath: "/home/mrds/MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol"
     task_and_robot_environment_name: 'UR5LabSimpleTask-v0'
     max_iterations: 20
 
