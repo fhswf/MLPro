@@ -23,10 +23,11 @@
 ## --                                - Method RLTraining.__init__(): par p_scenario replaced by p_scenario_cls
 ## -- 2021-12-09  1.3.2     DA       Class RLTraining: introduced dynamic parameters **p_kwargs
 ## -- 2021-12-12  1.4.0     DA       Class RLTraining: evaluation and stagnation detection added
+## -- 2021-12-16  1.4.1     DA       Method RLTraining._close_evaluation(): optimized scoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2021-12-12)
+Ver. 1.4.1 (2021-12-16)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -810,7 +811,7 @@ class RLTraining (Training):
         """
 
         # 1 Computation of score
-        score = ( self._eval_num_done - self._eval_num_limit - self._eval_num_broken ) * mean(self._eval_max_reward) * self._eval_factor / self._eval_num_cycles
+        score = self._eval_num_done * mean(self._eval_max_reward) * self._eval_factor / self._eval_num_cycles
 
 
         # 2 Store evaluation statistics
