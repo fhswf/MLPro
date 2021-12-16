@@ -718,7 +718,11 @@ class RLTraining (Training):
 
                     score = self._close_evaluation()
                     if ( self._results.highscore is None ) or ( score > self._results.highscore ):
+                        self.log(self.C_LOG_TYPE_W, 'New temporal highscore', str(score))
                         self._results.highscore = score
+                    else:
+                        self.log(self.C_LOG_TYPE_W, 'New score', str(score))
+
 
                     self._results.num_evaluations += 1
                     self._counter_epi_train = 0
@@ -811,7 +815,7 @@ class RLTraining (Training):
         """
 
         # 1 Computation of score
-        score = self._eval_num_done * mean(self._eval_max_reward) * self._eval_factor / self._eval_num_cycles
+        score = self._eval_num_done * mean(self._eval_max_reward) / self._eval_num_cycles
 
 
         # 2 Store evaluation statistics
