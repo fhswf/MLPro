@@ -138,16 +138,14 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
 
     def _set_action(self, action):
 
-        gripper_target = self.get_joint_states()
-        clipped_actions = action
-        if isinstance(self.action_space, spaces.Box):
-            clipped_actions = np.clip(action, self.action_space.low, self.action_space.high)
-        gripper_target = gripper_target + clipped_actions
+        gripper_target = self.get_joint_states()   
+        gripper_target = gripper_target + action
+        gripper_target = np.clip(gripper_target, -2*math.pi, 2*math.pi)
         self.last_action = "Joint Move"
 
         self.movement_result = self.move_joints(gripper_target)
 
-        rospy.logwarn("END Set Action ==>" + str(clipped_actions) +
+        rospy.logwarn("END Set Action ==>" + str(action) +
                       ", NAME=" + str(self.last_action))
 
     def _get_obs(self):
