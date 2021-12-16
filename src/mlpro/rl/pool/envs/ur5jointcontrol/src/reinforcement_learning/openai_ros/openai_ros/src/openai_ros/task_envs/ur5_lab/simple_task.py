@@ -140,7 +140,7 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
 
         gripper_target = self.get_joint_states()   
         gripper_target = gripper_target + action
-        gripper_target = np.clip(gripper_target, -2*math.pi, 2*math.pi)
+        gripper_target = np.clip(gripper_target, -math.pi, math.pi)
         self.last_action = "Joint Move"
 
         self.movement_result = self.move_joints(gripper_target)
