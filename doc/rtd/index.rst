@@ -13,7 +13,7 @@ industrial project or educational task in machine learning.
 
 The documentation is currently under construction, but we are working flat out to complete it. The framework 
 itself is ready for use and we are proud to offer you extensive functionalities, especially in the area of 
-reinforcement learning and game theory. A number of learning examples are available in Appendix 1 and 
+reinforcement learning and game theory. A number of self-study examples are available in Appendix 1 and 
 the API documentation in Appendix 2 is pretty complete. Try it out and get in touch with any questions or problems. 
 Have fun! 
 
