@@ -63,7 +63,11 @@ pygments_style = 'sphinx'
 html_theme = "sphinx_rtd_theme"
 # html_theme = "default"
 
-html_logo = "_static/logo_fh-at.png"
+#html_logo = "_static/logo_fh-at.png"
+#html_logo = "_static/blue_network.png"
+html_logo = "_static/blue_black_network.png"
+#html_logo = "_static/blue_c.png"
+
 
 def setup(app):
     app.add_css_file("custom.css")
