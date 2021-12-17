@@ -1,0 +1,15 @@
+ur5_lab: #namespace
+    init_pos: 
+      shoulder_pan_joint: 0.00
+      shoulder_lift_joint: -1.00
+      elbow_joint: -1.15
+      wrist_1_joint: -1.30
+      wrist_2_joint: 1.57
+      wrist_3_joint: 1.57
+
+    goal_pos:
+        x_pos: -0.29796
+        y_pos: 0.14046
+        z_pos: 1.0748
+
+    reached_goal_reward: 10

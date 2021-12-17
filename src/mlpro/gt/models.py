@@ -8,12 +8,12 @@
 ## -- 2021-05-21  0.0.0     DA       Creation
 ## -- 2021-06-06  1.0.0     DA       Release of first version
 ## -- 2021-06-25  1.0.1     DA       Class GameBoard: introduction of internal constant C_REWARD_TYPE
-## -- 2021-07-01  1.0.2     DA       Class Training: removed obsolete parameter p_path
-## -- 2021-08-28  1.0.3     DA       Adjustments after changings on rl models
+## -- 2021-08-28  1.0.2     DA       Adjustments after changings on rl models
 ## -- 2021-09-11  1.0.3     MRD      Change Header information to match our new library name
 ## -- 2021-11-16  1.1.0     DA       Refactoring
 ## -- 2021-12-03  1.1.1     DA       Refactoring
 ## -- 2021-12-07  1.1.2     DA       Refactoring
+## -- 2021-12-09  1.1.3     DA       Class GTTraining: refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -140,42 +140,49 @@ class GTTraining (RLTraining):
     """
     This class implements a standardized episodical training process. See super class for more 
     information.
+
+    Parameters
+    ----------
+    p_game_cls 
+        Name of GT game class, compatible to/inherited from class Game.
+    p_cycle_limit : int
+        Maximum number of training cycles (0=no limit). Default = 0.
+    p_cycles_per_epi_limit : int
+        Optional limit of cycles per episode (0=no limit, -1=get environment limit). Default = -1.    
+    p_adaptation_limit : int
+        Maximum number of adaptations (0=no limit). Default = 0.
+    p_stagnation_limit : int
+        Optional limit of consecutive evaluations without training progress. Default = 0.
+    p_eval_frequency : int
+        Optional evaluation frequency (0=no evaluation). Default = 0.
+    p_eval_grp_size : int
+        Number of evaluation episodes (eval group). Default = 0.
+    p_hpt : HyperParamTuner
+        Optional hyperparameter tuner (see class mlpro.bf.ml.HyperParamTuner). Default = None.
+    p_hpt_trials : int
+        Optional number of hyperparameter tuning trials. Default = 0. Must be > 0 if p_hpt is supplied.
+    p_path : str
+        Optional destination path to store training data. Default = None.
+    p_collect_states : bool
+        If True, the environment states will be collected. Default = True.
+    p_collect_actions : bool
+        If True, the agent actions will be collected. Default = True.
+    p_collect_rewards : bool
+        If True, the environment reward will be collected. Default = True.
+    p_collect_training : bool
+        If True, global training data will be collected. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
+    p_logging
+        Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
+
     """
 
     C_NAME      = 'GT'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_game_cls, 
-                 p_cycle_limit=0, 
-                 p_max_cycles_per_episode=-1, 
-                 p_max_adaptations=0, 
-                 p_max_stagnations=5, 
-                 p_eval_frequency=100, 
-                 p_eval_grp_size=50, 
-                 p_hpt:HyperParamTuner=None, 
-                 p_hpt_trials=0, 
-                 p_path=None, 
-                 p_collect_states=True, 
-                 p_collect_actions=True, 
-                 p_collect_rewards=True, 
-                 p_collect_training=True, 
-                 p_visualize=False,
-                 p_logging=Log.C_LOG_ALL):
-
-        super().__init__( p_scenario_cls=p_game_cls, 
-                          p_cycle_limit=p_cycle_limit, 
-                          p_max_cycles_per_episode=p_max_cycles_per_episode, 
-                          p_max_adaptations=p_max_adaptations, 
-                          p_max_stagnations=p_max_stagnations, 
-                          p_eval_frequency=p_eval_frequency, 
-                          p_eval_grp_size=p_eval_grp_size, 
-                          p_hpt=p_hpt, 
-                          p_hpt_trials=p_hpt_trials, 
-                          p_path=p_path, 
-                          p_collect_states=p_collect_states, 
-                          p_collect_actions=p_collect_actions, 
-                          p_collect_rewards=p_collect_rewards, 
-                          p_collect_training=p_collect_training, 
-                          p_visualize=p_visualize,
-                          p_logging=p_logging )
+    def __init__(self, **p_kwargs):
+        kwargs = p_kwargs.copy()
+        kwargs['p_scenario_cls'] = kwargs['p_game_cls']
+        kwargs.pop('p_game_cls')
+        super().__init__(**kwargs)

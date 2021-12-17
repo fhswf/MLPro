@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<robot name="target_blue">
+
+<!-- conveyor belt is just a long flat box for objects to slide on it -->
+
+<!-- world link -->
+<link name="world"/>
+
+<!-- base_link and its fixed joint -->
+<joint name="joint_fix" type="fixed">
+  <parent link="world"/>
+  <child link="targetblue"/>
+</joint>
+
+
+<link name="targetblue">
+
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.015"/>
+      </geometry>
+  </visual>
+
+  <inertial>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <mass value="1"/>
+    <inertia
+      ixx="1.0" ixy="0.0" ixz="0.0"
+      iyy="1.0" iyz="0.0"
+      izz="1.0"/>
+  </inertial>
+</link>
+ 
+<gazebo reference="targetblue">
+  <mu1>2</mu1>
+  <mu2>2</mu2>
+  <material>Gazebo/Blue</material>
+</gazebo>
+
+
+
+</robot>

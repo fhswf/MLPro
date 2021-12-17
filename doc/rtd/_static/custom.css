@@ -21,3 +21,7 @@
   padding-right: 0;
   color: #0d1c4d;
 }
+
+.wy-nav-content {
+  max-width: none;
+}

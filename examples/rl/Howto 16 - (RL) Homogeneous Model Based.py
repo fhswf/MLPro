@@ -5,7 +5,7 @@ from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
-from mlpro.rl.pool.envmodels.htmenvmodel import HTMEnvModel
+from mlpro.rl.pool.envmodels.mlpenvmodel import MLPEnvModel
 
 class SimulatedTraining(RLTraining):
     C_NAME = "Simulated"
@@ -79,7 +79,7 @@ class ScenarioRobotHTMActual(RLScenario):
         # 2 Setup standard single-agent with own policy
         return MBAgent(
             p_policy=policy_wrapped,
-            p_envmodel=HTMEnvModel(),
+            p_envmodel=MLPEnvModel(),
             p_em_mat_thsld=-1,
             p_name="Smith1",
             p_ada=p_ada,

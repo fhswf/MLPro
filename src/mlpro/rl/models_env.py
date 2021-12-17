@@ -18,10 +18,12 @@
 ## --                                - Introduction of special adaptive function classes AFct*
 ## --                                - Rework of classes EnvBase, Environment, EnvModel
 ## -- 2021-12-06  1.2.1     DA       Class AFctBase: correction by removing own method adapt()
+## -- 2021-12-10  1.2.2     DA       Code optimization and bugfixes
+## -- 2021-12-12  1.2.3     DA       New method EnvBase.get_last_reward()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2021-12-06)
+Ver. 1.2.3 (2021-12-12)
 
 This module provides model classes for environments and environnment models.
 """
@@ -162,7 +164,7 @@ class AFctBase (Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_hyperparam(self) -> HyperParamTupel:
+    def get_hyperparam(self) -> HyperParamTuple:
         return self._afct.get_hyperparam()
 
 
@@ -459,34 +461,36 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         Optional latency of environment. If not provided, the internal value of constant C_LATENCY 
         is used by default.
     p_afct_strans : AFctSTrans
-        Optional external adaptive function for state transition 
+        Optional external adaptive function for state transition. 
     p_afct_reward : AFctReward
-        Optional external adaptive function for reward computation
+        Optional external adaptive function for reward computation.
     p_afct_done : AFctDone
-        Optional external adaptive function for state evaluation 'done'
+        Optional external adaptive function for state evaluation 'done'.
     p_afct_broken : AFctBroken
-        Optional external adaptive function for state evaluation 'broken'
+        Optional external adaptive function for state evaluation 'broken'.
     p_logging 
-        Log level (see class Log for more details)
+        Log level (see class Log for more details).
 
     Attributes
     ----------
     _latency : timedelta
-        Latency of the environment
+        Latency of the environment.
     _state : State
-        Current state of environment
+        Current state of environment.
     _state : State
-        Previous state of environment
+        Previous state of environment.
     _last_action : Action
-        Last action
+        Last action.
+    _last_reward : Reward
+        Last reward.
     _afct_strans : AFctSTrans
-        Internal adaptive state transition function
+        Internal adaptive state transition function.
     _afct_reward : AFctReward
-        Internal adaptive reward function
+        Internal adaptive reward function.
     _afct_done : AFctDone
-        Internal adaptive function for state evaluation 'done'
+        Internal adaptive function for state evaluation 'done'.
     _afct_broken : AFctBroken
-        Internal adaptive function for state evaluation 'broken'
+        Internal adaptive function for state evaluation 'broken'.
 
     """
 
@@ -517,6 +521,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         self._state         = None
         self._prev_state    = None
         self._last_action   = None
+        self._last_reward   = None
         Log.__init__(self, p_logging=p_logging)
         self.set_latency(p_latency)
 
@@ -532,6 +537,15 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 ## -------------------------------------------------------------------------------------------------
     def adapt(self, *p_args) -> bool:
+        """
+        Adaptivity is switched off here. If called, then something went wrong. 
+        """
+
+        raise NotImplementedError('Classes of type ' + self.C_TYPE + ' are not adaptive!')
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_adapted(self) -> bool:
         """
         Adaptivity is switched off here. If called, then something went wrong. 
         """
@@ -617,6 +631,11 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
     def get_broken(self) -> bool:
         if self._state is None: return False
         return self._state.get_broken()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_last_reward(self) -> Reward:
+        return self._last_reward
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -772,9 +791,11 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         if state_new is None: return None
 
         if self._afct_reward is not None:
-            return self._afct_reward.compute_reward(p_state_old=state_old, p_state_new=state_new)
+            self._last_reward = self._afct_reward.compute_reward(p_state_old=state_old, p_state_new=state_new)
         else:
-            return self._compute_reward(p_state_old=state_old, p_state_new=state_new)
+            self._last_reward = self._compute_reward(p_state_old=state_old, p_state_new=state_new)
+
+        return self._last_reward
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -1202,9 +1223,7 @@ class EnvModel(EnvBase, Model):
         except:
             raise ParamError('Parameter must be of type SARSElement')
 
-        adapted     = False
-
-        adapted = adapted or self._afct_strans.adapt(state, action, state_new)
+        adapted = self._afct_strans.adapt(state, action, state_new)
 
         if self._afct_reward is not None:
             adapted = adapted or self._afct_reward.adapt(state, state_new, reward)
@@ -1218,8 +1237,10 @@ class EnvModel(EnvBase, Model):
         return adapted
 
 
+## -------------------------------------------------------------------------------------------------
     def get_adapted(self) -> bool:
         return Model.get_adapted(self)
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_maturity(self):

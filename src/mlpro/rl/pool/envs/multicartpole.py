@@ -13,10 +13,11 @@
 ## -- 2021-10-05  1.1.2     SY       Update following new attributes done and broken in State
 ## -- 2021-11-15  1.2.0     DA       Refactoring
 ## -- 2021-12-03  1.2.1     DA       Refactoring
+## -- 2021-12-12  1.2.2     DA       Method MutliCartPole.get_cycle_limit() implemented
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2021-12-03)
+Ver. 1.2.2 (2021-12-12)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -118,6 +119,11 @@ class MultiCartPole (Environment):
         state.set_broken(broken)
 
         return state
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self):
+        return self._envs[0].get_cycle_limit()
 
 
 ## -------------------------------------------------------------------------------------------------
