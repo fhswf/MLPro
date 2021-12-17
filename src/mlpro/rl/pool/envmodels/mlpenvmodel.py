@@ -4,10 +4,10 @@ import transformations
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotArm3D
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.rl.pool.afunctions.htmafctrans import MLPAFctTrans
+from mlpro.sl.pool.afct.mlpafctrans import MLPAFctTrans
 
 
-class HTMEnvModel(EnvModel, Mode):
+class MLPEnvModel(EnvModel, Mode):
     C_NAME = "HTM Env Model"
 
     def __init__(
@@ -105,7 +105,7 @@ class HTMEnvModel(EnvModel, Mode):
         # Setup Adaptive Function
         # HTM Function Here
         afct_strans = AFctSTrans(
-            HTMAFctTrans,
+            MLPAFctTrans,
             p_state_space=obs_space,
             p_action_space=action_space,
             p_threshold=-1,

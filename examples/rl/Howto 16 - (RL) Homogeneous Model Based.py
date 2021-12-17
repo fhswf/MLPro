@@ -6,6 +6,7 @@ from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from mlpro.rl.pool.envmodels.mlpenvmodel import MLPEnvModel
+from mlpro.rl.pool.envmodels.htmenvmodel import HTMEnvModel
 
 class SimulatedTraining(RLTraining):
     C_NAME = "Simulated"
@@ -34,7 +35,7 @@ class MBAgent(Agent):
         simulated_training = SimulatedTraining(
             p_scenario_cls=ScenarioRobotHTMSimulated,
             p_cycle_limit=100,
-            p_max_cycles_per_episode=100,
+            p_cycles_per_epi_limit=100,
             p_max_stagnations=0,
             p_collect_states=False,
             p_collect_actions=False,
@@ -93,7 +94,7 @@ now = datetime.now()
 training = ActualTraining(
     p_scenario_cls=ScenarioRobotHTMActual,
     p_cycle_limit=300000,
-    p_max_cycles_per_episode=100,
+    p_cycles_per_epi_limit=100,
     p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,

@@ -26,6 +26,8 @@ import random
 from mlpro.rl.models import *
 from mlpro.gt.models import *
 
+import transformations
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -217,6 +219,27 @@ class RobotArm3D:
     ## -------------------------------------------------------------------------------------------------
     def update_theta(self, deltaTheta):
         self.thetas += deltaTheta.flatten()
+
+    def convert_to_quaternion(self):
+        origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
+        hm_reshape = self.HM.reshape(self.joints.shape[1],4,4)
+        hm_length = hm_reshape.shape[0]
+
+        out = torch.Tensor([])
+        for x in range(hm_length):
+            _,_,rot,trans,_ = transformations.decompose_matrix(hm_reshape[x].numpy())
+
+            qx = transformations.quaternion_about_axis(rot[0], xaxis)
+            qy = transformations.quaternion_about_axis(rot[1], yaxis)
+            qz = transformations.quaternion_about_axis(rot[2], zaxis)
+            q = transformations.quaternion_multiply(qx, qy)
+            q = transformations.quaternion_multiply(q, qz)
+
+            outs = torch.Tensor(trans)
+            outs = torch.cat([outs, torch.Tensor(q)])
+            out = torch.cat([out,outs])
+        
+        return out
 
 
 ## -------------------------------------------------------------------------------------------------
