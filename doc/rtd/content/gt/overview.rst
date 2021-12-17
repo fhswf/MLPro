@@ -13,7 +13,7 @@ MLPro-GT is developed as a sub-framework for the cooperative GT approach to solv
 such as the environment model, the agent model, and the environment-agent interaction model.
 MLPro-GT serves as a child package and MLPro-RL is its parent package, which is explained in the simplified diagram below:
 
-.. image:: images/MLPro-GT_class_diagram.svg
+.. image:: images/MLPro-GT_class_diagram.png
 
 You can easily access the GT module, as follows:
 

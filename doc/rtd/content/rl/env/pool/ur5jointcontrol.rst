@@ -43,11 +43,11 @@
                 
     - **Overview**
     
-    .. image:: images/ur5simulation.jpg
-        :align: center
-        :width: 400
-      
-      `UR5 Robot while training (MP4) <https://github.com/fhswf/MLPro/blob/main/doc/rtd/content/rl/env/pool/images/ur5jointcontrol_demo.mp4>`_
+        .. image:: images/ur5simulation.jpg
+            :align: center
+            :width: 400
+          
+        `UR5 Robot while training (MP4) <https://github.com/fhswf/MLPro/blob/main/doc/rtd/content/rl/env/pool/images/ur5jointcontrol_demo.mp4>`_
       
     - **General information**
     

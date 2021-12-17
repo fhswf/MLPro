@@ -1,7 +1,7 @@
 Custom Environments
 -----------------------
 
-.. image:: images/MLPro-RL-Env_class_Environment_commented.svg
+.. image:: images/MLPro-RL-Env_class_Environment_commented.png
 
 - **Environment Creation for Simulation Mode**
 
