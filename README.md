@@ -4,6 +4,7 @@
 [![Documentation Status](https://readthedocs.org/projects/mlpro/badge/?version=latest)](https://mlpro.readthedocs.io/en/latest/?badge=latest)
 
 <img src="doc/\logo/original/logo.png" align="right" width="40%"/>
+
 # MLPro - Machine Learning Professional
 Machine Learning Professional - A Synoptic Framework for Standardized Machine Learning Tasks in Python
 
