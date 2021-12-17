@@ -47,6 +47,8 @@
         :align: center
         :width: 400
       
+      `UR5 Robot while training (MP4) <https://github.com/fhswf/MLPro/blob/main/doc/rtd/content/rl/env/pool/images/ur5jointcontrol_demo.mp4>`_
+      
     - **General information**
     
     +------------------------------------+-------------------------------------------------------+
@@ -128,10 +130,3 @@
     - **Version structure**
     
         + Version 1.0.0 : Initial version release in MLPro v. 0.0.0
-        
-    If you apply this environment in your research or work, please kindly cite the following related paper:
-    
-    .. code-block:: bibtex
-
-     @article{NoName2021
-      }

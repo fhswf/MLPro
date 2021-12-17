@@ -1,7 +1,7 @@
 1.1 What is MLPro?
 ====================
 
-`MLPro <https://github.com/fhswf/MLPro.git>`_ is a synoptic and standardized Python package to produce a solution for standard Machine Learning (ML) tasks.
+MLPro is a synoptic and standardized Python package to produce a solution for standard Machine Learning (ML) tasks.
 In the first version of MLPro, MLPro provides sub-packages for a subtopic of ML, namely Reinforcement Learning (RL),
 which is developed under a uniform infrastructure of basic and cross-sectional functionalities.
 MLPro supports simulation as well as real-hardware implementations. MLPro team has developed this framework by taking care of
