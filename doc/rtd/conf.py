@@ -63,7 +63,7 @@ pygments_style = 'sphinx'
 html_theme = "sphinx_rtd_theme"
 # html_theme = "default"
 
-html_logo = "_static/red_purple_network.png"
+html_logo = "_static/logo_mlpro.png"
 html_favicon = '_static/favicon.ico'
 
 def setup(app):
