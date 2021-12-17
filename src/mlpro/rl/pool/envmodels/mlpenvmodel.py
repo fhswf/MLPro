@@ -12,7 +12,8 @@
 """
 Ver. 1.0.0 (2021-12-17)
 
-This module provides Environment Model based on MLP Neural Network.
+This module provides Environment Model based on MLP Neural Network for
+robotinhtm environment.
 """
 
 import torch
