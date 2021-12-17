@@ -65,7 +65,7 @@ now             = datetime.now()
 
 training        = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
-    p_cycle_limit=500,
+    p_cycle_limit=50000,
     p_cycles_per_epi_limit=-1,
     p_max_stagnations=0,
     p_collect_states=True,

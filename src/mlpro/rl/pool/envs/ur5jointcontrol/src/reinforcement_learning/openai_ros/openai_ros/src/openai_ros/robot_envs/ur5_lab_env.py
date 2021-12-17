@@ -10,6 +10,7 @@ from moveit_msgs.msg import PlanningScene
 from geometry_msgs.msg import Pose
 from std_msgs.msg import String
 from sensor_msgs.msg import PointCloud2, JointState
+from actionlib_msgs.msg import GoalStatusArray
 import sensor_msgs.point_cloud2 as pc2
 from ctypes import cast,POINTER,pointer,c_float,c_uint32
 from gazebo_msgs.srv import GetWorldProperties, GetModelState
@@ -67,6 +68,7 @@ class UR5LabEnv(robot_gazebo_env.RobotGazeboEnv):
         self._check_all_systems_ready()
         
         rospy.Subscriber("/joint_states", JointState, self._joints_state_callback)
+        rospy.Subscriber("/move_group/status", GoalStatusArray, self._plan_status_feedback)
         self.last_contact_r = 0
         self.last_contact_l = 0
         
@@ -111,7 +113,6 @@ class UR5LabEnv(robot_gazebo_env.RobotGazeboEnv):
         rospy.logdebug("ALL SENSORS READY")
 
     def _JointState_numpy(self, data):
-        #print(data)
         data.name = list(data.name)
         data.position = list(data.position)
         finger_index = data.name.index('finger_joint')
@@ -136,10 +137,33 @@ class UR5LabEnv(robot_gazebo_env.RobotGazeboEnv):
             except:
                 rospy.logerr("Current /joint_states not ready yet, retrying for getting joint_states")
         return self.joint_states
+
+    def _check_no_motion_plan_ready(self):
+        self.no_motion_plan = None
+        rospy.logdebug("Waiting for Goal Status to be READY...")
+        while self.no_motion_plan is None and not rospy.is_shutdown():
+            try:
+                self.no_motion_plan = self._no_motion_plan(rospy.wait_for_message("/move_group/status", GoalStatusArray, timeout=2.0))
+                rospy.logdebug("Current Goal Status READY=>")
+
+            except:
+                rospy.logerr("Current Goal Status not ready yet, retrying for getting joint_states")
+        return self.no_motion_plan
+
+    def _no_motion_plan(self, data):
+        if data.status_list:
+            if data.status_list[-1].text in "No motion plan found. No execution attempted.":
+                return True
+        return False
         
     def _joints_state_callback(self, data):
         self.joint_states, self.gripper_states = self._JointState_numpy(data)
         return 
+
+    def _plan_status_feedback(self, data):
+        self.no_motion_plan = self._no_motion_plan(data)
+        return
+
         
     # Methods that the TrainingEnvironment will need to define here as virtual
     # because they will be used in RobotGazeboEnv GrandParentClass and defined in the

@@ -133,7 +133,6 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
 
     def _init_env_variables(self):
         rospy.logdebug("Init Env Variables...")
-        # self._draw_goal_pos()
         rospy.logdebug("Init Env Variables...END")
 
     def _set_action(self, action):
@@ -166,7 +165,7 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
                             b=observations[3:],
                             atol=0.05)
 
-        return done
+        return done or self.no_motion_plan
 
     def _compute_reward(self, observations, done):
         """
@@ -179,13 +178,14 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
         distance = np.linalg.norm(np.array(observations[:3]) - np.array(observations[3:]))
         ratio = distance/self.init_distance
         reward = -np.ones(1)*ratio
-        reward = reward - 10e-3
+        reward = reward - 10e-2
 
-        #if not self.movement_result:
-        #    reward = reward -3
-            
         if done:
-            reward += self.reached_goal_reward
+            if self.no_motion_plan:
+                reward += -(self.reached_goal_reward*4)
+            else:
+                reward += self.reached_goal_reward
+
         rospy.logwarn(">>>REWARD>>>"+str(reward))
 
         return reward
