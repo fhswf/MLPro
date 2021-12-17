@@ -27,7 +27,7 @@ In the first version of MLPro, we provide a standardized Python package for rein
 
 # Documentation
 
-The Documentation is available on : [MLPRORTD](https://www.google.com)
+The Documentation is available on : [https://mlpro.readthedocs.io/](https://mlpro.readthedocs.io/)
 
 # Installation
 
