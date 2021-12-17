@@ -235,7 +235,7 @@ class Set:
 
 ## -------------------------------------------------------------------------------------------------
     def append(self, p_set):
-        dim_id_new = max(self.get_dim_ids() or [0]) + 1
+        dim_id_new = (max(self.get_dim_ids()) + 1) if self.get_dim_ids() else 0
 
         for dim_id in p_set.get_dim_ids():
             self.add_dim( p_set.get_dim(dim_id).copy(dim_id_new) )
@@ -424,7 +424,7 @@ class Function:
         Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
         """
 
-        output = self._output_elem_cls(p_set=self._output_space)
+        output = self._output_elem_cls(self._output_space)
         self._map(p_input, output)
         return output
 

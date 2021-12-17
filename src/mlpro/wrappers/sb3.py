@@ -142,7 +142,10 @@ class WrPolicySB32MLPro (Policy):
         obs = p_obs.get_values()
         
         if not isinstance(obs, torch.Tensor):
-            obs = torch.Tensor(obs).reshape(1,obs.size).to(self.sb3.device)
+            if isinstance(obs, list):
+                obs = torch.Tensor(obs).reshape(1,len(obs)).to(self.sb3.device)
+            else:
+                obs = torch.Tensor(obs).reshape(1,obs.size).to(self.sb3.device)
         
         with torch.no_grad():
             actions, values, log_probs = self.sb3.policy.forward(obs)
