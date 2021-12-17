@@ -27,10 +27,11 @@
 ## --                                observation space
 ## -- 2021-11-14  1.3.0     DA       Model-based Agent functionality 
 ## -- 2021-11-26  1.3.1     DA       Minor changes
+## -- 2021-12-17  1.3.2     DA       Added method MultiAgent.get_agent()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-11-26)
+Ver. 1.3.2 (2021-12-17)
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -415,7 +416,8 @@ class MultiAgent(Agent):
             p_logging           Boolean switch for logging functionality
         """
 
-        self._agents = []
+        self._agents    = []
+        self._agent_ids = []
         self.set_name(p_name)
 
         Log.__init__(self, p_logging)
@@ -491,6 +493,7 @@ class MultiAgent(Agent):
         """
 
         p_agent.switch_adaptivity(self._adaptivity)
+        self._agent_ids.append(p_agent.get_id())
         self._agents.append([p_agent, p_weight])
         p_agent.set_name(str(p_agent.get_id()) + ' ' + p_agent.get_name())
         self.log(Log.C_LOG_TYPE_I, p_agent.C_TYPE + ' ' + p_agent.get_name() + ' added.')
@@ -499,6 +502,21 @@ class MultiAgent(Agent):
 ## -------------------------------------------------------------------------------------------------
     def get_agents(self):
         return self._agents
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_agent(self, p_agent_id):
+        """
+        Returns informations of a single agent.
+
+        Returns
+        -------
+        agent_info : list
+            agent_info[0] is the agent object itself and agent_info[1] it's weight
+            
+        """
+
+        return self._agents[self._agent_ids.index(p_agent_id)]
 
 
 ## -------------------------------------------------------------------------------------------------

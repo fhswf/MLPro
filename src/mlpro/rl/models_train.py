@@ -24,10 +24,11 @@
 ## -- 2021-12-09  1.3.2     DA       Class RLTraining: introduced dynamic parameters **p_kwargs
 ## -- 2021-12-12  1.4.0     DA       Class RLTraining: evaluation and stagnation detection added
 ## -- 2021-12-16  1.4.1     DA       Method RLTraining._close_evaluation(): optimized scoring
+## -- 2021-12-17  1.4.2     DA       Class RLTraining: reworked evaluation strategy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2021-12-16)
+Ver. 1.4.2 (2021-12-17)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -750,7 +751,7 @@ class RLTraining (Training):
         self._eval_num_limit    = 0 
         self._eval_num_done     = 0
         self._eval_num_broken   = 0
-        self._eval_max_reward   = None
+        self._eval_mean_reward  = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -769,7 +770,7 @@ class RLTraining (Training):
 
         """
 
-        self._eval_num_cycles += 1
+        self._eval_num_cycles       += 1
         if p_cycle_limit: self._eval_num_limit += 1
         if p_success: self._eval_num_done += 1
         if p_error: self._eval_num_broken += 1
@@ -780,23 +781,23 @@ class RLTraining (Training):
         reward_type = reward.get_type()
 
         if reward_type == Reward.C_TYPE_OVERALL:
-            overall_reward = reward.get_overall_reward()
-            if self._eval_max_reward is None:
-                self._eval_max_reward = [ overall_reward ]
-            elif overall_reward > self._eval_max_reward[0]:
-                self._eval_max_reward[0] = overall_reward
+            if self._eval_mean_reward is None:
+                self._eval_mean_reward = np.zeros(1)
+
+            self._eval_mean_reward[0] += reward.get_overall_reward()
 
         elif reward_type == Reward.C_TYPE_EVERY_AGENT:
-            if self._eval_max_reward is None:
-                self._eval_max_reward = []
-                for agent_id in reward.agent_ids: 
-                    self._eval_max_reward.append(reward.get_agent_reward(agent_id))
+            if self._eval_mean_reward is None:
+                self._eval_mean_reward = np.zeros(len(reward.agent_ids))
 
-            else:
-                for i, agent_id in enumerate(reward.agent_ids): 
-                    agent_reward = reward.get_agent_reward(agent_id)
-                    if agent_reward > self._eval_max_reward[i]:
-                        self._eval_max_reward[i] = agent_reward
+            for i, agent_id in enumerate(reward.agent_ids): 
+                # Get weight of agent
+                try:
+                    weight_agent = self._agent.get_agent(agent_id)[1]
+                except:
+                    weight_agent = 1.0
+
+                self._eval_mean_reward[i] += reward.get_agent_reward(agent_id) * weight_agent
                 
         else:
             raise Error('Reward type ' + str(reward_type) + ' not yet supported')
@@ -815,17 +816,18 @@ class RLTraining (Training):
         """
 
         # 1 Computation of score
-        score = self._eval_num_done * mean(self._eval_max_reward) / self._eval_num_cycles
+        score = np.mean(self._eval_sum_reward)
 
 
         # 2 Store evaluation statistics
         if self._results.ds_eval is not None:
+
             self._results.ds_eval.memorize_row( p_score=score, 
                                                 p_num_limit=self._eval_num_limit, 
                                                 p_num_cycles=self._eval_num_cycles, 
                                                 p_num_done=self._eval_num_done, 
                                                 p_num_broken=self._eval_num_broken, 
-                                                p_reward=self._eval_max_reward )
+                                                p_reward=self._eval_mean_reward )
 
 
         # 3 Stagnation detection
