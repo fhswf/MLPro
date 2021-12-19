@@ -6,6 +6,7 @@ This module demonstrates the Log class functionality.
 
 Prerequisites
 -----------------
+
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
 

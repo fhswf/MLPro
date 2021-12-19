@@ -43,6 +43,7 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install hyperopt
+        pip install transformations
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names

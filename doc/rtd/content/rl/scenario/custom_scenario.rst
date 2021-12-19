@@ -1,7 +1,7 @@
 Custom Scenario
 ------------------
 
-.. image:: images/MLPro-RL-Scenario_Class_Commented.svg
+.. image:: images/MLPro-RL-Scenario_Class_Commented.png
 
 Scenario is where the interaction between RL agent(s) and an environment with a unique
 specific settings takes place. One of the MLPro's features is enabling the user to apply
