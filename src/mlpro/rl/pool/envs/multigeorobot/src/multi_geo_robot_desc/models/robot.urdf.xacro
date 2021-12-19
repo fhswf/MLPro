@@ -1,0 +1,572 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+<xacro:macro name="multi_geo_robot">
+
+<!-- Base Model -->
+<link name="base_model">
+      <inertial>
+        <origin xyz="2e-06 0 0.019926" rpy="0 0 0"/>
+        <mass value="1000"/>
+        <inertia 
+        ixx="4.811547714514836" 
+        iyy="4.811547714514836"
+        izz="9.623095429029672" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision>
+        <geometry>
+            <mesh filename="package://multi_geo_robot_desc/models/BaseModel2.dae"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+            <mesh filename="package://multi_geo_robot_desc/models/BaseModel2.dae"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="base_model">
+      <material>Gazebo/DarkGrey</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+
+<!-- Arm Construct -->
+    <!-- 2 Adapter -->
+        <link name="adapter_1_1">
+        <inertial>
+        <origin xyz="0 -0.003725 0.003727" rpy="0 0 0"/>
+        <mass value="5"/>
+        <inertia 
+        ixx="0.008643042350907518" 
+        iyy="0.008643042350907518"
+        izz="0.008643042350907518" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="adapter_1_1_collision">
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="adapter_1_1">
+      <material>Gazebo/FlatBlack</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="adapter_1_1">
+      <sensor name="adapter_1_1_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>adapter_1_1_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="adapter_1_1_plugin">
+        <bumperTopicName>adapter_1_1_contact</bumperTopicName>
+        <frameName>adapter_1_1</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+        <link name="adapter_1_2">
+        <inertial>
+        <origin xyz="0 -0.003725 0.003727" rpy="0 0 0"/>
+        <mass value="5"/>
+        <inertia 
+        ixx="0.008643042350907518" 
+        iyy="0.008643042350907518"
+        izz="0.008643042350907518" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="adapter_1_2_collision">
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="adapter_1_2">
+      <material>Gazebo/FlatBlack</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="adapter_1_2">
+      <sensor name="adapter_1_2_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>adapter_1_2_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="adapter_1_2_plugin">
+        <bumperTopicName>adapter_1_2_contact</bumperTopicName>
+        <frameName>adapter_1_2</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+        <!-- 1 Arm -->
+    <link name="arm_1">
+     <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="9"/>
+        <inertia 
+        ixx="0.035625000000000004" 
+        iyy="0.035625000000000004"
+        izz="0.0018750000000000004" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="arm_1_collision">
+        <geometry>
+          <cylinder length="0.2" radius="0.05"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <cylinder length="0.2" radius="0.05"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="arm_1">
+      <material>Gazebo/DarkGrey</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="arm_1">
+      <sensor name="arm_1_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>arm_1_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="arm_1_plugin">
+        <bumperTopicName>arm_1_contact</bumperTopicName>
+        <frameName>arm_1</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+    <!-- 2 Adapter -->
+        <link name="adapter_2_1">
+        <inertial>
+        <origin xyz="0 -0.003725 0.003727" rpy="0 0 0"/>
+        <mass value="5"/>
+        <inertia 
+        ixx="0.008643042350907518" 
+        iyy="0.008643042350907518"
+        izz="0.008643042350907518" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="adapter_2_1_collision">
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="adapter_2_1">
+      <material>Gazebo/FlatBlack</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="adapter_2_1">
+      <sensor name="adapter_2_1_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>adapter_2_1_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="adapter_2_1_plugin">
+        <bumperTopicName>adapter_2_1_contact</bumperTopicName>
+        <frameName>adapter_2_1</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+        <link name="adapter_2_2">
+        <inertial>
+        <origin xyz="0 -0.003725 0.003727" rpy="0 0 0"/>
+        <mass value="5"/>
+        <inertia 
+        ixx="0.008643042350907518" 
+        iyy="0.008643042350907518"
+        izz="0.008643042350907518" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="adapter_2_2_collision">
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="adapter_2_2">
+      <material>Gazebo/FlatBlack</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="adapter_2_2">
+      <sensor name="adapter_2_2_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>adapter_2_2_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="adapter_2_2_plugin">
+        <bumperTopicName>adapter_2_2_contact</bumperTopicName>
+        <frameName>adapter_2_2</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+        <!-- 1 Arm -->
+    <link name="arm_2">
+     <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="2"/>
+        <inertia 
+        ixx="0.007916666666666667" 
+        iyy="0.007916666666666667"
+        izz="0.00041666666666666675" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="arm_2_collision">
+        <geometry>
+          <cylinder length="0.2" radius="0.05"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <cylinder length="0.2" radius="0.05"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="arm_2">
+      <material>Gazebo/DarkGrey</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="arm_2">
+      <sensor name="arm_2_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>arm_2_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="arm_2_plugin">
+        <bumperTopicName>arm_2_contact</bumperTopicName>
+        <frameName>arm_2</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+    <!-- 2 Adapter -->
+        <link name="adapter_3_1">
+        <inertial>
+        <origin xyz="0 -0.003725 0.003727" rpy="0 0 0"/>
+        <mass value="5"/>
+        <inertia 
+        ixx="0.008643042350907518" 
+        iyy="0.008643042350907518"
+        izz="0.008643042350907518" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="adapter_3_1_collision">
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="adapter_3_1">
+      <material>Gazebo/FlatBlack</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="adapter_3_1">
+      <sensor name="adapter_3_1_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>adapter_3_1_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="adapter_3_1_plugin">
+        <bumperTopicName>adapter_3_1_contact</bumperTopicName>
+        <frameName>adapter_3_1</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+        <link name="adapter_3_2">
+        <inertial>
+        <origin xyz="0 -0.003725 0.003727" rpy="0 0 0"/>
+        <mass value="5"/>
+        <inertia 
+        ixx="0.008643042350907518" 
+        iyy="0.008643042350907518"
+        izz="0.008643042350907518" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="adapter_3_2_collision">
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="adapter_3_2">
+      <material>Gazebo/FlatBlack</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="adapter_3_2">
+      <sensor name="adapter_3_2_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>adapter_3_2_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="adapter_3_2_plugin">
+        <bumperTopicName>adapter_3_2_contact</bumperTopicName>
+        <frameName>adapter_3_2</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+        <!-- 1 Arm -->
+    <link name="arm_3">
+     <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="2"/>
+        <inertia 
+        ixx="0.007916666666666667" 
+        iyy="0.007916666666666667"
+        izz="0.00041666666666666675" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="arm_3_collision">
+        <geometry>
+          <cylinder length="0.2" radius="0.05"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <cylinder length="0.2" radius="0.05"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="arm_3">
+      <material>Gazebo/DarkGrey</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="arm_3">
+      <sensor name="arm_3_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>arm_3_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="arm_3_plugin">
+        <bumperTopicName>arm_3_contact</bumperTopicName>
+        <frameName>arm_3</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+<!-- Tool Tip -->
+<link name="tooltip">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="10"/>
+        <inertia 
+        ixx="0.006333333333333334" 
+        iyy="0.006333333333333334"
+        izz="0.0020833333333333337" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="tooltip_collision">
+        <geometry>
+          <cylinder length="0.01" radius="0.05"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <cylinder length="0.01" radius="0.05"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="tooltip">
+      <material>Gazebo/DarkGrey</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="tooltip">
+      <sensor name="tooltip_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <update_rate>30</update_rate>
+      <contact>
+        <collision>tooltip_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="tooltip_plugin">
+        <bumperTopicName>tooltip_contact</bumperTopicName>
+        <frameName>tooltip</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+<!-- Gripper -->
+<xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
+<xacro:robotiq_arg2f_85 prefix=""/>  
+  <joint name="gripper_joint" type="fixed">
+    <parent link="tooltip" />
+    <child link = "robotiq_arg2f_base_link" />
+    <origin xyz="0.0 0.0 0.01" rpy="0.0 0.0 0.0" />
+  </joint>
+
+<!-- EEF Dummy -->
+<link name="eef_dummy"/>
+
+<joint name="eef_dummy_joint" type="fixed">
+  <origin xyz="0 0 0.14" rpy="0 ${-pi/2} 0"/>
+  <parent link="robotiq_arg2f_base_link"/>
+  <child link="eef_dummy"/>
+</joint>
+
+
+  <!-- Joint -->
+<joint name="base_model_adapter_1_1" type="revolute">
+      <parent link="base_model"/>
+      <child link="adapter_1_1"/>
+      <origin xyz="0 0 0.12" rpy="0 3.141592653589793 0"/>
+              <axis xyz="0 0 1"/>
+                <limit effort="1000.0" lower="${-pi}" upper="${pi}" velocity="13.2"/>
+              </joint>
+<transmission name="base_model_adapter_1_1_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="base_model_adapter_1_1">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+    <actuator name="base_model_adapter_1_1_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+<joint name="adapter_1_1_adapter_1_2" type="revolute">
+      <parent link="adapter_1_1"/>
+      <child link="adapter_1_2"/>
+      <origin xyz="0 -0.12 0" rpy="3.141592653589793 0 0"/>
+              <axis xyz="0 1 0"/>
+                <limit effort="1000.0" lower="${-pi}" upper="${pi}" velocity="13.2"/>
+              </joint>
+<transmission name="adapter_1_1_adapter_1_2_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="adapter_1_1_adapter_1_2">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+    <actuator name="adapter_1_1_adapter_1_2_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+<joint name="adapter_1_2_arm_1" type="fixed">
+      <parent link="adapter_1_2"/>
+      <child link="arm_1"/>
+      <origin xyz="0 0 0.16" rpy="0 0 0"/>
+      </joint>
+<joint name="arm_1_adapter_2_1" type="fixed">
+      <parent link="arm_1"/>
+      <child link="adapter_2_1"/>
+      <origin xyz="0 0 0.16" rpy="1.5707963267948966 0 0"/>
+      </joint>
+<joint name="adapter_2_1_adapter_2_2" type="revolute">
+      <parent link="adapter_2_1"/>
+      <child link="adapter_2_2"/>
+      <origin xyz="0 0 0.12" rpy="3.141592653589793 0 0"/>
+              <axis xyz="0 0 1"/>
+                <limit effort="1000.0" lower="${-pi}" upper="${pi}" velocity="13.2"/>
+              </joint>
+<transmission name="adapter_2_1_adapter_2_2_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="adapter_2_1_adapter_2_2">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+    <actuator name="adapter_2_1_adapter_2_2_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+<joint name="adapter_2_2_arm_2" type="fixed">
+      <parent link="adapter_2_2"/>
+      <child link="arm_2"/>
+      <origin xyz="0 -0.16 0" rpy="1.5707963267948966 0 0"/>
+      </joint>
+<joint name="arm_2_adapter_3_1" type="fixed">
+      <parent link="arm_2"/>
+      <child link="adapter_3_1"/>
+      <origin xyz="0 0 0.16" rpy="3.141592653589793 0 0"/>
+      </joint>
+<joint name="adapter_3_1_adapter_3_2" type="revolute">
+      <parent link="adapter_3_1"/>
+      <child link="adapter_3_2"/>
+      <origin xyz="0 -0.12 0" rpy="3.141592653589793 0 0"/>
+              <axis xyz="0 1 0"/>
+                <limit effort="1000.0" lower="${-pi}" upper="${pi}" velocity="13.2"/>
+              </joint>
+<transmission name="adapter_3_1_adapter_3_2_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="adapter_3_1_adapter_3_2">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+    <actuator name="adapter_3_1_adapter_3_2_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+<joint name="adapter_3_2_arm_3" type="fixed">
+      <parent link="adapter_3_2"/>
+      <child link="arm_3"/>
+      <origin xyz="0 0 0.16" rpy="0 0 0"/>
+      </joint>
+<joint name="arm_3_tooltip" type="revolute">
+      <parent link="arm_3"/>
+      <child link="tooltip"/>
+      <origin xyz="0 0 0.10500000000000001" rpy="0 0 0"/>
+              <axis xyz="0 0 1"/>
+                <limit effort="1000.0" lower="${-pi}" upper="${pi}" velocity="13.2"/>
+              </joint>
+<transmission name="arm_3_tooltip_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="arm_3_tooltip">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+    <actuator name="arm_3_tooltip_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+
+  </xacro:macro>
+</robot>
+

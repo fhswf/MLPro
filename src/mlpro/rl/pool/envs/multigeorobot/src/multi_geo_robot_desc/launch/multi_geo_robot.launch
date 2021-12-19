@@ -1,0 +1,26 @@
+<launch>
+
+<arg name="sim" default="true"/>
+<arg name="debug" default="false" />
+<arg name="moveitplan" default="true" doc="Starts Moveit planner" />
+
+<param name="robot_description" command="$(find xacro)/xacro --inorder $(find multi_geo_robot_desc)/models/robot_environment.xacro" />
+<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model robot -x 0 -y 0 -z 0" />
+<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+<rosparam file="$(find multi_geo_robot_desc)/config/joint_state_controller.yaml" command="load"/>
+<rosparam file="$(find multi_geo_robot_desc)/config/robotConfig.yaml" command="load"/>
+<node name="robot_controller_spawner" pkg="controller_manager" type="spawner" 
+        args="joint_state_controller arm_controller gripper_controller">
+</node>
+
+<!-- controller -->
+<node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false" output="screen" args="load joint_group_position_controller" />
+<node name="gripper_action_server" pkg="multi_geo_robot_desc" type="gripper_contact_handler.py" respawn= "true" output="screen"/> 
+
+<!-- moveit -->
+<remap if="$(arg sim)" from="/follow_joint_trajectory" to="/arm_controller/follow_joint_trajectory"/>
+<include if= "$(arg moveitplan)" file="$(find multi_geo_robot_desc)/launch/move_group.launch">
+<arg name="debug" default="$(arg debug)" />
+</include>
+
+</launch>

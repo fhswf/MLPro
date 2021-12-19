@@ -1,0 +1,11 @@
+multi_geo_robot:
+  ros_ws_abspath: "/home/mrds/Documents/dev/Multi_Geo/ros_ws"
+  robot_type: "3D"
+  arm_num: 3
+  arm_joint_seq: [[1,1,0],[0,1,0],[0,1,0]]
+  arm_length: [0.2, 0.2, 0.2]
+  arm_mass: [9, 2, 2]
+  adapter_mass: 5
+  eef_dummy: False
+  reaching_task:
+    task_and_robot_environment_name: 'MultiGeoRobotReach-v0'

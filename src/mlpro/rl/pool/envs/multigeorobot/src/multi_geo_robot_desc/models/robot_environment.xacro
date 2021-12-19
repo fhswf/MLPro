@@ -1,0 +1,17 @@
+<?xml version="1.0" ?>
+
+<robot name="multi_geo_robot" xmlns:xacro="http://ros.org/wiki/xacro">
+<xacro:include filename="$(find multi_geo_robot_desc)/models/gazebo.xacro"/>
+<xacro:include filename="$(find multi_geo_robot_desc)/models/robot.urdf.xacro"/>
+
+<link name="world"/>
+
+<joint name="world_joint" type="fixed">
+  <origin xyz="0 0 0" rpy="0 0 0"/>
+  <parent link="world"/>
+  <child link="base_model"/>
+</joint>
+
+<xacro:multi_geo_robot/>
+
+</robot>
