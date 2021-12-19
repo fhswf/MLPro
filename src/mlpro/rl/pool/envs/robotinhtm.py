@@ -412,7 +412,7 @@ class RobotHTM(Environment):
 
 
  ## -------------------------------------------------------------------------------------------------
-    def _compute_done(self, p_state: State = None) -> bool:
+    def _compute_success(self, p_state: State = None) -> bool:
         disterror = np.linalg.norm(np.array(p_state.get_values())[:3] - np.array(p_state.get_values())[3:6])
 
         if disterror <= 0.1:
