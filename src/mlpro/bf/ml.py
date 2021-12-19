@@ -26,10 +26,12 @@
 ## -- 2021-12-10  1.2.5     DA       Class HyperParamTuner: changed interface of method maximize()
 ## -- 2021-12-12  1.3.0     DA       Classes Scenario, Training, TrainingResults: introduced number
 ## --                                of adapatations
+## -- 2021-12-19  1.3.1     DA       - Minor changes on class Training
+## --                                - Added log functionality to class TrainingResults
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-12-12)
+Ver. 1.3.1 (2021-12-19)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -668,7 +670,7 @@ class Scenario (Mode, LoadSave, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class TrainingResults (Saveable):
+class TrainingResults (Log, Saveable):
     """
     Results of a training (see class Training).
 
@@ -684,6 +686,8 @@ class TrainingResults (Saveable):
         Optional estination path to store the results.
 
     """
+
+    C_TYPE      = 'Results '
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_path=None):
@@ -703,6 +707,8 @@ class TrainingResults (Saveable):
 
         self.custom_results     = []
 
+        Log.__init__(self, p_logging=Log.C_LOG_ALL)
+
 
 ## -------------------------------------------------------------------------------------------------
     def add_custom_result(self, p_name, p_value):
@@ -714,6 +720,27 @@ class TrainingResults (Saveable):
         self.ts_end             = datetime.now()
         self.duration           = self.ts_end - self.ts_start
         self.cycle_id_end       = self.cycle_id_start + self.num_cycles -1
+
+
+## -------------------------------------------------------------------------------------------------
+    def log_results(self):
+        self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+        self.log(self.C_LOG_TYPE_W, '-- Training Results of run', self.run)
+        self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+        self.log(self.C_LOG_TYPE_W, '-- Scenario          :', self.scenario.C_TYPE, self.scenario.C_NAME)
+        self.log(self.C_LOG_TYPE_W, '-- Model             :', self.scenario.get_model().C_TYPE, self.scenario.get_model().C_NAME)
+        self.log(self.C_LOG_TYPE_W, '-- Start time stamp  :', self.ts_start)
+        self.log(self.C_LOG_TYPE_W, '-- End time stamp    :', self.ts_end)
+        self.log(self.C_LOG_TYPE_W, '-- Duration          :', self.duration)
+        self.log(self.C_LOG_TYPE_W, '-- Start cycle id    :', self.cycle_id_start)
+        self.log(self.C_LOG_TYPE_W, '-- End cycle id      :', self.cycle_id_end)
+        self.log(self.C_LOG_TYPE_W, '-- Number of cycles  :', self.num_cycles)
+        self.log(self.C_LOG_TYPE_W, '-- Training cycles   :', self.num_cycles_train)
+        self.log(self.C_LOG_TYPE_W, '-- Evaluation cycles :', self.num_cycles_eval)
+        self.log(self.C_LOG_TYPE_W, '-- Adaptations       :', self.num_adaptations)
+        self.log(self.C_LOG_TYPE_W, '-- High score        :', self.highscore)
+        if self.path is not None:
+            self.log(self.C_LOG_TYPE_W, '-- Results stored in : "' + self.path +'"')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -926,7 +953,6 @@ class Training (Log):
         self._current_run       = 0
         self._new_run           = True
         self._results           = None
-        self._best_results      = None
         self._root_path         = self._gen_root_path(path)
         self._current_path      = None
         self._scenario          = None
@@ -1035,15 +1061,12 @@ class Training (Log):
             self.log(self.C_LOG_TYPE_W, '-- Training run', self._current_run, 'finished')
             self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
             self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
             self._scenario.get_model().save(self._current_path, 'trained model.pkl')
             self._close_results(self._results)
+            self._results.log_results()
+
             self._current_path = None
-
-            if ( self._best_results is None ) or ( self._results.highscore > self._best_results.highscore ):
-                self.log(self.C_LOG_TYPE_W, 'Training run', str(self._current_run), ': New highscore', str(self._results.highscore))
-                self._best_results = self._results
-
-            self._current_run  += 1
             self._new_run       = True
 
         return run_finished
@@ -1103,4 +1126,4 @@ class Training (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_results(self) -> TrainingResults:
-        return self._best_results
+        return self._results

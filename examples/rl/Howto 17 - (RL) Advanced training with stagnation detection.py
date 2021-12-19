@@ -125,7 +125,7 @@ if __name__ == "__main__":
     cycle_limit         = 5000
     adaptation_limit    = 50
     stagnation_limit    = 5
-    eval_frequency      = 10
+    eval_frequency      = 2 #10
     eval_grp_size       = 5
     logging             = Log.C_LOG_WE
     visualize           = True

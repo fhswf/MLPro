@@ -413,6 +413,8 @@ class RLTrainingResults (TrainingResults):
 
     """
 
+    C_NAME                  = 'RL'
+
     C_FNAME_EVAL            = 'evaluation'
     C_FNAME_ENV_STATES      = 'env_states'
     C_FNAME_AGENT_ACTIONS   = 'agent_actions'
@@ -439,6 +441,13 @@ class RLTrainingResults (TrainingResults):
 
         self.add_custom_result(self.C_CPAR_NUM_EPI, self.num_episodes)
         self.add_custom_result(self.C_CPAR_NUM_EVAL, self.num_evaluations)
+
+
+## -------------------------------------------------------------------------------------------------
+    def log_results(self):
+        super().log_results()
+        self.log(self.C_LOG_TYPE_W, '-- Training Episodes :', self.num_episodes)
+        self.log(self.C_LOG_TYPE_W, '-- Evaluations       :', self.num_evaluations)
 
 
 ## -------------------------------------------------------------------------------------------------
