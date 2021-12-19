@@ -22,7 +22,6 @@ from mlpro.rl.models import *
 from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
 from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
-import random
 from pathlib import Path
 
 # 1 Make Sure training_env branch of ur_control is sourced:
@@ -66,13 +65,15 @@ now             = datetime.now()
 
 training        = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
-    p_cycle_limit=100000,
+    p_cycle_limit=50000,
+    p_cycles_per_epi_limit=-1,
     p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
     p_visualize=True,
+    p_path=str(Path.home()),
     p_logging=Log.C_LOG_ALL )
 
 training.run()
@@ -125,5 +126,5 @@ data_printing   = {"Cycle":        [False],
 
 
 mem = training.get_results().ds_rewards
-mem_plot    = MyDataPlotting(mem, p_showing=False, p_printing=data_printing)
+mem_plot    = MyDataPlotting(mem, p_showing=True, p_printing=data_printing)
 mem_plot.get_plots()

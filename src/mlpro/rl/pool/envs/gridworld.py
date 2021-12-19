@@ -149,13 +149,13 @@ class GridWorld (Environment):
     def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
         rew = 1
-        euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos)
+        euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos).item()
         if euclidean_distance !=0:
             rew = 1/euclidean_distance
         if self.num_step >= self.max_step:
             rew -= self.max_step
         
-        reward.set_overall_reward(rew.item())
+        reward.set_overall_reward(rew)
         return reward
 
 

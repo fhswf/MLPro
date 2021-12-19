@@ -4,7 +4,7 @@ Custom Policies
 - **Policy Creation**
 
 
-    .. image:: images/MLPro-RL-Agent_Class_Policy_Commented.svg
+    .. image:: images/MLPro-RL-Agent_Class_Policy_Commented.png
     
     To create a RL policy that satisfies MLPro interface is pretty direct.
     You just require to assure that the RL policy consists at least these following 3 main functions:

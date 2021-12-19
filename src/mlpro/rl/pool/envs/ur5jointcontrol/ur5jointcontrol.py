@@ -114,12 +114,14 @@ class UR5JointControl(Environment):
         random.seed(p_seed)
         obs = self.env.reset()
         self._state = self._obs_to_state(obs)
+        self._state.set_done(True)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
         obs, self.reward_gym, self.done, info = self.env.step(p_action.get_sorted_values())
         self._state = self._obs_to_state(obs)
+        self._state.set_done(self.done)
         return self._state
 
 
@@ -160,3 +162,7 @@ class UR5JointControl(Environment):
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         pass
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self):
+        return self.env._max_episode_steps

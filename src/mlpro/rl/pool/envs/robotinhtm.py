@@ -22,6 +22,7 @@ Ver. 1.1.3 (2021-12-19)
 This module provide an environment of a robot manipulator based on Homogeneous Matrix
 """
 import torch
+import transformations
 import numpy as np
 import random
 from mlpro.rl.models import *
@@ -228,6 +229,28 @@ class RobotArm3D:
     def update_theta(self, deltaTheta):
         self.thetas += deltaTheta.flatten()
 
+    ## -------------------------------------------------------------------------------------------------
+    def convert_to_quaternion(self):
+         origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
+         hm_reshape = self.HM.reshape(self.joints.shape[1],4,4)
+         hm_length = hm_reshape.shape[0]
+
+         out = torch.Tensor([])
+         for x in range(hm_length):
+             _,_,rot,trans,_ = transformations.decompose_matrix(hm_reshape[x].numpy())
+
+             qx = transformations.quaternion_about_axis(rot[0], xaxis)
+             qy = transformations.quaternion_about_axis(rot[1], yaxis)
+             qz = transformations.quaternion_about_axis(rot[2], zaxis)
+             q = transformations.quaternion_multiply(qx, qy)
+             q = transformations.quaternion_multiply(q, qz)
+
+             outs = torch.Tensor(trans)
+             outs = torch.cat([outs, torch.Tensor(q)])
+             out = torch.cat([out,outs])
+
+         return out    
+
 
 
 
@@ -381,16 +404,16 @@ class RobotHTM(Environment):
             ],
             dim=1,
         )
-        obs = obs.cpu().numpy().flatten()
+        obs = obs.cpu().flatten().tolist()
         state = State(self._state_space)
         state.set_values(obs)
 
         return state
 
 
-## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state: State = None) -> bool:
-        disterror = np.linalg.norm(p_state.get_values()[:3] - p_state.get_values()[3:6])
+ ## -------------------------------------------------------------------------------------------------
+    def _compute_done(self, p_state: State = None) -> bool:
+        disterror = np.linalg.norm(np.array(p_state.get_values())[:3] - np.array(p_state.get_values())[3:6])
 
         if disterror <= 0.1:
             return True
@@ -406,7 +429,7 @@ class RobotHTM(Environment):
 ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
-        disterror = np.linalg.norm(p_state_new.get_values()[:3] - p_state_new.get_values()[3:6])
+        disterror = np.linalg.norm(np.array(p_state_new.get_values())[:3] - np.array(p_state_new.get_values())[3:6])
 
         ratio = disterror / self.init_distance.item()
         rew = -np.ones(1) * ratio
@@ -460,7 +483,7 @@ class RobotHTM(Environment):
             ],
             dim=1,
         )
-        obs = obs.cpu().numpy().flatten()
+        obs = obs.cpu().flatten().tolist()
         self._state = State(self._state_space)
         self._state.set_values(obs)
         self._state.set_success(True)

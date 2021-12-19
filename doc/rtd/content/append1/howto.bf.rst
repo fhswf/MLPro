@@ -12,3 +12,4 @@ We provide some examples of MLPro's basic funcionalities implementation, which i
    bf/howto.bf.004
    bf/howto.bf.005
    bf/howto.bf.006
+   bf/howto.bf.007

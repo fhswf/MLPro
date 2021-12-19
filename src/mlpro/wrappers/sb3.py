@@ -82,15 +82,15 @@ class WrPolicySB32MLPro (Policy):
         if len(self.get_action_space().get_dim(0).get_boundaries()) == 1:
             action_space = gym.spaces.Discrete(self.get_action_space().get_dim(0).get_boundaries()[0])
         else:
-            lows = []
-            highs = []
+            self.lows = []
+            self.highs = []
             for dimension in range(action_dim):
-                lows.append(self.get_action_space().get_dim(dimension).get_boundaries()[0])
-                highs.append(self.get_action_space().get_dim(dimension).get_boundaries()[1])
+                self.lows.append(self.get_action_space().get_dim(dimension).get_boundaries()[0])
+                self.highs.append(self.get_action_space().get_dim(dimension).get_boundaries()[1])
 
             action_space = gym.spaces.Box(
-                            low=np.array(lows, dtype=np.float32), 
-                            high=np.array(highs, dtype=np.float32), 
+                            low=np.array(self.lows, dtype=np.float32), 
+                            high=np.array(self.highs, dtype=np.float32), 
                             shape=(action_dim,), 
                             dtype=np.float32
                             )
@@ -142,16 +142,31 @@ class WrPolicySB32MLPro (Policy):
         obs = p_obs.get_values()
         
         if not isinstance(obs, torch.Tensor):
-            obs = torch.Tensor(obs).reshape(1,obs.size).to(self.sb3.device)
+            if isinstance(obs, list):
+                obs = torch.Tensor(obs).reshape(1,len(obs)).to(self.sb3.device)
+            else:
+                obs = torch.Tensor(obs).reshape(1,obs.size).to(self.sb3.device)
         
         with torch.no_grad():
             actions, values, log_probs = self.sb3.policy.forward(obs)
-        
-        # Add to additional_buffer_element
-        self.additional_buffer_element = dict(value=values, action_log=log_probs)
 
-        action = actions.cpu().numpy().flatten()
+        actions = actions.cpu().numpy()
+
+        clipped_actions = actions
+        # Clip the actions to avoid out of bound error
+        if isinstance(self.sb3.action_space, gym.spaces.Box):
+            clipped_actions = np.clip(actions, self.lows, self.highs)
+
+        # Action Step
+        action = clipped_actions.flatten()
         action = Action(self._id, self._action_space, action)
+
+        # Action Buffer
+        action_buffer = actions.flatten()
+        action_buffer = Action(self._id, self._action_space, action_buffer)
+
+        # Add to additional_buffer_element
+        self.additional_buffer_element = dict(action=action_buffer, value=values, action_log=log_probs)
         return action
 
     def _compute_action_off_policy(self, p_obs: State) -> Action:

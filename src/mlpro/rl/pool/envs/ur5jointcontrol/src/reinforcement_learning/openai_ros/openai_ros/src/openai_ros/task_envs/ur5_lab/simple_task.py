@@ -133,21 +133,18 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
 
     def _init_env_variables(self):
         rospy.logdebug("Init Env Variables...")
-        # self._draw_goal_pos()
         rospy.logdebug("Init Env Variables...END")
 
     def _set_action(self, action):
 
-        gripper_target = self.get_joint_states()
-        clipped_actions = action
-        if isinstance(self.action_space, spaces.Box):
-            clipped_actions = np.clip(action, self.action_space.low, self.action_space.high)
-        gripper_target = gripper_target + clipped_actions
+        gripper_target = self.get_joint_states()   
+        gripper_target = gripper_target + action
+        gripper_target = np.clip(gripper_target, -math.pi, math.pi)
         self.last_action = "Joint Move"
 
         self.movement_result = self.move_joints(gripper_target)
 
-        rospy.logwarn("END Set Action ==>" + str(clipped_actions) +
+        rospy.logwarn("END Set Action ==>" + str(action) +
                       ", NAME=" + str(self.last_action))
 
     def _get_obs(self):
@@ -168,7 +165,7 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
                             b=observations[3:],
                             atol=0.05)
 
-        return done
+        return done or self.no_motion_plan
 
     def _compute_reward(self, observations, done):
         """
@@ -181,13 +178,14 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
         distance = np.linalg.norm(np.array(observations[:3]) - np.array(observations[3:]))
         ratio = distance/self.init_distance
         reward = -np.ones(1)*ratio
-        reward = reward - 10e-3
+        reward = reward - 10e-2
 
-        #if not self.movement_result:
-        #    reward = reward -3
-            
         if done:
-            reward += self.reached_goal_reward
+            if self.no_motion_plan:
+                reward += -(self.reached_goal_reward*4)
+            else:
+                reward += self.reached_goal_reward
+
         rospy.logwarn(">>>REWARD>>>"+str(reward))
 
         return reward

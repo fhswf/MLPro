@@ -263,7 +263,7 @@ class AFctSTrans (AFctBase):
 
         # 1 Create input vector from given state and action
         input_values = p_state.get_values().copy()
-        input_values.append(p_action.get_values())
+        input_values.extend(p_action.get_sorted_values())
         input = Element(self._input_space)
         input.set_values(input_values)
 
@@ -292,7 +292,7 @@ class AFctSTrans (AFctBase):
         """
 
         input_values = p_state.get_values().copy()
-        input_values.append(p_action.get_values())
+        input_values.extend(p_action.get_sorted_values())
         input = Element(self._input_space)
         input.set_values(input_values)
 
