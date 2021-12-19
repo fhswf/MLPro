@@ -80,7 +80,7 @@ class MultiGeoRobotReachEnv(multi_geo_robot_env.MultiGeoRobotEnv):
                         0.3, 
                         0.3,
                         0,0,0,1]
-        self._draw_goal_pos(self.goal_pos[0],self.goal_pos[1],self.goal_pos[2])
+        self._draw_goal_pos("target_ball", self.goal_pos[0],self.goal_pos[1],self.goal_pos[2])
             
     
     # Methods that the TrainingEnvironment will need to define here as virtual
@@ -105,7 +105,7 @@ class MultiGeoRobotReachEnv(multi_geo_robot_env.MultiGeoRobotEnv):
                     pose.position.y,
                     pose.position.z,])
 
-        self.init_distance = np.linalg.norm(np.array(pose[:]) - np.array(self.goal_pos[:]))
+        self.init_distance = np.linalg.norm(np.array(pose[:]) - np.array(self.goal_pos[:3]))
 
         return True
 

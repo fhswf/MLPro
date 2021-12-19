@@ -37,18 +37,18 @@ class MultiGeo(Environment):
 
         LoadYamlFileParamsTest(rospackage_name="multi_geo_robot_training",
                                rel_path_from_package_to_file="config",
-                               yaml_file_name="multi_geo_robot.yaml")            
-        
-        super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+                               yaml_file_name="multi_geo_robot.yaml")  
 
         # Init OpenAI_ROS ENV
         task_and_robot_environment_name = rospy.get_param(
         '/multi_geo_robot/task_and_robot_environment_name')
 
         max_step_episode = rospy.get_param(
-        '/multi_geo_robot/max_iterations')
+        '/multi_geo_robot/max_iterations')  
 
-        self.env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
+        self.env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)        
+        
+        super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         
         self.reset()
 
@@ -79,7 +79,7 @@ class MultiGeo(Environment):
         # Setup action space
         action_space = ESpace()
 
-        for idx in range(self.env.joints):
+        for idx in range(len(self.env.joints)):
             action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad', 'rad', p_boundaries=[-0.1,0.1]))
 
         return state_space, action_space

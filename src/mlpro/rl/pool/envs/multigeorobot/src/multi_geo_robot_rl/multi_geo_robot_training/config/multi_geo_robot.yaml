@@ -1,5 +1,5 @@
 multi_geo_robot:
-  ros_ws_abspath: "/home/mrds/Documents/dev/Multi_Geo/ros_ws"
+  ros_ws_abspath: "/home/mrds/Documents/dev/MLPro/MLPro/src/mlpro/rl/pool/envs/multigeorobot"
   robot_type: "3D"
   arm_num: 3
   arm_joint_seq: [[1,1,0],[0,1,0],[0,1,0]]
@@ -8,5 +8,4 @@ multi_geo_robot:
   adapter_mass: 5
   eef_dummy: False
   max_iterations: 20
-  reaching_task:
-    task_and_robot_environment_name: 'MultiGeoRobotReach-v0'
+  task_and_robot_environment_name: 'MultiGeoRobotReach-v0'
