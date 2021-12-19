@@ -1,0 +1,6 @@
+<launch>
+    <!-- This version uses the openai_ros environments -->
+    <rosparam command="load" file="$(find rl_training)/config/multi_geo_robot.yaml" />
+    <!-- Launch the training system -->
+    <node pkg="rl_training" name="multi_geo_robot_training" type="start_training.py" output="screen"/>
+</launch>

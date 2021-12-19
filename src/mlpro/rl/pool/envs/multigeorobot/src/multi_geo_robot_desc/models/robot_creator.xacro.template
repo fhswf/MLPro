@@ -1,0 +1,247 @@
+<?xml version="1.0" ?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+<xacro:macro name="multi_geo_robot">
+
+<!-- Base Model -->
+<link name="@(base_model['name'])">
+      <inertial>
+        <origin xyz="@(base_model['cgx']) @(base_model['cgy']) @(base_model['cgz'])" rpy="0 0 0"/>
+        <mass value="@(base_model['mass'])"/>
+        <inertia 
+        ixx="@(base_model['ixx'])" 
+        iyy="@(base_model['iyy'])"
+        izz="@(base_model['izz'])" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision>
+        <geometry>
+            <mesh filename="package://multi_geo_robot_desc/models/BaseModel2.dae"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+            <mesh filename="package://multi_geo_robot_desc/models/BaseModel2.dae"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="@(base_model['name'])">
+      <material>Gazebo/DarkGrey</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+
+<!-- Arm Construct -->
+@[for arm in arms]@
+    <!-- 2 Adapter -->
+    @[for adapter in arm['adapters']]@
+    <link name="@(adapter['name'])">
+        <inertial>
+        <origin xyz="@(adapter['cgx']) @(adapter['cgy']) @(adapter['cgz'])" rpy="0 0 0"/>
+        <mass value="@(adapter['mass'])"/>
+        <inertia 
+        ixx="@(adapter['ixx'])" 
+        iyy="@(adapter['iyy'])"
+        izz="@(adapter['izz'])" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="@(adapter['name'])_collision">
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <mesh filename="package://multi_geo_robot_desc/models/FirstLink.dae"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="@(adapter['name'])">
+      <material>Gazebo/FlatBlack</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="@(adapter['name'])">
+      <sensor name="@(adapter['name'])_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>@(adapter['name'])_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="@(adapter['name'])_plugin">
+        <bumperTopicName>@(adapter['name'])_contact</bumperTopicName>
+        <frameName>@(adapter['name'])</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+    @[end for]@
+    <!-- 1 Arm -->
+    <link name="@(arm['name'])">
+     <inertial>
+        <origin xyz="@(arm['cgx']) @(arm['cgy']) @(arm['cgz'])" rpy="0 0 0"/>
+        <mass value="@(arm['mass'])"/>
+        <inertia 
+        ixx="@(arm['ixx'])" 
+        iyy="@(arm['iyy'])"
+        izz="@(arm['izz'])" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="@(arm['name'])_collision">
+        <geometry>
+          <cylinder length="@(arm['length'])" radius="@(arm['radius'])"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <cylinder length="@(arm['length'])" radius="@(arm['radius'])"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="@(arm['name'])">
+      <material>Gazebo/DarkGrey</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="@(arm['name'])">
+      <sensor name="@(arm['name'])_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <contact>
+        <collision>@(arm['name'])_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="@(arm['name'])_plugin">
+        <bumperTopicName>@(arm['name'])_contact</bumperTopicName>
+        <frameName>@(arm['name'])</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+@[end for]@
+<!-- Tool Tip -->
+<link name="@(tooltip['name'])">
+      <inertial>
+        <origin xyz="@(tooltip['cgx']) @(tooltip['cgy']) @(tooltip['cgz'])" rpy="0 0 0"/>
+        <mass value="@(tooltip['mass'])"/>
+        <inertia 
+        ixx="@(tooltip['ixx'])" 
+        iyy="@(tooltip['iyy'])"
+        izz="@(tooltip['izz'])" 
+        ixy="0" 
+        ixz="0"
+        iyz="0"/>
+      </inertial>
+      <collision name="@(tooltip['name'])_collision">
+        <geometry>
+          <cylinder length="@(tooltip['length'])" radius="@(tooltip['radius'])"/>
+        </geometry>
+      </collision>
+      <visual>
+        <geometry>
+          <cylinder length="@(tooltip['length'])" radius="@(tooltip['radius'])"/>
+        </geometry>
+      </visual>
+    </link>
+    <gazebo reference="@(tooltip['name'])">
+      <material>Gazebo/DarkGrey</material>
+      <!-- <selfCollide>true</selfCollide> -->
+    </gazebo>
+    <!-- Contact Sensor -->
+    <gazebo reference="@(tooltip['name'])">
+      <sensor name="@(tooltip['name'])_contact_sensor" type="contact">
+      <always_on>true</always_on>
+      <update_rate>30</update_rate>
+      <contact>
+        <collision>@(tooltip['name'])_collision_collision</collision>
+      </contact>
+      <plugin filename="libgazebo_ros_bumper.so" name="@(tooltip['name'])_plugin">
+        <bumperTopicName>@(tooltip['name'])_contact</bumperTopicName>
+        <frameName>@(tooltip['name'])</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+
+<!-- Gripper -->
+@[if gripper['active'] == True]@
+<xacro:include filename="$(find robotiq_2f_85_gripper_visualization)/urdf/robotiq_arg2f_85_model_macro.xacro" />
+<xacro:robotiq_arg2f_85 prefix=""/>  
+  <joint name="gripper_joint" type="fixed">
+    <parent link="@(tooltip['name'])" />
+    <child link = "robotiq_arg2f_base_link" />
+    <origin xyz="0.0 0.0 0.01" rpy="0.0 0.0 0.0" />
+  </joint>
+@[end if]@
+
+<!-- EEF Dummy -->
+@[if dummy['active'] == True]@
+<link name="@(dummy['name'])">
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.015"/>
+      </geometry>
+  </visual>
+
+  <inertial>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <mass value="1"/>
+    <inertia
+      ixx="1.0" ixy="0.0" ixz="0.0"
+      iyy="1.0" iyz="0.0"
+      izz="1.0"/>
+  </inertial>
+</link>
+ 
+<gazebo reference="@(dummy['name'])">
+  <material>Gazebo/Red</material>
+</gazebo>
+@[else]@
+<link name="@(dummy['name'])"/>
+@[end if]@
+
+@[if gripper['active'] == True]@
+<joint name="@(dummy['name'])_joint" type="fixed">
+  <origin xyz="0 0 0.14" rpy="0 ${-pi/2} 0"/>
+  <parent link="robotiq_arg2f_base_link"/>
+  <child link="@(dummy['name'])"/>
+</joint>
+@[else]@
+<joint name="@(dummy['name'])_joint" type="fixed">
+  <origin xyz="0 0 0" rpy="0 ${-pi/2} 0"/>
+  <parent link="@(tooltip['name'])"/>
+  <child link="@(dummy['name'])"/>
+</joint>
+@[end if]@
+
+
+  <!-- Joint -->
+@[for joint in joints]@
+<joint name="@(joint['name'])" type="@(joint['type'])">
+      <parent link="@(joint['parent'])"/>
+      <child link="@(joint['child'])"/>
+      <origin xyz="@(joint['ox']) @(joint['oy']) @(joint['oz'])" rpy="@(joint['rr']) @(joint['rp']) @(joint['ry'])"/>
+      @[if joint['type'] == 'revolute']@
+        <axis xyz="@(joint['ax']) @(joint['ay']) @(joint['az'])"/>
+        @[if joint['limit']]@
+        <limit effort="1000.0" lower="0" upper="0" velocity="3.2"/>
+        @[else]@
+        <limit effort="1000.0" lower="${-pi}" upper="${pi}" velocity="13.2"/>
+        @[end if]@
+      @[end if]@
+</joint>
+@[if joint['type'] == 'revolute']@
+<transmission name="@(joint['name'])_trans">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="@(joint['name'])">
+            <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+        </joint>
+    <actuator name="@(joint['name'])_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+</transmission>
+@[end if]@
+@[end for]@
+
+  </xacro:macro>
+</robot>
+

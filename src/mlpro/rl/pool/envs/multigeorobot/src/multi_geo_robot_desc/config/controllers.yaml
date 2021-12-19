@@ -1,0 +1,10 @@
+controller_list:
+- action_ns: follow_joint_trajectory
+  joints:
+  - base_model_adapter_1_1
+  - adapter_1_1_adapter_1_2
+  - adapter_2_1_adapter_2_2
+  - adapter_3_1_adapter_3_2
+  - arm_3_tooltip
+  name: arm_controller
+  type: FollowJointTrajectory

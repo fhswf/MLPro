@@ -1,0 +1,45 @@
+arm_controller:
+  action_monitor_rate: 10
+  constraints:
+    adapter_1_1_adapter_1_2:
+      goal: 0.1
+      trajectory: 0.1
+    adapter_2_1_adapter_2_2:
+      goal: 0.1
+      trajectory: 0.1
+    adapter_3_1_adapter_3_2:
+      goal: 0.1
+      trajectory: 0.1
+    arm_3_tooltip:
+      goal: 0.1
+      trajectory: 0.1
+    base_model_adapter_1_1:
+      goal: 0.1
+      trajectory: 0.1
+    goal_time: 0.6
+    stopped_velocity_tolerance: 0.05
+  joints:
+  - base_model_adapter_1_1
+  - adapter_1_1_adapter_1_2
+  - adapter_2_1_adapter_2_2
+  - adapter_3_1_adapter_3_2
+  - arm_3_tooltip
+  state_publish_rate: 125
+  stop_trajectory_duration: 0.5
+  type: position_controllers/JointTrajectoryController
+gripper_controller:
+  action_monitor_rate: 20
+  goal_tolerance: 0.01
+  joint: finger_joint
+  max_effort: 5
+  stall_timeout: 0.5
+  stall_velocity_threshold: 0.01
+  type: position_controllers/GripperActionController
+joint_group_position_controller:
+  joints:
+  - base_model_adapter_1_1
+  - adapter_1_1_adapter_1_2
+  - adapter_2_1_adapter_2_2
+  - adapter_3_1_adapter_3_2
+  - arm_3_tooltip
+  type: position_controllers/JointGroupPositionController
