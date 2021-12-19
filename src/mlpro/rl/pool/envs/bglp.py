@@ -22,10 +22,11 @@
 ## -- 2021-11-26  2.1.5     SY       Update reward type
 ## -- 2021-12-03  2.1.6     DA       Refactoring
 ## -- 2021-12-09  2.1.7     SY       Clean code assurance
+## -- 2021-12-19  2.1.8     DA       Replaced 'done' by 'success'
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.7 (2021-12-09)
+Ver. 2.1.8 (2021-12-19)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -907,7 +908,8 @@ class BGLP (Environment):
         self.t              = 0
         self.prod_reached   = 0
         self._state         = self.collect_substates()
-        self.get_state().set_done(False)
+        self.get_state().set_success(False)
+        self.get_state().set_broken(False)
         if self.data_frame == None:
             self.data_frame = 0
         else:
@@ -961,7 +963,7 @@ class BGLP (Environment):
             x += 1
             
         self.set_actions(action)
-        self._state.set_done(False)
+        self._state.set_success(False)
         self._state.set_broken(False)
         self._state = self.collect_substates()
         
@@ -974,9 +976,9 @@ class BGLP (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_done(self, p_state:State) -> bool:
+    def _compute_success(self, p_state:State) -> bool:
         """
-        This method computes the done flag. This method can be redefined.
+        This method computes the success flag. This method can be redefined.
 
         Parameters
         ----------
@@ -986,7 +988,7 @@ class BGLP (Environment):
         Returns
         -------
         bool
-            done or not done.
+            success or not success.
 
         """        
         if self.prod_scenario == 'continuous':

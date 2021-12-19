@@ -14,10 +14,11 @@
 ## -- 2021-10-05  1.0.4     SY       Update following new attributes done and broken in State
 ## -- 2021-11-15  1.0.5     DA       Refactoring
 ## -- 2021-12-03  1.0.6     DA       Refactoring
+## -- 2021-12-19  1.0.7     DA       Replaced 'done' by 'success'
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2021-12-03)
+Ver. 1.0.7 (2021-12-19)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -137,9 +138,9 @@ class GridWorld (Environment):
         self.num_step += 1
         euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos)
         if euclidean_distance == 0:
-            self._state.set_done(True)
+            self._state.set_success(True)
         else:
-            self._state.set_done(False)
+            self._state.set_success(False)
         self._state = self.get_state()
         return self._state
         
@@ -159,10 +160,10 @@ class GridWorld (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_done(self, p_state:State) -> bool:
+    def _compute_success(self, p_state:State) -> bool:
         if self.num_step >= self.max_step:
             return True
-        elif self.get_done() == True:
+        elif self.get_success() == True:
             return True
 
         return False

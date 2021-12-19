@@ -26,10 +26,12 @@
 ## -- 2021-11-16  1.2.7     DA       Refactoring
 ## -- 2021-11-16  1.2.8     SY       Refactoring
 ## -- 2021-12-03  1.2.9     DA       Refactoring
+## -- 2021-12-19  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
+## --                                - Optimized 'done' detection in both 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.9 (2021-12-03)
+Ver. 1.3.0 (2021-12-19)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -106,7 +108,10 @@ class WrEnvGYM2MLPro (Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None):
+
+        # 0 Intro
         self.log(self.C_LOG_TYPE_I, 'Reset')
+        self._num_cycles = 0
 
         # 1 Reset Gym environment and determine initial state
         self._gym_env.seed(p_seed)
@@ -116,7 +121,6 @@ class WrEnvGYM2MLPro (Environment):
         # 2 Create state object from Gym observation
         state   = State(self._state_space)
         state.set_values(obs.get_data())
-        state.set_done(True)
         self._set_state(state)
 
 
@@ -135,6 +139,9 @@ class WrEnvGYM2MLPro (Environment):
         else:
             action_gym = action_sorted.astype(self._gym_env.action_space.dtype)
 
+        self._num_cycles += 1
+
+
         # 2 Process step of Gym environment
         try:
             observation, reward_gym, done, info = self._gym_env.step(action_gym)
@@ -143,14 +150,19 @@ class WrEnvGYM2MLPro (Environment):
         
         obs     = DataObject(observation)
 
+
         # 3 Create state object from Gym observation
         state   = State(self._state_space)
         state.set_values(obs.get_data())
-        state.set_done(done)
+
+        if done and (self._num_cycles < self.get_cycle_limit()):
+            state.set_broken(True)
+
 
         # 4 Create reward object
         self._reward = Reward(Reward.C_TYPE_OVERALL)
         self._reward.set_overall_reward(reward_gym)
+
 
         # 5 Return next state
         return state
@@ -165,8 +177,8 @@ class WrEnvGYM2MLPro (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state:State) -> bool:
-        return self.get_done()
+    def compute_success(self, p_state:State) -> bool:
+        return self.get_success()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -271,18 +283,23 @@ class WrEnvMLPro2GYM(gym.Env):
         _action.add_elem('0', _act_elem)
         
         self._mlpro_env.process_action(_action)
-        reward          = self._mlpro_env.compute_reward()
+        reward = self._mlpro_env.compute_reward()
+        self._num_cycles += 1
         
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):
             obs = np.array(self._mlpro_env.get_state().get_values(), dtype=np.float32)
         else:
             obs = np.array(self._mlpro_env.get_state().get_values())
-        return obs, reward.get_overall_reward(), self._mlpro_env.get_done(), {}
+
+        done = self._mlpro_env.get_broken() or ( self._num_cycles >= self._mlpro_env.get_cycle_limit() )
+
+        return obs, reward.get_overall_reward(), done, {}
     
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self):
+        self._num_cycles = 0
         self._mlpro_env.reset()
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):

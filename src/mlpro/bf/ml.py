@@ -1017,10 +1017,9 @@ class Training (Log):
 
         if mode == self.C_MODE_TRAIN:
             self._results.num_cycles_train += 1
+            self._results.num_cycles += 1
         elif mode == self.C_MODE_EVAL:
             self._results.num_cycles_eval += 1
-
-        self._results.num_cycles += 1
 
 
         # 3 Assess results

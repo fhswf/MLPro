@@ -18,10 +18,11 @@
 ## -- 2021-10-05  1.0.6     DA       Class State: new attributes done, broken and related methods 
 ## -- 2021-10-05  1.0.7     SY       Bugfixes and minor improvements
 ## -- 2021-12-12  1.0.8     DA       Reward type C_TYPE_EVERY_ACTION disabled
+## -- 2021-12-19  1.1.0     DA       Class State: replaced term 'done' by 'success'
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2021-12-12)
+Ver. 1.1.0 (2021-12-19)
 
 This module provides model classes for state, action and reward data and their buffering.
 """
@@ -48,18 +49,18 @@ class State(Element, TStamp):
     def __init__(self, p_state_space:MSpace):
         TStamp.__init__(self)
         Element.__init__(self, p_state_space)
-        self.set_done(False)
+        self.set_success(False)
         self.set_broken(False)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_done(self) -> bool:
-        return self._done
+    def get_success(self) -> bool:
+        return self._success
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_done(self, p_done:bool):
-        self._done = p_done
+    def set_success(self, p_success:bool):
+        self._success = p_success
 
 
 ## -------------------------------------------------------------------------------------------------

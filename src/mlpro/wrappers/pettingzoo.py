@@ -19,10 +19,12 @@
 ## -- 2021-11-16  1.2.7     SY       Refactoring
 ## -- 2021-12-09  1.2.8     SY       Update process action procedure in WrEnvMLPro2PZoo()
 ## -- 2021-12-11  1.2.9     SY       Update WrEnvPZOO2MLPro() in setting up done flag
+## -- 2021-12-19  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
+## --                                - Optimized 'done' detection in both 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.8 (2021-12-11)
+Ver. 1.3.0 (2021-12-19)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -110,8 +112,11 @@ class WrEnvPZOO2MLPro(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None):
+
+        # 0 Intro
         self.log(self.C_LOG_TYPE_I, 'Reset')
-        
+        self._num_cycles = 0
+
         # 1 Reset Zoo environment and determine initial state
         self._zoo_env.seed(p_seed)
         self._zoo_env.reset()
@@ -148,11 +153,14 @@ class WrEnvPZOO2MLPro(Environment):
             
         # 2 Process step of Zoo environment that automatically switches control to the next agent.
             observation, reward_zoo, done, info = self._zoo_env.last()
-            new_state.set_done(done)
+
             obs     = DataObject(observation)
             
-            if new_state.get_done():
+            if done:
                 self._zoo_env.step(None)
+
+                if self._num_cycles < self.get_cycle_limit(): 
+                    new_state.set_broken(True)
             else:
                 try:
                     self._zoo_env.step(action_zoo)
@@ -183,8 +191,8 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state:State) -> bool:
-        return self.get_done()
+    def compute_success(self, p_state:State) -> bool:
+        return self.get_success()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -303,7 +311,7 @@ class WrEnvMLPro2PZoo():
                     if not self.rewards[self.possible_agents[i]]:
                         self.rewards[self.possible_agents[i]] = 0
             
-            if self._mlpro_env.get_done():
+            if self._mlpro_env.get_broken():
                 self.dones = {agent: True for agent in self.agents}
             
             self.agent_selection = self._agent_selector.next()
@@ -324,6 +332,7 @@ class WrEnvMLPro2PZoo():
 
 ## -------------------------------------------------------------------------------------------------
         def reset(self):
+            self._num_cycles = 0
             self.agents = self.possible_agents[:]
             self.rewards = {agent: 0 for agent in self.agents}
             self._cumulative_rewards = {agent: 0 for agent in self.agents}
@@ -336,6 +345,7 @@ class WrEnvMLPro2PZoo():
             
             self._agent_selector = agent_selector(self.agents)
             self.agent_selection = self._agent_selector.next()
+
 
 ## -------------------------------------------------------------------------------------------------
         def render(self, mode='human'):
