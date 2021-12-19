@@ -11,6 +11,7 @@ from sensor_msgs.msg import JointState
 from gazebo_msgs.msg import ContactsState
 from geometry_msgs.msg import Pose
 from gazebo_msgs.srv import GetWorldProperties, GetModelState
+from actionlib_msgs.msg import GoalStatusArray
 
 from openai_ros import robot_gazebo_env
 from openai_ros.openai_ros_common import ROSLauncher
@@ -84,6 +85,7 @@ class MultiGeoRobotEnv(robot_gazebo_env.RobotGazeboEnv):
         self._check_all_systems_ready()
         
         rospy.Subscriber("/joint_states", JointState, self._joints_state_callback)
+        rospy.Subscriber("/move_group/status", GoalStatusArray, self._plan_status_feedback)
         rospy.Subscriber('/right_inner_finger_pad_bumper/', ContactsState, self._right_contact_state_callback)
         rospy.Subscriber('/left_inner_finger_pad_bumper/', ContactsState, self._left_contact_state_callback)
         self.last_contact_r = 0
@@ -157,10 +159,20 @@ class MultiGeoRobotEnv(robot_gazebo_env.RobotGazeboEnv):
             except:
                 rospy.logerr("Current /joint_states not ready yet, retrying for getting joint_states")
         return self.joint_states
+
+    def _no_motion_plan(self, data):
+        if data.status_list:
+            if data.status_list[-1].text in "No motion plan found. No execution attempted.":
+                return True
+        return False
         
     def _joints_state_callback(self, data):
         self.joint_states, self.gripper_states = self._JointState_numpy(data)
         return 
+
+    def _plan_status_feedback(self, data):
+        self.no_motion_plan = self._no_motion_plan(data)
+        return
         
     def _right_contact_state_callback(self, data):
         for state in data.states:

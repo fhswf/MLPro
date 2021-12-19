@@ -7,5 +7,6 @@ multi_geo_robot:
   arm_mass: [9, 2, 2]
   adapter_mass: 5
   eef_dummy: False
+  max_iterations: 20
   reaching_task:
     task_and_robot_environment_name: 'MultiGeoRobotReach-v0'
