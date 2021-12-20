@@ -212,7 +212,8 @@ class WrPolicySB32MLPro (Policy):
             return False
 
         last_obs = torch.Tensor(np.array([self.last_buffer_element.get_data()["state_new"].get_values()])).to(self.sb3.device)
-        last_done = np.array([self.last_buffer_element.get_data()["state_new"].get_success()])
+        last_done = self.last_buffer_element.get_data()["state_new"].get_broken() or self.last_buffer_element.get_data()["state_new"].get_success()
+        last_done = np.array([last_done])
 
         # Get the next value from the last observation
         with torch.no_grad():
@@ -271,11 +272,13 @@ class WrPolicySB32MLPro (Policy):
         self.sb3.num_timesteps += 1
         self.last_buffer_element = self._add_additional_buffer(p_buffer_element)
         datas = self.last_buffer_element.get_data()
+
+        done = datas["state"].get_broken() or datas["state"].get_success()
         self.sb3.rollout_buffer.add(
                             datas["state"].get_values(),
                             datas["action"].get_sorted_values(),
                             datas["reward"].get_overall_reward(),
-                            datas["state"].get_success(),
+                            done,
                             datas["value"],
                             datas["action_log"])
 
