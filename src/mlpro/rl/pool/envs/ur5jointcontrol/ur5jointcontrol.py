@@ -114,6 +114,8 @@ class UR5JointControl(Environment):
         random.seed(p_seed)
         obs = self.env.reset()
         self._state = self._obs_to_state(obs)
+        self._state.set_success(True)
+        self._state.set_broken(True)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -122,9 +124,13 @@ class UR5JointControl(Environment):
         self._num_cycles += 1
         state = self._obs_to_state(obs)
         close = np.allclose(a=obs[:3], b=obs[3:], atol=0.05)
-        if done and not close and ( self._num_cycles < self.get_cycle_limit() ):
+        
+        if not done:
+            state.set_broken(False)
+            state.set_success(False)
+        elif not close and ( self._num_cycles < self.get_cycle_limit() ):
             state.set_broken(True)
-
+            
         return state
 
 
