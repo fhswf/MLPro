@@ -65,6 +65,7 @@ class WrEnvGYM2MLPro (Environment):
 
         self._gym_env     = p_gym_env
         self.C_NAME       = 'Env "' + self._gym_env.spec.id + '"'
+        self._num_cycles  = 0
         super().__init__(p_mode=Environment.C_MODE_SIM, p_latency=None, p_logging=p_logging)
 
         if p_state_space is not None: 
