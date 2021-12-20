@@ -12,6 +12,7 @@
 ## -- 2021-10-05  1.0.3     SY       Update following new attributes done and broken in State
 ## -- 2021-12-03  1.0.4     DA       Refactoring
 ## -- 2021-12-20  1.0.5     DA       Replaced 'done' by 'success'
+## -- 2021-12-20  1.0.5     WB       Update 'success' and 'broken' rule
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -113,7 +114,6 @@ class UR5JointControl(Environment):
         random.seed(p_seed)
         obs = self.env.reset()
         self._state = self._obs_to_state(obs)
-        self._state.set_success(True)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -121,8 +121,8 @@ class UR5JointControl(Environment):
         obs, self.reward_gym, done, info = self.env.step(p_action.get_sorted_values())
         self._num_cycles += 1
         state = self._obs_to_state(obs)
-
-        if done and ( self._num_cycles < self.get_cycle_limit() ):
+        close = np.allclose(a=obs[:3], b=obs[3:], atol=0.05)
+        if done and not close and ( self._num_cycles < self.get_cycle_limit() ):
             state.set_broken(True)
 
         return state
@@ -142,9 +142,7 @@ class UR5JointControl(Environment):
     def _evaluate_state(self) -> None: 
         obs = self.env.get_observation()
         
-        close = np.allclose(a=obs[:3], 
-                            b=obs[3:], 
-                            atol=0.05)
+        close = np.allclose(a=obs[:3], b=obs[3:], atol=0.05)
         if close:
             self._state.set_success(True)
 
