@@ -5,15 +5,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-09-11  1.0.0     MRD      Creation
-## -- 2021-09-21  1.0.0     MRD      Release First Version
-## -- 2021-10-27  1.0.1     MRD      Added Policy Loss Check between Native and Wrapper
-## -- 2021-12-08  1.0.2     DA       Refactoring
-## -- 2021-12-20  1.0.3     DA       Refactoring
+## -- 2021-12-20  1.0.0     MRD      Adapted from test_sb3_policy_wrapper.py
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2021-12-20)
+Ver. 1.0.0 (2021-12-20)
 
 Unit test classes for environment.
 """
