@@ -684,13 +684,15 @@ class TrainingResults (Log, Saveable):
         Id of first cycle of this run.
     p_path : str
         Optional estination path to store the results.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
 
     """
 
     C_TYPE      = 'Results '
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_path=None):
+    def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_path=None, p_logging=Log.C_LOG_WE):
         self.scenario           = p_scenario
         self.run                = p_run
         self.ts_start           = datetime.now()
@@ -707,7 +709,7 @@ class TrainingResults (Log, Saveable):
 
         self.custom_results     = []
 
-        Log.__init__(self, p_logging=Log.C_LOG_ALL)
+        Log.__init__(self, p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1009,7 +1011,11 @@ class Training (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_results(self) -> TrainingResults:
-        return self.C_CLS_RESULTS(self._scenario, self._current_run, self._scenario.get_cycle_id(), self._current_path)
+        return self.C_CLS_RESULTS(self._scenario, 
+                                  self._current_run, 
+                                  self._scenario.get_cycle_id(), 
+                                  p_path=self._current_path,
+                                  p_logging=self._level)
 
 
 ## -------------------------------------------------------------------------------------------------
