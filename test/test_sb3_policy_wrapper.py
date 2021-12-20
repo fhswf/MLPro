@@ -9,10 +9,11 @@
 ## -- 2021-09-21  1.0.0     MRD      Release First Version
 ## -- 2021-10-27  1.0.1     MRD      Added Policy Loss Check between Native and Wrapper
 ## -- 2021-12-08  1.0.2     DA       Refactoring
+## -- 2021-12-20  1.0.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-12-08)
+Ver. 1.0.3 (2021-12-20)
 
 Unit test classes for environment.
 """
@@ -43,6 +44,7 @@ def test_sb3_policy_wrapper(env_cls):
             class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
                 def reset(self, p_seed=None):
                     self.log(self.C_LOG_TYPE_I, 'Reset')
+                    self._num_cycles = 0
 
                     # 1 Reset Gym environment and determine initial state
                     observation = self._gym_env.reset()
@@ -51,7 +53,7 @@ def test_sb3_policy_wrapper(env_cls):
                     # 2 Create state object from Gym observation
                     state   = State(self._state_space)
                     state.set_values(obs.get_data())
-                    state.set_done(True)
+                    state.set_success(True)
                     self._set_state(state)
 
             # 1 Setup environment
