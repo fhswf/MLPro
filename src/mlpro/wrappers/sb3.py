@@ -11,10 +11,11 @@
 ## -- 2021-10-18  1.1.0     MRD      SB3 Off Policy Wrapper on WrPolicySB32MLPro
 ## -- 2021-10-27  1.1.1     MRD      Mismatch datatype last_done on WrPolicySB32MLPro
 ## -- 2021-11-18  1.1.2     MRD      Put DummyEnv class outside the WrPolicySB32MLPro
+## -- 2021-12-20  1.1.3     DA       Replaced calls get_done() by get_success()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2021-11-18)
+Ver. 1.1.3 (2021-12-20)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -211,7 +212,7 @@ class WrPolicySB32MLPro (Policy):
             return False
 
         last_obs = torch.Tensor(np.array([self.last_buffer_element.get_data()["state_new"].get_values()])).to(self.sb3.device)
-        last_done = np.array([self.last_buffer_element.get_data()["state_new"].get_done()])
+        last_done = np.array([self.last_buffer_element.get_data()["state_new"].get_success()])
 
         # Get the next value from the last observation
         with torch.no_grad():
@@ -251,7 +252,7 @@ class WrPolicySB32MLPro (Policy):
             self.sb3.replay_buffer.next_observations[self.sb3.replay_buffer.pos-1] = datas["state"].get_values().copy()
             self.last_done = False
 
-        if datas["state_new"].get_done():
+        if datas["state_new"].get_success():
             self.last_done = True
 
         self.sb3.replay_buffer.add(
@@ -259,7 +260,7 @@ class WrPolicySB32MLPro (Policy):
                             datas["state_new"].get_values(),
                             datas["action"].get_sorted_values(),
                             datas["reward"].get_overall_reward(),
-                            datas["state"].get_done(),
+                            datas["state"].get_success(),
                             [info])
 
     def _add_buffer_on_policy(self, p_buffer_element: SARSElement):
@@ -274,7 +275,7 @@ class WrPolicySB32MLPro (Policy):
                             datas["state"].get_values(),
                             datas["action"].get_sorted_values(),
                             datas["reward"].get_overall_reward(),
-                            datas["state"].get_done(),
+                            datas["state"].get_success(),
                             datas["value"],
                             datas["action_log"])
 

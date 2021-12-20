@@ -151,6 +151,7 @@ training = RLTraining(
         p_stagnation_limit=stagnation_limit,
         p_eval_frequency=eval_frequency,
         p_eval_grp_size=eval_grp_size,
+        p_success_ends_epi=True,
         p_path=path,
         p_visualize=visualize,
         p_logging=logging )

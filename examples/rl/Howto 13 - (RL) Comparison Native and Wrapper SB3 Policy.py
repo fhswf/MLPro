@@ -9,10 +9,11 @@
 ## -- 2021-10-27  1.0.0     MRD      Released first version
 ## -- 2021-11-16  1.0.1     DA       Refactoring
 ## -- 2021-12-07  1.0.2     DA       Refactoring
+## -- 2021-12-20  1.0.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-12-07)
+Ver. 1.0.3 (2021-12-20)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
@@ -58,6 +59,7 @@ class MyScenario(RLScenario):
         class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
             def reset(self, p_seed=None):
                 self.log(self.C_LOG_TYPE_I, 'Reset')
+                self._num_cycles = 0 
 
                 # 1 Reset Gym environment and determine initial state
                 observation = self._gym_env.reset()
@@ -66,7 +68,7 @@ class MyScenario(RLScenario):
                 # 2 Create state object from Gym observation
                 state   = State(self._state_space)
                 state.set_values(obs.get_data())
-                state.set_done(True)
+                state.set_success(True)
                 self._set_state(state)
 
         # 1 Setup environment
@@ -105,6 +107,8 @@ class MyScenario(RLScenario):
             p_ada=p_ada,
             p_logging=p_logging
         )
+
+
 
 
 # 3 Instantiate training

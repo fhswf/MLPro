@@ -20,7 +20,7 @@
 ## -- 2021-12-09  1.2.8     SY       Update process action procedure in WrEnvMLPro2PZoo()
 ## -- 2021-12-11  1.2.9     SY       Update WrEnvPZOO2MLPro() in setting up done flag
 ## -- 2021-12-19  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
-## --                                - Optimized 'done' detection in both 
+## --                                - Optimized 'done' detection in both classes
 ## -------------------------------------------------------------------------------------------------
 
 """

@@ -24,11 +24,13 @@
 ## -- 2021-12-09  1.3.2     DA       Class RLTraining: introduced dynamic parameters **p_kwargs
 ## -- 2021-12-12  1.4.0     DA       Class RLTraining: evaluation and stagnation detection added
 ## -- 2021-12-16  1.4.1     DA       Method RLTraining._close_evaluation(): optimized scoring
-## -- 2021-12-20  1.4.2     DA       Class RLTraining: reworked evaluation strategy
+## -- 2021-12-20  1.5.0     DA       Class RLTraining: 
+## --                                - reworked evaluation strategy
+## --                                - new parameter p_success_ends_epi
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2021-12-20)
+Ver. 1.5.0 (2021-12-20)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -40,7 +42,6 @@ from mlpro.bf.math import *
 from mlpro.bf.data import *
 from mlpro.bf.ml import *
 from mlpro.rl.models_env import *
-from statistics import mean
 
 
 
@@ -488,6 +489,8 @@ class RLTraining (Training):
         Optional evaluation frequency (0=no evaluation). Default = 0.
     p_eval_grp_size : int
         Number of evaluation episodes (eval group). Default = 0.
+    p_success_ends_epi : bool
+        If True, an episode is ended when the env has been reached a success state. Default = False.
     p_hpt : HyperParamTuner
         Optional hyperparameter tuner (see class mlpro.bf.ml.HyperParamTuner). Default = None.
     p_hpt_trials : int
@@ -549,28 +552,35 @@ class RLTraining (Training):
             self._eval_grp_size = 0
             self._kwargs['p_eval_grp_size'] = self._eval_grp_size
 
-        # 2.5 Optional parameter p_collect_states
+        # 2.5 Optional parameter p_success_ends_epi
+        try:
+            self._success_ends_epi = self._kwargs['p_success_ends_epi']
+        except:
+            self._success_ends_epi = False
+            self._kwargs['p_success_ends_epi'] = self._success_ends_epi
+
+        # 2.6 Optional parameter p_collect_states
         try:
             self._collect_states = self._kwargs['p_collect_states']
         except:
             self._collect_states = True
             self._kwargs['p_collect_states'] = self._collect_states
 
-        # 2.6 Optional parameter p_collect_actions
+        # 2.7 Optional parameter p_collect_actions
         try:
             self._collect_actions = self._kwargs['p_collect_actions']
         except:
             self._collect_actions = True
             self._kwargs['p_collect_actions'] = self._collect_actions
 
-        # 2.7 Optional parameter p_collect_rewards
+        # 2.8 Optional parameter p_collect_rewards
         try:
             self._collect_rewards = self._kwargs['p_collect_rewards']
         except:
             self._collect_rewards = True
             self._kwargs['p_collect_rewards'] = self._collect_rewards
 
-        # 2.8 Optional parameter p_collect_eval
+        # 2.9 Optional parameter p_collect_eval
         try:
             self._collect_eval = self._kwargs['p_collect_eval']
         except:
@@ -881,9 +891,6 @@ class RLTraining (Training):
         if adapted: 
             self._results.num_adaptations += 1
 
-        if success:
-            self.log(self.C_LOG_TYPE_I, 'Objective of environment reached')
-
 
         # 3 Update current evaluation
         if self._mode == self.C_MODE_EVAL:
@@ -893,6 +900,14 @@ class RLTraining (Training):
         # 4 Check: Episode finished?
         if error:
             eof_episode = True
+
+        if success:
+            if self._success_ends_epi: 
+                self.log(self.C_LOG_TYPE_W, 'Objective of environment reached (End of episode)')
+                eof_episode = True
+            else:
+                self.log(self.C_LOG_TYPE_I, 'Objective of environment reached')
+
 
         if self._cycles_episode == self._cycles_per_epi_limit:
             self.log(self.C_LOG_TYPE_W, 'Episode cycle limit ', str(self._cycles_per_epi_limit), ' reached')
