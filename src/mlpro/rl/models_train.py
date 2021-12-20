@@ -24,11 +24,11 @@
 ## -- 2021-12-09  1.3.2     DA       Class RLTraining: introduced dynamic parameters **p_kwargs
 ## -- 2021-12-12  1.4.0     DA       Class RLTraining: evaluation and stagnation detection added
 ## -- 2021-12-16  1.4.1     DA       Method RLTraining._close_evaluation(): optimized scoring
-## -- 2021-12-17  1.4.2     DA       Class RLTraining: reworked evaluation strategy
+## -- 2021-12-20  1.4.2     DA       Class RLTraining: reworked evaluation strategy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2021-12-17)
+Ver. 1.4.2 (2021-12-20)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -444,8 +444,8 @@ class RLTrainingResults (TrainingResults):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def log_results(self):
-        super().log_results()
+    def _log_results(self):
+        super()._log_results()
         self.log(self.C_LOG_TYPE_W, '-- Training Episodes :', self.num_episodes)
         self.log(self.C_LOG_TYPE_W, '-- Evaluations       :', self.num_evaluations)
 

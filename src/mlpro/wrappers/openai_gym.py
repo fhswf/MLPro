@@ -155,7 +155,7 @@ class WrEnvGYM2MLPro (Environment):
         state   = State(self._state_space)
         state.set_values(obs.get_data())
 
-        if done and (self._num_cycles < self.get_cycle_limit()):
+        if done and ( self._num_cycles < self.get_cycle_limit() ):
             state.set_broken(True)
 
 

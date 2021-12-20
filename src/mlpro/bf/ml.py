@@ -26,12 +26,12 @@
 ## -- 2021-12-10  1.2.5     DA       Class HyperParamTuner: changed interface of method maximize()
 ## -- 2021-12-12  1.3.0     DA       Classes Scenario, Training, TrainingResults: introduced number
 ## --                                of adapatations
-## -- 2021-12-19  1.3.1     DA       - Minor changes on class Training
+## -- 2021-12-20  1.3.1     DA       - Minor changes on class Training
 ## --                                - Added log functionality to class TrainingResults
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-19)
+Ver. 1.3.1 (2021-12-20)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -726,6 +726,14 @@ class TrainingResults (Log, Saveable):
     def log_results(self):
         self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
         self.log(self.C_LOG_TYPE_W, '-- Training Results of run', self.run)
+        self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+        self._log_results()
+        self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+        self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+
+
+## -------------------------------------------------------------------------------------------------
+    def _log_results(self):
         self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
         self.log(self.C_LOG_TYPE_W, '-- Scenario          :', self.scenario.C_TYPE, self.scenario.C_NAME)
         self.log(self.C_LOG_TYPE_W, '-- Model             :', self.scenario.get_model().C_TYPE, self.scenario.get_model().C_NAME)
