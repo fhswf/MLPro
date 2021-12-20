@@ -411,6 +411,8 @@ class RLTrainingResults (TrainingResults):
         Id of first cycle of this run.
     p_path : str
         Optional destination path to store the results.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
 
     """
 
@@ -425,8 +427,8 @@ class RLTrainingResults (TrainingResults):
     C_CPAR_NUM_EVAL         = 'Evaluations'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:RLScenario, p_run, p_cycle_id, p_path=None):
-        super().__init__(p_scenario, p_run, p_cycle_id, p_path=p_path)
+    def __init__(self, p_scenario:RLScenario, p_run, p_cycle_id, p_path=None, p_logging=Log.C_LOG_WE):
+        super().__init__(p_scenario, p_run, p_cycle_id, p_path=p_path, p_logging=p_logging)
 
         self.num_episodes       = 0
         self.num_evaluations    = 0
