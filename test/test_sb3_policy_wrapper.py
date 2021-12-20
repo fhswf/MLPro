@@ -128,7 +128,7 @@ def test_sb3_policy_wrapper(env_cls):
     training        = RLTraining(
         p_scenario_cls=MyScenario,
         p_cycle_limit=100,
-        p_max_stagnations=0,
+        p_stagnation_limit=0,
         p_collect_states=True,
         p_collect_actions=True,
         p_collect_rewards=True,
