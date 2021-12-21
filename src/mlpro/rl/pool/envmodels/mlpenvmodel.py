@@ -8,10 +8,11 @@
 ## -- 2021-12-17  0.0.0     MRD      Creation
 ## -- 2021-12-17  1.0.0     MRD      Released first version
 ## -- 2021-12-20  1.0.1     DA       Replaced 'done' by 'success'
+## -- 2021-12-21  1.0.2     DA       Class MLPEnvMdel: renamed method reset() to _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-12-20)
+Ver. 1.0.2 (2021-12-21)
 
 This module provides Environment Model based on MLP Neural Network for
 robotinhtm environment.
@@ -204,7 +205,7 @@ class MLPEnvModel(EnvModel, Mode):
         self.RobotArm1.update_joint_coords()
         self.jointangles = self.RobotArm1.thetas
 
-    def reset(self, p_seed=None) -> None:
+    def _reset(self, p_seed=None) -> None:
         self.set_random_seed(p_seed)
         theta = torch.zeros(self.RobotArm1.get_num_joint())
         self.RobotArm1.set_theta(theta)

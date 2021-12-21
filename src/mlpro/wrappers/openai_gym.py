@@ -26,16 +26,17 @@
 ## -- 2021-11-16  1.2.7     DA       Refactoring
 ## -- 2021-11-16  1.2.8     SY       Refactoring
 ## -- 2021-12-03  1.2.9     DA       Refactoring
-## -- 2021-12-19  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
-## --                                - Optimized 'done' detection in both 
+## -- 2021-12-21  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
+## --                                - Optimized 'done' detection in both classed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-12-19)
+Ver. 1.3.0 (2021-12-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
 
+from itertools import cycle
 import gym
 from mlpro.rl.models import *
 
@@ -66,6 +67,7 @@ class WrEnvGYM2MLPro (Environment):
         self._gym_env     = p_gym_env
         self.C_NAME       = 'Env "' + self._gym_env.spec.id + '"'
         self._num_cycles  = 0
+
         super().__init__(p_mode=Environment.C_MODE_SIM, p_latency=None, p_logging=p_logging)
 
         if p_state_space is not None: 
@@ -108,10 +110,9 @@ class WrEnvGYM2MLPro (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None):
+    def _reset(self, p_seed=None):
 
-        # 0 Intro
-        self.log(self.C_LOG_TYPE_I, 'Reset')
+        # 0 Reset cycle counter
         self._num_cycles = 0
 
         # 1 Reset Gym environment and determine initial state
@@ -140,8 +141,6 @@ class WrEnvGYM2MLPro (Environment):
         else:
             action_gym = action_sorted.astype(self._gym_env.action_space.dtype)
 
-        self._num_cycles += 1
-
 
         # 2 Process step of Gym environment
         try:
@@ -149,15 +148,14 @@ class WrEnvGYM2MLPro (Environment):
         except:
             observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
         
-        obs     = DataObject(observation)
+        obs               = DataObject(observation)
+        self._num_cycles += 1
+        cycle_limit       = self.get_cycle_limit()
 
 
         # 3 Create state object from Gym observation
-        state   = State(self._state_space)
+        state = State(self._state_space, p_terminal=done, p_timeout=(cycle_limit > 0) and (self._num_cycles >= cycle_limit) )
         state.set_values(obs.get_data())
-
-        if done and ( self._num_cycles < self.get_cycle_limit() ):
-            state.set_broken(True)
 
 
         # 4 Create reward object
@@ -229,6 +227,7 @@ class WrEnvMLPro2GYM(gym.Env):
         """
 
         self._mlpro_env             = p_mlpro_env
+        self._num_cycles            = 0
         
         if p_state_space is not None: 
             self.observation_space  = p_state_space
@@ -285,7 +284,6 @@ class WrEnvMLPro2GYM(gym.Env):
         
         self._mlpro_env.process_action(_action)
         reward = self._mlpro_env.compute_reward()
-        self._num_cycles += 1
         
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):
@@ -293,7 +291,9 @@ class WrEnvMLPro2GYM(gym.Env):
         else:
             obs = np.array(self._mlpro_env.get_state().get_values())
 
-        done = self._mlpro_env.get_broken() or ( self._num_cycles >= self._mlpro_env.get_cycle_limit() )
+        self._num_cycles += 1
+        cycle_limit = self._mlpro_env.get_cycle_limit()
+        done = ( self._mlpro_env.get_state().get_terminal() ) or ( (cycle_limit > 0) and (self._num_cycles>=cycle_limit) )
 
         return obs, reward.get_overall_reward(), done, {}
     

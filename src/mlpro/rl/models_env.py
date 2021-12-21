@@ -21,10 +21,15 @@
 ## -- 2021-12-10  1.2.2     DA       Code optimization and bugfixes
 ## -- 2021-12-12  1.2.3     DA       New method EnvBase.get_last_reward()
 ## -- 2021-12-19  1.3.0     DA       Replaced term 'done' by 'success'
+## -- 2021-12-21  1.4.0     DA       - Class EnvBase: 
+## --                                    - new custom method _reset()
+## --                                    - new custom method get_cycle_limit()
+## --                                    - timeout detection
+## --                                - Class EnvModel: cycle limit detection
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-12-19)
+Ver. 1.4.0 (2021-12-21)
 
 This module provides model classes for environments and environnment models.
 """
@@ -523,6 +528,8 @@ class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scien
         self._prev_state    = None
         self._last_action   = None
         self._last_reward   = None
+        self._num_cycles    = 0
+
         Log.__init__(self, p_logging=p_logging)
         self.set_latency(p_latency)
 
@@ -645,6 +652,15 @@ class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scien
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self) -> int:
+        """
+        Returns limit of cycles per training episode. To be implemented in child classes.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
         """
         Resets the internal random generator using the given seed.
@@ -662,7 +678,26 @@ class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scien
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None) -> None:
         """
-        Resets environment to initial state. Please redefine.
+        Resets environment to an initial state by calling the related custom method _reset().
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed parameter for an internal random generator
+
+        """
+
+        self.log(self.C_LOG_TYPE_I, 'Reset')
+        self._num_cycles = 0
+        self._reset(p_seed)
+        if self._state is not None:
+            self._state.set_initial(True)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None) -> None:
+        """
+        Custom method to reset the environment to an initial/defined state. 
 
         Parameters
         ----------
@@ -687,7 +722,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scien
 
         Returns
         -------
-        bool
+        success : bool
             True, if action processing was successfull. False otherwise.
 
         """
@@ -703,6 +738,12 @@ class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scien
             self.log(self.C_LOG_TYPE_I, 'Action processing finished successfully')
         else:
             self.log(self.C_LOG_TYPE_E, 'Action processing failed')
+
+        self._num_cycles += 1
+
+        cycle_limit = self.get_cycle_limit()
+        
+        self.get_state().set_timeout( (cycle_limit>0) and ( self._num_cycles >= cycle_limit ) )
 
         return result
 
@@ -942,6 +983,7 @@ class Environment (EnvBase, Mode):
 
         Mode.__init__(self, p_mode, p_logging)
         self._state_space, self._action_space = self.setup_spaces()
+        self._num_cylces = 0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -963,12 +1005,16 @@ class Environment (EnvBase, Mode):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_cycle_limit(self):
+    def get_cycle_limit(self) -> int:
         """
         Returns limit of cycles per training episode.
         """
 
-        return self.C_CYCLE_LIMIT
+        if self.get_mode() == Mode.C_MODE_SIM:
+            return self.C_CYCLE_LIMIT
+        else:
+            # In real operation mode there is no cycle limit
+            return 0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1125,6 +1171,7 @@ class EnvModel(EnvBase, Model):
         self._afct_reward   = p_afct_reward
         self._afct_success  = p_afct_success
         self._afct_broken   = p_afct_broken
+        self._cycle_limit   = 0
 
 
         # 2 Check adaptive functions for compatibility with agent
@@ -1152,10 +1199,19 @@ class EnvModel(EnvBase, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None):
+    def _reset(self, p_seed=None):
         self.set_random_seed(p_seed=p_seed)
         self._state         = None
         self._prev_state    = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self) -> int:
+        """
+        Returns limit of cycles per training episode.
+        """
+
+        return self._cycle_limit
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1234,6 +1290,10 @@ class EnvModel(EnvBase, Model):
 
         if self._afct_broken is not None:
             adapted = adapted or self._afct_broken.adapt(state_new)
+
+        if ( self._cycle_limit == 0 ) and state_new.get_timeout():
+            # First timeout state defines the cycle limit
+            self._cycle_limit = self._num_cycles
 
         return adapted
 

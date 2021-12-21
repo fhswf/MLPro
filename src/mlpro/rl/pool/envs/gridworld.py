@@ -15,10 +15,11 @@
 ## -- 2021-11-15  1.0.5     DA       Refactoring
 ## -- 2021-12-03  1.0.6     DA       Refactoring
 ## -- 2021-12-19  1.0.7     DA       Replaced 'done' by 'success'
+## -- 2021-12-21  1.0.8     DA       Class GridWorld: renamed method reset() to _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2021-12-19)
+Ver. 1.0.8 (2021-12-21)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -101,7 +102,7 @@ class GridWorld (Environment):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None) -> None:
+    def _reset(self, p_seed=None) -> None:
         """
         To reset environment
         """

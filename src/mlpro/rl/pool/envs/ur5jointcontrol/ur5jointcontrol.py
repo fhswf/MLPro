@@ -12,11 +12,12 @@
 ## -- 2021-10-05  1.0.3     SY       Update following new attributes done and broken in State
 ## -- 2021-12-03  1.0.4     DA       Refactoring
 ## -- 2021-12-20  1.0.5     DA       Replaced 'done' by 'success'
-## -- 2021-12-20  1.0.5     WB       Update 'success' and 'broken' rule
+## -- 2021-12-20  1.0.6     WB       Update 'success' and 'broken' rule
+## -- 2021-12-21  1.0.7     DA       Class UR5JointControl: renamed method reset() to _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2021-12-20)
+Ver. 1.0.6 (2021-12-21)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
@@ -109,8 +110,7 @@ class UR5JointControl(Environment):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None) -> None:
-        self._num_cycles = 0
+    def _reset(self, p_seed=None) -> None:
         random.seed(p_seed)
         obs = self.env.reset()
         self._state = self._obs_to_state(obs)

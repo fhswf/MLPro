@@ -24,13 +24,11 @@
 ## -- 2021-12-09  1.3.2     DA       Class RLTraining: introduced dynamic parameters **p_kwargs
 ## -- 2021-12-12  1.4.0     DA       Class RLTraining: evaluation and stagnation detection added
 ## -- 2021-12-16  1.4.1     DA       Method RLTraining._close_evaluation(): optimized scoring
-## -- 2021-12-20  1.5.0     DA       Class RLTraining: 
-## --                                - reworked evaluation strategy
-## --                                - new parameter p_success_ends_epi
+## -- 2021-12-21  1.5.0     DA       Class RLTraining: reworked evaluation strategy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2021-12-20)
+Ver. 1.5.0 (2021-12-21)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -491,8 +489,6 @@ class RLTraining (Training):
         Optional evaluation frequency (0=no evaluation). Default = 0.
     p_eval_grp_size : int
         Number of evaluation episodes (eval group). Default = 0.
-    p_success_ends_epi : bool
-        If True, an episode is ended when the env has been reached a success state. Default = False.
     p_hpt : HyperParamTuner
         Optional hyperparameter tuner (see class mlpro.bf.ml.HyperParamTuner). Default = None.
     p_hpt_trials : int
@@ -554,35 +550,28 @@ class RLTraining (Training):
             self._eval_grp_size = 0
             self._kwargs['p_eval_grp_size'] = self._eval_grp_size
 
-        # 2.5 Optional parameter p_success_ends_epi
-        try:
-            self._success_ends_epi = self._kwargs['p_success_ends_epi']
-        except:
-            self._success_ends_epi = False
-            self._kwargs['p_success_ends_epi'] = self._success_ends_epi
-
-        # 2.6 Optional parameter p_collect_states
+        # 2.5 Optional parameter p_collect_states
         try:
             self._collect_states = self._kwargs['p_collect_states']
         except:
             self._collect_states = True
             self._kwargs['p_collect_states'] = self._collect_states
 
-        # 2.7 Optional parameter p_collect_actions
+        # 2.6 Optional parameter p_collect_actions
         try:
             self._collect_actions = self._kwargs['p_collect_actions']
         except:
             self._collect_actions = True
             self._kwargs['p_collect_actions'] = self._collect_actions
 
-        # 2.8 Optional parameter p_collect_rewards
+        # 2.7 Optional parameter p_collect_rewards
         try:
             self._collect_rewards = self._kwargs['p_collect_rewards']
         except:
             self._collect_rewards = True
             self._kwargs['p_collect_rewards'] = self._collect_rewards
 
-        # 2.9 Optional parameter p_collect_eval
+        # 2.8 Optional parameter p_collect_eval
         try:
             self._collect_eval = self._kwargs['p_collect_eval']
         except:
@@ -900,19 +889,30 @@ class RLTraining (Training):
 
 
         # 4 Check: Episode finished?
-        if error:
-            eof_episode = True
+        state       = self._env.get_state()
+        eof_episode = state.get_terminal()
 
-        if success:
-            if self._success_ends_epi: 
-                self.log(self.C_LOG_TYPE_W, 'Objective of environment reached (End of episode)')
-                eof_episode = True
+        if eof_episode:
+
+            if state.get_broken():
+                # 4.1 Environment reached a state of no return
+                self.log(self.C_LOG_TYPE_E, 'Environment broken')
+
+            elif state.get_success():
+                # 4.2 Objective of environment reached
+                self.log(self.C_LOG_TYPE_W, 'Objective of environment reached')
+
+            elif state.get_timeout():
+                # 4.3 Cycle limit of environment reached
+                self.log(self.C_LOG_TYPE_W, 'Limit of', self._env.get_cycle_limit(), 'cylces per episde reached (Environment)')
+
             else:
-                self.log(self.C_LOG_TYPE_I, 'Objective of environment reached')
+                # 4.4 Environment terminated the episode because of unknown reasons
+                self.log(self.C_LOG_TYPE_W, 'Environment terminated episode (reason unknown)')
 
-
-        if self._cycles_episode == self._cycles_per_epi_limit:
-            self.log(self.C_LOG_TYPE_W, 'Episode cycle limit ', str(self._cycles_per_epi_limit), ' reached')
+        elif self._cycles_episode == self._cycles_per_epi_limit:
+            # 4.5 Cycle limit of training setup reached
+            self.log(self.C_LOG_TYPE_W, 'Limit of', self._cycles_per_epi_limit, 'cylces per episde reached (Training)')
             eof_episode = True
 
         if eof_episode: 

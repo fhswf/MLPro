@@ -1063,7 +1063,7 @@ class Training (Log):
         # 3 Assess results
         if ( self._cycle_limit > 0 ) and ( self._results.num_cycles_train >= self._cycle_limit ):
             # 3.1 Cycle limit reached
-            self.log(self.C_LOG_TYPE_W, 'Cycle limit', self._cycle_limit, 'reached')
+            self.log(self.C_LOG_TYPE_W, 'Training cycle limit', self._cycle_limit, 'reached')
             run_finished = True
 
         if run_finished:

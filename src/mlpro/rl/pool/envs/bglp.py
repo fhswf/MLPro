@@ -23,10 +23,11 @@
 ## -- 2021-12-03  2.1.6     DA       Refactoring
 ## -- 2021-12-09  2.1.7     SY       Clean code assurance
 ## -- 2021-12-19  2.1.8     DA       Replaced 'done' by 'success'
+## -- 2021-12-21  2.1.9     DA       Class BGLP: renamed method reset() to _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.8 (2021-12-19)
+Ver. 2.1.9 (2021-12-21)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -891,7 +892,7 @@ class BGLP (Environment):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None) -> None:
+    def _reset(self, p_seed=None) -> None:
         """
         This method is used to reset the environment.
 

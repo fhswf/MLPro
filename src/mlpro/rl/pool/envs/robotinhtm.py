@@ -14,10 +14,11 @@
 ## -- 2021-12-03  1.1.1     DA       Refactoring
 ## -- 2021-12-08  1.1.2     MRD      Change the state, include the joint angles
 ## -- 2021-12-19  1.1.3     DA       Replaced 'done' by 'success'
+## -- 2021-12-21  1.1.4     DA       Class RobotHTM: renamed method reset() to _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2021-12-19)
+Ver. 1.1.4 (2021-12-21)
 
 This module provide an environment of a robot manipulator based on Homogeneous Matrix
 """
@@ -449,7 +450,7 @@ class RobotHTM(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None) -> None:
+    def _reset(self, p_seed=None) -> None:
         self.set_random_seed(p_seed)
         theta = torch.zeros(self.RobotArm1.get_num_joint())
         self.RobotArm1.set_theta(theta)

@@ -19,10 +19,13 @@
 ## -- 2021-10-05  1.0.7     SY       Bugfixes and minor improvements
 ## -- 2021-12-12  1.0.8     DA       Reward type C_TYPE_EVERY_ACTION disabled
 ## -- 2021-12-19  1.1.0     DA       Class State: replaced term 'done' by 'success'
+## -- 2021-12-21  1.1.1     DA       Class State: 
+## --                                - new attributes _initial, _terminal, _timeout
+## --                                - all attributes can be set as parameters of the constructor
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-12-19)
+Ver. 1.1.1 (2021-12-21)
 
 This module provides model classes for state, action and reward data and their buffering.
 """
@@ -42,15 +45,52 @@ from mlpro.bf.plot import *
 ## -------------------------------------------------------------------------------------------------
 class State(Element, TStamp):
     """
-    Objects of this class represent states of a given metric state space.
+    State of an environment as an element of a given state space. Additionally the state can be
+    labeled with various properties.
+
+    Parameters
+    ----------
+    p_state_space : MSpace
+        State space of the related environment.
+    p_initial : bool
+        This optional flag signals that the state is the first one after a reset. Default=False.
+    p_terminal : bool
+        This optional flag labels the state as a terminal state. Default=False.
+    p_success : bool
+        This optional flag labels the state as an objective state. Default=False.
+    p_broken : bool
+        This optional flag labels the state as a final error state. Default=False.
+    p_timeout : bool
+        This optional flag signals that the cycle limit of an episode has been reached. Default=False.
+
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_state_space:MSpace):
+    def __init__(self, 
+                 p_state_space:MSpace, 
+                 p_initial:bool=False,
+                 p_terminal:bool=False,
+                 p_success:bool=False,
+                 p_broken:bool=False,
+                 p_timeout:bool=False ):
+
         TStamp.__init__(self)
         Element.__init__(self, p_state_space)
-        self.set_success(False)
-        self.set_broken(False)
+        self.set_initial(p_initial)
+        self.set_terminal(p_terminal)
+        self.set_success(p_success)
+        self.set_broken(p_broken)
+        self.set_timeout(p_timeout)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_initial(self) -> bool:
+        return self._initial
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_initial(self, p_initial:bool):
+        self._initial = p_initial
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -71,6 +111,28 @@ class State(Element, TStamp):
 ## -------------------------------------------------------------------------------------------------
     def set_broken(self, p_broken:bool):
         self._broken = p_broken
+        if p_broken: self.set_terminal(True)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_timeout(self) -> bool:
+        return self._timeout
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_timeout(self, p_timeout:bool):
+        self._timeout = p_timeout
+        if p_timeout: self.set_terminal(True)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_terminal(self) -> bool:
+        return self._terminal
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_terminal(self, p_terminal:bool):
+        self._terminal = p_terminal
 
 
 

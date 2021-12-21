@@ -19,12 +19,12 @@
 ## -- 2021-11-16  1.2.7     SY       Refactoring
 ## -- 2021-12-09  1.2.8     SY       Update process action procedure in WrEnvMLPro2PZoo()
 ## -- 2021-12-11  1.2.9     SY       Update WrEnvPZOO2MLPro() in setting up done flag
-## -- 2021-12-19  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
+## -- 2021-12-21  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
 ## --                                - Optimized 'done' detection in both classes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-12-19)
+Ver. 1.3.0 (2021-12-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -66,6 +66,8 @@ class WrEnvPZOO2MLPro(Environment):
 
         self._zoo_env     = p_zoo_env
         self.C_NAME       = 'Env "' + self._zoo_env.metadata['name'] + '"'
+        self._num_cycles  = 0
+
         Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         
         if p_state_space is not None: 
@@ -111,10 +113,9 @@ class WrEnvPZOO2MLPro(Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None):
+    def _reset(self, p_seed=None):
 
-        # 0 Intro
-        self.log(self.C_LOG_TYPE_I, 'Reset')
+        # 0 Reset cycle counter
         self._num_cycles = 0
 
         # 1 Reset Zoo environment and determine initial state
@@ -136,6 +137,8 @@ class WrEnvPZOO2MLPro(Environment):
     def simulate_reaction(self, p_state:State, p_action:Action) -> State:
 
         new_state = State(self._state_space)
+        self._num_cycles += 1
+        cycle_limit = self.get_cycle_limit()
 
         # 1 Convert action to Zoo syntax
         action_sorted = p_action.get_sorted_values()
@@ -158,9 +161,9 @@ class WrEnvPZOO2MLPro(Environment):
             
             if done:
                 self._zoo_env.step(None)
+                new_state.set_terminal(True)
+                new_state.set_timeout( (cycle_limit>0) and (self._num_cycles >= cycle_limit) )
 
-                if self._num_cycles < self.get_cycle_limit(): 
-                    new_state.set_broken(True)
             else:
                 try:
                     self._zoo_env.step(action_zoo)
@@ -256,6 +259,7 @@ class WrEnvMLPro2PZoo():
 
 ## -------------------------------------------------------------------------------------------------
         def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
+            self._num_cycles            = 0
             self._mlpro_env             = p_mlpro_env
             self.possible_agents        = [str(r) for r in range(p_num_agents)]
             self.agent_name_mapping     = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
@@ -288,6 +292,8 @@ class WrEnvMLPro2PZoo():
             
             agent = self.agent_selection
             self._cumulative_rewards[agent] = 0
+            self._num_cycles += 1
+            cycle_limit = self._mlpro_env.get_cycle_limit()
             
             if agent == self.possible_agents[0]:
                 self.action_set = []
@@ -311,7 +317,9 @@ class WrEnvMLPro2PZoo():
                     if not self.rewards[self.possible_agents[i]]:
                         self.rewards[self.possible_agents[i]] = 0
             
-            if self._mlpro_env.get_broken():
+                self._mlpro_env.get_state().set_timeout( (cycle_limit>0) and ( self._num_cycles >= cycle_limit ) )
+
+            if self._mlpro_env.get_state().get_terminal():
                 self.dones = {agent: True for agent in self.agents}
             
             self.agent_selection = self._agent_selector.next()
