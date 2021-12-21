@@ -659,38 +659,38 @@ class RLTraining (Training):
                 if self._counter_epi_train == 0:
                     self._scenario.get_model().switch_adaptivity(True)
 
-                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                    self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                     self.log(self.C_LOG_TYPE_W, '-- Training period started...')
-                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+                    self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
                 self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
 
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                 self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'started...')
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
             else:
                 if self._counter_epi_eval == 0:
                     self._scenario.get_model().switch_adaptivity(False)
 
-                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                    self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                     self.log(self.C_LOG_TYPE_W, '-- Evaluation period', self._results.num_evaluations, 'started...')
-                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+                    self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
                     self._init_evaluation()
                     
                 self._scenario.reset(self._counter_epi_eval)
 
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                 self.log(self.C_LOG_TYPE_W, '-- Evaluation episode', self._counter_epi_eval, 'started...')
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
         else:
             self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
 
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'started...')
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+            self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
 
         # 3 Preparation of data logging for next episode 
@@ -705,10 +705,10 @@ class RLTraining (Training):
         if self._eval_frequency > 0:
 
             if self._mode == self.C_MODE_TRAIN:
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                 self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
                 self.log(self.C_LOG_TYPE_W, '-- Training cycles finished:', self._results.num_cycles + 1)
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n\n')
 
                 self._results.num_episodes  += 1
                 self._counter_epi_train     += 1
@@ -718,9 +718,9 @@ class RLTraining (Training):
                     self._mode              = self.C_MODE_EVAL
 
             else:
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                 self.log(self.C_LOG_TYPE_W, '-- Evaluation episode', self._counter_epi_eval, 'finished after', str(self._cycles_episode), 'cycles')
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n\n')
 
                 self._counter_epi_eval      += 1
 
@@ -739,10 +739,10 @@ class RLTraining (Training):
                     self._mode              = self.C_MODE_TRAIN
        
         else:
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
             self.log(self.C_LOG_TYPE_W, '-- Training cycles finished:', self._results.num_cycles + 1)
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+            self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n\n')
 
             self._results.num_episodes  += 1
 

@@ -26,12 +26,12 @@
 ## -- 2021-12-10  1.2.5     DA       Class HyperParamTuner: changed interface of method maximize()
 ## -- 2021-12-12  1.3.0     DA       Classes Scenario, Training, TrainingResults: introduced number
 ## --                                of adapatations
-## -- 2021-12-20  1.3.1     DA       - Minor changes on class Training
+## -- 2021-12-21  1.3.1     DA       - Minor changes on class Training
 ## --                                - Added log functionality to class TrainingResults
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-20)
+Ver. 1.3.1 (2021-12-21)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -726,17 +726,17 @@ class TrainingResults (Log, Saveable):
 
 ## -------------------------------------------------------------------------------------------------
     def log_results(self):
-        self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
         self.log(self.C_LOG_TYPE_W, '-- Training Results of run', self.run)
-        self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
         self._log_results()
-        self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
-        self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
 
 ## -------------------------------------------------------------------------------------------------
     def _log_results(self):
-        self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+        self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
         self.log(self.C_LOG_TYPE_W, '-- Scenario          :', self.scenario.C_TYPE, self.scenario.C_NAME)
         self.log(self.C_LOG_TYPE_W, '-- Model             :', self.scenario.get_model().C_TYPE, self.scenario.get_model().C_NAME)
         self.log(self.C_LOG_TYPE_W, '-- Start time stamp  :', self.ts_start)
@@ -890,6 +890,8 @@ class Training (Log):
     C_MODE_TRAIN    = 0 
     C_MODE_EVAL     = 1
 
+    C_LOG_SEPARATOR = '------------------------------------------------------------------------------'
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
  
@@ -1041,11 +1043,11 @@ class Training (Log):
             # 1.1 Start of new training run
             self._current_path  = self._gen_current_path(self._root_path, self._current_run)
             self._results       = self._init_results()
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
+            self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, '-- Training run', self._current_run, 'started...')
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+            self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
+            self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR, '\n')
             self._new_run = False
             
 
@@ -1068,11 +1070,11 @@ class Training (Log):
 
         if run_finished:
             # 3.2 Training run finished
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
+            self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, '-- Training run', self._current_run, 'finished')
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+            self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
+            self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR, '\n')
 
             self._scenario.get_model().save(self._current_path, 'trained model.pkl')
             self._close_results(self._results)
