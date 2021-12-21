@@ -15,10 +15,11 @@
 ## -- 2021-12-08  1.1.2     MRD      Change the state, include the joint angles
 ## -- 2021-12-19  1.1.3     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  1.1.4     DA       Class RobotHTM: renamed method reset() to _reset()
+## -- 2021-12-21  1.1.5     MRD      Add Termination on Success
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4 (2021-12-21)
+Ver. 1.1.5 (2021-12-21)
 
 This module provide an environment of a robot manipulator based on Homogeneous Matrix
 """
@@ -417,6 +418,7 @@ class RobotHTM(Environment):
         disterror = np.linalg.norm(np.array(p_state.get_values())[:3] - np.array(p_state.get_values())[3:6])
 
         if disterror <= 0.1:
+            self._state.set_terminal(True)
             return True
         else:
             return False
@@ -487,7 +489,6 @@ class RobotHTM(Environment):
         obs = obs.cpu().flatten().tolist()
         self._state = State(self._state_space)
         self._state.set_values(obs)
-        self._state.set_success(True)
 
 
 ## -------------------------------------------------------------------------------------------------
