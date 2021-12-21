@@ -42,7 +42,7 @@ def test_sb3_policy_wrapper(env_cls):
 
         def _setup(self, p_mode, p_ada, p_logging):
             class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
-                def reset(self, p_seed=None):
+                def _reset(self, p_seed=None):
                     self.log(self.C_LOG_TYPE_I, 'Reset')
                     self._num_cycles = 0
 
@@ -53,7 +53,6 @@ def test_sb3_policy_wrapper(env_cls):
                     # 2 Create state object from Gym observation
                     state   = State(self._state_space)
                     state.set_values(obs.get_data())
-                    state.set_success(True)
                     self._set_state(state)
 
             # 1 Setup environment
@@ -155,7 +154,6 @@ def test_sb3_policy_wrapper(env_cls):
                     self.loss_cnt.append(self.locals.get("self").logger.name_to_value["train/policy_loss"])
 
         def _on_step(self) -> bool:
-            print(self.locals.get("obs_tensor"))
             return super()._on_step()
 
         def _on_rollout_end(self) -> None:

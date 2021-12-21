@@ -12,10 +12,12 @@
 ## -- 2021-10-27  1.1.1     MRD      Mismatch datatype last_done on WrPolicySB32MLPro
 ## -- 2021-11-18  1.1.2     MRD      Put DummyEnv class outside the WrPolicySB32MLPro
 ## -- 2021-12-20  1.1.3     DA       Replaced calls get_done() by get_success()
+## -- 2021-12-21  1.1.4     MRD      Refactor due to new update, regarding initial and terminal
+## --                                state 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2021-12-20)
+Ver. 1.1.4 (2021-12-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -212,7 +214,7 @@ class WrPolicySB32MLPro (Policy):
             return False
 
         last_obs = torch.Tensor(np.array([self.last_buffer_element.get_data()["state_new"].get_values()])).to(self.sb3.device)
-        last_done = self.last_buffer_element.get_data()["state_new"].get_broken() or self.last_buffer_element.get_data()["state_new"].get_success()
+        last_done = self.last_buffer_element.get_data()["state_new"].get_terminal()
         last_done = np.array([last_done])
 
         # Get the next value from the last observation
@@ -272,13 +274,11 @@ class WrPolicySB32MLPro (Policy):
         self.sb3.num_timesteps += 1
         self.last_buffer_element = self._add_additional_buffer(p_buffer_element)
         datas = self.last_buffer_element.get_data()
-
-        done = datas["state"].get_broken() or datas["state"].get_success()
         self.sb3.rollout_buffer.add(
                             datas["state"].get_values(),
                             datas["action"].get_sorted_values(),
                             datas["reward"].get_overall_reward(),
-                            done,
+                            datas["state"].get_initial(),
                             datas["value"],
                             datas["action_log"])
 
