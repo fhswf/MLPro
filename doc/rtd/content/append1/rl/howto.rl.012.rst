@@ -9,6 +9,7 @@ Prerequisites
 
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
+    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
   ..
     - `NumPy <https://pypi.org/project/numpy/>`_
   ..
@@ -19,8 +20,6 @@ Please install the following packages to run this examples properly:
     - `Pytorch <https://pypi.org/project/torch/>`_
   ..
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-  ..
-    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
   ..
     - `Optuna <https://pypi.org/project/optuna/>`_
   ..
@@ -37,4 +36,4 @@ Example Code
 
 Results
 `````````````````
-Descriptions, plots, images, screenshots of expected results.
+...

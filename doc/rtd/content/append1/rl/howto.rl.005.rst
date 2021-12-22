@@ -10,12 +10,11 @@ Prerequisites
 
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
   ..
     - `NumPy <https://pypi.org/project/numpy/>`_
   ..
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
   ..
     - `Pytorch <https://pypi.org/project/torch/>`_
   ..
@@ -38,5 +37,5 @@ Example Code
 
 Results
 `````````````````
-Descriptions, plots, images, screenshots of expected results.
+...
 
