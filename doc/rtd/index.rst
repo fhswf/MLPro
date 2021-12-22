@@ -6,10 +6,10 @@
 MLPro - Machine Learning Professional
 ================================================
 
-Welcome to MLPro - your synoptic framework for standardized machine learning tasks in Python!
+Welcome to MLPro - the synoptic framework for standardized machine learning tasks in Python!
 
 MLPro provides complete, standardized and reusable functionalities to support your scientific research, 
-industrial project or educational task in machine learning.
+industrial projects or educational tasks in machine learning.
 
 The documentation is currently under construction, but we are working flat out to complete it. The framework 
 itself is ready for use and we are proud to offer you extensive functionalities, especially in the area of 

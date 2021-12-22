@@ -10,12 +10,11 @@ Prerequisites
 
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
   ..
     - `NumPy <https://pypi.org/project/numpy/>`_
   ..
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
   ..
     - `Pytorch <https://pypi.org/project/torch/>`_
   ..
@@ -38,5 +37,5 @@ Example Code
 
 Results
 `````````````````
-Descriptions, plots, images, screenshots of expected results.
+The Gym cartpole window appears and shows a randowm behavior while the demo run is logged on the console. Deno should terminate after 61 cycles because of the fixed random seed.
 

@@ -379,13 +379,13 @@ class RLScenario (Scenario):
 
         # 6 Check for terminating events
         success = self._env.get_state().get_success()
-        error   = self._env.get_state().get_broken()
+        error   = self._env.get_state().get_terminal()
 
         if success:
             self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': Environment goal achieved')
 
         if error:
-            self.log(self.C_LOG_TYPE_E, 'Process time', self._timer.get_time(), ': Environment broken')
+            self.log(self.C_LOG_TYPE_E, 'Process time', self._timer.get_time(), ': Environment terminated')
 
         return success, error, adapted
 

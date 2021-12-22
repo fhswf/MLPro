@@ -9,16 +9,13 @@ Prerequisites
 
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
+    - `Pytorch <https://pypi.org/project/torch/>`_
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
+    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
   ..
     - `NumPy <https://pypi.org/project/numpy/>`_
   ..
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
-  ..
-    - `Pytorch <https://pypi.org/project/torch/>`_
-  ..
-    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
   ..
     - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
   ..
@@ -37,4 +34,4 @@ Example Code
 
 Results
 `````````````````
-Descriptions, plots, images, screenshots of expected results.
+...
