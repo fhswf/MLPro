@@ -125,7 +125,7 @@ if __name__ == "__main__":
     cycle_limit         = 5000
     adaptation_limit    = 50
     stagnation_limit    = 5
-    eval_frequency      = 5
+    eval_frequency      = 10
     eval_grp_size       = 5
     logging             = Log.C_LOG_WE
     visualize           = True
@@ -151,6 +151,7 @@ training = RLTraining(
         p_stagnation_limit=stagnation_limit,
         p_eval_frequency=eval_frequency,
         p_eval_grp_size=eval_grp_size,
+        p_success_ends_epi=True,
         p_path=path,
         p_visualize=visualize,
         p_logging=logging )

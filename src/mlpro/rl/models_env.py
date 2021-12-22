@@ -20,10 +20,16 @@
 ## -- 2021-12-06  1.2.1     DA       Class AFctBase: correction by removing own method adapt()
 ## -- 2021-12-10  1.2.2     DA       Code optimization and bugfixes
 ## -- 2021-12-12  1.2.3     DA       New method EnvBase.get_last_reward()
+## -- 2021-12-19  1.3.0     DA       Replaced term 'done' by 'success'
+## -- 2021-12-21  1.4.0     DA       - Class EnvBase: 
+## --                                    - new custom method _reset()
+## --                                    - new custom method get_cycle_limit()
+## --                                    - timeout detection
+## --                                - Class EnvModel: cycle limit detection
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2021-12-12)
+Ver. 1.4.0 (2021-12-21)
 
 This module provides model classes for environments and environnment models.
 """
@@ -39,7 +45,7 @@ from mlpro.rl.models_sar import *
 ## -------------------------------------------------------------------------------------------------
 class AFctBase (Model):
     """
-    Base class for all special adaptive functions (state transition, reward, done, broken). 
+    Base class for all special adaptive functions (state transition, reward, success, broken). 
 
     Parameters
     ----------
@@ -374,9 +380,9 @@ class AFctReward (AFctBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctDone (AFctBase): 
+class AFctSuccess (AFctBase): 
 
-    C_TYPE          = 'AFct Done'
+    C_TYPE          = 'AFct Success'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self, p_state_space:MSpace, p_action_space:MSpace, p_input_space:MSpace, p_output_space:MSpace):
@@ -385,11 +391,11 @@ class AFctDone (AFctBase):
         p_input_space.append(p_state_space)
 
         # 2 Setup output space
-        p_output_space.add_dim( Dimension( p_id=0, p_name_short='Done', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Done', p_boundaries=[0,1]) )
+        p_output_space.add_dim( Dimension( p_id=0, p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success', p_boundaries=[0,1]) )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state:State) -> bool:
+    def compute_success(self, p_state:State) -> bool:
         output = self._afct.map(p_state)
 
         if output.get_values()[0] >= 0.5: return True
@@ -399,7 +405,7 @@ class AFctDone (AFctBase):
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State) -> bool:
         output = Element(self._output_space)
-        if p_state.get_done():
+        if p_state.get_success():
             output.set_value(0,1)
         else:
             output.set_value(0,0)
@@ -423,7 +429,7 @@ class AFctBroken (AFctBase):
         p_input_space.append(p_state_space)
 
         # 2 Setup output space
-        p_output_space.add_dim( Dimension( p_id=0, p_name_short='Done', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Done', p_boundaries=[0,1]) )
+        p_output_space.add_dim( Dimension( p_id=0, p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success', p_boundaries=[0,1]) )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -437,7 +443,7 @@ class AFctBroken (AFctBase):
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State) -> bool:
         output = Element(self._output_space)
-        if p_state.get_done():
+        if p_state.get_success():
             output.set_value(0,1)
         else:
             output.set_value(0,0)
@@ -450,7 +456,7 @@ class AFctBroken (AFctBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, ScientificObject):
+class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, ScientificObject):
     """
     Base class for all environment classes. It defines the interface and elementry properties for
     an environment in the context of reinforcement learning.
@@ -464,8 +470,8 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         Optional external adaptive function for state transition. 
     p_afct_reward : AFctReward
         Optional external adaptive function for reward computation.
-    p_afct_done : AFctDone
-        Optional external adaptive function for state evaluation 'done'.
+    p_afct_success : AFctSuccess
+        Optional external adaptive function for state evaluation 'success'.
     p_afct_broken : AFctBroken
         Optional external adaptive function for state evaluation 'broken'.
     p_logging 
@@ -487,8 +493,8 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         Internal adaptive state transition function.
     _afct_reward : AFctReward
         Internal adaptive reward function.
-    _afct_done : AFctDone
-        Internal adaptive function for state evaluation 'done'.
+    _afct_success : AFctSuccess
+        Internal adaptive function for state evaluation 'success'.
     _afct_broken : AFctBroken
         Internal adaptive function for state evaluation 'broken'.
 
@@ -508,13 +514,13 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
                  p_latency:timedelta=None, 
                  p_afct_strans:AFctSTrans=None,
                  p_afct_reward:AFctReward=None,
-                 p_afct_done:AFctDone=None,
+                 p_afct_success:AFctSuccess=None,
                  p_afct_broken:AFctBroken=None,     
                  p_logging=Log.C_LOG_ALL): 
 
         self._afct_strans   = p_afct_strans
         self._afct_reward   = p_afct_reward
-        self._afct_done     = p_afct_done
+        self._afct_success  = p_afct_success
         self._afct_broken   = p_afct_broken
         self._state_space   = None
         self._action_space  = None
@@ -522,6 +528,8 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         self._prev_state    = None
         self._last_action   = None
         self._last_reward   = None
+        self._num_cycles    = 0
+
         Log.__init__(self, p_logging=p_logging)
         self.set_latency(p_latency)
 
@@ -567,7 +575,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         Log.switch_logging(self, p_logging)
         if self._afct_strans is not None: self._afct_strans.switch_logging(p_logging)
         if self._afct_reward is not None: self._afct_reward.switch_logging(p_logging)
-        if self._afct_done is not None: self._afct_done.switch_logging(p_logging)
+        if self._afct_success is not None: self._afct_success.switch_logging(p_logging)
         if self._afct_broken is not None: self._afct_broken.switch_logging(p_logging)
 
 
@@ -622,9 +630,9 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_done(self) -> bool:
+    def get_success(self) -> bool:
         if self._state is None: return False
-        return self._state.get_done()
+        return self._state.get_success()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -640,7 +648,16 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 ## -------------------------------------------------------------------------------------------------
     def get_functions(self):
-        return self._afct_strans, self._afct_reward, self._afct_done, self._afct_broken
+        return self._afct_strans, self._afct_reward, self._afct_success, self._afct_broken
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self) -> int:
+        """
+        Returns limit of cycles per training episode. To be implemented in child classes.
+        """
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -661,7 +678,26 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None) -> None:
         """
-        Resets environment to initial state. Please redefine.
+        Resets environment to an initial state by calling the related custom method _reset().
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed parameter for an internal random generator
+
+        """
+
+        self.log(self.C_LOG_TYPE_I, 'Reset')
+        self._num_cycles = 0
+        self._reset(p_seed)
+        if self._state is not None:
+            self._state.set_initial(True)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None) -> None:
+        """
+        Custom method to reset the environment to an initial/defined state. 
 
         Parameters
         ----------
@@ -686,7 +722,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
         Returns
         -------
-        bool
+        success : bool
             True, if action processing was successfull. False otherwise.
 
         """
@@ -702,6 +738,12 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
             self.log(self.C_LOG_TYPE_I, 'Action processing finished successfully')
         else:
             self.log(self.C_LOG_TYPE_E, 'Action processing failed')
+
+        self._num_cycles += 1
+
+        cycle_limit = self.get_cycle_limit()
+        
+        self.get_state().set_timeout( (cycle_limit>0) and ( self._num_cycles >= cycle_limit ) )
 
         return result
 
@@ -808,10 +850,10 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state:State) -> bool:
+    def compute_success(self, p_state:State) -> bool:
         """
-        Assesses the given state whether it is a 'done' state. Assessment is carried out either by
-        a custom implementation in method _compute_done() or by an embedded adaptive function.
+        Assesses the given state whether it is a 'success' state. Assessment is carried out either by
+        a custom implementation in method _compute_success() or by an embedded adaptive function.
 
         Parameters
         ----------
@@ -821,20 +863,20 @@ class EnvBase (AFctSTrans, AFctReward, AFctDone, AFctBroken, Plottable, Scientif
         Returns
         -------
         bool
-            True, if the given state is a 'done' state. False otherwise.
+            True, if the given state is a 'success' state. False otherwise.
 
         """
 
-        if self._afct_done is not None:
-            return self._afct_done.compute_done(p_state)
+        if self._afct_success is not None:
+            return self._afct_success.compute_success(p_state)
         else:
-            return self._compute_done(p_state)
+            return self._compute_success(p_state)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_done(self, p_state:State) -> bool:
+    def _compute_success(self, p_state:State) -> bool:
         """
-        Custom method for state evaluation 'done'. See method compute_done() for further details.
+        Custom method for state evaluation 'success'. See method compute_success() for further details.
         """
 
         raise NotImplementedError
@@ -908,8 +950,8 @@ class Environment (EnvBase, Mode):
         Optional external adaptive function for state transition 
     p_afct_reward : AFctReward
         Optional external adaptive function for reward computation
-    p_afct_done : AFctDone
-        Optional external adaptive function for state evaluation 'done'
+    p_afct_success : AFctSuccess
+        Optional external adaptive function for state evaluation 'success'
     p_afct_broken : AFctBroken
         Optional external adaptive function for state evaluation 'broken'
     p_logging 
@@ -927,7 +969,7 @@ class Environment (EnvBase, Mode):
                  p_latency:timedelta=None, 
                  p_afct_strans:AFctSTrans=None,
                  p_afct_reward:AFctReward=None,
-                 p_afct_done:AFctDone=None,
+                 p_afct_success:AFctSuccess=None,
                  p_afct_broken:AFctBroken=None,     
                  p_logging=Log.C_LOG_ALL): 
 
@@ -935,12 +977,13 @@ class Environment (EnvBase, Mode):
                          p_latency=p_latency, 
                          p_afct_strans=p_afct_strans, 
                          p_afct_reward=p_afct_reward,
-                         p_afct_done=p_afct_done,
+                         p_afct_success=p_afct_success,
                          p_afct_broken=p_afct_broken,
                          p_logging=p_logging)
 
         Mode.__init__(self, p_mode, p_logging)
         self._state_space, self._action_space = self.setup_spaces()
+        self._num_cylces = 0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -962,12 +1005,16 @@ class Environment (EnvBase, Mode):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_cycle_limit(self):
+    def get_cycle_limit(self) -> int:
         """
         Returns limit of cycles per training episode.
         """
 
-        return self.C_CYCLE_LIMIT
+        if self.get_mode() == Mode.C_MODE_SIM:
+            return self.C_CYCLE_LIMIT
+        else:
+            # In real operation mode there is no cycle limit
+            return 0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1015,7 +1062,7 @@ class Environment (EnvBase, Mode):
 
         # 2 State evaluation
         state = self.get_state()
-        state.set_done(self.compute_done(state))
+        state.set_success(self.compute_success(state))
         state.set_broken(self.compute_broken(state))
         
 
@@ -1081,8 +1128,8 @@ class EnvModel(EnvBase, Model):
         Mandatory external adaptive function for state transition. 
     p_afct_reward : AFctReward
         Optional external adaptive function for reward computation.
-    p_afct_done : AFctDone
-        Optional external adaptive function for state assessment 'done'.
+    p_afct_success : AFctSuccess
+        Optional external adaptive function for state assessment 'success'.
     p_afct_broken : AFctBroken
         Optional external adaptive function for state assessment 'broken'.
     p_ada : bool
@@ -1101,7 +1148,7 @@ class EnvModel(EnvBase, Model):
                  p_latency:timedelta,
                  p_afct_strans:AFctSTrans, 
                  p_afct_reward:AFctReward=None, 
-                 p_afct_done:AFctDone=None, 
+                 p_afct_success:AFctSuccess=None, 
                  p_afct_broken:AFctBroken=None, 
                  p_ada=True, 
                  p_logging=Log.C_LOG_ALL):
@@ -1111,7 +1158,7 @@ class EnvModel(EnvBase, Model):
                          p_latency=p_latency, 
                          p_afct_strans=p_afct_strans,
                          p_afct_reward=p_afct_reward,
-                         p_afct_done=p_afct_done,
+                         p_afct_success=p_afct_success,
                          p_afct_broken=p_afct_broken,
                          p_logging=p_logging )
 
@@ -1122,8 +1169,9 @@ class EnvModel(EnvBase, Model):
 
         self._afct_strans   = p_afct_strans
         self._afct_reward   = p_afct_reward
-        self._afct_done     = p_afct_done
+        self._afct_success  = p_afct_success
         self._afct_broken   = p_afct_broken
+        self._cycle_limit   = 0
 
 
         # 2 Check adaptive functions for compatibility with agent
@@ -1141,9 +1189,9 @@ class EnvModel(EnvBase, Model):
         if ( self._afct_reward is not None ) and ( self._afct_reward.get_state_space() != self._state_space ):
             raise ParamError('Observation spaces of environment model and adaptive function for reward computation are not equal')
 
-        # 2.3 Check function 'done'
-        if ( self._afct_done is not None ) and ( self._afct_done.get_state_space() != self._state_space ):
-            raise ParamError('Observation spaces of environment model and adaptive function for assessment done are not equal')
+        # 2.3 Check function 'success'
+        if ( self._afct_success is not None ) and ( self._afct_success.get_state_space() != self._state_space ):
+            raise ParamError('Observation spaces of environment model and adaptive function for assessment success are not equal')
 
         # 2.4 Check function 'broken'
         if ( self._afct_broken is not None ) and ( self._afct_broken.get_state_space() != self._state_space ):
@@ -1151,10 +1199,19 @@ class EnvModel(EnvBase, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None):
+    def _reset(self, p_seed=None):
         self.set_random_seed(p_seed=p_seed)
         self._state         = None
         self._prev_state    = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_cycle_limit(self) -> int:
+        """
+        Returns limit of cycles per training episode.
+        """
+
+        return self._cycle_limit
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1165,7 +1222,7 @@ class EnvModel(EnvBase, Model):
 
         # 2 State evaluation
         state = self.get_state()
-        state.set_done(self.compute_done(state))
+        state.set_success(self.compute_success(state))
         state.set_broken(self.compute_broken(state))
 
         return True
@@ -1184,8 +1241,8 @@ class EnvModel(EnvBase, Model):
             pass
 
         try:
-            if self._afct_done is not None:
-                self._afct_done.switch_adaptivity(p_ada)
+            if self._afct_success is not None:
+                self._afct_success.switch_adaptivity(p_ada)
         except:
             pass
 
@@ -1228,11 +1285,15 @@ class EnvModel(EnvBase, Model):
         if self._afct_reward is not None:
             adapted = adapted or self._afct_reward.adapt(state, state_new, reward)
 
-        if self._afct_done is not None:
-            adapted = adapted or self._afct_done.adapt(state_new)
+        if self._afct_success is not None:
+            adapted = adapted or self._afct_success.adapt(state_new)
 
         if self._afct_broken is not None:
             adapted = adapted or self._afct_broken.adapt(state_new)
+
+        if ( self._cycle_limit == 0 ) and state_new.get_timeout():
+            # First timeout state defines the cycle limit
+            self._cycle_limit = self._num_cycles
 
         return adapted
 
@@ -1259,8 +1320,8 @@ class EnvModel(EnvBase, Model):
             pass
 
         try:
-            if self._afct_done is not None:
-                maturity += self._afct_done.get_maturity()
+            if self._afct_success is not None:
+                maturity += self._afct_success.get_maturity()
                 num_afct += 1
         except:
             pass
@@ -1279,5 +1340,5 @@ class EnvModel(EnvBase, Model):
     def clear_buffer(self):
         self._afct_strans.clear_buffer()
         if self._afct_reward is not None: self._afct_reward.clear_buffer()
-        if self._afct_done is not None: self._afct_done.clear_buffer()
+        if self._afct_success is not None: self._afct_success.clear_buffer()
         if self._afct_broken is not None: self._afct_broken.clear_buffer()

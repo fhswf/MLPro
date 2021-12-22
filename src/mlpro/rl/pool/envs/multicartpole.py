@@ -14,10 +14,12 @@
 ## -- 2021-11-15  1.2.0     DA       Refactoring
 ## -- 2021-12-03  1.2.1     DA       Refactoring
 ## -- 2021-12-12  1.2.2     DA       Method MutliCartPole.get_cycle_limit() implemented
+## -- 2021-12-19  1.2.3     DA       Replaced 'done' by 'success'
+## -- 2021-12-21  1.2.4     DA       Class MultiCartPole: renamed method reset() to _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2021-12-12)
+Ver. 1.2.4 (2021-12-21)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -103,8 +105,10 @@ class MultiCartPole (Environment):
     def collect_substates(self) -> State:
         state = State(self._state_space)
 
-        done    = True
-        broken  = False
+        success  = True
+        broken   = False
+        timeout  = False
+        terminal = False
 
         for env_id, env in enumerate(self._envs):
             sub_state_val = env.get_state().get_values()
@@ -112,11 +116,15 @@ class MultiCartPole (Environment):
             for d in range(sub_state_dim):
                 state.set_value(env_id*sub_state_dim + d, sub_state_val[d])
 
-            done = done and env.get_state().get_done()
+            success = success and env.get_state().get_success()
             broken = broken or env.get_state().get_broken()
+            timeout = timeout or env.get_state().get_timeout()
+            terminal = terminal or env.get_state().get_terminal()
 
-        state.set_done(done)
+        state.set_terminal(terminal)
+        state.set_success(success)
         state.set_broken(broken)
+        state.set_timeout(timeout)
 
         return state
 
@@ -127,7 +135,7 @@ class MultiCartPole (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None):
+    def _reset(self, p_seed=None):
         seed = p_seed
 
         for env in self._envs: 
@@ -140,7 +148,7 @@ class MultiCartPole (Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state:State, p_action:Action) -> State:
-        done = True
+        success = True
 
         for agent_id in p_action.get_agent_ids():
             action_elem = p_action.get_elem(agent_id)
@@ -152,11 +160,8 @@ class MultiCartPole (Environment):
                 action_env      = Action()
                 action_env.add_elem(agent_id, action_elem_env)
                 env._set_state(env.simulate_reaction(None, action_env))
-                done            = done and env.get_done()
 
-        new_state = self.collect_substates()
-        new_state.set_done(done)
-        return new_state
+        return self.collect_substates()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -190,8 +195,8 @@ class MultiCartPole (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_done(self, p_state:State) -> bool:
-        return self.get_done()
+    def compute_success(self, p_state:State) -> bool:
+        return self.get_success()
 
 
 ## -------------------------------------------------------------------------------------------------

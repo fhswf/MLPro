@@ -9,10 +9,11 @@
 ## -- 2021-09-21  1.0.0     MRD      Release First Version
 ## -- 2021-10-27  1.0.1     MRD      Added Policy Loss Check between Native and Wrapper
 ## -- 2021-12-08  1.0.2     DA       Refactoring
+## -- 2021-12-20  1.0.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-12-08)
+Ver. 1.0.3 (2021-12-20)
 
 Unit test classes for environment.
 """
@@ -41,8 +42,9 @@ def test_sb3_policy_wrapper(env_cls):
 
         def _setup(self, p_mode, p_ada, p_logging):
             class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
-                def reset(self, p_seed=None):
+                def _reset(self, p_seed=None):
                     self.log(self.C_LOG_TYPE_I, 'Reset')
+                    self._num_cycles = 0
 
                     # 1 Reset Gym environment and determine initial state
                     observation = self._gym_env.reset()
@@ -51,7 +53,6 @@ def test_sb3_policy_wrapper(env_cls):
                     # 2 Create state object from Gym observation
                     state   = State(self._state_space)
                     state.set_values(obs.get_data())
-                    state.set_done(True)
                     self._set_state(state)
 
             # 1 Setup environment
@@ -126,7 +127,8 @@ def test_sb3_policy_wrapper(env_cls):
     training        = RLTraining(
         p_scenario_cls=MyScenario,
         p_cycle_limit=100,
-        p_max_stagnations=0,
+        p_success_ends_epi=True,
+        p_stagnation_limit=0,
         p_collect_states=True,
         p_collect_actions=True,
         p_collect_rewards=True,
@@ -152,7 +154,6 @@ def test_sb3_policy_wrapper(env_cls):
                     self.loss_cnt.append(self.locals.get("self").logger.name_to_value["train/policy_loss"])
 
         def _on_step(self) -> bool:
-            print(self.locals.get("obs_tensor"))
             return super()._on_step()
 
         def _on_rollout_end(self) -> None:

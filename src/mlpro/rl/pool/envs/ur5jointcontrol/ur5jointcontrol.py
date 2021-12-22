@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
+## -- Package : mlpro.rl.pool.envs.ur5jointcontrol
 ## -- Module  : urjointcontrol.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -11,10 +11,13 @@
 ## -- 2021-09-23  1.0.2     WB       Increased C_LATENCY
 ## -- 2021-10-05  1.0.3     SY       Update following new attributes done and broken in State
 ## -- 2021-12-03  1.0.4     DA       Refactoring
+## -- 2021-12-20  1.0.5     DA       Replaced 'done' by 'success'
+## -- 2021-12-20  1.0.6     WB       Update 'success' and 'broken' rule
+## -- 2021-12-21  1.0.7     DA       Class UR5JointControl: renamed method reset() to _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2021-12-03)
+Ver. 1.0.6 (2021-12-21)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
@@ -53,8 +56,7 @@ class UR5JointControl(Environment):
             p_logging       Boolean switch for logging
         """
         roscore = subprocess.Popen('roscore')
-        rospy.init_node('ur5_lab_training_start',
-                    anonymous=True, log_level=rospy.WARN)
+        rospy.init_node('ur5_lab_training_start', anonymous=True, log_level=rospy.WARN)
 
         LoadYamlFileParamsTest(rospackage_name="ur5_lab",
                                rel_path_from_package_to_file="config",
@@ -63,11 +65,9 @@ class UR5JointControl(Environment):
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
 
         # Init OpenAI_ROS ENV
-        task_and_robot_environment_name = rospy.get_param(
-        '/ur5_lab/task_and_robot_environment_name')
+        task_and_robot_environment_name = rospy.get_param('/ur5_lab/task_and_robot_environment_name')
     
-        max_step_episode = rospy.get_param(
-        '/ur5_lab/max_iterations')
+        max_step_episode = rospy.get_param('/ur5_lab/max_iterations')
 
         self.env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
         
@@ -110,40 +110,47 @@ class UR5JointControl(Environment):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None) -> None:
+    def _reset(self, p_seed=None) -> None:
         random.seed(p_seed)
         obs = self.env.reset()
         self._state = self._obs_to_state(obs)
-        self._state.set_done(True)
+        self._state.set_success(True)
+        self._state.set_broken(True)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
-        obs, self.reward_gym, self.done, info = self.env.step(p_action.get_sorted_values())
-        self._state = self._obs_to_state(obs)
-        self._state.set_done(self.done)
-        return self._state
+        obs, self.reward_gym, done, info = self.env.step(p_action.get_sorted_values())
+        self._num_cycles += 1
+        state = self._obs_to_state(obs)
+        close = np.allclose(a=obs[:3], b=obs[3:], atol=0.05)
+        
+        if not done:
+            state.set_broken(False)
+            state.set_success(False)
+        elif not close and ( self._num_cycles < self.get_cycle_limit() ):
+            state.set_broken(True)
+            
+        return state
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_done(self, p_state:State) -> bool:
-        return self.get_done()
+    def _compute_success(self, p_state:State) -> bool:
+        return self.get_success()
 
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state:State) -> bool:
-        return False
+        return self.get_broken()
 
 
 ## -------------------------------------------------------------------------------------------------
     def _evaluate_state(self) -> None: 
         obs = self.env.get_observation()
         
-        close = np.allclose(a=obs[:3], 
-                            b=obs[3:], 
-                            atol=0.05)
+        close = np.allclose(a=obs[:3], b=obs[3:], atol=0.05)
         if close:
-            self._state.set_done(True)
+            self._state.set_success(True)
 
 
 ## -------------------------------------------------------------------------------------------------

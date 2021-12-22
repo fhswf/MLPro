@@ -13,10 +13,13 @@
 ## -- 2021-11-15  1.1.0     DA       Refactoring of class RobotHTM
 ## -- 2021-12-03  1.1.1     DA       Refactoring
 ## -- 2021-12-08  1.1.2     MRD      Change the state, include the joint angles
+## -- 2021-12-19  1.1.3     DA       Replaced 'done' by 'success'
+## -- 2021-12-21  1.1.4     DA       Class RobotHTM: renamed method reset() to _reset()
+## -- 2021-12-21  1.1.5     MRD      Add Termination on Success
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2021-12-03)
+Ver. 1.1.5 (2021-12-21)
 
 This module provide an environment of a robot manipulator based on Homogeneous Matrix
 """
@@ -26,6 +29,7 @@ import numpy as np
 import random
 from mlpro.rl.models import *
 from mlpro.gt.models import *
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -48,7 +52,7 @@ class RobotArm3D:
         self.HM = torch.Tensor([])
         self.HMeef = None
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def add_link_joint(
         self,
         jointAxis=None,
@@ -70,7 +74,7 @@ class RobotArm3D:
             self.thetas = torch.cat([self.thetas, thetaInit])
             self.num_joint = self.num_joint + 1
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def get_transformation_matrix(self, theta, lvector, rotAxis, adjustRots=None, adjustThetas=None):
         transformationMatrix = torch.Tensor([])
 
@@ -162,7 +166,8 @@ class RobotArm3D:
         transformationMatrix = torch.cat([transformationMatrix, torch.Tensor([[0, 0, 0, 1]])], dim=0)
         return transformationMatrix
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def update_joint_coords(self):
         self.HM = torch.Tensor([])
         T = torch.eye(4)
@@ -191,31 +196,38 @@ class RobotArm3D:
         # self.orientation = self.convert_to_quaternion_only()
         self.HMeef = T
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_joint(self):
         return self.joints
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_num_joint(self):
         return self.num_joint
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_theta(self, theta):
         self.thetas = theta.flatten()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_homogeneous(self):
         return self.HM
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_homogeneous_eef(self):
         return self.HMeef
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_orientation(self):
         return self.orientation
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def update_theta(self, deltaTheta):
         self.thetas += deltaTheta.flatten()
 
@@ -242,6 +254,9 @@ class RobotArm3D:
          return out    
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class RobotHTM(Environment):
@@ -255,7 +270,7 @@ class RobotHTM(Environment):
     C_LATENCY = timedelta(0, 1, 0)
     C_INFINITY = np.finfo(np.float32).max
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_num_joints=4, p_target_mode="Random", p_logging=Log.C_LOG_ALL):
         """
         Parameters:
@@ -320,12 +335,14 @@ class RobotHTM(Environment):
 
         self.reset()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
         return None, None
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self):
         """
         Implement this method to enrich the state and action space with specific
@@ -371,7 +388,8 @@ class RobotHTM(Environment):
 
         return state_space, action_space
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
         action = p_action.get_sorted_values()
         if not isinstance(action, torch.Tensor):
@@ -394,20 +412,24 @@ class RobotHTM(Environment):
 
         return state
 
-    ## -------------------------------------------------------------------------------------------------
-    def _compute_done(self, p_state: State = None) -> bool:
+
+ ## -------------------------------------------------------------------------------------------------
+    def _compute_success(self, p_state: State = None) -> bool:
         disterror = np.linalg.norm(np.array(p_state.get_values())[:3] - np.array(p_state.get_values())[3:6])
 
         if disterror <= 0.1:
+            self._state.set_terminal(True)
             return True
         else:
             return False
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
         return False
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
         disterror = np.linalg.norm(np.array(p_state_new.get_values())[:3] - np.array(p_state_new.get_values())[3:6])
@@ -421,14 +443,16 @@ class RobotHTM(Environment):
         reward.set_overall_reward(rew.item())
         return reward
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_theta(self, theta):
         self.RobotArm1.thetas = theta.reshape(self.num_joint)
         self.RobotArm1.update_joint_coords()
         self.jointangles = self.RobotArm1.thetas
 
-    ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None) -> None:
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None) -> None:
         self.set_random_seed(p_seed)
         theta = torch.zeros(self.RobotArm1.get_num_joint())
         self.RobotArm1.set_theta(theta)
@@ -465,12 +489,13 @@ class RobotHTM(Environment):
         obs = obs.cpu().flatten().tolist()
         self._state = State(self._state_space)
         self._state.set_values(obs)
-        self._state.set_done(True)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         pass
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         pass

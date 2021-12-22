@@ -23,10 +23,12 @@
 ## --                                - Method RLTraining.__init__(): par p_scenario replaced by p_scenario_cls
 ## -- 2021-12-09  1.3.2     DA       Class RLTraining: introduced dynamic parameters **p_kwargs
 ## -- 2021-12-12  1.4.0     DA       Class RLTraining: evaluation and stagnation detection added
+## -- 2021-12-16  1.4.1     DA       Method RLTraining._close_evaluation(): optimized scoring
+## -- 2021-12-21  1.5.0     DA       Class RLTraining: reworked evaluation strategy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2021-12-12)
+Ver. 1.5.0 (2021-12-21)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -38,7 +40,6 @@ from mlpro.bf.math import *
 from mlpro.bf.data import *
 from mlpro.bf.ml import *
 from mlpro.rl.models_env import *
-from statistics import mean
 
 
 
@@ -136,7 +137,7 @@ class RLDataStoringEval (DataStoring):
     # Variables for training header data storage
     C_VAR_SCORE         = 'Score'
     C_VAR_NUM_CYCLES    = 'Number of cycles'
-    C_VAR_NUM_DONE      = 'Env goal reached'
+    C_VAR_NUM_SUCCESS   = 'Env goal reached'
     C_VAR_NUM_BROKEN    = 'Env broken'
     C_VAR_NUM_LIMIT     = 'Env out of limit'
 
@@ -151,7 +152,7 @@ class RLDataStoringEval (DataStoring):
         self.space = p_space
 
         # Initalization as an episodical detail data storage
-        self.variables  = [ self.C_VAR_SCORE, self.C_VAR_NUM_CYCLES, self.C_VAR_NUM_LIMIT, self.C_VAR_NUM_DONE, self.C_VAR_NUM_BROKEN ]
+        self.variables  = [ self.C_VAR_SCORE, self.C_VAR_NUM_CYCLES, self.C_VAR_NUM_LIMIT, self.C_VAR_NUM_SUCCESS, self.C_VAR_NUM_BROKEN ]
         self.var_space  = []
     
         for dim_id in self.space.get_dim_ids():
@@ -180,7 +181,7 @@ class RLDataStoringEval (DataStoring):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def memorize_row(self, p_score, p_num_limit, p_num_cycles, p_num_done, p_num_broken, p_reward):
+    def memorize_row(self, p_score, p_num_limit, p_num_cycles, p_num_success, p_num_broken, p_reward):
         """
         Memorizes an evaluation data row.
 
@@ -192,7 +193,7 @@ class RLDataStoringEval (DataStoring):
         self.memorize(self.C_VAR_SCORE, self.current_evaluation, p_score)
         self.memorize(self.C_VAR_NUM_LIMIT, self.current_evaluation, p_num_limit)
         self.memorize(self.C_VAR_NUM_CYCLES, self.current_evaluation, p_num_cycles)
-        self.memorize(self.C_VAR_NUM_DONE, self.current_evaluation, p_num_done)
+        self.memorize(self.C_VAR_NUM_SUCCESS, self.current_evaluation, p_num_success)
         self.memorize(self.C_VAR_NUM_BROKEN, self.current_evaluation, p_num_broken)
 
         for i, var in enumerate(self.var_space):
@@ -377,7 +378,7 @@ class RLScenario (Scenario):
 
 
         # 6 Check for terminating events
-        success = self._env.get_state().get_done()
+        success = self._env.get_state().get_success()
         error   = self._env.get_state().get_broken()
 
         if success:
@@ -408,8 +409,12 @@ class RLTrainingResults (TrainingResults):
         Id of first cycle of this run.
     p_path : str
         Optional destination path to store the results.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
 
     """
+
+    C_NAME                  = 'RL'
 
     C_FNAME_EVAL            = 'evaluation'
     C_FNAME_ENV_STATES      = 'env_states'
@@ -420,8 +425,8 @@ class RLTrainingResults (TrainingResults):
     C_CPAR_NUM_EVAL         = 'Evaluations'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:RLScenario, p_run, p_cycle_id, p_path=None):
-        super().__init__(p_scenario, p_run, p_cycle_id, p_path=p_path)
+    def __init__(self, p_scenario:RLScenario, p_run, p_cycle_id, p_path=None, p_logging=Log.C_LOG_WE):
+        super().__init__(p_scenario, p_run, p_cycle_id, p_path=p_path, p_logging=p_logging)
 
         self.num_episodes       = 0
         self.num_evaluations    = 0
@@ -437,6 +442,13 @@ class RLTrainingResults (TrainingResults):
 
         self.add_custom_result(self.C_CPAR_NUM_EPI, self.num_episodes)
         self.add_custom_result(self.C_CPAR_NUM_EVAL, self.num_evaluations)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _log_results(self):
+        super()._log_results()
+        self.log(self.C_LOG_TYPE_W, '-- Training Episodes :', self.num_episodes)
+        self.log(self.C_LOG_TYPE_W, '-- Evaluations       :', self.num_evaluations)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -592,10 +604,8 @@ class RLTraining (Training):
             if self._cycles_per_epi_limit == -1:
                 self._cycles_per_epi_limit = self._env.get_cycle_limit()
 
-            if self._cycles_per_epi_limit > 0:
-                self._eval_factor = self._cycles_per_epi_limit
-            else:
-                self._eval_factor = 100
+            if self._cycles_per_epi_limit <= 0:
+                raise ParamError('Please define a maximum number of training cylces per episode (env or param p_cycles_per_epi_limit')
 
             if self._eval_frequency > 0:
                 # Training with evaluation starts with initial evaluation
@@ -649,38 +659,38 @@ class RLTraining (Training):
                 if self._counter_epi_train == 0:
                     self._scenario.get_model().switch_adaptivity(True)
 
-                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                    self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                     self.log(self.C_LOG_TYPE_W, '-- Training period started...')
-                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+                    self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
                 self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
 
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                 self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'started...')
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
             else:
                 if self._counter_epi_eval == 0:
                     self._scenario.get_model().switch_adaptivity(False)
 
-                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                    self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                     self.log(self.C_LOG_TYPE_W, '-- Evaluation period', self._results.num_evaluations, 'started...')
-                    self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+                    self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
                     self._init_evaluation()
                     
                 self._scenario.reset(self._counter_epi_eval)
 
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                 self.log(self.C_LOG_TYPE_W, '-- Evaluation episode', self._counter_epi_eval, 'started...')
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
         else:
             self._scenario.reset(self._results.num_episodes + self._eval_grp_size)
 
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'started...')
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n')
+            self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
 
         # 3 Preparation of data logging for next episode 
@@ -695,9 +705,10 @@ class RLTraining (Training):
         if self._eval_frequency > 0:
 
             if self._mode == self.C_MODE_TRAIN:
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                 self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+                self.log(self.C_LOG_TYPE_W, '-- Training cycles finished:', self._results.num_cycles + 1)
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n\n')
 
                 self._results.num_episodes  += 1
                 self._counter_epi_train     += 1
@@ -707,9 +718,9 @@ class RLTraining (Training):
                     self._mode              = self.C_MODE_EVAL
 
             else:
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
                 self.log(self.C_LOG_TYPE_W, '-- Evaluation episode', self._counter_epi_eval, 'finished after', str(self._cycles_episode), 'cycles')
-                self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+                self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n\n')
 
                 self._counter_epi_eval      += 1
 
@@ -717,16 +728,21 @@ class RLTraining (Training):
 
                     score = self._close_evaluation()
                     if ( self._results.highscore is None ) or ( score > self._results.highscore ):
+                        self.log(self.C_LOG_TYPE_W, 'New temporal highscore', str(score))
                         self._results.highscore = score
+                    else:
+                        self.log(self.C_LOG_TYPE_W, 'New score', str(score))
+
 
                     self._results.num_evaluations += 1
                     self._counter_epi_train = 0
                     self._mode              = self.C_MODE_TRAIN
        
         else:
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------')
+            self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, '-- Training episode', self._results.num_episodes, 'finished after', str(self._cycles_episode), 'cycles')
-            self.log(self.C_LOG_TYPE_W, '--------------------------------------------------\n\n')
+            self.log(self.C_LOG_TYPE_W, '-- Training cycles finished:', self._results.num_cycles + 1)
+            self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n\n')
 
             self._results.num_episodes  += 1
 
@@ -743,9 +759,9 @@ class RLTraining (Training):
 
         self._eval_num_cycles   = 0
         self._eval_num_limit    = 0 
-        self._eval_num_done     = 0
+        self._eval_num_success  = 0
         self._eval_num_broken   = 0
-        self._eval_max_reward   = None
+        self._eval_sum_reward   = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -764,9 +780,9 @@ class RLTraining (Training):
 
         """
 
-        self._eval_num_cycles += 1
+        self._eval_num_cycles       += 1
         if p_cycle_limit: self._eval_num_limit += 1
-        if p_success: self._eval_num_done += 1
+        if p_success: self._eval_num_success += 1
         if p_error: self._eval_num_broken += 1
 
         reward = self._env.get_last_reward()
@@ -775,23 +791,23 @@ class RLTraining (Training):
         reward_type = reward.get_type()
 
         if reward_type == Reward.C_TYPE_OVERALL:
-            overall_reward = reward.get_overall_reward()
-            if self._eval_max_reward is None:
-                self._eval_max_reward = [ overall_reward ]
-            elif overall_reward > self._eval_max_reward[0]:
-                self._eval_max_reward[0] = overall_reward
+            if self._eval_sum_reward is None:
+                self._eval_sum_reward = np.zeros(1)
+
+            self._eval_sum_reward[0] += reward.get_overall_reward()
 
         elif reward_type == Reward.C_TYPE_EVERY_AGENT:
-            if self._eval_max_reward is None:
-                self._eval_max_reward = []
-                for agent_id in reward.agent_ids: 
-                    self._eval_max_reward.append(reward.get_agent_reward(agent_id))
+            if self._eval_sum_reward is None:
+                self._eval_sum_reward = np.zeros(len(reward.agent_ids))
 
-            else:
-                for i, agent_id in enumerate(reward.agent_ids): 
-                    agent_reward = reward.get_agent_reward(agent_id)
-                    if agent_reward > self._eval_max_reward[i]:
-                        self._eval_max_reward[i] = agent_reward
+            for i, agent_id in enumerate(reward.agent_ids): 
+                # Get weight of agent
+                try:
+                    weight_agent = self._agent.get_agent(agent_id)[1]
+                except:
+                    weight_agent = 1.0
+
+                self._eval_sum_reward[i] += reward.get_agent_reward(agent_id) * weight_agent
                 
         else:
             raise Error('Reward type ' + str(reward_type) + ' not yet supported')
@@ -810,17 +826,19 @@ class RLTraining (Training):
         """
 
         # 1 Computation of score
-        score = max( self._eval_num_done - self._eval_num_limit - self._eval_num_broken, 0) * mean(self._eval_max_reward) * self._eval_factor / self._eval_num_cycles
+        self._eval_sum_reward /= self._counter_epi_eval
+        score = np.mean( self._eval_sum_reward )
 
 
         # 2 Store evaluation statistics
         if self._results.ds_eval is not None:
+
             self._results.ds_eval.memorize_row( p_score=score, 
                                                 p_num_limit=self._eval_num_limit, 
                                                 p_num_cycles=self._eval_num_cycles, 
-                                                p_num_done=self._eval_num_done, 
+                                                p_num_success=self._eval_num_success, 
                                                 p_num_broken=self._eval_num_broken, 
-                                                p_reward=self._eval_max_reward )
+                                                p_reward=self._eval_sum_reward )
 
 
         # 3 Stagnation detection
@@ -871,19 +889,30 @@ class RLTraining (Training):
 
 
         # 4 Check: Episode finished?
-        if success:
-            self.log(self.C_LOG_TYPE_I, 'Objective of environment reached')
-            eof_episode = True
+        state       = self._env.get_state()
+        eof_episode = state.get_terminal()
 
-        if error:
-            self.log(self.C_LOG_TYPE_E, 'Environment broken')
-            eof_episode = True
+        if eof_episode:
 
-        if timeout:
-            self.log(self.C_LOG_TYPE_E, 'Timout detected')
+            if state.get_broken():
+                # 4.1 Environment reached a state of no return
+                self.log(self.C_LOG_TYPE_E, 'Environment broken')
 
-        if ( self._cycles_per_epi_limit > 0 ) and ( self._cycles_episode == self._cycles_per_epi_limit ):
-            self.log(self.C_LOG_TYPE_W, 'Episode cycle limit ', str(self._cycles_per_epi_limit), ' reached')
+            elif state.get_success():
+                # 4.2 Objective of environment reached
+                self.log(self.C_LOG_TYPE_W, 'Objective of environment reached')
+
+            elif state.get_timeout():
+                # 4.3 Cycle limit of environment reached
+                self.log(self.C_LOG_TYPE_W, 'Limit of', self._env.get_cycle_limit(), 'cylces per episde reached (Environment)')
+
+            else:
+                # 4.4 Environment terminated the episode because of unknown reasons
+                self.log(self.C_LOG_TYPE_W, 'Environment terminated episode (reason unknown)')
+
+        elif self._cycles_episode == self._cycles_per_epi_limit:
+            # 4.5 Cycle limit of training setup reached
+            self.log(self.C_LOG_TYPE_W, 'Limit of', self._cycles_per_epi_limit, 'cylces per episde reached (Training)')
             eof_episode = True
 
         if eof_episode: 

@@ -5,12 +5,14 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-12-17  0.0.0     MRD       Creation
-## -- 2021-12-17  1.0.0     MRD       Released first version
+## -- 2021-12-17  0.0.0     MRD      Creation
+## -- 2021-12-17  1.0.0     MRD      Released first version
+## -- 2021-12-20  1.0.1     DA       Replaced 'done' by 'success'
+## -- 2021-12-21  1.0.2     DA       Class MLPEnvMdel: renamed method reset() to _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-17)
+Ver. 1.0.2 (2021-12-21)
 
 This module provides Environment Model based on MLP Neural Network for
 robotinhtm environment.
@@ -139,7 +141,7 @@ class MLPEnvModel(EnvModel, Mode):
             p_latency=timedelta(seconds=self.dt),
             p_afct_strans=afct_strans,
             p_afct_reward=None,
-            p_afct_done=None,
+            p_afct_success=None,
             p_afct_broken=None,
             p_ada=p_ada,
             p_logging=p_logging,
@@ -171,7 +173,7 @@ class MLPEnvModel(EnvModel, Mode):
         self.reset()
 
     ## -------------------------------------------------------------------------------------------------
-    def _compute_done(self, p_state: State = None) -> bool:
+    def _compute_success(self, p_state: State = None) -> bool:
         # disterror = np.linalg.norm(p_state.get_values()[:3] - p_state.get_values()[3:6])
         disterror = np.linalg.norm(np.array(p_state.get_values())[:3] - np.array(p_state.get_values())[3:6])
         if disterror <= 0.1:
@@ -203,7 +205,7 @@ class MLPEnvModel(EnvModel, Mode):
         self.RobotArm1.update_joint_coords()
         self.jointangles = self.RobotArm1.thetas
 
-    def reset(self, p_seed=None) -> None:
+    def _reset(self, p_seed=None) -> None:
         self.set_random_seed(p_seed)
         theta = torch.zeros(self.RobotArm1.get_num_joint())
         self.RobotArm1.set_theta(theta)
@@ -237,5 +239,5 @@ class MLPEnvModel(EnvModel, Mode):
         obs = obs.cpu().flatten().tolist()
         self._state = State(self._state_space)
         self._state.set_values(obs)
-        self._state.set_done(True)
+        self._state.set_success(True)
 

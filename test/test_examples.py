@@ -8,10 +8,11 @@
 ## -- 2021-10-06  1.0.0     MRD      Creation
 ## -- 2021-10-06  1.0.0     MRD      Release First Version
 ## -- 2021-12-12  1.0.1     DA       Howto 17 added
+## -- 2021-12-20  1.0.2     DA       Howto 08 disabled
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-12-12)
+Ver. 1.0.2 (2021-12-20)
 
 Unit test for all examples available.
 """
@@ -31,7 +32,7 @@ howto_list = {
     "rl_03": "examples.rl.Howto 03 - (RL) Train agent with own policy on gym environment",
     "rl_04": "examples.rl.Howto 04 - (RL) Run multi-agent with own policy in multicartpole environment",
     "rl_05": "examples.rl.Howto 05 - (RL) Train multi-agent with own policy on multicartpole environment",
-    "rl_08": "examples.rl.Howto 08 - (RL) Run own agents with petting zoo environment",
+#    "rl_08": "examples.rl.Howto 08 - (RL) Run own agents with petting zoo environment",
     "rl_10": "examples.rl.Howto 10 - (RL) Train using SB3 Wrapper",
     "rl_11": "examples.rl.Howto 11 - (RL) Wrap mlpro Environment class to gym environment",
     "rl_12": "examples.rl.Howto 12 - (RL) Wrap mlpro Environment class to petting zoo environment",
