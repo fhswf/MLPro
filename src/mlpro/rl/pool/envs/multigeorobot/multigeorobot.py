@@ -46,17 +46,11 @@ class MultiGeo(Environment):
         max_step_episode = rospy.get_param(
         '/multi_geo_robot/max_iterations')  
 
-        self.env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)        
+        self.env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)       
         
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         
         self.reset()
-
-## -------------------------------------------------------------------------------------------------
-    def _obs_to_state(self, observation):
-        state = State(self._state_space)
-        state.set_values(observation)
-        return state
 
 ## -------------------------------------------------------------------------------------------------
     def setup_spaces(self):
@@ -85,23 +79,29 @@ class MultiGeo(Environment):
         return state_space, action_space
     
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None) -> None:
+    def _reset(self, p_seed=None) -> None:
         random.seed(p_seed)
         obs = self.env.reset()
-        self._state = self._obs_to_state(obs)
-        self._state.set_done(True)
+        state   = State(self._state_space)
+        state.set_values(obs)
+        self._set_state(state)
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
-        obs, self.reward_gym, self.done, info = self.env.step(p_action.get_sorted_values())
-        self._state = self._obs_to_state(obs)
-        self._state.set_done(self.done)
-        return self._state
+    def simulate_reaction(self, p_state: State, p_action: Action) -> State:
+        obs, self.reward_gym, done, info = self.env.step(p_action.get_sorted_values())
+        state = State(self._state_space, p_terminal=done)
+        state.set_values(obs)
+
+        return state
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_done(self, p_state:State) -> bool:
-        return self.get_done()
+    def _compute_success(self, p_state:State) -> bool:
+        success = (np.allclose(a=p_state.get_values()[:3], 
+                            b=p_state.get_values()[3:], 
+                            atol=0.05))
+
+        return success
 
 
 ## -------------------------------------------------------------------------------------------------
