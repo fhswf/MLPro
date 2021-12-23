@@ -11,6 +11,7 @@
 ## -- 2021-12-07  1.0.2     DA       Refactoring
 ## -- 2021-12-20  1.0.3     DA       Refactoring
 ## -- 2021-12-23  1.0.4     MRD      Small change on custom _reset Wrapper
+## -- 2021-12-24  1.0.5     DA       Replaced separtor in log line by Training.C_LOG_SEPARATOR
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -203,9 +204,9 @@ class CustomCallback(BaseCallback, Log):
         self.rewards_cnt = []
 
     def _on_training_start(self) -> None:
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------')
+        self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR)
         self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'started...')
-        self.log(self.C_LOG_TYPE_I, '--------------------------------------\n')
+        self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR, '\n')
         self.ds_rewards.add_episode(self.episode_num)
 
     def _on_step(self) -> bool:
@@ -214,15 +215,15 @@ class CustomCallback(BaseCallback, Log):
         self.total_cycle += 1
         self.cycles += 1
         if self.locals.get("infos")[0]:
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------')
+            self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'finished after', self.total_cycle + 1, 'cycles')
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------\n\n')
+            self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR, '\n\n')
             self.episode_num += 1
             self.total_cycle = 0
             self.ds_rewards.add_episode(self.episode_num)
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------')
+            self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'started...')
-            self.log(self.C_LOG_TYPE_I, '--------------------------------------\n')
+            self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR', \n')
         
         return True
 
