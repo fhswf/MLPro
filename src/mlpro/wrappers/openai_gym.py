@@ -28,10 +28,12 @@
 ## -- 2021-12-03  1.2.9     DA       Refactoring
 ## -- 2021-12-21  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
 ## --                                - Optimized 'done' detection in both classed
+## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to EnvBase.process_actions()
+## --                                is already adding self._num_cycle
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-12-21)
+Ver. 1.3.1 (2021-12-23)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -149,7 +151,6 @@ class WrEnvGYM2MLPro (Environment):
             observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
         
         obs               = DataObject(observation)
-        self._num_cycles += 1
         cycle_limit       = self.get_cycle_limit()
 
 

@@ -21,10 +21,12 @@
 ## -- 2021-12-11  1.2.9     SY       Update WrEnvPZOO2MLPro() in setting up done flag
 ## -- 2021-12-21  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
 ## --                                - Optimized 'done' detection in both classes
+## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to EnvBase.process_actions()
+## --                                is already adding self._num_cycle
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2021-12-21)
+Ver. 1.3.1 (2021-12-23)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -137,7 +139,6 @@ class WrEnvPZOO2MLPro(Environment):
     def simulate_reaction(self, p_state:State, p_action:Action) -> State:
 
         new_state = State(self._state_space)
-        self._num_cycles += 1
         cycle_limit = self.get_cycle_limit()
 
         # 1 Convert action to Zoo syntax
