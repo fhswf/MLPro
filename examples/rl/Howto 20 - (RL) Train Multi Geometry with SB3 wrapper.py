@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-19  0.0.0     MRD      Creation
 ## -- 2021-12-19  1.0.0     MRD      Initial Release
+## -- 2021-12-23  1.0.1     DA       Minor fix 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-19)
+Ver. 1.0.1 (2021-12-23)
 
 This module shows how to use SB3 wrapper to train Multi Geometry Robot.
 """
@@ -63,7 +64,6 @@ training        = RLTraining(
     p_scenario_cls=ScenarioMultiGeoPPO,
     p_cycle_limit=1000,
     p_cycles_per_epi_limit=-1,
-    p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
