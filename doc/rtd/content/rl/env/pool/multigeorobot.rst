@@ -40,14 +40,13 @@
                 
     - **Overview**
     
-        .. image:: images/ur5simulation.jpg
-            :align: center
-            :width: 400
-          
-        `UR5 Robot while training (MP4) <https://github.com/fhswf/MLPro/blob/main/doc/rtd/content/rl/env/pool/images/ur5jointcontrol_demo.mp4>`_
       
     - **General information**
 
+    Building a robot model in URDF format can be a painful work, if you do not know what you are doing. Especially when the model is complex.
+    Multi Geometry Robot environment provides an easy way to build your own robot with a predefined configuration. 
+    This way, the user do not have to take care of the robot model. All the configurations are automatically built. The robot is also attached with a robotiq
+    gripper.
     The robot can be configured in:
         .. code-block:: bash
         
@@ -55,27 +54,27 @@
 
     Below are the parameters on above mentioned file that can be configured:
 
-    +------------------------------------+--------------------------------------------------------------+----------------------------+
-    |         Parameter                  |                 Description                                  |  Example value             |
-    +====================================+==============================================================+============================+
-    | robot_type                         | Type of the robot, "2D" or "3D"                              |      "3D"                  |
-    +------------------------------------+--------------------------------------------------------------+----------------------------+
-    | arm_num                            | Number of arm, any integer value                             |      3                     |
-    +------------------------------------+--------------------------------------------------------------+----------------------------+
-    | arm_joint_seq                      | Arm Joint Sequence per arm, 0=Fixed Joint, 1=Revolute Joint  | [[1,1,0],[0,1,0],[0,1,0]]  |
-    +------------------------------------+--------------------------------------------------------------+----------------------------+
-    | arm_length                         | Length of each Arm                                           | [0.2, 0.2, 0.2]            |
-    +------------------------------------+--------------------------------------------------------------+----------------------------+
-    | arm_mass                           | Mass of each arm                                             | [9, 2, 2]                  |
-    +------------------------------------+--------------------------------------------------------------+----------------------------+
-    | adapter_mass                       | Mass of Adapter, connection between arm                      |        5                   |
-    +------------------------------------+--------------------------------------------------------------+----------------------------+
-    | eef_dummy                          | Display dummy ball on the end effector point                 | False                      |
-    +------------------------------------+--------------------------------------------------------------+----------------------------+
-    | max_iterations                     | Max cycle per episode                                        |   20                       |
-    +------------------------------------+--------------------------------------------------------------+----------------------------+
-    | task_and_robot_environment_name    | The name of the environment task registered on gym           |  'MultiGeoRobotReach-v0'   |
-    +------------------------------------+--------------------------------------------------------------+----------------------------+
+    +------------------------------------+-------------------------------------------------------------------+----------------------------+
+    |         Parameter                  |                 Description                                       |  Example value             |
+    +====================================+===================================================================+============================+
+    | robot_type                         | Type of the robot, "2D" or "3D"                                   |      "3D"                  |
+    +------------------------------------+-------------------------------------------------------------------+----------------------------+
+    | arm_num                            | Number of arm, positive integer value                             |      3                     |
+    +------------------------------------+-------------------------------------------------------------------+----------------------------+
+    | arm_joint_seq                      | Arm Joint Sequence per arm, 0=Fixed Joint, 1=Revolute Joint       | [[1,1,0],[0,1,0],[0,1,0]]  |
+    +------------------------------------+-------------------------------------------------------------------+----------------------------+
+    | arm_length                         | Length of each Arm, list of positive floating value               | [0.2, 0.2, 0.2]            |
+    +------------------------------------+-------------------------------------------------------------------+----------------------------+
+    | arm_mass                           | Mass of each arm, list of positive floating value                 | [9, 2, 2]                  |
+    +------------------------------------+-------------------------------------------------------------------+----------------------------+
+    | adapter_mass                       | Mass of Adapter (connection between arm), positive floating value |        5                   |
+    +------------------------------------+-------------------------------------------------------------------+----------------------------+
+    | eef_dummy                          | Display dummy ball on the end effector point, boolean value       | False                      |
+    +------------------------------------+-------------------------------------------------------------------+----------------------------+
+    | max_iterations                     | Max cycle per episode, positive integer value                     |   20                       |
+    +------------------------------------+-------------------------------------------------------------------+----------------------------+
+    | task_and_robot_environment_name    | The name of the environment task registered on gym                |  'MultiGeoRobotReach-v0'   |
+    +------------------------------------+-------------------------------------------------------------------+----------------------------+
 
     For the joint sequence explanation is shown on the figure below.
     
@@ -149,4 +148,4 @@
       
     - **Version structure**
     
-        + Version 1.0.0 : Initial version release in MLPro v. 0.0.0
+        + Version 1.4.0
