@@ -4,7 +4,6 @@ Reinforcement Learning
 States, Actions, Rewards
 -------------------------
 
-
 .. image:: images/rl/01_state-action-reward/MLPro-RL-SAR_class_diagram.png
 .. automodule:: mlpro.rl.models_sar
    :members:
@@ -23,7 +22,6 @@ Environments
 Agents
 ------------------
 
-
 .. image:: images/rl/03_agents/MLPro-RL-Agents_class_diagram.png
 .. automodule:: mlpro.rl.models_agents
    :members:
@@ -33,7 +31,6 @@ Agents
    
 Training and Tuning
 ---------------------
-
 
 .. image:: images/rl/04_run_and_train/MLPro-RL-Train_class_diagram.png
 .. automodule:: mlpro.rl.models_train
