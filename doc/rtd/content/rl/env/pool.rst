@@ -11,3 +11,4 @@ Add text here!
    pool/gridworld
    pool/robotmanipulator
    pool/ur5jointcontrol
+   pool/multigeorobot
