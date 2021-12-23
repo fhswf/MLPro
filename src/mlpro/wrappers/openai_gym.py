@@ -28,8 +28,8 @@
 ## -- 2021-12-03  1.2.9     DA       Refactoring
 ## -- 2021-12-21  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
 ## --                                - Optimized 'done' detection in both classed
-## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to EnvBase.process_actions()
-## --                                is already adding self._num_cycle
+## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to 
+## --                                EnvBase.process_actions() is already adding self._num_cycle
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -68,7 +68,6 @@ class WrEnvGYM2MLPro (Environment):
 
         self._gym_env     = p_gym_env
         self.C_NAME       = 'Env "' + self._gym_env.spec.id + '"'
-        self._num_cycles  = 0
 
         super().__init__(p_mode=Environment.C_MODE_SIM, p_latency=None, p_logging=p_logging)
 
@@ -114,9 +113,6 @@ class WrEnvGYM2MLPro (Environment):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
 
-        # 0 Reset cycle counter
-        self._num_cycles = 0
-
         # 1 Reset Gym environment and determine initial state
         self._gym_env.seed(p_seed)
         observation = self._gym_env.reset()
@@ -151,11 +147,10 @@ class WrEnvGYM2MLPro (Environment):
             observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
         
         obs               = DataObject(observation)
-        cycle_limit       = self.get_cycle_limit()
 
 
         # 3 Create state object from Gym observation
-        state = State(self._state_space, p_terminal=done, p_timeout=(cycle_limit > 0) and (self._num_cycles >= cycle_limit) )
+        state = State(self._state_space, p_terminal=done )
         state.set_values(obs.get_data())
 
 

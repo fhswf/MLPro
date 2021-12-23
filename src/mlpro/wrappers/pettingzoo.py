@@ -21,8 +21,8 @@
 ## -- 2021-12-11  1.2.9     SY       Update WrEnvPZOO2MLPro() in setting up done flag
 ## -- 2021-12-21  1.3.0     DA       - Replaced 'done' by 'success' on mlpro functionality
 ## --                                - Optimized 'done' detection in both classes
-## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to EnvBase.process_actions()
-## --                                is already adding self._num_cycle
+## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to 
+## --                                EnvBase.process_actions() is already adding self._num_cycle
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -68,7 +68,6 @@ class WrEnvPZOO2MLPro(Environment):
 
         self._zoo_env     = p_zoo_env
         self.C_NAME       = 'Env "' + self._zoo_env.metadata['name'] + '"'
-        self._num_cycles  = 0
 
         Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         
@@ -117,9 +116,6 @@ class WrEnvPZOO2MLPro(Environment):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
 
-        # 0 Reset cycle counter
-        self._num_cycles = 0
-
         # 1 Reset Zoo environment and determine initial state
         self._zoo_env.seed(p_seed)
         self._zoo_env.reset()
@@ -139,7 +135,6 @@ class WrEnvPZOO2MLPro(Environment):
     def simulate_reaction(self, p_state:State, p_action:Action) -> State:
 
         new_state = State(self._state_space)
-        cycle_limit = self.get_cycle_limit()
 
         # 1 Convert action to Zoo syntax
         action_sorted = p_action.get_sorted_values()
@@ -163,7 +158,6 @@ class WrEnvPZOO2MLPro(Environment):
             if done:
                 self._zoo_env.step(None)
                 new_state.set_terminal(True)
-                new_state.set_timeout( (cycle_limit>0) and (self._num_cycles >= cycle_limit) )
 
             else:
                 try:
