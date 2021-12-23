@@ -223,7 +223,7 @@ class CustomCallback(BaseCallback, Log):
             self.ds_rewards.add_episode(self.episode_num)
             self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'started...')
-            self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR', \n')
+            self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR, '\n')
         
         return True
 
