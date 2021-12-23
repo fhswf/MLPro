@@ -10,6 +10,7 @@
 ## -- 2021-11-16  1.0.1     DA       Refactoring
 ## -- 2021-12-07  1.0.2     DA       Refactoring
 ## -- 2021-12-20  1.0.3     DA       Refactoring
+## -- 2021-12-23  1.0.4     MRD      Small change on custom _reset Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -57,9 +58,8 @@ class MyScenario(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
-            def reset(self, p_seed=None):
+            def _reset(self, p_seed=None):
                 self.log(self.C_LOG_TYPE_I, 'Reset')
-                self._num_cycles = 0 
 
                 # 1 Reset Gym environment and determine initial state
                 observation = self._gym_env.reset()
