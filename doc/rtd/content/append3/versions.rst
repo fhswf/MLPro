@@ -7,7 +7,7 @@ Version 0.8.1
 Release Highlights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-RL/GT: New environment MultiGeo
+RL/GT: New environment Multi Geometry Robot
 
 
 .. New Features
