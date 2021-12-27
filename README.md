@@ -39,9 +39,9 @@ e) Integration of established 3rd party packages (Wrapper classes)
 
 
 # Development
--   Test-driven development in GitHub (CI/CD concept)
--   Consequent object-oriented design and programming
--   Clean code paradigma
+- Consequent object-oriented design and programming
+- Clean code paradigma
+- Test-driven development in GitHub (CI/CD concept)
 
 
 # Documentation
