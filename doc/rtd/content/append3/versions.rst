@@ -1,6 +1,30 @@
 Release Notes
 ================
 
+Version 0.8.1
+---------------------
+
+Release Highlights
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+RL/GT: New environment Multi Geometry Robot
+
+
+.. New Features
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Fixed Issues
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Wrappers OpenAI Gym and PettingZoo: removed redundant cycle counting
+
+.. Documentation Changes
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. Others
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
 Version 0.8.0
 ---------------------
 
@@ -27,7 +51,7 @@ Release Highlights
 .. New Features
 .. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. Issued Fixed
+.. Fixed Issues
 .. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. Documentation Changes
