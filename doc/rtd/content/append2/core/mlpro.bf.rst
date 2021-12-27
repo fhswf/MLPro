@@ -8,33 +8,35 @@ Various
    :members:
    :undoc-members:
    :show-inheritance:
+
    
 Mathematics
 ----------------
 
-
+.. image:: images/bf/MLPro-BF-Math_class_diagram.png
 .. automodule:: mlpro.bf.math
    :members:
    :undoc-members:
    :show-inheritance:
+
    
 Data Management
 ----------------
-
 
 .. automodule:: mlpro.bf.data
    :members:
    :undoc-members:
    :show-inheritance:
+
    
 Data Plotting
 ----------------
-
 
 .. automodule:: mlpro.bf.plot
    :members:
    :undoc-members:
    :show-inheritance:
+
    
 Machine Learning
 ----------------
@@ -44,6 +46,7 @@ Machine Learning
    :members:
    :undoc-members:
    :show-inheritance:
+   
    
 Exceptions
 ----------------
