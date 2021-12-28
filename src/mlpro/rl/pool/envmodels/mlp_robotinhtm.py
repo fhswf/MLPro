@@ -23,7 +23,7 @@ import torch
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotArm3D
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.sl.pool.afct.mlpafctrans import MLPAFctTrans
+from mlpro.sl.pool.afct.afctrans_mlp_robotinhtm import MLPAFctTrans
 
 
 class MLPEnvModel(EnvModel, Mode):
