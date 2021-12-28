@@ -39,7 +39,9 @@
                     MLPro/src/mlpro/rl/pool/envs/multigeorobot/src/multi_geo_robot_rl/multi_geo_robot_training/config/multi_geo_robot.yaml
                 
     - **Overview**
-    
+        .. image:: images/multigeo_overview.png
+            :align: center
+            :width: 400
       
     - **General information**
 
