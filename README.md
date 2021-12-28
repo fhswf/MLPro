@@ -35,14 +35,14 @@ Wrapper classes for:
 - Hyperparameter Tuning with Hyperopt
 
 
+## Documentation
+The Documentation is available on : [https://mlpro.readthedocs.io/](https://mlpro.readthedocs.io/)
+
+
 ## Development
 - Consequent object-oriented design and programming
 - Clean code paradigma
 - Test-driven development in GitHub (CI/CD concept)
-
-
-## Documentation
-The Documentation is available on : [https://mlpro.readthedocs.io/](https://mlpro.readthedocs.io/)
 
 
 ## Project and Team
