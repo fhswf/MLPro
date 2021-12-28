@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.envmodels
-## -- Module  : mlpenvmodel
+## -- Module  : mlp_robotinhtm
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -23,7 +23,7 @@ import torch
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotArm3D
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.sl.pool.afct.mlpafctrans import MLPAFctTrans
+from mlpro.sl.pool.afct.mlpafctrans_robotinhtm import MLPAFctTrans
 
 
 class MLPEnvModel(EnvModel, Mode):
