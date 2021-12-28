@@ -5,8 +5,7 @@
 
 <img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png" align="right" width="40%"/>
 
-# MLPro - Machine Learning Professional
-A Synoptic Framework for Standardized Machine Learning Tasks in Python
+# MLPro - A Synoptic Framework for Standardized Machine Learning Tasks in Python
 
 MLPro provides complete, standardized, and reusable functionalities to support your scientific research, educational tasks or industrial projects in machine learning.
 
@@ -46,9 +45,9 @@ The Documentation is available on : [https://mlpro.readthedocs.io/](https://mlpr
 
 
 ## Project and Team
-Project MLPro was started in 2021 by [Automation Technology and Learning Systems Group at the South Westphalia University of Applied Sciences](https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php)
+Project MLPro was started in 2021 by the [Group for Automation Technology and Learning Systems at the South Westphalia University of Applied Sciences](https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php).
 
-MLPro is currently designed and developed by [Detlef Arend](https://github.com/detlefarend), [M Rizky Diprasetya](https://github.com/rizkydiprasetya), [Steve Yuwono](https://github.com/steveyuwono), [William Budiatmadjaja](https://github.com/budiatmadjajaWill)
+MLPro is currently designed and developed by [Detlef Arend](https://github.com/detlefarend), [M Rizky Diprasetya](https://github.com/rizkydiprasetya), [Steve Yuwono](https://github.com/steveyuwono) and [William Budiatmadjaja](https://github.com/budiatmadjajaWill).
 
 
 ## How to contribute
