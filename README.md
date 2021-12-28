@@ -28,7 +28,7 @@ Project MLPro was started in 2021 by [Automation Technology and Learning Systems
 #### c) MLPro-GT: Sub-Package for Cooperative Game Theory
 - Templates for (potential based) game boards
 - Templates for cooperative multi-players
-- Reuse of advanced training/tuning classes and multi-agent environments of sub-package RL
+- Reuse of advanced training/tuning classes and multi-agent environments of sub-package MLPro-RL
 
 #### d) Numerous executable self study examples
 
