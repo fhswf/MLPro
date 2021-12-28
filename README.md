@@ -28,7 +28,8 @@ MLPro provides complete, standardized, and reusable functionalities to support y
 
 #### d) Numerous executable self study examples
 
-#### e) Integration of established 3rd party packages (Wrapper classes) 
+#### e) Integration of established 3rd party packages
+Wrapper classes for:
 - Environments of OpenAI Gym and PettingZoo
 - Policy Algorithms of Stable Baselines 3
 - Hyperparameter Tuning with Hyperopt
