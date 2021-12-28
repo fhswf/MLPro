@@ -40,9 +40,11 @@ The Documentation is available on : [https://mlpro.readthedocs.io/](https://mlpr
 
 
 ## Development
-- Consequent object-oriented design and programming
+- Consequent object-oriented design and programming (OOD/OOP)
+- Quality assurance by test-driven development
+- Hosted and managed on GitHub
+- Agile CI/CD approach with automated test and deployment
 - Clean code paradigma
-- Test-driven development in GitHub (CI/CD concept)
 
 
 ## Project and Team
