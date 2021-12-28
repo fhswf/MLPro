@@ -12,7 +12,7 @@ MLPro provides complete, standardized, and reusable functionalities to support y
 ## Key Features
 
 #### a) Open, modular and extensible architecture
-- Overarching software infrastructure (data management, mathematics, UI framework, logging, plottig, ...)
+- Overarching software infrastructure (mathematics, data management and plotting, UI framework, logging, ...)
 - Fundamental ML classes for adaptive models and their training and hyperparameter tuning
 
 #### b) MLPro-RL: Sub-Package for Reinforcement Learning
