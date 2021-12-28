@@ -10,9 +10,6 @@ A Synoptic Framework for Standardized Machine Learning Tasks in Python
 
 MLPro provides complete, standardized, and reusable functionalities to support your scientific research, educational tasks or industrial projects in machine learning.
 
-Project MLPro was started in 2021 by [Automation Technology and Learning Systems team at Fachhochschule Südwestfalen](https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php)
-
-
 # Key Features
 
 #### a) Open, modular and extensible architecture
@@ -48,7 +45,9 @@ Project MLPro was started in 2021 by [Automation Technology and Learning Systems
 The Documentation is available on : [https://mlpro.readthedocs.io/](https://mlpro.readthedocs.io/)
 
 
-# Team MLPro
+# Project and Team
+Project MLPro was started in 2021 by [Automation Technology and Learning Systems Group at the South Westphalia University of Applied Sciences](https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php)
+
 MLPro is currently designed and developed by [Detlef Arend](https://github.com/detlefarend), [M Rizky Diprasetya](https://github.com/rizkydiprasetya), [Steve Yuwono](https://github.com/steveyuwono), [William Budiatmadjaja](https://github.com/budiatmadjajaWill)
 
 
