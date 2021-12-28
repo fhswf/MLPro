@@ -15,24 +15,24 @@ Project MLPro was started in 2021 by [Automation Technology and Learning Systems
 
 # Key Features
 
-a) Open, modular and extensible architecture
+####a) Open, modular and extensible architecture
 - Overarching software infrastructure (logging, data management, mathematics, UI framework, ...)
 - Fundamental ML classes for adaptive models and their training and hyperparameter tuning
 
-b) Sub-Package for Reinforcement Learning
+####b) Sub-Package for Reinforcement Learning
 - Powerful Environment templates for simulation, training and real operation
 - Templates for single-agents, model-based agents (MBRL) with action planning to multi-agents (MARL)
 - Advanced training/tuning funktionalities with separate evaluation and progress detection
 - Growing pool of reuseable environments of automation and robotics
 
-c) Sub-Package for Cooperative Game Theory
+####c) Sub-Package for Cooperative Game Theory
 - Templates for (potential based) game boards
 - Templates for cooperative multi-players
 - Reuse of advanced training/tuning classes and multi-agent environments of sub-package RL
 
-d) Numerous executable self study examples
+####d) Numerous executable self study examples
 
-e) Integration of established 3rd party packages (Wrapper classes) 
+####e) Integration of established 3rd party packages (Wrapper classes) 
 - Environments of OpenAI Gym and PettingZoo
 - Policy Algorithms of Stable Baselines 3
 - Hyperparameter Tuning with Hyperopt
