@@ -36,7 +36,7 @@ MLPro provides wrapper classes for:
 
 
 ## Documentation
-The Documentation is available on: [https://mlpro.readthedocs.io/](https://mlpro.readthedocs.io/)
+The Documentation is available here: [https://mlpro.readthedocs.io/](https://mlpro.readthedocs.io/)
 
 
 ## Development
