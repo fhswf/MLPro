@@ -28,7 +28,7 @@
 ## -- 2021-11-14  1.3.0     DA       Model-based Agent functionality 
 ## -- 2021-11-26  1.3.1     DA       Minor changes
 ## -- 2021-12-17  1.3.2     DA       Added method MultiAgent.get_agent()
-## -- 2021-12-29  1.4.0     DA       Class Agent: completion of adaptation mechanism
+## -- 2021-12-29  1.4.0     DA       Class Agent: added internal model-based policy training
 ## -------------------------------------------------------------------------------------------------
 
 """
