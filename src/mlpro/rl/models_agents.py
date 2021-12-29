@@ -28,10 +28,11 @@
 ## -- 2021-11-14  1.3.0     DA       Model-based Agent functionality 
 ## -- 2021-11-26  1.3.1     DA       Minor changes
 ## -- 2021-12-17  1.3.2     DA       Added method MultiAgent.get_agent()
+## -- 2021-12-29  1.4.0     DA       Class Agent: completion of adaptation mechanism
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2021-12-17)
+Ver. 1.4.0 (2021-12-29)
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -40,6 +41,7 @@ This module provides model classes for policies, model-free and model-based agen
 from mlpro.bf.data import *
 from mlpro.rl.models_sar import *
 from mlpro.rl.models_env import *
+from mlpro.rl.models_train import RLScenario, RLTraining
 
 
 
@@ -181,9 +183,63 @@ class ActionPlanner (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class RLScenarioMBInt (RLScenario): 
+    """
+    Special rl scenario class for internal training of a policy on an environment model inside a
+    single agent.
+
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self):
+        # Pseudo-implementation
+        self._env = EnvBase(p_logging=Log.C_LOG_NOTHING)
+        return Model(p_logging=Log.C_LOG_NOTHING)
+
+
+## -------------------------------------------------------------------------------------------------
+    def setup_ext(self, p_env:EnvBase, p_policy:Policy):
+        self._model     = p_policy
+        self._agent     = p_policy
+        self._env       = p_env
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class Agent(Policy):
     """
     This class represents a single agent model.
+
+    Parameters
+    ----------
+    p_policy : Policy
+        Policy object.
+    p_envmodel : EnvModel
+        Optional environment model object. Default = None.
+    p_em_mat_thsld : float
+        Optional threshold for environment model maturity (whether or not the envmodel is 'good' 
+        enough to be used to train the policy). Default = 1.
+    p_action_planner : ActionPlanner   
+        Optional action planner object (obligatory for model based agents). Default = None.
+    p_planning_depth : int    
+        Optional planning depth (obligatory for model based agents). Default = 0.
+    p_planning_width : int   
+        Optional planning width (obligatory for model based agents). Default = 0.
+    p_name : str             
+        Optional name of agent. Default = ''.
+    p_id : int               
+        Optional unique agent id (especially important for multi-agent scenarios). Default = 0.
+    p_ada : Bool               
+        Boolean switch for adaptivity. Default = True.
+    p_logging          
+        Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_ALL.
+    p_mb_training_param : dict
+        Optional parameters for internal policy training with environment model (see parameters of
+        class RLTraining). Hyperparameter tuning and data logging is not supported here. The suitable
+        scenario class is added internally.
 
     """
 
@@ -191,26 +247,41 @@ class Agent(Policy):
     C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_policy:Policy, p_envmodel:EnvModel=None, p_em_mat_thsld=1, p_action_planner:ActionPlanner=None, p_planning_depth=0, p_planning_width=0, p_name='', p_id=0, p_ada=True, 
-                p_logging=True):
-        """
-        Parameters:
-            p_policy            Policy object
-            p_envmodel          Optional environment model object
-            p_em_mat_thsld      Threshold for environment model maturity (whether or not the envmodel is 'good' enougth to be used to train the policy)
-            p_action_planner    Optional action planner object (obligatory for model based agents)
-            p_planning_depth    Optional planning depth (obligatory for model based agents)
-            p_planning_width    Optional planning width (obligatory for model based agents)
-            p_name              Optional name of agent
-            p_id                Unique agent id (especially important for multi-agent scenarios)
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
-        """
+    def __init__(self, 
+                 p_policy:Policy, 
+                 p_envmodel:EnvModel=None, 
+                 p_em_mat_thsld=1, 
+                 p_action_planner:ActionPlanner=None, 
+                 p_planning_depth=0, 
+                 p_planning_width=0, 
+                 p_name='', 
+                 p_id=0, 
+                 p_ada=True, 
+                 p_logging=Log.C_LOG_ALL,
+                 **p_mb_training_param):
 
         if p_name != '': 
             self.set_name(p_name)
         else:
             self.set_name(self.C_NAME)
+
+        if p_envmodel is not None:
+            if len(self._mb_training_param) == 0:
+                raise ParamError('Please provide training parameters in parameter p_mb_training_param')
+
+            self._mb_training_param = p_mb_training_param.copy()
+            self._mb_training_param['p_scenario_cls']       = RLScenarioMBInt
+            self._mb_training_param['p_collect_states']     = False 
+            self._mb_training_param['p_collect_actions']    = False 
+            self._mb_training_param['p_collect_rewards']    = False 
+            self._mb_training_param['p_collect_eval']       = False 
+            self._mb_training_param['p_visualize']          = False 
+            self._mb_training_param['p_logging']            = p_logging 
+
+            # Hyperparameter tuning is disabled here
+            if 'p_hpt' in self._mb_training_param: self._mb_training_param.pop('p_hpt')
+            if 'p_hpt_trials' in self._mb_training_param: self._mb_training_param.pop('p_hpt_trials')
+            
 
         if   ( p_action_planner is not None ) and ( p_envmodel is None ):
            raise ParamError('Agents using an action planner also need an environment model')
@@ -226,6 +297,9 @@ class Agent(Policy):
         self._planning_depth        = p_planning_depth
         self._planning_width        = p_planning_width
 
+        if p_envmodel is not None:
+            self._mb_training_param     = p_mb_training_param.copy()
+        
         self._set_id(p_id)
 
         Log.__init__(self, p_logging)
@@ -381,11 +455,10 @@ class Agent(Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt_policy_by_model(self):
-        # 1 Instantiate a Scenario object
-        # 2 Instantiate a Training object
-        # 3 Execute episodical training
-        
-        return True
+        self.log(self.C_LOG_TYPE_I, 'Model-based policy training')
+        training = RLTraining( self._mb_training_param )
+        training.get_scenario().setup_ext(p_env=self._envmodel, p_policy=self._policy)
+        return training.run().num_adaptations > 0
 
 
 ## -------------------------------------------------------------------------------------------------
