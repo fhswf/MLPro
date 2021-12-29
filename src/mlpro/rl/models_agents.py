@@ -379,6 +379,7 @@ class Agent(Policy):
         return adapted
 
 
+## -------------------------------------------------------------------------------------------------
     def _adapt_policy_by_model(self):
         # 1 Instantiate a Scenario object
         # 2 Instantiate a Training object
