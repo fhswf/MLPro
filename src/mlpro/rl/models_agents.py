@@ -30,7 +30,7 @@
 ## -- 2021-12-17  1.3.2     DA       Added method MultiAgent.get_agent()
 ## -- 2021-12-30  1.4.0     DA       - Class Agent: added internal model-based policy training
 ## --                                - Class ActionPlanner completed
-## --                                - Standardizationof all docstrings
+## --                                - Standardization of all docstrings
 ## -------------------------------------------------------------------------------------------------
 
 """
