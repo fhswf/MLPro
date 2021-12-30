@@ -33,7 +33,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2021-12-30)
+Ver. 1.4.0 (2021-12-30) -- still under construction by Detlef
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
