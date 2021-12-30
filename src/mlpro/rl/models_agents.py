@@ -90,7 +90,13 @@ class Policy (Model):
     C_BUFFER_CLS    = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=Log.C_LOG_ALL):
+    def __init__(self, 
+                 p_observation_space:MSpace, 
+                 p_action_space:MSpace, 
+                 p_buffer_size=1, 
+                 p_ada=True, 
+                 p_logging=Log.C_LOG_ALL):
+
         super().__init__(p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         self._observation_space = p_observation_space
         self._action_space      = p_action_space
@@ -164,7 +170,9 @@ class Policy (Model):
 ## -------------------------------------------------------------------------------------------------
 class ActionPlanner (Log):
     """
-    Template class for action planning algorithms to be used as part of planning agents.
+    Template class for action planning algorithms to be used as part of model-based planning agents. 
+    The goal is to find the shortest sequence of actions that leads to a maximum reward.
+
     """
 
     C_TYPE          = 'Action Planner'
@@ -172,27 +180,80 @@ class ActionPlanner (Log):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging=p_logging)
-        self._action_path = []
+        self._depth_limit   = 0
+        self._width_limit   = 0
+        self._policy        = None
+        self._env_model     = None
+        self._action_path   = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state:State, p_policy:Policy, p_envmodel:EnvModel, p_depth, p_width) -> Action:
+    def setup(self, 
+              p_policy:Policy, 
+              p_envmodel:EnvModel,
+              p_depth_limit=0, 
+              p_width_limit=0):
         """
-        Computes a path of actions with defined length that maximizes the reward of the given 
-        environment model.
-        
+        Setup of action planner object in concrete planning scenario. Must be called before first
+        planning. Optional custom method _setup() is called at the end.
+
         Parameters
         ----------
-        p_state : State
-            Current state of environment.
         p_policy : Policy
             Poliy of an agent.
         p_envmodel : EnvModel
             Environment model.
-        p_depth : int             
-            Planning depth (=length of action path to be predicted). 
-        p_width : int
-            Planning width (=number of alternative actions per planning level).
+        p_depth_limit : int             
+            Optional static maximum planning depth (=length of action path to be predicted). Can
+            be overridden by method compute_action(). Default=0. 
+        p_width_limit : int
+            Optional static maximum planning width (=number of alternative actions per planning level).
+            Can be overridden by method compute_action(). Default=0. 
+
+        """
+
+        self._policy        = p_policy
+        self._envmodel      = p_envmodel
+        self._depth_limit   = p_depth_limit
+        self._width_limit   = p_width_limit
+        self._path_id       = 0
+        self.clear_action_path()
+        self._setup()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self):
+        """
+        Optional custom setup method.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_action(self, 
+                       p_obs:State, 
+                       p_depth_limit=0, 
+                       p_width_limit=0 ) -> Action:
+        """
+        Computes a path of actions with defined length that maximizes the reward of the given 
+        environment model. The planning algorithm itself is to be implemented in the custom method
+        _plan_action().
+        
+        Parameters
+        ----------
+        p_obs : State
+            Observation data.
+        p_policy : Policy
+            Poliy of an agent.
+        p_envmodel : EnvModel
+            Environment model.
+        p_depth_limit : int             
+            Optional dynamic maximum planning depth (=length of action path to be predicted) that 
+            overrides the static limit of method setup(). Default=0 (no override).
+        p_width_limit : int
+            Optionnal dynamic maximum planning width (=number of alternative actions per planning level) 
+            that  overrides the static limit of method setup(). Default=0 (no override).
 
         Returns
         -------
@@ -201,12 +262,73 @@ class ActionPlanner (Log):
 
         """
 
-        raise NotImplementedError
+        if ( self._policy is None ) or ( self._envmodel is None ):
+            raise RuntimeError('Please call method setup() first')
+
+        if ( p_depth_limit > 0 ) and ( p_depth_limit != self._depth_limit ):
+            self._depth_limit = p_depth_limit
+            self._action_path = None
+
+        if p_width_limit > 0: 
+            self._width_limit = p_width_limit
+
+        if ( self._depth_limit <= 0 ) or ( self._width_limit <= 0 ):
+            raise RuntimeError('Please set planning depth and width')
+
+        if self._action_path is None:
+            self._action_path = SARSBuffer(p_size=self._depth_limit)
+
+        if self._path_id >= len(self._action_path):
+            # (Re-)Planning of action path
+            self._action_path.clear()
+            self._plan_action(p_obs)
+            self._path_id = 0
+
+# Check/continue implementing...
+        sars_data     = self._action_path.get_all()
+        obs_buffered  = sars_data['states'][self._path_id]
+        if self._policy.get_observation_space().distance(p_obs, obs_buffered) == 0:
+            action = sars_data['actions'][self._path_id]
+            self._path_id += 1
+        else:
+            # ... to be implemented
+            pass
+
+
+        
+
+        if action is None:
+            # Action planner failed
+            action = self._policy.compute_action(p_obs)
+
+        return action
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _plan_action(self, p_obs:State):
+        """
+        Custom planning algorithm to fill the internal action path (self._action_path). Search width
+        and depth are restricted by the attributes self._width_limit and self._depth_limit.
+
+        Parameters
+        ----------
+        p_obs : State
+            Observation data.
+
+        Returns
+        -------
+        action_path : SARSBuffer
+            Sequence of actions that leads to the best possible reward.
+
+        """
+
+        raise NotImplementedError
+ 
+ 
+## -------------------------------------------------------------------------------------------------
     def clear_action_path(self):
-        self._action_path.clear()
+        if self._action_path is not None:
+            self._action_path.clear()
 
 
 
