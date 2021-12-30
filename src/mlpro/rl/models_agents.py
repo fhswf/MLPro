@@ -29,11 +29,12 @@
 ## -- 2021-11-26  1.3.1     DA       Minor changes
 ## -- 2021-12-17  1.3.2     DA       Added method MultiAgent.get_agent()
 ## -- 2021-12-30  1.4.0     DA       - Class Agent: added internal model-based policy training
-## --                                - Standardized all docstrings
+## --                                - Class ActionPlanner completed
+## --                                - Standardizationof all docstrings
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2021-12-30) -- still under construction by Detlef
+Ver. 1.4.0 (2021-12-30) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -81,7 +82,7 @@ class Policy (Model):
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
     p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
 
     """
 
@@ -173,18 +174,26 @@ class ActionPlanner (Log):
     Template class for action planning algorithms to be used as part of model-based planning agents. 
     The goal is to find the shortest sequence of actions that leads to a maximum reward.
 
+    Parameters
+    ----------
+    p_state_thsld : float
+        Threshold for metric difference between two states to be equal. Default = 0.00000001.
+    p_logging
+        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
+
     """
 
     C_TYPE          = 'Action Planner'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_state_thsld=0.00000001, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging=p_logging)
         self._depth_limit   = 0
         self._width_limit   = 0
         self._policy        = None
         self._env_model     = None
         self._action_path   = None
+        self._state_thsld   = p_state_thsld
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -218,6 +227,7 @@ class ActionPlanner (Log):
         self._width_limit   = p_width_limit
         self._path_id       = 0
         self.clear_action_path()
+        self._action_path   = None
         self._setup()
 
 
@@ -275,37 +285,33 @@ class ActionPlanner (Log):
         if ( self._depth_limit <= 0 ) or ( self._width_limit <= 0 ):
             raise RuntimeError('Please set planning depth and width')
 
-        if self._action_path is None:
-            self._action_path = SARSBuffer(p_size=self._depth_limit)
-
-        if self._path_id >= len(self._action_path):
-            # (Re-)Planning of action path
-            self._action_path.clear()
-            self._plan_action(p_obs)
-            self._path_id = 0
-
-# Check/continue implementing...
-        sars_data     = self._action_path.get_all()
-        obs_buffered  = sars_data['states'][self._path_id]
-        if self._policy.get_observation_space().distance(p_obs, obs_buffered) == 0:
-            action = sars_data['actions'][self._path_id]
-            self._path_id += 1
-        else:
-            # ... to be implemented
-            pass
-
-
+        # Check: Replanning required?
+        replan = self._action_path is None
+        replan = replan or ( self._path_id >= len(self._action_path) )
         
+        if not replan:
+            # Check: Is the next action of action path suitable?
+            path_data     = self._action_path.get_all()
+            obs_buffered  = path_data['state'][self._path_id]
+            replan        = self._policy.get_observation_space().distance(p_obs, obs_buffered) > self._state_thsld
 
-        if action is None:
-            # Action planner failed
-            action = self._policy.compute_action(p_obs)
+        if replan:
+            # (Re-)Planning of action path
+            self._path_id = 0
+            self._action_path.clear()
+            self._action_path = self._plan_action(p_obs)
+            if ( self._action_path is None ) or ( len(self._action_path) == 0 ):
+                # Planning returned nothing -> direct action computation as fallback solution
+                return self._policy.compute_action(p_obs)
 
+        # Next action of action path can be used
+        action = path_data['action'][self._path_id]
+        self._path_id += 1
         return action
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _plan_action(self, p_obs:State):
+    def _plan_action(self, p_obs:State) -> SARSBuffer:
         """
         Custom planning algorithm to fill the internal action path (self._action_path). Search width
         and depth are restricted by the attributes self._width_limit and self._depth_limit.
@@ -318,7 +324,7 @@ class ActionPlanner (Log):
         Returns
         -------
         action_path : SARSBuffer
-            Sequence of actions that leads to the best possible reward.
+            Sequence of SARSElement objects with included actions that lead to the best possible reward.
 
         """
 
@@ -364,7 +370,7 @@ class RLScenarioMBInt (RLScenario):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Agent(Policy):
+class Agent (Policy):
     """
     This class represents a single agent model.
 
@@ -376,7 +382,7 @@ class Agent(Policy):
         Optional environment model object. Default = None.
     p_em_mat_thsld : float
         Optional threshold for environment model maturity (whether or not the envmodel is 'good' 
-        enough to be used to train the policy). Default = 1.
+        enough to be used to train the policy). Default = 0.9.
     p_action_planner : ActionPlanner   
         Optional action planner object (obligatory for model based agents). Default = None.
     p_planning_depth : int    
@@ -405,7 +411,7 @@ class Agent(Policy):
     def __init__(self, 
                  p_policy:Policy, 
                  p_envmodel:EnvModel=None, 
-                 p_em_mat_thsld=1, 
+                 p_em_mat_thsld=0.9, 
                  p_action_planner:ActionPlanner=None, 
                  p_planning_depth=0, 
                  p_planning_width=0, 
@@ -452,9 +458,9 @@ class Agent(Policy):
         self._planning_depth        = p_planning_depth
         self._planning_width        = p_planning_width
 
-        if p_envmodel is not None:
+        if self._envmodel is not None:
             self._mb_training_param = p_mb_training_param.copy()
-        
+
         self._set_id(p_id)
 
         Log.__init__(self, p_logging)
@@ -462,6 +468,13 @@ class Agent(Policy):
         self.switch_adaptivity(p_ada)
 
         self.clear_buffer()
+
+        if self._action_planner is not None:
+            self._action_planner.setup(p_policy=self._policy, 
+                                       p_envmodel=self._envmodel, 
+                                       p_depth_limit=self._planning_depth, 
+                                       p_width_limit=self._planning_width)
+        
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -562,7 +575,7 @@ class Agent(Policy):
 
         else:
             # 1.2 With action planner
-            action = self._action_planner.compute_action(observation, self._policy, self._envmodel, self._planning_depth, self._planning_width)
+            action = self._action_planner.compute_action(observation)
 
 
         # 2 Outro
@@ -638,7 +651,7 @@ class Agent(Policy):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiAgent(Agent):
+class MultiAgent (Agent):
     """
     Multi-Agent.
 
@@ -649,7 +662,7 @@ class MultiAgent(Agent):
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
     p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
 
     """
 
