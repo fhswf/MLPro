@@ -1,6 +1,30 @@
 Release Notes
 ================
 
+Version 0.x.y
+---------------------
+
+Release Highlights
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+New Features
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+RL, Agent: Model-based policy training implemented
+
+
+.. Fixed Issues
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+.. Documentation Changes
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. Others
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
 Version 0.8.1
 ---------------------
 
