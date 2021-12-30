@@ -28,10 +28,11 @@
 ## --                                - parameter p_logging is the new log level now
 ## --                                Class Saveable: new constant C_SUFFIX
 ## -- 2021-12-07  1.7.3     SY       Add a new attribute in ScientificObject
+## -- 2021-12-31  1.7.4     DA       Class Log: udpated docstrings
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.3 (2021-12-07)
+Ver. 1.7.4 (2021-12-31)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer, ...
@@ -194,10 +195,13 @@ class Log:
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         """
-        Switches log functionality on/off.
+        Sets new log level. 
 
-        Parameters:
-            p_logging     Log level (see constants for log levels)
+        Parameters
+        ----------
+        p_logging     
+            Log level (constant C_LOG_LEVELS contains valid values)
+
         """
 
         if p_logging not in self.C_LOG_LEVELS: raise ParamError('Wrong log level. See class Log for valid log levels')

@@ -28,11 +28,12 @@
 ## -- 2021-11-14  1.3.0     DA       Model-based Agent functionality 
 ## -- 2021-11-26  1.3.1     DA       Minor changes
 ## -- 2021-12-17  1.3.2     DA       Added method MultiAgent.get_agent()
-## -- 2021-12-29  1.4.0     DA       Class Agent: added internal model-based policy training
+## -- 2021-12-30  1.4.0     DA       - Class Agent: added internal model-based policy training
+## --                                - Standardized all docstrings
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2021-12-29)
+Ver. 1.4.0 (2021-12-30)
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -68,6 +69,20 @@ class Policy (Model):
     Hyperparameters of the policy should be stored in the internal object self._hp_list, so that
     they can be tuned from outside. Optionally a policy-specific callback method can be called on 
     changes. For more information see class HyperParameterList.
+
+    Parameters
+    ----------
+    p_observation_space : MSpace     
+        Subspace of an environment that is observed by the policy.
+    p_action_space : MSpace
+        Action space object.
+    p_buffer_size : int           
+        Size of internal buffer. Default = 1.
+    p_ada : bool               
+        Boolean switch for adaptivity. Default = True.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+
     """
 
     C_TYPE          = 'Policy'
@@ -75,16 +90,7 @@ class Policy (Model):
     C_BUFFER_CLS    = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=True):
-        """
-         Parameters:
-            p_observation_space     Subspace of an environment that is observed by the policy
-            p_action_space          Action space object
-            p_buffer_size           Size of the buffer
-            p_ada                   Boolean switch for adaptivity
-            p_logging               Boolean switch for logging functionality
-        """
-
+    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=Log.C_LOG_ALL):
         super().__init__(p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         self._observation_space = p_observation_space
         self._action_space      = p_action_space
@@ -116,11 +122,16 @@ class Policy (Model):
         """
         Specific action computation method to be redefined. 
 
-        Parameters:
-            p_obs       Observation data
+        Parameters
+        ----------
+        p_obs : State
+            Observation data.
 
-        Returns:
-            Action object
+        Returns
+        -------
+        action : Action
+            Action object.
+
         """
 
         raise NotImplementedError
@@ -131,8 +142,16 @@ class Policy (Model):
         """
         Adapts the policy based on State-Action-Reward-State (SARS) data.
 
-        Parameters:
-            p_arg[0]           Object of type SARSElement
+        Parameters
+        ----------
+        p_arg[0] : SARSElement
+            Object of type SARSElement.
+
+        Returns
+        -------
+        adapted : bool
+            True, if something has been adapted. False otherwise.
+
         """
 
         raise NotImplementedError
@@ -151,7 +170,7 @@ class ActionPlanner (Log):
     C_TYPE          = 'Action Planner'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=True):
+    def __init__(self, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging=p_logging)
         self._action_path = []
 
@@ -162,12 +181,24 @@ class ActionPlanner (Log):
         Computes a path of actions with defined length that maximizes the reward of the given 
         environment model.
         
-        Parameters:
-            p_state             Current state of environment
-            p_policy            Poliy of an agent
-            p_envmodel          Environment model
-            p_depth             Planning depth (=length of action path to be predicted)
-            p_width             Planning width (=number of alternative actions per planning level)
+        Parameters
+        ----------
+        p_state : State
+            Current state of environment.
+        p_policy : Policy
+            Poliy of an agent.
+        p_envmodel : EnvModel
+            Environment model.
+        p_depth : int             
+            Planning depth (=length of action path to be predicted). 
+        p_width : int
+            Planning width (=number of alternative actions per planning level).
+
+        Returns
+        -------
+        action : Action
+            Best action as result of the planning process.
+
         """
 
         raise NotImplementedError
@@ -185,13 +216,15 @@ class ActionPlanner (Log):
 ## -------------------------------------------------------------------------------------------------
 class RLScenarioMBInt (RLScenario): 
     """
-    Special rl scenario class for internal training of a policy on an environment model inside a
-    single agent.
+    Internal use in class Agent. Intended for the training of the policy with the environment model of
+    a model-based (single) agent.
 
     """
 
+    C_NAME          = 'MB(intern)'
+
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self):
+    def _setup(self) -> Model:
         # Pseudo-implementation
         self._env = EnvBase(p_logging=Log.C_LOG_NOTHING)
         return Model(p_logging=Log.C_LOG_NOTHING)
@@ -232,7 +265,7 @@ class Agent(Policy):
         Optional name of agent. Default = ''.
     p_id : int               
         Optional unique agent id (especially important for multi-agent scenarios). Default = 0.
-    p_ada : Bool               
+    p_ada : bool               
         Boolean switch for adaptivity. Default = True.
     p_logging          
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_ALL.
@@ -267,17 +300,17 @@ class Agent(Policy):
 
         if p_envmodel is not None:
             if len(self._mb_training_param) == 0:
-                raise ParamError('Please provide training parameters in parameter p_mb_training_param')
+                raise ParamError('Please provide parameters for model-based training in parameter p_mb_training_param')
 
-            self._mb_training_param = p_mb_training_param.copy()
-            self._mb_training_param['p_scenario_cls']       = RLScenarioMBInt
-            self._mb_training_param['p_collect_states']     = False 
-            self._mb_training_param['p_collect_actions']    = False 
-            self._mb_training_param['p_collect_rewards']    = False 
-            self._mb_training_param['p_collect_eval']       = False 
-            self._mb_training_param['p_visualize']          = False 
-            self._mb_training_param['p_logging']            = p_logging 
-
+            self._mb_training_param                   = p_mb_training_param.copy()
+            self._mb_training_param['p_scenario_cls'] = RLScenarioMBInt
+            self._mb_training_param['p_visualize']    = False 
+            self._mb_training_param['p_logging']      = p_logging 
+            if not 'p_collect_states' in self._mb_training_param: self._mb_training_param['p_collect_states'] = False 
+            if not 'p_collect_actions' in self._mb_training_param: self._mb_training_param['p_collect_actions'] = False 
+            if not 'p_collect_rewards' in self._mb_training_param: self._mb_training_param['p_collect_rewards'] = False 
+            if not 'p_collect_eval' in self._mb_training_param: self._mb_training_param['p_collect_eval'] = False 
+            
             # Hyperparameter tuning is disabled here
             if 'p_hpt' in self._mb_training_param: self._mb_training_param.pop('p_hpt')
             if 'p_hpt_trials' in self._mb_training_param: self._mb_training_param.pop('p_hpt_trials')
@@ -298,7 +331,7 @@ class Agent(Policy):
         self._planning_width        = p_planning_width
 
         if p_envmodel is not None:
-            self._mb_training_param     = p_mb_training_param.copy()
+            self._mb_training_param = p_mb_training_param.copy()
         
         self._set_id(p_id)
 
@@ -336,7 +369,7 @@ class Agent(Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def switch_logging(self, p_logging: bool):
+    def switch_logging(self, p_logging):
         super().switch_logging(p_logging)
         self._policy.switch_logging(p_logging)
 
@@ -383,11 +416,16 @@ class Agent(Policy):
         """
         Default implementation of a single agent.
 
-        Parameters:
-            p_state         State of the related environment
+        Parameters
+        ----------
+        p_state : State        
+            State of the related environment.
 
-        Returns:
-            Action object
+        Returns
+        -------
+        action : Action
+            Action object.
+
         """
 
         # 0 Intro
@@ -417,12 +455,18 @@ class Agent(Policy):
         """
         Default adaptation implementation of a single agent.
 
-        Parameters:
-            p_args[0]       State object (see class State)
-            p_args[1]       Reward object (see class Reward)
+        Parameters
+        ----------
+        p_args[0] : State       
+            State object.
+        p_args[1] : Reward     
+            Reward object.
  
-        Returns:
-            True, if something has beed adapted
+        Returns
+        -------
+        result : bool
+            True, if something has beed adapted. False otherwise.
+
         """
 
         # 1 Check: Adaptation possible?
@@ -474,7 +518,17 @@ class Agent(Policy):
 ## -------------------------------------------------------------------------------------------------
 class MultiAgent(Agent):
     """
-    This class implements a reinforcement learning multi-agent model.
+    Multi-Agent.
+
+    Parameters
+    ----------
+    p_name : str
+        Name of agent. Default = ''.
+    p_ada : bool               
+        Boolean switch for adaptivity. Default = True.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+
     """
 
     C_TYPE          = 'Multi-Agent'
@@ -483,13 +537,6 @@ class MultiAgent(Agent):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name='', p_ada=True, p_logging=True):
-        """
-        Parameters:
-            p_name              Name of agent
-            p_ada               Boolean switch for adaptivity
-            p_logging           Boolean switch for logging functionality
-        """
-
         self._agents    = []
         self._agent_ids = []
         self.set_name(p_name)
@@ -501,7 +548,7 @@ class MultiAgent(Agent):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def switch_logging(self, p_logging:bool) -> None: 
+    def switch_logging(self, p_logging) -> None: 
         Log.switch_logging(self, p_logging=p_logging)
 
         for agent_entry in self._agents:
@@ -558,12 +605,13 @@ class MultiAgent(Agent):
         """
         Adds agent object to internal list of agents. 
 
-        Parameters:
-            p_agent           Agent object
-            p_weight          Optional weight for the agent
+        Parameters
+        ----------
+        p_agent : Agent
+            Agent object to be added.
+        p_weight : float         
+            Optional weight for the agent. Default = 1.0.
 
-        Returns:
-            Nothing
         """
 
         p_agent.switch_adaptivity(self._adaptivity)
