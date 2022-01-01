@@ -31,10 +31,11 @@
 ## -- 2021-12-30  1.4.0     DA       - Class Agent: added internal model-based policy training
 ## --                                - Class ActionPlanner completed
 ## --                                - Standardization of all docstrings
+## -- 2022-01-01  1.4.1     MRD      Refactoring and Fixing some bugs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2021-12-30) 
+Ver. 1.4.1 (2022-01-01) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -427,7 +428,7 @@ class Agent (Policy):
             self.set_name(self.C_NAME)
 
         if p_envmodel is not None:
-            if len(self._mb_training_param) == 0:
+            if len(p_mb_training_param) == 0:
                 raise ParamError('Please provide parameters for model-based training in parameter p_mb_training_param')
 
             self._mb_training_param                   = p_mb_training_param.copy()
@@ -457,9 +458,6 @@ class Agent (Policy):
         self._action_planner        = p_action_planner
         self._planning_depth        = p_planning_depth
         self._planning_width        = p_planning_width
-
-        if self._envmodel is not None:
-            self._mb_training_param = p_mb_training_param.copy()
 
         self._set_id(p_id)
 
@@ -634,7 +632,7 @@ class Agent (Policy):
 ## -------------------------------------------------------------------------------------------------
     def _adapt_policy_by_model(self):
         self.log(self.C_LOG_TYPE_I, 'Model-based policy training')
-        training = RLTraining( self._mb_training_param )
+        training = RLTraining( **self._mb_training_param )
         training.get_scenario().setup_ext(p_env=self._envmodel, p_policy=self._policy)
         return training.run().num_adaptations > 0
 

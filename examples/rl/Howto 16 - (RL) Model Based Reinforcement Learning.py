@@ -7,6 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-17  0.0.0     MRD       Creation
 ## -- 2021-12-17  1.0.0     MRD       Released first version
+## -- 2022-01-01  1.0.1     MRD       Refactoring due to new model implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -25,50 +26,9 @@ from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from mlpro.rl.pool.envmodels.mlp_robotinhtm import MLPEnvModel
 
-class SimulatedTraining(RLTraining):
-    C_NAME = "Simulated"
-
 
 class ActualTraining(RLTraining):
     C_NAME = "Actual"
-
-# Implement model based agent
-class MBAgent(Agent):
-    def _adapt_policy_by_model(self):
-        env_ext = self._envmodel
-        pol_ext = self._policy
-        class ScenarioRobotHTMSimulated(RLScenario):
-            def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
-                self._env = env_ext
-                return Agent(
-                    p_policy=pol_ext,
-                    p_envmodel=None,
-                    p_name="Smith2",
-                    p_ada=p_ada,
-                    p_logging=p_logging,
-                )
-
-        # Instantiate training
-        simulated_training = SimulatedTraining(
-            p_scenario_cls=ScenarioRobotHTMSimulated,
-            p_cycle_limit=100,
-            p_cycles_per_epi_limit=100,
-            p_max_stagnations=0,
-            p_collect_states=False,
-            p_collect_actions=False,
-            p_collect_rewards=False,
-            p_collect_training=False,
-            p_logging=False,
-        )
-
-        # Run Training
-        simulated_training.run()
-
-        # Save Policy to be used for actual
-        self._policy = simulated_training.get_scenario().get_agent()._policy
-
-        return True
-
 
 # Implement RL Scenario for the actual environment to train the environment model
 class ScenarioRobotHTMActual(RLScenario):
@@ -95,13 +55,20 @@ class ScenarioRobotHTMActual(RLScenario):
         )
 
         # 2 Setup standard single-agent with own policy
-        return MBAgent(
+        return Agent(
             p_policy=policy_wrapped,
             p_envmodel=MLPEnvModel(),
             p_em_mat_thsld=-1,
             p_name="Smith1",
             p_ada=p_ada,
             p_logging=p_logging,
+            p_cycle_limit=100, 
+            p_cycles_per_epi_limit=100,
+            p_max_stagnations=0,
+            p_collect_states=False,
+            p_collect_actions=False,
+            p_collect_rewards=False,
+            p_collect_training=False,
         )
 
 # 4 Train agent in scenario
