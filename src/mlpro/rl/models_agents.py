@@ -476,7 +476,6 @@ class Agent (Policy):
                                        p_width_limit=self._planning_width)
         
 
-
 ## -------------------------------------------------------------------------------------------------
     def _set_id(self, p_id): 
         super().set_id(p_id)
