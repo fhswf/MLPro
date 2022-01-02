@@ -32,12 +32,13 @@ howto_list = {
     "rl_03": "examples.rl.Howto 03 - (RL) Train agent with own policy on gym environment",
     "rl_04": "examples.rl.Howto 04 - (RL) Run multi-agent with own policy in multicartpole environment",
     "rl_05": "examples.rl.Howto 05 - (RL) Train multi-agent with own policy on multicartpole environment",
-#    "rl_08": "examples.rl.Howto 08 - (RL) Run own agents with petting zoo environment",
+    "rl_08": "examples.rl.Howto 08 - (RL) Run own agents with petting zoo environment",
     "rl_10": "examples.rl.Howto 10 - (RL) Train using SB3 Wrapper",
     "rl_11": "examples.rl.Howto 11 - (RL) Wrap mlpro Environment class to gym environment",
     "rl_12": "examples.rl.Howto 12 - (RL) Wrap mlpro Environment class to petting zoo environment",
     "rl_13": "examples.rl.Howto 13 - (RL) Comparison Native and Wrapper SB3 Policy",
     "rl_15": "examples.rl.Howto 15 - (RL) Train Robothtm with SB3 Wrapper",
+    "rl_16": "examples.rl.Howto 16 - (RL) Model Based Reinforcement Learning",
     "rl_17": "examples.rl.Howto 17 - (RL) Advanced training with stagnation detection",
     "sciui_01": "examples.sciui.Howto 01 (SciUI) - Reuse of interactive 2D,3D input space"
 }

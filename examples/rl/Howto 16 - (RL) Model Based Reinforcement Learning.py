@@ -26,6 +26,8 @@ from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from mlpro.rl.pool.envmodels.mlp_robotinhtm import MLPEnvModel
 
+from pathlib import Path
+
 
 class ActualTraining(RLTraining):
     C_NAME = "Actual"
@@ -76,16 +78,32 @@ class ScenarioRobotHTMActual(RLScenario):
 # 3 Train agent in scenario
 now = datetime.now()
 
+if __name__ == "__main__":
+    # 3.1 Parameters for demo mode
+    cycle_limit         = 300000
+    logging             = Log.C_LOG_ALL
+    visualize           = True
+    path                = str(Path.home())
+    plotting            = True
+ 
+else:
+    # 3.2 Parameters for internal unit test
+    cycle_limit         = 100
+    logging             = Log.C_LOG_NOTHING
+    visualize           = False
+    path                = None
+    plotting            = False
 
 training = ActualTraining(
     p_scenario_cls=ScenarioRobotHTMActual,
-    p_cycle_limit=300000,
+    p_cycle_limit=cycle_limit,
     p_cycles_per_epi_limit=100,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_logging=Log.C_LOG_ALL,
+    p_path=path,
+    p_logging=logging,
 )
 
 training.run()
@@ -139,5 +157,5 @@ data_printing = {
 
 
 mem = training.get_results().ds_rewards
-mem_plot = MyDataPlotting(mem, p_showing=True, p_printing=data_printing)
+mem_plot = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
 mem_plot.get_plots()
