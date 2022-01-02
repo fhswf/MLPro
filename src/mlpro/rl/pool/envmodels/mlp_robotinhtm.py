@@ -177,6 +177,7 @@ class MLPEnvModel(EnvModel, Mode):
         # disterror = np.linalg.norm(p_state.get_values()[:3] - p_state.get_values()[3:6])
         disterror = np.linalg.norm(np.array(p_state.get_values())[:3] - np.array(p_state.get_values())[3:6])
         if disterror <= 0.1:
+            self._state.set_terminal(True)
             return True
         else:
             return False
@@ -239,5 +240,4 @@ class MLPEnvModel(EnvModel, Mode):
         obs = obs.cpu().flatten().tolist()
         self._state = State(self._state_space)
         self._state.set_values(obs)
-        self._state.set_success(True)
 

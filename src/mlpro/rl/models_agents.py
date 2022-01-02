@@ -353,7 +353,7 @@ class RLScenarioMBInt (RLScenario):
     C_NAME          = 'MB(intern)'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self) -> Model:
+    def _setup(self, **p_kwargs) -> Model:
         # Pseudo-implementation
         self._env = EnvBase(p_logging=Log.C_LOG_NOTHING)
         return Model(p_logging=Log.C_LOG_NOTHING)
@@ -361,8 +361,8 @@ class RLScenarioMBInt (RLScenario):
 
 ## -------------------------------------------------------------------------------------------------
     def setup_ext(self, p_env:EnvBase, p_policy:Policy):
-        self._model     = p_policy
-        self._agent     = p_policy
+        self._model     = Agent(p_policy=p_policy)
+        self._agent     = self._model
         self._env       = p_env
 
 
@@ -634,6 +634,13 @@ class Agent (Policy):
         self.log(self.C_LOG_TYPE_I, 'Model-based policy training')
         training = RLTraining( **self._mb_training_param )
         training.get_scenario().setup_ext(p_env=self._envmodel, p_policy=self._policy)
+
+        # The RLTraining need to be adjust again due to setup_ext()
+        # And also due to model_train.py line 595 only executed on RLTraining init
+        # Not after the setup_ext
+        training._env = training.get_scenario().get_env()
+        training._agent = training.get_scenario().get_agent()
+
         return training.run().num_adaptations > 0
 
 

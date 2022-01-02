@@ -54,6 +54,14 @@ class ScenarioRobotHTMActual(RLScenario):
             p_logging=p_logging,
         )
 
+        mb_training_param = dict(p_cycle_limit=100, 
+            p_cycles_per_epi_limit=100,
+            p_max_stagnations=0,
+            p_collect_states=False,
+            p_collect_actions=False,
+            p_collect_rewards=False,
+            p_collect_training=False)
+
         # 2 Setup standard single-agent with own policy
         return Agent(
             p_policy=policy_wrapped,
@@ -62,13 +70,7 @@ class ScenarioRobotHTMActual(RLScenario):
             p_name="Smith1",
             p_ada=p_ada,
             p_logging=p_logging,
-            p_cycle_limit=100, 
-            p_cycles_per_epi_limit=100,
-            p_max_stagnations=0,
-            p_collect_states=False,
-            p_collect_actions=False,
-            p_collect_rewards=False,
-            p_collect_training=False,
+            **mb_training_param
         )
 
 # 4 Train agent in scenario
