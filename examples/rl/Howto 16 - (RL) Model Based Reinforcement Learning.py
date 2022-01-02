@@ -11,7 +11,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-17)
+Ver. 1.0.1 (2022-01-01)
 
 This module demonstrates model-based reinforcement learning.
 """
@@ -73,7 +73,7 @@ class ScenarioRobotHTMActual(RLScenario):
             **mb_training_param
         )
 
-# 4 Train agent in scenario
+# 3 Train agent in scenario
 now = datetime.now()
 
 
@@ -81,17 +81,16 @@ training = ActualTraining(
     p_scenario_cls=ScenarioRobotHTMActual,
     p_cycle_limit=300000,
     p_cycles_per_epi_limit=100,
-    p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_logging=True,
+    p_logging=Log.C_LOG_ALL,
 )
 
 training.run()
 
-# 6 Create Plotting Class
+# 4 Create Plotting Class
 class MyDataPlotting(DataPlotting):
     def get_plots(self):
         """
@@ -129,7 +128,7 @@ class MyDataPlotting(DataPlotting):
                     plt.close(fig)
 
 
-# 7 Plotting 1 MLpro
+# 5 Plotting 1 MLpro
 data_printing = {
     "Cycle": [False],
     "Day": [False],
