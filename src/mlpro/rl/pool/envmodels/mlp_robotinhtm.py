@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.envmodels
-## -- Module  : mlpenvmodel
+## -- Module  : mlp_robotinhtm
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -9,10 +9,12 @@
 ## -- 2021-12-17  1.0.0     MRD      Released first version
 ## -- 2021-12-20  1.0.1     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  1.0.2     DA       Class MLPEnvMdel: renamed method reset() to _reset()
+## -- 2022-01-02  2.0.0     MRD      Refactoring due to the changes on afct pool on
+## --                                TorchAFctTrans
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-12-21)
+Ver. 2.0.0 (2022-01-02)
 
 This module provides Environment Model based on MLP Neural Network for
 robotinhtm environment.

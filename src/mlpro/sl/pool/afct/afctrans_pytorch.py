@@ -1,18 +1,19 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.sl.afct
-## -- Module  : mlpafctrans
+## -- Module  : afctrans_pytorch
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-17  0.0.0     MRD       Creation
 ## -- 2021-12-17  1.0.0     MRD       Released first version
+## -- 2022-01-02  2.0.0     MRD       Re-released afct for pytorch
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-17)
+Ver. 2.0.0 (2022-01-02)
 
-This module provides Adaptive Functions for state transition with MLP.
+This module provides Adaptive Functions for state transition with Neural Network based on Pytorch.
 """
 
 import torch
