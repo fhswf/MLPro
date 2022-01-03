@@ -43,7 +43,7 @@
                 
     - **Overview**
     
-        .. image:: images/ur5simulation.jpg
+        .. image:: images/ur5simulation.gif
             :align: center
             :width: 400
           
