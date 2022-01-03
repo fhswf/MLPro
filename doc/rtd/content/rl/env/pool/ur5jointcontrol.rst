@@ -5,13 +5,13 @@
           
           
     This UR5 environment's task is to align the Red Ball to the Blue Ball.
-    It can be installed via:
+    It can be imported via:
 
     .. code-block:: python
     
         import mlpro.rl.pool.envs.ur5jointcontrol
     
-    - **3rd Party Dependencies**
+    - **Prerequisites**
         The environment has been tested in Ubuntu 20.04 running ROS Noetic. 
         
         The installation steps are as follow:

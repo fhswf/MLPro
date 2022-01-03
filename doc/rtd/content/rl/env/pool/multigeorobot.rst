@@ -1,12 +1,16 @@
 `Multi Geometry Robot <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/multigeorobot.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    This Multi Geometry Robot environment can be installed via:
+    .. image:: images/multigeo_overview.png
+        :width: 600
+            
+            
+    This Multi Geometry Robot environment can be imported via:
 
     .. code-block:: python
     
         import mlpro.rl.pool.envs.multigeorobot
     
-    - **3rd Party Dependencies**
+    - **Prerequisites**
         The environment has been tested in Ubuntu 20.04 running ROS Noetic. 
         
         The installation steps are as follow:
@@ -38,10 +42,6 @@
                 
                     MLPro/src/mlpro/rl/pool/envs/multigeorobot/src/multi_geo_robot_rl/multi_geo_robot_training/config/multi_geo_robot.yaml
                 
-    - **Overview**
-        .. image:: images/multigeo_overview.png
-            :align: center
-            :width: 400
       
     - **General information**
 

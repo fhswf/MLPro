@@ -1,18 +1,15 @@
 `Multi-Cartpole <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/multicartpole.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    This ???? environment can be installed via:
+    This ???? environment can be imported via:
 
     .. code-block:: python
     
         import mlpro.rl.pool.envs.multicartpole
     
-    - **3rd Party Dependencies**
+    - **Prerequisites**
     
     add text here!
     
-    - **Overview**
-    
-    add text here!
       
     - **General information**
     

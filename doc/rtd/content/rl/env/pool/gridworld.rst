@@ -1,17 +1,5 @@
 `Grid World <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/gridworld.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    This Grid World environment can be installed via:
-
-    .. code-block:: python
-    
-        import mlpro.rl.pool.envs.gridworld
-    
-    - **3rd Party Dependencies**
-    
-        - NumPy
-    
-    - **Overview**
-    
     .. code-block:: bash
     
        [[0, 0, 0, 0, 0, 0, 0, 0],
@@ -28,8 +16,17 @@
     the goal through position increment actions. The user can customize the dimension of the grid and decide 
     the maximum number of steps. The agent is represented by number 1 and the goal is represented by number 2.
     
+    This Grid World environment can be imported via:
+
+    .. code-block:: python
     
-      
+        import mlpro.rl.pool.envs.gridworld
+    
+    - **Prerequisites**
+    
+        - NumPy
+    
+    
     - **General information**
     
     +------------------------------------+-------------------------------------------------------+

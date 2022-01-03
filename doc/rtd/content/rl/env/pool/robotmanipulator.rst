@@ -1,20 +1,6 @@
 `Robot Manipulator on Homogeneous Matrix <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/robotinhtm.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    This robotinhtm environment can be installed via:
-
-    .. code-block:: python
-    
-        import mlpro.rl.pool.envs.robotinhtm
-    
-    - **3rd Party Dependencies**
-    
-        - PyTorch
-        - NumPy
-    
-    - **Overview**
-
     .. image:: images/3dmanipulator.png
-        :align: center
         :width: 400
     
     This environment represents the robot manipulator in term of mathematical equations.
@@ -37,7 +23,19 @@
 		\mathbf{Rot} & \mathbf{0}\\ 
 		\mathbf{0} & 1
         \end{bmatrix}}_{rotation}
-      
+        
+        
+    This robotinhtm environment can be imported via:
+
+    .. code-block:: python
+    
+        import mlpro.rl.pool.envs.robotinhtm
+    
+    - **Prerequisites**
+        - PyTorch
+        - NumPy
+    
+    
     - **General information**
     
     +------------------------------------+-------------------------------------------------------+

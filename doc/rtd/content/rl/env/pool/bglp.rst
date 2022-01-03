@@ -1,17 +1,5 @@
 `Bulk Good Laboratory Plant (BGLP) <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/bglp.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    This BGLP environment can be installed via:
-
-    .. code-block:: python
-    
-        import mlpro.rl.pool.envs.bglp
-    
-    - **3rd Party Dependency**
-    
-        - NumPy
-    
-    - **Overview**
-    
     The BGLP illustrates a smart production system with high flexibility and distributed control to transport bulk raw materials.
     One of the advantages of this laboratory test belt is the modularity in design, as depicted schematically below:
     
@@ -37,6 +25,18 @@
     	This parameter can be defined while setting up the BGLP environment.
     	Therefore, 5 actuators are involved in this simulation instead of 6 actuators.
         
+    This BGLP environment can be imported via:
+
+    .. code-block:: python
+    
+        import mlpro.rl.pool.envs.bglp
+    
+    - **Prerequisites**
+    
+        - NumPy
+    
+    
+    
     - **General information**
     
     +------------------------------------+-------------------------------------------------------+
