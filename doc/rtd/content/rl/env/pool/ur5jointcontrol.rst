@@ -1,6 +1,11 @@
 `Universal Robots 5 Joint Control <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/ur5jointcontrol.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    This UR5 environment can be installed via:
+    .. image:: images/ur5simulation.gif
+        :width: 600
+          
+          
+    This UR5 environment's task is to align the Red Ball to the Blue Ball.
+    It can be installed via:
 
     .. code-block:: python
     
@@ -41,14 +46,7 @@
                 
                     MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
                 
-    - **Overview**
     
-        .. image:: images/ur5simulation.gif
-            :align: center
-            :width: 400
-          
-        `UR5 Robot while training (MP4) <https://github.com/fhswf/MLPro/blob/main/doc/rtd/content/rl/env/pool/images/ur5jointcontrol_demo.mp4>`_
-      
     - **General information**
     
     +------------------------------------+-------------------------------------------------------+
