@@ -11,43 +11,47 @@
     
         import mlpro.rl.pool.envs.ur5jointcontrol
     
-    - **Prerequisites**
-        The environment has been tested in Ubuntu 20.04 running ROS Noetic. 
+Prerequisites
+=============
+
+The environment has been tested in Ubuntu 20.04 running ROS Noetic. 
         
-        The installation steps are as follow:
-            1. Install `Ubuntu 20.04 <https://releases.ubuntu.com/20.04/>`_
-            2. Install `ROS <http://wiki.ros.org/noetic/Installation/Ubuntu>`_
-            3. Install `Moveit <https://moveit.ros.org/install/>`_
-            4. Install Dependencies:
-                .. code-block:: bash
+The installation steps are as follow:
+    1. Install `Ubuntu 20.04 <https://releases.ubuntu.com/20.04/>`_
+    2. Install `ROS <http://wiki.ros.org/noetic/Installation/Ubuntu>`_
+    3. Install `Moveit <https://moveit.ros.org/install/>`_
+    4. Install Dependencies:
+        .. code-block:: bash
+                 
+            sudo apt-get install ros-$ROS_DISTRO-ur-client-library ros-$ROS_DISTRO-joint-trajectory-controller \
+                                ros-$ROS_DISTRO-scaled-controller ros-$ROS_DISTRO-speed-scaling-interface \
+                                ros-$ROS_DISTRO-speed-scaling-state-controller ros-$ROS_DISTRO-pass-through-controllers
+            sudo apt install ros-$ROS_DISTRO-moveit-resources-prbt-moveit-config
+                sudo apt install ros-$ROS_DISTRO-pilz-industrial-motion-planner
+            sudo apt install python3-pip
+            pip3 install catkin_tools gym empy defusedxml pymodbus numpy netifaces pycryptodomex
                     
-                    sudo apt-get install ros-$ROS_DISTRO-ur-client-library ros-$ROS_DISTRO-joint-trajectory-controller \
-                                        ros-$ROS_DISTRO-scaled-controller ros-$ROS_DISTRO-speed-scaling-interface \
-                                        ros-$ROS_DISTRO-speed-scaling-state-controller ros-$ROS_DISTRO-pass-through-controllers
-                    sudo apt install ros-$ROS_DISTRO-moveit-resources-prbt-moveit-config
-                    sudo apt install ros-$ROS_DISTRO-pilz-industrial-motion-planner
-                    sudo apt install python3-pip
-                    pip3 install catkin_tools gym empy defusedxml pymodbus numpy netifaces pycryptodomex
-                    
-            5. Build the Environment:
-                .. code-block:: bash
+    5. Build the Environment:
+        .. code-block:: bash
+        
+            cd MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/src
+            git submodule update --init
+            cd .. && catkin_make
             
-                    cd MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/src
-                    git submodule update --init
-                    cd .. && catkin_make
+    6. Source the package:
+        .. code-block:: bash
+                
+            echo "source MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/devel/setup.bash" >> ~/.bashrc
+            source ~/.bashrc
+    
+    7. Change the ros_ws_abspath parameter in:
+        .. code-block:: bash
             
-            6. Source the package:
-                .. code-block:: bash
-                
-                    echo "source MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/devel/setup.bash" >> ~/.bashrc
-                    source ~/.bashrc
-            7. Change the ros_ws_abspath parameter in:
-                .. code-block:: bash
-                
-                    MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
+            MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
                 
     
-    - **General information**
+General Information
+===================
     
     +------------------------------------+-------------------------------------------------------+
     |         Parameter                  |                         Value                         |
@@ -71,7 +75,8 @@
     | Reward Structure                   | Overall reward                                        |
     +------------------------------------+-------------------------------------------------------+
       
-    - **Action space**
+Action Space
+============
     
     The action of the agent directly affects the joint angles (rad) of the robot. The action is 
     interpreted as increments towards the current value. 
@@ -92,7 +97,8 @@
     | Wrist 3 Joint      | rad                 | [-0.1, 0.1]           |
     +--------------------+---------------------+-----------------------+
     
-    - **State space**
+State Space
+===========
     
     The state space consists of position information of the end effector (Red Ball) and 
     the target location (Blue Ball). 
@@ -113,7 +119,8 @@
     | Targetz            | m                                           | [-2.0, 2.0]           |
     +--------------------+---------------------------------------------+-----------------------+
     
-    - **Reward structure**
+Reward Structure
+================
     
     .. code-block:: python
         
@@ -125,11 +132,13 @@
         if done:
             reward += self.reached_goal_reward
       
-    - **Version structure**
+Version Structure
+=================
     
         + Version 1.0.0 : Initial version release in MLPro v. 0.0.0
         
         
-    - Cross Reference:
+Cross Reference
+===============
         + :ref:`API Reference <UR5 Arm Robot>`
         + :ref:`Howto 14 - (RL) Train UR5 with SB3 wrapper <Howto 14>`
