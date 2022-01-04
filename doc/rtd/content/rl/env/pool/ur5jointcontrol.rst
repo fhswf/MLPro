@@ -128,3 +128,8 @@
     - **Version structure**
     
         + Version 1.0.0 : Initial version release in MLPro v. 0.0.0
+        
+        
+    - Cross Reference:
+        + :ref:`API Reference <UR5 Arm Robot>`
+        + :ref:`Howto 14 - (RL) Train UR5 with SB3 wrapper <Howto 14>`
