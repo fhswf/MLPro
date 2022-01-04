@@ -4,13 +4,14 @@
         :width: 600
           
           
-    This UR5 environment's task is to align the Red Ball to the Blue Ball.
+    This UR5 environment's task is to align the red ball to the blue ball.
     It can be imported via:
 
     .. code-block:: python
     
         import mlpro.rl.pool.envs.ur5jointcontrol
     
+
 Prerequisites
 =============
 
@@ -75,6 +76,7 @@ General Information
     | Reward Structure                   | Overall reward                                        |
     +------------------------------------+-------------------------------------------------------+
       
+
 Action Space
 ============
     
@@ -97,6 +99,7 @@ Action Space
     | Wrist 3 Joint      | rad                 | [-0.1, 0.1]           |
     +--------------------+---------------------+-----------------------+
     
+
 State Space
 ===========
     
@@ -119,6 +122,7 @@ State Space
     | Targetz            | m                                           | [-2.0, 2.0]           |
     +--------------------+---------------------------------------------+-----------------------+
     
+
 Reward Structure
 ================
     
@@ -132,11 +136,17 @@ Reward Structure
         if done:
             reward += self.reached_goal_reward
       
-Version Structure
-=================
+
+Change Log
+==========
     
-        + Version 1.0.0 : Initial version release in MLPro v. 0.0.0
-        
+    +--------------------+---------------------------------------------+
+    | Version            | Changes                                     |
+    +====================+=============================================+
+    | 1.0.7              | First public version                        |
+    +--------------------+---------------------------------------------+
+
+
         
 Cross Reference
 ===============
