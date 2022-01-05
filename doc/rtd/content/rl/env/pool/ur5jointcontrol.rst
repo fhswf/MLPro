@@ -152,3 +152,4 @@ Cross Reference
 ===============
     + :ref:`API Reference <UR5 Arm Robot>`
     + :ref:`Howto 14 - (RL) Train UR5 with SB3 wrapper <Howto RL 14>`
+    + `UR5 Product Page (Unaffiliated) <https://www.universal-robots.com/products/ur5-robot/>`_
