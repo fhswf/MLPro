@@ -93,7 +93,7 @@ Table of Content
    :caption: Appendix 3: Project MLPro
    
    content/append3/versions
-   content/append3/paper
+   content/append3/publications
    content/append3/cont
    content/append3/disclaimer
    

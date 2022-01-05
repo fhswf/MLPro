@@ -1,4 +1,4 @@
-Papers
+Publications
 ================
 
 Add text here!
