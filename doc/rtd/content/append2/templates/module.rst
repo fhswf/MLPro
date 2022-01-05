@@ -5,6 +5,5 @@ Please use the following template code for new modules. Further docstring format
 `Numpy's docstring standard <https://numpydoc.readthedocs.io/en/latest/format.html>`_.
 
 
- 
-.. literalinclude:: ../../../../template.py
+.. literalinclude:: ./attachments/module.template.py
    :language: python
