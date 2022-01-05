@@ -44,8 +44,8 @@ RL/GT: New environment Multi Geometry Robot
 .. New Features
 .. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Fixed Issues
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. Fixed Issues
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. Documentation Changes
 .. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
