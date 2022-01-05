@@ -95,6 +95,7 @@ Table of Content
    content/append3/versions
    content/append3/paper
    content/append3/cont
+   content/append3/disclaimer
    
 Citing MLPro
 ------------------------
