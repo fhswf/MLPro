@@ -1,8 +1,8 @@
 Release Notes
 ================
 
-Version 0.x.y
----------------------
+Coming soon
+-----------
 
 Release Highlights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
