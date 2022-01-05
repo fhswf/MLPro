@@ -1,3 +1,4 @@
+.. _Howto BF 2:
 `Howto 02 - (Various) Timer <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2002%20-%20(Various)%20Timer.py>`_
 ================
 Ver. 1.0.1 (2021-11-13)

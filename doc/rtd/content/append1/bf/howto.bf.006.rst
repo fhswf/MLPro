@@ -1,3 +1,4 @@
+.. _Howto BF 6:
 `Howto 06 - (Data) Buffer <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2006%20-%20(Data)%20Buffer.py>`_
 ================
 Ver. 1.0.0 (2021-10-26)

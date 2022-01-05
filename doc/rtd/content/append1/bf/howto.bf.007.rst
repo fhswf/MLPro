@@ -1,3 +1,4 @@
+.. _Howto BF 7:
 `Howto 07 - (ML) Hyperparameter Tuning using Hyperopt <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2007%20-%20(ML)%20Hyperparameter%20Tuning%20using%20Hyperopt.py>`_
 ================
 Ver. 1.0.0 (2021-12-08)

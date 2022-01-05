@@ -1,3 +1,4 @@
+.. _Howto RL 3:
 `Howto 03 - (RL) Train agent with own policy on gym environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2003%20-%20(RL)%20Train%20agent%20with%20own%20policy%20on%20gym%20environment.py>`_
 ================
 Ver. 1.3.2 (2021-12-07)

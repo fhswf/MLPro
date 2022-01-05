@@ -1,3 +1,4 @@
+.. _Howto RL 10:
 `Howto 10 - (RL) Train using SB3 Wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2010%20-%20(RL)%20Train%20using%20SB3%20Wrapper.py>`_
 ================
 Ver. 1.0.6 (2021-12-07)
