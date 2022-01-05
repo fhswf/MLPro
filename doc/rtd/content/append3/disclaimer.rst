@@ -8,7 +8,7 @@ Disclaimers for MLPro Usage
 All the information on this website is published in good faith and for general information purpose only. 
 We do not make any warranties about the completeness, reliability and accuracy of this information. 
 Any action you take upon the information you find on this project is strictly at your own 
-risk. Fachhochschule Südwestfalen will not be liable for any losses and/or damages in connection with the 
+risk. The South Westphalia University of Applied Sciences, Germany will not be liable for any losses and/or damages in connection with the 
 use of MLPro.
 
 From our website, you can visit other websites by following hyperlinks to such external sites. 
