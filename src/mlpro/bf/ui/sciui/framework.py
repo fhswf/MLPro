@@ -9,10 +9,11 @@
 ## -- 2021-07-05  1.0.0     DA       Release of first version
 ## -- 2021-07-29  1.1.0     DA       Class SciUITabCTRL added
 ## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
+## -- 2022-01-06  1.1.1     DA       Adjustments for matplotlib 3.5
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2021-07-29)
+Ver. 1.1.1 (2022-01-06)
 
 SciUI framework classes to be reused in own SciUI scenarios. Needs Matplotlib 3.3 or higher.
 """
@@ -770,7 +771,7 @@ class SciUISubplot2D(SciUISubplotRoot):
 
 ## -------------------------------------------------------------------------------------------------
     def __init_cursor(self):   
-        self.cursor = SciUICursor(self.ax, useblit=True, color=self.C_AX_CURSOR_COLOR, linewidth=0.5, LineStyle='--')
+        self.cursor = SciUICursor(self.ax, useblit=True, color=self.C_AX_CURSOR_COLOR, linewidth=0.5, linestyle='--' )
         self.cursor.connect_event('button_press_event', self.cb_mbutton_pressed)
         self.cursor.connect_event('button_release_event', self.cb_mbutton_released)
         self.cursor.connect_event('motion_notify_event', self.cb_mouse_moved)
