@@ -25,7 +25,8 @@ Documentation Changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Class diagrams resized
-- Structure of environment and sample documentation assigned
+- Structure of environment documentation assigned to example documentation
+- Appendix 1 (examples) restructured
 - Disclaimer added
 
 .. Others

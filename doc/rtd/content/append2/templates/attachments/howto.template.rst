@@ -16,9 +16,9 @@ Please install the following packages to run this examples properly:
   ..
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
   ..
-    - `Pytorch <https://pypi.org/project/torch/>`_
+    - `PyTorch <https://pypi.org/project/torch/>`_
   ..
-    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
+    - `Stable Baselines3 <https://pypi.org/project/stable-baselines3/>`_
   ..
     - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
   ..

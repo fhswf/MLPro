@@ -19,8 +19,8 @@ Can be executed directly...
 
 
 
-from mlpro.bf.ui.framework import *
-from mlpro.bf.ui.pool.iis import InteractiveInputSpace
+from mlpro.bf.ui.sciui.framework import *
+from mlpro.bf.ui.sciui.pool.iis import InteractiveInputSpace
 from mlpro.bf.math import *
 
 
@@ -78,5 +78,5 @@ class DemoIIS3D(SciUIScenario):
         
 
 if (__name__ == '__main__'): 
-    from mlpro.bf.ui.main import SciUI
+    from mlpro.bf.ui.sciui.main import SciUI
     SciUI()

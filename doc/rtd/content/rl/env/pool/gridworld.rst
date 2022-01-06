@@ -25,7 +25,7 @@ This Grid World environment can be imported via:
 Prerequisites
 =============
 
-    - NumPy
+    - `NumPy <https://pypi.org/project/numpy/>`_
 
 
 General Information

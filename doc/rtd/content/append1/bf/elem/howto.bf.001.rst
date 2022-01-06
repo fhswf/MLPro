@@ -14,7 +14,7 @@ Please install the following packages to run this examples properly:
 Example Code
 -----------------
 
-.. literalinclude:: ../../../../../examples/bf/Howto 01 - (Various) Logging.py
+.. literalinclude:: ../../../../../../examples/bf/Howto 01 - (Various) Logging.py
     :language: python
         
 Results

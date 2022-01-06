@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro.scui.pool
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.bf.ui.scui.pool
 ## -- Module  : iis
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -27,8 +27,8 @@ import tkinter
 from tkinter.ttk import Combobox
 from mpl_toolkits.mplot3d import Axes3D
 
-from mlpro.bf.ui.framework import *
-from mlpro.bf.ui.pool.iisbenchmark import *
+from mlpro.bf.ui.sciui.framework import *
+from mlpro.bf.ui.sciui.pool.iisbenchmark import *
 from mlpro.bf.math import ESpace
 
 

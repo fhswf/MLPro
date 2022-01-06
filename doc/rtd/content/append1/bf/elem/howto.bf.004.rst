@@ -17,7 +17,7 @@ Please install the following packages to run this examples properly:
 Example Code
 `````````````````
 
-.. literalinclude:: ../../../../../examples/bf/Howto 04 - (Data) Store, plot, and save variables.py
+.. literalinclude:: ../../../../../../examples/bf/Howto 04 - (Data) Store, plot, and save variables.py
     :language: python
         
 Results

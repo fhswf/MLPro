@@ -20,7 +20,7 @@ Have fun!
 
 
 Table of Content
--------------------------
+----------------
 
 .. toctree::
    :maxdepth: 2
@@ -32,49 +32,50 @@ Table of Content
    content/intro/dependencies
 
 
+
 .. toctree::
    :maxdepth: 2
    :caption: 2 MLPro-BF – Basic Functions
+   :glob:
    
-   content/bf/elementary
-   content/bf/math
-   content/bf/ml
-   content/bf/ui
+   content/bf/*
+
 
 
 .. toctree::
    :maxdepth: 1
    :caption: 3 MLPro-SL - Supervised Learning
+   :glob:
    
-   content/sl/overview
+   content/sl/*
+
 
 
 .. toctree::
    :maxdepth: 3
    :caption: 4 MLPro-RL - Reinforcement Learning
-   
-   content/rl/overview
-   content/rl/env
-   content/rl/agents
-   content/rl/scenario
-   content/rl/train
-   content/rl/wrapper
+   :glob:
+
+   content/rl/*
+
 
 
 .. toctree::
    :maxdepth: 2
    :caption: 5 MLPro-GT – Game Theory
+   :glob:
    
-   content/gt/overview
-   content/gt/players
-   content/gt/gameboard
+   content/gt/*
+
 
 
 .. toctree::
    :maxdepth: 1
    :caption: 6 MLPro-DSM – Data Stream Mining   
+   :glob:
 
-   content/dsm/overview
+   content/dsm/*
+
 
 
 .. toctree::
@@ -84,11 +85,10 @@ Table of Content
    content/append1/howto.bf
    content/append1/howto.rl
    content/append1/howto.gt
-   content/append1/howto.ui
 
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
    :caption: Appendix 2: API Reference
    
    content/append2/mlpro.core

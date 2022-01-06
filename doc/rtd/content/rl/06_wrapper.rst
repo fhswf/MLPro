@@ -78,15 +78,3 @@ The stable-baselines3 can be used also in MLPro interface. The wrapper provides 
             )
 
 For more information, please check our how to files `here <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2010%20-%20(RL)%20Train%20using%20SB3%20Wrapper.py>`_.
-
-
-Ray RLlib
------------------------------------
-
-Under construction. The wrapper will be available soon.
-
-.. code-block:: python
-
-    from mlpro.rl.wrappers import wrPolicyRay
-
-    wrPolicyRay(...)

@@ -17,7 +17,7 @@ Please install the following packages to run this examples properly:
 Example Code
 `````````````````
 
-.. literalinclude:: ../../../../../examples/bf/Howto 06 - (Data) Buffer.py
+.. literalinclude:: ../../../../../../examples/bf/Howto 06 - (Data) Buffer.py
     :language: python
 
 Results

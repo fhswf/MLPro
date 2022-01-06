@@ -17,7 +17,7 @@ Please install the following packages to run this examples properly:
 Example Code
 `````````````````
 
-.. literalinclude:: ../../../../../examples/sciui/Howto 01 (SciUI) - Reuse of interactive 2D,3D input space.py
+.. literalinclude:: ../../../../../../examples/sciui/Howto 01 (SciUI) - Reuse of interactive 2D,3D input space.py
     :language: python
 
 Results

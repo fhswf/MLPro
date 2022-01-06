@@ -34,8 +34,8 @@ This robotinhtm environment can be imported via:
 
 Prerequisites
 =============
-    - PyTorch
-    - NumPy
+    - `NumPy <https://pypi.org/project/numpy/>`_
+    - `PyTorch <https://pypi.org/project/torch/>`_
 
 
 General Information

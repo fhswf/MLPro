@@ -1,9 +1,9 @@
-.. _Howto BF 7:
-`Howto 07 - (ML) Hyperparameter Tuning using Hyperopt <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2007%20-%20(ML)%20Hyperparameter%20Tuning%20using%20Hyperopt.py>`_
+.. _Howto BF 2:
+`Howto 02 - (Various) Timer <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2002%20-%20(Various)%20Timer.py>`_
 ================
-Ver. 1.0.0 (2021-12-08)
+Ver. 1.0.1 (2021-11-13)
 
-This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
+This module demonstrates the Timer class functionality.
 
 Prerequisites
 `````````````````
@@ -11,17 +11,17 @@ Prerequisites
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
   ..
-    - `NumPy <https://pypi.org/project/numpy/>`_
-  ..
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
   ..
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
+    - `NumPy <https://pypi.org/project/numpy/>`_
   ..
     - `Pytorch <https://pypi.org/project/torch/>`_
   ..
-    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
   ..
     - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
+  ..
+    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
   ..
     - `Optuna <https://pypi.org/project/optuna/>`_
   ..
@@ -33,7 +33,7 @@ Please install the following packages to run this examples properly:
 Example Code
 `````````````````
 
-.. literalinclude:: ../../../../../examples/bf/Howto 07 - (ML) Hyperparameter Tuning using Hyperopt.py
+.. literalinclude:: ../../../../../../examples/bf/Howto 02 - (Various) Timer.py
     :language: python
 
 Results

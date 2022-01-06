@@ -17,7 +17,7 @@ Please install the following packages to run this examples properly:
 Example Code
 `````````````````
 
-.. literalinclude:: ../../../../../examples/sciui/Howto 02 (SciUI) - Reinforcement learning cockpit.py
+.. literalinclude:: ../../../../../../examples/sciui/Howto 02 (SciUI) - Reinforcement learning cockpit.py
     :language: python
 
 Results

@@ -16,7 +16,7 @@ Please install the following packages to run this examples properly:
   ..
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
   ..
-    - `Pytorch <https://pypi.org/project/torch/>`_
+    - `PyTorch <https://pypi.org/project/torch/>`_
   ..
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
   ..

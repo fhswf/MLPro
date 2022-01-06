@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
-## -- Module  : rl
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.rl
+## -- Module  : sciui_rl.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -24,7 +24,7 @@ from tkinter.ttk import *
 from tkinter.scrolledtext import *
 from mpl_toolkits.mplot3d import Axes3D
 
-from mlpro.bf.ui.framework import *
+from mlpro.bf.ui.sciui.framework import *
 from mlpro.bf.math import ESpace
 import mlpro.rl.pool.scenarios as ScePool
 from mlpro.rl.models import *

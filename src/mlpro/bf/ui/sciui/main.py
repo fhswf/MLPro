@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro.scui
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.bf.ui.scui
 ## -- Module  : main
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -20,7 +20,7 @@ Provides the SciUI application class.
 
 from tkinter import *
 import tkinter.messagebox
-from mlpro.bf.ui.framework import *
+from mlpro.bf.ui.sciui.framework import *
 
 
 

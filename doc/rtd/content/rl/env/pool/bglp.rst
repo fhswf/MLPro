@@ -35,7 +35,7 @@ This BGLP environment can be imported via:
 Prerequisites
 =============
 
-    - NumPy
+    - `NumPy <https://pypi.org/project/numpy/>`_
 
 
 

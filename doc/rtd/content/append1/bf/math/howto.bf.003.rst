@@ -15,7 +15,7 @@ Please install the following packages to run this examples properly:
 Example Code
 `````````````````
 
-.. literalinclude:: ../../../../../examples/bf/Howto 03 - (Math) Spaces, subspaces and elements.py
+.. literalinclude:: ../../../../../../examples/bf/Howto 03 - (Math) Spaces, subspaces and elements.py
     :language: python
 
 Results

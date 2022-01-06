@@ -17,9 +17,9 @@ SciUI template for a Reinforcement Learning simulation.
 
 
 
-from mlpro.ui.sciui.framework import *
+from mlpro.bf.ui.sciui.framework import *
 from mlpro.bf.math import *
-from mlpro.ui.sciui.pool.rl import RLInteractiveUI
+from mlpro.rl.sciui_rl import RLInteractiveUI
 
 
 
@@ -42,6 +42,8 @@ class SciUI_RL(SciUIScenario):
                                            p_padx=5, p_logging=self.logging, p_refresh_rate=100))
         
 
+
+
 if (__name__ == '__main__'): 
-    from mlpro.ui.sciui.main import SciUI
+    from mlpro.bf.ui.sciui.main import SciUI
     SciUI()
