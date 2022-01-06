@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-17  0.0.0     MRD       Creation
 ## -- 2021-12-17  1.0.0     MRD       Released first version
+## -- 2022-01-01  1.0.1     MRD       Refactoring due to new model implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-17)
+Ver. 1.0.1 (2022-01-01)
 
 This module demonstrates model-based reinforcement learning.
 """
@@ -25,50 +26,11 @@ from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from mlpro.rl.pool.envmodels.mlp_robotinhtm import MLPEnvModel
 
-class SimulatedTraining(RLTraining):
-    C_NAME = "Simulated"
+from pathlib import Path
 
 
 class ActualTraining(RLTraining):
     C_NAME = "Actual"
-
-# Implement model based agent
-class MBAgent(Agent):
-    def _adapt_policy_by_model(self):
-        env_ext = self._envmodel
-        pol_ext = self._policy
-        class ScenarioRobotHTMSimulated(RLScenario):
-            def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
-                self._env = env_ext
-                return Agent(
-                    p_policy=pol_ext,
-                    p_envmodel=None,
-                    p_name="Smith2",
-                    p_ada=p_ada,
-                    p_logging=p_logging,
-                )
-
-        # Instantiate training
-        simulated_training = SimulatedTraining(
-            p_scenario_cls=ScenarioRobotHTMSimulated,
-            p_cycle_limit=100,
-            p_cycles_per_epi_limit=100,
-            p_max_stagnations=0,
-            p_collect_states=False,
-            p_collect_actions=False,
-            p_collect_rewards=False,
-            p_collect_training=False,
-            p_logging=False,
-        )
-
-        # Run Training
-        simulated_training.run()
-
-        # Save Policy to be used for actual
-        self._policy = simulated_training.get_scenario().get_agent()._policy
-
-        return True
-
 
 # Implement RL Scenario for the actual environment to train the environment model
 class ScenarioRobotHTMActual(RLScenario):
@@ -94,35 +56,59 @@ class ScenarioRobotHTMActual(RLScenario):
             p_logging=p_logging,
         )
 
+        mb_training_param = dict(p_cycle_limit=100, 
+            p_cycles_per_epi_limit=100,
+            p_max_stagnations=0,
+            p_collect_states=False,
+            p_collect_actions=False,
+            p_collect_rewards=False,
+            p_collect_training=False)
+
         # 2 Setup standard single-agent with own policy
-        return MBAgent(
+        return Agent(
             p_policy=policy_wrapped,
             p_envmodel=MLPEnvModel(),
             p_em_mat_thsld=-1,
             p_name="Smith1",
             p_ada=p_ada,
             p_logging=p_logging,
+            **mb_training_param
         )
 
-# 4 Train agent in scenario
+# 3 Train agent in scenario
 now = datetime.now()
 
+if __name__ == "__main__":
+    # 3.1 Parameters for demo mode
+    cycle_limit         = 300000
+    logging             = Log.C_LOG_ALL
+    visualize           = True
+    path                = str(Path.home())
+    plotting            = True
+ 
+else:
+    # 3.2 Parameters for internal unit test
+    cycle_limit         = 100
+    logging             = Log.C_LOG_NOTHING
+    visualize           = False
+    path                = None
+    plotting            = False
 
 training = ActualTraining(
     p_scenario_cls=ScenarioRobotHTMActual,
-    p_cycle_limit=300000,
+    p_cycle_limit=cycle_limit,
     p_cycles_per_epi_limit=100,
-    p_max_stagnations=0,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_logging=True,
+    p_path=path,
+    p_logging=logging,
 )
 
 training.run()
 
-# 6 Create Plotting Class
+# 4 Create Plotting Class
 class MyDataPlotting(DataPlotting):
     def get_plots(self):
         """
@@ -160,7 +146,7 @@ class MyDataPlotting(DataPlotting):
                     plt.close(fig)
 
 
-# 7 Plotting 1 MLpro
+# 5 Plotting 1 MLpro
 data_printing = {
     "Cycle": [False],
     "Day": [False],
@@ -171,5 +157,5 @@ data_printing = {
 
 
 mem = training.get_results().ds_rewards
-mem_plot = MyDataPlotting(mem, p_showing=True, p_printing=data_printing)
+mem_plot = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
 mem_plot.get_plots()

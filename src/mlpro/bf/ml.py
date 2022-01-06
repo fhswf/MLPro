@@ -28,10 +28,11 @@
 ## --                                of adapatations
 ## -- 2021-12-21  1.3.1     DA       - Minor changes on class Training
 ## --                                - Added log functionality to class TrainingResults
+## -- 2022-01-01  1.3.2     MRD      Fix minor bug
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-21)
+Ver. 1.3.2 (2021-12-21)
 
 This module provides fundamental machine learning templates, functionalities and properties.
 """
@@ -978,7 +979,7 @@ class Training (Log):
                                                p_logging=logging )
                 self._scenario.set_cycle_limit(self._cycle_limit)
             except:
-                raise ParamError('Par p_scenario_cls: class "' + scenario_cls + '" not compatible')
+                raise ParamError('Par p_scenario_cls: class "' + scenario_cls.__name__ + '" not compatible')
 
 
 ## -------------------------------------------------------------------------------------------------
