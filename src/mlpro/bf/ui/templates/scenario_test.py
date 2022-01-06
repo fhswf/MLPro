@@ -17,7 +17,7 @@ Elementry functional test scenario for SciUI project. Can be executed directly..
 
 
 
-from mlpro.ui.sciui.framework import *
+from mlpro.bf.ui.framework import *
 
 
 
@@ -35,6 +35,6 @@ class SciUIScenarioTest(SciUIScenario):
 
 
 if (__name__ == '__main__'): 
-    from mlpro.ui.sciui.main import SciUI
+    from mlpro.bf.ui.main import SciUI
     SciUI()
 

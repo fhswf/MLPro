@@ -25,6 +25,8 @@ Documentation Changes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Class diagrams resized
+- Structure of environment and sample documentation assigned
+- Disclaimer added
 
 .. Others
 .. ^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -1,4 +1,4 @@
-6.1 UI Framework SciUI
+Overview
 ===========================
 
 - Platform-independend framework for creation of own UI scenarios
@@ -10,8 +10,3 @@ If you are looking for an example of SciUI implementation, we provide
 :ref:`how to files<target-howto>` related to this subject.
 
 Add text here!
-
-.. toctree::
-   :maxdepth: 1
-   
-   sciui/rl

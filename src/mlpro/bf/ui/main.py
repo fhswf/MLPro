@@ -20,7 +20,7 @@ Provides the SciUI application class.
 
 from tkinter import *
 import tkinter.messagebox
-from mlpro.ui.sciui.framework import *
+from mlpro.bf.ui.framework import *
 
 
 

@@ -24,7 +24,7 @@ from tkinter.ttk import *
 from tkinter.scrolledtext import *
 from mpl_toolkits.mplot3d import Axes3D
 
-from mlpro.ui.sciui.framework import *
+from mlpro.bf.ui.framework import *
 from mlpro.bf.math import ESpace
 import mlpro.rl.pool.scenarios as ScePool
 from mlpro.rl.models import *

@@ -30,7 +30,8 @@ Table of Content
    content/intro/getstarted
    content/intro/architecture
    content/intro/dependencies
-   
+
+
 .. toctree::
    :maxdepth: 2
    :caption: 2 MLPro-BF – Basic Functions
@@ -38,6 +39,8 @@ Table of Content
    content/bf/elementary
    content/bf/math
    content/bf/ml
+   content/bf/ui
+
 
 .. toctree::
    :maxdepth: 1
@@ -45,9 +48,10 @@ Table of Content
    
    content/sl/overview
 
+
 .. toctree::
    :maxdepth: 3
-   :caption: 4 MLPro-RL – Reinforcement Learning
+   :caption: 4 MLPro-RL - Reinforcement Learning
    
    content/rl/overview
    content/rl/env
@@ -55,6 +59,7 @@ Table of Content
    content/rl/scenario
    content/rl/train
    content/rl/wrapper
+
 
 .. toctree::
    :maxdepth: 2
@@ -64,11 +69,13 @@ Table of Content
    content/gt/players
    content/gt/gameboard
 
+
 .. toctree::
-   :maxdepth: 2
-   :caption: 6 MLPro-UI – Interactive ML
-   
-   content/ui/sciui
+   :maxdepth: 1
+   :caption: 6 MLPro-DSM – Data Stream Mining   
+
+   content/dsm/overview
+
 
 .. toctree::
    :maxdepth: 2
@@ -79,6 +86,7 @@ Table of Content
    content/append1/howto.gt
    content/append1/howto.ui
 
+
 .. toctree::
    :maxdepth: 4
    :caption: Appendix 2: API Reference
@@ -87,6 +95,7 @@ Table of Content
    content/append2/mlpro.wrappers
    content/append2/mlpro.pool
    content/append2/mlpro.template
+
 
 .. toctree::
    :maxdepth: 2
@@ -97,6 +106,7 @@ Table of Content
    content/append3/cont
    content/append3/disclaimer
    
+
 Citing MLPro
 ------------------------
 To cite this project in publications:

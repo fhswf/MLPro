@@ -27,8 +27,8 @@ import tkinter
 from tkinter.ttk import Combobox
 from mpl_toolkits.mplot3d import Axes3D
 
-from mlpro.ui.sciui.framework import *
-from mlpro.ui.sciui.pool.iisbenchmark import *
+from mlpro.bf.ui.framework import *
+from mlpro.bf.ui.pool.iisbenchmark import *
 from mlpro.bf.math import ESpace
 
 
