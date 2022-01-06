@@ -856,7 +856,7 @@ class SciUIScenario(SciUIFrame):
     C_VISIBLE       = False    
         
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_shared_db:SciUISharedDB, p_logging=True): 
+    def __init__(self, p_shared_db:SciUISharedDB, p_logging=Log.C_LOG_ALL): 
         SciUIFrame.__init__(self, p_shared_db, p_row=0, p_col=0, p_width_perc=1, p_height_perc=1, p_visible=p_shared_db.window_fullscreen, p_logging=p_logging)
 
         if p_shared_db.window_fullscreen:

@@ -189,7 +189,7 @@ class SciUI(SciUIWindow):
             # self.scenario.__del__()
             self.scenario = None  
               
-        self.scenario         = self.scenario_pool[self.scenario_id.get()][1](self.shared_db, p_logging=self.logging)
+        self.scenario         = self.scenario_pool[self.scenario_id.get()][1](self.shared_db, p_logging=self._level)
         self.shared_db.start_global_refresh()
         
         self.title(self.C_NAME + ': Scenario "' + self.scenario.C_NAME + '"')

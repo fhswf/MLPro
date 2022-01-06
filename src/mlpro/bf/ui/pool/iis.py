@@ -439,7 +439,7 @@ class IISParamBenchmark(SciUIFrameParam):
             if bm[0] == benchmark: break
 
         self.log(self.C_LOG_TYPE_I, 'Started benchmark "' + benchmark + '"')
-        bm[1](self.shared_db.iis_ispace, self.shared_db.iis_sim_input_cb, p_logging=self.logging).run()
+        bm[1](self.shared_db.iis_ispace, self.shared_db.iis_sim_input_cb, p_logging=self._level).run()
         self.shared_db.iis_update_counter = 0
         self.shared_db.start_global_refresh()
 
@@ -460,8 +460,8 @@ class IISParam(SciUIFrameParam):
     def init_component(self):
         super().init_component()
 
-        self.add_component(IISParamGeneral(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady = 5, p_visible=True, p_logging=self.logging))
-        self.add_component(IISParamBenchmark(p_shared_db=self.shared_db, p_row=1, p_col=0, p_pady = 5, p_visible=True, p_logging=self.logging))
+        self.add_component(IISParamGeneral(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady = 5, p_visible=True, p_logging=self._level))
+        self.add_component(IISParamBenchmark(p_shared_db=self.shared_db, p_row=1, p_col=0, p_pady = 5, p_visible=True, p_logging=self._level))
 
 
 
@@ -487,11 +487,11 @@ class IISFrameLeft(SciUIFrame):
 
         for i, dim_id in enumerate(self.shared_db.iis_ispace.get_dim_ids()):
             dim = self.shared_db.iis_ispace.get_dim(dim_id)
-            iisivar_comp = IISIVar(self.shared_db, p_row=i, p_col=0, p_title='Input Variable ' + dim.get_name_short(), p_width_perc=0.25, p_height_perc=height_perc, p_logging=self.logging)
+            iisivar_comp = IISIVar(self.shared_db, p_row=i, p_col=0, p_title='Input Variable ' + dim.get_name_short(), p_width_perc=0.25, p_height_perc=height_perc, p_logging=self._level)
             iisivar_comp.assign_dim(i)
             self.add_component(iisivar_comp)
 
-        self.add_component(IISParam(self.shared_db, p_row=num_dim, p_col=0, p_visible=True, p_logging=self.logging))
+        self.add_component(IISParam(self.shared_db, p_row=num_dim, p_col=0, p_visible=True, p_logging=self._level))
 
 
 
@@ -542,14 +542,14 @@ class InteractiveInputSpace(SciUIFrame):
 
 
         # 2 Create left subframe with subplots for each input dimension
-        self.add_component(IISFrameLeft(self.shared_db, p_row=0, p_col=0, p_padx=5, p_logging=self.logging))
+        self.add_component(IISFrameLeft(self.shared_db, p_row=0, p_col=0, p_padx=5, p_logging=self._level))
 
 
         #  3 Create input space subplot
         if self.dim == 2:
-            self.add_component(IISMain2D(self.shared_db, p_row=0, p_col=1, p_height_perc=1.0, p_padx=5, p_logging=self.logging))
+            self.add_component(IISMain2D(self.shared_db, p_row=0, p_col=1, p_height_perc=1.0, p_padx=5, p_logging=self._level))
         elif self.dim == 3:
-            self.add_component(IISMain3D(self.shared_db, p_row=0, p_col=1, p_height_perc=1.0, p_padx=5, p_logging=self.logging))
+            self.add_component(IISMain3D(self.shared_db, p_row=0, p_col=1, p_height_perc=1.0, p_padx=5, p_logging=self._level))
 
 
  ## -------------------------------------------------------------------------------------------------
