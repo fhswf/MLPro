@@ -39,7 +39,7 @@ class SciUI_RL(SciUIScenario):
         RLInteractiveUI.enrich_shared_db(self.shared_db)
         
         self.add_component(RLInteractiveUI(p_shared_db=self.shared_db, p_row=0, p_col=0,
-                                           p_padx=5, p_logging=self.logging, p_refresh_rate=100))
+                                           p_padx=5, p_logging=self._level, p_refresh_rate=100))
         
 
 

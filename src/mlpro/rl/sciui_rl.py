@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-07-30  0.0.0     SY       Creation
 ## -- 2021-10-07  1.0.0     SY       Release of first draft
+## -- 2022-01-06  1.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-10-07)
+Ver. 1.0.1 (2022-01-06)
 
 This file provides reusable SciUI components for SciUI_RL.
 """
@@ -605,10 +606,10 @@ class RLStatesView(SciUIFrameParam):
         super().init_component()
         self.first_refresh              = True
         
-        self.states_plt                 = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self.logging)
+        self.states_plt                 = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self._level)
         self.states_plt.frame_visible   = False
         self.states_toggle              = RLStatesToggle(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,
-                                                     p_logging=self.logging, p_height_perc=1)
+                                                     p_logging=self._level, p_height_perc=1)
         
         self.add_component(self.states_plt)
         self.add_component(self.states_toggle)
@@ -639,7 +640,7 @@ class RLActionsView(SciUIFrameParam):
         super().init_component()
         self.first_refresh                  = True
         
-        self.actions_plt                    = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self.logging)
+        self.actions_plt                    = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self._level)
         self.actions_plt.frame_visible      = False
         self.add_component(self.actions_plt)
         
@@ -680,7 +681,7 @@ class RLRewardsView(SciUIFrameParam):
         super().init_component()
         self.first_refresh              = True
         
-        self.rewards_plt                = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self.logging)
+        self.rewards_plt                = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self._level)
         self.rewards_plt.frame_visible  = False
         self.add_component(self.rewards_plt)
         
@@ -724,7 +725,7 @@ class RLGoalsCompletedView(SciUIFrameParam):
         self.C_AGENT_LABELS.append(self.shared_db.rl_env)
         self.first_refresh              = True
         
-        self.exp_rate_plt               = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self.logging)
+        self.exp_rate_plt               = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self._level)
         self.exp_rate_plt.frame_visible = False
         self.add_component(self.exp_rate_plt)
         
@@ -766,7 +767,7 @@ class RLCustomView(SciUIFrameParam):
         super().init_component()
         self.first_refresh              = True
         
-        self.custom_plt                 = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self.logging)
+        self.custom_plt                 = RLPlot2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.36, p_height_perc=0.26, p_logging=self._level)
         self.custom_plt.frame_visible   = False
         self.add_component(self.custom_plt)
         
@@ -809,11 +810,11 @@ class RLHeatmapsView(SciUIFrameParam):
         super().init_component()
         self.first_refresh                      = True
         
-        self.maps_actions_plt                   = RLHeatmap2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.18, p_height_perc=0.26, p_logging=self.logging)
+        self.maps_actions_plt                   = RLHeatmap2D(self.shared_db, p_row=1, p_col=0, p_width_perc=0.18, p_height_perc=0.26, p_logging=self._level)
         self.maps_actions_plt.title_heatmap     = "Performance Maps - Actions"
         self.maps_actions_plt.frame_visible     = False
         
-        self.maps_rewards_plt                   = RLHeatmap2D(self.shared_db, p_row=1, p_col=1, p_width_perc=0.18, p_height_perc=0.26, p_logging=self.logging)
+        self.maps_rewards_plt                   = RLHeatmap2D(self.shared_db, p_row=1, p_col=1, p_width_perc=0.18, p_height_perc=0.26, p_logging=self._level)
         self.maps_rewards_plt.title_heatmap     = "Performance Maps - Rewards"
         self.maps_rewards_plt.frame_visible     = False
         
@@ -862,13 +863,13 @@ class RLGeneralView(SciUIFrame):
         self.first_refresh  = True
 
         self.add_component(RLStatesView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=8,
-                                        p_padx=10, p_logging=self.logging, p_visible=True))
+                                        p_padx=10, p_logging=self._level, p_visible=True))
         self.add_component(RLActionsView(p_shared_db=self.shared_db, p_row=0, p_col=1, p_pady=8,
-                                         p_padx=10, p_logging=self.logging, p_visible=True))
+                                         p_padx=10, p_logging=self._level, p_visible=True))
         self.add_component(RLRewardsView(p_shared_db=self.shared_db, p_row=1, p_col=0, p_pady=8,
-                                         p_padx=10, p_logging=self.logging, p_visible=True))
+                                         p_padx=10, p_logging=self._level, p_visible=True))
         self.add_component(RLGoalsCompletedView(p_shared_db=self.shared_db, p_row=1, p_col=1, p_pady=8,
-                                                p_padx=10, p_logging=self.logging, p_visible=True))
+                                                p_padx=10, p_logging=self._level, p_visible=True))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -903,7 +904,7 @@ class RLEnvironmentView(SciUIFrame):
         self.first_refresh  = True
 
         self.add_component(RLCustomView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=8,
-                                        p_padx=10, p_logging=self.logging, p_visible=True))
+                                        p_padx=10, p_logging=self._level, p_visible=True))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -938,7 +939,7 @@ class RLAgentView(SciUIFrame):
         self.first_refresh  = True
 
         self.add_component(RLHeatmapsView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=8,
-                                          p_padx=10, p_logging=self.logging, p_visible=True))
+                                          p_padx=10, p_logging=self._level, p_visible=True))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -969,9 +970,9 @@ class RLView(SciUITabCTRL):
         self.fontstyle  = tkFont.Font(family=self.C_FONT_FAMILY, size=self.C_FONT_SIZE)
         self.tab_list   = []
         self.tab_ctrl   = None 
-        self.add_tab('General view', RLGeneralView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5, p_logging=self.logging))
-        self.add_tab('Environment view', RLEnvironmentView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5, p_logging=self.logging))
-        self.add_tab('RL Agent(s) view', RLAgentView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5, p_logging=self.logging))
+        self.add_tab('General view', RLGeneralView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5, p_logging=self._level))
+        self.add_tab('Environment view', RLEnvironmentView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5, p_logging=self._level))
+        self.add_tab('RL Agent(s) view', RLAgentView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5, p_logging=self._level))
 
 ## -------------------------------------------------------------------------------------------------
     def refresh(self, p_parent_frame):
@@ -1191,10 +1192,10 @@ class RLFrameTopLeft(SciUIFrame):
         super().init_component()
 
         self.add_component(RLDetails(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,
-                                     p_logging=self.logging, p_visible=True, p_height_perc=1))
+                                     p_logging=self._level, p_visible=True, p_height_perc=1))
 
         self.add_component(RLParam(p_shared_db=self.shared_db, p_row=1, p_col=0, p_pady=5,
-                                     p_logging=self.logging, p_visible=True, p_height_perc=1))
+                                     p_logging=self._level, p_visible=True, p_height_perc=1))
         
         
 ## -------------------------------------------------------------------------------------------------
@@ -1211,7 +1212,7 @@ class RLFrameTopRight(SciUIFrame):
         super().init_component()
         
         self.shared_db.plot_frame = RLView(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,
-                                           p_logging=self.logging, p_visible=True, p_height_perc=1)
+                                           p_logging=self._level, p_visible=True, p_height_perc=1)
         self.add_component(self.shared_db.plot_frame)
 
         
@@ -1230,10 +1231,10 @@ class RLFrameTop(SciUIFrame):
         super().init_component()
 
         self.add_component(RLFrameTopLeft(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,
-                                          p_logging=self.logging))
+                                          p_logging=self._level))
 
         self.add_component(RLFrameTopRight(p_shared_db=self.shared_db, p_row=0, p_col=1, p_pady=5,
-                                           p_logging=self.logging))
+                                           p_logging=self._level))
         
         
         
@@ -1254,7 +1255,7 @@ class RLFrameBottomLeft(SciUIFrame):
         super().init_component()
         
         self.shared_db.ep_monitor_frame = RLEpMonitoring(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,p_padx=5,
-                                                         p_logging=self.logging, p_visible=True, p_height_perc=1)
+                                                         p_logging=self._level, p_visible=True, p_height_perc=1)
         self.add_component(self.shared_db.ep_monitor_frame)
         
         
@@ -1272,9 +1273,9 @@ class RLFrameBottomRight(SciUIFrame):
         super().init_component()
         
         self.add_component(RLLoggingSelection(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,p_padx=5,
-                                              p_logging=self.logging, p_visible=True, p_height_perc=1))
+                                              p_logging=self._level, p_visible=True, p_height_perc=1))
         self.shared_db.log_frame = RLLogging(p_shared_db=self.shared_db, p_row=0, p_col=1, p_pady=5,p_padx=5,
-                                             p_logging=self.logging, p_visible=True, p_height_perc=1) 
+                                             p_logging=self._level, p_visible=True, p_height_perc=1) 
         self.add_component(self.shared_db.log_frame)
 
 
@@ -1294,9 +1295,9 @@ class RLFrameBottom(SciUIFrame):
         super().init_component()
 
         self.add_component(RLFrameBottomLeft(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,
-                                             p_logging=self.logging))
+                                             p_logging=self._level))
         self.add_component(RLFrameBottomRight(p_shared_db=self.shared_db, p_row=0, p_col=1, p_pady=5,
-                                              p_logging=self.logging))
+                                              p_logging=self._level))
 
 
         
@@ -1405,9 +1406,9 @@ class RLInteractiveUI(SciUIFrame):
     def init_component(self):
         super().init_component()
         self.add_component(RLFrameTop(p_shared_db=self.shared_db, p_row=0, p_col=0, p_pady=5,
-                                      p_logging=self.logging))
+                                      p_logging=self._level))
         self.add_component(RLFrameBottom(p_shared_db=self.shared_db, p_row=1, p_col=0, p_pady=5,
-                                         p_logging=self.logging))
+                                         p_logging=self._level))
 
  ## -------------------------------------------------------------------------------------------------
     def refresh(self, p_parent_frame):
