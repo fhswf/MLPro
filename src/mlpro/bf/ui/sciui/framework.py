@@ -719,7 +719,7 @@ class SciUISubplotRoot(SciUIFrame):
     def cb_save_plot(self):
         self.log(self.C_LOG_TYPE_I, 'Plot save dialog called from context menu')
 
-        dlg = SciUISubplotSaveDLG(p_fname=self.frame_text, p_logging=self.logging)
+        dlg = SciUISubplotSaveDLG(p_fname=self.frame_text, p_logging=self._level)
         dlg.start()
         f   = dlg.get_filename()
         if f != '':
