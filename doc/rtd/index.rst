@@ -20,7 +20,7 @@ Have fun!
 
 
 Table of Content
--------------------------
+----------------
 
 .. toctree::
    :maxdepth: 2
@@ -30,45 +30,53 @@ Table of Content
    content/intro/getstarted
    content/intro/architecture
    content/intro/dependencies
-   
+
+
+
 .. toctree::
    :maxdepth: 2
    :caption: 2 MLPro-BF – Basic Functions
+   :glob:
    
-   content/bf/elementary
-   content/bf/math
-   content/bf/ml
+   content/bf/*
+
+
 
 .. toctree::
    :maxdepth: 1
    :caption: 3 MLPro-SL - Supervised Learning
+   :glob:
    
-   content/sl/overview
+   content/sl/*
+
+
 
 .. toctree::
    :maxdepth: 3
-   :caption: 4 MLPro-RL – Reinforcement Learning
-   
-   content/rl/overview
-   content/rl/env
-   content/rl/agents
-   content/rl/scenario
-   content/rl/train
-   content/rl/wrapper
+   :caption: 4 MLPro-RL - Reinforcement Learning
+   :glob:
+
+   content/rl/*
+
+
 
 .. toctree::
    :maxdepth: 2
    :caption: 5 MLPro-GT – Game Theory
+   :glob:
    
-   content/gt/overview
-   content/gt/players
-   content/gt/gameboard
+   content/gt/*
+
+
 
 .. toctree::
-   :maxdepth: 2
-   :caption: 6 MLPro-UI – Interactive ML
-   
-   content/ui/sciui
+   :maxdepth: 1
+   :caption: 6 MLPro-DSM – Data Stream Mining   
+   :glob:
+
+   content/dsm/*
+
+
 
 .. toctree::
    :maxdepth: 2
@@ -77,10 +85,10 @@ Table of Content
    content/append1/howto.bf
    content/append1/howto.rl
    content/append1/howto.gt
-   content/append1/howto.ui
+
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 6
    :caption: Appendix 2: API Reference
    
    content/append2/mlpro.core
@@ -88,14 +96,17 @@ Table of Content
    content/append2/mlpro.pool
    content/append2/mlpro.template
 
+
 .. toctree::
    :maxdepth: 2
    :caption: Appendix 3: Project MLPro
    
    content/append3/versions
-   content/append3/paper
+   content/append3/publications
    content/append3/cont
+   content/append3/disclaimer
    
+
 Citing MLPro
 ------------------------
 To cite this project in publications:

@@ -1,3 +1,4 @@
+.. _Howto RL 2:
 `Howto 02 - (RL) Run agent with own policy with gym environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2002%20-%20(RL)%20Run%20agent%20with%20own%20policy%20with%20gym%20environment.py>`_
 ================
 Ver. 1.2.2 (2021-12-03)
@@ -16,7 +17,7 @@ Please install the following packages to run this examples properly:
   ..
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
   ..
-    - `Pytorch <https://pypi.org/project/torch/>`_
+    - `PyTorch <https://pypi.org/project/torch/>`_
   ..
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
   ..

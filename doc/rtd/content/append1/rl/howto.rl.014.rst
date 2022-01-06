@@ -1,3 +1,4 @@
+.. _Howto RL 14:
 `Howto 14 - (RL) Train UR5 with SB3 wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2014%20-%20(RL)%20Train%20UR5%20with%20SB3%20wrapper.py>`_
 ================
 Ver. 1.0.1 (2021-12-07)
@@ -10,7 +11,7 @@ Prerequisites
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-    - :ref:`RL Environment UR5 Joint Control <Universal Robots 5 Joint Control>`
+    - :ref:`RL Environment UR5 Joint Control <ur5jointcontrol>`
   ..
     - `NumPy <https://pypi.org/project/numpy/>`_
   ..

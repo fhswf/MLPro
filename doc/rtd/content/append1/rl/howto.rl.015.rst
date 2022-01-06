@@ -1,3 +1,4 @@
+.. _Howto RL 15:
 `Howto 15 - (RL) Train Robothtm with SB3 Wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2015%20-%20(RL)%20Train%20Robothtm%20with%20SB3%20Wrapper.py>`_
 ================
 Ver. 1.0.2 (2021-12-08)

@@ -1,3 +1,4 @@
+.. _Howto RL 5:
 `Howto 05 - (RL) Train multi-agent with own policy on multicartpole environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2005%20-%20(RL)%20Train%20multi-agent%20with%20own%20policy%20on%20multicartpole%20environment.py>`_
 ================
 Ver. 1.3.1 (2021-12-07)

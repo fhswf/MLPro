@@ -1,3 +1,4 @@
+.. _Howto RL 1:
 `Howto 01 - (RL) Types of reward <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2001%20-%20(RL)%20Types%20of%20reward.py>`_
 ================
 Ver. 1.0.0 (2021-09-11)
@@ -16,7 +17,7 @@ Please install the following packages to run this examples properly:
   ..
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
   ..
-    - `Pytorch <https://pypi.org/project/torch/>`_
+    - `PyTorch <https://pypi.org/project/torch/>`_
   ..
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
   ..

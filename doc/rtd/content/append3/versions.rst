@@ -1,6 +1,40 @@
 Release Notes
 ================
 
+Coming soon
+-----------
+
+Release Highlights
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+New Features
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- RL, Agent: Model-based policy training implemented
+- RL, Agent: Template for action planning implemented/embedded
+
+
+Fixed Issues
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Wrappers OpenAI Gym and PettingZoo: removed redundant cycle counting
+
+
+Documentation Changes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Class diagrams resized
+- Structure of environment documentation assigned to example documentation
+- Appendix 1 (examples) restructured
+- Disclaimer added
+
+.. Others
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+
 Version 0.8.1
 ---------------------
 
@@ -13,16 +47,16 @@ RL/GT: New environment Multi Geometry Robot
 .. New Features
 .. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Fixed Issues
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Wrappers OpenAI Gym and PettingZoo: removed redundant cycle counting
+.. Fixed Issues
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. Documentation Changes
 .. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. Others
 .. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
 
 
 Version 0.8.0

@@ -19,8 +19,8 @@ Can be executed directly...
 
 
 
-from mlpro.ui.sciui.framework import *
-from mlpro.ui.sciui.pool.iis import InteractiveInputSpace
+from mlpro.bf.ui.sciui.framework import *
+from mlpro.bf.ui.sciui.pool.iis import InteractiveInputSpace
 from mlpro.bf.math import *
 
 
@@ -45,7 +45,7 @@ class DemoIIS2D(SciUIScenario):
         self.shared_db.iis_ispace.add_dim(Dimension(1, 'x2', '', 'x_2', 'm/s', '\\frac{m}{s}', [-25,25]))
 
         # 2 Build scenario structure
-        self.add_component(InteractiveInputSpace(self.shared_db, p_row=0, p_col=0, p_padx=5, p_logging=self.logging))
+        self.add_component(InteractiveInputSpace(self.shared_db, p_row=0, p_col=0, p_padx=5, p_logging=self._level))
 
 
 
@@ -71,12 +71,12 @@ class DemoIIS3D(SciUIScenario):
         self.shared_db.iis_ispace.add_dim(Dimension(2, 'x3', '', 'x_3', 'm/s^2', '\\frac{m}{s^2}', [-15,15]))
 
         # 2 Build scenario structure
-        self.add_component(InteractiveInputSpace(self.shared_db, p_row=0, p_col=0, p_padx=5, p_logging=self.logging))
+        self.add_component(InteractiveInputSpace(self.shared_db, p_row=0, p_col=0, p_padx=5, p_logging=self._level))
 
 
 
         
 
 if (__name__ == '__main__'): 
-    from mlpro.ui.sciui.main import SciUI
+    from mlpro.bf.ui.sciui.main import SciUI
     SciUI()
