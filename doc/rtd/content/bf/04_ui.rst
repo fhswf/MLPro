@@ -6,6 +6,9 @@
 - Focus on real-time visualization and interaction 
 - Based on Python standards Tkinter and MatPlotLib
 
+.. image:: images/SciUI_2D.png
+.. image:: images/SciUI_3D.png
+
 
 .. toctree::
    :maxdepth: 1
