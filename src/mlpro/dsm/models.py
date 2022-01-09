@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.dsm
-## -- Module  : models
+## -- Module  : models.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -15,79 +15,228 @@ Model classes for efficient online adaptive data stream processing.
 """
 
 
-from time import CLOCK_THREAD_CPUTIME_ID
+#from time import CLOCK_THREAD_CPUTIME_ID
+from itertools import combinations_with_replacement
 from mlpro.bf.various import *
 from mlpro.bf.ml import *
+from mlpro.bf.math import *
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ProcessingStep(Model):
+class Feature (Dimension): pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Instance (Element): pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Stream (Mode, LoadSave, ScientificObject ):
+
     """
-    Model class for an adaptive data stream (pre-)processing step.
+    Template class for data streams.
+
+    Parameters
+    ----------
+    p_mode
+        Operation mode. Valid values are stored in constant C_VALID_MODES.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+
+    """
+
+    C_TYPE          = 'Stream'
+    C_NAME          = '????'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, 
+                 p_mode=Mode.C_MODE_SIM, 
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs ):
+
+        super().__init__(p_mode=p_mode, p_logging=p_logging)
+        self._kwargs = p_kwargs.copy()
+        self._feature_space = self.setup()
+
+
+## -------------------------------------------------------------------------------------------------
+    def setup(self) -> MSpace:
+        """
+        Sets up the data stream and specially the related feature space by calling custom method
+        _setup().
+
+        Returns
+        -------
+        feature_space : MSpace
+            The feature space of the data stream.
+
+        """
+
+        return self._setup()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self) -> MSpace:
+        """
+        Custom method to set up the data stream and related feature space. See method setup() for
+        more details. Use class Feature to define the feature space.
+
+        Returns
+        -------
+        feature_space : MSpace
+            The feature space of the data stream.
+
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_feature_space(self):
+        return self._feature_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_seed=None):
+        """
+        Resets stream generator and initializes an internal random generator with the given seed
+        value by calling the custom method _reset().
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed value for random generator.
+
+        """
+
+        self._reset(p_seed=p_seed)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed):
+        """
+        Custom reset method for data stream. See method reset() for more details.
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed value for random generator.
+
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_next(self) -> Instance:
+        """
+        Returns next data stream instance or None at the end of the stream. The next instance is
+        determined by calling the custom method _get_next().
+
+        Returns
+        -------
+        instance : Instance
+            Next instance of data stream or None.
+
+        """
+
+        return self._get_next()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_next(self) -> Instance:
+        """
+        Custom method to determine the next data stream instance. See method get_next() for more
+        details.
+
+        Returns
+        -------
+        instance : Instance
+            Next instance of data stream or None.
+            
+        """
+
+        raise NotImplementedError
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class PreProStep (Log):
+    """
+    Template class for an data stream preprocessing step.
+
+    Parameters
+    ----------
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+
     """
 
     C_TYPE          = 'Prepro Step'
 
 ## -------------------------------------------------------------------------------------------------
-    def process_step(self, p_x_add, p_x_del): 
-        """
-        Processes step.
-
-        Parameters:
-            p_x_add     List of input vectors to be added
-            p_x_del     List of input vectors to be deleted
-
-        Returns: 
-            Nothing
-        """
-
-        # 1 Processing steps before policy adaption
-        self.log('Process custom step after adaption')
-        self.process_before(p_x_add, p_x_del)
-
-        # 2 Policy adaption
-#        self.log('Policy adaption')
-#        self.policy_adapted = self.adapt_policy(p_x_add, p_x_del)
-#        self.log('Policy adapted = ' + self.policy_adapted)
-
-        # 3 Processing steps after policy adaption
-        self.log('Process custom step after adaption')
-        self.process_after(p_x_add, p_x_del)
+    def __init__(self, p_logging=Log.C_LOG_ALL):
+        super().__init__(p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def process_before(self, p_x_add, p_x_del): 
+    def process(self, p_in_add, p_in_del): 
         """
-        Processes custom steps before policy adaption. To be redefined.
+        Processes new/obsolete instances of a data stream by calling the custom method _process().
 
-        Parameters:
-            p_x_add     List of input vectors to be added
-            p_x_del     List of input vectors to be deleted
+        Parameters
+        ----------
+        p_in_add : list     
+            List of new instances.
+        p_in_del : list     
+            List of obsolete instances.
 
-        Returns: 
-            Nothing
         """
 
-        pass
+        self.log(self.C_LOG_TYPE_I, 'Start processing:', len(p_in_add), 'new and', len(p_in_del), 'obsolete instaces')
+        self._process(p_in_add, p_in_del)
+        self.log(self.C_LOG_TYPE_I, 'End processing...')
+
 
 
 ## -------------------------------------------------------------------------------------------------
-    def process_after(self, p_x_add, p_x_del): 
+    def _process(self, p_in_add, p_in_del):
         """
-        Processes custom steps after policy adaption. To be redefined.
+        Custom method to process new/obsolete instances of a data stream. See method process() for
+        further details.
 
-        Parameters:
-            p_x_add     List of input vectors to be added
-            p_x_del     List of input vectors to be deleted
-
-        Returns: 
-            Nothing
         """
 
-        pass
+        raise NotImplementedError
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Preprocessor (PreProStep):
+
+    C_TYPE          = 'Preprocessor'
+    C_NAME          = ''
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self): pass
+
 
 
 
@@ -166,64 +315,6 @@ class StreamProcessor(ProcessingStep):
         
         # 2 Adaption of own policy and main processing
         self.process_step(x_add, x_del)
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Stream:
-
-    C_NAME          = '????'
-    C_DESCRIPTION   = '...'
-    C_URL           = ''
-    C_CITATION      = ''
-    C_DOI           = ''
-    C_FEATURES      = 0
-    C_INSTANCES     = 0
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self) -> None:
-        self.def_space()
-        self.reset()
-
-
-## -------------------------------------------------------------------------------------------------
-    def def_space(self):
-        """
-        Defines the internal feature space and it's dimensions. To be redefined. Please bind a well
-        defined space object to the internal attribute self.space. 
-        """
-        
-        # Example implementation using the Euclidian space...
-        self.space = ESpace()
-        self.space.add_dim(Dimension(0, 'X1', '', '', 'm', '', [-20,20]))
-        self.space.add_dim(Dimension(1, 'X2', '', '', 'm/s', '', [-10,10]))
-        self.space.add_dim(Dimension(2, 'X3', '', '', 'm/s²', '', [-5,5]))
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_space(self):
-        return self.space
-
-
-## -------------------------------------------------------------------------------------------------
-    def reset(self):
-        """
-        Resets stream generator. To be redefined.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_next(self):
-        """
-        Returns next data stream instance or None at the end of the stream. To be redefined.
-        """
-
-        return None
 
 
 
