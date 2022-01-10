@@ -175,28 +175,62 @@ class Stream (Mode, LoadSave, ScientificObject ):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PreProStep (Log):
+class PreProStep (Model):
     """
-    Template class for an data stream preprocessing step.
+    Template class for an adaptive data stream preprocessing step.
 
     Parameters
     ----------
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
+    p_input_space : MSpace
+        Optional fixed input feature space. Default = None.
+    p_output_space : MSpace
+        Optional fixed output feature space. Default = None.
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : Dict
+        Futher model specific parameters (to be defined in chhild class).
 
     """
 
     C_TYPE          = 'Prepro Step'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging=p_logging)
+    def __init__(self, 
+                 p_buffer_size=0,
+                 p_input_space:MSpace=None,
+                 p_output_space:MSpace=None,
+                 p_ada=True,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
+
+        super().__init__( p_buffer_size=p_buffer_size,
+                          p_ada=p_ada,
+                          p_logging=p_logging,
+                          p_par=p_kwargs )
+
+        self._input_space   = p_input_space
+        self._output_space  = p_output_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_input_space(self) -> MSpace:
+        return self._input_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_output_space(self) -> MSpace:
+        return self._output_space
 
 
 ## -------------------------------------------------------------------------------------------------
     def process(self, p_in_add, p_in_del): 
         """
-        Processes new/obsolete instances of a data stream by calling the custom method _process().
+        Processes new/obsolete instances of a data stream by calling the custom methods 
+        _process_before(), adapt() and _process_after(). 
 
         Parameters
         ----------
@@ -208,16 +242,57 @@ class PreProStep (Log):
         """
 
         self.log(self.C_LOG_TYPE_I, 'Start processing:', len(p_in_add), 'new and', len(p_in_del), 'obsolete instaces')
-        self._process(p_in_add, p_in_del)
-        self.log(self.C_LOG_TYPE_I, 'End processing...')
-
+        self._process_before(p_in_add, p_in_del)
+        self.adapt(p_in_add, p_in_del)
+        self._process_after(p_in_add, p_in_del)
+        self.log(self.C_LOG_TYPE_I, 'End processing')
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _process(self, p_in_add, p_in_del):
+    def _process_before(self, p_in_add, p_in_del):
         """
-        Custom method to process new/obsolete instances of a data stream. See method process() for
-        further details.
+        Custom method for process steps before adaptation. See method process() for further details.
+
+        Parameters
+        ----------
+        p_in_add : list     
+            List of new instances.
+        p_in_del : list     
+            List of obsolete instances.
+
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, p_in_add, p_in_del) -> bool:
+        """
+        Custom adaptation method. See method process() for further details.
+
+        Parameters
+        ----------
+        p_in_add : list     
+            List of new instances.
+        p_in_del : list     
+            List of obsolete instances.
+
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _process_after(self, p_in_add, p_in_del):
+        """
+        Custom method for process steps after adaptation. See method process() for further details.
+
+        Parameters
+        ----------
+        p_in_add : list     
+            List of new instances.
+        p_in_del : list     
+            List of obsolete instances.
 
         """
 
@@ -229,14 +304,113 @@ class PreProStep (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Preprocessor (PreProStep):
+class Preprocessor (Model):
+    """
+    Adaptive data stream preprocessor.
+
+    Parameters
+    ----------
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    
+    """
 
     C_TYPE          = 'Preprocessor'
     C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self): pass
+    def __init__(self, p_ada=True, p_logging=Log.C_LOG_ALL):
+        super().__init__(p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
+        self._prepro_steps  = []
+        self._input_space   = None
+        self._output_space  = None
 
+
+## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging):
+        super().switch_logging(p_logging)
+        for step in self._prepro_steps:
+            step.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_adaptivity(self, p_ada: bool):
+        super().switch_adaptivity(p_ada)
+        for step in self._prepro_steps:
+            step.switch_adaptivity(p_ada)
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        for step in self._prepro_steps:
+            step.set_random_seed(p_seed)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_adapted(self) -> bool:
+        adapted = False
+        for step in self._prepro_steps:
+            if step.get_adapted():
+                adapted = True
+                break
+
+        return adapted
+        
+
+## -------------------------------------------------------------------------------------------------
+    def add_prepro_step(self, p_step:PreProStep):
+        if len(self._prepro_steps) == 0: self._input_space = p_step.get_input_space()
+        self._output_space = p_step.get_output_space()
+        self._prepro_steps.append(p_step)
+
+
+## -------------------------------------------------------------------------------------------------
+    def process(self, p_in_add, p_in_del):
+        self.log(self.C_LOG_TYPE_I, 'Start preprocessing')
+
+        for step in self._prepro_steps:
+            self.log(self.C_LOG_TYPE_I, 'Start processing step', step.C_TYPE, self.C_NAME)
+            step.process( p_in_add, p_in_del )
+
+        self.log(self.C_LOG_TYPE_I, 'End preprocessing')
+
+
+# -------------------------------------------------------------------------------------------------
+    def adapt(self, *p_args) -> bool: 
+        """
+        No adaptation steps at this level.
+        """
+
+        return False
+
+
+# -------------------------------------------------------------------------------------------------
+    def clear_buffer(self):
+       for step in self._prepro_steps:
+            step.clear_buffer()
+
+
+# -------------------------------------------------------------------------------------------------
+    def get_maturity(self) -> float:
+        """
+        Calculates the maturity as mean value of the maturities of all preprocessing steps.
+
+        Returns
+        -------
+        mean_maturity : float
+            Mean maturity of preprocessing steps.
+
+        """
+
+        if len(self._prepro_steps) == 0: return 0
+
+        maturity = 0
+        for step in self._prepro_steps:
+            maturity += step.get_maturity()
+
+        return maturity / len(self._prepro_steps)
 
 
 
