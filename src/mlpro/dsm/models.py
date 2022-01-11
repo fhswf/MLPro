@@ -6,6 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-01-06  0.0.0     DA       Creation
+## -- 2022-mm-dd  1.0.0     DA       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -16,7 +17,7 @@ Model classes for efficient online adaptive data stream processing.
 
 
 #from time import CLOCK_THREAD_CPUTIME_ID
-from itertools import combinations_with_replacement
+#from itertools import combinations_with_replacement
 from mlpro.bf.various import *
 from mlpro.bf.ml import *
 from mlpro.bf.math import *
@@ -42,7 +43,34 @@ class Instance (Element): pass
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Stream (Mode, LoadSave, ScientificObject ):
+class StreamReference (ScientificObject):
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_id) -> None:
+        self._id = p_id
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_id(self) -> str:
+        return self._id
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_name(self) -> str:
+        return self.C_SCIREF_TITLE
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_url(self) -> str:
+        return self.C_SCIREF_URL
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Stream (Mode, LoadSave, ScientificObject):
 
     """
     Template class for data streams.
@@ -168,6 +196,102 @@ class Stream (Mode, LoadSave, ScientificObject ):
         """
 
         raise NotImplementedError
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamProvider (Log, ScientificObject):
+    """
+    Template class for stream providers.
+    """
+
+    C_TYPE          = 'Stream Provider'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_logging=Log.C_LOG_ALL):
+        super().__init__(p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_stream_list(self, **p_kwargs) -> list:
+        """
+        Gets a list of provided streams by calling custom method _get_stream_list().
+
+        Returns
+        -------
+        stream_list : list
+            List of provided streams.
+
+        """
+
+        self.log(self.C_LOG_TYPE_I, 'Getting list of streams...')
+        stream_list = self._get_stream_list(p_kwargs)
+        self.log(self.C_LOG_TYPE_I, 'Stream found:', len(stream_list))
+        return stream_list
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_stream_list(self, **p_kwargs) -> list:
+        """
+        Custom method to get the list of provided streams. See method get_stream_list() for further
+        details.
+
+        Returns
+        -------
+        stream_list : list
+            List of provided streams.
+
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_stream(self, p_id) -> Stream:
+        """
+        Returns stream with the specified id by calling custom method _get_stream().
+
+        Parameters
+        ----------
+        p_id : str
+            Id of the requested stream.
+
+        Returns
+        -------
+        s : Stream
+            Stream object or None in case of an error.
+
+        """
+
+        self.log(self.C_LOG_TYPE_I, 'Requested stream:', str(p_id)) 
+        s = self._get_stream(p_id)
+        if s is None:
+            self.log(self.C_LOG_TYPE_E, 'Stream', str(p_id), 'not found') 
+
+        return s
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_stream(self, p_id) -> Stream:
+        """
+        Custom method to get the specified stream. See method get_stream() for further details.
+
+        Parameters
+        ----------
+        p_id : str
+            Id of the requested stream.
+
+        Returns
+        -------
+        s : Stream
+            Stream object or None in case of an error.
+
+        """
+
+        raise NotImplementedError 
 
 
 
@@ -416,249 +540,249 @@ class Preprocessor (Model):
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class StreamProcessor(ProcessingStep):
-    """
-    Model class for sequential adaptive stream processing with optional data preprocessing. Owhn 
-    policy adaption and processing steps can be implemented by redefining methods adapt_policy() and
-    process_custom().
-    """
+# ## -------------------------------------------------------------------------------------------------
+# ## -------------------------------------------------------------------------------------------------
+# class StreamProcessor(ProcessingStep):
+#     """
+#     Model class for sequential adaptive stream processing with optional data preprocessing. Owhn 
+#     policy adaption and processing steps can be implemented by redefining methods adapt_policy() and
+#     process_custom().
+#     """
 
-    C_TYPE          = 'Stream Processor'
+#     C_TYPE          = 'Stream Processor'
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_ada=True, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
-        self.prepro_steps   = []
+# ## -------------------------------------------------------------------------------------------------
+#     def __init__(self, p_ada=True, p_logging=Log.C_LOG_ALL):
+#         super().__init__(p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
+#         self.prepro_steps   = []
  
 
-## -------------------------------------------------------------------------------------------------
-    def switch_logging(self, p_logging):
-        Log.switch_logging(self, p_logging=p_logging)
-        for step in self.prepro_steps:
-            step.switch_logging(p_logging=p_logging)
+# ## -------------------------------------------------------------------------------------------------
+#     def switch_logging(self, p_logging):
+#         Log.switch_logging(self, p_logging=p_logging)
+#         for step in self.prepro_steps:
+#             step.switch_logging(p_logging=p_logging)
 
 
-## -------------------------------------------------------------------------------------------------
-    def add_prepro_step(self, p_step:ProcessingStep):
-        """
-        Adds a preprocessing step.
+# ## -------------------------------------------------------------------------------------------------
+#     def add_prepro_step(self, p_step:ProcessingStep):
+#         """
+#         Adds a preprocessing step.
 
-        Parameters:
-            p_step      Preprocessing step object to be added
+#         Parameters:
+#             p_step      Preprocessing step object to be added
  
-        Returns: 
-            Nothing
-        """
+#         Returns: 
+#             Nothing
+#         """
 
-        p_step.set_adaptivity(self.adaptivity)
-        p_step.switch_logging(p_logging=self.logging)
-        self.prepro_steps.append(p_step)
+#         p_step.set_adaptivity(self.adaptivity)
+#         p_step.switch_logging(p_logging=self.logging)
+#         self.prepro_steps.append(p_step)
 
 
-## -------------------------------------------------------------------------------------------------
-    def process(self, p_x):
-        """
-        Processes input in three phases: at first all preprocessing steps will be executed. After that
-        the own policy will be adapted and at last the own process steps will be executed.
+# ## -------------------------------------------------------------------------------------------------
+#     def process(self, p_x):
+#         """
+#         Processes input in three phases: at first all preprocessing steps will be executed. After that
+#         the own policy will be adapted and at last the own process steps will be executed.
 
-        Parameters:
-            p_x         Input vector x
+#         Parameters:
+#             p_x         Input vector x
 
-        Returns: 
-            Nothing
-        """
+#         Returns: 
+#             Nothing
+#         """
 
-        # 0 Intro
-        x_add   = []
-        x_del   = []
-        x_add.append(p_x)
-        self.log(self.C_LOG_TYPE_I, 'Start processing of input ', p_x)
+#         # 0 Intro
+#         x_add   = []
+#         x_del   = []
+#         x_add.append(p_x)
+#         self.log(self.C_LOG_TYPE_I, 'Start processing of input ', p_x)
 
-        # 1 Preprocessing
-        if len(self.prepro_steps) > 0:
-            self.log(self.C_LOG_TYPE_I, 'Start of preprocessing')
+#         # 1 Preprocessing
+#         if len(self.prepro_steps) > 0:
+#             self.log(self.C_LOG_TYPE_I, 'Start of preprocessing')
 
-            for step_id, step in enumerate(self.prepro_steps): 
-                self.log(self.C_LOG_TYPE_I, 'Preprocessing step ' + str(step_id) + ': ' + step.C_TYPE + ' ' + step.C_NAME)
-                step.process_step(x_add, x_del)
+#             for step_id, step in enumerate(self.prepro_steps): 
+#                 self.log(self.C_LOG_TYPE_I, 'Preprocessing step ' + str(step_id) + ': ' + step.C_TYPE + ' ' + step.C_NAME)
+#                 step.process_step(x_add, x_del)
 
-            self.log('End of preprocessing')
+#             self.log('End of preprocessing')
 
         
-        # 2 Adaption of own policy and main processing
-        self.process_step(x_add, x_del)
+#         # 2 Adaption of own policy and main processing
+#         self.process_step(x_add, x_del)
 
 
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class StreamProcess(Log):
-    """
-    Stream process, consisting of stream and stream processor object.
-    """
+# ## -------------------------------------------------------------------------------------------------
+# ## -------------------------------------------------------------------------------------------------
+# class StreamProcess(Log):
+#     """
+#     Stream process, consisting of stream and stream processor object.
+#     """
 
-    C_TYPE      = 'Stream Process'
-    C_NAME      = ''
+#     C_TYPE      = 'Stream Process'
+#     C_NAME      = ''
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_stream:Stream, p_sproc:StreamProcessor, p_logging=True):
-        """
-        Parameters:
-            p_stream        Stream object
-            p_sproc         Stream processor object
-            p_logging       Boolean switch for logging
-        """
+# ## -------------------------------------------------------------------------------------------------
+#     def __init__(self, p_stream:Stream, p_sproc:StreamProcessor, p_logging=True):
+#         """
+#         Parameters:
+#             p_stream        Stream object
+#             p_sproc         Stream processor object
+#             p_logging       Boolean switch for logging
+#         """
 
-        super().__init__(p_logging=p_logging)
-        self.stream = p_stream
-        self.sproc  = p_sproc
+#         super().__init__(p_logging=p_logging)
+#         self.stream = p_stream
+#         self.sproc  = p_sproc
 
-        self.log(self.C_LOG_TYPE_I, 'Stream', self.stream.C_NAME, ' registered')
-        self.log(self.C_LOG_TYPE_I, self.sproc.C_TYPE, self.sproc.C_NAME, ' registered')
-
-
-## -------------------------------------------------------------------------------------------------
-    def run(self, p_inst_limit=0, p_feature_ids=None):
-        """
-        Reads and processes all/limited number of stream instances.
-
-        Parameters:
-            p_inst_limit    Optional limitation of instances.
-            p_feature_ids   Optional list of ids of features to be processed
-
-        Returns:
-            Number of processed instances.
-        """
-
-        # 1 Intro
-        self.log(self.C_LOG_TYPE_I, 'Start of stream processing (limit='+ str(p_inst_limit) + ')')
-        num_inst = 0
+#         self.log(self.C_LOG_TYPE_I, 'Stream', self.stream.C_NAME, ' registered')
+#         self.log(self.C_LOG_TYPE_I, self.sproc.C_TYPE, self.sproc.C_NAME, ' registered')
 
 
-        # 2 Main processing loop
-        while True:
-            inst = self.stream.get_next()
-            if inst == None:
-                self.log(self.C_LOG_TYPE_I, 'Stream limit reached') 
-                break
+# ## -------------------------------------------------------------------------------------------------
+#     def run(self, p_inst_limit=0, p_feature_ids=None):
+#         """
+#         Reads and processes all/limited number of stream instances.
 
-            num_inst += 1
-            self.sproc.process(inst)
-            self.log(self.C_LOG_TYPE_I, 'Instance', inst, 'processed')
-            if ( p_inst_limit > 0 ) and ( num_inst == p_inst_limit ): break          
+#         Parameters:
+#             p_inst_limit    Optional limitation of instances.
+#             p_feature_ids   Optional list of ids of features to be processed
 
+#         Returns:
+#             Number of processed instances.
+#         """
 
-        # 3 Outro
-        self.log(self.C_LOG_TYPE_I, 'End of stream processing (' + str(num_inst) + ' instances)')
-        return num_inst
-
-
+#         # 1 Intro
+#         self.log(self.C_LOG_TYPE_I, 'Start of stream processing (limit='+ str(p_inst_limit) + ')')
+#         num_inst = 0
 
 
+#         # 2 Main processing loop
+#         while True:
+#             inst = self.stream.get_next()
+#             if inst == None:
+#                 self.log(self.C_LOG_TYPE_I, 'Stream limit reached') 
+#                 break
 
-## -------------------------------------------------------------------------------------------------
-## -- Class Group: Special types of preprocessing steps
-## -------------------------------------------------------------------------------------------------
+#             num_inst += 1
+#             self.sproc.process(inst)
+#             self.log(self.C_LOG_TYPE_I, 'Instance', inst, 'processed')
+#             if ( p_inst_limit > 0 ) and ( num_inst == p_inst_limit ): break          
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class DataWindow (ProcessingStep):
-    """
-    Model class for data windows that can be used to deal with concept drift. 
-    """
-
-    C_TYPE      = 'Data Window'
+#         # 3 Outro
+#         self.log(self.C_LOG_TYPE_I, 'End of stream processing (' + str(num_inst) + ' instances)')
+#         return num_inst
 
 
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Normalization (ProcessingStep):
-    """
-    Model class for adaptive normalization algorithms. 
-    """
-
-    C_TYPE      = 'Normalization'
-
-## -------------------------------------------------------------------------------------------------
-    def process_before(self, p_x_add, p_x_del):
-        self.backup_policy()
+# ## -------------------------------------------------------------------------------------------------
+# ## -- Class Group: Special types of preprocessing steps
+# ## -------------------------------------------------------------------------------------------------
 
 
-## -------------------------------------------------------------------------------------------------
-    def process_after(self, p_x_add, p_x_del):
-        for x in p_x_add:
-            x = self.normalize(x)
+# ## -------------------------------------------------------------------------------------------------
+# ## -------------------------------------------------------------------------------------------------
+# class DataWindow (ProcessingStep):
+#     """
+#     Model class for data windows that can be used to deal with concept drift. 
+#     """
+
+#     C_TYPE      = 'Data Window'
 
 
-## -------------------------------------------------------------------------------------------------
-    def normalize(self, p_x):
-        """
-        Normalizes an input vector - either by using the recent or the backup policy. To be redefined.
 
-        Parameters:
-            p_x         Input vector x to be denormalized
+
+
+# ## -------------------------------------------------------------------------------------------------
+# ## -------------------------------------------------------------------------------------------------
+# class Normalization (ProcessingStep):
+#     """
+#     Model class for adaptive normalization algorithms. 
+#     """
+
+#     C_TYPE      = 'Normalization'
+
+# ## -------------------------------------------------------------------------------------------------
+#     def process_before(self, p_x_add, p_x_del):
+#         self.backup_policy()
+
+
+# ## -------------------------------------------------------------------------------------------------
+#     def process_after(self, p_x_add, p_x_del):
+#         for x in p_x_add:
+#             x = self.normalize(x)
+
+
+# ## -------------------------------------------------------------------------------------------------
+#     def normalize(self, p_x):
+#         """
+#         Normalizes an input vector - either by using the recent or the backup policy. To be redefined.
+
+#         Parameters:
+#             p_x         Input vector x to be denormalized
         
-        Returns:
-            Normalized input vector.
-        """
+#         Returns:
+#             Normalized input vector.
+#         """
         
-        pass   
+#         pass   
 
 
-## -------------------------------------------------------------------------------------------------
-    def denormalize(self, p_x, p_backup=True):
-        """
-        Denormalizes an input - either by using the recent or the backup policy. To be redefined.
+# ## -------------------------------------------------------------------------------------------------
+#     def denormalize(self, p_x, p_backup=True):
+#         """
+#         Denormalizes an input - either by using the recent or the backup policy. To be redefined.
 
-        Parameters:
-            p_x         Input vector x to be denormalized
-            p_backup    If True, the backup policy shall be used. Recent policy otherwise.
+#         Parameters:
+#             p_x         Input vector x to be denormalized
+#             p_backup    If True, the backup policy shall be used. Recent policy otherwise.
 
-        Returns:
-            Denormalized input vector.    
-        """
+#         Returns:
+#             Denormalized input vector.    
+#         """
         
-        pass
+#         pass
 
 
-## -------------------------------------------------------------------------------------------------
-    def renormalize(self, p_x):
-        """
-        Reormalizes an input vector by denormalizing it with the backup policy and normalizing it
-        with the recent policy after that.
+# ## -------------------------------------------------------------------------------------------------
+#     def renormalize(self, p_x):
+#         """
+#         Reormalizes an input vector by denormalizing it with the backup policy and normalizing it
+#         with the recent policy after that.
 
-        Parameters:
-            p_x         Input vector x to be denormalized
+#         Parameters:
+#             p_x         Input vector x to be denormalized
 
-        Returns:
-            Reormalized input vector.    
-        """
+#         Returns:
+#             Reormalized input vector.    
+#         """
 
-        return self.normalize(self.denormalize(p_x, p_backup=True))
-
-
-
-## -------------------------------------------------------------------------------------------------
-    def backup_policy(self):
-        """
-        Backups the recent policy. To be redefined.
-        """
-
-        pass
+#         return self.normalize(self.denormalize(p_x, p_backup=True))
 
 
 
+# ## -------------------------------------------------------------------------------------------------
+#     def backup_policy(self):
+#         """
+#         Backups the recent policy. To be redefined.
+#         """
 
-## -------------------------------------------------------------------------------------------------
-## -- Class Group: Special types of stream processing applications
-## -------------------------------------------------------------------------------------------------
+#         pass
+
+
+
+
+# ## -------------------------------------------------------------------------------------------------
+# ## -- Class Group: Special types of stream processing applications
+# ## -------------------------------------------------------------------------------------------------
 
 
