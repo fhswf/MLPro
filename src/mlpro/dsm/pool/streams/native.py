@@ -22,10 +22,16 @@ from mlpro.dsm.models import StreamProvider, Stream
 
 
 
-class StreamRnd (Stream):
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamRnd (Stream): 
     """
-    
+
     """
+
+    pass
+
+
 
 
 
@@ -33,7 +39,7 @@ class StreamRnd (Stream):
 ## -------------------------------------------------------------------------------------------------
 class StreamProviderMLPro (StreamProvider): 
     """
-    Builtin provider for native benchmark streams.
+    Builtin provider for native data streams.
     """
 
     C_NAME              = 'MLPro'
