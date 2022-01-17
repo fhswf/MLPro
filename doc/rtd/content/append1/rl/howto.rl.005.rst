@@ -32,7 +32,9 @@ Please install the following packages to run this examples properly:
 
 Results
 `````````````````
-...
+An output similar to the one present in :ref:`the third example <Howto RL 3>` 
+will show up. However, there will be multiple windows of the environment open.
+In addition, the training log will contain one more pkl file for the second agent.
 
 
 Example Code
