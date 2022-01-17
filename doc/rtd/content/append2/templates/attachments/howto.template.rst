@@ -28,13 +28,12 @@ Please install the following packages to run this examples properly:
   ..
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
-
-Example Code
-`````````````````
-
-.. literalinclude:: ../../../template.py
-    :language: python
-
 Results
 `````````````````
 Descriptions, plots, images, screenshots of expected results.
+
+Example Code
+`````````````````
+.. literalinclude:: ../../../template.py
+    :language: python
+

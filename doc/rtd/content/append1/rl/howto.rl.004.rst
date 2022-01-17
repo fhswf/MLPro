@@ -29,6 +29,10 @@ Please install the following packages to run this examples properly:
   ..
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
+Results
+`````````````````
+...
+
 
 Example Code
 `````````````````
@@ -36,6 +40,3 @@ Example Code
 .. literalinclude:: ../../../../../examples/rl/Howto 04 - (RL) Run multi-agent with own policy in multicartpole environment.py
     :language: python
 
-Results
-`````````````````
-...
