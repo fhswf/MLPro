@@ -28,13 +28,15 @@ Please install the following packages to run this examples properly:
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
+Results
+`````````````````
+...
+
+
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 11 - (RL) Wrap mlpro Environment class to gym environment.py
     :language: python
 
-Results
-`````````````````
-...
 

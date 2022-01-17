@@ -27,12 +27,13 @@ Please install the following packages to run this examples properly:
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
+Results
+`````````````````
+...
+
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 13 - (RL) Comparison Native and Wrapper SB3 Policy.py
     :language: python
 
-Results
-`````````````````
-...

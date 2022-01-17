@@ -30,12 +30,13 @@ Please install the following packages to run this examples properly:
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
+Results
+`````````````````
+...
+
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 14 - (RL) Train UR5 with SB3 wrapper.py
     :language: python
 
-Results
-`````````````````
-...

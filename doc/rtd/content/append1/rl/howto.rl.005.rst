@@ -30,13 +30,15 @@ Please install the following packages to run this examples properly:
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
+Results
+`````````````````
+...
+
+
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 05 - (RL) Train multi-agent with own policy on multicartpole environment.py
     :language: python
 
-Results
-`````````````````
-...
 
