@@ -974,9 +974,9 @@ class Training (Log):
             try:
                 self._scenario = scenario_cls( p_mode=Mode.C_MODE_SIM, 
                                                p_ada=True,
+                                               p_cycle_limit=self._cycle_limit,
                                                p_visualize=visualize,
                                                p_logging=logging )
-                self._scenario.set_cycle_limit(self._cycle_limit)
             except:
                 raise ParamError('Par p_scenario_cls: class "' + scenario_cls + '" not compatible')
 
