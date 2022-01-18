@@ -1,62 +1,79 @@
 `Multi-Cartpole <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/multicartpole.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    This ???? environment can be installed via:
+This ???? environment can be imported via:
 
-    .. code-block:: python
+.. code-block:: python
+
+    import mlpro.rl.pool.envs.multicartpole
+
+
+Prerequisites
+=============
+
+add text here!
+
+  
+General Information
+===================
+
++------------------------------------+-------------------------------------------------------+
+|         Parameter                  |                         Value                         |
++====================================+=======================================================+
+| Agents                             | ??                                                    |
++------------------------------------+-------------------------------------------------------+
+| Native Source                      | MLPro??                                               |
++------------------------------------+-------------------------------------------------------+
+| Action Space Dimension             | [,]??                                                 |
++------------------------------------+-------------------------------------------------------+
+| Action Space Base Set              | Real/Integer number??                                 |
++------------------------------------+-------------------------------------------------------+
+| Action Space Boundaries            | [,]??                                                 |
++------------------------------------+-------------------------------------------------------+
+| State Space Dimension              | [,]??                                                 |
++------------------------------------+-------------------------------------------------------+
+| State Space Base Set               | Real/Integer number??                                 |
++------------------------------------+-------------------------------------------------------+
+| State Space Boundaries             | [,]??                                                 |
++------------------------------------+-------------------------------------------------------+
+| Reward Structure                   | Individual/Overall reward??                           |
++------------------------------------+-------------------------------------------------------+
+  
+Action Space
+============
+
+add text here!
+  
+State Space
+===========
+
+add text here!
+  
+Reward Structure
+================
+
+add text here!
+  
+Change Log
+==========
     
-        import mlpro.rl.pool.envs.multicartpole
-    
-    - **3rd Party Dependencies**
-    
-    add text here!
-    
-    - **Overview**
-    
-    add text here!
-      
-    - **General information**
-    
-    +------------------------------------+-------------------------------------------------------+
-    |         Parameter                  |                         Value                         |
-    +====================================+=======================================================+
-    | Agents                             | ??                                                    |
-    +------------------------------------+-------------------------------------------------------+
-    | Native Source                      | MLPro??                                               |
-    +------------------------------------+-------------------------------------------------------+
-    | Action Space Dimension             | [,]??                                                 |
-    +------------------------------------+-------------------------------------------------------+
-    | Action Space Base Set              | Real/Integer number??                                 |
-    +------------------------------------+-------------------------------------------------------+
-    | Action Space Boundaries            | [,]??                                                 |
-    +------------------------------------+-------------------------------------------------------+
-    | State Space Dimension              | [,]??                                                 |
-    +------------------------------------+-------------------------------------------------------+
-    | State Space Base Set               | Real/Integer number??                                 |
-    +------------------------------------+-------------------------------------------------------+
-    | State Space Boundaries             | [,]??                                                 |
-    +------------------------------------+-------------------------------------------------------+
-    | Reward Structure                   | Individual/Overall reward??                           |
-    +------------------------------------+-------------------------------------------------------+
-      
-    - **Action space**
-    
-    add text here!
-      
-    - **State space**
-    
-    add text here!
-      
-    - **Reward structure**
-    
-    add text here!
-      
-    - **Version structure**
-    
-        + Version 0.0.0 : Initial version release in MLPro v. 0.0.0???
++--------------------+---------------------------------------------+
+| Version            | Changes                                     |
++====================+=============================================+
+| 0.0.0              | Description of the change                   |
++--------------------+---------------------------------------------+
+
+
         
-    If you apply this environment in your research or work, please kindly cite the following related paper:
+Cross Reference
+===============
+Other documents related to the environment should be referenced here. For example, 
+the respecitve API Reference.
     
-    .. code-block:: bibtex
++ :ref:`API Reference <Multi Cartpole>`
 
-     @article{NoName2021
-      }
+If you apply this environment in your research or work, please kindly cite the following related paper:
+
+.. code-block:: bibtex
+
+ @article{NoName2021
+  }

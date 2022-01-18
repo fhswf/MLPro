@@ -11,7 +11,7 @@ Various
 
    
 Mathematics
-----------------
+-----------
 
 .. image:: images/bf/MLPro-BF-Math_class_diagram.png
 .. automodule:: mlpro.bf.math
@@ -21,7 +21,7 @@ Mathematics
 
    
 Data Management
-----------------
+---------------
 
 .. automodule:: mlpro.bf.data
    :members:
@@ -30,7 +30,7 @@ Data Management
 
    
 Data Plotting
-----------------
+-------------
 
 .. automodule:: mlpro.bf.plot
    :members:
@@ -49,7 +49,7 @@ Machine Learning
    
    
 Exceptions
-----------------
+----------
 
 .. automodule:: mlpro.bf.exceptions
    :members:
@@ -57,3 +57,10 @@ Exceptions
    :show-inheritance:
 
 
+User Interaction
+----------------
+
+.. toctree::
+   :maxdepth: 3
+
+   ui/mlpro.ui.sciui

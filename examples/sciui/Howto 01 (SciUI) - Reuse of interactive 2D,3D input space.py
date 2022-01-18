@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : Howto 01 (SciUI) - Reuse of interactive 2D,3D input space
 ## -------------------------------------------------------------------------------------------------
@@ -8,10 +8,11 @@
 ## -- 2021-06-20  0.0.0     DA       Creation
 ## -- 2021-07-03  1.0.0     DA       Release of first version
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
+## -- 2022-01-06  1.0.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-07-03)
+Ver. 1.0.1 (2022-01-06)
 
 Demo scenarios for SciUI framework that shows the reuse of the interactive 2D/3D input space class.
 Can be executed directly...
@@ -19,8 +20,8 @@ Can be executed directly...
 
 
 
-from mlpro.ui.sciui.framework import *
-from mlpro.ui.sciui.pool.iis import InteractiveInputSpace
+from mlpro.bf.ui.sciui.framework import *
+from mlpro.bf.ui.sciui.pool.iis import InteractiveInputSpace
 from mlpro.bf.math import *
 
 
@@ -41,11 +42,23 @@ class DemoIIS2D(SciUIScenario):
 
         # 1 Add scenario-specific variables to shared db
         InteractiveInputSpace.enrich_shared_db(self.shared_db)
-        self.shared_db.iis_ispace.add_dim(Dimension(0, 'x1', '', 'x_1', 'm', 'm', [-5,5]))
-        self.shared_db.iis_ispace.add_dim(Dimension(1, 'x2', '', 'x_2', 'm/s', '\\frac{m}{s}', [-25,25]))
+        self.shared_db.iis_ispace.add_dim( Dimension( p_id=0, 
+                                                      p_name_short='x1',
+                                                      p_description='', 
+                                                      p_name_latex='x_1', 
+                                                      p_unit='m', 
+                                                      p_unit_latex='m', 
+                                                      p_boundaries=[-5,5]) )
+        self.shared_db.iis_ispace.add_dim( Dimension( p_id=1, 
+                                                      p_name_short='x2', 
+                                                      p_description='', 
+                                                      p_name_latex='x_2', 
+                                                      p_unit='m/s', 
+                                                      p_unit_latex='\\frac{m}{s}', 
+                                                      p_boundaries=[-25,25]) )
 
         # 2 Build scenario structure
-        self.add_component(InteractiveInputSpace(self.shared_db, p_row=0, p_col=0, p_padx=5, p_logging=self.logging))
+        self.add_component(InteractiveInputSpace(self.shared_db, p_row=0, p_col=0, p_padx=5, p_logging=self._level))
 
 
 
@@ -66,17 +79,35 @@ class DemoIIS3D(SciUIScenario):
 
         # 1 Add scenario-specific variables to shared db
         InteractiveInputSpace.enrich_shared_db(self.shared_db)
-        self.shared_db.iis_ispace.add_dim(Dimension(0, 'x1', '', 'x_1', 'm', 'm', [-5,5]))
-        self.shared_db.iis_ispace.add_dim(Dimension(1, 'x2', '', 'x_2', 'm/s', '\\frac{m}{s}', [-25,25]))
-        self.shared_db.iis_ispace.add_dim(Dimension(2, 'x3', '', 'x_3', 'm/s^2', '\\frac{m}{s^2}', [-15,15]))
+        self.shared_db.iis_ispace.add_dim( Dimension( p_id=0, 
+                                                      p_name_short='x1', 
+                                                      p_description='', 
+                                                      p_name_latex='x_1', 
+                                                      p_unit='m', 
+                                                      p_unit_latex='m', 
+                                                      p_boundaries=[-5,5]) )
+        self.shared_db.iis_ispace.add_dim( Dimension( p_id=1, 
+                                                      p_name_short='x2', 
+                                                      p_description='', 
+                                                      p_name_latex='x_2', 
+                                                      p_unit='m/s', 
+                                                      p_unit_latex='\\frac{m}{s}', 
+                                                      p_boundaries=[-25,25]) )
+        self.shared_db.iis_ispace.add_dim( Dimension( p_id=2, 
+                                                      p_name_short='x3', 
+                                                      p_description='', 
+                                                      p_name_latex='x_3', 
+                                                      p_unit='m/s^2', 
+                                                      p_unit_latex='\\frac{m}{s^2}', 
+                                                      p_boundaries=[-15,15] ))
 
         # 2 Build scenario structure
-        self.add_component(InteractiveInputSpace(self.shared_db, p_row=0, p_col=0, p_padx=5, p_logging=self.logging))
+        self.add_component(InteractiveInputSpace(self.shared_db, p_row=0, p_col=0, p_padx=5, p_logging=self._level))
 
 
 
         
 
 if (__name__ == '__main__'): 
-    from mlpro.ui.sciui.main import SciUI
+    from mlpro.bf.ui.sciui.main import SciUI
     SciUI()

@@ -1,3 +1,4 @@
+.. _Howto RL 8:
 `Howto 08 - (RL) Run own agents with petting zoo environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2008%20-%20(RL)%20Run%20own%20agents%20with%20petting%20zoo%20environment.py>`_
 ================
 Ver. 1.1.6 (2021-12-03)

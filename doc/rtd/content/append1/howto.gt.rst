@@ -1,7 +1,7 @@
 Game Theory
 ================
 
-We provide some examples of MLPro's GT implementation, which is available on our GitHub file.
+The following examples demonstrate various functionalities of MLPro-GT:
 
 .. toctree::
    :maxdepth: 1

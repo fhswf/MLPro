@@ -17,7 +17,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2021-12-21)
+Ver. 1.0.7 (2021-12-21)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 

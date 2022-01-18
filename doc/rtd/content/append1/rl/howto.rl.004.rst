@@ -1,3 +1,4 @@
+.. _Howto RL 4:
 `Howto 04 - (RL) Run multi-agent with own policy in multicartpole environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2004%20-%20(RL)%20Run%20multi-agent%20with%20own%20policy%20in%20multicartpole%20environment.py>`_
 ================
 Ver. 1.2.0 (2021-11-15)

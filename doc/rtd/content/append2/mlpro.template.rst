@@ -4,5 +4,6 @@ Templates
 .. toctree::
    :maxdepth: 1
    
-   templates/code.template
-   templates/howto.template
+   templates/module
+   templates/howto
+   templates/pool.env

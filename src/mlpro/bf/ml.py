@@ -34,7 +34,6 @@
 
 """
 Ver. 1.3.2 (2022-01-18)
-
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
@@ -980,7 +979,7 @@ class Training (Log):
                                                p_visualize=visualize,
                                                p_logging=logging )
             except:
-                raise ParamError('Par p_scenario_cls: class "' + scenario_cls + '" not compatible')
+                raise ParamError('Par p_scenario_cls: class "' + scenario_cls.__name__ + '" not compatible')
 
 
 ## -------------------------------------------------------------------------------------------------

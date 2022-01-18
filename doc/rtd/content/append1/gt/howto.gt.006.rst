@@ -1,3 +1,4 @@
+.. _Howto GT 6:
 `Howto 06 - (GT) Run multi-player with own policy in multicartpole game board <https://github.com/fhswf/MLPro/blob/main/examples/gt/Howto%2006%20-%20(GT)%20Run%20multi-player%20with%20own%20policy%20in%20multicartpole%20game%20board.py>`_
 ================
 Ver. 1.1.0 (2021-11-15)
