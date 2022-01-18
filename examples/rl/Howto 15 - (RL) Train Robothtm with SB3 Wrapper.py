@@ -46,7 +46,8 @@ class ScenarioRobotHTM(RLScenario):
                     seed=1)
 
         policy_wrapped = WrPolicySB32MLPro(
-                p_sb3_policy=policy_sb3, 
+                p_sb3_policy=policy_sb3,
+                p_cycle_limit=self._cycle_limit, 
                 p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
                 p_ada=p_ada,

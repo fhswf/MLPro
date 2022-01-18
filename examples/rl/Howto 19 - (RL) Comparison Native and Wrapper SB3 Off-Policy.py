@@ -1,29 +1,24 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : Howto 13 - Comparison Native and Wrapper SB3 Policy
+## -- Module  : Howto 19 - Comparison Native and Wrapper SB3 Off-Policy
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-10-27  0.0.0     MRD      Creation
-## -- 2021-10-27  1.0.0     MRD      Released first version
-## -- 2021-11-16  1.0.1     DA       Refactoring
-## -- 2021-12-07  1.0.2     DA       Refactoring
-## -- 2021-12-20  1.0.3     DA       Refactoring
-## -- 2021-12-23  1.0.4     MRD      Small change on custom _reset Wrapper
-## -- 2021-12-24  1.0.5     DA       Replaced separtor in log line by Training.C_LOG_SEPARATOR
+## -- 2022-01-11  0.0.0     MRD      Creation
+## -- 2022-01-18  1.0.0     MRD      Released first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2021-12-23)
+Ver. 1.0.0 (2022-01-18)
 
-This module shows how to train with SB3 Wrapper for On-Policy Algorithm
+This module shows comparison between native and wrapper Off-policy SB3
 """
 
 import gym
 import pandas as pd
 import torch
-from stable_baselines3 import PPO
+from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
@@ -35,8 +30,8 @@ from pathlib import Path
 
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    logging     = Log.C_LOG_ALL
-    visualize   = True
+    logging     = Log.C_LOG_WE
+    visualize   = False
     path        = str(Path.home())
     max_episode = 400
  
@@ -49,8 +44,8 @@ else:
 
 mva_window = 1
 buffer_size = 100
-policy_kwargs = dict(activation_fn=torch.nn.Tanh,
-                     net_arch=[dict(pi=[10, 10], vf=[10, 10])])
+policy_kwargs = dict(activation_fn=torch.nn.ReLU,
+                     net_arch=[10])
 
 # 2 Implement your own RL scenario
 class MyScenario(RLScenario):
@@ -69,33 +64,28 @@ class MyScenario(RLScenario):
                 # 2 Create state object from Gym observation
                 state   = State(self._state_space)
                 state.set_values(obs.get_data())
-                state.set_success(True)
                 self._set_state(state)
 
         # 1 Setup environment
         gym_env     = gym.make('CartPole-v1')
-        gym_env.seed(1)
-        # self._env   = mlpro_env
+        gym_env.seed(2)
         self._env   = CustomWrapperFixedSeed(gym_env, p_logging=p_logging) 
 
         # 2 Instatiate Policy From SB3
-        # env is set to None, it will be set up later inside the wrapper
-        # _init_setup_model is set to False, the _setup_model() will be called inside
-        # the wrapper manually
-
-        # PPO
-        policy_sb3 = PPO(
-                    policy="MlpPolicy", 
+        # DQN
+        policy_sb3 = DQN(
+                    policy="MlpPolicy",
+                    learning_starts=12, 
+                    buffer_size=24,
                     env=None,
-                    n_steps=buffer_size,
                     _init_setup_model=False,
                     policy_kwargs=policy_kwargs,
-                    seed=1)
+                    seed=2)
 
         # 3 Wrap the policy
         self.policy_wrapped = WrPolicySB32MLPro(
-                p_sb3_policy=policy_sb3,
-                p_cycle_limit=self._cycle_limit, 
+                p_sb3_policy=policy_sb3, 
+                p_cycle_limit=self._cycle_limit,
                 p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
                 p_ada=p_ada,
@@ -116,7 +106,7 @@ class MyScenario(RLScenario):
 # 3 Instantiate training
 training        = RLTraining(
     p_scenario_cls=MyScenario,
-    p_cycle_limit=1000,      
+    p_cycle_limit=1200,      
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
@@ -200,6 +190,7 @@ class CustomCallback(BaseCallback, Log):
         self.total_cycle = 0
         self.cycles = 0
         self.plots = None
+        self.new_episodes = False
 
         self.continue_training = True
         self.rewards_cnt = []
@@ -211,13 +202,9 @@ class CustomCallback(BaseCallback, Log):
         self.ds_rewards.add_episode(self.episode_num)
 
     def _on_step(self) -> bool:
-        # With Cycle Limit
-        self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("rewards"))
-        self.total_cycle += 1
-        self.cycles += 1
-        if self.locals.get("infos")[0]:
+        if self.new_episodes:
             self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR)
-            self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'finished after', self.total_cycle + 1, 'cycles')
+            self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'finished after', self.total_cycle, 'cycles')
             self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR, '\n\n')
             self.episode_num += 1
             self.total_cycle = 0
@@ -225,10 +212,18 @@ class CustomCallback(BaseCallback, Log):
             self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'started...')
             self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR, '\n')
+            self.new_episodes = False
+        # With Cycle Limit
+        self.ds_rewards.memorize_row(self.total_cycle, timedelta(0,0,0), self.locals.get("reward"))
+        self.total_cycle += 1
+        self.cycles += 1
+        if self.locals.get("infos")[0]:
+            self.new_episodes = True
         
         return True
 
     def _on_training_end(self) -> None:
+        self.log(self.C_LOG_TYPE_I, 'Training cycle limit', self.cycles, 'reached')
         data_printing   = {"Cycle":        [False],
                             "Day":          [False],
                             "Second":       [False],
@@ -240,17 +235,17 @@ class CustomCallback(BaseCallback, Log):
 
 # 8 Run the SB3 Training Native
 gym_env     = gym.make('CartPole-v1')
-gym_env.seed(1)
-policy_sb3 = PPO(
-                policy="MlpPolicy", 
+gym_env.seed(2)
+policy_sb3 = DQN(
+                policy="MlpPolicy",
+                learning_starts=12, 
+                buffer_size=24,
                 env=gym_env,
-                n_steps=buffer_size,
-                verbose=0,
                 policy_kwargs=policy_kwargs,
-                seed=1)
+                seed=2)
 
 cus_callback = CustomCallback()
-policy_sb3.learn(total_timesteps=1000, callback=cus_callback)
+policy_sb3.learn(total_timesteps=1200, callback=cus_callback)
 native_plot = cus_callback.plots
 
 # 9 Difference Plot

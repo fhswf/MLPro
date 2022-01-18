@@ -28,12 +28,12 @@
 ## --                                of adapatations
 ## -- 2021-12-21  1.3.1     DA       - Minor changes on class Training
 ## --                                - Added log functionality to class TrainingResults
-## -- 2022-01-01  1.3.2     MRD      Fix minor bug
+## -- 2022-01-18  1.3.2     MRD      Small optimize on Scenario instantiation in Training class
+## --                                Put the self._cycle_limit directly on the parameter argument
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2021-12-21)
-
+Ver. 1.3.2 (2022-01-18)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
@@ -975,9 +975,9 @@ class Training (Log):
             try:
                 self._scenario = scenario_cls( p_mode=Mode.C_MODE_SIM, 
                                                p_ada=True,
+                                               p_cycle_limit=self._cycle_limit,
                                                p_visualize=visualize,
                                                p_logging=logging )
-                self._scenario.set_cycle_limit(self._cycle_limit)
             except:
                 raise ParamError('Par p_scenario_cls: class "' + scenario_cls.__name__ + '" not compatible')
 

@@ -14,10 +14,12 @@
 ## -- 2021-12-20  1.1.3     DA       Replaced calls get_done() by get_success()
 ## -- 2021-12-21  1.1.4     MRD      Refactor due to new update, regarding initial and terminal
 ## --                                state 
+## -- 2022-01-18  1.1.5     MRD      Fix mismatch Off Policy Algorithm by adding more additional
+## --                                information on adapt_off_policy()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4 (2021-12-21)
+Ver. 1.1.5 (2022-01-18)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -59,7 +61,7 @@ class WrPolicySB32MLPro (Policy):
     C_TYPE        = 'SB3 Policy'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_sb3_policy, p_observation_space, p_action_space, p_ada=True, p_logging=True):
+    def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space, p_action_space, p_ada=True, p_logging=True):
         """
         Args:
             p_sb3_policy : SB3 Policy
@@ -139,6 +141,7 @@ class WrPolicySB32MLPro (Policy):
             self.collected_steps = 0
 
         self.sb3._setup_model()
+        self.sb3._total_timesteps = p_cycle_limit
         self.sb3._logger = utils.configure_logger()
 
     def _compute_action_on_policy(self, p_obs: State) -> Action:
@@ -175,7 +178,7 @@ class WrPolicySB32MLPro (Policy):
     def _compute_action_off_policy(self, p_obs: State) -> Action:
         self.sb3._last_obs = p_obs.get_values()
         action, buffer_action = self.sb3._sample_action(self.sb3.learning_starts)
-
+        
         action = action.flatten()
         action = Action(self._id, self._action_space, action)
 
@@ -190,6 +193,7 @@ class WrPolicySB32MLPro (Policy):
         # Add to buffer
         self._add_buffer(p_args[0])
 
+        # Should Collect more steps
         if self.collected_steps < self.sb3.train_freq.frequency:
             return False
    
@@ -243,28 +247,30 @@ class WrPolicySB32MLPro (Policy):
         Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
         internal buffer from SB3 for off_policy.
         """
+
+        # Add num_collected_steps
         self.collected_steps += 1
         self.sb3.num_timesteps += 1
+
         self.last_buffer_element = self._add_additional_buffer(p_buffer_element)
         datas = self.last_buffer_element.get_data()
 
-        # TODO : to detect timlimit or cyclelimit termination
         info = {}
 
-        if self.last_done:
-            self.sb3.replay_buffer.next_observations[self.sb3.replay_buffer.pos-1] = datas["state"].get_values().copy()
-            self.last_done = False
-
-        if datas["state_new"].get_success():
-            self.last_done = True
+        if datas["state_new"].get_terminal():
+            if datas["state_new"].get_timeout():
+                info["TimeLimit.truncated"] = not datas["state_new"].get_success()
 
         self.sb3.replay_buffer.add(
                             datas["state"].get_values(),
                             datas["state_new"].get_values(),
                             datas["action"].get_sorted_values(),
                             datas["reward"].get_overall_reward(),
-                            datas["state"].get_success(),
+                            datas["state_new"].get_terminal(),
                             [info])
+        
+        self.sb3._update_current_progress_remaining(self.sb3.num_timesteps, self.sb3._total_timesteps)
+        self.sb3._on_step()
 
     def _add_buffer_on_policy(self, p_buffer_element: SARSElement):
         """
