@@ -83,8 +83,8 @@ def test_sb3_policy_wrapper(env_cls):
                 """
                 Custom Class for logging the loss
                 """
-                def __init__(self, p_sb3_policy, p_observation_space, p_action_space, p_ada=True, p_logging=True):
-                    super().__init__(p_sb3_policy, p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
+                def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space, p_action_space, p_ada=True, p_logging=True):
+                    super().__init__(p_sb3_policy, p_cycle_limit, p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
                     self.loss_cnt = []
 
                 def _adapt_on_policy(self, *p_args) -> bool:
@@ -99,7 +99,8 @@ def test_sb3_policy_wrapper(env_cls):
 
             # 3 Wrap the policy
             self.policy_wrapped = TestWrPolicySB32MLPro(
-                    p_sb3_policy=policy_sb3, 
+                    p_sb3_policy=policy_sb3,
+                    p_cycle_limit=self._cycle_limit,
                     p_observation_space=self._env.get_state_space(),
                     p_action_space=self._env.get_action_space(),
                     p_ada=p_ada,
