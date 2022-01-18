@@ -6,13 +6,13 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-01-11  0.0.0     MRD      Creation
-## -- 2022-01-13  1.0.0     MRD      Released first version
+## -- 2022-01-18  1.0.0     MRD      Released first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-01-13)
+Ver. 1.0.0 (2022-01-18)
 
-This module shows how to train with SB3 Wrapper for On-Policy Algorithm
+This module shows comparison between native and wrapper Off-policy SB3
 """
 
 import gym

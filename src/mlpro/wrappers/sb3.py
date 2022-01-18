@@ -14,10 +14,12 @@
 ## -- 2021-12-20  1.1.3     DA       Replaced calls get_done() by get_success()
 ## -- 2021-12-21  1.1.4     MRD      Refactor due to new update, regarding initial and terminal
 ## --                                state 
+## -- 2022-01-18  1.1.5     MRD      Fix mismatch Off Policy Algorithm by adding more additional
+## --                                information on adapt_off_policy()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4 (2021-12-21)
+Ver. 1.1.5 (2022-01-18)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 

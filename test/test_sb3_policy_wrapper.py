@@ -10,10 +10,11 @@
 ## -- 2021-10-27  1.0.1     MRD      Added Policy Loss Check between Native and Wrapper
 ## -- 2021-12-08  1.0.2     DA       Refactoring
 ## -- 2021-12-20  1.0.3     DA       Refactoring
+## -- 2022-01-18  2.0.0     MRD      Add Off Policy Algorithm into the test
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2021-12-20)
+Ver. 2.0.0 (2022-01-18)
 
 Unit test classes for environment.
 """
