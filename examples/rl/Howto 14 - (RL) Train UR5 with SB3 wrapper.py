@@ -43,7 +43,8 @@ class ScenarioUR5A2C(RLScenario):
                     _init_setup_model=False)
 
         policy_wrapped = WrPolicySB32MLPro(
-                p_sb3_policy=policy_sb3, 
+                p_sb3_policy=policy_sb3,
+                p_cycle_limit=self._cycle_limit, 
                 p_observation_space=self._env.get_state_space(),
                 p_action_space=self._env.get_action_space(),
                 p_ada=p_ada,
@@ -65,9 +66,11 @@ now             = datetime.now()
 
 training        = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
-    p_cycle_limit=50000,
+    p_cycle_limit=1000,
     p_cycles_per_epi_limit=-1,
-    p_stagnation_limit=0,
+    p_stagnation_limit=5,
+    p_eval_frequency=10,
+    p_eval_grp_size=5,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
