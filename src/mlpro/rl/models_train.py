@@ -25,10 +25,11 @@
 ## -- 2021-12-12  1.4.0     DA       Class RLTraining: evaluation and stagnation detection added
 ## -- 2021-12-16  1.4.1     DA       Method RLTraining._close_evaluation(): optimized scoring
 ## -- 2021-12-21  1.5.0     DA       Class RLTraining: reworked evaluation strategy
+## -- 2022-01-19  1.5.1     DA       Corrections of log texts
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2021-12-21)
+Ver. 1.5.1 (2022-01-19)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -606,7 +607,7 @@ class RLTraining (Training):
                 self._cycles_per_epi_limit = self._env.get_cycle_limit()
 
             if self._cycles_per_epi_limit <= 0:
-                raise ParamError('Please define a maximum number of training cylces per episode (env or param p_cycles_per_epi_limit')
+                raise ParamError('Please define a maximum number of training cycles per episode (env or param p_cycles_per_epi_limit')
 
             if self._eval_frequency > 0:
                 # Training with evaluation starts with initial evaluation
@@ -905,7 +906,7 @@ class RLTraining (Training):
 
             elif state.get_timeout():
                 # 4.3 Cycle limit of environment reached
-                self.log(self.C_LOG_TYPE_W, 'Limit of', self._env.get_cycle_limit(), 'cylces per episde reached (Environment)')
+                self.log(self.C_LOG_TYPE_W, 'Limit of', self._env.get_cycle_limit(), 'cycles per episode reached (Environment)')
 
             else:
                 # 4.4 Environment terminated the episode because of unknown reasons
@@ -913,7 +914,7 @@ class RLTraining (Training):
 
         elif self._cycles_episode == self._cycles_per_epi_limit:
             # 4.5 Cycle limit of training setup reached
-            self.log(self.C_LOG_TYPE_W, 'Limit of', self._cycles_per_epi_limit, 'cylces per episde reached (Training)')
+            self.log(self.C_LOG_TYPE_W, 'Limit of', self._cycles_per_epi_limit, 'cycles per episode reached (Training)')
             eof_episode = True
 
         if eof_episode: 
