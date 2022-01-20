@@ -16,10 +16,11 @@
 ## --                                state 
 ## -- 2022-01-18  1.1.5     MRD      Fix mismatch Off Policy Algorithm by adding more additional
 ## --                                information on adapt_off_policy()
+## -- 2022-01-20  1.1.6     MRD      Fix the bug due to new version of SB3 1.4.0
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.5 (2022-01-18)
+Ver. 1.1.6 (2022-01-20)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -280,10 +281,20 @@ class WrPolicySB32MLPro (Policy):
         self.sb3.num_timesteps += 1
         self.last_buffer_element = self._add_additional_buffer(p_buffer_element)
         datas = self.last_buffer_element.get_data()
+
+        rewards = datas["reward"].get_overall_reward()
+
+        if datas["state_new"].get_terminal():
+            if not datas["state_new"].get_timeout():
+                with torch.no_grad():
+                    terminal_obs = torch.Tensor(np.array([datas["state_new"].get_values()])).to(self.sb3.device)
+                    terminal_value = self.policy.predict_values(terminal_obs)[0]
+                    rewards[0] += self.sb3.gamma * terminal_value
+
         self.sb3.rollout_buffer.add(
                             datas["state"].get_values(),
                             datas["action"].get_sorted_values(),
-                            datas["reward"].get_overall_reward(),
+                            rewards,
                             datas["state"].get_initial(),
                             datas["value"],
                             datas["action_log"])
