@@ -14,10 +14,11 @@
 ## -- 2021-12-20  1.0.5     DA       Replaced 'done' by 'success'
 ## -- 2021-12-20  1.0.6     WB       Update 'success' and 'broken' rule
 ## -- 2021-12-21  1.0.7     DA       Class UR5JointControl: renamed method reset() to _reset()
+## -- 2022-01-20  1.0.8     MRD      Use the gym wrapper to wrap the ur5 environment
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2021-12-21)
+Ver. 1.0.8 (2022-01-20)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
