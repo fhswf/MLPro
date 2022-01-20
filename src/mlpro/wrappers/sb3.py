@@ -223,7 +223,7 @@ class WrPolicySB32MLPro (Policy):
 
         # Get the next value from the last observation
         with torch.no_grad():
-            _, last_values, _ = self.sb3.policy.forward(last_obs)
+            last_values = self.sb3.policy.predict_values(last_obs)
 
         # Compute Return and Advantage
         self.sb3.rollout_buffer.compute_returns_and_advantage(last_values=last_values, dones=last_done)
