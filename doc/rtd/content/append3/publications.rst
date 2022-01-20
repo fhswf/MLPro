@@ -1,4 +1,0 @@
-Publications
-================
-
-Add text here!
