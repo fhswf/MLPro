@@ -71,103 +71,11 @@ class UR5JointControl(WrEnvGYM2MLPro):
         env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
 
         super().__init__(p_gym_env=env)
-                
-                
-# ## -------------------------------------------------------------------------------------------------
-#     def _obs_to_state(self, observation):
-#         state = State(self._state_space)
-#         state.set_values(observation)
-#         return state
-        
 
-# ## -------------------------------------------------------------------------------------------------
-#     @staticmethod
-#     def setup_spaces():
-#         # Setup state space
-#         state_space = ESpace()
-
-#         state_space.add_dim(Dimension(0, 'Px', 'PositionX', '', 'm', 'm', 
-#                                 p_boundaries=[-math.inf,math.inf]))
-#         state_space.add_dim(Dimension(1, 'Py', 'PositionY', '', 'm', 'm', 
-#                                 p_boundaries=[-math.inf,math.inf]))
-#         state_space.add_dim(Dimension(2, 'Pz', 'PositionZ', '', 'm', 'm', 
-#                                 p_boundaries=[-math.inf,math.inf]))
-#         state_space.add_dim(Dimension(3, 'Tx', 'Targetx', '', 'm', 'm', 
-#                                 p_boundaries=[-math.inf,math.inf]))
-#         state_space.add_dim(Dimension(4, 'Ty', 'Targety', '', 'm', 'm', 
-#                                 p_boundaries=[-math.inf,math.inf]))
-#         state_space.add_dim(Dimension(5, 'Tz', 'Targetz', '', 'm', 'm', 
-#                                 p_boundaries=[-math.inf,math.inf]))
-            
-#         # Setup action space
-#         action_space = ESpace()
-
-#         for idx in range(6):
-#             action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad', 'rad', p_boundaries=[-0.1,0.1]))
-
-#         return state_space, action_space
-
-    
-# ## -------------------------------------------------------------------------------------------------
-#     def _reset(self, p_seed=None) -> None:
-#         random.seed(p_seed)
-#         obs = self.env.reset()
-#         self._state = self._obs_to_state(obs)
-#         self._state.set_success(True)
-#         self._state.set_broken(True)
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
-#         obs, self.reward_gym, done, info = self.env.step(p_action.get_sorted_values())
-#         state = self._obs_to_state(obs)
-#         close = np.allclose(a=obs[:3], b=obs[3:], atol=0.05)
-        
-#         if not done:
-#             state.set_broken(False)
-#             state.set_success(False)
-#         elif not close and ( self._num_cycles < self.get_cycle_limit() ):
-#             state.set_broken(True)
-            
-#         return state
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _compute_success(self, p_state:State) -> bool:
-#         return self.get_success()
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _compute_broken(self, p_state:State) -> bool:
-#         return self.get_broken()
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _evaluate_state(self) -> None: 
-#         obs = self.env.get_observation()
-        
-#         close = np.allclose(a=obs[:3], b=obs[3:], atol=0.05)
-#         if close:
-#             self._state.set_success(True)
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
-#         reward = Reward(Reward.C_TYPE_OVERALL)
-#         reward.set_overall_reward(self.reward_gym)
-#         self.reward = reward
-#         return self.reward
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def init_plot(self, p_figure=None):
-#         pass
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def update_plot(self):
-#         pass
-
-# ## -------------------------------------------------------------------------------------------------
-#     def get_cycle_limit(self):
-#         return self.env._max_episode_steps
+## -------------------------------------------------------------------------------------------------
+    def compute_success(self, p_state: State) -> bool:
+        obs = p_state.get_values()
+        close =  np.allclose(a=obs[:3],
+                            b=obs[3:],
+                            atol=0.05)
+        return close
