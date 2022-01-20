@@ -31,10 +31,11 @@
 ## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to 
 ## --                                EnvBase.process_actions() is already adding self._num_cycle
 ## -- 2022-01-20  1.3.2     MRD      Rename self._reward into self._last_reward
+## -- 2022-01-21  1.3.3     MRD      Add proper time limit functionality for WrEnvMLPro2GYM
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-01-20)
+Ver. 1.3.3 (2022-01-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -290,9 +291,14 @@ class WrEnvMLPro2GYM(gym.Env):
 
         self._num_cycles += 1
         cycle_limit = self._mlpro_env.get_cycle_limit()
-        done = ( self._mlpro_env.get_state().get_terminal() ) or ( (cycle_limit > 0) and (self._num_cycles>=cycle_limit) )
+        done = ( self._mlpro_env.get_state().get_success() ) or ( self._mlpro_env.get_state().get_broken() )
 
-        return obs, reward.get_overall_reward(), done, {}
+        info = {}
+        if ( (cycle_limit > 0) and (self._num_cycles>=cycle_limit) ):
+            info["TimeLimit.truncated"] = not done
+            done = True
+
+        return obs, reward.get_overall_reward(), done, info
     
 
 ## -------------------------------------------------------------------------------------------------
