@@ -175,8 +175,9 @@ class WrEnvPZOO2MLPro(Environment):
 
 
         # 4 Create and store reward object
-        self._reward = Reward(Reward.C_TYPE_OVERALL)
-        self._reward.set_overall_reward(reward_zoo)
+        self._reward = Reward(Reward.C_TYPE_EVERY_AGENT)
+        for key in self._zoo_env.rewards.keys():
+            self._reward.add_agent_reward(key, self._zoo_env.rewards.get(key))
 
         return new_state
 
