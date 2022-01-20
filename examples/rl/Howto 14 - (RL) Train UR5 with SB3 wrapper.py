@@ -75,7 +75,7 @@ training        = RLTraining(
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_visualize=True,
+    p_visualize=False,
     p_path=str(Path.home()),
     p_logging=Log.C_LOG_ALL )
 
