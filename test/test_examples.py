@@ -40,6 +40,7 @@ howto_list = {
     "rl_15": "examples.rl.Howto 15 - (RL) Train Robothtm with SB3 Wrapper",
     "rl_16": "examples.rl.Howto 16 - (RL) Model Based Reinforcement Learning",
     "rl_17": "examples.rl.Howto 17 - (RL) Advanced training with stagnation detection",
+    "rl_18": "examples.rl.Howto 18 - (RL) Single Agent with stagnation detection and SB3 Wrapper",
     "sciui_01": "examples.sciui.Howto 01 (SciUI) - Reuse of interactive 2D,3D input space"
 }
 

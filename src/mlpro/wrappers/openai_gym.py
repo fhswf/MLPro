@@ -30,10 +30,11 @@
 ## --                                - Optimized 'done' detection in both classed
 ## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to 
 ## --                                EnvBase.process_actions() is already adding self._num_cycle
+## -- 2022-01-20  1.3.2     MRD      Rename self._reward into self._last_reward
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-23)
+Ver. 1.3.2 (2022-01-20)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -155,8 +156,8 @@ class WrEnvGYM2MLPro (Environment):
 
 
         # 4 Create reward object
-        self._reward = Reward(Reward.C_TYPE_OVERALL)
-        self._reward.set_overall_reward(reward_gym)
+        self._last_reward = Reward(Reward.C_TYPE_OVERALL)
+        self._last_reward.set_overall_reward(reward_gym)
 
 
         # 5 Return next state
@@ -168,7 +169,7 @@ class WrEnvGYM2MLPro (Environment):
         if ( p_state_old is not None ) or ( p_state_new is not None ):
             raise NotImplementedError
 
-        return self._reward
+        return self._last_reward
 
 
 ## -------------------------------------------------------------------------------------------------
