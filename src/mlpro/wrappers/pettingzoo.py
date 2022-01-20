@@ -23,10 +23,11 @@
 ## --                                - Optimized 'done' detection in both classes
 ## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to 
 ## --                                EnvBase.process_actions() is already adding self._num_cycle
+## -- 2022-01-20  1.3.2     SY       Update PettingZoo2MLPro's reward type to C_TYPE_EVERY_AGENT 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-23)
+Ver. 1.3.2 (2022-01-20)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
