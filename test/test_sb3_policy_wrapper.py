@@ -37,8 +37,11 @@ from stable_baselines3.common.callbacks import BaseCallback
 @pytest.mark.parametrize("env_cls", [A2C, PPO, DQN, DDPG, SAC])
 def test_sb3_policy_wrapper(env_cls):
     buffer_size = 5
-    policy_kwargs = dict(activation_fn=torch.nn.Tanh,
+    policy_kwargs_on = dict(activation_fn=torch.nn.Tanh,
                      net_arch=[dict(pi=[10, 10], vf=[10, 10])])
+
+    policy_kwargs_off = dict(activation_fn=torch.nn.ReLU,
+                     net_arch=[10])
     class MyScenario(RLScenario):
 
         C_NAME      = 'Matrix'
@@ -64,7 +67,7 @@ def test_sb3_policy_wrapper(env_cls):
                             env=None,
                             n_steps=buffer_size,
                             _init_setup_model=False,
-                            policy_kwargs=policy_kwargs,
+                            policy_kwargs=policy_kwargs_on,
                             verbose=0,
                             seed=2)
             else:
@@ -73,7 +76,8 @@ def test_sb3_policy_wrapper(env_cls):
                             env=None,
                             buffer_size=1000000,
                             _init_setup_model=False,
-                            learning_starts=5,
+                            learning_starts=0,
+                            policy_kwargs=policy_kwargs_off,
                             verbose=0,
                             seed=2)
 
@@ -95,6 +99,17 @@ def test_sb3_policy_wrapper(env_cls):
                     super().__init__(p_sb3_policy, p_cycle_limit, p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
                     self.loss_cnt = []
 
+                def _adapt_off_policy(self, *p_args) -> bool:
+                    if super()._adapt_off_policy(*p_args):
+                        if isinstance(self.sb3, DQN):
+                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/loss"])
+                        elif isinstance(self.sb3, DDPG):
+                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/critic_loss"])
+                        elif isinstance(self.sb3, SAC):
+                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/critic_loss"])
+                        return True
+                    return False
+
                 def _adapt_on_policy(self, *p_args) -> bool:
                     if super()._adapt_on_policy(*p_args):
                         # Log the Loss
@@ -102,12 +117,6 @@ def test_sb3_policy_wrapper(env_cls):
                             self.loss_cnt.append(self.sb3.logger.name_to_value["train/policy_gradient_loss"])
                         elif isinstance(self.sb3, A2C):
                             self.loss_cnt.append(self.sb3.logger.name_to_value["train/policy_loss"])
-                        elif isinstance(self.sb3, DQN):
-                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/loss"])
-                        elif isinstance(self.sb3, DDPG):
-                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/critic_loss"])
-                        elif isinstance(self.sb3, SAC):
-                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/critic_loss"])
                         return True
                     return False
 
@@ -129,19 +138,10 @@ def test_sb3_policy_wrapper(env_cls):
                 p_logging=p_logging
             )
 
-    # # 2 Instantiate scenario
-    # myscenario  = MyScenario(
-    #     p_mode=Environment.C_MODE_SIM,
-    #     p_ada=True,
-    #     p_cycle_limit=-1,
-    #     p_visualize=False,
-    #     p_logging=False
-    # )
-
     # 3 Instantiate training
     training        = RLTraining(
         p_scenario_cls=MyScenario,
-        p_cycle_limit=100,
+        p_cycle_limit=50,
         p_success_ends_epi=True,
         p_stagnation_limit=0,
         p_collect_states=True,
@@ -153,6 +153,8 @@ def test_sb3_policy_wrapper(env_cls):
 
     # 4 Train
     training.run()
+
+    print("#########")
 
     class CustomCallback(BaseCallback):
 
@@ -194,7 +196,7 @@ def test_sb3_policy_wrapper(env_cls):
                         env=env,
                         n_steps=buffer_size,
                         verbose=0,
-                        policy_kwargs=policy_kwargs,
+                        policy_kwargs=policy_kwargs_on,
                         seed=2)
     else:
         policy_sb3 = env_cls(
@@ -202,11 +204,12 @@ def test_sb3_policy_wrapper(env_cls):
                     env=env,
                     buffer_size=1000000,
                     verbose=0,
-                    learning_starts=5,
+                    policy_kwargs=policy_kwargs_off,
+                    learning_starts=0,
                     seed=2)
 
     cus_callback = CustomCallback()
-    policy_sb3.learn(total_timesteps=100, callback=cus_callback)
+    policy_sb3.learn(total_timesteps=50, callback=cus_callback)
 
     assert cus_callback.loss_cnt is not empty, "No Loss on Native"
     assert training.get_scenario().policy_wrapped.loss_cnt is not empty, "No Loss on Wrapper"
