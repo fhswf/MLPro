@@ -34,7 +34,7 @@ from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [A2C, PPO, DQN, DDPG, SAC])
+@pytest.mark.parametrize("env_cls", [DDPG, DQN, SAC])
 def test_sb3_policy_wrapper(env_cls):
     buffer_size = 5
     policy_kwargs_on = dict(activation_fn=torch.nn.Tanh,
@@ -62,6 +62,10 @@ def test_sb3_policy_wrapper(env_cls):
                     self._set_state(state)
 
             if issubclass(env_cls, OnPolicyAlgorithm):
+                # 1 Setup environment
+                gym_env     = gym.make('CartPole-v1')
+                gym_env.seed(2)
+                self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
                 policy_sb3 = env_cls(
                             policy="MlpPolicy", 
                             env=None,
@@ -71,25 +75,27 @@ def test_sb3_policy_wrapper(env_cls):
                             verbose=0,
                             seed=2)
             else:
+                if issubclass(env_cls, DQN):
+                    # 1 Setup environment
+                    gym_env     = gym.make('CartPole-v1')
+                    gym_env.seed(2)
+                    self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
+                else:
+                    gym_env     = gym.make('MountainCarContinuous-v0')
+                    gym_env.seed(2)
+                    self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
+
                 policy_sb3 = env_cls(
                             policy="MlpPolicy", 
                             env=None,
                             buffer_size=1000000,
                             _init_setup_model=False,
-                            learning_starts=0,
                             policy_kwargs=policy_kwargs_off,
+                            gradient_steps=1,
+                            train_freq=4,
+                            learning_starts=0,
                             verbose=0,
                             seed=2)
-
-            if issubclass(env_cls, DQN):
-                # 1 Setup environment
-                gym_env     = gym.make('CartPole-v1')
-                gym_env.seed(2)
-                self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
-            else:
-                gym_env     = gym.make('MountainCarContinuous-v0')
-                gym_env.seed(2)
-                self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
 
             class TestWrPolicySB32MLPro(WrPolicySB32MLPro):
                 """
@@ -141,7 +147,7 @@ def test_sb3_policy_wrapper(env_cls):
     # 3 Instantiate training
     training        = RLTraining(
         p_scenario_cls=MyScenario,
-        p_cycle_limit=50,
+        p_cycle_limit=1200,
         p_success_ends_epi=True,
         p_stagnation_limit=0,
         p_collect_states=True,
@@ -153,8 +159,6 @@ def test_sb3_policy_wrapper(env_cls):
 
     # 4 Train
     training.run()
-
-    print("#########")
 
     class CustomCallback(BaseCallback):
 
@@ -181,16 +185,11 @@ def test_sb3_policy_wrapper(env_cls):
 
         def _on_rollout_end(self) -> None:
             self.update += 1
-
-    if issubclass(env_cls, DQN):
+    
+    if issubclass(env_cls, OnPolicyAlgorithm):
         # 1 Setup environment
         env     = gym.make('CartPole-v1')
         env.seed(2)
-    else:
-        env     = gym.make('MountainCarContinuous-v0')
-        env.seed(2)
-    
-    if issubclass(env_cls, OnPolicyAlgorithm):
         policy_sb3 = env_cls(
                         policy="MlpPolicy", 
                         env=env,
@@ -199,17 +198,26 @@ def test_sb3_policy_wrapper(env_cls):
                         policy_kwargs=policy_kwargs_on,
                         seed=2)
     else:
+        if issubclass(env_cls, DQN):
+            # 1 Setup environment
+            env     = gym.make('CartPole-v1')
+            env.seed(2)
+        else:
+            env     = gym.make('MountainCarContinuous-v0')
+            env.seed(2)
         policy_sb3 = env_cls(
                     policy="MlpPolicy", 
                     env=env,
                     buffer_size=1000000,
                     verbose=0,
-                    policy_kwargs=policy_kwargs_off,
+                    gradient_steps=1,
+                    train_freq=4,
                     learning_starts=0,
+                    policy_kwargs=policy_kwargs_off,
                     seed=2)
 
     cus_callback = CustomCallback()
-    policy_sb3.learn(total_timesteps=50, callback=cus_callback)
+    policy_sb3.learn(total_timesteps=1200, callback=cus_callback)
 
     assert cus_callback.loss_cnt is not empty, "No Loss on Native"
     assert training.get_scenario().policy_wrapped.loss_cnt is not empty, "No Loss on Wrapper"

@@ -258,9 +258,8 @@ class WrPolicySB32MLPro (Policy):
 
         info = {}
 
-        if datas["state_new"].get_terminal():
-            if datas["state_new"].get_timeout():
-                info["TimeLimit.truncated"] = not datas["state_new"].get_success()
+        if datas["state_new"].get_terminal() and datas["state_new"].get_timeout():
+            info["TimeLimit.truncated"] = True
 
         self.sb3.replay_buffer.add(
                             datas["state"].get_values(),
@@ -284,12 +283,12 @@ class WrPolicySB32MLPro (Policy):
 
         rewards = datas["reward"].get_overall_reward()
 
-        if datas["state_new"].get_terminal():
-            if not datas["state_new"].get_timeout():
-                with torch.no_grad():
-                    terminal_obs = torch.Tensor(np.array([datas["state_new"].get_values()])).to(self.sb3.device)
-                    terminal_value = self.sb3.policy.predict_values(terminal_obs)[0]
-                    rewards += self.sb3.gamma * terminal_value
+        if datas["state_new"].get_terminal() and datas["state_new"].get_timeout():
+            terminal_obs = torch.Tensor(np.array([datas["state_new"].get_values()])).to(self.sb3.device)
+            with torch.no_grad():
+                terminal_value = self.sb3.policy.predict_values(terminal_obs)[0]
+            rewards += self.sb3.gamma * terminal_value
+
 
         self.sb3.rollout_buffer.add(
                             datas["state"].get_values(),
