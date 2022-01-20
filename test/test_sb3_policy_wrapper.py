@@ -11,22 +11,22 @@
 ## -- 2021-12-08  1.0.2     DA       Refactoring
 ## -- 2021-12-20  1.0.3     DA       Refactoring
 ## -- 2022-01-18  2.0.0     MRD      Add Off Policy Algorithm into the test
+## -- 2022-01-21  2.0.1     MRD      Include RobotHTM as the continues action envrionment
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2022-01-18)
+Ver. 2.0.1 (2022-01-21)
 
 Unit test classes for environment.
 """
 
 
-from inspect import isclass
 from numpy import empty
 import pytest
 import gym
 import torch
 from mlpro.rl.models import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro, WrEnvMLPro2GYM
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
@@ -34,11 +34,11 @@ from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [DDPG, DQN, SAC])
+@pytest.mark.parametrize("env_cls", [PPO, A2C, DQN, DDPG, SAC])
 def test_sb3_policy_wrapper(env_cls):
-    buffer_size = 5
+    buffer_size = 100
     policy_kwargs_on = dict(activation_fn=torch.nn.Tanh,
-                     net_arch=[dict(pi=[10, 10], vf=[10, 10])])
+                     net_arch=[dict(pi=[128, 128], vf=[128, 128])])
 
     policy_kwargs_off = dict(activation_fn=torch.nn.ReLU,
                      net_arch=[10])
@@ -63,9 +63,7 @@ def test_sb3_policy_wrapper(env_cls):
 
             if issubclass(env_cls, OnPolicyAlgorithm):
                 # 1 Setup environment
-                gym_env     = gym.make('CartPole-v1')
-                gym_env.seed(2)
-                self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
+                self._env   = RobotHTM(p_seed=1, p_logging=False)
                 policy_sb3 = env_cls(
                             policy="MlpPolicy", 
                             env=None,
@@ -81,9 +79,7 @@ def test_sb3_policy_wrapper(env_cls):
                     gym_env.seed(2)
                     self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
                 else:
-                    gym_env     = gym.make('MountainCarContinuous-v0')
-                    gym_env.seed(2)
-                    self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
+                    self._env   = RobotHTM(p_seed=1, p_logging=False)
 
                 policy_sb3 = env_cls(
                             policy="MlpPolicy", 
@@ -148,7 +144,6 @@ def test_sb3_policy_wrapper(env_cls):
     training        = RLTraining(
         p_scenario_cls=MyScenario,
         p_cycle_limit=1200,
-        p_success_ends_epi=True,
         p_stagnation_limit=0,
         p_collect_states=True,
         p_collect_actions=True,
@@ -188,11 +183,11 @@ def test_sb3_policy_wrapper(env_cls):
     
     if issubclass(env_cls, OnPolicyAlgorithm):
         # 1 Setup environment
-        env     = gym.make('CartPole-v1')
-        env.seed(2)
+        env   = RobotHTM(p_seed=1, p_logging=False)
+        gym_env   = WrEnvMLPro2GYM(env)
         policy_sb3 = env_cls(
                         policy="MlpPolicy", 
-                        env=env,
+                        env=gym_env,
                         n_steps=buffer_size,
                         verbose=0,
                         policy_kwargs=policy_kwargs_on,
@@ -200,14 +195,14 @@ def test_sb3_policy_wrapper(env_cls):
     else:
         if issubclass(env_cls, DQN):
             # 1 Setup environment
-            env     = gym.make('CartPole-v1')
-            env.seed(2)
+            gym_env     = gym.make('CartPole-v1')
+            gym_env.seed(2)
         else:
-            env     = gym.make('MountainCarContinuous-v0')
-            env.seed(2)
+            env   = RobotHTM(p_seed=1, p_logging=False)
+            gym_env   = WrEnvMLPro2GYM(env)
         policy_sb3 = env_cls(
                     policy="MlpPolicy", 
-                    env=env,
+                    env=gym_env,
                     buffer_size=1000000,
                     verbose=0,
                     gradient_steps=1,

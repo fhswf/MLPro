@@ -16,10 +16,11 @@
 ## -- 2021-12-19  1.1.3     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  1.1.4     DA       Class RobotHTM: renamed method reset() to _reset()
 ## -- 2021-12-21  1.1.5     MRD      Add Termination on Success
+## -- 2022-01-21  1.1.6     MRD      Add recommended cycle limit and add seed parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.5 (2021-12-21)
+Ver. 1.1.6 (2022-01-21)
 
 This module provide an environment of a robot manipulator based on Homogeneous Matrix
 """
@@ -269,9 +270,10 @@ class RobotHTM(Environment):
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
     C_LATENCY = timedelta(0, 1, 0)
     C_INFINITY = np.finfo(np.float32).max
+    C_CYCLE_LIMIT = 100
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_num_joints=4, p_target_mode="Random", p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_num_joints=4, p_seed=0, p_target_mode="Random", p_logging=Log.C_LOG_ALL):
         """
         Parameters:
             p_logging               Boolean switch for logging
@@ -332,7 +334,7 @@ class RobotHTM(Environment):
 
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         self._state_space, self._action_space = self._setup_spaces()
-
+        self.set_random_seed(p_seed)
         self.reset()
 
 
@@ -453,7 +455,6 @@ class RobotHTM(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
-        self.set_random_seed(p_seed)
         theta = torch.zeros(self.RobotArm1.get_num_joint())
         self.RobotArm1.set_theta(theta)
         self.RobotArm1.update_joint_coords()
