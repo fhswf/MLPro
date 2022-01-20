@@ -288,8 +288,8 @@ class WrPolicySB32MLPro (Policy):
             if not datas["state_new"].get_timeout():
                 with torch.no_grad():
                     terminal_obs = torch.Tensor(np.array([datas["state_new"].get_values()])).to(self.sb3.device)
-                    terminal_value = self.policy.predict_values(terminal_obs)[0]
-                    rewards[0] += self.sb3.gamma * terminal_value
+                    terminal_value = self.sb3.policy.predict_values(terminal_obs)[0]
+                    rewards += self.sb3.gamma * terminal_value
 
         self.sb3.rollout_buffer.add(
                             datas["state"].get_values(),
