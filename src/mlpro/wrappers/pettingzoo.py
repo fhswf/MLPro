@@ -23,7 +23,8 @@
 ## --                                - Optimized 'done' detection in both classes
 ## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to 
 ## --                                EnvBase.process_actions() is already adding self._num_cycle
-## -- 2022-01-20  1.3.2     SY       Update PettingZoo2MLPro's reward type to C_TYPE_EVERY_AGENT 
+## -- 2022-01-20  1.3.2     SY       - Update PettingZoo2MLPro's reward type to C_TYPE_EVERY_AGENT 
+## --                                - Update Wrapper MLPro2PettingZoo - Method step()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -173,7 +174,6 @@ class WrEnvPZOO2MLPro(Environment):
             else:
                 new_state.set_values(obs.get_data())
 
-
         # 4 Create and store reward object
         self._reward = Reward(Reward.C_TYPE_EVERY_AGENT)
         for key in self._zoo_env.rewards.keys():
@@ -292,9 +292,7 @@ class WrEnvMLPro2PZoo():
             self._num_cycles += 1
             cycle_limit = self._mlpro_env.get_cycle_limit()
             
-            if agent == self.possible_agents[0]:
-                self.action_set = []
-            self.action_set.append(action[self.agent_selection.index(agent)])
+            self.state[self.agent_selection] = action[int(self.agent_selection)]
             
             if agent == self.possible_agents[-1]:
                 _action     = Action()
@@ -305,7 +303,7 @@ class WrEnvMLPro2PZoo():
                     _act_set    = Set()
                     _act_set.add_dim(Dimension(i,'action_'+str(i)))
                     _act_elem   = Element(_act_set)
-                    _act_elem.set_value(i, self.action_set[i])
+                    _act_elem.set_value(i, self.state[self.possible_agents[i]])
                     _action.add_elem(self.possible_agents[i], _act_elem)
                 
                 self._mlpro_env.process_action(_action)
@@ -316,9 +314,15 @@ class WrEnvMLPro2PZoo():
             
                 self._mlpro_env.get_state().set_timeout( (cycle_limit>0) and ( self._num_cycles >= cycle_limit ) )
 
-            if self._mlpro_env.get_state().get_terminal():
-                self.dones = {agent: True for agent in self.agents}
+                if self._mlpro_env.get_state().get_terminal():
+                    self.dones = {agent: True for agent in self.agents}
+                    
+                for i in self.agents:
+                    self.observations[i] = self.state[self.agents[1-int(i)]]
             
+            else:
+                self._clear_rewards()
+                
             self.agent_selection = self._agent_selector.next()
             
             self._accumulate_rewards()
