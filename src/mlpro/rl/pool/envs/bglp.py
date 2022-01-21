@@ -24,10 +24,11 @@
 ## -- 2021-12-09  2.1.7     SY       Clean code assurance
 ## -- 2021-12-19  2.1.8     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  2.1.9     DA       Class BGLP: renamed method reset() to _reset()
+## -- 2022-01-21  2.2.0     SY       Add cycle_limit as an input parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.9 (2021-12-21)
+Ver. 2.2.0 (2022-01-21)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -709,12 +710,15 @@ class BGLP (Environment):
         the production target for batch operation (in L).
     prod_scenario : str
         'batch' means batch production scenario and 'continuous' means continuous production scenario.
+    cycle_limit : int
+        the number of cycle limit.
     
     """
     C_NAME              = "BGLP"
     C_LATENCY           = timedelta(0,1,0)    
     C_INFINITY          = np.finfo(np.float32).max
     C_REWARD_TYPE       = Reward.C_TYPE_EVERY_AGENT
+    C_CYCLE_LIMIT       = 0
     sils                = []
     hops                = []
     ress                = []
@@ -749,7 +753,7 @@ class BGLP (Environment):
     def __init__(self, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_logging=Log.C_LOG_ALL,
                  t_step=0.5, t_set=10.0, demand=0.1, lr_margin=1.0, lr_demand=4.0,
                  lr_energy=0.0010, margin_p=[0.2,0.8,4], prod_target=10000,
-                 prod_scenario='continuous'):
+                 prod_scenario='continuous', cycle_limit=0):
         self.num_envs       = 5                                                 # Number of internal sub-environments
         self.reward_type    = p_reward_type
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
@@ -764,6 +768,7 @@ class BGLP (Environment):
         self.C_SCIREF_VOLUME  = "152"
         self.C_SCIREF_DOI     = "10.1016/j.compchemeng.2021.107382"
         
+        self.C_CYCLE_LIMIT  = cycle_limit
         self.t              = 0
         self.t_step         = t_step
         self.t_set          = t_set
