@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-08  0.0.0     SY       Creation
 ## -- 2021-12-08  1.0.0     SY       Release of first version
+## -- 2022-01-21  1.0.1     DA       Renaming: tupel -> tuple
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-08)
+Ver. 1.0.1 (2022-01-21)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 """
@@ -46,7 +47,7 @@ class myPolicy (Policy):
         """
         super().__init__(p_observation_space, p_action_space, p_buffer_size, p_ada, p_logging)
         self._hyperparam_space  = HyperParamSpace()
-        self._hyperparam_tupel  = None
+        self._hyperparam_tuple  = None
         self._init_hyperparam()
     
 
@@ -63,14 +64,14 @@ class myPolicy (Policy):
         self._hyperparam_space.add_dim(HyperParam(3,'buffer_size','Z', p_boundaries = [10000,100000]))
         self._hyperparam_space.add_dim(HyperParam(4,'update_rate','Z', p_boundaries = [5,20]))
         self._hyperparam_space.add_dim(HyperParam(5,'sampling_size','Z', p_boundaries = [64,256]))
-        self._hyperparam_tupel = HyperParamTupel(self._hyperparam_space)
+        self._hyperparam_tuple = HyperParamTuple(self._hyperparam_space)
         
-        self._hyperparam_tupel.set_value(0, 100)
-        self._hyperparam_tupel.set_value(1, 0.035)
-        self._hyperparam_tupel.set_value(2, 0.0001)
-        self._hyperparam_tupel.set_value(3, 100000)
-        self._hyperparam_tupel.set_value(4, 100)
-        self._hyperparam_tupel.set_value(4, 256)
+        self._hyperparam_tuple.set_value(0, 100)
+        self._hyperparam_tuple.set_value(1, 0.035)
+        self._hyperparam_tuple.set_value(2, 0.0001)
+        self._hyperparam_tuple.set_value(3, 100000)
+        self._hyperparam_tuple.set_value(4, 100)
+        self._hyperparam_tuple.set_value(4, 256)
     
 
 ## -------------------------------------------------------------------------------------------------
