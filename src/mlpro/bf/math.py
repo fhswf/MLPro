@@ -16,10 +16,11 @@
 ## -- 2021-10-25  1.3.0     DA       New class Function
 ## -- 2021-12-03  1.3.1     DA       New methods Dimension.copy(), Set.copy(), Set.append()
 ## -- 2021-12-03  1.3.2     MRDS     Fix Set.append() due to the usage of max() on empty list
+## -- 2022-01-21  1.4.0     DA       New class TrendAnalyzer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-03)
+Ver. 1.4.0 (2022-01-21)
 
 This module provides basic mathematical classes .
 """
@@ -434,3 +435,93 @@ class Function:
         raise NotImplementedError
         
         
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class TrendAnalyzer:
+    """
+    Template class for trend analysis. Values can be added and the implemented algorithm decides
+    about the trend.
+
+    Parameters
+    ----------
+    p_horizon : int
+        This number of last values is buffered as base for the trend computation.
+
+    """
+
+    C_TREND_POSITIVE    = 1
+    C_TREND_NEGATIVE    = -1
+    C_TREND_NEUTRAL     = 0
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_horizon:int):
+        self._horizon   = p_horizon
+        self._trend     = self.C_TREND_NEUTRAL
+        self._buffer    = []
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_value(self, p_value:float) -> int:
+        """
+        Adds a new value to the buffer and computes the trend of the buffered values by calling the
+        custom methodd _compute_trend().
+
+        Parameters
+        ----------
+        p_value : float
+            Value to be added to the internal buffer.
+
+        Returns
+        -------
+        trend : int
+            Trend of the buffered values. Possible values are C_TREND_POSITIVE, C_TREND_NEGATIVE, C_TREND_NEUTRAL.
+
+        """
+
+        self._buffer.append(p_value)
+        if len(self._buffer) > self._horizon: self._buffer.pop()
+        
+        trend = self._compute_trend(np.asarray(self._buffer))
+        if trend > 0: self._trend = self.C_TREND_POSITIVE
+        elif trend < 0: self._trend = self.C_TREND_NEGATIVE
+        else: self._trend = self.C_TREND_NEUTRAL
+
+        return self._trend
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_trend(self, p_values:np.ndarray) -> int:
+        """
+        Custom method for trend algorithm.
+
+        Parameters
+        ----------
+        p_values : np.ndarray
+            Numpy array with values to be analyzed.
+
+        Returns
+        -------
+        trend : float
+            Where a value >0 means a positive trend, 0 a neutral trend and <0 a negative trend.
+
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_trend(self) -> int:
+        """
+        Returns the trend of the currently buffered values.
+
+        Returns
+        -------
+        trend : int
+            Valid values are: -1 for negative trend, 0 for a neutral trend and 1 for a positive trend.
+
+        """
+
+        return self._trend
