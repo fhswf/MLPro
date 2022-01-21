@@ -26,10 +26,12 @@
 ## -- 2021-12-16  1.4.1     DA       Method RLTraining._close_evaluation(): optimized scoring
 ## -- 2021-12-21  1.5.0     DA       Class RLTraining: reworked evaluation strategy
 ## -- 2022-01-19  1.5.1     DA       Corrections of log texts
+## -- 2022-01-21  1.5.2     DA       Classes RLTrainingResults, RLTraining: added column 'Adapations'
+## --                                to result file evaluation.csv
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.1 (2022-01-19)
+Ver. 1.5.2 (2022-01-21)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -137,10 +139,11 @@ class RLDataStoringEval (DataStoring):
 
     # Variables for training header data storage
     C_VAR_SCORE         = 'Score'
-    C_VAR_NUM_CYCLES    = 'Number of cycles'
-    C_VAR_NUM_SUCCESS   = 'Env goal reached'
-    C_VAR_NUM_BROKEN    = 'Env broken'
-    C_VAR_NUM_LIMIT     = 'Env out of limit'
+    C_VAR_NUM_CYCLES    = 'Cycles'          # 'Number of cycles'
+    C_VAR_NUM_SUCCESS   = 'Successes'       #'Env goal reached'
+    C_VAR_NUM_BROKEN    = 'Crashes'         #'Env broken'
+    C_VAR_NUM_LIMIT     = 'Timeouts'        # 'Env out of limit'
+    C_VAR_NUM_ADAPT     = 'Adaptations'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_space:Set=None):
@@ -153,7 +156,7 @@ class RLDataStoringEval (DataStoring):
         self.space = p_space
 
         # Initalization as an episodical detail data storage
-        self.variables  = [ self.C_VAR_SCORE, self.C_VAR_NUM_CYCLES, self.C_VAR_NUM_LIMIT, self.C_VAR_NUM_SUCCESS, self.C_VAR_NUM_BROKEN ]
+        self.variables  = [ self.C_VAR_SCORE, self.C_VAR_NUM_CYCLES, self.C_VAR_NUM_LIMIT, self.C_VAR_NUM_SUCCESS, self.C_VAR_NUM_BROKEN, self.C_VAR_NUM_ADAPT ]
         self.var_space  = []
     
         for dim_id in self.space.get_dim_ids():
@@ -182,12 +185,16 @@ class RLDataStoringEval (DataStoring):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def memorize_row(self, p_score, p_num_limit, p_num_cycles, p_num_success, p_num_broken, p_reward):
+    def memorize_row(self, p_score, p_num_limit, p_num_cycles, p_num_success, p_num_broken, p_num_adaptations, p_reward):
         """
         Memorizes an evaluation data row.
 
         Parameters
-        ---------- 
+        ----------
+        p_score : float
+            Score value of current evaluation.
+        p_num_limit : int
+
 
         """
 
@@ -196,6 +203,7 @@ class RLDataStoringEval (DataStoring):
         self.memorize(self.C_VAR_NUM_CYCLES, self.current_evaluation, p_num_cycles)
         self.memorize(self.C_VAR_NUM_SUCCESS, self.current_evaluation, p_num_success)
         self.memorize(self.C_VAR_NUM_BROKEN, self.current_evaluation, p_num_broken)
+        self.memorize(self.C_VAR_NUM_ADAPT, self.current_evaluation, p_num_adaptations)
 
         for i, var in enumerate(self.var_space):
             self.memorize(var, self.current_evaluation, p_reward[i])
@@ -599,7 +607,8 @@ class RLTraining (Training):
             self._eval_grp_id           = 0
             self._eval_last_score       = None
             self._eval_stagnations      = 0
-
+            self._eval_num_adaptations  = 0
+            
             self._env   = self._scenario.get_env()
             self._agent = self._scenario.get_agent()
 
@@ -759,11 +768,11 @@ class RLTraining (Training):
 
         if self._results.ds_eval is not None: self._results.ds_eval.add_evaluation(self._results.num_evaluations)
 
-        self._eval_num_cycles   = 0
-        self._eval_num_limit    = 0 
-        self._eval_num_success  = 0
-        self._eval_num_broken   = 0
-        self._eval_sum_reward   = None
+        self._eval_num_cycles       = 0
+        self._eval_num_limit        = 0 
+        self._eval_num_success      = 0
+        self._eval_num_broken       = 0
+        self._eval_sum_reward       = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -835,11 +844,15 @@ class RLTraining (Training):
         # 2 Store evaluation statistics
         if self._results.ds_eval is not None:
 
+            num_adaptations = self._results.num_adaptations - self._eval_num_adaptations
+            self._eval_num_adaptations = self._results.num_adaptations
+
             self._results.ds_eval.memorize_row( p_score=score, 
                                                 p_num_limit=self._eval_num_limit, 
                                                 p_num_cycles=self._eval_num_cycles, 
                                                 p_num_success=self._eval_num_success, 
                                                 p_num_broken=self._eval_num_broken, 
+                                                p_num_adaptations=num_adaptations,
                                                 p_reward=self._eval_sum_reward )
 
 
@@ -926,7 +939,7 @@ class RLTraining (Training):
             self.log(self.C_LOG_TYPE_W, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
             eof_training = True
 
-        if ( self._stagnation_limit > 0 ) and ( self._eval_stagnations >= self._stagnation_limit ):
+        if ( self._stagnation_limit > 0 ) and ( self._eval_stagnations >= ( self._stagnation_limit - 1 ) ):
             self.log(self.C_LOG_TYPE_W, 'Stagnation limit ', str(self._stagnation_limit), ' reached')
             eof_training = True
 
