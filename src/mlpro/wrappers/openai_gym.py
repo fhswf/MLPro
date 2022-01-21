@@ -158,8 +158,8 @@ class WrEnvGYM2MLPro (Environment):
 
 
         # 4 Create reward object
-        self._reward = Reward(Reward.C_TYPE_OVERALL)
-        self._reward.set_overall_reward(reward_gym)
+        self._last_reward = Reward(Reward.C_TYPE_OVERALL)
+        self._last_reward.set_overall_reward(reward_gym)
 
 
         # 5 Return next state
@@ -171,7 +171,7 @@ class WrEnvGYM2MLPro (Environment):
         if ( p_state_old is not None ) or ( p_state_new is not None ):
             raise NotImplementedError
 
-        return self._reward
+        return self._last_reward
 
 
 ## -------------------------------------------------------------------------------------------------

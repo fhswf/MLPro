@@ -11,22 +11,22 @@
 ## -- 2021-12-08  1.0.2     DA       Refactoring
 ## -- 2021-12-20  1.0.3     DA       Refactoring
 ## -- 2022-01-18  2.0.0     MRD      Add Off Policy Algorithm into the test
+## -- 2022-01-21  2.0.1     MRD      Include RobotHTM as the continues action envrionment
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2022-01-18)
+Ver. 2.0.1 (2022-01-21)
 
 Unit test classes for environment.
 """
 
 
-from inspect import isclass
 from numpy import empty
 import pytest
 import gym
 import torch
 from mlpro.rl.models import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro, WrEnvMLPro2GYM
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
@@ -34,11 +34,14 @@ from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [A2C, PPO, DQN, DDPG, SAC])
+@pytest.mark.parametrize("env_cls", [PPO, A2C, DQN, DDPG, SAC])
 def test_sb3_policy_wrapper(env_cls):
-    buffer_size = 5
-    policy_kwargs = dict(activation_fn=torch.nn.Tanh,
-                     net_arch=[dict(pi=[10, 10], vf=[10, 10])])
+    buffer_size = 100
+    policy_kwargs_on = dict(activation_fn=torch.nn.Tanh,
+                     net_arch=[dict(pi=[128, 128], vf=[128, 128])])
+
+    policy_kwargs_off = dict(activation_fn=torch.nn.ReLU,
+                     net_arch=[10])
     class MyScenario(RLScenario):
 
         C_NAME      = 'Matrix'
@@ -59,33 +62,36 @@ def test_sb3_policy_wrapper(env_cls):
                     self._set_state(state)
 
             if issubclass(env_cls, OnPolicyAlgorithm):
+                # 1 Setup environment
+                self._env   = RobotHTM(p_seed=1, p_logging=False)
                 policy_sb3 = env_cls(
                             policy="MlpPolicy", 
                             env=None,
                             n_steps=buffer_size,
                             _init_setup_model=False,
-                            policy_kwargs=policy_kwargs,
+                            policy_kwargs=policy_kwargs_on,
                             verbose=0,
                             seed=2)
             else:
+                if issubclass(env_cls, DQN):
+                    # 1 Setup environment
+                    gym_env     = gym.make('CartPole-v1')
+                    gym_env.seed(2)
+                    self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
+                else:
+                    self._env   = RobotHTM(p_seed=1, p_logging=False)
+
                 policy_sb3 = env_cls(
                             policy="MlpPolicy", 
                             env=None,
                             buffer_size=1000000,
                             _init_setup_model=False,
-                            learning_starts=5,
+                            policy_kwargs=policy_kwargs_off,
+                            gradient_steps=1,
+                            train_freq=4,
+                            learning_starts=0,
                             verbose=0,
                             seed=2)
-
-            if issubclass(env_cls, DQN):
-                # 1 Setup environment
-                gym_env     = gym.make('CartPole-v1')
-                gym_env.seed(2)
-                self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
-            else:
-                gym_env     = gym.make('MountainCarContinuous-v0')
-                gym_env.seed(2)
-                self._env   = CustomWrapperFixedSeed(gym_env, p_logging=False)
 
             class TestWrPolicySB32MLPro(WrPolicySB32MLPro):
                 """
@@ -95,6 +101,17 @@ def test_sb3_policy_wrapper(env_cls):
                     super().__init__(p_sb3_policy, p_cycle_limit, p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
                     self.loss_cnt = []
 
+                def _adapt_off_policy(self, *p_args) -> bool:
+                    if super()._adapt_off_policy(*p_args):
+                        if isinstance(self.sb3, DQN):
+                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/loss"])
+                        elif isinstance(self.sb3, DDPG):
+                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/critic_loss"])
+                        elif isinstance(self.sb3, SAC):
+                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/critic_loss"])
+                        return True
+                    return False
+
                 def _adapt_on_policy(self, *p_args) -> bool:
                     if super()._adapt_on_policy(*p_args):
                         # Log the Loss
@@ -102,12 +119,6 @@ def test_sb3_policy_wrapper(env_cls):
                             self.loss_cnt.append(self.sb3.logger.name_to_value["train/policy_gradient_loss"])
                         elif isinstance(self.sb3, A2C):
                             self.loss_cnt.append(self.sb3.logger.name_to_value["train/policy_loss"])
-                        elif isinstance(self.sb3, DQN):
-                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/loss"])
-                        elif isinstance(self.sb3, DDPG):
-                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/critic_loss"])
-                        elif isinstance(self.sb3, SAC):
-                            self.loss_cnt.append(self.sb3.logger.name_to_value["train/critic_loss"])
                         return True
                     return False
 
@@ -129,20 +140,10 @@ def test_sb3_policy_wrapper(env_cls):
                 p_logging=p_logging
             )
 
-    # # 2 Instantiate scenario
-    # myscenario  = MyScenario(
-    #     p_mode=Environment.C_MODE_SIM,
-    #     p_ada=True,
-    #     p_cycle_limit=-1,
-    #     p_visualize=False,
-    #     p_logging=False
-    # )
-
     # 3 Instantiate training
     training        = RLTraining(
         p_scenario_cls=MyScenario,
-        p_cycle_limit=100,
-        p_success_ends_epi=True,
+        p_cycle_limit=1200,
         p_stagnation_limit=0,
         p_collect_states=True,
         p_collect_actions=True,
@@ -179,34 +180,39 @@ def test_sb3_policy_wrapper(env_cls):
 
         def _on_rollout_end(self) -> None:
             self.update += 1
-
-    if issubclass(env_cls, DQN):
-        # 1 Setup environment
-        env     = gym.make('CartPole-v1')
-        env.seed(2)
-    else:
-        env     = gym.make('MountainCarContinuous-v0')
-        env.seed(2)
     
     if issubclass(env_cls, OnPolicyAlgorithm):
+        # 1 Setup environment
+        env   = RobotHTM(p_seed=1, p_logging=False)
+        gym_env   = WrEnvMLPro2GYM(env)
         policy_sb3 = env_cls(
                         policy="MlpPolicy", 
-                        env=env,
+                        env=gym_env,
                         n_steps=buffer_size,
                         verbose=0,
-                        policy_kwargs=policy_kwargs,
+                        policy_kwargs=policy_kwargs_on,
                         seed=2)
     else:
+        if issubclass(env_cls, DQN):
+            # 1 Setup environment
+            gym_env     = gym.make('CartPole-v1')
+            gym_env.seed(2)
+        else:
+            env   = RobotHTM(p_seed=1, p_logging=False)
+            gym_env   = WrEnvMLPro2GYM(env)
         policy_sb3 = env_cls(
                     policy="MlpPolicy", 
-                    env=env,
+                    env=gym_env,
                     buffer_size=1000000,
                     verbose=0,
-                    learning_starts=5,
+                    gradient_steps=1,
+                    train_freq=4,
+                    learning_starts=0,
+                    policy_kwargs=policy_kwargs_off,
                     seed=2)
 
     cus_callback = CustomCallback()
-    policy_sb3.learn(total_timesteps=100, callback=cus_callback)
+    policy_sb3.learn(total_timesteps=1200, callback=cus_callback)
 
     assert cus_callback.loss_cnt is not empty, "No Loss on Native"
     assert training.get_scenario().policy_wrapped.loss_cnt is not empty, "No Loss on Wrapper"
