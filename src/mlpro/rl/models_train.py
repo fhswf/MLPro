@@ -26,12 +26,12 @@
 ## -- 2021-12-16  1.4.1     DA       Method RLTraining._close_evaluation(): optimized scoring
 ## -- 2021-12-21  1.5.0     DA       Class RLTraining: reworked evaluation strategy
 ## -- 2022-01-19  1.5.1     DA       Corrections of log texts
-## -- 2022-01-21  1.5.2     DA       Classes RLTrainingResults, RLTraining: added column 'Adapations'
-## --                                to result file evaluation.csv
+## -- 2022-01-23  1.5.2     DA       Classes RLTrainingResults, RLDataStoringEval: added columns 
+## --                                'Score (MA)' and 'Adapations' to result file evaluation.csv
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.2 (2022-01-21)
+Ver. 1.5.2 (2022-01-23)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -132,31 +132,33 @@ class RLDataStoringEval (DataStoring):
     """
     Derivate of basic class DataStoring that is specialized to store evaluation data of a training
     in the context of reinforcement learning.
+
+    Parameters
+    ----------
+    p_space : Set         
+        Set object that provides dimensional information for raw data. If None a training header data object will be instantiated.
+
     """
 
     # Frame ID renamed
     C_VAR0              = 'Evaluation ID'
 
     # Variables for training header data storage
-    C_VAR_SCORE         = 'Score'
-    C_VAR_NUM_CYCLES    = 'Cycles'          # 'Number of cycles'
-    C_VAR_NUM_SUCCESS   = 'Successes'       #'Env goal reached'
-    C_VAR_NUM_BROKEN    = 'Crashes'         #'Env broken'
-    C_VAR_NUM_LIMIT     = 'Timeouts'        # 'Env out of limit'
-    C_VAR_NUM_ADAPT     = 'Adaptations'
+    C_VAR_SCORE         = 'Score'           # Score
+    C_VAR_SCORE_MA      = 'Score(MA)'       # Moving average score
+    C_VAR_NUM_CYCLES    = 'Cycles'          # Number of cycles
+    C_VAR_NUM_SUCCESS   = 'Successes'       # Number of successful labled states
+    C_VAR_NUM_BROKEN    = 'Crashes'         # Number of broken states
+    C_VAR_NUM_LIMIT     = 'Timeouts'        # Number of timeouts (cycles per episode reached)
+    C_VAR_NUM_ADAPT     = 'Adaptations'     # Number of adaptations in the last training period
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_space:Set=None):
-        """
-        Parameters:
-            p_space         Space object that provides dimensional information for raw data. If None
-                            a training header data object will be instantiated.
-        """
-        
+    def __init__(self, p_space:Set):
+       
         self.space = p_space
 
         # Initalization as an episodical detail data storage
-        self.variables  = [ self.C_VAR_SCORE, self.C_VAR_NUM_CYCLES, self.C_VAR_NUM_LIMIT, self.C_VAR_NUM_SUCCESS, self.C_VAR_NUM_BROKEN, self.C_VAR_NUM_ADAPT ]
+        self.variables  = [ self.C_VAR_SCORE, self.C_VAR_SCORE_MA, self.C_VAR_NUM_CYCLES, self.C_VAR_NUM_LIMIT, self.C_VAR_NUM_SUCCESS, self.C_VAR_NUM_BROKEN, self.C_VAR_NUM_ADAPT ]
         self.var_space  = []
     
         for dim_id in self.space.get_dim_ids():
@@ -185,7 +187,7 @@ class RLDataStoringEval (DataStoring):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def memorize_row(self, p_score, p_num_limit, p_num_cycles, p_num_success, p_num_broken, p_num_adaptations, p_reward):
+    def memorize_row(self, p_score, p_score_ma, p_num_limit, p_num_cycles, p_num_success, p_num_broken, p_num_adaptations, p_reward):
         """
         Memorizes an evaluation data row.
 
@@ -193,12 +195,23 @@ class RLDataStoringEval (DataStoring):
         ----------
         p_score : float
             Score value of current evaluation.
+        p_score_ma : float
+            Moving average score value.
         p_num_limit : int
-
+            Number of episodes in timeout.
+        p_num_cycles : int
+            Number of evaluation cycles.
+        p_num_success : int
+            Number of states that were labeled as successfull.
+        p_num_broken : int
+            Number of states that were labeled as broken.
+        p_num_adaptations : int
+            Number of adaptations in the last training period.
 
         """
 
         self.memorize(self.C_VAR_SCORE, self.current_evaluation, p_score)
+        self.memorize(self.C_VAR_SCORE_MA, self.current_evaluation, p_score_ma)
         self.memorize(self.C_VAR_NUM_LIMIT, self.current_evaluation, p_num_limit)
         self.memorize(self.C_VAR_NUM_CYCLES, self.current_evaluation, p_num_cycles)
         self.memorize(self.C_VAR_NUM_SUCCESS, self.current_evaluation, p_num_success)
@@ -493,12 +506,15 @@ class RLTraining (Training):
         Optional limit of cycles per episode (0=no limit, -1=get environment limit). Default = -1.    
     p_adaptation_limit : int
         Maximum number of adaptations (0=no limit). Default = 0.
-    p_stagnation_limit : int
-        Optional limit of consecutive evaluations without training progress. Default = 0.
     p_eval_frequency : int
         Optional evaluation frequency (0=no evaluation). Default = 0.
     p_eval_grp_size : int
         Number of evaluation episodes (eval group). Default = 0.
+    p_score_ma_horizon : int
+        Horizon length for moving average score computation. Default = 5.
+    p_stagnation_limit : int
+        Optional limit of consecutive evaluations without training progress. Base is the moving average
+        score. Default = 0.
     p_hpt : HyperParamTuner
         Optional hyperparameter tuner (see class mlpro.bf.ml.HyperParamTuner). Default = None.
     p_hpt_trials : int
@@ -539,49 +555,58 @@ class RLTraining (Training):
         except:
             self._cycles_per_epi_limit = -1
 
-        # 2.2 Optional parameter p_stagnation_limit
-        try:
-            self._stagnation_limit = self._kwargs['p_stagnation_limit']
-        except:
-            self._stagnation_limit = 0
-            self._kwargs['p_stagnation_limit'] = self._stagnation_limit
-
-        # 2.3 Optional parameter p_eval_frequency
+        # 2.2 Optional parameter p_eval_frequency
         try:
             self._eval_frequency = self._kwargs['p_eval_frequency']
         except:
             self._eval_frequency = 0
             self._kwargs['p_eval_frequency'] = self._eval_frequency
 
-        # 2.4 Optional parameter p_eval_grp_size
+        # 2.3 Optional parameter p_eval_grp_size
         try:
             self._eval_grp_size = self._kwargs['p_eval_grp_size']
         except:
             self._eval_grp_size = 0
             self._kwargs['p_eval_grp_size'] = self._eval_grp_size
 
-        # 2.5 Optional parameter p_collect_states
+        # 2.4 Optional parameter p_ma_score_horizon
+        try:
+            self._eval_score_ma_horizon = self._kwargs['p_score_ma_horizon']
+            if self._eval_score_ma_horizon < 1: self._eval_score_ma_horizon = 1
+
+        except:
+            self._eval_score_ma_horizon = 5
+            self._kwargs['p_score_ma_horizon'] = self._eval_score_ma_horizon
+
+        # 2.5 Optional parameter p_stagnation_limit
+        try:
+            self._stagnation_limit = self._kwargs['p_stagnation_limit']
+        except:
+            self._stagnation_limit = 0
+            self._kwargs['p_stagnation_limit'] = self._stagnation_limit
+
+        # 2.6 Optional parameter p_collect_states
         try:
             self._collect_states = self._kwargs['p_collect_states']
         except:
             self._collect_states = True
             self._kwargs['p_collect_states'] = self._collect_states
 
-        # 2.6 Optional parameter p_collect_actions
+        # 2.7 Optional parameter p_collect_actions
         try:
             self._collect_actions = self._kwargs['p_collect_actions']
         except:
             self._collect_actions = True
             self._kwargs['p_collect_actions'] = self._collect_actions
 
-        # 2.7 Optional parameter p_collect_rewards
+        # 2.8 Optional parameter p_collect_rewards
         try:
             self._collect_rewards = self._kwargs['p_collect_rewards']
         except:
             self._collect_rewards = True
             self._kwargs['p_collect_rewards'] = self._collect_rewards
 
-        # 2.8 Optional parameter p_collect_eval
+        # 2.9 Optional parameter p_collect_eval
         try:
             self._collect_eval = self._kwargs['p_collect_eval']
         except:
@@ -608,7 +633,9 @@ class RLTraining (Training):
             self._eval_last_score       = None
             self._eval_stagnations      = 0
             self._eval_num_adaptations  = 0
-            
+            self._eval_score_ma_buffer  = []
+            self._eval_score_ma_sum     = 0
+
             self._env   = self._scenario.get_env()
             self._agent = self._scenario.get_agent()
 
@@ -841,13 +868,24 @@ class RLTraining (Training):
         score = np.mean( self._eval_sum_reward )
 
 
-        # 2 Store evaluation statistics
+        # 2 Computation of moving average score
+        self._eval_score_ma_buffer.insert(0,score)
+        self._eval_score_ma_sum += score
+
+        if len(self._eval_score_ma_buffer) > self._eval_score_ma_horizon:
+            self._eval_score_ma_sum -= self._eval_score_ma_buffer.pop()
+
+        score_ma = self._eval_score_ma_sum / len(self._eval_score_ma_buffer)
+
+
+        # 3 Store evaluation statistics
         if self._results.ds_eval is not None:
 
             num_adaptations = self._results.num_adaptations - self._eval_num_adaptations
             self._eval_num_adaptations = self._results.num_adaptations
 
             self._results.ds_eval.memorize_row( p_score=score, 
+                                                p_score_ma=score_ma,
                                                 p_num_limit=self._eval_num_limit, 
                                                 p_num_cycles=self._eval_num_cycles, 
                                                 p_num_success=self._eval_num_success, 
@@ -856,11 +894,11 @@ class RLTraining (Training):
                                                 p_reward=self._eval_sum_reward )
 
 
-        # 3 Stagnation detection
+        # 4 Stagnation detection based on moving average score
         if self._eval_last_score is None:
-            self._eval_last_score = score
+            self._eval_last_score = score_ma
 
-        elif score <= self._eval_last_score:
+        elif score_ma <= self._eval_last_score:
             self._eval_stagnations += 1
         
         else:
