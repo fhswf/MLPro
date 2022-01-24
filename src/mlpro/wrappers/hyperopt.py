@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-07  0.0.0     SY       Creation 
 ## -- 2021-12-08  1.0.0     SY       Release of first version
+## -- 2022-01-21  1.0.1     DA       Fixed some bugs
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-08)
+Ver. 1.0.1 (2022-01-21)
 This module provides a wrapper class for hyperparameter tuning by reusinng Hyperopt framework
 """
 
@@ -118,7 +119,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
             if not self._ids:
                 _id             = self.hp_tupel[x].get_dim_ids()
             else:
-                _id             = self_ids
+                _id             = self._ids
                 
             for i in range(len(_id)):
                 if isinstance(self._model, MultiAgent) or isinstance(self._model, MultiPlayer):
@@ -168,7 +169,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
             if not self._ids:
                 _id             = self.hp_tupel[x].get_dim_ids()
             else:
-                _id             = self_ids
+                _id             = self._ids
             for i in range(len(_id)):
                 hp_id           = _id[i]
                 hp_set          = self.hp_tupel[x].get_related_set().get_dim(hp_id)

@@ -26,10 +26,12 @@
 ## --                                    - new custom method get_cycle_limit()
 ## --                                    - timeout detection
 ## --                                - Class EnvModel: cycle limit detection
+## -- 2022-01-21  1.4.1     DA       Class EnvBase, method process_action(): a success/terminal state
+## --                                avoids the timeout labelling
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2021-12-21)
+Ver. 1.4.1 (2022-01-21)
 
 This module provides model classes for environments and environnment models.
 """
@@ -743,7 +745,9 @@ class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scien
 
         cycle_limit = self.get_cycle_limit()
         
-        self.get_state().set_timeout( (cycle_limit>0) and ( self._num_cycles >= cycle_limit ) )
+        state = self.get_state()
+        if not ( state.get_terminal() and state.get_success() ):
+            state.set_timeout( (cycle_limit>0) and ( self._num_cycles >= cycle_limit ) )
 
         return result
 

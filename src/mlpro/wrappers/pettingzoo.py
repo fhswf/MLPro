@@ -25,10 +25,15 @@
 ## --                                EnvBase.process_actions() is already adding self._num_cycle
 ## -- 2022-01-20  1.3.2     SY       - Update PettingZoo2MLPro's reward type to C_TYPE_EVERY_AGENT 
 ## --                                - Update Wrapper MLPro2PettingZoo - Method step()
+## -- 2022-01-21  1.3.3     SY       Class WrEnvPZOO2MLPro: 
+## --                                - replace variable _reward to _last_reward 
+## --                                Class WrEnvMLPro2PZoo:  
+## --                                - refactored done detection 
+## --                                - removed artifacts of cycle counting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-01-20)
+Ver. 1.3.3 (2022-01-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -175,9 +180,9 @@ class WrEnvPZOO2MLPro(Environment):
                 new_state.set_values(obs.get_data())
 
         # 4 Create and store reward object
-        self._reward = Reward(Reward.C_TYPE_EVERY_AGENT)
+        self._last_reward = Reward(Reward.C_TYPE_EVERY_AGENT)
         for key in self._zoo_env.rewards.keys():
-            self._reward.add_agent_reward(key, self._zoo_env.rewards.get(key))
+            self._last_reward.add_agent_reward(key, self._zoo_env.rewards.get(key))
 
         return new_state
 
@@ -187,7 +192,7 @@ class WrEnvPZOO2MLPro(Environment):
         if ( p_state_old is not None ) or ( p_state_new is not None ):
             raise NotImplementedError
 
-        return self._reward
+        return self._last_reward
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -256,7 +261,6 @@ class WrEnvMLPro2PZoo():
 
 ## -------------------------------------------------------------------------------------------------
         def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
-            self._num_cycles            = 0
             self._mlpro_env             = p_mlpro_env
             self.possible_agents        = [str(r) for r in range(p_num_agents)]
             self.agent_name_mapping     = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
@@ -289,7 +293,6 @@ class WrEnvMLPro2PZoo():
             
             agent = self.agent_selection
             self._cumulative_rewards[agent] = 0
-            self._num_cycles += 1
             cycle_limit = self._mlpro_env.get_cycle_limit()
             
             self.state[self.agent_selection] = action[int(self.agent_selection)]
@@ -312,8 +315,6 @@ class WrEnvMLPro2PZoo():
                     if not self.rewards[self.possible_agents[i]]:
                         self.rewards[self.possible_agents[i]] = 0
             
-                self._mlpro_env.get_state().set_timeout( (cycle_limit>0) and ( self._num_cycles >= cycle_limit ) )
-
                 if self._mlpro_env.get_state().get_terminal():
                     self.dones = {agent: True for agent in self.agents}
                     
@@ -341,7 +342,6 @@ class WrEnvMLPro2PZoo():
 
 ## -------------------------------------------------------------------------------------------------
         def reset(self):
-            self._num_cycles = 0
             self.agents = self.possible_agents[:]
             self.rewards = {agent: 0 for agent in self.agents}
             self._cumulative_rewards = {agent: 0 for agent in self.agents}

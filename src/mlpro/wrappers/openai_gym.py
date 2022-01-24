@@ -30,12 +30,13 @@
 ## --                                - Optimized 'done' detection in both classed
 ## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to 
 ## --                                EnvBase.process_actions() is already adding self._num_cycle
-## -- 2022-01-20  1.3.2     MRD      Rename self._reward into self._last_reward
-## -- 2022-01-21  1.3.3     MRD      Add proper time limit functionality for WrEnvMLPro2GYM
+## -- 2022-01-21  1.3.2     DA/MRD   Class WrEnvMLPro2GYM: 
+## --                                - refactored done detection 
+## --                                - removed artifacts of cycle counting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2022-01-21)
+Ver. 1.3.2 (2022-01-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -225,7 +226,6 @@ class WrEnvMLPro2GYM(gym.Env):
         """
 
         self._mlpro_env             = p_mlpro_env
-        self._num_cycles            = 0
         
         if p_state_space is not None: 
             self.observation_space  = p_state_space
@@ -289,21 +289,17 @@ class WrEnvMLPro2GYM(gym.Env):
         else:
             obs = np.array(self._mlpro_env.get_state().get_values())
 
-        self._num_cycles += 1
-        cycle_limit = self._mlpro_env.get_cycle_limit()
-        done = ( self._mlpro_env.get_state().get_success() ) or ( self._mlpro_env.get_state().get_broken() )
+        state = self._mlpro_env.get_state()
+        done = state.get_terminal()
 
         info = {}
-        if ( (cycle_limit > 0) and (self._num_cycles>=cycle_limit) ):
-            info["TimeLimit.truncated"] = not done
-            done = True
+        info["TimeLimit.truncated"] = state.get_timeout()
 
         return obs, reward.get_overall_reward(), done, info
     
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self):
-        self._num_cycles = 0
         self._mlpro_env.reset()
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):
