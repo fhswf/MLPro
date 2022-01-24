@@ -25,10 +25,11 @@
 ## -- 2021-12-19  2.1.8     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  2.1.9     DA       Class BGLP: renamed method reset() to _reset()
 ## -- 2022-01-21  2.2.0     SY       Add cycle_limit as an input parameter
+## -- 2022-01-24  2.2.1     SY       Update seeding procedure, remove reset() in the constructor
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2022-01-21)
+Ver. 2.2.1 (2022-01-24)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -840,8 +841,6 @@ class BGLP (Environment):
         self.data_lists         = ["time","overflow","energy","demand"]
         self.data_storing       = DataStoring(self.data_lists)
         self.data_frame         = None
-        
-        self.reset()
             
 
 ## -------------------------------------------------------------------------------------------------
@@ -903,11 +902,12 @@ class BGLP (Environment):
 
         Parameters
         ----------
-        p_seed : int, optional
-            Not yet implemented. The default is None.
+        p_seed : int
+            Seed parameter for an internal random generator.
 
         """
-        self.set_random_seed(p_seed)
+        np.random.seed(p_seed)
+        self.levels_init = np.random.rand(6,1)
         self.reset_levels()
         self.reset_actuators()
         obs                 = self.calc_state()
@@ -1161,7 +1161,6 @@ class BGLP (Environment):
         This method resets reservoirs.
         
         """
-        self.levels_init = np.random.rand(6,1)
         for resnum in range(len(self.ress)):
             res = self.ress[resnum]
             res.vol_cur_abs = self.levels_init[resnum]*res.vol_max
