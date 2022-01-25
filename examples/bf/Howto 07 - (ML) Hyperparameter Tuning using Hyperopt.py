@@ -209,15 +209,29 @@ class BGLP_Rnd(RLScenario):
 
 if __name__ == "__main__":
     # Parameters for demo mode
-    logging     = Log.C_LOG_ALL
-    visualize   = False
-    dest_path   = str(Path.home())
+    logging         = Log.C_LOG_WE
+    visualize       = False
+    dest_path       = str(Path.home())
+    cycle_limit     = 100
+    cycle_per_ep    = 10
+    eval_freq       = 10
+    eval_grp_size   = 5
+    adapt_limit     = 0
+    stagnant_limit  = 5
+    score_ma_hor    = 5
  
 else:
     # Parameters for internal unit test
-    logging     = Log.C_LOG_NOTHING
-    visualize   = False
-    dest_path   = None
+    logging         = Log.C_LOG_NOTHING
+    visualize       = False
+    dest_path       = None
+    cycle_limit     = 100
+    cycle_per_ep    = 10
+    eval_freq       = 5
+    eval_grp_size   = 1
+    adapt_limit     = 0
+    stagnant_limit  = 0
+    score_ma_hor    = 0
 
 
 # 3. Instantiate a hyperopt wrapper
@@ -238,12 +252,14 @@ myscenario  = BGLP_Rnd(
 
 # 5. Train players in the scenario and turn the hyperparamter tuning on
 training        = RLTraining(
-    p_scenario=myscenario,
-    p_max_cycles_per_episode=1,
-    p_cycle_limit=10,
-    p_max_adaptations=0,
-    p_max_stagnations=0,
-    p_eval_frequency=0,
+    p_scenario_cls=myscenario,
+    p_cycle_limit=cycle_limit,
+    p_cycles_per_epi_limit=cycle_per_ep,
+    p_eval_frequency=eval_freq,
+    p_eval_grp_size=eval_grp_size,
+    p_adaptation_limit=adapt_limit,
+    p_stagnation_limit=stagnant_limit,
+    p_score_ma_horizon=score_ma_hor,
     p_hpt=myHyperopt,
     p_hpt_trials=10,
     p_collect_states=True,
