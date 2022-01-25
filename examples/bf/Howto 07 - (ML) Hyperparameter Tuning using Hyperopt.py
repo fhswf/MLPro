@@ -8,10 +8,11 @@
 ## -- 2021-12-08  0.0.0     SY       Creation
 ## -- 2021-12-08  1.0.0     SY       Release of first version
 ## -- 2022-01-21  1.0.1     DA       Renaming: tupel -> tuple
+## -- 2022-01-25  1.0.2     SY       Class WrHPTHyperopt enhancement
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-01-21)
+Ver. 1.0.2 (2022-01-25)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 """
