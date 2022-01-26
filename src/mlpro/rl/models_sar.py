@@ -30,22 +30,16 @@ Ver. 1.1.1 (2021-12-21)
 This module provides model classes for state, action and reward data and their buffering.
 """
 
-
-from mlpro.bf.various import *
 from mlpro.bf.data import *
-from mlpro.bf.math import *
 from mlpro.bf.ml import *
 from mlpro.bf.plot import *
-
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class State(Element, TStamp):
     """
-    State of an environment as an element of a given state space. Additionally the state can be
+    State of an environment as an element of a given state space. Additionally, the state can be
     labeled with various properties.
 
     Parameters
@@ -65,14 +59,14 @@ class State(Element, TStamp):
 
     """
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_state_space:MSpace, 
-                 p_initial:bool=False,
-                 p_terminal:bool=False,
-                 p_success:bool=False,
-                 p_broken:bool=False,
-                 p_timeout:bool=False ):
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_state_space: MSpace,
+                 p_initial: bool = False,
+                 p_terminal: bool = False,
+                 p_success: bool = False,
+                 p_broken: bool = False,
+                 p_timeout: bool = False):
 
         TStamp.__init__(self)
         Element.__init__(self, p_state_space)
@@ -82,83 +76,67 @@ class State(Element, TStamp):
         self.set_broken(p_broken)
         self.set_timeout(p_timeout)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_initial(self) -> bool:
         return self._initial
 
-
-## -------------------------------------------------------------------------------------------------
-    def set_initial(self, p_initial:bool):
+    ## -------------------------------------------------------------------------------------------------
+    def set_initial(self, p_initial: bool):
         self._initial = p_initial
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_success(self) -> bool:
         return self._success
 
-
-## -------------------------------------------------------------------------------------------------
-    def set_success(self, p_success:bool):
+    ## -------------------------------------------------------------------------------------------------
+    def set_success(self, p_success: bool):
         self._success = p_success
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_broken(self) -> bool:
         return self._broken
 
-
-## -------------------------------------------------------------------------------------------------
-    def set_broken(self, p_broken:bool):
+    ## -------------------------------------------------------------------------------------------------
+    def set_broken(self, p_broken: bool):
         self._broken = p_broken
-        if p_broken: self.set_terminal(True)
+        if p_broken:
+            self.set_terminal(True)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_timeout(self) -> bool:
         return self._timeout
 
-
-## -------------------------------------------------------------------------------------------------
-    def set_timeout(self, p_timeout:bool):
+    ## -------------------------------------------------------------------------------------------------
+    def set_timeout(self, p_timeout: bool):
         self._timeout = p_timeout
-        if p_timeout: self.set_terminal(True)
+        if p_timeout:
+            self.set_terminal(True)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_terminal(self) -> bool:
         return self._terminal
 
-
-## -------------------------------------------------------------------------------------------------
-    def set_terminal(self, p_terminal:bool):
+    ## -------------------------------------------------------------------------------------------------
+    def set_terminal(self, p_terminal: bool):
         self._terminal = p_terminal
-
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class ActionElement(Element):
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_action_space:Set, p_weight=1.0) -> None:
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_action_space: Set, p_weight=1.0) -> None:
         super().__init__(p_action_space)
         self.set_weight(p_weight)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_weight(self):
         return self.weight
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def set_weight(self, p_weight):
         self.weight = p_weight
-
-    
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -166,13 +144,13 @@ class ActionElement(Element):
 class Action(ElementList, TStamp):
     """
     Objects of this class represent actions of (multi-)agents. Every element
-    of the internal list is related to an agent and it's partial subaction.
+    of the internal list is related to an agent, and its partial subsection.
     Action values for the first agent can be added while object instantiation.
     Action values of further agents can be added by using method self.add_elem().
     """
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_agent_id=0, p_action_space=None, p_values:np.ndarray=None):
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_agent_id=0, p_action_space=None, p_values: np.ndarray = None):
         """
         Parameters:
             p_agent_id        Unique id of (first) agent to be added
@@ -183,22 +161,20 @@ class Action(ElementList, TStamp):
         ElementList.__init__(self)
         TStamp.__init__(self)
 
-        if ( p_action_space is not None ) and ( p_values is not None):
+        if (p_action_space is not None) and (p_values is not None):
             e = ActionElement(p_action_space)
             e.set_values(p_values)
             self.add_elem(p_agent_id, e)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_agent_ids(self):
         return self.get_elem_ids()
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_sorted_values(self) -> np.ndarray:
         # 1 Determine overall dimensionality of action vector
-        num_dim     = 0
-        action_ids  = []
+        num_dim = 0
+        action_ids = []
 
         for elem in self._elem_list:
             num_dim = num_dim + elem.get_related_set().get_num_dim()
@@ -211,14 +187,11 @@ class Action(ElementList, TStamp):
 
         for elem in self._elem_list:
             for elem_action_id in elem.get_related_set().get_dim_ids():
-                i         = action_ids.index(elem_action_id)
+                i = action_ids.index(elem_action_id)
                 action[i] = elem.get_value(elem_action_id)
 
         # 3 Return sorted result array
         return action
-
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -226,16 +199,16 @@ class Action(ElementList, TStamp):
 class Reward(TStamp):
     """
     Objects of this class represent rewards of environments. The internal structure
-    depends of the reward type. Three types are supported as listed below.
+    depends on the reward type. Three types are supported as listed below.
     """
 
-    C_TYPE_OVERALL        = 0    # Reward is a scalar (default)
-    C_TYPE_EVERY_AGENT    = 1    # Reward is a scalar for every agent
-    C_TYPE_EVERY_ACTION   = 2    # Reward is a scalar for every agent and action
+    C_TYPE_OVERALL = 0  # Reward is a scalar (default)
+    C_TYPE_EVERY_AGENT = 1  # Reward is a scalar for every agent
+    C_TYPE_EVERY_ACTION = 2  # Reward is a scalar for every agent and action
 
-    C_VALID_TYPES         = [ C_TYPE_OVERALL, C_TYPE_EVERY_AGENT, C_TYPE_EVERY_ACTION ]
+    C_VALID_TYPES = [C_TYPE_OVERALL, C_TYPE_EVERY_AGENT, C_TYPE_EVERY_ACTION]
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_type=C_TYPE_OVERALL, p_value=0):
         """
         Parameters:
@@ -247,18 +220,17 @@ class Reward(TStamp):
             raise ParamError('Reward type ' + str(p_type) + ' not supported.')
 
         TStamp.__init__(self)
-        self.type           = p_type
-        self.agent_ids      = []
-        self.rewards        = []
-        if self.type == self.C_TYPE_OVERALL: self.set_overall_reward(p_value)
+        self.type = p_type
+        self.agent_ids = []
+        self.rewards = []
+        if self.type == self.C_TYPE_OVERALL:
+            self.set_overall_reward(p_value)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_type(self):
-        return self.type        
+        return self.type
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def is_rewarded(self, p_agent_id) -> bool:
         try:
             i = self.agent_ids.index(p_agent_id)
@@ -266,42 +238,41 @@ class Reward(TStamp):
         except:
             return False
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def set_overall_reward(self, p_reward) -> bool:
-        if self.type != self.C_TYPE_OVERALL: return False
-        self.overall_reward = p_reward    
+        if self.type != self.C_TYPE_OVERALL:
+            return False
+        self.overall_reward = p_reward
         return True
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_overall_reward(self):
         return self.overall_reward
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def add_agent_reward(self, p_agent_id, p_reward) -> bool:
-        if self.type != self.C_TYPE_EVERY_AGENT: return False
-        self.agent_ids.append(p_agent_id) 
-        self.rewards.append(p_reward)   
+        if self.type != self.C_TYPE_EVERY_AGENT:
+            return False
+        self.agent_ids.append(p_agent_id)
+        self.rewards.append(p_reward)
         return True
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_agent_reward(self, p_agent_id):
-        if self.type == self.C_TYPE_OVERALL: return self.overall_reward
+        if self.type == self.C_TYPE_OVERALL:
+            return self.overall_reward
 
         try:
-            i = self.agent_ids.index(p_agent_id)    
+            i = self.agent_ids.index(p_agent_id)
         except:
-            return None   
+            return None
 
         return self.rewards[i]
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def add_action_reward(self, p_agent_id, p_action_id, p_reward) -> bool:
-        if self.type != self.C_TYPE_EVERY_ACTION: return False
+        if self.type != self.C_TYPE_EVERY_ACTION:
+            return False
 
         try:
             i = self.agent_ids.index(p_agent_id)
@@ -310,29 +281,26 @@ class Reward(TStamp):
             r[1].append(p_reward)
         except:
             self.agent_ids.append(p_agent_id)
-            self.rewards.append([ [p_action_id],[p_reward] ])
+            self.rewards.append([[p_action_id], [p_reward]])
 
         return True
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_action_reward(self, p_agent_id, p_action_id):
-      if self.type != self.C_TYPE_EVERY_ACTION: return None
-      
-      try:
-          i_agent = self.agent_ids.index(p_agent_id)
-      except:
-          return None
+        if self.type != self.C_TYPE_EVERY_ACTION:
+            return None
 
-      try:
-          r = self.rewards[i_agent]
-          i_action = r[0].index(p_action_id)
-          return r[1][i_action]
-      except:
-          return None
+        try:
+            i_agent = self.agent_ids.index(p_agent_id)
+        except:
+            return None
 
-
-
+        try:
+            r = self.rewards[i_agent]
+            i_action = r[0].index(p_action_id)
+            return r[1][i_action]
+        except:
+            return None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -342,7 +310,7 @@ class SARSElement(BufferElement):
     Element of a SARSBuffer.
     """
 
-    def __init__(self, p_state:State, p_action:Action, p_reward:Reward, p_state_new:State):
+    def __init__(self, p_state: State, p_action: Action, p_reward: Reward, p_state_new: State):
         """
         Parameters:
             p_state         State of an environment
@@ -351,10 +319,7 @@ class SARSElement(BufferElement):
             p_state_new     State of the environment as reaction to the action
         """
 
-        super().__init__( { "state" : p_state, "action" : p_action, "reward" : p_reward, "state_new" : p_state_new } )
-
-
-
+        super().__init__({"state": p_state, "action": p_action, "reward": p_reward, "state_new": p_state_new})
 
 
 ## -------------------------------------------------------------------------------------------------
