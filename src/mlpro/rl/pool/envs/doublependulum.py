@@ -305,7 +305,7 @@ class DoublePendulum (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot():
+    def update_plot(self):
         x1 = self.l1*sin(self.y[:, 0])
         y1 = -self.l1*cos(self.y[:, 0])
 
