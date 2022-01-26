@@ -30,10 +30,11 @@
 ## --                                - Added log functionality to class TrainingResults
 ## -- 2022-01-18  1.3.2     MRD      Small optimize on Scenario instantiation in Training class
 ## --                                Put the self._cycle_limit directly on the parameter argument
+## -- 2022-01-25  1.3.3     SY       Class Training: enhanced training with hyperparameter tuning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-01-18)
+Ver. 1.3.3 (2022-01-25)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
