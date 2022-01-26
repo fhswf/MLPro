@@ -20,7 +20,6 @@ from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
-from collections import deque
 from pathlib import Path
 
 
