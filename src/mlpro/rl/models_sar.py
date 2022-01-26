@@ -235,7 +235,7 @@ class Reward(TStamp):
         try:
             i = self.agent_ids.index(p_agent_id)
             return True
-        except:
+        except ValueError:
             return False
 
     ## -------------------------------------------------------------------------------------------------
@@ -264,7 +264,7 @@ class Reward(TStamp):
 
         try:
             i = self.agent_ids.index(p_agent_id)
-        except:
+        except ValueError:
             return None
 
         return self.rewards[i]
@@ -279,7 +279,7 @@ class Reward(TStamp):
             r = self.rewards[i]
             r[0].append(p_action_id)
             r[1].append(p_reward)
-        except:
+        except ValueError:
             self.agent_ids.append(p_agent_id)
             self.rewards.append([[p_action_id], [p_reward]])
 
@@ -292,7 +292,7 @@ class Reward(TStamp):
 
         try:
             i_agent = self.agent_ids.index(p_agent_id)
-        except:
+        except ValueError:
             return None
 
         try:

@@ -147,26 +147,32 @@ class WrPolicySB32MLPro(Policy):
             else:
                 obs = torch.Tensor(obs).reshape(1, obs.size).to(self.sb3.device)
 
-        with torch.no_grad():
-            actions, values, log_probs = self.sb3.policy.forward(obs)
+        if self._adaptivity:
+            with torch.no_grad():
+                actions, values, log_probs = self.sb3.policy.forward(obs)
 
-        actions = actions.cpu().numpy()
+            actions = actions.cpu().numpy()
 
-        clipped_actions = actions
-        # Clip the actions to avoid out of bound error
-        if isinstance(self.sb3.action_space, gym.spaces.Box):
-            clipped_actions = np.clip(actions, self.lows, self.highs)
+            clipped_actions = actions
+            # Clip the actions to avoid out of bound error
+            if isinstance(self.sb3.action_space, gym.spaces.Box):
+                clipped_actions = np.clip(actions, self.lows, self.highs)
 
-        # Action Step
-        action = clipped_actions.flatten()
-        action = Action(self._id, self._action_space, action)
+            # Action Step
+            action = clipped_actions.flatten()
+            action = Action(self._id, self._action_space, action)
 
-        # Action Buffer
-        action_buffer = actions.flatten()
-        action_buffer = Action(self._id, self._action_space, action_buffer)
+            # Action Buffer
+            action_buffer = actions.flatten()
+            action_buffer = Action(self._id, self._action_space, action_buffer)
 
-        # Add to additional_buffer_element
-        self.additional_buffer_element = dict(action=action_buffer, value=values, action_log=log_probs)
+            # Add to additional_buffer_element
+            self.additional_buffer_element = dict(action=action_buffer, value=values, action_log=log_probs)
+        else:
+            action, _ = self.sb3.predict(obs, deterministic=True)
+
+            action = action.flatten()
+            action = Action(self._id, self._action_space, action)
         return action
 
     def _compute_action_off_policy(self, p_obs: State) -> Action:

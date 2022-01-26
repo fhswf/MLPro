@@ -516,20 +516,20 @@ class RLTraining(Training):
         # 2.1 Optional parameter p_cycles_per_epi_limit
         try:
             self._cycles_per_epi_limit = self._kwargs['p_cycles_per_epi_limit']
-        except:
+        except KeyError:
             self._cycles_per_epi_limit = -1
 
         # 2.2 Optional parameter p_eval_frequency
         try:
             self._eval_frequency = self._kwargs['p_eval_frequency']
-        except:
+        except KeyError:
             self._eval_frequency = 0
             self._kwargs['p_eval_frequency'] = self._eval_frequency
 
         # 2.3 Optional parameter p_eval_grp_size
         try:
             self._eval_grp_size = self._kwargs['p_eval_grp_size']
-        except:
+        except KeyError:
             self._eval_grp_size = 0
             self._kwargs['p_eval_grp_size'] = self._eval_grp_size
 
@@ -539,42 +539,42 @@ class RLTraining(Training):
             if self._eval_score_ma_horizon < 1:
                 self._eval_score_ma_horizon = 1
 
-        except:
+        except KeyError:
             self._eval_score_ma_horizon = 5
             self._kwargs['p_score_ma_horizon'] = self._eval_score_ma_horizon
 
         # 2.5 Optional parameter p_stagnation_limit
         try:
             self._stagnation_limit = self._kwargs['p_stagnation_limit']
-        except:
+        except KeyError:
             self._stagnation_limit = 0
             self._kwargs['p_stagnation_limit'] = self._stagnation_limit
 
         # 2.6 Optional parameter p_collect_states
         try:
             self._collect_states = self._kwargs['p_collect_states']
-        except:
+        except KeyError:
             self._collect_states = True
             self._kwargs['p_collect_states'] = self._collect_states
 
         # 2.7 Optional parameter p_collect_actions
         try:
             self._collect_actions = self._kwargs['p_collect_actions']
-        except:
+        except KeyError:
             self._collect_actions = True
             self._kwargs['p_collect_actions'] = self._collect_actions
 
         # 2.8 Optional parameter p_collect_rewards
         try:
             self._collect_rewards = self._kwargs['p_collect_rewards']
-        except:
+        except KeyError:
             self._collect_rewards = True
             self._kwargs['p_collect_rewards'] = self._collect_rewards
 
         # 2.9 Optional parameter p_collect_eval
         try:
             self._collect_eval = self._kwargs['p_collect_eval']
-        except:
+        except KeyError:
             self._collect_eval = True
             self._kwargs['p_collect_eval'] = self._collect_eval
 
