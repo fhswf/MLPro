@@ -28,10 +28,11 @@
 ## -- 2022-01-19  1.5.1     DA       Corrections of log texts
 ## -- 2022-01-23  1.5.2     DA       Classes RLTrainingResults, RLDataStoringEval: added columns 
 ## --                                'Score (MA)' and 'Adapations' to result file evaluation.csv
+## -- 2022-01-26  1.5.3     DA       Class RLTraining: turn off training data logging during evaluation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.2 (2022-01-23)
+Ver. 1.5.3 (2022-01-26)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -793,6 +794,9 @@ class RLTraining (Training):
         Initializes the next evaluation.
         """
 
+        # Training data logging is turned eff
+        self._scenario.connect_data_logger()
+
         if self._results.ds_eval is not None: self._results.ds_eval.add_evaluation(self._results.num_evaluations)
 
         self._eval_num_cycles       = 0
@@ -905,7 +909,11 @@ class RLTraining (Training):
             self._eval_stagnations = 0
 
 
-        # 4 Outro
+        # 5 Training data logging is turned on
+        self._scenario.connect_data_logger(p_ds_states=self._results.ds_states, p_ds_actions=self._results.ds_actions, p_ds_rewards=self._results.ds_rewards)
+
+
+        # 6 Outro
         return score
 
 
