@@ -134,11 +134,11 @@ class DoublePendulum (Environment):
         state_space.add_dim(Dimension(0, 'theta 1', 'th1', 'Angle of Pendulum 1', '', 'degrees', 
                             '\textdegrees',[-np.pi, np.pi]))
         state_space.add_dim(Dimension(1, 'omega 1', 'w1', 'Angular Velocity of Pendulum 1', '', 
-                            'degrees/second', '\textdegrees/s',[]))
+                            'degrees/second', '\textdegrees/s',[-np.inf, np.inf]))
         state_space.add_dim(Dimension(2, 'theta 2', 'th2', 'Angle of pendulum 2', '', 'degrees', 
                             '\textdegrees',[-np.pi, np.pi]))
         state_space.add_dim(Dimension(3, 'omega 2', 'w2', 'Angular Velocity of Pendulum 2', '', 
-                            'degrees/second', '\textdegrees/s',[]))
+                            'degrees/second', '\textdegrees/s',[-np.inf, np.inf]))
         
         action_space.add_dim(Dimension(0, 'torque 1', 'tau1', 'Applied Torque of Motor 1', '', 
                             'Nm', 'Nm', [-self.max_torque, self.max_torque]))
@@ -147,26 +147,25 @@ class DoublePendulum (Environment):
         
 
 ## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def derivs(state, t):
+    def derivs(self, state, t):
         dydx = np.zeros_like(state)
         dydx[0] = state[1]
 
         delta = state[2] - state[0]
-        den1 = (M1+M2) * L1 - M2 * L1 * cos(delta) * cos(delta)
-        dydx[1] = ((M2 * L1 * state[1] * state[1] * sin(delta) * cos(delta)
-                    + M2 * G * sin(state[2]) * cos(delta)
-                    + M2 * L2 * state[3] * state[3] * sin(delta)
-                    - (M1+M2) * G * sin(state[0]))
+        den1 = (self.m1+self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
+        dydx[1] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
+                    + self.m2 * self.g * sin(state[2]) * cos(delta)
+                    + self.m2 * self.l2 * state[3] * state[3] * sin(delta)
+                    - (self.m1+self.m2) * self.g * sin(state[0]))
                    / den1)
 
         dydx[2] = state[3]
 
-        den2 = (L2/L1) * den1
-        dydx[3] = ((- M2 * L2 * state[3] * state[3] * sin(delta) * cos(delta)
-                    + (M1+M2) * G * sin(state[0]) * cos(delta)
-                    - (M1+M2) * L1 * state[1] * state[1] * sin(delta)
-                    - (M1+M2) * G * sin(state[2]))
+        den2 = (self.l2/self.l1) * den1
+        dydx[3] = ((- self.m2 * self.l2 * state[3] * state[3] * sin(delta) * cos(delta)
+                    + (self.m1+self.m2) * self.g * sin(state[0]) * cos(delta)
+                    - (self.m1+self.m2) * self.l1 * state[1] * state[1] * sin(delta)
+                    - (self.m1+self.m2) * self.g * sin(state[2]))
                    / den2)
 
         return dydx
@@ -229,7 +228,7 @@ class DoublePendulum (Environment):
         else:
             state[1] = np.clip(state[1], -self.max_speed, self.max_speed)
         
-        self.y = integrate.odeint(derivs, state, np.arange(0, self.t_act*self.t_step, self.t_step))
+        self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act*self.t_step, self.t_step))
         state = self.y[-1]
         
         for i in range(len(state)):
@@ -321,7 +320,7 @@ class DoublePendulum (Environment):
 
             self.line.set_data(thisx, thisy)
             self.trace.set_data(self.history_x, self.history_y)
-            return line, trace
+            return self.line, self.trace
 
         ani = animation.FuncAnimation(
             self.fig, animate, len(self.y), interval=self.t_step*1000, blit=True, repeat=False)
