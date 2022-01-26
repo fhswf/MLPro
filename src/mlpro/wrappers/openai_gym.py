@@ -40,101 +40,93 @@ Ver. 1.3.2 (2022-01-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
-
-from itertools import cycle
 import gym
 from mlpro.rl.models import *
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvGYM2MLPro (Environment):
+class WrEnvGYM2MLPro(Environment):
     """
     This class is a ready to use wrapper class for OpenAI Gym environments. 
     Objects of this type can be treated as an environment object. Encapsulated 
     gym environment must be compatible to class gym.Env.
     """
 
-    C_TYPE        = 'OpenAI Gym Env'
+    C_TYPE = 'OpenAI Gym Env'
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_gym_env,                     # Gym environment object
-                 p_state_space:MSpace=None,     # Optional external state space object that meets the
-                                                # state space of the gym environment
-                 p_action_space:MSpace=None,    # ptional external action space object that meets the
-                                                # state space of the gym environment
-                 p_logging=Log.C_LOG_ALL):      # Log level (see constants of class Log)
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_gym_env,  # Gym environment object
+                 p_state_space: MSpace = None,  # Optional external state space object that meets the
+                 # state space of the gym environment
+                 p_action_space: MSpace = None,  # ptional external action space object that meets the
+                 # state space of the gym environment
+                 p_logging=Log.C_LOG_ALL):  # Log level (see constants of class Log)
 
-        self._gym_env     = p_gym_env
-        self.C_NAME       = 'Env "' + self._gym_env.spec.id + '"'
+        self._gym_env = p_gym_env
+        self.C_NAME = 'Env "' + self._gym_env.spec.id + '"'
 
         super().__init__(p_mode=Environment.C_MODE_SIM, p_latency=None, p_logging=p_logging)
 
-        if p_state_space is not None: 
+        if p_state_space is not None:
             self._state_space = p_state_space
         else:
             self._state_space = self.recognize_space(self._gym_env.observation_space)
-        
-        if p_action_space is not None: 
+
+        if p_action_space is not None:
             self._action_space = p_action_space
         else:
             self._action_space = self.recognize_space(self._gym_env.action_space)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __del__(self):
         self._gym_env.close()
         self.log(self.C_LOG_TYPE_I, 'Closed')
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def recognize_space(p_gym_space) -> ESpace:
         space = ESpace()
-        
+
         if isinstance(p_gym_space, gym.spaces.Discrete):
-            space.add_dim(Dimension(p_id=0,p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
+            space.add_dim(
+                Dimension(p_id=0, p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
         elif isinstance(p_gym_space, gym.spaces.Box):
             shape_dim = len(p_gym_space.shape)
             for i in range(shape_dim):
                 for d in range(p_gym_space.shape[i]):
-                    space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R, p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
+                    space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
+                                            p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
 
         return space
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
         return None, None
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
 
         # 1 Reset Gym environment and determine initial state
         self._gym_env.seed(p_seed)
         observation = self._gym_env.reset()
-        obs         = DataObject(observation)
+        obs = DataObject(observation)
 
         # 2 Create state object from Gym observation
-        state   = State(self._state_space)
+        state = State(self._state_space)
         state.set_values(obs.get_data())
         self._set_state(state)
 
-
-## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state:State, p_action: Action) -> State:
+    ## -------------------------------------------------------------------------------------------------
+    def simulate_reaction(self, p_state: State, p_action: Action) -> State:
 
         # 1 Convert action to Gym syntax
         action_sorted = p_action.get_sorted_values()
-        dtype         = self._gym_env.action_space.dtype
+        dtype = self._gym_env.action_space.dtype
 
-        if ( dtype == np.int32 ) or ( dtype == np.int64 ):
+        if (dtype == np.int32) or (dtype == np.int64):
             action_sorted = action_sorted.round(0)
 
         if action_sorted.size == 1:
@@ -142,64 +134,51 @@ class WrEnvGYM2MLPro (Environment):
         else:
             action_gym = action_sorted.astype(self._gym_env.action_space.dtype)
 
-
         # 2 Process step of Gym environment
         try:
             observation, reward_gym, done, info = self._gym_env.step(action_gym)
         except:
             observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
-        
-        obs               = DataObject(observation)
 
+        obs = DataObject(observation)
 
         # 3 Create state object from Gym observation
-        state = State(self._state_space, p_terminal=done )
+        state = State(self._state_space, p_terminal=done)
         state.set_values(obs.get_data())
-
 
         # 4 Create reward object
         self._last_reward = Reward(Reward.C_TYPE_OVERALL)
         self._last_reward.set_overall_reward(reward_gym)
 
-
         # 5 Return next state
         return state
 
-
-## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state_old:State=None, p_state_new:State=None) -> Reward:
-        if ( p_state_old is not None ) or ( p_state_new is not None ):
+    ## -------------------------------------------------------------------------------------------------
+    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+        if (p_state_old is not None) or (p_state_new is not None):
             raise NotImplementedError
 
         return self._last_reward
 
-
-## -------------------------------------------------------------------------------------------------
-    def compute_success(self, p_state:State) -> bool:
+    ## -------------------------------------------------------------------------------------------------
+    def compute_success(self, p_state: State) -> bool:
         return self.get_success()
 
-
-## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state:State) -> bool:
+    ## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state: State) -> bool:
         return self.get_broken()
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         self._gym_env.render()
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         self._gym_env.render()
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_cycle_limit(self):
         return self._gym_env._max_episode_steps
-
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -211,11 +190,11 @@ class WrEnvMLPro2GYM(gym.Env):
     MLPro environment must be compatible to class Environment.
     """
 
-    C_TYPE        = 'MLPro to Gym Env'
-    metadata      = {'render.modes': ['human']}
+    C_TYPE = 'MLPro to Gym Env'
+    metadata = {'render.modes': ['human']}
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mlpro_env, p_state_space:MSpace=None, p_action_space:MSpace=None):
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_mlpro_env, p_state_space: MSpace = None, p_action_space: MSpace = None):
         """
         Parameters:
             p_mlpro_env     MLPro's Environment object
@@ -225,23 +204,22 @@ class WrEnvMLPro2GYM(gym.Env):
                             state space of the MLPro environment
         """
 
-        self._mlpro_env             = p_mlpro_env
-        
-        if p_state_space is not None: 
-            self.observation_space  = p_state_space
-        else:
-            self.observation_space  = self.recognize_space(self._mlpro_env.get_state_space())
-        
-        if p_action_space is not None: 
-            self.action_space       = p_action_space
-        else:
-            self.action_space       = self.recognize_space(self._mlpro_env.get_action_space())
-        
-        self.first_refresh          = True
-        
+        self._mlpro_env = p_mlpro_env
 
-## -------------------------------------------------------------------------------------------------
-    @staticmethod    
+        if p_state_space is not None:
+            self.observation_space = p_state_space
+        else:
+            self.observation_space = self.recognize_space(self._mlpro_env.get_state_space())
+
+        if p_action_space is not None:
+            self.action_space = p_action_space
+        else:
+            self.action_space = self.recognize_space(self._mlpro_env.get_action_space())
+
+        self.first_refresh = True
+
+    ## -------------------------------------------------------------------------------------------------
+    @staticmethod
     def recognize_space(p_mlpro_space):
         space = None
         action_dim = p_mlpro_space.get_num_dim()
@@ -255,34 +233,33 @@ class WrEnvMLPro2GYM(gym.Env):
                 highs.append(p_mlpro_space.get_dim(dimension).get_boundaries()[1])
 
             space = gym.spaces.Box(
-                            low=np.array(lows, dtype=np.float32), 
-                            high=np.array(highs, dtype=np.float32), 
-                            shape=(action_dim,), 
-                            dtype=np.float32
-                            )
-            
+                low=np.array(lows, dtype=np.float32),
+                high=np.array(highs, dtype=np.float32),
+                shape=(action_dim,),
+                dtype=np.float32
+            )
+
         return space
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def step(self, action):
-        _action     = Action()
-        _act_set    = Set()
-        idx         = self._mlpro_env._action_space.get_num_dim()
+        _action = Action()
+        _act_set = Set()
+        idx = self._mlpro_env._action_space.get_num_dim()
 
         if isinstance(self.observation_space, gym.spaces.Discrete):
             action = np.array([action])
-        
+
         for i in range(idx):
-            _act_set.add_dim(Dimension(i,'action_'+str(i)))
-        _act_elem   = Element(_act_set)
+            _act_set.add_dim(Dimension(i, 'action_' + str(i)))
+        _act_elem = Element(_act_set)
         for i in range(idx):
             _act_elem.set_value(i, action[i].item())
         _action.add_elem('0', _act_elem)
-        
+
         self._mlpro_env.process_action(_action)
         reward = self._mlpro_env.compute_reward()
-        
+
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):
             obs = np.array(self._mlpro_env.get_state().get_values(), dtype=np.float32)
@@ -296,9 +273,8 @@ class WrEnvMLPro2GYM(gym.Env):
         info["TimeLimit.truncated"] = state.get_timeout()
 
         return obs, reward.get_overall_reward(), done, info
-    
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def reset(self):
         self._mlpro_env.reset()
         obs = None
@@ -307,9 +283,8 @@ class WrEnvMLPro2GYM(gym.Env):
         else:
             obs = np.array(self._mlpro_env.get_state().get_values())
         return obs
-    
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def render(self, mode='human'):
         try:
             if self.first_refresh:
@@ -321,7 +296,6 @@ class WrEnvMLPro2GYM(gym.Env):
         except:
             return False
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def close(self):
         self._mlpro_env.__del__()
