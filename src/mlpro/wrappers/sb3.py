@@ -146,7 +146,7 @@ class WrPolicySB32MLPro(Policy):
                 obs = torch.Tensor(obs).reshape(1, len(obs)).to(self.sb3.device)
             else:
                 obs = torch.Tensor(obs).reshape(1, obs.size).to(self.sb3.device)
-        print(self._adaptivity)
+
         if self._adaptivity:
             with torch.no_grad():
                 actions, values, log_probs = self.sb3.policy.forward(obs)

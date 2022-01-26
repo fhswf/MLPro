@@ -475,9 +475,12 @@ class Agent(Policy):
         self._policy.switch_logging(p_logging)
 
     ## -------------------------------------------------------------------------------------------------
-    def switch_adaptivity(self, p_ada:bool):
+    def switch_adaptivity(self, p_ada: bool):
         super().switch_adaptivity(p_ada)
-        self._policy.switch_adaptivity(p_ada)
+        try:
+            self._policy.switch_adaptivity(p_ada)
+        except AttributeError:
+            pass
 
     ## -------------------------------------------------------------------------------------------------
     def set_log_level(self, p_level):
