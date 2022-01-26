@@ -259,7 +259,7 @@ class RobotHTM(Environment):
     C_CYCLE_LIMIT = 100
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_num_joints=4, p_seed=0, p_target_mode="random", p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_num_joints=4, p_reset_seed=True, p_seed=None, p_target_mode="random", p_logging=Log.C_LOG_ALL):
         """
         Parameters:
             p_logging               Boolean switch for logging
@@ -269,8 +269,7 @@ class RobotHTM(Environment):
 
         self.RobotArm1 = RobotArm3D()
 
-        roboconf = {}
-        roboconf["Joints"] = []
+        joints = []
 
         jointType = []
         vectLinkLength = [[0, 0, 0], [0, 0, 0]]
@@ -288,12 +287,9 @@ class RobotHTM(Environment):
                 Joint_type=jointType[x],
                 Vector_link_length=vectorLink,
             )
-            roboconf["Joints"].append(joint)
+            joints.append(joint)
 
-        roboconf["Target_mode"] = p_target_mode
-        roboconf["Update_rate"] = 0.01
-
-        for robo in roboconf["Joints"]:
+        for robo in joints:
             self.RobotArm1.add_link_joint(
                 lvector=torch.Tensor(
                     [
@@ -310,8 +306,8 @@ class RobotHTM(Environment):
 
         self.RobotArm1.update_joint_coords()
         self.jointangles = self.RobotArm1.thetas
-        self.dt = roboconf["Update_rate"]
-        self.target_mode = roboconf["Target_mode"]
+        self.dt = 0.01
+        self.target_mode = p_target_mode
         self.target = None
         self.init_distance = None
         self.num_joint = self.RobotArm1.get_num_joint()
@@ -321,6 +317,8 @@ class RobotHTM(Environment):
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         self._state_space, self._action_space = self._setup_spaces()
         self.set_random_seed(p_seed)
+        self._reset_seed = p_reset_seed
+
         self.reset()
 
     ## -------------------------------------------------------------------------------------------------
@@ -433,7 +431,8 @@ class RobotHTM(Environment):
 
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
-        self.set_random_seed(p_seed)
+        if self._reset_seed:
+            self.set_random_seed(p_seed)
         theta = torch.zeros(self.RobotArm1.get_num_joint())
         self.RobotArm1.set_theta(theta)
         self.RobotArm1.update_joint_coords()
