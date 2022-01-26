@@ -29,10 +29,11 @@
 ## -- 2022-01-23  1.5.2     DA       Classes RLTrainingResults, RLDataStoringEval: added columns 
 ## --                                'Score (MA)' and 'Adapations' to result file evaluation.csv
 ## -- 2022-01-26  1.5.3     DA       Class RLTraining: turn off training data logging during evaluation
+## -- 2022-01-26  1.5.4     SY       Class RLTraining: update preparation of data logging for next episode
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.3 (2022-01-26)
+Ver. 1.5.4 (2022-01-26)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -733,9 +734,9 @@ class RLTraining (Training):
 
 
         # 3 Preparation of data logging for next episode 
-        if self._results.ds_states is not None: self._results.ds_states.add_episode(self._results.num_episodes)
-        if self._results.ds_actions is not None: self._results.ds_actions.add_episode(self._results.num_episodes)
-        if self._results.ds_rewards is not None: self._results.ds_rewards.add_episode(self._results.num_episodes)
+        if (self._results.ds_states and self._scenario._ds_states) is not None: self._results.ds_states.add_episode(self._results.num_episodes)
+        if (self._results.ds_actions and self._scenario._ds_actions) is not None: self._results.ds_actions.add_episode(self._results.num_episodes)
+        if (self._results.ds_rewards and self._scenario._ds_rewards) is not None: self._results.ds_rewards.add_episode(self._results.num_episodes)
 
 
 ## -------------------------------------------------------------------------------------------------
