@@ -41,7 +41,8 @@ class MyScenario(RLScenario):
                     policy="MlpPolicy",
                     n_steps=5, 
                     env=None,
-                    _init_setup_model=False)
+                    _init_setup_model=False,
+                    seed=1)
 
         # 3 Wrap the policy
         policy_wrapped = WrPolicySB32MLPro(
@@ -70,7 +71,7 @@ if __name__ == "__main__":
     cycle_limit         = 5000
     adaptation_limit    = 50
     stagnation_limit    = 5
-    eval_frequency      = 10
+    eval_frequency      = 5
     eval_grp_size       = 5
     logging             = Log.C_LOG_WE
     visualize           = True
