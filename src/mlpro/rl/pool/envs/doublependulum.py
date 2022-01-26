@@ -224,7 +224,7 @@ class DoublePendulum (Environment):
         state[1] = th1dot + (3 * self.g / (2 * self.l1) * sin(th1) + 3.0 / 
                 (self.m1 * self.l1 ** 2) * torque) * self.t_step
                 
-        if abs(th1dot) > max_speed:
+        if abs(th1dot) > self.max_speed:
             state[1] = np.clip(state[1], -th1dot, th1dot)
         else:
             state[1] = np.clip(state[1], -self.max_speed, self.max_speed)
