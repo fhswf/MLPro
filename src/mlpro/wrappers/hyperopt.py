@@ -27,7 +27,7 @@ from mlpro.bf.various import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrHPTHyperopt(HyperParamTuner, ScientificObject):
+class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
     """
     This class is a ready to use wrapper class for Hyperopt framework. 
     Objects of this type can be treated as a hyperparameter tuner object.
@@ -76,12 +76,18 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
         """
         super().__init__(p_logging=p_logging)
 
-        self._algo          = p_algo
-        self._ids           = p_ids
-    
+        if p_algo is None:
+            raise ParamError('Mandatory parameter p_algo is not supplied')
+        else:
+            self._algo = p_algo
+        
+        self._ids = p_ids
+        
+        self.log(self.C_LOG_TYPE_I, 'Hyperopt configuration is successful')
+            
 
 ## -------------------------------------------------------------------------------------------------
-    def _maximize(self) -> TrainingResults:
+    def _maximize(self, **p_kwargs) -> TrainingResults:
         """
         This method is a place to setup a hp tuner based on hp structure of the model
         and run the hp tuner.
@@ -92,6 +98,24 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
             The best result after a number of evaluations.
 
         """
+        self._kwargs = p_kwargs.copy()
+        
+        try:
+            training_cls = self._kwargs['p_training_cls']
+        except:
+            raise ParamError('Mandatory parameter p_training_cls is not supplied')
+        try:
+            num_trials = self._kwargs['p_num_trials']
+            if num_trials <= 0:
+                raise ParamError('Parameter p_num_trials must be greater than 0')
+        except:
+            raise ParamError('Mandatory parameter p_num_trials is not supplied')
+        try:
+            training_param = self._kwargs['p_training_param']
+        except:
+            raise ParamError('Mandatory parameter p_training_param is not supplied')
+
+
         spaces              = self.SetupSpaces()
         if self._algo == 'TPE':
             self.algo       = tpe.suggest

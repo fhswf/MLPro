@@ -235,7 +235,7 @@ else:
 
 
 # 3. Instantiate a hyperopt wrapper
-myHyperopt = WrHPTHyperopt(p_logging=logging,
+myHyperopt = WrHPTHyperopt(p_logging=Log.C_LOG_ALL,
                            p_algo=WrHPTHyperopt.C_ALGO_TPE,
                            p_ids=None)
     
