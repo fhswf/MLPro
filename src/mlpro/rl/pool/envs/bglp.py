@@ -25,7 +25,7 @@
 ## -- 2021-12-19  2.1.8     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  2.1.9     DA       Class BGLP: renamed method reset() to _reset()
 ## -- 2022-01-21  2.2.0     SY       Add cycle_limit as an input parameter
-## -- 2022-01-24  2.2.1     SY       Update seeding procedure, remove reset() in the constructor
+## -- 2022-01-24  2.2.1     SY       Update seeding procedure, refactoring _reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
