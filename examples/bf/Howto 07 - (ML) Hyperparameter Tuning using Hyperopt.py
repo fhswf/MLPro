@@ -79,6 +79,7 @@ class myPolicy (Policy):
     def compute_action(self, p_state: State) -> Action:
         my_action_values = np.zeros(self._action_space.get_num_dim())
         for d in range(self._action_space.get_num_dim()):
+            self.set_random_seed(None)
             my_action_values[d] = random.random() 
         return Action(self._id, self._action_space, my_action_values)
     
@@ -214,7 +215,7 @@ if __name__ == "__main__":
     dest_path       = str(Path.home())
     cycle_limit     = 100
     cycle_per_ep    = 10
-    eval_freq       = 10
+    eval_freq       = 2
     eval_grp_size   = 5
     adapt_limit     = 0
     stagnant_limit  = 5
@@ -227,7 +228,7 @@ else:
     dest_path       = None
     cycle_limit     = 100
     cycle_per_ep    = 10
-    eval_freq       = 5
+    eval_freq       = 2
     eval_grp_size   = 1
     adapt_limit     = 0
     stagnant_limit  = 0

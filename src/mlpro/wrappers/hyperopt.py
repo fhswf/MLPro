@@ -30,7 +30,7 @@ import os
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
+class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log, LoadSave):
     """
     This class is a ready to use wrapper class for Hyperopt framework. 
     Objects of this type can be treated as a hyperparameter tuner object.
@@ -65,6 +65,8 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
     C_SCIREF_PAGES      = "13-19"
     C_SCIREF_DOI        = "10.25080/Majora-8b375195-003"
     C_SCIREF_EDITOR     = "Stefan van der Walt, Jarrod Millman, Katy Huff"
+    
+    C_LOG_SEPARATOR = '------------------------------------------------------------------------------'
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -124,7 +126,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
         
         #ignore collecting data during tuning to save tuning time and memory
         self._training_param['p_training_param']['p_collect_states'] = False
-        self._training_param['p_training_param']['p_collect_actions'] = False
+        self._training_param['p_training_param']['p_collect_actions'] = True
         self._training_param['p_training_param']['p_collect_rewards'] = False
         self._training_param['p_training_param']['p_logging'] = Log.C_LOG_NOTHING
         self._training_param['p_training_param']['p_visualize'] = False
@@ -141,7 +143,11 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
         elif self._algo == 'RND':
             self.algo       = rand.suggest
             
-        best_result         = fmin(self._ofct_hyperopt, spaces, self.algo, self._num_trials, trials=Trials())
+        trials              = Trials()
+        best_param          = fmin(self._ofct_hyperopt, spaces, self.algo, self._num_trials, trials=trials)
+        best_result         = trials.results[np.argmin([r['loss'] for r in trials.results])]['loss']
+        self.save(best_param, best_result, self._root_path, 'best_parameters.csv')
+        
         return -best_result
 
 ## -------------------------------------------------------------------------------------------------
@@ -158,6 +164,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
         """
         
         self.log(self.C_LOG_TYPE_I, 'Trial number '+str(self.num_trials)+' has started')
+        self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
         
         #change root path in training param
         self._training_param['p_training_param']['p_path'] =  self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Trial_'+str(self.num_trials)
@@ -188,10 +195,11 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
                         raise NotImplementedError
         
         #run the scenario and retrieve the high score
-        result                  = self.training_cls.run()
+        result                  = training_cls.run()
         self.num_trials         += 1
         
         self.log(self.C_LOG_TYPE_I, 'Trial number '+str(self.num_trials)+' has finished')
+        self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
         
         return -(result.highscore)
 
@@ -247,6 +255,53 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
                     else:
                         raise NotImplementedError
         
-        self.log(self.C_LOG_TYPE_I, 'Spaces for hyperopt is ready.')
+        self.log(self.C_LOG_TYPE_I, 'Spaces for hyperopt is ready')
+        self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
         
         return spaces
+    
+## -------------------------------------------------------------------------------------------------
+    def _save_line(self, p_file, p_name, p_value):
+        value = p_value
+        if value is None: value = '-'
+        p_file.write(p_name + '\t' + str(value) + '\n')
+
+
+## -------------------------------------------------------------------------------------------------
+    def save(self, p_param, p_result, p_path, p_filename='summary.csv') -> bool:
+        """
+        Saves a training summary in the given path.
+
+        Parameters
+        ----------
+        p_path : dict
+            A dictionary that consists of list of best parameters
+        p_result : float
+            Highest score
+        p_path : str
+            Destination folder
+        p_filename  :str
+            Name of summary file. Default = 'summary.csv'
+
+        Returns
+        -------
+        success : bool
+            True, if summary file was created successfully. False otherwise.
+
+        """
+
+        filename = p_path + os.sep + p_filename
+        filename.replace(os.sep + os.sep, os.sep)
+
+        file = open(filename, 'wt')
+        if file is None: return False
+  
+        self._save_line(file, 'Tuner', '"Hyperopt"')    
+        self._save_line(file, 'Number of evaluations', self._num_trials)  
+        self._save_line(file, 'Algorithms', self._algo)       
+        self._save_line(file, 'Highest Score', p_result)
+        for key in p_param:
+            self._save_line(file, key, p_param[key])
+
+        file.close()
+        return True
