@@ -8,11 +8,11 @@
 ## -- 2021-12-08  0.0.0     SY       Creation
 ## -- 2021-12-08  1.0.0     SY       Release of first version
 ## -- 2022-01-21  1.0.1     DA       Renaming: tupel -> tuple
-## -- 2022-01-25  1.0.2     SY       Class WrHPTHyperopt enhancement
+## -- 2022-01-27  1.0.2     SY       Class WrHPTHyperopt enhancement
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-01-25)
+Ver. 1.0.2 (2022-01-27)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 """
@@ -240,19 +240,9 @@ myHyperopt = WrHPTHyperopt(p_logging=Log.C_LOG_ALL,
                            p_ids=None)
     
 
-# 4. Instantiate a scenario
-myscenario  = BGLP_Rnd(
-    p_mode=Mode.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=0,
-    p_visualize=visualize,
-    p_logging=logging
-)
-
-
-# 5. Train players in the scenario and turn the hyperparamter tuning on
+# 4. Train players in the scenario and turn the hyperparamter tuning on
 training        = RLTraining(
-    p_scenario_cls=myscenario,
+    p_scenario_cls=BGLP_Rnd,
     p_cycle_limit=cycle_limit,
     p_cycles_per_epi_limit=cycle_per_ep,
     p_eval_frequency=eval_freq,
@@ -260,7 +250,7 @@ training        = RLTraining(
     p_adaptation_limit=adapt_limit,
     p_stagnation_limit=stagnant_limit,
     p_score_ma_horizon=score_ma_hor,
-    p_hpt=myHyperopt,
+    p_hpt=None,
     p_hpt_trials=10,
     p_collect_states=True,
     p_collect_actions=True,
