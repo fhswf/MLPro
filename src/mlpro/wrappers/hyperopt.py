@@ -8,11 +8,11 @@
 ## -- 2021-12-07  0.0.0     SY       Creation 
 ## -- 2021-12-08  1.0.0     SY       Release of first version
 ## -- 2022-01-21  1.0.1     DA       Fixed some bugs
-## -- 2022-01-26  1.0.2     SY       Wrapper enhancement
+## -- 2022-01-27  1.0.2     SY       Wrapper enhancement
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-01-26)
+Ver. 1.0.2 (2022-01-27)
 This module provides a wrapper class for hyperparameter tuning by reusinng Hyperopt framework
 """
 
@@ -21,6 +21,7 @@ from hyperopt import *
 from mlpro.bf.ml import *
 from mlpro.bf.math import *
 from mlpro.bf.various import *
+import os
 
 
 
@@ -109,8 +110,12 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
             raise ParamError('Mandatory parameter self._training_param is not supplied')
         
         #change root path in training param
+        self._training_param['p_training_param']['p_path'] += os.sep+'HyperparameterTuning'
+        if not os.path.exists(self._training_param['p_training_param']['p_path']):
+            os.mkdir(self._training_param['p_training_param']['p_path'])
         
         #instantiate a scenario class
+        training_cls = self._training_cls(**self._training_param['p_training_param'])
         
         #self._model = self.training_cls._model
         
