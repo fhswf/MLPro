@@ -110,12 +110,14 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
         if self._num_trials <= 0:
             raise ParamError('Parameter self._num_trials must be greater than 0')
         
+        if self._root_path is None:
+            raise ParamError('Mandatory parameter self._root_path is not supplied')
+        
         if self._training_param is None:
             raise ParamError('Mandatory parameter self._training_param is not supplied')
         
         #change root path in training param
-        self.main_path = self._training_param['p_training_param']['p_path']
-        self._training_param['p_training_param']['p_path'] = self.main_path+os.sep+'HyperparameterTuning'
+        self._training_param['p_training_param']['p_path'] = self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Base'
         if not os.path.exists(self._training_param['p_training_param']['p_path']):
             os.mkdir(self._training_param['p_training_param']['p_path'])
         
@@ -155,7 +157,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
         """
         
         #change root path in training param
-        self._training_param['p_training_param']['p_path'] = self.main_path+os.sep+'HyperparameterTuning'+os.sep+'Trial_'+str(self.num_trials)
+        self._training_param['p_training_param']['p_path'] =  self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Trial_'+str(self.num_trials)
         if not os.path.exists(self._training_param['p_training_param']['p_path']):
             os.mkdir(self._training_param['p_training_param']['p_path'])
         
