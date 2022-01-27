@@ -922,7 +922,7 @@ class BGLP (Environment):
             self.data_frame = 0
         else:
             self.data_frame += 1
-            self.data_storing.add_frame(str(self.data_frame))
+        self.data_storing.add_frame(str(self.data_frame))
 
 
 ## -------------------------------------------------------------------------------------------------
