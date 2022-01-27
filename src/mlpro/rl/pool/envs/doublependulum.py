@@ -7,6 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-01-25  0.0.0     WB       Creation
 ## -- 2022-01-26  0.9.0     WB       Initial trial of the environment
+## -- 2022-01-27  0.9.1     WB       Trial without animation 
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -66,7 +67,7 @@ class DoublePendulum (Environment):
     g : float, optional
         gravitational acceleration. The default is 9.8
     history_length : int, optional
-        historical trajectory points to display. The default is 50.
+        historical trajectory points to display. The default is 20.
         
     Attributes
     ----------
@@ -88,7 +89,7 @@ class DoublePendulum (Environment):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.01, t_act=20, max_torque=20,
                 max_speed=10, l1=0.5, l2=0.5, m1=0.5, m2=0.5, th1=0.0, th2=0.0, 
-                th1dot=0.0, th2dot=0.0, g=9.8, history_length=50):
+                th1dot=0.0, th2dot=0.0, g=9.8, history_length=20):
         self.t_step = t_step
         self.t_act = t_act
         self.set_latency(timedelta(0,t_act*t_step,0))
@@ -293,6 +294,8 @@ class DoublePendulum (Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
+        if hasattr(self, 'fig'):
+            plt.close(self.fig)
         self.fig = plt.figure(figsize=(5,4)) if p_figure==None else p_figure
         self.ax = self.fig.add_subplot(autoscale_on=False, 
                     xlim=(-self.L*1.2, self.L*1.2), ylim=(-self.L*1.2, self.L*1.2))
