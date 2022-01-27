@@ -30,10 +30,11 @@
 ## --                                - Added log functionality to class TrainingResults
 ## -- 2022-01-18  1.3.2     MRD      Small optimize on Scenario instantiation in Training class
 ## --                                Put the self._cycle_limit directly on the parameter argument
+## -- 2022-01-27  1.3.3     SY       Class Training: enhanced training with hyperparameter tuning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-01-18)
+Ver. 1.3.3 (2022-01-27)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
@@ -820,7 +821,7 @@ class HyperParamTuner (Log):
     C_NAME      = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def maximize(self, p_training_cls, p_num_trials, **p_training_param ) -> TrainingResults:
+    def maximize(self, p_training_cls, p_num_trials, p_root_path, **p_training_param ) -> TrainingResults:
         """
         ...
 
@@ -830,6 +831,8 @@ class HyperParamTuner (Log):
             Training class to be instantiated/executed 
         p_num_trials : int    
             Number of trials
+        p_num_trials : str    
+            Root path of the training class
         p_training_param : dictionary
             Training parameters
 
@@ -842,7 +845,8 @@ class HyperParamTuner (Log):
 
         self._training_cls      = p_training_cls
         self._num_trials        = p_num_trials
-        self._training_pararm   = p_training_param
+        self._root_path         = p_root_path
+        self._training_param    = p_training_param
 
         return self._maximize()
 
@@ -1126,7 +1130,7 @@ class Training (Log):
             training_param  = self._kwargs.copy()
             training_param.pop('p_hpt')
             training_param.pop('p_hpt_trials')
-            self._results = self._hpt.maximize(p_training_cls=self.__class__(), p_num_trials=self._hpt_trials, p_training_param=training_param)
+            self._results = self._hpt.maximize(p_training_cls=self.__class__, p_num_trials=self._hpt_trials, p_root_path=self._root_path, p_training_param=training_param)
 
         self.log(self.C_LOG_TYPE_I, 'Training completed')
         return self.get_results()

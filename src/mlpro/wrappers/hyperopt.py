@@ -8,10 +8,11 @@
 ## -- 2021-12-07  0.0.0     SY       Creation 
 ## -- 2021-12-08  1.0.0     SY       Release of first version
 ## -- 2022-01-21  1.0.1     DA       Fixed some bugs
+## -- 2022-01-27  1.0.2     SY       Wrapper enhancement
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-01-21)
+Ver. 1.0.2 (2022-01-27)
 This module provides a wrapper class for hyperparameter tuning by reusinng Hyperopt framework
 """
 
@@ -22,13 +23,14 @@ from mlpro.bf.math import *
 from mlpro.bf.various import *
 from mlpro.rl.models import *
 from mlpro.gt.models import *
+import os
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrHPTHyperopt(HyperParamTuner, ScientificObject):
+class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log, LoadSave):
     """
     This class is a ready to use wrapper class for Hyperopt framework. 
     Objects of this type can be treated as a hyperparameter tuner object.
@@ -64,6 +66,8 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
     C_SCIREF_DOI        = "10.25080/Majora-8b375195-003"
     C_SCIREF_EDITOR     = "Stefan van der Walt, Jarrod Millman, Katy Huff"
     
+    C_LOG_SEPARATOR = '------------------------------------------------------------------------------'
+    
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_algo=C_ALGO_RAND, p_ids=None):
@@ -77,9 +81,17 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
         """
         super().__init__(p_logging=p_logging)
 
-        self._algo          = p_algo
-        self._ids           = p_ids
-    
+        if p_algo is None:
+            raise ParamError('Mandatory parameter p_algo is not supplied')
+        else:
+            self._algo  = p_algo
+        
+        self._ids       = p_ids
+        self.num_trials = 0
+        self.main_path  = None
+        
+        self.log(self.C_LOG_TYPE_I, 'Hyperopt configuration is successful')
+            
 
 ## -------------------------------------------------------------------------------------------------
     def _maximize(self) -> TrainingResults:
@@ -93,13 +105,49 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
             The best result after a number of evaluations.
 
         """
+        
+        if self._training_cls is None:
+            raise ParamError('Mandatory parameter self._training_cls is not supplied')
+        
+        if self._num_trials <= 0:
+            raise ParamError('Parameter self._num_trials must be greater than 0')
+        
+        if self._root_path is None:
+            raise ParamError('Mandatory parameter self._root_path is not supplied')
+        
+        if self._training_param is None:
+            raise ParamError('Mandatory parameter self._training_param is not supplied')
+        
+        #change root path in training param
+        self._training_param['p_training_param']['p_path'] = self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Base (Preparation)'
+        if not os.path.exists(self._training_param['p_training_param']['p_path']):
+            os.mkdir(self._root_path+os.sep+'HyperparameterTuning')
+            os.mkdir(self._training_param['p_training_param']['p_path'])
+        
+        #ignore collecting data during tuning to save tuning time and memory
+        self._training_param['p_training_param']['p_collect_states'] = False
+        self._training_param['p_training_param']['p_collect_actions'] = True
+        self._training_param['p_training_param']['p_collect_rewards'] = False
+        self._training_param['p_training_param']['p_logging'] = Log.C_LOG_NOTHING
+        self._training_param['p_training_param']['p_visualize'] = False
+        self._training_param['p_training_param']['p_collect_eval'] = True
+        
+        #instantiate a scenario class and define the model in a variable
+        training_cls = self._training_cls(**self._training_param['p_training_param'])
+        self._model = training_cls._scenario._model
+        
         spaces              = self.SetupSpaces()
+        
         if self._algo == 'TPE':
             self.algo       = tpe.suggest
         elif self._algo == 'RND':
             self.algo       = rand.suggest
             
-        best_result         = fmin(self._ofct_hyperopt, spaces, self.algo, self._num_trials, trials=Trials())
+        trials              = Trials()
+        best_param          = fmin(self._ofct_hyperopt, spaces, self.algo, self._num_trials, trials=trials)
+        best_result         = trials.results[np.argmin([r['loss'] for r in trials.results])]['loss']
+        self.save(best_param, best_result, self._root_path, 'best_parameters.csv')
+        
         return -best_result
 
 ## -------------------------------------------------------------------------------------------------
@@ -114,26 +162,45 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
             The result of an evaluations.
             
         """
+        
+        self.log(self.C_LOG_TYPE_I, 'Trial number '+str(self.num_trials)+' has started')
+        self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
+        
+        #change root path in training param
+        self._training_param['p_training_param']['p_path'] =  self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Trial_'+str(self.num_trials)
+        if not os.path.exists(self._training_param['p_training_param']['p_path']):
+            os.mkdir(self._training_param['p_training_param']['p_path'])
+        
+        #instantiate a scenario class
+        training_cls = self._training_cls(**self._training_param['p_training_param'])
+        
+        #change the parameter according to p_params generated by hyperopt
         param_id                = 0
-        for x in range(len(self.hp_tupel)):
+        for x in range(len(self.hp_tuple)):
             if not self._ids:
-                _id             = self.hp_tupel[x].get_dim_ids()
+                _id             = self.hp_tuple[x].get_dim_ids()
             else:
                 _id             = self._ids
                 
             for i in range(len(_id)):
                 if isinstance(self._model, MultiAgent) or isinstance(self._model, MultiPlayer):
                     for x in range(len(self._model.get_agents())):
-                        self._model.get_agents()[x][0]._policy._hyperparam_tupel.set_value(_id[i], p_params[param_id])
+                        self._model.get_agents()[x][0]._policy._hyperparam_tuple.set_value(_id[i], p_params[param_id])
                 elif isinstance(self._model, Agent) or isinstance(self._model, Player):
-                    self._model._policy._hyperparam_tupel.set_value(_id[i], p_params[param_id])
+                    self._model._policy._hyperparam_tuple.set_value(_id[i], p_params[param_id])
                 else:
                     try:
-                        self._model._hyperparam_tupel.set_value(_id[i], p_params[param_id])
+                        self._model._hyperparam_tuple.set_value(_id[i], p_params[param_id])
                     except:
                         raise NotImplementedError
         
-        result                  = self._ofct()
+        #run the scenario and retrieve the high score
+        result                  = training_cls.run()
+        self.num_trials         += 1
+        
+        self.log(self.C_LOG_TYPE_I, 'Trial number '+str(self.num_trials)+' has finished')
+        self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
+        
         return -(result.highscore)
 
 ## -------------------------------------------------------------------------------------------------
@@ -152,27 +219,27 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
             List of parameter expressions.
 
         """
-        self.hp_tupel            = []
+        self.hp_tuple = []
         if isinstance(self._model, MultiAgent) or isinstance(self._model, MultiPlayer):
             for x in range(len(self._model.get_agents())):
-                self.hp_tupel.append(self._model.get_agents()[x][0]._policy._hyperparam_tupel)
+                self.hp_tuple.append(self._model.get_agents()[x][0]._policy._hyperparam_tuple)
         elif isinstance(self._model, Agent) or isinstance(self._model, Player):
-            self.hp_tupel.append(self._model._policy._hyperparam_tupel)
+            self.hp_tuple.append(self._model._policy._hyperparam_tuple)
         else:
             try:
-                self.hp_tupel.append(self._model._hyperparam_tupel)
+                self.hp_tuple.append(self._model._hyperparam_tuple)
             except:
                 raise NotImplementedError
         
-        spaces                  = []
-        for x in range(len(self.hp_tupel)):
+        spaces = []
+        for x in range(len(self.hp_tuple)):
             if not self._ids:
-                _id             = self.hp_tupel[x].get_dim_ids()
+                _id             = self.hp_tuple[x].get_dim_ids()
             else:
                 _id             = self._ids
             for i in range(len(_id)):
                 hp_id           = _id[i]
-                hp_set          = self.hp_tupel[x].get_related_set().get_dim(hp_id)
+                hp_set          = self.hp_tuple[x].get_related_set().get_dim(hp_id)
                 hp_base_set     = hp_set._base_set
                 hp_boundaries   = hp_set.get_boundaries()
                 hp_name_short   = hp_set.get_name_short()
@@ -187,4 +254,54 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
                         spaces.append(hp.uniform(hp_name_short+'_'+str(x),hp_low,hp_high))
                     else:
                         raise NotImplementedError
+        
+        self.log(self.C_LOG_TYPE_I, 'Spaces for hyperopt is ready')
+        self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
+        
         return spaces
+    
+## -------------------------------------------------------------------------------------------------
+    def _save_line(self, p_file, p_name, p_value):
+        value = p_value
+        if value is None: value = '-'
+        p_file.write(p_name + '\t' + str(value) + '\n')
+
+
+## -------------------------------------------------------------------------------------------------
+    def save(self, p_param, p_result, p_path, p_filename='summary.csv') -> bool:
+        """
+        Saves a training summary in the given path.
+
+        Parameters
+        ----------
+        p_path : dict
+            A dictionary that consists of list of best parameters
+        p_result : float
+            Highest score
+        p_path : str
+            Destination folder
+        p_filename  :str
+            Name of summary file. Default = 'summary.csv'
+
+        Returns
+        -------
+        success : bool
+            True, if summary file was created successfully. False otherwise.
+
+        """
+
+        filename = p_path + os.sep + p_filename
+        filename.replace(os.sep + os.sep, os.sep)
+
+        file = open(filename, 'wt')
+        if file is None: return False
+  
+        self._save_line(file, 'Tuner', '"Hyperopt"')    
+        self._save_line(file, 'Number of evaluations', self._num_trials)  
+        self._save_line(file, 'Algorithms', self._algo)       
+        self._save_line(file, 'Highest Score', p_result)
+        for key in p_param:
+            self._save_line(file, key, p_param[key])
+
+        file.close()
+        return True

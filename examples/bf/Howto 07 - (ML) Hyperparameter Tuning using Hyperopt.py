@@ -8,10 +8,11 @@
 ## -- 2021-12-08  0.0.0     SY       Creation
 ## -- 2021-12-08  1.0.0     SY       Release of first version
 ## -- 2022-01-21  1.0.1     DA       Renaming: tupel -> tuple
+## -- 2022-01-27  1.0.2     SY       Class WrHPTHyperopt enhancement
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-01-21)
+Ver. 1.0.2 (2022-01-27)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 """
@@ -78,6 +79,7 @@ class myPolicy (Policy):
     def compute_action(self, p_state: State) -> Action:
         my_action_values = np.zeros(self._action_space.get_num_dim())
         for d in range(self._action_space.get_num_dim()):
+            self.set_random_seed(None)
             my_action_values[d] = random.random() 
         return Action(self._id, self._action_space, my_action_values)
     
@@ -208,41 +210,47 @@ class BGLP_Rnd(RLScenario):
 
 if __name__ == "__main__":
     # Parameters for demo mode
-    logging     = Log.C_LOG_ALL
-    visualize   = False
-    dest_path   = str(Path.home())
+    logging         = Log.C_LOG_WE
+    visualize       = False
+    dest_path       = str(Path.home())
+    cycle_limit     = 100
+    cycle_per_ep    = 10
+    eval_freq       = 2
+    eval_grp_size   = 5
+    adapt_limit     = 0
+    stagnant_limit  = 5
+    score_ma_hor    = 5
  
 else:
     # Parameters for internal unit test
-    logging     = Log.C_LOG_NOTHING
-    visualize   = False
-    dest_path   = None
+    logging         = Log.C_LOG_NOTHING
+    visualize       = False
+    dest_path       = None
+    cycle_limit     = 100
+    cycle_per_ep    = 10
+    eval_freq       = 2
+    eval_grp_size   = 1
+    adapt_limit     = 0
+    stagnant_limit  = 0
+    score_ma_hor    = 0
 
 
 # 3. Instantiate a hyperopt wrapper
-myHyperopt = WrHPTHyperopt(p_logging=logging,
+myHyperopt = WrHPTHyperopt(p_logging=Log.C_LOG_ALL,
                            p_algo=WrHPTHyperopt.C_ALGO_TPE,
                            p_ids=None)
     
 
-# 4. Instantiate a scenario
-myscenario  = BGLP_Rnd(
-    p_mode=Mode.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=0,
-    p_visualize=visualize,
-    p_logging=logging
-)
-
-
-# 5. Train players in the scenario and turn the hyperparamter tuning on
+# 4. Train players in the scenario and turn the hyperparamter tuning on
 training        = RLTraining(
-    p_scenario=myscenario,
-    p_max_cycles_per_episode=1,
-    p_cycle_limit=10,
-    p_max_adaptations=0,
-    p_max_stagnations=0,
-    p_eval_frequency=0,
+    p_scenario_cls=BGLP_Rnd,
+    p_cycle_limit=cycle_limit,
+    p_cycles_per_epi_limit=cycle_per_ep,
+    p_eval_frequency=eval_freq,
+    p_eval_grp_size=eval_grp_size,
+    p_adaptation_limit=adapt_limit,
+    p_stagnation_limit=stagnant_limit,
+    p_score_ma_horizon=score_ma_hor,
     p_hpt=myHyperopt,
     p_hpt_trials=10,
     p_collect_states=True,
