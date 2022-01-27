@@ -841,8 +841,6 @@ class BGLP (Environment):
         self.data_lists         = ["time","overflow","energy","demand"]
         self.data_storing       = DataStoring(self.data_lists)
         self.data_frame         = None
-        
-        self.reset()
             
 
 ## -------------------------------------------------------------------------------------------------
