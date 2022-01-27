@@ -117,8 +117,9 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
             raise ParamError('Mandatory parameter self._training_param is not supplied')
         
         #change root path in training param
-        self._training_param['p_training_param']['p_path'] = self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Base'
+        self._training_param['p_training_param']['p_path'] = self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Base (Preparation)'
         if not os.path.exists(self._training_param['p_training_param']['p_path']):
+            os.mkdir(self._root_path+os.sep+'HyperparameterTuning')
             os.mkdir(self._training_param['p_training_param']['p_path'])
         
         #ignore collecting data during tuning to save tuning time and memory
@@ -156,6 +157,8 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
             
         """
         
+        self.log(self.C_LOG_TYPE_I, 'Trial number '+str(self.num_trials)+' has started')
+        
         #change root path in training param
         self._training_param['p_training_param']['p_path'] =  self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Trial_'+str(self.num_trials)
         if not os.path.exists(self._training_param['p_training_param']['p_path']):
@@ -187,6 +190,8 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
         #run the scenario and retrieve the high score
         result                  = self.training_cls.run()
         self.num_trials         += 1
+        
+        self.log(self.C_LOG_TYPE_I, 'Trial number '+str(self.num_trials)+' has finished')
         
         return -(result.highscore)
 
@@ -241,4 +246,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log):
                         spaces.append(hp.uniform(hp_name_short+'_'+str(x),hp_low,hp_high))
                     else:
                         raise NotImplementedError
+        
+        self.log(self.C_LOG_TYPE_I, 'Spaces for hyperopt is ready.')
+        
         return spaces
