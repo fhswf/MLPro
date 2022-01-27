@@ -81,7 +81,7 @@ class DoublePendulum (Environment):
     """
     C_NAME              = "DoublePendulum"
     C_CYCLE_LIMIT       = 0
-    C_LATENCY           = timedelta(0,1,0)    
+    C_LATENCY           = timedelta(0,0,0)    
     C_REWARD_TYPE       = Reward.C_TYPE_OVERALL
     
     
@@ -310,18 +310,26 @@ class DoublePendulum (Environment):
 
         x2 = self.l2*sin(self.y[:, 2]) + x1
         y2 = -self.l2*cos(self.y[:, 2]) + y1
+        
+        # def animate(i):
+            # thisx = [0, x1[i], x2[i]]
+            # thisy = [0, y1[i], y2[i]]
 
-        def animate(i):
-            thisx = [0, x1[i], x2[i]]
-            thisy = [0, y1[i], y2[i]]
+            # self.history_x.appendleft(thisx[2])
+            # self.history_y.appendleft(thisy[2])
 
-            self.history_x.appendleft(thisx[2])
-            self.history_y.appendleft(thisy[2])
+            # self.line.set_data(thisx, thisy)
+            # self.trace.set_data(self.history_x, self.history_y)
+            # return self.line, self.trace
 
-            self.line.set_data(thisx, thisy)
-            self.trace.set_data(self.history_x, self.history_y)
-            return self.line, self.trace
+        # ani = animation.FuncAnimation(
+            # self.fig, animate, len(self.y), interval=self.t_step*1000, blit=True, repeat=False)
 
-        ani = animation.FuncAnimation(
-            self.fig, animate, len(self.y), interval=self.t_step*1000, blit=True, repeat=False)
+        thisx = [0, x1[-1], x2[-1]]
+        thisy = [0, y1[-1], y2[-1]]            
+        self.history_x.appendleft(thisx[2])
+        self.history_y.appendleft(thisy[2])
+        self.line.set_data(thisx, thisy)
+        self.trace.set_data(self.history_x, self.history_y)
+        
         plt.show()
