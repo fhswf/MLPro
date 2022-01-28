@@ -9,10 +9,11 @@
 ## -- 2021-12-08  1.0.0     SY       Release of first version
 ## -- 2022-01-21  1.0.1     DA       Fixed some bugs
 ## -- 2022-01-27  1.0.2     SY       Wrapper enhancement
+## -- 2022-01-28  1.0.3     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-01-27)
+Ver. 1.0.3 (2022-01-28)
 This module provides a wrapper class for hyperparameter tuning by reusinng Hyperopt framework
 """
 
@@ -91,7 +92,6 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log, LoadSave):
         self.main_path  = None
         
         self.log(self.C_LOG_TYPE_I, 'Hyperopt configuration is successful')
-            
 
 ## -------------------------------------------------------------------------------------------------
     def _maximize(self) -> TrainingResults:
@@ -126,7 +126,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log, LoadSave):
         
         #ignore collecting data during tuning to save tuning time and memory
         self._training_param['p_training_param']['p_collect_states'] = False
-        self._training_param['p_training_param']['p_collect_actions'] = True
+        self._training_param['p_training_param']['p_collect_actions'] = False
         self._training_param['p_training_param']['p_collect_rewards'] = False
         self._training_param['p_training_param']['p_logging'] = Log.C_LOG_NOTHING
         self._training_param['p_training_param']['p_visualize'] = False
