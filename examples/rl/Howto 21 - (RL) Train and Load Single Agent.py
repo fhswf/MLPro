@@ -39,6 +39,7 @@ class MyScenario(RLScenario):
             n_steps=5,
             env=None,
             _init_setup_model=False,
+            device="cpu",
             seed=1)
 
         # 3 Wrap the policy

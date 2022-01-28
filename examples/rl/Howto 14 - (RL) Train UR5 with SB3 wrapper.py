@@ -38,7 +38,8 @@ class ScenarioUR5A2C(RLScenario):
             policy="MlpPolicy",
             n_steps=20,
             env=None,
-            _init_setup_model=False)
+            _init_setup_model=False,
+            device="cpu",)
 
         policy_wrapped = WrPolicySB32MLPro(
             p_sb3_policy=policy_sb3,

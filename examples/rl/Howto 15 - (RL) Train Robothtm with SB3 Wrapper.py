@@ -42,6 +42,7 @@ class ScenarioRobotHTM(RLScenario):
             env=None,
             _init_setup_model=False,
             policy_kwargs=policy_kwargs,
+            device="cpu",
             seed=2)
 
         policy_wrapped = WrPolicySB32MLPro(

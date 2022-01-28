@@ -16,7 +16,6 @@ Ver. 1.0.1 (2022-01-01)
 This module demonstrates model-based reinforcement learning.
 """
 
-
 import torch
 
 from mlpro.bf.ml import *
@@ -32,9 +31,9 @@ from pathlib import Path
 class ActualTraining(RLTraining):
     C_NAME = "Actual"
 
+
 # Implement RL Scenario for the actual environment to train the environment model
 class ScenarioRobotHTMActual(RLScenario):
-
     C_NAME = "Matrix1"
 
     def _setup(self, p_mode, p_ada, p_logging):
@@ -42,10 +41,15 @@ class ScenarioRobotHTMActual(RLScenario):
         self._env = RobotHTM(p_logging=True)
 
         policy_kwargs = dict(activation_fn=torch.nn.Tanh,
-                     net_arch=[dict(pi=[128, 128], vf=[128, 128])])
+                             net_arch=[dict(pi=[128, 128], vf=[128, 128])])
 
         policy_sb3 = PPO(
-            policy="MlpPolicy", n_steps=100, env=None, _init_setup_model=False, policy_kwargs=policy_kwargs
+            policy="MlpPolicy",
+            n_steps=100,
+            env=None,
+            _init_setup_model=False,
+            policy_kwargs=policy_kwargs,
+            device="cpu"
         )
 
         policy_wrapped = WrPolicySB32MLPro(
@@ -57,13 +61,13 @@ class ScenarioRobotHTMActual(RLScenario):
             p_logging=p_logging,
         )
 
-        mb_training_param = dict(p_cycle_limit=100, 
-            p_cycles_per_epi_limit=100,
-            p_max_stagnations=0,
-            p_collect_states=False,
-            p_collect_actions=False,
-            p_collect_rewards=False,
-            p_collect_training=False)
+        mb_training_param = dict(p_cycle_limit=100,
+                                 p_cycles_per_epi_limit=100,
+                                 p_max_stagnations=0,
+                                 p_collect_states=False,
+                                 p_collect_actions=False,
+                                 p_collect_rewards=False,
+                                 p_collect_training=False)
 
         # 2 Setup standard single-agent with own policy
         return Agent(
@@ -76,24 +80,25 @@ class ScenarioRobotHTMActual(RLScenario):
             **mb_training_param
         )
 
+
 # 3 Train agent in scenario
 now = datetime.now()
 
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit         = 300000
-    logging             = Log.C_LOG_ALL
-    visualize           = True
-    path                = str(Path.home())
-    plotting            = True
- 
+    cycle_limit = 300000
+    logging = Log.C_LOG_ALL
+    visualize = True
+    path = str(Path.home())
+    plotting = True
+
 else:
     # 3.2 Parameters for internal unit test
-    cycle_limit         = 100
-    logging             = Log.C_LOG_NOTHING
-    visualize           = False
-    path                = None
-    plotting            = False
+    cycle_limit = 100
+    logging = Log.C_LOG_NOTHING
+    visualize = False
+    path = None
+    plotting = False
 
 training = ActualTraining(
     p_scenario_cls=ScenarioRobotHTMActual,
@@ -108,6 +113,7 @@ training = ActualTraining(
 )
 
 training.run()
+
 
 # 4 Create Plotting Class
 class MyDataPlotting(DataPlotting):
@@ -155,7 +161,6 @@ data_printing = {
     "Microsecond": [False],
     "Smith1": [True, -1],
 }
-
 
 mem = training.get_results().ds_rewards
 mem_plot = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
