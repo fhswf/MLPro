@@ -32,10 +32,11 @@
 ## --                                - Class ActionPlanner completed
 ## --                                - Standardization of all docstrings
 ## -- 2022-01-01  1.4.1     MRD      Refactoring and Fixing some bugs
+## -- 2022-01-28  1.4.2     SY       Added switch_adaptivity method in MultiAgent class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-01-01) 
+Ver. 1.4.2 (2022-01-28) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -656,6 +657,13 @@ class MultiAgent(Agent):
 
         for agent_entry in self._agents:
             agent_entry[0].switch_logging(p_logging)
+
+    ## -------------------------------------------------------------------------------------------------
+    def switch_adaptivity(self, p_ada: bool):
+        super().switch_adaptivity(p_ada)
+        
+        for agent_entry in self._agents:
+            agent_entry[0].switch_adaptivity(p_ada)
 
     ## -------------------------------------------------------------------------------------------------
     def set_log_level(self, p_level):
