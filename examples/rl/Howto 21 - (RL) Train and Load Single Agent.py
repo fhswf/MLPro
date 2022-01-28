@@ -112,7 +112,7 @@ class MyNdScenario(RLScenario):
 
 # 2 Create and run training object
 training = RLTraining(
-    p_scenario_cls=MyScenario,
+    p_scenario_cls=MyNdScenario,
     p_cycle_limit=cycle_limit,
     p_adaptation_limit=adaptation_limit,
     p_stagnation_limit=stagnation_limit,
