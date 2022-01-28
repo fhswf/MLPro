@@ -31,7 +31,7 @@ class ScenarioRobotHTM(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        self._env = RobotHTM(p_logging=True)
+        self._env = RobotHTM(p_target_mode="fix", p_logging=True)
 
         policy_kwargs = dict(activation_fn=torch.nn.Tanh,
                              net_arch=[dict(pi=[128, 128], vf=[128, 128])])
@@ -42,7 +42,7 @@ class ScenarioRobotHTM(RLScenario):
             env=None,
             _init_setup_model=False,
             policy_kwargs=policy_kwargs,
-            seed=1)
+            seed=2)
 
         policy_wrapped = WrPolicySB32MLPro(
             p_sb3_policy=policy_sb3,
