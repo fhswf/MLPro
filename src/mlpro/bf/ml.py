@@ -31,12 +31,14 @@
 ## -- 2022-01-18  1.3.2     MRD      Small optimize on Scenario instantiation in Training class
 ## --                                Put the self._cycle_limit directly on the parameter argument
 ## -- 2022-01-27  1.3.3     SY       Class Training: enhanced training with hyperparameter tuning
+## -- 2022-01-28  1.3.4     SY       Class HyperParamTuner: add save(), save_line(), HPDataStoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2022-01-27)
+Ver. 1.3.4 (2022-01-28)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
+
 
 import sys
 from typing import Dict
@@ -47,18 +49,21 @@ from mlpro.bf.plot import *
 import random
 
 
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParam(Dimension):
+class HyperParam (Dimension):
     """
     Hyperparameter definition class. See class Dimension for further descriptions.
     """
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def register_callback(self, p_cb):
         self._cb = p_cb
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def callback_on_change(self, p_value):
         try:
             self._cb(p_value)
@@ -66,9 +71,12 @@ class HyperParam(Dimension):
             pass
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamSpace(ESpace):
+class HyperParamSpace (ESpace):
     """
     Hyperparameter space, which is just an Euclidian space.
     """
@@ -76,22 +84,28 @@ class HyperParamSpace(ESpace):
     pass
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamTuple(Element):
+class HyperParamTuple (Element):
     """
     Tuple of hyperparameters, which is an element of a hyperparameter space
     """
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
         super().set_value(p_dim_id, p_value)
         self._set.get_dim(p_dim_id).callback_on_change(p_value)
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Model(Log, LoadSave, Plottable, ScientificObject):
+class Model (Log, LoadSave, Plottable, ScientificObject):
     """
     Fundamental template class for adaptive ML models. Supports especially
       - Adaptivity
@@ -113,21 +127,21 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
 
     """
 
-    C_TYPE = 'Model'
-    C_NAME = '????'
+    C_TYPE          = 'Model'
+    C_NAME          = '????'
 
-    C_BUFFER_CLS = Buffer
+    C_BUFFER_CLS    = Buffer       
 
-    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_NONE
+    C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_NONE     
 
-    ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL, **p_par):
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL, **p_par):  
 
         Log.__init__(self, p_logging=p_logging)
-        self._adapted = False
+        self._adapted           = False
         self.switch_adaptivity(p_ada)
-        self._hyperparam_space = HyperParamSpace()
-        self._hyperparam_tuple = None
+        self._hyperparam_space  = HyperParamSpace()
+        self._hyperparam_tuple  = None
         self._init_hyperparam(**p_par)
 
         if p_buffer_size > 0:
@@ -135,7 +149,8 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
         else:
             self._buffer = None
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self, **p_par):
         """
         Implementation specific hyperparameters can be added here. Please follow these steps:
@@ -153,7 +168,8 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
 
         pass
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_hyperparam(self) -> HyperParamTuple:
         """
         Returns the internal hyperparameter tuple to get access to single values.
@@ -161,8 +177,9 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
 
         return self._hyperparam_tuple
 
-    ## -------------------------------------------------------------------------------------------------
-    def switch_adaptivity(self, p_ada: bool):
+
+## -------------------------------------------------------------------------------------------------
+    def switch_adaptivity(self, p_ada:bool):
         """
         Switches adaption functionality on/off.
         
@@ -179,7 +196,8 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
         else:
             self.log(self.C_LOG_TYPE_I, 'Adaptivity switched off')
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
         """
         Resets the internal random generator using the given seed.
@@ -187,7 +205,8 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
 
         random.seed(p_seed)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_adapted(self) -> bool:
         """
         Returns True, if the model was adapted at least once. False otherwise.
@@ -195,15 +214,17 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
 
         return self._adapted
 
-    ## -------------------------------------------------------------------------------------------------
-    def _set_adapted(self, p_adapted: bool):
+
+## -------------------------------------------------------------------------------------------------
+    def _set_adapted(self, p_adapted:bool):
         """
         Sets the adapted flag. Internal use only.
         """
 
         self._adapted = p_adapted
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def adapt(self, *p_args) -> bool:
         """
         Adapts the model by calling the custom method _adapt().
@@ -225,8 +246,9 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
         adapted = self._adapt(*p_args)
         self._set_adapted(adapted)
         return adapted
+        
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
         """
         Custom implementation of the adaptation algorithm. Please describe the type and purpose of 
@@ -249,7 +271,8 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         """
         Clears internal buffer (if buffering is active).
@@ -257,7 +280,8 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
 
         if self._buffer is not None: self._buffer.clear()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_maturity(self):
         """
         Computes the maturity of the model.
@@ -271,9 +295,12 @@ class Model(Log, LoadSave, Plottable, ScientificObject):
         raise NotImplementedError
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Mode(Log):
+class Mode (Log):
     """
     Property class that adds a mode and related methods to a child class.
 
@@ -286,19 +313,20 @@ class Mode(Log):
 
     """
 
-    C_MODE_INITIAL = -1
-    C_MODE_SIM = 0
-    C_MODE_REAL = 1
+    C_MODE_INITIAL  = -1
+    C_MODE_SIM      = 0
+    C_MODE_REAL     = 1
 
-    C_VALID_MODES = [C_MODE_SIM, C_MODE_REAL]
+    C_VALID_MODES   = [ C_MODE_SIM, C_MODE_REAL ]
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_mode, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)
         self._mode = self.C_MODE_INITIAL
         self.set_mode(p_mode)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_mode(self):
         """
         Returns current mode.
@@ -306,7 +334,8 @@ class Mode(Log):
 
         return self._mode
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_mode(self, p_mode):
         """
         Sets new mode.
@@ -324,9 +353,12 @@ class Mode(Log):
         self.log(self.C_LOG_TYPE_I, 'Operation mode set to', self._mode)
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Scenario(Mode, LoadSave, Plottable):
+class Scenario (Mode, LoadSave, Plottable):
     """
     Template class for a common ML scenario with an adaptive model inside. To be inherited and 
     specialized in higher ML subtopic layers.
@@ -353,29 +385,31 @@ class Scenario(Mode, LoadSave, Plottable):
     
     """
 
-    C_TYPE = 'Scenario'
-    C_NAME = '????'
+    C_TYPE      = 'Scenario'
+    C_NAME      = '????'
 
-    ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_mode=Mode.C_MODE_SIM,
-                 p_ada: bool = True,
-                 p_cycle_limit=0,
-                 p_visualize=True,
-                 p_logging=Log.C_LOG_ALL):
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, 
+                 p_mode=Mode.C_MODE_SIM,       
+                 p_ada:bool=True,               
+                 p_cycle_limit=0,              
+                 p_visualize=True,              
+                 p_logging=Log.C_LOG_ALL ):    
 
         # 0 Intro
-        self._cycle_max = sys.maxsize
-        self._cycle_id = 0
-        self._visualize = p_visualize
+        self._cycle_max     = sys.maxsize
+        self._cycle_id      = 0
+        self._visualize     = p_visualize
         self.set_cycle_limit(p_cycle_limit)
+
 
         # 1 Setup entire scenario
         self._model = self._setup(p_mode=self.C_MODE_SIM, p_ada=p_ada, p_logging=p_logging)
-        if self._model is None:
+        if self._model is None: 
             raise ImplementationError('Please return your ML model in method self._setup()')
 
         super().__init__(p_mode, p_logging)
+
 
         # 2 Init timer
         if self.get_mode() == Mode.C_MODE_SIM:
@@ -384,15 +418,17 @@ class Scenario(Mode, LoadSave, Plottable):
             t_mode = Timer.C_MODE_REAL
 
         self._cycle_len = self.get_latency()
-        self._timer = Timer(t_mode, self._cycle_len, self._cycle_limit)
+        self._timer     = Timer(t_mode, self._cycle_len, self._cycle_limit)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         super().switch_logging(p_logging)
         self._model.switch_logging(p_logging)
 
-    ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada: bool, p_logging) -> Model:
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_ada:bool, p_logging) -> Model:
         """
         Custom setup of ML scenario.
 
@@ -413,15 +449,18 @@ class Scenario(Mode, LoadSave, Plottable):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         self._model.init_plot(p_figure=p_figure)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         self._model.update_plot()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_model(self) -> Model:
         """
         Returns the adaptive model object inside the scenario.
@@ -429,12 +468,14 @@ class Scenario(Mode, LoadSave, Plottable):
 
         return self._model
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_mode(self, p_mode):
         super().set_mode(p_mode)
         self._set_mode(p_mode)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _set_mode(self, p_mode):
         """
         Redefine this method to switch the scenario between simulation or real operation mode.
@@ -442,7 +483,8 @@ class Scenario(Mode, LoadSave, Plottable):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_latency(self) -> timedelta:
         """
         Returns the latency of the scenario. To be implemented in child class.
@@ -450,11 +492,13 @@ class Scenario(Mode, LoadSave, Plottable):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_cycle_limit(self, p_limit):
         self._cycle_limit = p_limit
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=1):
         """
         Resets the scenario and especially the ML model inside. Internal random generators are seed 
@@ -483,7 +527,8 @@ class Scenario(Mode, LoadSave, Plottable):
         # 4 Cycle counter reset
         self._cycle_id = 0
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
         """
         Custom method to reset further components of the scenario (not the ML model itself) and to 
@@ -492,7 +537,8 @@ class Scenario(Mode, LoadSave, Plottable):
 
         pass
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def run_cycle(self):
         """
         Runs a single process cycle.
@@ -517,28 +563,33 @@ class Scenario(Mode, LoadSave, Plottable):
         success, error, adapted = self._run_cycle()
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': End of cycle', str(self._cycle_id), '\n')
 
+
         # 2 Update visualization
         if self._visualize:
             self.update_plot()
 
+
         # 3 Update cycle id and check for optional limit
-        if (self._cycle_limit > 0) and (self._cycle_id >= (self._cycle_limit - 1)):
+        if ( self._cycle_limit > 0 ) and ( self._cycle_id >= ( self._cycle_limit -1 ) ): 
             limit = True
         else:
-            self._cycle_id = (self._cycle_id + 1) & self._cycle_max
+            self._cycle_id = ( self._cycle_id + 1 ) & self._cycle_max
             limit = False
 
+
         # 4 Wait for next cycle (real mode only)
-        if (self._timer.finish_lap() == False) and (self._cycle_len is not None):
+        if ( self._timer.finish_lap() == False ) and ( self._cycle_len is not None ):
             self.log(self.C_LOG_TYPE_W, 'Process time', self._timer.get_time(), ': Process timed out !!!')
             timeout = True
         else:
             timeout = False
 
+
         # 5 Return result of custom cycle execution
         return success, error, timeout, limit, adapted
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
         """
         Custom implementation of a single process cycle. To be redefined.
@@ -556,7 +607,8 @@ class Scenario(Mode, LoadSave, Plottable):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_cycle_id(self):
         """
         Returns current cycle id.
@@ -564,11 +616,12 @@ class Scenario(Mode, LoadSave, Plottable):
 
         return self._cycle_id
 
-    ## -------------------------------------------------------------------------------------------------
-    def run(self,
-            p_term_on_success: bool = True,
-            p_term_on_error: bool = True,
-            p_term_on_timeout: bool = False):
+
+## -------------------------------------------------------------------------------------------------
+    def run(self, 
+            p_term_on_success:bool=True,        
+            p_term_on_error:bool=True,          
+            p_term_on_timeout:bool=False ):    
         """
         Runs the scenario as a sequence of single process steps until a terminating event occures.
 
@@ -598,8 +651,8 @@ class Scenario(Mode, LoadSave, Plottable):
 
         """
 
-        self._cycle_id = 0
-        adapted = False
+        self._cycle_id  = 0
+        adapted         = False
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'Start of processing')
 
         while True:
@@ -615,9 +668,12 @@ class Scenario(Mode, LoadSave, Plottable):
         return success, error, timeout, limit, adapted, self._cycle_id
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class TrainingResults(Log, Saveable):
+class TrainingResults (Log, Saveable):
     """
     Results of a training (see class Training).
 
@@ -636,39 +692,42 @@ class TrainingResults(Log, Saveable):
 
     """
 
-    C_TYPE = 'Results '
+    C_TYPE      = 'Results '
 
-    ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario: Scenario, p_run, p_cycle_id, p_path=None, p_logging=Log.C_LOG_WE):
-        self.scenario = p_scenario
-        self.run = p_run
-        self.ts_start = datetime.now()
-        self.ts_end = None
-        self.duration = 0
-        self.cycle_id_start = p_cycle_id
-        self.cycle_id_end = 0
-        self.num_cycles = 0
-        self.num_cycles_train = 0
-        self.num_cycles_eval = 0
-        self.num_adaptations = 0
-        self.highscore = None
-        self.path = p_path
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_path=None, p_logging=Log.C_LOG_WE):
+        self.scenario           = p_scenario
+        self.run                = p_run
+        self.ts_start           = datetime.now()
+        self.ts_end             = None
+        self.duration           = 0
+        self.cycle_id_start     = p_cycle_id
+        self.cycle_id_end       = 0
+        self.num_cycles         = 0
+        self.num_cycles_train   = 0
+        self.num_cycles_eval    = 0
+        self.num_adaptations    = 0
+        self.highscore          = None
+        self.path               = p_path
 
-        self.custom_results = []
+        self.custom_results     = []
 
         Log.__init__(self, p_logging=p_logging)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def add_custom_result(self, p_name, p_value):
         self.custom_results.append([p_name, p_value])
 
-    ## -------------------------------------------------------------------------------------------------
-    def close(self):
-        self.ts_end = datetime.now()
-        self.duration = self.ts_end - self.ts_start
-        self.cycle_id_end = self.cycle_id_start + self.num_cycles - 1
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+    def close(self):
+        self.ts_end             = datetime.now()
+        self.duration           = self.ts_end - self.ts_start
+        self.cycle_id_end       = self.cycle_id_start + self.num_cycles -1
+
+
+## -------------------------------------------------------------------------------------------------
     def log_results(self):
         self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
         self.log(self.C_LOG_TYPE_W, '-- Training Results of run', self.run)
@@ -677,12 +736,12 @@ class TrainingResults(Log, Saveable):
         self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
         self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR, '\n')
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _log_results(self):
         self.log(self.C_LOG_TYPE_W, Training.C_LOG_SEPARATOR)
         self.log(self.C_LOG_TYPE_W, '-- Scenario          :', self.scenario.C_TYPE, self.scenario.C_NAME)
-        self.log(self.C_LOG_TYPE_W, '-- Model             :', self.scenario.get_model().C_TYPE,
-                 self.scenario.get_model().C_NAME)
+        self.log(self.C_LOG_TYPE_W, '-- Model             :', self.scenario.get_model().C_TYPE, self.scenario.get_model().C_NAME)
         self.log(self.C_LOG_TYPE_W, '-- Start time stamp  :', self.ts_start)
         self.log(self.C_LOG_TYPE_W, '-- End time stamp    :', self.ts_end)
         self.log(self.C_LOG_TYPE_W, '-- Duration          :', self.duration)
@@ -693,15 +752,17 @@ class TrainingResults(Log, Saveable):
         self.log(self.C_LOG_TYPE_W, '-- Adaptations       :', self.num_adaptations)
         self.log(self.C_LOG_TYPE_W, '-- High score        :', self.highscore)
         if self.path is not None:
-            self.log(self.C_LOG_TYPE_W, '-- Results stored in : "' + self.path + '"')
+            self.log(self.C_LOG_TYPE_W, '-- Results stored in : "' + self.path +'"')
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _save_line(self, p_file, p_name, p_value):
         value = p_value
         if value is None: value = '-'
         p_file.write(p_name + '\t' + str(value) + '\n')
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def save(self, p_path, p_filename='summary.csv') -> bool:
         """
         Saves a training summary in the given path.
@@ -727,8 +788,7 @@ class TrainingResults(Log, Saveable):
         if file is None: return False
 
         self._save_line(file, 'Scenario', '"' + self.scenario.C_TYPE + ' ' + self.scenario.C_NAME + '"')
-        self._save_line(file, 'Model',
-                        '"' + self.scenario.get_model().C_TYPE + ' ' + self.scenario.get_model().C_NAME + '"')
+        self._save_line(file, 'Model', '"' + self.scenario.get_model().C_TYPE + ' ' + self.scenario.get_model().C_NAME + '"')
         self._save_line(file, 'Run', str(self.run))
         self._save_line(file, 'Start', self.ts_start)
         self._save_line(file, 'End', self.ts_end)
@@ -748,18 +808,23 @@ class TrainingResults(Log, Saveable):
         return True
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamTuner(Log):
+class HyperParamTuner (Log, Saveable):
     """
     Template class for hyperparameter tuning (HPT).
     """
 
-    C_TYPE = 'HyperParam Tuner'
-    C_NAME = '????'
+    C_TYPE      = 'HyperParam Tuner'
+    C_NAME      = '????'
+    C_VAR_TRIAL = 'Trial'
+    C_VAR_SCORE = 'Highscore'
 
-    ## -------------------------------------------------------------------------------------------------
-    def maximize(self, p_training_cls, p_num_trials, p_root_path, **p_training_param) -> TrainingResults:
+## -------------------------------------------------------------------------------------------------
+    def maximize(self, p_training_cls, p_num_trials, p_root_path, **p_training_param ) -> TrainingResults:
         """
         ...
 
@@ -781,21 +846,75 @@ class HyperParamTuner(Log):
 
         """
 
-        self._training_cls = p_training_cls
-        self._num_trials = p_num_trials
-        self._root_path = p_root_path
-        self._training_param = p_training_param
+        self._training_cls      = p_training_cls
+        self._num_trials        = p_num_trials
+        self._root_path         = p_root_path
+        self._training_param    = p_training_param
+        self.HPDataStoring      = None
+        self.variables          = [self.C_VAR_TRIAL, self.C_VAR_SCORE]
 
         return self._maximize()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _maximize(self) -> TrainingResults:
         raise NotImplementedError
+    
+## -------------------------------------------------------------------------------------------------
+    def _save_line(self, p_file, p_name, p_value):
+        value = p_value
+        if value is None: value = '-'
+        p_file.write(p_name + '\t' + str(value) + '\n')
+
+
+## -------------------------------------------------------------------------------------------------
+    def save(self, p_param, p_result, p_filename='best_parameters.csv') -> bool:
+        """
+        Saves the best result of the hyperparameter tuning in the root path.
+
+        Parameters
+        ----------
+        p_param : dict
+            A dictionary that consists of list of best parameters
+        p_result : float
+            Highest score
+        p_filename  :str
+            Name of summary file. Default = 'best_parameters.csv'
+
+        Returns
+        -------
+        success : bool
+            True, if summary file was created successfully. False otherwise.
+
+        """
+
+        filename = self._root_path + os.sep + p_filename
+        filename.replace(os.sep + os.sep, os.sep)
+
+        file = open(filename, 'wt')
+        if file is None: return False
+  
+        self._save_line(file, 'Tuner', '"' + self.C_NAME + '"')    
+        self._save_line(file, 'Number of evaluations', self._num_trials)     
+        self._save_line(file, 'Highest Score', p_result)
+        for key in p_param:
+            self._save_line(file, key, p_param[key])
+
+        file.close()
+        
+        try:
+            self.HPDataStoring.save_data(self._root_path, 'tuning_summary', '\t')
+            return True
+        except:
+            return False
+        
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Training(Log):
+class Training (Log):
     """
     Template class for a ML training and hyperparameter tuning.
 
@@ -820,19 +939,19 @@ class Training(Log):
 
     """
 
-    C_TYPE = 'Training'
-    C_NAME = '????'
+    C_TYPE          = 'Training'
+    C_NAME          = '????'
 
-    C_CLS_RESULTS = TrainingResults
+    C_CLS_RESULTS   = TrainingResults
 
-    C_MODE_TRAIN = 0
-    C_MODE_EVAL = 1
+    C_MODE_TRAIN    = 0 
+    C_MODE_EVAL     = 1
 
     C_LOG_SEPARATOR = '------------------------------------------------------------------------------'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
-
+ 
         # 1 Check and completion of parameters
         self._kwargs = p_kwargs.copy()
 
@@ -868,9 +987,9 @@ class Training(Log):
             self._hpt_trials = self._kwargs['p_hpt_trials']
         except:
             self._hpt_trials = 0
-            self._kwargs['p_hpt_trials'] = self._hpt_trials
+            self._kwargs['p_hpt_trials'] = self._hpt_trials 
 
-        if (self._hpt is not None) and (self._hpt_trials <= 0):
+        if ( self._hpt is not None ) and ( self._hpt_trials <= 0 ):
             raise ParamError('Please supply parameter p_hpt_trials with a number >0')
 
         # 1.6 Optional file path
@@ -894,69 +1013,77 @@ class Training(Log):
             logging = Log.C_LOG_WE
             self._kwargs['p_logging'] = logging
 
+
         # 2 Initialization
         super().__init__(p_logging=logging)
 
-        self._current_run = 0
-        self._new_run = True
-        self._results = None
-        self._root_path = self._gen_root_path(path)
-        self._current_path = None
-        self._scenario = None
-        self._mode = self.C_MODE_TRAIN
+        self._current_run       = 0
+        self._new_run           = True
+        self._results           = None
+        self._root_path         = self._gen_root_path(path)
+        self._current_path      = None
+        self._scenario          = None
+        self._mode              = self.C_MODE_TRAIN
+
 
         # 3 Setup scenario
         if self._hpt is None:
             try:
-                self._scenario = scenario_cls(p_mode=Mode.C_MODE_SIM,
-                                              p_ada=True,
-                                              p_cycle_limit=self._cycle_limit,
-                                              p_visualize=visualize,
-                                              p_logging=logging)
+                self._scenario = scenario_cls( p_mode=Mode.C_MODE_SIM, 
+                                               p_ada=True,
+                                               p_cycle_limit=self._cycle_limit,
+                                               p_visualize=visualize,
+                                               p_logging=logging )
             except:
                 raise ParamError('Par p_scenario_cls: class "' + scenario_cls.__name__ + '" not compatible')
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_scenario(self) -> Scenario:
         return self._scenario
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _gen_root_path(self, p_path) -> str:
         if p_path is None: return None
 
-        now = datetime.now()
-        ts = '%04d-%02d-%02d  %02d.%02d.%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
-        root_path = p_path + str(os.sep) + ts + ' ' + self.C_TYPE + ' ' + self.C_NAME
+        now         = datetime.now()
+        ts          = '%04d-%02d-%02d  %02d.%02d.%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
+        root_path   = p_path + str(os.sep) + ts + ' ' + self.C_TYPE + ' ' + self.C_NAME
         root_path.replace(str(os.sep) + str(os.sep), str(os.sep))
         os.mkdir(root_path)
         return root_path
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _gen_current_path(self, p_root_path, p_run) -> str:
         if p_root_path is None: return None
         if self._hpt is None: return self._root_path
 
-        now = datetime.now()
-        ts = '%04d-%02d-%02d  %02d.%02d.%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
-        current_path = p_root_path + os.sep + ts + ' Run #' + str(p_run)
+        now             = datetime.now()
+        ts              = '%04d-%02d-%02d  %02d.%02d.%02d' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
+        current_path    = p_root_path + os.sep + ts + ' Run #' + str(p_run)
         current_path.replace(os.sep + os.sep, os.sep)
         os.mkdir(current_path)
         return current_path
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _init_results(self) -> TrainingResults:
-        return self.C_CLS_RESULTS(self._scenario,
-                                  self._current_run,
-                                  self._scenario.get_cycle_id(),
+        return self.C_CLS_RESULTS(self._scenario, 
+                                  self._current_run, 
+                                  self._scenario.get_cycle_id(), 
                                   p_path=self._current_path,
                                   p_logging=self._level)
 
-    ## -------------------------------------------------------------------------------------------------
-    def _close_results(self, p_results: TrainingResults):
+
+## -------------------------------------------------------------------------------------------------
+    def _close_results(self, p_results:TrainingResults):
         p_results.close()
         if self._current_path is not None: p_results.save(self._current_path)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def run_cycle(self) -> bool:
         """
         Runs a single training cycle.
@@ -971,17 +1098,18 @@ class Training(Log):
         # 1 Intro
         if self._new_run:
             # 1.1 Start of new training run
-            self._current_path = self._gen_current_path(self._root_path, self._current_run)
-            self._results = self._init_results()
+            self._current_path  = self._gen_current_path(self._root_path, self._current_run)
+            self._results       = self._init_results()
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, '-- Training run', self._current_run, 'started...')
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR, '\n')
             self._new_run = False
+            
 
         # 2 Run a single training cycle
-        mode = self._mode
+        mode         = self._mode
         run_finished = self._run_cycle()
 
         if mode == self.C_MODE_TRAIN:
@@ -990,8 +1118,9 @@ class Training(Log):
         elif mode == self.C_MODE_EVAL:
             self._results.num_cycles_eval += 1
 
+
         # 3 Assess results
-        if (self._cycle_limit > 0) and (self._results.num_cycles_train >= self._cycle_limit):
+        if ( self._cycle_limit > 0 ) and ( self._results.num_cycles_train >= self._cycle_limit ):
             # 3.1 Cycle limit reached
             self.log(self.C_LOG_TYPE_W, 'Training cycle limit', self._cycle_limit, 'reached')
             run_finished = True
@@ -1009,11 +1138,12 @@ class Training(Log):
             self._results.log_results()
 
             self._current_path = None
-            self._new_run = True
+            self._new_run       = True
 
         return run_finished
+        
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _run_cycle(self) -> bool:
         """
         Single custom trainig cycle to be redefined. Custom training results can be added to using
@@ -1028,7 +1158,8 @@ class Training(Log):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def run(self) -> TrainingResults:
         """
         Runs a training and returns the results of the best trained/tuned agent.
@@ -1048,21 +1179,22 @@ class Training(Log):
         else:
             # 2 Training with hyperparameter tuning
             self.log(self.C_LOG_TYPE_I, 'Training started (with hyperparameter tuning)')
-            training_param = self._kwargs.copy()
+            training_param  = self._kwargs.copy()
             training_param.pop('p_hpt')
             training_param.pop('p_hpt_trials')
-            self._results = self._hpt.maximize(p_training_cls=self.__class__, p_num_trials=self._hpt_trials,
-                                               p_root_path=self._root_path, p_training_param=training_param)
+            self._results = self._hpt.maximize(p_training_cls=self.__class__, p_num_trials=self._hpt_trials, p_root_path=self._root_path, p_training_param=training_param)
 
         self.log(self.C_LOG_TYPE_I, 'Training completed')
         return self.get_results()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _run(self) -> TrainingResults:
         self._new_run = True
         while not self.run_cycle(): pass
         return self.get_results()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_results(self) -> TrainingResults:
         return self._results
