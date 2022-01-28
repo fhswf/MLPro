@@ -6,7 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-10-26  1.0.0     DA       Splitted modules for sar-, env-, agent- and training classes.
-##--                                 Further change logs are documented there.
+## --                                Further change logs are documented there.
 ## -------------------------------------------------------------------------------------------------
 
 """
