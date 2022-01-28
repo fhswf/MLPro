@@ -93,6 +93,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject, Log, LoadSave):
         
         self.log(self.C_LOG_TYPE_I, 'Hyperopt configuration is successful')
 
+
 ## -------------------------------------------------------------------------------------------------
     def _maximize(self) -> TrainingResults:
         """
