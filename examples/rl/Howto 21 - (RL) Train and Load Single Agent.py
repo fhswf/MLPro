@@ -97,7 +97,7 @@ training = RLTraining(
     p_logging=logging)
 
 training.run()
-
+training_path = training._root_path
 
 # We start from the beginning, in this case we load an existing model
 # 1 Implement your own RL scenario with an existing model
@@ -105,12 +105,16 @@ class MyNdScenario(RLScenario):
     C_NAME = 'Matrix2'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        # In this example we use previous training from the same file
+        # 1 Setup environment
+        gym_env = gym.make('CartPole-v1')
+        self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
+
+        # 2 In this example we use previous training from the same file
         # To make easier, we retrieve the save path from the previous training
-        return self.load(training._root_path, "trained model.pkl")
+        return self.load(training_path, "trained model.pkl")
 
 
-# 2 Create and run training object
+# 3 Create and run training object
 training = RLTraining(
     p_scenario_cls=MyNdScenario,
     p_cycle_limit=cycle_limit,
