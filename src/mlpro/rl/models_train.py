@@ -867,15 +867,13 @@ class RLTraining(Training):
                                                p_reward=self._eval_sum_reward)
 
         # 4 Stagnation detection based on moving average score
-        if self._eval_last_score is None:
-            self._eval_last_score = score_ma
-
-        elif score_ma <= self._eval_last_score:
-            self._eval_last_score   = score_ma
+        if ( self._eval_last_score is not None ) and ( score_ma <= self._eval_last_score ):
             self._eval_stagnations += 1
-
         else:
             self._eval_stagnations = 0
+
+        self._eval_last_score = score_ma
+
 
         # 5 Training data logging is turned on
         self._scenario.connect_data_logger(p_ds_states=self._results.ds_states, p_ds_actions=self._results.ds_actions,
@@ -910,7 +908,7 @@ class RLTraining(Training):
 
         # 3 Update current evaluation
         if self._mode == self.C_MODE_EVAL:
-            self._update_evaluation(success, error, limit)
+            self._update_evaluation(p_success=success, p_error=error, p_cycle_limit=limit)
 
         # 4 Check: Episode finished?
         state = self._env.get_state()

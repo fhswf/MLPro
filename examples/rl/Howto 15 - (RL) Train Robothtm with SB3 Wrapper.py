@@ -68,7 +68,7 @@ class ScenarioRobotHTM(RLScenario):
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
     cycle_limit = 100000
-    adaptation_limit = 50
+    adaptation_limit = 150
     stagnation_limit = 5
     eval_frequency = 5
     eval_grp_size = 5
