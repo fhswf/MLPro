@@ -32,7 +32,8 @@
 ## --                                - Class ActionPlanner completed
 ## --                                - Standardization of all docstrings
 ## -- 2022-01-01  1.4.1     MRD      Refactoring and Fixing some bugs
-## -- 2022-01-28  1.4.2     SY       Added switch_adaptivity method in MultiAgent class
+## -- 2022-01-28  1.4.2     SY       - Added switch_adaptivity method in MultiAgent class
+## --                                - Update _adapt method in MultiAgent class
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -786,7 +787,7 @@ class MultiAgent(Agent):
             if (reward.get_type() != Reward.C_TYPE_OVERALL) and not reward.is_rewarded(agent.get_id()):
                 continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-            adapted = adapted or agent.adapt(state, reward)
+            adapted = agent.adapt(state, reward) or adapted
 
         self.log(self.C_LOG_TYPE_I, 'End of adaptation for all agents...')
 
