@@ -141,13 +141,13 @@ class WrPolicySB32MLPro(Policy):
     def _compute_action_on_policy(self, p_obs: State) -> Action:
         obs = p_obs.get_values()
 
-        if not isinstance(obs, torch.Tensor):
-            if isinstance(obs, list):
-                obs = torch.Tensor(obs).reshape(1, len(obs)).to(self.sb3.device)
-            else:
-                obs = torch.Tensor(obs).reshape(1, obs.size).to(self.sb3.device)
-
         if self._adaptivity:
+            if not isinstance(obs, torch.Tensor):
+                if isinstance(obs, list):
+                    obs = torch.Tensor(obs).reshape(1, len(obs)).to(self.sb3.device)
+                else:
+                    obs = torch.Tensor(obs).reshape(1, obs.size).to(self.sb3.device)
+
             with torch.no_grad():
                 actions, values, log_probs = self.sb3.policy.forward(obs)
 
@@ -287,7 +287,7 @@ class WrPolicySB32MLPro(Policy):
             terminal_obs = torch.Tensor(np.array([datas["state_new"].get_values()])).to(self.sb3.device)
             with torch.no_grad():
                 terminal_value = self.sb3.policy.predict_values(terminal_obs)[0]
-            rewards += self.sb3.gamma * terminal_value
+            rewards += self.sb3.gamma * terminal_value.cpu()
 
         self.sb3.rollout_buffer.add(
             datas["state"].get_values(),
