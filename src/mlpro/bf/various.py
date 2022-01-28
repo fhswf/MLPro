@@ -40,7 +40,7 @@ For example: logging, load/save, timer, ...
 
 from datetime import datetime, timedelta
 from time import sleep
-import pickle as pkl
+import dill as pkl
 import os
 from mlpro.bf.exceptions import *
 
