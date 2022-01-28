@@ -30,15 +30,17 @@
 ## --                                'Score (MA)' and 'Adaptations' to result file evaluation.csv
 ## -- 2022-01-26  1.5.3     DA       Class RLTraining: turn off training data logging during evaluation
 ## -- 2022-01-26  1.5.4     SY       Class RLTraining: update preparation of data logging for next episode
+## -- 2022-01-28  1.5.5     DA       Class RLTraining: correction of stagnation detection
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.4 (2022-01-26)
+Ver. 1.5.5 (2022-01-28)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
 
 from mlpro.rl.models_env import *
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -869,6 +871,7 @@ class RLTraining(Training):
             self._eval_last_score = score_ma
 
         elif score_ma <= self._eval_last_score:
+            self._eval_last_score   = score_ma
             self._eval_stagnations += 1
 
         else:
@@ -945,7 +948,7 @@ class RLTraining(Training):
             self.log(self.C_LOG_TYPE_W, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
             eof_training = True
 
-        if (self._stagnation_limit > 0) and (self._eval_stagnations >= (self._stagnation_limit - 1)):
+        if (self._stagnation_limit > 0) and ( self._eval_stagnations >= self._stagnation_limit ):
             self.log(self.C_LOG_TYPE_W, 'Stagnation limit ', str(self._stagnation_limit), ' reached')
             eof_training = True
 

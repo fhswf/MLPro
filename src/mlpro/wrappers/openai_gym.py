@@ -33,10 +33,11 @@
 ## -- 2022-01-21  1.3.2     DA/MRD   Class WrEnvMLPro2GYM: 
 ## --                                - refactored done detection 
 ## --                                - removed artifacts of cycle counting
+## -- 2022-01-28  1.3.3     DA       Class WrEnvMLPro2GYM: stabilized destructor
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-01-21)
+Ver. 1.3.3 (2022-01-28)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -81,8 +82,11 @@ class WrEnvGYM2MLPro(Environment):
 
     ## -------------------------------------------------------------------------------------------------
     def __del__(self):
-        self._gym_env.close()
-        self.log(self.C_LOG_TYPE_I, 'Closed')
+        try:
+            self._gym_env.close()
+            self.log(self.C_LOG_TYPE_I, 'Closed')
+        except:
+            pass
 
     ## -------------------------------------------------------------------------------------------------
     @staticmethod
