@@ -10,10 +10,11 @@
 ## -- 2022-01-27  0.9.1     WB       Trial without animation 
 ## -- 2022-01-28  0.9.2     WB       Fix the  update_plot method
 ## -- 2022-01-31  0.9.3     WB       Taking account of the new state in _compute_reward method 
+## -- 2022-01-31  0.9.4     WB       Add Circular arrow to the plot 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.3 (2022-01-31)
+Ver. 0.9.4 (2022-01-31)
 
 This module provides an RL environment of double pendulum.
 """
@@ -25,7 +26,7 @@ import numpy as np
 from numpy import sin, cos
 import random
 import matplotlib.pyplot as plt
-import matplotlib.animation as animation
+from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
 from collections import deque
 
@@ -198,6 +199,7 @@ class DoublePendulum (Environment):
         
         self.history_x.clear()
         self.history_y.clear()
+        self.action_cw = False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -234,9 +236,10 @@ class DoublePendulum (Environment):
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act*self.t_step, self.t_step))
         state = self.y[-1]
         
+        self.action_cw = True if torque >= 0 else False
         for i in range(len(state)):
             self._state.set_value(i, state[i])
-
+        
         return self._state
 
 
@@ -315,6 +318,30 @@ class DoublePendulum (Environment):
         self.ax.set_aspect('equal')
         self.ax.grid()
         
+        self.cw_arc = Arc([0,0], 0.5*self.l1, 0.5*self.l1, angle=0, theta1=0, 
+                            theta2=250, color='crimson')
+        endX = (0.5*self.l1/2) * np.cos(np.radians(250))
+        endY = (0.5*self.l1/2) * np.sin(np.radians(250))
+        self.cw_arrow = RegularPolygon((endX, endY), 3, 0.5*self.l1/9, np.radians(250), 
+                                        color='crimson')
+        
+        self.ccw_arc = Arc([0,0], 0.5*self.l1, 0.5*self.l1, angle=70, theta1=0, 
+                            theta2=320, color='crimson')
+        endX = (0.5*self.l1/2) * np.cos(np.radians(70+320))
+        endY = (0.5*self.l1/2) * np.sin(np.radians(70+320))
+        self.ccw_arrow = RegularPolygon((endX, endY), 3, 0.5*self.l1/9, np.radians(70+320), 
+                                        color='crimson')
+                                        
+        self.ax.add_patch(self.cw_arc)
+        self.ax.add_patch(self.cw_arrow)
+        self.ax.add_patch(self.ccw_arc)
+        self.ax.add_patch(self.ccw_arrow)
+        
+        self.cw_arc.set_visible(False)
+        self.cw_arrow.set_visible(False)
+        self.ccw_arc.set_visible(False)
+        self.ccw_arrow.set_visible(False)
+        
         self.line, = self.ax.plot([], [], 'o-', lw=2)
         self.trace, = self.ax.plot([], [], '.-', lw=1, ms=2)
 
@@ -333,6 +360,17 @@ class DoublePendulum (Environment):
         self.history_y.appendleft(thisy[2])
         self.line.set_data(thisx, thisy)
         self.trace.set_data(self.history_x, self.history_y)
+        
+        if self.action_cw:
+            self.cw_arc.set_visible(True)
+            self.cw_arrow.set_visible(True)
+            self.ccw_arc.set_visible(False)
+            self.ccw_arrow.set_visible(False)
+        else:
+            self.cw_arc.set_visible(False)
+            self.cw_arrow.set_visible(False)
+            self.ccw_arc.set_visible(True)
+            self.ccw_arrow.set_visible(True)
         
         if not self.embedded_fig:
             self.fig.canvas.draw()
