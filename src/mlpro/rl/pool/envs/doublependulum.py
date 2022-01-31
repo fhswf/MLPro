@@ -9,10 +9,11 @@
 ## -- 2022-01-26  0.9.0     WB       Initial trial of the environment
 ## -- 2022-01-27  0.9.1     WB       Trial without animation 
 ## -- 2022-01-28  0.9.2     WB       Fix the  update_plot method
+## -- 2022-01-31  0.9.3     WB       Taking account of the new state in _compute_reward method 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.2 (2022-01-28)
+Ver. 0.9.3 (2022-01-31)
 
 This module provides an RL environment of double pendulum.
 """
@@ -282,13 +283,17 @@ class DoublePendulum (Environment):
 ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         reward = Reward(Reward.C_TYPE_OVERALL)
+        
+        state = p_state_new.get_values()
+        
         count = 0
         for th1 in self.y[:,0]:
             if np.degrees(th1) > 179 or np.degrees(th1) < 181 or \
                 np.degrees(th1) < -179 or np.degrees(th1) > -181:
                 count += 1
         
-        reward.set_overall_reward(count/len(self.y))
+        speed_costs = np.pi * abs(state[1]) / self.max_speed
+        reward.set_overall_reward((abs(state[0])-speed_costs) * count/len(self.y))
         
         return reward
     
