@@ -156,7 +156,7 @@ class DoublePendulum(Environment):
         return state_space, action_space
 
     ## -------------------------------------------------------------------------------------------------
-    def derivs(self, state):
+    def derivs(self, state, t=None):
         """
         This method is used to calculate the derivatives of the system, given the
         current states.
@@ -165,6 +165,9 @@ class DoublePendulum(Environment):
         ----------
         state : list
             [th, th1dot, th2, th2dot]
+
+        t : list
+            Timestep
 
         Returns
         -------
