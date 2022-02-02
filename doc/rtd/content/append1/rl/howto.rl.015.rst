@@ -28,12 +28,14 @@ Please install the following packages to run this examples properly:
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
+Results
+`````````````````
+...
+
+
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 15 - (RL) Train Robothtm with SB3 Wrapper.py
     :language: python
 
-Results
-`````````````````
-...

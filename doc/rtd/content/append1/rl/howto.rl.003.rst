@@ -28,13 +28,47 @@ Please install the following packages to run this examples properly:
   ..
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
+Results
+`````````````````
+.. image:: images/Cartpole.png
 
+The Gym Cartpole environment window should appear. Afterwards, the training should run 
+for a few episodes before terminating and printing the result. The training log
+is also stored in the location specified. 
+
+.. code-block:: bash
+
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training Results of run 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Scenario          : RL-Scenario Matrix 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Model             : Agent Smith 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Start time stamp  : 2022-01-17 10:31:12.339004 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- End time stamp    : 2022-01-17 10:31:21.548256 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Duration          : 0:00:09.209252 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Start cycle id    : 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- End cycle id      : 499 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training cycles   : 500 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Evaluation cycles : 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Adaptations       : 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- High score        : None 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Results stored in : "C:\Users\%username%\YYYY-MM-DD  HH:MM:SS Training RL" 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training Episodes : 23 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Evaluations       : 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
+
+In the folder, there should be some files including:
+    - agent_actions.csv
+    - env_rewards.csv
+    - env_states.csv
+    - evaluation.csv
+    - summary.csv
+    - trained model.pkl
+    
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 03 - (RL) Train agent with own policy on gym environment.py
     :language: python
-
-Results
-`````````````````
-...

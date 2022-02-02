@@ -25,13 +25,15 @@ The installation steps are as follow:
     4. Install Dependencies:
         .. code-block:: bash
                  
-            sudo apt-get install ros-$ROS_DISTRO-ur-client-library ros-$ROS_DISTRO-joint-trajectory-controller \
-                                ros-$ROS_DISTRO-scaled-controller ros-$ROS_DISTRO-speed-scaling-interface \
-                                ros-$ROS_DISTRO-speed-scaling-state-controller ros-$ROS_DISTRO-pass-through-controllers
-            sudo apt install ros-$ROS_DISTRO-moveit-resources-prbt-moveit-config
-                sudo apt install ros-$ROS_DISTRO-pilz-industrial-motion-planner
+            sudo apt-get install ros-$ROS_DISTRO-ur-client-library ros-$ROS_DISTRO-joint-trajectory-controller ros-$ROS_DISTRO-scaled-controllers ros-$ROS_DISTRO-speed-scaling-interface ros-$ROS_DISTRO-speed-scaling-state-controller ros-$ROS_DISTRO-pass-through-controllers
+
+        .. code-block:: bash
+
             sudo apt install python3-pip
-            pip3 install catkin_tools gym empy defusedxml pymodbus numpy netifaces pycryptodomex
+
+        .. code-block:: bash
+
+            pip3 install catkin_tools gym empy defusedxml pymodbus numpy netifaces pycryptodomex rospkg gnupg
                     
     5. Build the Environment:
         .. code-block:: bash

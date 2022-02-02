@@ -27,12 +27,14 @@ Please install the following packages to run this examples properly:
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
+Results
+`````````````````
+Descriptions, plots, images, screenshots of expected results.
+
+
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 10 - (RL) Train using SB3 Wrapper.py
     :language: python
 
-Results
-`````````````````
-Descriptions, plots, images, screenshots of expected results.

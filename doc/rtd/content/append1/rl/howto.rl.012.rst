@@ -29,12 +29,14 @@ Please install the following packages to run this examples properly:
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
+Results
+`````````````````
+...
+
+
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 12 - (RL) Wrap mlpro Environment class to petting zoo environment.py
     :language: python
 
-Results
-`````````````````
-...

@@ -29,6 +29,11 @@ Please install the following packages to run this examples properly:
   ..
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
+Results
+`````````````````
+An output similar to the one present in :ref:`the second example <Howto RL 2>` 
+will show up. However, there will be multiple windows of the environment open.
+
 
 Example Code
 `````````````````
@@ -36,6 +41,3 @@ Example Code
 .. literalinclude:: ../../../../../examples/rl/Howto 04 - (RL) Run multi-agent with own policy in multicartpole environment.py
     :language: python
 
-Results
-`````````````````
-...

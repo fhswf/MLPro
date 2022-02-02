@@ -31,12 +31,14 @@ Please install the following packages to run this examples properly:
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
+Results
+`````````````````
+Descriptions, plots, images, screenshots of expected results.
+
+
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 08 - (RL) Run own agents with petting zoo environment.py
     :language: python
 
-Results
-`````````````````
-Descriptions, plots, images, screenshots of expected results.
