@@ -11,10 +11,11 @@
 ## -- 2022-01-28  0.9.2     WB       Fix the  update_plot method
 ## -- 2022-01-31  0.9.3     WB       Taking account of the new state in _compute_reward method 
 ## -- 2022-01-31  0.9.4     WB       Add Circular arrow to the plot 
+## -- 2022-02-02  1.0.0     WB       Release of first version 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.4 (2022-01-31)
+Ver. 1.0.0 (2022-02-02)
 
 This module provides an RL environment of double pendulum.
 """
@@ -38,6 +39,8 @@ class DoublePendulum (Environment):
     """
     This is the main class of the Double Pendulum environment that inherits 
     Environment class from MLPro.
+    The base formulation is taken from 
+    https://matplotlib.org/stable/gallery/animation/double_pendulum.html
     
     Parameters
     ----------
@@ -92,7 +95,7 @@ class DoublePendulum (Environment):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.01, t_act=20, max_torque=20,
                 max_speed=10, l1=0.5, l2=0.5, m1=0.5, m2=0.5, th1=0.0, th2=0.0, 
-                th1dot=0.0, th2dot=0.0, g=9.8, history_length=2):
+                th1dot=0.0, th2dot=0.0, g=9.8, history_length=3):
         self.t_step = t_step
         self.t_act = t_act
         self.set_latency(timedelta(0,t_act*t_step,0))
@@ -152,6 +155,21 @@ class DoublePendulum (Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def derivs(self, state, t):
+        """
+        This method is used to calculate the derrivatives of the system, given the 
+        current states.
+
+        Parameters
+        ----------
+        state : list
+            [th, th1dot, th2, th2dot]
+
+        Returns
+        -------
+        dydx : list
+            The derrivatives of the given state
+
+        """
         dydx = np.zeros_like(state)
         dydx[0] = state[1]
 
@@ -178,6 +196,15 @@ class DoublePendulum (Environment):
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def angle_normalize(x):
+        """
+        This method is called to ensure a normalized angle in radians.
+
+        Returns
+        -------
+        angle : float
+            Normalized angle.
+
+        """
         return ((x + np.pi) % (2 * np.pi)) - np.pi
         
 
@@ -285,6 +312,22 @@ class DoublePendulum (Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
+        """
+        This method calculates the reward for C_TYPE_OVERALL reward type.
+
+        Parameters
+        ----------
+        p_state_old : State
+            previous state.
+        p_state_new : State
+            new state.
+
+        Returns
+        -------
+        reward : Reward
+            reward values.
+
+        """
         reward = Reward(Reward.C_TYPE_OVERALL)
         
         state = p_state_new.get_values()
@@ -303,6 +346,15 @@ class DoublePendulum (Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
+        """
+        This method initializes the plot figure of each episodes. When the environment
+        is reset, the previous figure is closed and reinitialized. 
+        
+        Parameters
+        ----------
+        p_figure : matplotlib.figure.Figure
+            A Figure object of the matplotlib library.
+        """
         if hasattr(self, 'fig'):
             plt.close(self.fig)
         
@@ -348,6 +400,12 @@ class DoublePendulum (Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
+        """
+        This method updates the plot figure of each episodes. When the figure is 
+        detected to be an embedded figure, this method will only set up the 
+        necessary data of the figure.
+        
+        """
         x1 = self.l1*sin(self.y[:, 0])
         y1 = -self.l1*cos(self.y[:, 0])
 
