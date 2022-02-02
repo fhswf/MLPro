@@ -28,11 +28,12 @@ from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.pool.envs.gridworld import GridWorld
 from mlpro.rl.pool.envs.multicartpole import MultiCartPole
+from mlpro.rl.pool.envs.doublependulum import DoublePendulum
 # from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
 
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld, MultiCartPole])
+@pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld, MultiCartPole, DoublePendulum])
 def test_environment(env_cls):
     env = env_cls()
     assert isinstance(env, Environment)
