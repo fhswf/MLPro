@@ -39,8 +39,6 @@ class DoublePendulum (Environment):
     """
     This is the main class of the Double Pendulum environment that inherits 
     Environment class from MLPro.
-    The base formulation is taken from 
-    https://matplotlib.org/stable/gallery/animation/double_pendulum.html
     
     Parameters
     ----------
@@ -97,26 +95,35 @@ class DoublePendulum (Environment):
                 max_speed=10, l1=0.5, l2=0.5, m1=0.5, m2=0.5, th1=0.0, th2=0.0, 
                 th1dot=0.0, th2dot=0.0, g=9.8, history_length=3):
         self.t_step = t_step
-        self.t_act = t_act
+        self.t_act  = t_act
+        
         self.set_latency(timedelta(0,t_act*t_step,0))
         
         self.max_torque = max_torque
-        self.max_speed = max_speed
-        self.l1 = l1
-        self.l2 = l2
-        self.L = l1+l2
-        self.m1 = m1
-        self.m2 = m2
-        self.th1 = th1
-        self.th2 = th2
+        self.max_speed  = max_speed
+        
+        self.l1     = l1
+        self.l2     = l2
+        self.L      = l1+l2
+        self.m1     = m1
+        self.m2     = m2
+        self.th1    = th1
+        self.th2    = th2
         self.th1dot = th1dot
         self.th2dot = th2dot
-        self.g = g
+        self.g      = g
         
         self.history_x = deque(maxlen=history_length)
         self.history_y = deque(maxlen=history_length)
         
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+        
+        self.C_SCIREF_TYPE    = self.C_SCIREF_TYPE_ONLINE
+        self.C_SCIREF_AUTHOR  = "John Hunter, Darren Dale, Eric Firing, Michael \
+                                Droettboom and the Matplotlib development team"
+        self.C_SCIREF_TITLE   = "The Double Pendulum Problem"
+        self.C_SCIREF_URL     = "https://matplotlib.org/stable/gallery/animation/double_pendulum.html"
+        
         self._state = State(self._state_space)
         
         self.reset()  
