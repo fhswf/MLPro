@@ -31,10 +31,11 @@
 ## -- 2022-01-26  1.5.3     DA       Class RLTraining: turn off training data logging during evaluation
 ## -- 2022-01-26  1.5.4     SY       Class RLTraining: update preparation of data logging for next episode
 ## -- 2022-01-28  1.5.5     DA       Class RLTraining: correction of stagnation detection
+## -- 2022-02-04  1.6.0     DA       Class RLTraining: new parameter p_stagnation_entry
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.5 (2022-01-28)
+Ver. 1.6.0 (2022-02-04)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -482,6 +483,8 @@ class RLTraining(Training):
     p_stagnation_limit : int
         Optional limit of consecutive evaluations without training progress. Base is the moving average
         score. Default = 0.
+    p_stagnation_entry : int
+        Optional number of evaluations before the stagnation detection starts. Default = 0.
     p_hpt : HyperParamTuner
         Optional hyperparameter tuner (see class mlpro.bf.ml.HyperParamTuner). Default = None.
     p_hpt_trials : int
@@ -552,28 +555,35 @@ class RLTraining(Training):
             self._stagnation_limit = 0
             self._kwargs['p_stagnation_limit'] = self._stagnation_limit
 
-        # 2.6 Optional parameter p_collect_states
+        # 2.6 Optional parameter p_stagnation_entry
+        try:
+            self._stagnation_entry = self._kwargs['p_stagnation_entry']
+        except KeyError:
+            self._stagnation_entry = 0
+            self._kwargs['p_stagnation_entry'] = self._stagnation_entry
+
+        # 2.7 Optional parameter p_collect_states
         try:
             self._collect_states = self._kwargs['p_collect_states']
         except KeyError:
             self._collect_states = True
             self._kwargs['p_collect_states'] = self._collect_states
 
-        # 2.7 Optional parameter p_collect_actions
+        # 2.8 Optional parameter p_collect_actions
         try:
             self._collect_actions = self._kwargs['p_collect_actions']
         except KeyError:
             self._collect_actions = True
             self._kwargs['p_collect_actions'] = self._collect_actions
 
-        # 2.8 Optional parameter p_collect_rewards
+        # 2.9 Optional parameter p_collect_rewards
         try:
             self._collect_rewards = self._kwargs['p_collect_rewards']
         except KeyError:
             self._collect_rewards = True
             self._kwargs['p_collect_rewards'] = self._collect_rewards
 
-        # 2.9 Optional parameter p_collect_eval
+        # 2.10 Optional parameter p_collect_eval
         try:
             self._collect_eval = self._kwargs['p_collect_eval']
         except KeyError:
@@ -592,6 +602,9 @@ class RLTraining(Training):
         if ((self._eval_frequency > 0) and (self._eval_grp_size <= 0)) or (
                 (self._eval_frequency <= 0) and (self._eval_grp_size > 0)):
             raise ParamError('For cyclic evaluation both parameters p_eval_frequency and p_eval_grp_size must be > 0')
+
+        if ( self._stagnation_entry > 0 ) and ( self._stagnation_limit <= 0 ):
+            raise ParamError('Parameter p_stagnation_entry > 0 has no effect, because stagnation detection is off')
 
             # 4 Initialization of further rl-specific attributes
         if self._scenario is not None:
@@ -867,13 +880,15 @@ class RLTraining(Training):
                                                p_reward=self._eval_sum_reward)
 
         # 4 Stagnation detection based on moving average score
-        if ( self._eval_last_score is not None ) and ( score_ma <= self._eval_last_score ):
-            self._eval_stagnations += 1
-        else:
-            self._eval_stagnations = 0
+        if ( self._results.num_evaluations + 1 ) > self._stagnation_entry:
 
-        self._eval_last_score = score_ma
+            if ( self._eval_last_score is not None ) and ( score_ma <= self._eval_last_score ):
+                self._eval_stagnations += 1
 
+            else:
+                self._eval_stagnations = 0
+
+            self._eval_last_score  = score_ma
 
         # 5 Training data logging is turned on
         self._scenario.connect_data_logger(p_ds_states=self._results.ds_states, p_ds_actions=self._results.ds_actions,
