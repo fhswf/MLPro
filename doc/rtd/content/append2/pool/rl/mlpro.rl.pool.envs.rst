@@ -47,3 +47,11 @@ UR5 Arm Robot
    :undoc-members:
    :show-inheritance:
 
+Double Pendulum
+----------------
+
+
+.. automodule:: mlpro.rl.pool.envs.doublependulum
+   :members:
+   :undoc-members:
+   :show-inheritance:
