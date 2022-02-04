@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-11  0.0.0     DA       Creation
 ## -- 2021-12-12  1.0.0     DA       Released first version
+## -- 2022-02-04  1.1.0     DA       Introduction of parameter p_stagnation_entry
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-12)
+Ver. 1.1.0 (2022-02-04)
 
 This module demonstrates advanced training with evaluation and stagnation detection.
 """
@@ -125,6 +126,7 @@ if __name__ == "__main__":
     cycle_limit         = 5000
     adaptation_limit    = 50
     stagnation_limit    = 5
+    stagnation_entry    = 3
     eval_frequency      = 10
     eval_grp_size       = 5
     logging             = Log.C_LOG_WE
@@ -136,6 +138,7 @@ else:
     cycle_limit         = 50
     adaptation_limit    = 5
     stagnation_limit    = 5
+    stagnation_entry    = 1
     eval_frequency      = 2
     eval_grp_size       = 1
     logging             = Log.C_LOG_NOTHING
@@ -151,6 +154,7 @@ training = RLTraining(
         p_eval_frequency=eval_frequency,
         p_eval_grp_size=eval_grp_size,
         p_stagnation_limit=stagnation_limit,
+        p_stagnation_entry=stagnation_entry,
         p_score_ma_horizon=3,
         p_success_ends_epi=True,
         p_path=path,
