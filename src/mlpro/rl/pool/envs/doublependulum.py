@@ -279,7 +279,7 @@ class DoublePendulum(Environment):
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act * self.t_step, self.t_step))
         state = self.y[-1]
 
-        self.action_cw = True if torque >= 0 else False
+        self.action_cw = True if torque <= 0 else False
         for i in range(len(state)):
             self._state.set_value(i, state[i])
 
