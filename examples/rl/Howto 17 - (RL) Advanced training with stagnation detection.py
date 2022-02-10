@@ -8,10 +8,11 @@
 ## -- 2021-12-11  0.0.0     DA       Creation
 ## -- 2021-12-12  1.0.0     DA       Released first version
 ## -- 2022-02-04  1.1.0     DA       Introduction of parameter p_stagnation_entry
+## -- 2022-02-10  1.2.0     DA       Introduction of parameter p_end_at_stagnation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-02-04)
+Ver. 1.2.0 (2022-02-10)
 
 This module demonstrates advanced training with evaluation and stagnation detection.
 """
@@ -123,10 +124,11 @@ class MyScenario (RLScenario):
 
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit         = 5000
+    cycle_limit         = 1500
     adaptation_limit    = 50
     stagnation_limit    = 5
     stagnation_entry    = 3
+    end_at_stagnation   = True
     eval_frequency      = 10
     eval_grp_size       = 5
     logging             = Log.C_LOG_WE
@@ -139,6 +141,7 @@ else:
     adaptation_limit    = 5
     stagnation_limit    = 5
     stagnation_entry    = 1
+    end_at_stagnation   = True
     eval_frequency      = 2
     eval_grp_size       = 1
     logging             = Log.C_LOG_NOTHING
@@ -155,6 +158,7 @@ training = RLTraining(
         p_eval_grp_size=eval_grp_size,
         p_stagnation_limit=stagnation_limit,
         p_stagnation_entry=stagnation_entry,
+        p_end_at_stagnation=end_at_stagnation,
         p_score_ma_horizon=3,
         p_success_ends_epi=True,
         p_path=path,
