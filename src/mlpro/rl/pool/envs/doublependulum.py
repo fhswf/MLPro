@@ -15,10 +15,11 @@
 ## -- 2022-02-02  1.0.1     MRD      Cleaning the code
 ## -- 2022-02-10  1.0.2     WB       Introduce transparency in arrow depending on applied torque
 ## -- 2022-02-10  1.0.3     WB       Set init_angles as presets for starting angles
+## -- 2022-02-10  1.0.4     WB       Normalize angle in reward calculation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-02-10)
+Ver. 1.0.4 (2022-02-10)
 
 This module provides an RL environment of double pendulum.
 """
@@ -345,8 +346,9 @@ class DoublePendulum(Environment):
 
         count = 0
         for th1 in self.y[:, 0]:
-            if np.degrees(th1) > 179 or np.degrees(th1) < 181 or \
-                    np.degrees(th1) < -179 or np.degrees(th1) > -181:
+            ang = np.degrees(DoublePendulum.angle_normalize(th1))
+            if ang > 170 or ang < 190 or \
+                    ang < -170 or ang > -190:
                 count += 1
             else:
                 count = 0
