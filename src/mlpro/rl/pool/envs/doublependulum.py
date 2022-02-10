@@ -16,10 +16,11 @@
 ## -- 2022-02-10  1.0.2     WB       Introduce transparency in arrow depending on applied torque
 ## -- 2022-02-10  1.0.3     WB       Set init_angles as presets for starting angles
 ## -- 2022-02-10  1.0.4     WB       Normalize angle in reward calculation
+## -- 2022-02-10  1.0.5     WB       Fix arrow head 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-02-10)
+Ver. 1.0.5 (2022-02-10)
 
 This module provides an RL environment of double pendulum.
 """
@@ -386,9 +387,9 @@ class DoublePendulum(Environment):
 
         self.cw_arc = Arc([0, 0], 0.5 * self.l1, 0.5 * self.l1, angle=0, theta1=0,
                           theta2=250, color='crimson')
-        endX = (0.5 * self.l1 / 2) * np.cos(np.radians(250))
-        endY = (0.5 * self.l1 / 2) * np.sin(np.radians(250))
-        self.cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self.l1 / 9, np.radians(250),
+        endX = (0.5 * self.l1 / 2) * np.cos(np.radians(0))
+        endY = (0.5 * self.l1 / 2) * np.sin(np.radians(0))
+        self.cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self.l1 / 9, np.radians(180),
                                        color='crimson')
 
         self.ccw_arc = Arc([0, 0], 0.5 * self.l1, 0.5 * self.l1, angle=70, theta1=0,
