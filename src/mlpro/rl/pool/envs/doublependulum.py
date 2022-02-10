@@ -45,7 +45,7 @@ class DoublePendulum(Environment):
     p_logging : Log, optional
         Logging functionalities. The default is Log.C_LOG_ALL.
     t_step : float, optional
-        Time for each time step (in seconds). The default is 0.01.
+        Time for each time step (in seconds). The default is 0.0025.
     t_act : int, optional
         Action frequency (with respect to the time step). The default is 20.
     max_torque : float, optional
@@ -55,11 +55,11 @@ class DoublePendulum(Environment):
     l1 : float, optional
         Length of pendulum 1 in m. The default is 0.5
     l2 : float, optional
-        Length of pendulum 2 in m. The default is 0.5
+        Length of pendulum 2 in m. The default is 0.25
     m1 : float, optional
         Mass of pendulum 1 in kg. The default is 0.5
     m2 : float, optional
-        Mass of pendulum 2 in kg. The default is 0.5
+        Mass of pendulum 2 in kg. The default is 0.25
     init_angles: str, optional
         'up' starts the pendulum in an upright position
         'down' starts the pendulum in a downward position
@@ -86,8 +86,8 @@ class DoublePendulum(Environment):
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.01, t_act=20, max_torque=20,
-                 max_speed=10, l1=0.5, l2=0.5, m1=0.5, m2=0.5, init_angles='down', 
+    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.0025, t_act=20, max_torque=20,
+                 max_speed=10, l1=0.5, l2=0.25, m1=0.5, m2=0.25, init_angles='down', 
                  g=9.8, history_length=3):
         self.t_step = t_step
         self.t_act = t_act
@@ -109,7 +109,7 @@ class DoublePendulum(Environment):
         
         if init_angles=='up':
             self.th1 = 180
-            self.th2 = 0
+            self.th2 = 180
         elif init_angles=='down':
             self.th1 = 0
             self.th2 = 0
