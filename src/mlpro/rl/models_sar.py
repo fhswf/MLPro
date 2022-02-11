@@ -22,10 +22,11 @@
 ## -- 2021-12-21  1.1.1     DA       Class State: 
 ## --                                - new attributes _initial, _terminal, _timeout
 ## --                                - all attributes can be set as parameters of the constructor
+## -- 2022-02-11  1.1.2     DA       Class Reward: dealing with arrays as overall reward
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2021-12-21)
+Ver. 1.1.2 (2022-02-11)
 
 This module provides model classes for state, action and reward data and their buffering.
 """
@@ -242,12 +243,20 @@ class Reward(TStamp):
     def set_overall_reward(self, p_reward) -> bool:
         if self.type != self.C_TYPE_OVERALL:
             return False
-        self.overall_reward = p_reward
+
+        try:
+            self.overall_reward = p_reward[0]
+        except:
+            self.overall_reward = p_reward
+
         return True
 
     ## -------------------------------------------------------------------------------------------------
     def get_overall_reward(self):
-        return self.overall_reward
+        try:
+            return self.overall_reward[0]
+        except:
+            return self.overall_reward
 
     ## -------------------------------------------------------------------------------------------------
     def add_agent_reward(self, p_agent_id, p_reward) -> bool:
