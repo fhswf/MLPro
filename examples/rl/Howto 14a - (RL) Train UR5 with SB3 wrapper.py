@@ -40,7 +40,8 @@ class ScenarioUR5A2C(RLScenario):
             n_steps=20,
             env=None,
             _init_setup_model=False,
-            device="cpu",)
+            device="cpu",
+            seed=1)
 
         policy_wrapped = WrPolicySB32MLPro(
             p_sb3_policy=policy_sb3,

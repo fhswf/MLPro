@@ -24,19 +24,13 @@ This module provides an environment with multivariate state and action spaces
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
 """
 
-
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import numpy as np
-import gym
 import rospy
-import rospkg
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
 from openai_ros.task_envs.task_commons import LoadYamlFileParamsTest
 import subprocess
-
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -47,12 +41,12 @@ class UR5JointControl(WrEnvGYM2MLPro):
     Gym-based environment 'UR5RandomTargetTask-v0'. 
     """
 
-    C_NAME      = 'UR5JointControl'
-    C_LATENCY   = timedelta(0,5,0)
-    C_INFINITY  = np.finfo(np.float32).max      
+    C_NAME = 'UR5JointControl'
+    C_LATENCY = timedelta(0, 5, 0)
+    C_INFINITY = np.finfo(np.float32).max
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=True):
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_seed=0, p_logging=True):
         """
         Parameters:
             p_logging       Boolean switch for logging
@@ -66,17 +60,22 @@ class UR5JointControl(WrEnvGYM2MLPro):
 
         # Init OpenAI_ROS ENV
         task_and_robot_environment_name = rospy.get_param('/ur5_lab/task_and_robot_environment_name')
-    
+
         max_step_episode = rospy.get_param('/ur5_lab/max_iterations')
 
         env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
+        env.seed(p_seed)
 
         super().__init__(p_gym_env=env)
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
         obs = p_state.get_values()
-        close =  np.allclose(a=obs[:3],
+        close = np.allclose(a=obs[:3],
                             b=obs[3:],
-                            atol=0.05)
+                            atol=0.1)
+
+        if close:
+            self._state.set_terminal(True)
+
         return close
