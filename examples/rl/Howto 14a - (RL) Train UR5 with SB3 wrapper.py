@@ -14,7 +14,7 @@
 """
 Ver. 1.1.0 (2022-02-11)
 
-This module shows how to use SB3 wrapper to train UR5 robot
+This module shows how to use SB3 wrapper to train UR5 robot.
 """
 
 from mlpro.rl.models import *
