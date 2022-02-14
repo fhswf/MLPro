@@ -17,10 +17,11 @@
 ## -- 2022-02-10  1.0.3     WB       Set init_angles as presets for starting angles
 ## -- 2022-02-10  1.0.4     WB       Normalize angle in reward calculation
 ## -- 2022-02-10  1.0.5     WB       Fix arrow head 
+## -- 2022-02-14  1.0.6     WB       Update _compute_reward method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-02-10)
+Ver. 1.0.6 (2022-02-14)
 
 This module provides an RL environment of double pendulum.
 """
@@ -353,9 +354,11 @@ class DoublePendulum(Environment):
                 count += 1
             else:
                 count = 0
-
+        distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[0])))
+        distance_costs = 4 if distance <= 0.1 else 0.3 / distance
+        
         speed_costs = np.pi * abs(state[1]) / self.max_speed
-        reward.set_overall_reward((abs(state[0]) - speed_costs) * count / len(self.y))
+        reward.set_overall_reward((distance_costs - speed_costs) * count / len(self.y))
 
         return reward
 
