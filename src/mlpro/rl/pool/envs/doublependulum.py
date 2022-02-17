@@ -364,6 +364,7 @@ class DoublePendulum(Environment):
         th1_acceleration_costs = abs(self.y[-1, 1]-self.y[-2, 1]) / (self.max_speed)
         
         inner_pole_costs = (th1_distance_costs - th1_speed_costs - th1_acceleration_costs) * th1_count / len(self.y)
+        inner_pole_weight = (self.l1/2)*self.m1
         
         th2_count = 0
         for th2 in self.y[:, 2]:
@@ -383,7 +384,7 @@ class DoublePendulum(Environment):
         outer_pole_costs = (th2_distance_costs - th2_speed_costs - th2_acceleration_costs) * th2_count / len(self.y)
         outer_pole_weight = (self.L-(self.l2/2))*self.m2
         
-        reward.set_overall_reward(inner_pole_costs + outer_pole_costs * outer_pole_weight)
+        reward.set_overall_reward(inner_pole_costs * inner_pole_weight + outer_pole_costs * outer_pole_weight)
 
         return reward
 
