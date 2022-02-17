@@ -18,10 +18,11 @@
 ## -- 2022-02-10  1.0.4     WB       Normalize angle in reward calculation
 ## -- 2022-02-10  1.0.5     WB       Fix arrow head 
 ## -- 2022-02-14  1.0.6     WB       Update _compute_reward method
+## -- 2022-02-17  1.0.7     WB       Taking into account the outer pole in reward calculation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2022-02-14)
+Ver. 1.0.7 (2022-02-17)
 
 This module provides an RL environment of double pendulum.
 """
@@ -105,6 +106,7 @@ class DoublePendulum(Environment):
         self.L = l1 + l2
         self.m1 = m1
         self.m2 = m2
+        self.M = m1+m2
         self.g = g
         
         self.th1dot = 0
@@ -346,19 +348,42 @@ class DoublePendulum(Environment):
 
         state = p_state_new.get_values()
 
-        count = 0
+        th1_count = 0
         for th1 in self.y[:, 0]:
             ang = np.degrees(DoublePendulum.angle_normalize(th1))
             if ang > 170 or ang < 190 or \
                     ang < -170 or ang > -190:
-                count += 1
+                th1_count += 1
             else:
-                count = 0
-        distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[0])))
-        distance_costs = 4 if distance <= 0.1 else 0.3 / distance
+                th1_count = 0
+        th1_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[0])))
+        th1_distance_costs = 4 if th1_distance <= 0.1 else 0.3 / th1_distance
         
-        speed_costs = np.pi * abs(state[1]) / self.max_speed
-        reward.set_overall_reward((distance_costs - speed_costs) * count / len(self.y))
+        th1_speed_costs = np.pi * abs(state[1]) / self.max_speed
+        
+        th1_acceleration_costs = abs(self.y[-1, 1]-self.y[-2, 1]) / (self.max_speed)
+        
+        inner_pole_costs = (th1_distance_costs - th1_speed_costs - th1_acceleration_costs) * th1_count / len(self.y)
+        
+        th2_count = 0
+        for th2 in self.y[:, 2]:
+            ang = np.degrees(DoublePendulum.angle_normalize(th2))
+            if ang > 170 or ang < 190 or \
+                    ang < -170 or ang > -190:
+                th2_count += 1
+            else:
+                th2_count = 0
+        th2_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[2])))
+        th2_distance_costs = 4 if th2_distance <= 0.1 else 0.3 / th2_distance
+        
+        th2_speed_costs = np.pi * abs(state[3]) / self.max_speed
+        
+        th2_acceleration_costs = abs(self.y[-1, 3]-self.y[-2, 3]) / (self.max_speed)
+        
+        outer_pole_costs = (th2_distance_costs - th2_speed_costs - th2_acceleration_costs) * th2_count / len(self.y)
+        outer_pole_weight = (self.L-(self.l2/2))*self.m2
+        
+        reward.set_overall_reward(inner_pole_costs + outer_pole_costs * outer_pole_weight)
 
         return reward
 
