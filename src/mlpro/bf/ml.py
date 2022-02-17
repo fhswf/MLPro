@@ -107,8 +107,23 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
     def add_hp_tuple(self, p_hpt:HyperParamTuple):
-        pass
+        raise NotImplementedError
 
+## -------------------------------------------------------------------------------------------------
+    def get_value(self, p_dim_id):
+        return super().get_value(p_dim_id)
+   
+## -------------------------------------------------------------------------------------------------
+    def set_value(self, p_dim_id, p_value):
+        raise NotImplementedError
+
+## -------------------------------------------------------------------------------------------------
+    def get_values(self):
+        raise NotImplementedError
+
+## -------------------------------------------------------------------------------------------------
+    def set_values(self, p_values):
+        raise NotImplementedError
 
 
 
