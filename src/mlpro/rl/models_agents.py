@@ -34,10 +34,11 @@
 ## -- 2022-01-01  1.4.1     MRD      Refactoring and Fixing some bugs
 ## -- 2022-01-28  1.4.2     SY       - Added switch_adaptivity method in MultiAgent class
 ## --                                - Update _adapt method in MultiAgent class
+## -- 2022-02-17  1.5.0     DA/SY    Class Agent: redefinition of method _init_hyperparam()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2022-01-28) 
+Ver. 1.5.0 (2022-02-17) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -471,6 +472,22 @@ class Agent(Policy):
         self._name = p_name
         self.C_NAME = p_name
 
+
+    ## -------------------------------------------------------------------------------------------------
+    def _init_hyperparam(self, **p_par):
+
+        # 1 Create overall hyperparameter space of all adaptive components inside
+        self._hyperparam_space = self._policy.get_hyperparam().get_related_set().copy()
+        if self._envmodel is not None:
+            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set())
+
+        # 2 Create overall hyperparameter (dispatcher) tuple
+        self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+        self._hyperparam_tuple.add_hp_tuple(self._policy.get_hyperparam())
+        if self._envmodel is not None:
+            self._hyperparam_tuple.add_hp_tuple(self._envmodel.get_hyperparam())
+
+        
     ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         super().switch_logging(p_logging)
