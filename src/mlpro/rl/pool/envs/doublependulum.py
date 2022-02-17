@@ -364,7 +364,7 @@ class DoublePendulum(Environment):
         th1_acceleration_costs = abs(self.y[-1, 1]-self.y[-2, 1]) / (self.max_speed)
         
         inner_pole_costs = (th1_distance_costs - th1_speed_costs - th1_acceleration_costs) * th1_count / len(self.y)
-        inner_pole_weight = (self.l1/2)*self.m1
+        inner_pole_weight = 0.5 + (self.l1/2)*self.m1
         
         th2_count = 0
         for th2 in self.y[:, 2]:
