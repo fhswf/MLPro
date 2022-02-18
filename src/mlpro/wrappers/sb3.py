@@ -301,3 +301,39 @@ class WrPolicySB32MLPro(Policy):
     def _add_additional_buffer(self, p_buffer_element: SARSElement):
         p_buffer_element.add_value_element(self.additional_buffer_element)
         return p_buffer_element
+
+
+class WrPolicyACNetMLPro2SB3():
+    """
+    This is actor critic class wrapper
+    """
+
+    def __init__(self):
+        pass
+
+
+class WrPolicySACNetMLPro2SB3():
+    """
+    This is soft actor critic class wrapper
+    """
+
+    def __init__(self):
+        pass
+
+
+class WrPolicyDQNNetMLPro2SB3():
+    """
+    This is soft actor critic class wrapper
+    """
+
+    def __init__(self):
+        pass
+
+
+class WrPolicyTD3NetMLPro2SB3():
+    """
+    This is soft actor critic class wrapper
+    """
+
+    def __init__(self):
+        pass

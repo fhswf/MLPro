@@ -26,7 +26,7 @@ import transformations
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotArm3D
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.sl.pool.afct.afctrans_pytorch import TorchAFctTrans
+from mlpro.sl.pool.afct.afct_pytorch import TorchAFctTrans
 
 from torch.utils.data.sampler import SubsetRandomSampler
 from collections import deque
