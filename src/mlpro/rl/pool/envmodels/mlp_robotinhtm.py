@@ -26,15 +26,17 @@ import transformations
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotArm3D
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.sl.pool.afct.afct_pytorch import TorchAFctTrans
+from mlpro.sl.pool.afct.afct_pytorch import TorchAFct
 
 from torch.utils.data.sampler import SubsetRandomSampler
 from collections import deque
+
 
 def init(module, weight_init, bias_init, gain=1):
     weight_init(module.weight.data, gain=gain)
     bias_init(module.bias.data)
     return module
+
 
 class RobotMLPModel(torch.nn.Module):
     def __init__(self, n_joint, timeStep):
@@ -47,27 +49,28 @@ class RobotMLPModel(torch.nn.Module):
                                constant_(x, 0), np.sqrt(2))
 
         self.model1 = torch.nn.Sequential(
-            init_(torch.nn.Linear(self.n_joint,self.hidden)),
+            init_(torch.nn.Linear(self.n_joint, self.hidden)),
             torch.nn.Tanh(),
-            init_(torch.nn.Linear(self.hidden,self.hidden)),
+            init_(torch.nn.Linear(self.hidden, self.hidden)),
             torch.nn.Tanh(),
-            init_(torch.nn.Linear(self.hidden,self.hidden)),
+            init_(torch.nn.Linear(self.hidden, self.hidden)),
             torch.nn.Tanh(),
-            init_(torch.nn.Linear(self.hidden,7*(self.n_joint+1))),
+            init_(torch.nn.Linear(self.hidden, 7 * (self.n_joint + 1))),
             torch.nn.Tanh()
-            )
-        
+        )
+
     def forward(self, I):
-        BatchSize=I.shape[0]
-        newI = I.reshape(BatchSize,2,self.n_joint) * torch.cat([torch.Tensor([self.timeStep]).repeat(1,self.n_joint), torch.ones(1,self.n_joint)])
-        newI = torch.sum(newI,dim=1)
-        out2 = self.model1(newI)   
-        out2 = out2.reshape(BatchSize,self.n_joint+1,7)
+        BatchSize = I.shape[0]
+        newI = I.reshape(BatchSize, 2, self.n_joint) * torch.cat(
+            [torch.Tensor([self.timeStep]).repeat(1, self.n_joint), torch.ones(1, self.n_joint)])
+        newI = torch.sum(newI, dim=1)
+        out2 = self.model1(newI)
+        out2 = out2.reshape(BatchSize, self.n_joint + 1, 7)
         return out2
+
 
 class IOElement(BufferElement):
     def __init__(self, p_input: torch.Tensor, p_output: torch.Tensor):
-
         super().__init__({"input": p_input, "output": p_output})
 
 
@@ -84,10 +87,11 @@ class MyOwnBuffer(Buffer, torch.utils.data.Dataset):
     def get_internal_counter(self):
         return self._internal_counter
 
-    def __getitem__(self,idx):
+    def __getitem__(self, idx):
         return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
 
-class RobothtmAFct(TorchAFctTrans):
+
+class RobothtmAFct(TorchAFct):
     C_NAME = "Robothtm Adaptive Function"
     C_BUFFER_CLS = MyOwnBuffer
 
@@ -139,34 +143,36 @@ class RobothtmAFct(TorchAFctTrans):
         self.sim_env.update_joint_coords()
 
     def _input_preproc(self, p_input: torch.Tensor) -> torch.Tensor:
-        input = torch.cat([p_input[0][6+self.joint_num:], p_input[0][6:6+self.joint_num]])
-        input = input.reshape(1,self.joint_num*2)
-        self.input_temp = p_input[0][:3].reshape(1,3)
-        
+        input = torch.cat([p_input[0][6 + self.joint_num:], p_input[0][6:6 + self.joint_num]])
+        input = input.reshape(1, self.joint_num * 2)
+        self.input_temp = p_input[0][:3].reshape(1, 3)
+
         return input
 
     def _output_postproc(self, p_output: torch.Tensor) -> torch.Tensor:
         angles = torch.Tensor([])
         thets = torch.zeros(3)
         for idx in range(self.joint_num):
-            angle = torch.Tensor(transformations.euler_from_quaternion(p_output[-1][idx][3:].detach().numpy(), axes="rxyz")) - thets
-            thets = torch.Tensor(transformations.euler_from_quaternion(p_output[-1][idx][3:].detach().numpy(), axes="rxyz"))
+            angle = torch.Tensor(
+                transformations.euler_from_quaternion(p_output[-1][idx][3:].detach().numpy(), axes="rxyz")) - thets
+            thets = torch.Tensor(
+                transformations.euler_from_quaternion(p_output[-1][idx][3:].detach().numpy(), axes="rxyz"))
             angles = torch.cat([angles, torch.norm(angle).reshape(1, 1)], dim=1)
 
-        output = torch.cat([self.input_temp, p_output[-1][-1][:3].reshape(1,3)], dim=1)
+        output = torch.cat([self.input_temp, p_output[-1][-1][:3].reshape(1, 3)], dim=1)
         output = torch.cat([output, angles], dim=1)
 
         return output
-    
+
     def _adapt(self, p_input: Element, p_output: Element) -> bool:
         model_input = deque(p_input.get_values()[6:])
         model_input.rotate(self.joint_num)
         model_input = torch.Tensor([list(model_input)])
 
-        self.sim_env.set_theta(torch.Tensor([p_output.get_values()[6 : 6 + self.joint_num]]))
+        self.sim_env.set_theta(torch.Tensor([p_output.get_values()[6: 6 + self.joint_num]]))
         self.sim_env.update_joint_coords()
 
-        model_output = self.sim_env.convert_to_quaternion().reshape(1,self.joint_num+1,7)
+        model_output = self.sim_env.convert_to_quaternion().reshape(1, self.joint_num + 1, 7)
 
         self._add_buffer(IOElement(model_input, model_output))
 
@@ -178,7 +184,7 @@ class RobothtmAFct(TorchAFctTrans):
             dataset_size = len(self._buffer)
             indices = list(range(dataset_size))
             split = int(np.floor(0.3 * dataset_size))
-            np.random.seed(random.randint(1,1000))
+            np.random.seed(random.randint(1, 1000))
             np.random.shuffle(indices)
             train_indices, test_indices = indices[split:], indices[:split]
 
@@ -205,7 +211,7 @@ class RobothtmAFct(TorchAFctTrans):
                 loss = self.loss_dyn(outputs, Label)
                 test_loss += loss.item()
 
-            if test_loss/len(tester) < 5e-9:
+            if test_loss / len(tester) < 5e-9:
                 self.train_model = False
 
         return True
@@ -213,15 +219,16 @@ class RobothtmAFct(TorchAFctTrans):
     def _add_buffer(self, p_buffer_element: IOElement):
         self._buffer.add_element(p_buffer_element)
 
+
 class MLPEnvModel(EnvModel, Mode):
     C_NAME = "HTM Env Model"
 
     def __init__(
-        self,
-        p_num_joints=4,
-        p_target_mode="Random",
-        p_ada=True,
-        p_logging=False,
+            self,
+            p_num_joints=4,
+            p_target_mode="Random",
+            p_ada=True,
+            p_logging=False,
     ):
 
         # Define all the adaptive function here
@@ -424,4 +431,3 @@ class MLPEnvModel(EnvModel, Mode):
         obs = obs.cpu().flatten().tolist()
         self._state = State(self._state_space)
         self._state.set_values(obs)
-
