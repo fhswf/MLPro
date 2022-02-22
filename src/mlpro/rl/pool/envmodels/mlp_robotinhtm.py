@@ -26,7 +26,9 @@ import transformations
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotArm3D
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
+from mlpro.sl.pool.afct.afct_base_nn import IOElement
 from mlpro.sl.pool.afct.afct_pytorch import TorchAFct
+from mlpro.sl.pool.afct.afct_pytorch import TorchBuffer
 
 from torch.utils.data.sampler import SubsetRandomSampler
 from collections import deque
@@ -69,36 +71,14 @@ class RobotMLPModel(torch.nn.Module):
         return out2
 
 
-class IOElement(BufferElement):
-    def __init__(self, p_input: torch.Tensor, p_output: torch.Tensor):
-        super().__init__({"input": p_input, "output": p_output})
-
-
-# Buffer
-class MyOwnBuffer(Buffer, torch.utils.data.Dataset):
-    def __init__(self, p_size=1):
-        Buffer.__init__(self, p_size=p_size)
-        self._internal_counter = 0
-
-    def add_element(self, p_elem: BufferElement):
-        Buffer.add_element(self, p_elem)
-        self._internal_counter += 1
-
-    def get_internal_counter(self):
-        return self._internal_counter
-
-    def __getitem__(self, idx):
-        return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
-
-
 class RobothtmAFct(TorchAFct):
     C_NAME = "Robothtm Adaptive Function"
-    C_BUFFER_CLS = MyOwnBuffer
+    C_BUFFER_CLS = TorchBuffer
 
     def _setup_model(self):
         self.joint_num = self._output_space.get_num_dim() - 6
-        self.net_model = RobotMLPModel(self.joint_num, 0.01)
-        self.optimizer = torch.optim.Adam(self.net_model.parameters(), lr=3e-4)
+        net_model = RobotMLPModel(self.joint_num, 0.01)
+        self.optimizer = torch.optim.Adam(net_model.parameters(), lr=3e-4)
         self.loss_dyn = torch.nn.MSELoss()
         self.train_model = True
         self.input_temp = None
@@ -141,6 +121,7 @@ class RobothtmAFct(TorchAFct):
             )
 
         self.sim_env.update_joint_coords()
+        return net_model
 
     def _input_preproc(self, p_input: torch.Tensor) -> torch.Tensor:
         input = torch.cat([p_input[0][6 + self.joint_num:], p_input[0][6:6 + self.joint_num]])

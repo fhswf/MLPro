@@ -18,23 +18,49 @@ This module provides Adaptive Functions with Neural Network based on Pytorch.
 """
 
 import torch
+from torch.utils.data.sampler import SubsetRandomSampler
 
 from mlpro.rl.models import *
+from mlpro.sl.pool.afct.afct_base_nn import AFctBaseNN
+from mlpro.sl.pool.afct.afct_base_nn import IOElement
 
-class TorchAFct(AdaptiveFunction):
+
+class TorchBuffer(Buffer, torch.utils.data.Dataset):
+    def __init__(self, p_size=1):
+        Buffer.__init__(self, p_size=p_size)
+        self._internal_counter = 0
+
+    def add_element(self, p_elem: BufferElement):
+        Buffer.add_element(self, p_elem)
+        self._internal_counter += 1
+
+    def get_internal_counter(self):
+        return self._internal_counter
+
+    def __getitem__(self, idx):
+        return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
+
+
+class TorchAFct(AFctBaseNN):
     C_NAME = "Pytorch based Adaptive Function"
+    C_BUFFER_CLS = TorchBuffer
 
     def __init__(
-        self,
-        p_input_space: MSpace,
-        p_output_space: MSpace,
-        p_output_elem_cls=Element,
-        p_threshold=0,
-        p_buffer_size=0,
-        p_ada=True,
-        p_logging=Log.C_LOG_ALL,
-        **p_par
+            self,
+            p_input_space: MSpace,
+            p_output_space: MSpace,
+            p_output_elem_cls=Element,
+            p_data_split=0.3,
+            p_batch_size=100,
+            p_threshold=0,
+            p_buffer_size=0,
+            p_ada=True,
+            p_logging=Log.C_LOG_ALL,
+            **p_par
     ):
+
+        self.batch_size = p_batch_size
+        self.data_split = p_data_split
 
         super().__init__(
             p_input_space=p_input_space,
@@ -47,29 +73,37 @@ class TorchAFct(AdaptiveFunction):
             **p_par
         )
 
-        self._setup_model()
+    def _adapt(self, p_input: Element, p_output: Element):
+        self._buffer.add_element(IOElement(p_input, p_output))
 
-        if self.net_model is None:
-            raise ParamError("Please assign your network model to self.net_model")
-        
-    
-    def _setup_model(self):
-        """
-        Setup Neural Network.
-        
-        Here, the user needs to implement the Neural Network structure and all the necessary variable
-        to train the neural network, e.g, optimizer, loss function.
+        if self._buffer.get_internal_counter() % self._buffer._size != 0:
+            return False
 
-        Input space can be obtained from the following variable.
-        self._input_space
+        self.net_model.train()
 
-        Output space can be obtained from the following variable.
-        self._output_space
+        dataset_size = len(self._buffer)
+        indices = list(range(dataset_size))
+        split = int(np.floor(self.data_split * dataset_size))
+        np.random.seed(random.randint(1, 1000))
+        np.random.shuffle(indices)
+        train_indices, test_indices = indices[split:], indices[:split]
 
-        Please return the neural network.
-        """
+        train_sampler = SubsetRandomSampler(train_indices)
+        test_sampler = SubsetRandomSampler(test_indices)
+        trainer = torch.utils.data.DataLoader(self._buffer, batch_size=self.batch_size, sampler=train_sampler)
+        tester = torch.utils.data.DataLoader(self._buffer, batch_size=self.batch_size, sampler=test_sampler)
 
-        return None
+        # Training
+        self.net_model.train()
+
+        for i, (In, Label) in enumerate(trainer):
+            outputs = self.net_model(In)
+            loss = self.loss_dyn(outputs, Label)
+            self.optimizer.zero_grad()
+            loss.backward()
+            self.optimizer.step()
+
+        return True
 
     def input_preproc(self, p_input: Element) -> torch.Tensor:
         # Convert p_input from Element to Tensor
@@ -94,15 +128,3 @@ class TorchAFct(AdaptiveFunction):
 
     def _output_postproc(self, p_output: torch.Tensor) -> torch.Tensor:
         return p_output
-
-    def _map(self, p_input: Element, p_output: Element):
-        # Input pre processing
-        input = self.input_preproc(p_input)
-
-        # Make prediction
-        output = self.net_model(input)
-
-        # Output post processing
-        output = self.output_postproc(output)
-
-        p_output.set_values(output)
