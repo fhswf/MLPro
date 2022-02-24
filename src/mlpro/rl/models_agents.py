@@ -35,10 +35,11 @@
 ## -- 2022-01-28  1.4.2     SY       - Added switch_adaptivity method in MultiAgent class
 ## --                                - Update _adapt method in MultiAgent class
 ## -- 2022-02-17  1.5.0     DA/SY    Class Agent: redefinition of method _init_hyperparam()
+## -- 2022-02-24  1.5.1     SY       Class MultiAgent: redefinition of method _init_hyperparam()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-02-17) 
+Ver. 1.5.01(2022-02-24) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -669,6 +670,31 @@ class MultiAgent(Agent):
         self.switch_adaptivity(p_ada)
         self._set_adapted(False)
 
+
+    ## -------------------------------------------------------------------------------------------------
+    def _init_hyperparam(self, **p_par):
+
+        # 1 Create overall hyperparameter space of all adaptive components inside
+        for x in range(len(self.get_agents())):
+            if x == 0:
+                agent_model = self.get_agents[x][0]
+                self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy()
+            else:
+                self._hyperparam_space.append(agent_model._policy.get_hyperparam().get_related_set())
+         
+        if self._envmodel is not None:
+            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set())
+
+        # 2 Create overall hyperparameter (dispatcher) tuple
+        self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+        for x in range(len(self.get_agents())):
+            agent_model = self.get_agents[x][0]
+            self._hyperparam_tuple.add_hp_tuple(agent_model._policy.get_hyperparam())
+            
+        if self._envmodel is not None:
+            self._hyperparam_tuple.add_hp_tuple(self._envmodel.get_hyperparam())
+
+        
     ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging) -> None:
         Log.switch_logging(self, p_logging=p_logging)
