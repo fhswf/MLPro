@@ -32,10 +32,11 @@
 ## --                                Put the self._cycle_limit directly on the parameter argument
 ## -- 2022-01-27  1.3.3     SY       Class Training: enhanced training with hyperparameter tuning
 ## -- 2022-01-28  1.3.4     SY       Class HyperParamTuner: add save(), save_line(), HPDataStoring
+## -- 2022-02-24  1.3.5     SY       Introduce new class HyperParamDispatcher
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2022-01-28)
+Ver. 1.3.5 (2022-02-24)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
@@ -103,27 +104,40 @@ class HyperParamTuple (Element):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamDispatcher (HyperParamTuple):
+class HyperParamDispatcher (HyperParamTuple):        
 
 ## -------------------------------------------------------------------------------------------------
     def add_hp_tuple(self, p_hpt:HyperParamTuple):
-        raise NotImplementedError
+        try:
+            self._hp_dict
+        except:
+            self._hp_dict = {}
+        
+        for idx in p_hpt.get_dim_ids():
+            self._hp_dict[idx] = p_hpt
 
 ## -------------------------------------------------------------------------------------------------
     def get_value(self, p_dim_id):
-        return super().get_value(p_dim_id)
+        return self._hp_dict.get(p_dim_id).get_value(p_dim_id)
    
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
-        raise NotImplementedError
+        self._hp_dict.get(p_dim_id).set_value(p_dim_id, p_value)
 
 ## -------------------------------------------------------------------------------------------------
     def get_values(self):
-        raise NotImplementedError
+        for idx in range(len(self._set.get_dim_ids())):
+            dim_id = self._set.get_dim_ids()[idx]
+            self._values[idx] = self.get_value(dim_id)
+        return self._values
 
 ## -------------------------------------------------------------------------------------------------
     def set_values(self, p_values):
-        raise NotImplementedError
+        for idx in range(len(self._set.get_dim_ids())):
+            dim_id = self._set[idx]
+            self._values[idx] = self.set_value(dim_id, p_values[idx])
+
+
 
 
 
