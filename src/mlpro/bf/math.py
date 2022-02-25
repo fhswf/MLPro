@@ -210,10 +210,10 @@ class Set:
     ## -------------------------------------------------------------------------------------------------
     def append(self, p_set, p_new_dim_ids=True):
         if p_new_dim_ids:
-            for dim_id in self.get_dim_ids():
+            for dim_id in p_set.get_dim_ids():
                 self.add_dim(p_set.get_dim(dim_id).copy())
         else:
-            for dim_id in self.get_dim_ids():
+            for dim_id in p_set.get_dim_ids():
                 self.add_dim(p_set.get_dim(dim_id))
 
 

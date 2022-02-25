@@ -894,7 +894,7 @@ class BGLP (Environment):
         state = State(self._state_space)
         sub_state_val = self.calc_state()
         for i in range(len(sub_state_val)):
-            state.set_value(i, sub_state_val[i])
+            state.set_value(state.get_dim_ids()[i], sub_state_val[i])
         return state
     
 
