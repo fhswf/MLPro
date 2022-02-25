@@ -948,11 +948,7 @@ class BGLP (Environment):
         for agent_id in p_action.get_agent_ids():
             action_elem = p_action.get_elem(agent_id)
             for action_id in action_elem.get_dim_ids():
-                action_elem_env = ActionElement(self.get_action_space())
-                action_elem_env.set_value(action_id, action_elem.get_value(action_id))
-                action_env      = Action()
-                action_env.add_elem(agent_id, action_elem_env)
-                action.append(action_elem_env.get_value(action_id))
+                action.append(action_elem.get_value(action_id))
         
         self.overflow_t         = np.zeros((len(self.ress),1))
         self.demand_t           = np.zeros((len(self.ress),1))
@@ -1059,8 +1055,10 @@ class BGLP (Environment):
                 agent_action_ids    = agent_action_elem.get_dim_ids()
                 r_agent             = 0
                 r_reward            = self.calc_reward()
+                action_idx          = 0
                 for action_id in agent_action_ids:
-                    r_action        = r_reward[action_id]
+                    r_action        = r_reward[action_idx]
+                    action_idx      += 1
                     if self.reward_type == Reward.C_TYPE_EVERY_ACTION:
                         reward.add_action_reward(agent_id, action_id, r_action)
                     elif self.reward_type == Reward.C_TYPE_EVERY_AGENT:

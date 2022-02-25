@@ -16,10 +16,11 @@
 ## -- 2021-11-15  1.1.4     DA       Refactoring 
 ## -- 2021-11-16  1.1.5     DA       Added explicit scenario reset with constant seeding 
 ## -- 2021-12-03  1.1.6     DA       Refactoring 
+## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.6 (2021-12-03)
+Ver. 1.1.7 (2022-20-25)
 
 This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
 the mlpro framework.
@@ -63,11 +64,12 @@ class PBScenario (RLScenario):
         self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=p_logging)
         
         multi_agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_logging=True)
-        agent_id            = 0
+        agent_idx           = 0
         for k in self._env._zoo_env.action_spaces:
-            agent_name      = "Agent_"+str(agent_id)
+            agent_name      = "Agent_"+str(agent_idx)
+            as_ids          = self._env.get_action_space().get_dim_ids()
             agent_ospace    = self._env.get_state_space()
-            agent_asspace   = self._env.get_action_space().spawn([agent_id])
+            agent_asspace   = self._env.get_action_space().spawn([as_ids[agent_idx]])
             agent           = Agent(p_policy=ContRandPolicy(p_observation_space=agent_ospace,
                                                             p_action_space=agent_asspace,
                                                             p_buffer_size=10,
@@ -75,13 +77,13 @@ class PBScenario (RLScenario):
                                                             p_logging=p_logging
                                                             ),
                                     p_envmodel=None,
-                                    p_id=agent_id,
+                                    p_id=agent_idx,
                                     p_name=agent_name,
                                     p_ada=p_ada,
                                     p_logging=p_logging
                                     )
             multi_agent.add_agent(p_agent=agent)
-            agent_id += 1
+            agent_idx += 1
 
         return multi_agent
     
@@ -116,11 +118,12 @@ class C4Scenario (RLScenario):
         self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=True)
         
         multi_agent         = MultiAgent(p_name='Connect4_Agents', p_ada=1, p_logging=True)
-        agent_id            = 0
+        agent_idx           = 0
         for k in self._env._zoo_env.action_spaces:
-            agent_name      = "Agent_"+str(agent_id)
+            agent_name      = "Agent_"+str(agent_idx)
+            as_ids          = self._env.get_action_space().get_dim_ids()
             agent_sspace    = self._env.get_state_space()
-            agent_asspace   = self._env.get_action_space().spawn([agent_id])
+            agent_asspace   = self._env.get_action_space().spawn([as_ids[agent_idx]])
             agent           = Agent(p_policy=DiscRandPolicy(p_observation_space=agent_sspace,
                                                             p_action_space=agent_asspace,
                                                             p_buffer_size=10,
@@ -128,13 +131,13 @@ class C4Scenario (RLScenario):
                                                             p_logging=p_logging
                                                             ),
                                     p_envmodel=None,
-                                    p_id=agent_id,
+                                    p_id=agent_idx,
                                     p_name=agent_name,
                                     p_ada=p_ada,
                                     p_logging=p_logging
                                     )
             multi_agent.add_agent(p_agent=agent)
-            agent_id += 1
+            agent_idx += 1
 
         return multi_agent
 

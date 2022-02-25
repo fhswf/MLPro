@@ -17,10 +17,11 @@
 ## -- 2022-01-18  1.1.5     MRD      Fix mismatch Off Policy Algorithm by adding more additional
 ## --                                information on adapt_off_policy()
 ## -- 2022-01-20  1.1.6     MRD      Fix the bug due to new version of SB3 1.4.0
+## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.6 (2022-01-20)
+Ver. 1.1.7 (2022-02-25)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -78,14 +79,16 @@ class WrPolicySB32MLPro(Policy):
 
         # Check if action is Discrete or Box
         action_dim = self.get_action_space().get_num_dim()
-        if len(self.get_action_space().get_dim(0).get_boundaries()) == 1:
-            action_space = gym.spaces.Discrete(self.get_action_space().get_dim(0).get_boundaries()[0])
+        id_dim = self.get_action_space().get_dim_ids()[0]
+        if len(self.get_action_space().get_dim(id_dim).get_boundaries()) == 1:
+            action_space = gym.spaces.Discrete(self.get_action_space().get_dim(id_dim).get_boundaries()[0])
         else:
             self.lows = []
             self.highs = []
             for dimension in range(action_dim):
-                self.lows.append(self.get_action_space().get_dim(dimension).get_boundaries()[0])
-                self.highs.append(self.get_action_space().get_dim(dimension).get_boundaries()[1])
+                id_dim = self.get_action_space().get_dim_ids()[dimension]
+                self.lows.append(self.get_action_space().get_dim(id_dim).get_boundaries()[0])
+                self.highs.append(self.get_action_space().get_dim(id_dim).get_boundaries()[1])
 
             action_space = gym.spaces.Box(
                 low=np.array(self.lows, dtype=np.float32),
@@ -96,14 +99,16 @@ class WrPolicySB32MLPro(Policy):
 
         # Check if state is Discrete or Box
         observation_dim = self.get_observation_space().get_num_dim()
-        if len(self.get_observation_space().get_dim(0).get_boundaries()) == 1:
-            observation_space = gym.spaces.Discrete(self.get_observation_space().get_dim(0).get_boundaries()[0])
+        id_dim = self.get_observation_space().get_dim_ids()[0]
+        if len(self.get_observation_space().get_dim(id_dim).get_boundaries()) == 1:
+            observation_space = gym.spaces.Discrete(self.get_observation_space().get_dim(id_dim).get_boundaries()[0])
         else:
             lows = []
             highs = []
             for dimension in range(observation_dim):
-                lows.append(self.get_observation_space().get_dim(dimension).get_boundaries()[0])
-                highs.append(self.get_observation_space().get_dim(dimension).get_boundaries()[1])
+                id_dim = self.get_observation_space().get_dim_ids()[dimension]
+                lows.append(self.get_observation_space().get_dim(id_dim).get_boundaries()[0])
+                highs.append(self.get_observation_space().get_dim(id_dim).get_boundaries()[1])
 
             observation_space = gym.spaces.Box(
                 low=np.array(lows, dtype=np.float32),
