@@ -28,10 +28,11 @@
 ## --                                - Class EnvModel: cycle limit detection
 ## -- 2022-01-21  1.4.1     DA       Class EnvBase, method process_action(): a success/terminal state
 ## --                                avoids the timeout labelling
+## -- 2022-02-25  1.4.2     SY       Class EnvModel : redefine method _init_hyperparam()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-01-21)
+Ver. 1.4.2 (2022-02-25)
 
 This module provides model classes for environments and environment models.
 """
@@ -1134,6 +1135,23 @@ class EnvModel(EnvBase, Model):
             raise ParamError(
                 'Observation spaces of environment model and adaptive function for assessment broken are not equal')
 
+    ## -------------------------------------------------------------------------------------------------
+    def _init_hyperparam(self, **p_par):
+
+        # 1 Create overall hyperparameter space of all adaptive components inside
+        self._hyperparam_space = self._afct_strans.get_hyperparam().get_related_set().copy()
+        self._hyperparam_space.append(self._afct_reward.get_hyperparam().get_related_set())
+        self._hyperparam_space.append(self._afct_success.get_hyperparam().get_related_set())
+        self._hyperparam_space.append(self._afct_broken.get_hyperparam().get_related_set())
+
+        # 2 Create overall hyperparameter (dispatcher) tuple
+        self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+        self._hyperparam_tuple.add_hp_tuple(self._afct_strans.get_hyperparam())
+        self._hyperparam_tuple.add_hp_tuple(self._afct_reward.get_hyperparam())
+        self._hyperparam_tuple.add_hp_tuple(self._afct_success.get_hyperparam())
+        self._hyperparam_tuple.add_hp_tuple(self._afct_broken.get_hyperparam())
+        
+        
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
         self.set_random_seed(p_seed=p_seed)
