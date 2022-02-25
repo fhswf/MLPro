@@ -16,10 +16,11 @@
 ## -- 2021-12-12  1.2.2     DA       Method MutliCartPole.get_cycle_limit() implemented
 ## -- 2021-12-19  1.2.3     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  1.2.4     DA       Class MultiCartPole: renamed method reset() to _reset()
+## -- 2022-02-25  1.2.5     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2021-12-21)
+Ver. 1.2.5 (2022-02-25)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -90,13 +91,13 @@ class MultiCartPole (Environment):
         for i in range(self._num_envs):
             # Add a set of state dimensions for each sub-environment
             env_str = str(i)
-            state_space.add_dim(Dimension( p_id=i*4, p_name_short='E-' + env_str + ' CPos', p_name_long='Env-' + env_str + ' Cart Position', p_unit='m', p_boundaries=[-4.8, 4.8]))
-            state_space.add_dim(Dimension( p_id=i*4+1, p_name_short='E-' + env_str + ' CVel', p_name_long='Env-' + env_str + ' Cart Velocity', p_unit='m/sec', p_unit_latex='\frac{m}{sec}', p_boundaries=[-self.C_INFINITY,self.C_INFINITY]))
-            state_space.add_dim(Dimension( p_id=i*4+2, p_name_short='E-' + env_str + ' PAng', p_name_long='Env-' + env_str + ' Pole Angle', p_unit='rad', p_boundaries=[-0.418, 0.418]))
-            state_space.add_dim(Dimension( p_id=i*4+3, p_name_short='E-' + env_str + ' PAVel', p_name_long='Env-' + env_str + ' Pole Angular Velocity', p_unit='rad/sec', p_unit_latex='\frac{rad}{sec}',p_boundaries=[-self.C_INFINITY,self.C_INFINITY]))
+            state_space.add_dim(Dimension( p_name_short='E-' + env_str + ' CPos', p_name_long='Env-' + env_str + ' Cart Position', p_unit='m', p_boundaries=[-4.8, 4.8]))
+            state_space.add_dim(Dimension( p_name_short='E-' + env_str + ' CVel', p_name_long='Env-' + env_str + ' Cart Velocity', p_unit='m/sec', p_unit_latex='\frac{m}{sec}', p_boundaries=[-self.C_INFINITY,self.C_INFINITY]))
+            state_space.add_dim(Dimension( p_name_short='E-' + env_str + ' PAng', p_name_long='Env-' + env_str + ' Pole Angle', p_unit='rad', p_boundaries=[-0.418, 0.418]))
+            state_space.add_dim(Dimension( p_name_short='E-' + env_str + ' PAVel', p_name_long='Env-' + env_str + ' Pole Angular Velocity', p_unit='rad/sec', p_unit_latex='\frac{rad}{sec}',p_boundaries=[-self.C_INFINITY,self.C_INFINITY]))
             
             # Add an action dimension for each sub-environment
-            action_space.add_dim(Dimension( p_id=i, p_name_short='E-' + env_str + ' Push', p_name_long='Env-' + env_str + ' Push Cart Left/Right', p_boundaries=[0,1]))
+            action_space.add_dim(Dimension( p_name_short='E-' + env_str + ' Push', p_name_long='Env-' + env_str + ' Push Cart Left/Right', p_boundaries=[0,1]))
 
         return state_space, action_space
 

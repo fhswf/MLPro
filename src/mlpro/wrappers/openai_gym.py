@@ -34,10 +34,11 @@
 ## --                                - refactored done detection 
 ## --                                - removed artifacts of cycle counting
 ## -- 2022-01-28  1.3.3     DA       Class WrEnvMLPro2GYM: stabilized destructor
+## -- 2022-02-25  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2022-01-28)
+Ver. 1.3.4 (2022-02-25)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -95,12 +96,12 @@ class WrEnvGYM2MLPro(Environment):
 
         if isinstance(p_gym_space, gym.spaces.Discrete):
             space.add_dim(
-                Dimension(p_id=0, p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
+                Dimension(p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
         elif isinstance(p_gym_space, gym.spaces.Box):
             shape_dim = len(p_gym_space.shape)
             for i in range(shape_dim):
                 for d in range(p_gym_space.shape[i]):
-                    space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
+                    space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
                                             p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
 
         return space
@@ -255,10 +256,11 @@ class WrEnvMLPro2GYM(gym.Env):
             action = np.array([action])
 
         for i in range(idx):
-            _act_set.add_dim(Dimension(i, 'action_' + str(i)))
+            _act_set.add_dim(Dimension('action_' + str(i)))
         _act_elem = Element(_act_set)
         for i in range(idx):
-            _act_elem.set_value(i, action[i].item())
+            _ids = _act_elem.get_dim_ids()
+            _act_elem.set_value(_ids[i], action[i].item())
         _action.add_elem('0', _act_elem)
 
         self._mlpro_env.process_action(_action)

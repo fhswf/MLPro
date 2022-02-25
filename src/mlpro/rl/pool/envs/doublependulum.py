@@ -13,10 +13,11 @@
 ## -- 2022-01-31  0.9.4     WB       Add Circular arrow to the plot 
 ## -- 2022-02-02  1.0.0     WB       Release of first version
 ## -- 2022-02-02  1.0.1     MRD      Cleaning the code
+## -- 2022-02-25  1.0.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-02-02)
+Ver. 1.0.2 (2022-02-25)
 
 This module provides an RL environment of double pendulum.
 """
@@ -141,16 +142,16 @@ class DoublePendulum(Environment):
         state_space = ESpace()
         action_space = ESpace()
 
-        state_space.add_dim(Dimension(0, 'theta 1', 'th1', 'Angle of Pendulum 1', '', 'degrees',
+        state_space.add_dim(Dimension('theta 1', 'th1', 'Angle of Pendulum 1', '', 'degrees',
                                       '\textdegrees', [-np.pi, np.pi]))
-        state_space.add_dim(Dimension(1, 'omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
+        state_space.add_dim(Dimension('omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
                                       'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
-        state_space.add_dim(Dimension(2, 'theta 2', 'th2', 'Angle of pendulum 2', '', 'degrees',
+        state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'degrees',
                                       '\textdegrees', [-np.pi, np.pi]))
-        state_space.add_dim(Dimension(3, 'omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
+        state_space.add_dim(Dimension('omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
                                       'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
 
-        action_space.add_dim(Dimension(0, 'torque 1', 'tau1', 'Applied Torque of Motor 1', '',
+        action_space.add_dim(Dimension('torque 1', 'tau1', 'Applied Torque of Motor 1', '',
                                        'Nm', 'Nm', [-self.max_torque, self.max_torque]))
 
         return state_space, action_space

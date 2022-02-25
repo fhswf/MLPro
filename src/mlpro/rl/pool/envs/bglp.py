@@ -26,10 +26,11 @@
 ## -- 2021-12-21  2.1.9     DA       Class BGLP: renamed method reset() to _reset()
 ## -- 2022-01-21  2.2.0     SY       Add cycle_limit as an input parameter
 ## -- 2022-01-24  2.2.1     SY       Update seeding procedure, refactoring _reset()
+## -- 2022-02-25  2.2.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.1 (2022-01-24)
+Ver. 2.2.2 (2022-02-25)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -863,18 +864,18 @@ class BGLP (Environment):
         action_space    = ESpace()
         levels_max      = [17.42, 9.10, 17.42, 9.10, 17.42, 9.10]
 
-        state_space.add_dim(Dimension(0, 'E-0 LvlSiloA', 'R', 'Env-0 Level of Silo A', '', 'L', 'L',[0, levels_max[0]]))
-        state_space.add_dim(Dimension(1, 'E-0 LvlHopperA', 'R', 'Env-0 Level of Hopper A', '', 'L', 'L',[0, levels_max[1]]))
-        state_space.add_dim(Dimension(2, 'E-0 LvlSiloB', 'R', 'Env-0 Level of Silo B', '', 'L', 'L',[0, levels_max[2]]))
-        state_space.add_dim(Dimension(3, 'E-0 LvlHopperB', 'R', 'Env-0 Level of Hopper B', '', 'L', 'L',[0, levels_max[3]]))
-        state_space.add_dim(Dimension(4, 'E-0 LvlSiloC', 'R', 'Env-0 Level of Silo C', '', 'L', 'L',[0, levels_max[4]]))
-        state_space.add_dim(Dimension(5, 'E-0 LvlHopperC', 'R', 'Env-0 Level of Hopper C', '', 'L', 'L',[0, levels_max[5]]))
+        state_space.add_dim(Dimension('E-0 LvlSiloA', 'R', 'Env-0 Level of Silo A', '', 'L', 'L',[0, levels_max[0]]))
+        state_space.add_dim(Dimension('E-0 LvlHopperA', 'R', 'Env-0 Level of Hopper A', '', 'L', 'L',[0, levels_max[1]]))
+        state_space.add_dim(Dimension('E-0 LvlSiloB', 'R', 'Env-0 Level of Silo B', '', 'L', 'L',[0, levels_max[2]]))
+        state_space.add_dim(Dimension('E-0 LvlHopperB', 'R', 'Env-0 Level of Hopper B', '', 'L', 'L',[0, levels_max[3]]))
+        state_space.add_dim(Dimension('E-0 LvlSiloC', 'R', 'Env-0 Level of Silo C', '', 'L', 'L',[0, levels_max[4]]))
+        state_space.add_dim(Dimension('E-0 LvlHopperC', 'R', 'Env-0 Level of Hopper C', '', 'L', 'L',[0, levels_max[5]]))
         
-        action_space.add_dim(Dimension(0, 'E-0 Act', 'R', 'Env-0 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension(1, 'E-1 Act', 'R', 'Env-1 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension(2, 'E-2 Act', 'Z', 'Env-2 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension(3, 'E-3 Act', 'R', 'Env-3 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension(4, 'E-4 Act', 'R', 'Env-4 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-0 Act', 'R', 'Env-0 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-1 Act', 'R', 'Env-1 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-2 Act', 'Z', 'Env-2 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-3 Act', 'R', 'Env-3 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-4 Act', 'R', 'Env-4 Actuator Control', '', '', '', [0,1]))
 
         return state_space, action_space
 
