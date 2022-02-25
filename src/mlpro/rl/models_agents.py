@@ -478,9 +478,9 @@ class Agent(Policy):
     def _init_hyperparam(self, **p_par):
 
         # 1 Create overall hyperparameter space of all adaptive components inside
-        self._hyperparam_space = self._policy.get_hyperparam().get_related_set().copy()
+        self._hyperparam_space = self._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
         if self._envmodel is not None:
-            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set())
+            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set(), p_new_dim_ids=False)
 
         # 2 Create overall hyperparameter (dispatcher) tuple
         self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
@@ -678,9 +678,9 @@ class MultiAgent(Agent):
         for x in range(len(self.get_agents())):
             if x == 0:
                 agent_model = self.get_agents[x][0]
-                self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy()
+                self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
             else:
-                self._hyperparam_space.append(agent_model._policy.get_hyperparam().get_related_set())
+                self._hyperparam_space.append(agent_model._policy.get_hyperparam().get_related_set(), p_new_dim_ids=False)
          
         if self._envmodel is not None:
             self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set())

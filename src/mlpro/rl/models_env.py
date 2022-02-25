@@ -1139,10 +1139,10 @@ class EnvModel(EnvBase, Model):
     def _init_hyperparam(self, **p_par):
 
         # 1 Create overall hyperparameter space of all adaptive components inside
-        self._hyperparam_space = self._afct_strans.get_hyperparam().get_related_set().copy()
-        self._hyperparam_space.append(self._afct_reward.get_hyperparam().get_related_set())
-        self._hyperparam_space.append(self._afct_success.get_hyperparam().get_related_set())
-        self._hyperparam_space.append(self._afct_broken.get_hyperparam().get_related_set())
+        self._hyperparam_space = self._afct_strans.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+        self._hyperparam_space.append(self._afct_reward.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+        self._hyperparam_space.append(self._afct_success.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+        self._hyperparam_space.append(self._afct_broken.get_hyperparam().get_related_set(), p_new_dim_ids=False)
 
         # 2 Create overall hyperparameter (dispatcher) tuple
         self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
