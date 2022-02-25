@@ -62,8 +62,10 @@ class MultiCartPole (Environment):
         self._state_space, self._action_space = self._setup_spaces()
 
         for i in range(self._num_envs): 
-            state_space_env  = self._state_space.spawn([i*4, i*4+1, i*4+2, i*4+3])
-            action_space_env = self._action_space.spawn([i])
+            state_space_id   = self._state_space.get_dim_ids()
+            action_space_id  = self._action_space.get_dim_ids()
+            state_space_env  = self._state_space.spawn([state_space_id[i*4], state_space_id[i*4+1], state_space_id[i*4+2], state_space_id[i*4+3]])
+            action_space_env = self._action_space.spawn([action_space_id[i]])
             env              = WrEnvGYM2MLPro(gym.make('CartPole-v1'), state_space_env, action_space_env, p_logging=p_logging)
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)
@@ -115,7 +117,8 @@ class MultiCartPole (Environment):
             sub_state_val = env.get_state().get_values()
             sub_state_dim = sub_state_val.shape[0]
             for d in range(sub_state_dim):
-                state.set_value(env_id*sub_state_dim + d, sub_state_val[d])
+                state_ids = state.get_dim_ids()
+                state.set_value(state_ids[env_id*sub_state_dim + d], sub_state_val[d])
 
             success = success and env.get_state().get_success()
             broken = broken or env.get_state().get_broken()
@@ -153,14 +156,23 @@ class MultiCartPole (Environment):
 
         for agent_id in p_action.get_agent_ids():
             action_elem = p_action.get_elem(agent_id)
-
+            
+            try:
+                self.env_idx
+            except:
+                self.env_idx = 0    
+            
             for action_id in action_elem.get_dim_ids():
-                env             = self._envs[action_id]
+                env             = self._envs[self.env_idx]
                 action_elem_env = ActionElement(env.get_action_space())
                 action_elem_env.set_value(action_id, action_elem.get_value(action_id))
                 action_env      = Action()
                 action_env.add_elem(agent_id, action_elem_env)
                 env._set_state(env.simulate_reaction(None, action_env))
+                if self.env_idx == len(self._envs)-1:
+                    self.env_idx = 0
+                else:
+                    self.env_idx += 1
 
         return self.collect_substates()
 
@@ -181,8 +193,14 @@ class MultiCartPole (Environment):
                 agent_action_elem = self._last_action.get_elem(agent_id)
                 agent_action_ids  = agent_action_elem.get_dim_ids()
                 r_agent = 0
+                
+                try:
+                    self.env_idx_reward
+                except:
+                    self.env_idx_reward = 0
+                    
                 for action_id in agent_action_ids:
-                    r_action = self._envs[action_id].compute_reward().get_overall_reward()
+                    r_action = self._envs[self.env_idx_reward].compute_reward().get_overall_reward()
                     if self._reward_type == Reward.C_TYPE_EVERY_ACTION:
                         reward.add_action_reward(agent_id, action_id, r_action)
                     elif self._reward_type == Reward.C_TYPE_EVERY_AGENT:
@@ -191,6 +209,11 @@ class MultiCartPole (Environment):
                 if self._reward_type == Reward.C_TYPE_EVERY_AGENT:
                     r_agent = r_agent / len(agent_action_ids)
                     reward.add_agent_reward(agent_id, r_agent)
+                
+                if self.env_idx_reward == len(self._envs)-1:
+                    self.env_idx_reward = 0
+                else:
+                    self.env_idx_reward += 1
 
         return reward
 
