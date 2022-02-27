@@ -36,10 +36,11 @@
 ## --                                - new parameter p_end_at_stagnation
 ## --                                - file evaluation.csv: new columns 'Score until Stagnation', 
 ## --                                  'Score(MA) until Stagnation'
+## -- 2022-02-27  1.7.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2022-02-10)
+Ver. 1.7.1 (2022-02-27)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -702,7 +703,7 @@ class RLTraining(Training):
                     agents = [[self._agent, 1.0]]
 
                 for agent, weight in agents:
-                    reward_space.add_dim(Dimension(agent.get_id(), agent.get_name()))
+                    reward_space.add_dim(Dimension(agent.get_name()))
 
                 if self._collect_rewards:
                     results.ds_rewards = RLDataStoring(reward_space)
