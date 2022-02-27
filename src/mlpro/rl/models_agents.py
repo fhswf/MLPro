@@ -36,10 +36,11 @@
 ## --                                - Update _adapt method in MultiAgent class
 ## -- 2022-02-17  1.5.0     DA/SY    Class Agent: redefinition of method _init_hyperparam()
 ## -- 2022-02-24  1.5.1     SY       Class MultiAgent: redefinition of method _init_hyperparam()
+## -- 2022-02-27  1.5.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.01(2022-02-24) 
+Ver. 1.5.2(2022-02-27) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -525,7 +526,9 @@ class Agent(Policy):
         observation = State(obs_space)
 
         for dim_id in obs_dim_ids:
-            observation.set_value(dim_id, p_state.get_value(dim_id))
+            p_state_ids = p_state.get_dim_ids()
+            obs_idx = obs_space.get_dim_ids().index(dim_id)
+            observation.set_value(dim_id, p_state.get_value(p_state_ids[obs_idx]))
 
         return observation
 
