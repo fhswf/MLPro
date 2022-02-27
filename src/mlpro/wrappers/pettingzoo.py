@@ -30,11 +30,11 @@
 ## --                                Class WrEnvMLPro2PZoo:  
 ## --                                - refactored done detection 
 ## --                                - removed artifacts of cycle counting
-## -- 2022-02-25  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2022-02-25)
+Ver. 1.3.4 (2022-02-27)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -306,7 +306,7 @@ class WrEnvMLPro2PZoo():
                     _act_set.add_dim(Dimension('action_'+str(i)))
                     _act_elem   = Element(_act_set)
                     _ids = _act_elem.get_dim_ids()
-                    _act_elem.set_value(_ids[i], self.state[self.possible_agents[i]])
+                    _act_elem.set_value(_ids[0], self.state[self.possible_agents[i]])
                     _action.add_elem(self.possible_agents[i], _act_elem)
                 
                 self._mlpro_env.process_action(_action)
