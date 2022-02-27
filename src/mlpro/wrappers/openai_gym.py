@@ -34,11 +34,11 @@
 ## --                                - refactored done detection 
 ## --                                - removed artifacts of cycle counting
 ## -- 2022-01-28  1.3.3     DA       Class WrEnvMLPro2GYM: stabilized destructor
-## -- 2022-02-25  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2022-02-25)
+Ver. 1.3.4 (2022-02-27)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -228,14 +228,16 @@ class WrEnvMLPro2GYM(gym.Env):
     def recognize_space(p_mlpro_space):
         space = None
         action_dim = p_mlpro_space.get_num_dim()
-        if len(p_mlpro_space.get_dim(0).get_boundaries()) == 1:
-            space = gym.spaces.Discrete(p_mlpro_space.get_dim(0).get_boundaries()[0])
+        id_dim = p_mlpro_space.get_dim_ids()[0]
+        if len(p_mlpro_space.get_dim(id_dim).get_boundaries()) == 1:
+            space = gym.spaces.Discrete(p_mlpro_space.get_dim(id_dim).get_boundaries()[0])
         else:
             lows = []
             highs = []
             for dimension in range(action_dim):
-                lows.append(p_mlpro_space.get_dim(dimension).get_boundaries()[0])
-                highs.append(p_mlpro_space.get_dim(dimension).get_boundaries()[1])
+                id_dim = p_mlpro_space.get_dim_ids()[dimension]
+                lows.append(p_mlpro_space.get_dim(id_dim).get_boundaries()[0])
+                highs.append(p_mlpro_space.get_dim(id_dim).get_boundaries()[1])
 
             space = gym.spaces.Box(
                 low=np.array(lows, dtype=np.float32),

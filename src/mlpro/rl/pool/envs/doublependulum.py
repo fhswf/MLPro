@@ -13,11 +13,11 @@
 ## -- 2022-01-31  0.9.4     WB       Add Circular arrow to the plot 
 ## -- 2022-02-02  1.0.0     WB       Release of first version
 ## -- 2022-02-02  1.0.1     MRD      Cleaning the code
-## -- 2022-02-25  1.0.2     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-02-27  1.0.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-02-25)
+Ver. 1.0.2 (2022-02-27)
 
 This module provides an RL environment of double pendulum.
 """
@@ -223,10 +223,11 @@ class DoublePendulum(Environment):
             Not yet implemented. The default is None.
 
         """
-        self._state.set_value(0, np.radians(self.th1))
-        self._state.set_value(1, np.radians(self.th1dot))
-        self._state.set_value(2, np.radians(self.th2))
-        self._state.set_value(3, np.radians(self.th2dot))
+        state_ids = self._state.get_dim_ids()
+        self._state.set_value(state_ids[0], np.radians(self.th1))
+        self._state.set_value(state_ids[1], np.radians(self.th1dot))
+        self._state.set_value(state_ids[2], np.radians(self.th2))
+        self._state.set_value(state_ids[3], np.radians(self.th2dot))
 
         self.history_x.clear()
         self.history_y.clear()
@@ -267,8 +268,9 @@ class DoublePendulum(Environment):
         state = self.y[-1]
 
         self.action_cw = True if torque >= 0 else False
+        state_ids = self._state.get_dim_ids()
         for i in range(len(state)):
-            self._state.set_value(i, state[i])
+            self._state.set_value(state_ids[i], state[i])
 
         return self._state
 
