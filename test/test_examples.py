@@ -9,7 +9,7 @@
 ## -- 2021-10-06  1.0.0     MRD      Release First Version
 ## -- 2021-12-12  1.0.1     DA       Howto 17 added
 ## -- 2021-12-20  1.0.2     DA       Howto 08 disabled
-## -- 2022-02-28  1.0.3     SY       Howto 05, 06 of basic functions are added
+## -- 2022-02-28  1.0.3     SY       Howto 06, 07 of basic functions are added
 ## -------------------------------------------------------------------------------------------------
 
 """
