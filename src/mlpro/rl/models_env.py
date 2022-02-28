@@ -28,7 +28,8 @@
 ## --                                - Class EnvModel: cycle limit detection
 ## -- 2022-01-21  1.4.1     DA       Class EnvBase, method process_action(): a success/terminal state
 ## --                                avoids the timeout labelling
-## -- 2022-02-28  1.4.2     SY       Class EnvModel : redefine method _init_hyperparam()
+## -- 2022-02-28  1.4.2     SY       - Class EnvModel : redefine method _init_hyperparam()
+## --                                - Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -299,7 +300,7 @@ class AFctReward(AFctBase):
 
         # 2 Setup output space
         p_output_space.add_dim(
-            Dimension(p_id=0, p_name_short='Rwd', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Reward'))
+            Dimension(p_name_short='Rwd', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Reward'))
 
     ## -------------------------------------------------------------------------------------------------
     def compute_reward(self, p_state: State = None, p_state_new: State = None) -> Reward:
@@ -345,7 +346,8 @@ class AFctReward(AFctBase):
 
         # 2 Create setpoint output vector
         output = Element(self._output_space)
-        output.set_value(0, p_reward.get_overall_reward())
+        ids_ = output.get_dim_ids()
+        output.set_value(ids_[0], p_reward.get_overall_reward())
 
         # 3 Trigger adaptation of embedded adaptive function
         return self._afct.adapt(input, output)
@@ -365,7 +367,7 @@ class AFctSuccess(AFctBase):
 
         # 2 Setup output space
         p_output_space.add_dim(
-            Dimension(p_id=0, p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success',
+            Dimension(p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success',
                       p_boundaries=[0, 1]))
 
     ## -------------------------------------------------------------------------------------------------
@@ -379,10 +381,11 @@ class AFctSuccess(AFctBase):
     ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state: State) -> bool:
         output = Element(self._output_space)
+        ids_ = output.get_dim_ids()
         if p_state.get_success():
-            output.set_value(0, 1)
+            output.set_value(ids_[0], 1)
         else:
-            output.set_value(0, 0)
+            output.set_value(ids_[0], 0)
 
         return self._afct.adapt(p_state, output)
 
@@ -401,7 +404,7 @@ class AFctBroken(AFctBase):
 
         # 2 Setup output space
         p_output_space.add_dim(
-            Dimension(p_id=0, p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success',
+            Dimension(p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success',
                       p_boundaries=[0, 1]))
 
     ## -------------------------------------------------------------------------------------------------
@@ -415,10 +418,11 @@ class AFctBroken(AFctBase):
     ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state: State) -> bool:
         output = Element(self._output_space)
+        ids_ = output.get_dim_ids()
         if p_state.get_success():
-            output.set_value(0, 1)
+            output.set_value(ids_[0], 1)
         else:
-            output.set_value(0, 0)
+            output.set_value(ids_[0], 0)
 
         return self._afct.adapt(p_state, output)
 
