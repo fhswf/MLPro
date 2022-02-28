@@ -27,7 +27,7 @@ howto_list = {
     "bf_03": "examples.bf.Howto 03 - (Math) Spaces, subspaces and elements",
     "bf_05": "examples.bf.Howto 05 - (ML) Hyperparameters setup",
     "bf_06": "examples.bf.Howto 06 - (Data) Buffer",
-    "bf_07": "examples.bf.Howto 07 - (ML) Hyperparameters Tuning using Hyperopt",
+    "bf_07": "examples.bf.Howto 07 - (ML) Hyperparameter Tuning using Hyperopt",
     "gt_06": "examples.gt.Howto 06 - (GT) Run multi-player with own policy in multicartpole game board",
     "gt_07": "examples.gt.Howto 07 - (GT) Train own multi-player with multicartpole game board",
     "rl_01": "examples.rl.Howto 01 - (RL) Types of reward",
