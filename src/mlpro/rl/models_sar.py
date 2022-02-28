@@ -23,10 +23,11 @@
 ## --                                - new attributes _initial, _terminal, _timeout
 ## --                                - all attributes can be set as parameters of the constructor
 ## -- 2022-02-11  1.1.2     DA       Class Reward: dealing with arrays as overall reward
+## -- 2022-02-28  1.1.3     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2022-02-11)
+Ver. 1.1.3 (2022-02-28)
 
 This module provides model classes for state, action and reward data and their buffering.
 """
@@ -180,8 +181,6 @@ class Action(ElementList, TStamp):
         for elem in self._elem_list:
             num_dim = num_dim + elem.get_related_set().get_num_dim()
             action_ids.extend(elem.get_related_set().get_dim_ids())
-
-        action_ids.sort()
 
         # 2 Transfer action values
         action = np.zeros(num_dim)
