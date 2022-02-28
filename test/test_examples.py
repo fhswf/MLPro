@@ -10,10 +10,11 @@
 ## -- 2021-12-12  1.0.1     DA       Howto 17 added
 ## -- 2021-12-20  1.0.2     DA       Howto 08 disabled
 ## -- 2022-02-28  1.0.3     SY       Howto 06, 07 of basic functions are added
+## -- 2022-02-28  1.0.4     SY       Howto 07 of basic functions is disabled
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-02-28)
+Ver. 1.0.4 (2022-02-28)
 
 Unit test for all examples available.
 """
@@ -29,7 +30,6 @@ howto_list = {
     "bf_06": "examples.bf.Howto 06 - (Data) Buffer",
     "bf_07": "examples.bf.Howto 07 - (ML) Hyperparameter Tuning using Hyperopt",
     "gt_06": "examples.gt.Howto 06 - (GT) Run multi-player with own policy in multicartpole game board",
-    "gt_07": "examples.gt.Howto 07 - (GT) Train own multi-player with multicartpole game board",
     "rl_01": "examples.rl.Howto 01 - (RL) Types of reward",
     "rl_02": "examples.rl.Howto 02 - (RL) Run agent with own policy with gym environment",
     "rl_03": "examples.rl.Howto 03 - (RL) Train agent with own policy on gym environment",
