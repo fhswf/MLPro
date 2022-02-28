@@ -9,10 +9,11 @@
 ## -- 2021-10-06  1.0.0     MRD      Release First Version
 ## -- 2021-12-12  1.0.1     DA       Howto 17 added
 ## -- 2021-12-20  1.0.2     DA       Howto 08 disabled
+## -- 2022-02-28  1.0.3     SY       Howto 05, 06 of basic functions are added
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-12-20)
+Ver. 1.0.3 (2022-02-28)
 
 Unit test for all examples available.
 """
@@ -25,6 +26,8 @@ howto_list = {
     "bf_02": "examples.bf.Howto 02 - (Various) Timer",
     "bf_03": "examples.bf.Howto 03 - (Math) Spaces, subspaces and elements",
     "bf_05": "examples.bf.Howto 05 - (ML) Hyperparameters setup",
+    "bf_06": "examples.bf.Howto 06 - (Data) Buffer",
+    "bf_07": "examples.bf.Howto 07 - (ML) Hyperparameters Tuning using Hyperopt",
     "gt_06": "examples.gt.Howto 06 - (GT) Run multi-player with own policy in multicartpole game board",
     "gt_07": "examples.gt.Howto 07 - (GT) Train own multi-player with multicartpole game board",
     "rl_01": "examples.rl.Howto 01 - (RL) Types of reward",
