@@ -28,11 +28,11 @@
 ## --                                - Class EnvModel: cycle limit detection
 ## -- 2022-01-21  1.4.1     DA       Class EnvBase, method process_action(): a success/terminal state
 ## --                                avoids the timeout labelling
-## -- 2022-02-25  1.4.2     SY       Class EnvModel : redefine method _init_hyperparam()
+## -- 2022-02-28  1.4.2     SY       Class EnvModel : redefine method _init_hyperparam()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2022-02-25)
+Ver. 1.4.2 (2022-02-28)
 
 This module provides model classes for environments and environment models.
 """
@@ -1136,20 +1136,64 @@ class EnvModel(EnvBase, Model):
                 'Observation spaces of environment model and adaptive function for assessment broken are not equal')
 
     ## -------------------------------------------------------------------------------------------------
-    # def _init_hyperparam(self, **p_par):
+    def _init_hyperparam(self, **p_par):
 
-    #     # 1 Create overall hyperparameter space of all adaptive components inside
-    #     self._hyperparam_space = self._afct_strans.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
-    #     self._hyperparam_space.append(self._afct_reward.get_hyperparam().get_related_set(), p_new_dim_ids=False)
-    #     self._hyperparam_space.append(self._afct_success.get_hyperparam().get_related_set(), p_new_dim_ids=False)
-    #     self._hyperparam_space.append(self._afct_broken.get_hyperparam().get_related_set(), p_new_dim_ids=False)
-
-    #     # 2 Create overall hyperparameter (dispatcher) tuple
-    #     self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
-    #     self._hyperparam_tuple.add_hp_tuple(self._afct_strans.get_hyperparam())
-    #     self._hyperparam_tuple.add_hp_tuple(self._afct_reward.get_hyperparam())
-    #     self._hyperparam_tuple.add_hp_tuple(self._afct_success.get_hyperparam())
-    #     self._hyperparam_tuple.add_hp_tuple(self._afct_broken.get_hyperparam())
+        # 1 Create overall hyperparameter space of all adaptive components inside
+        hyperparam_space_init = False
+        try:
+            self._hyperparam_space = self._afct_strans.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+            hyperparam_space_init = True
+        except:
+            pass
+        
+        try:
+            if hyperparam_space_init:
+                self._hyperparam_space.append(self._afct_reward.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+            else:
+                self._hyperparam_space = self._afct_reward.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+                hyperparam_space_init = True
+        except:
+            pass
+        
+        try:
+            if hyperparam_space_init:
+                self._hyperparam_space.append(self._afct_success.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+            else:
+                self._hyperparam_space = self._afct_success.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+                hyperparam_space_init = True
+        except:
+            pass
+        
+        try:
+            if hyperparam_space_init:
+                self._hyperparam_space.append(self._afct_broken.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+            else:
+                self._hyperparam_space = self._afct_broken.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+                hyperparam_space_init = True
+        except:
+            pass
+        
+        # 2 Create overall hyperparameter (dispatcher) tuple
+        self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+        try:
+            self._hyperparam_tuple.add_hp_tuple(self._afct_strans.get_hyperparam())
+        except:
+            pass
+        
+        try:
+            self._hyperparam_tuple.add_hp_tuple(self._afct_reward.get_hyperparam())
+        except:
+            pass
+        
+        try:
+            self._hyperparam_tuple.add_hp_tuple(self._afct_success.get_hyperparam())
+        except:
+            pass
+        
+        try:
+            self._hyperparam_tuple.add_hp_tuple(self._afct_broken.get_hyperparam())
+        except:
+            pass
         
         
     ## -------------------------------------------------------------------------------------------------
