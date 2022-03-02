@@ -17,10 +17,11 @@
 ## -- 2021-12-21  1.1.4     DA       Class RobotHTM: renamed method reset() to _reset()
 ## -- 2021-12-21  1.1.5     MRD      Add Termination on Success
 ## -- 2022-01-21  1.1.6     MRD      Add recommended cycle limit and add seed parameter
+## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.6 (2022-01-21)
+Ver. 1.1.7 (2022-02-25)
 
 This module provides an environment of a robot manipulator based on Homogeneous Matrix
 """
@@ -335,17 +336,16 @@ class RobotHTM(Environment):
 
         # 1 Setup state space
         state_space = ESpace()
-        state_space.add_dim(Dimension(0, "Tx", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        state_space.add_dim(Dimension(1, "Ty", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        state_space.add_dim(Dimension(2, "Tz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        state_space.add_dim(Dimension(3, "Px", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        state_space.add_dim(Dimension(4, "Py", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        state_space.add_dim(Dimension(5, "Pz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Tx", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Ty", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Tz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Px", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Py", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Pz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
 
         for idx in range(self.num_joint):
             state_space.add_dim(
                 Dimension(
-                    idx + 6,
                     "J%i" % (idx),
                     "Joint%i" % (idx),
                     "",
@@ -360,7 +360,6 @@ class RobotHTM(Environment):
         for idx in range(self.num_joint):
             action_space.add_dim(
                 Dimension(
-                    idx,
                     "A%i" % (idx),
                     "AV%i" % (idx),
                     "",

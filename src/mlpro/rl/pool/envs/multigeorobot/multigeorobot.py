@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-19  0.0.0     MRD      Creation
 ## -- 2021-12-19  1.0.0     MRD      Released first version
+## -- 2022-02-25  1.0.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-19)
+Ver. 1.0.1 (2022-02-25)
 
 This module provides an environment for multi geometry robot.
 """
@@ -57,24 +58,24 @@ class MultiGeo(Environment):
         # Setup state space
         state_space = ESpace()
 
-        state_space.add_dim(Dimension(0, 'Px', 'PositionX', '', 'm', 'm', 
+        state_space.add_dim(Dimension('Px', 'PositionX', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
-        state_space.add_dim(Dimension(1, 'Py', 'PositionY', '', 'm', 'm', 
+        state_space.add_dim(Dimension('Py', 'PositionY', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
-        state_space.add_dim(Dimension(2, 'Pz', 'PositionZ', '', 'm', 'm', 
+        state_space.add_dim(Dimension('Pz', 'PositionZ', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
-        state_space.add_dim(Dimension(3, 'Tx', 'Targetx', '', 'm', 'm', 
+        state_space.add_dim(Dimension('Tx', 'Targetx', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
-        state_space.add_dim(Dimension(4, 'Ty', 'Targety', '', 'm', 'm', 
+        state_space.add_dim(Dimension('Ty', 'Targety', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
-        state_space.add_dim(Dimension(5, 'Tz', 'Targetz', '', 'm', 'm', 
+        state_space.add_dim(Dimension('Tz', 'Targetz', '', 'm', 'm', 
                                 p_boundaries=[-math.inf,math.inf]))
             
         # Setup action space
         action_space = ESpace()
 
         for idx in range(len(self.env.joints)):
-            action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad', 'rad', p_boundaries=[-0.1,0.1]))
+            action_space.add_dim(Dimension('J%i'%(idx), 'Joint%i'%(idx), '', 'rad', 'rad', p_boundaries=[-0.1,0.1]))
 
         return state_space, action_space
     

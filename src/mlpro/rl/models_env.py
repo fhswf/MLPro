@@ -28,10 +28,12 @@
 ## --                                - Class EnvModel: cycle limit detection
 ## -- 2022-01-21  1.4.1     DA       Class EnvBase, method process_action(): a success/terminal state
 ## --                                avoids the timeout labelling
+## -- 2022-02-28  1.4.2     SY       - Class EnvModel : redefine method _init_hyperparam()
+## --                                - Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-01-21)
+Ver. 1.4.2 (2022-02-28)
 
 This module provides model classes for environments and environment models.
 """
@@ -298,7 +300,7 @@ class AFctReward(AFctBase):
 
         # 2 Setup output space
         p_output_space.add_dim(
-            Dimension(p_id=0, p_name_short='Rwd', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Reward'))
+            Dimension(p_name_short='Rwd', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Reward'))
 
     ## -------------------------------------------------------------------------------------------------
     def compute_reward(self, p_state: State = None, p_state_new: State = None) -> Reward:
@@ -344,7 +346,8 @@ class AFctReward(AFctBase):
 
         # 2 Create setpoint output vector
         output = Element(self._output_space)
-        output.set_value(0, p_reward.get_overall_reward())
+        ids_ = output.get_dim_ids()
+        output.set_value(ids_[0], p_reward.get_overall_reward())
 
         # 3 Trigger adaptation of embedded adaptive function
         return self._afct.adapt(input, output)
@@ -364,7 +367,7 @@ class AFctSuccess(AFctBase):
 
         # 2 Setup output space
         p_output_space.add_dim(
-            Dimension(p_id=0, p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success',
+            Dimension(p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success',
                       p_boundaries=[0, 1]))
 
     ## -------------------------------------------------------------------------------------------------
@@ -378,10 +381,11 @@ class AFctSuccess(AFctBase):
     ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state: State) -> bool:
         output = Element(self._output_space)
+        ids_ = output.get_dim_ids()
         if p_state.get_success():
-            output.set_value(0, 1)
+            output.set_value(ids_[0], 1)
         else:
-            output.set_value(0, 0)
+            output.set_value(ids_[0], 0)
 
         return self._afct.adapt(p_state, output)
 
@@ -400,7 +404,7 @@ class AFctBroken(AFctBase):
 
         # 2 Setup output space
         p_output_space.add_dim(
-            Dimension(p_id=0, p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success',
+            Dimension(p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success',
                       p_boundaries=[0, 1]))
 
     ## -------------------------------------------------------------------------------------------------
@@ -414,10 +418,11 @@ class AFctBroken(AFctBase):
     ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state: State) -> bool:
         output = Element(self._output_space)
+        ids_ = output.get_dim_ids()
         if p_state.get_success():
-            output.set_value(0, 1)
+            output.set_value(ids_[0], 1)
         else:
-            output.set_value(0, 0)
+            output.set_value(ids_[0], 0)
 
         return self._afct.adapt(p_state, output)
 
@@ -1134,6 +1139,67 @@ class EnvModel(EnvBase, Model):
             raise ParamError(
                 'Observation spaces of environment model and adaptive function for assessment broken are not equal')
 
+    ## -------------------------------------------------------------------------------------------------
+    def _init_hyperparam(self, **p_par):
+
+        # 1 Create overall hyperparameter space of all adaptive components inside
+        hyperparam_space_init = False
+        try:
+            self._hyperparam_space = self._afct_strans.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+            hyperparam_space_init = True
+        except:
+            pass
+        
+        try:
+            if hyperparam_space_init:
+                self._hyperparam_space.append(self._afct_reward.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+            else:
+                self._hyperparam_space = self._afct_reward.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+                hyperparam_space_init = True
+        except:
+            pass
+        
+        try:
+            if hyperparam_space_init:
+                self._hyperparam_space.append(self._afct_success.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+            else:
+                self._hyperparam_space = self._afct_success.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+                hyperparam_space_init = True
+        except:
+            pass
+        
+        try:
+            if hyperparam_space_init:
+                self._hyperparam_space.append(self._afct_broken.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+            else:
+                self._hyperparam_space = self._afct_broken.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+                hyperparam_space_init = True
+        except:
+            pass
+        
+        # 2 Create overall hyperparameter (dispatcher) tuple
+        self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+        try:
+            self._hyperparam_tuple.add_hp_tuple(self._afct_strans.get_hyperparam())
+        except:
+            pass
+        
+        try:
+            self._hyperparam_tuple.add_hp_tuple(self._afct_reward.get_hyperparam())
+        except:
+            pass
+        
+        try:
+            self._hyperparam_tuple.add_hp_tuple(self._afct_success.get_hyperparam())
+        except:
+            pass
+        
+        try:
+            self._hyperparam_tuple.add_hp_tuple(self._afct_broken.get_hyperparam())
+        except:
+            pass
+        
+        
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
         self.set_random_seed(p_seed=p_seed)

@@ -11,10 +11,11 @@
 ## -- 2021-12-21  1.0.2     DA       Class MLPEnvMdel: renamed method reset() to _reset()
 ## -- 2022-01-02  2.0.0     MRD      Refactoring due to the changes on afct pool on
 ## --                                TorchAFctTrans
+## -- 2022-02-25  2.0.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2022-01-02)
+Ver. 2.0.1 (2022-02-25)
 
 This module provides Environment Model based on MLP Neural Network for
 robotinhtm environment.
@@ -279,16 +280,16 @@ class MLPEnvModel(EnvModel, Mode):
         # 1 Setup state space
         obs_space = ESpace()
 
-        obs_space.add_dim(Dimension(0, "Tx", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        obs_space.add_dim(Dimension(1, "Ty", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        obs_space.add_dim(Dimension(2, "Tz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        obs_space.add_dim(Dimension(3, "Px", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        obs_space.add_dim(Dimension(4, "Py", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        obs_space.add_dim(Dimension(5, "Pz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension("Tx", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension("Ty", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension("Tz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension("Px", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension("Py", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        obs_space.add_dim(Dimension("Pz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
 
         for idx in range(self.num_joint):
             obs_space.add_dim(
-                Dimension(idx + 6, "J%i" % (idx), "Joint%i" % (idx), "", "deg", "deg", p_boundaries=[-np.inf, np.inf])
+                Dimension("J%i" % (idx), "Joint%i" % (idx), "", "deg", "deg", p_boundaries=[-np.inf, np.inf])
             )
 
         # 2 Setup action space
@@ -296,7 +297,6 @@ class MLPEnvModel(EnvModel, Mode):
         for idx in range(self.num_joint):
             action_space.add_dim(
                 Dimension(
-                    idx,
                     "A%i" % (idx),
                     "AV%i" % (idx),
                     "",

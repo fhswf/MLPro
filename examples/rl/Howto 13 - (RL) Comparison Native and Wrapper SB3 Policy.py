@@ -12,10 +12,11 @@
 ## -- 2021-12-20  1.0.3     DA       Refactoring
 ## -- 2021-12-23  1.0.4     MRD      Small change on custom _reset Wrapper
 ## -- 2021-12-24  1.0.5     DA       Replaced separtor in log line by Training.C_LOG_SEPARATOR
+## -- 2022-02-27  1.0.6     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2021-12-23)
+Ver. 1.0.6 (2022-02-27)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
@@ -193,7 +194,7 @@ class CustomCallback(BaseCallback, Log):
     def __init__(self, p_verbose=0):
         super(CustomCallback, self).__init__(p_verbose)
         reward_space = Set()
-        reward_space.add_dim(Dimension(0, "Native"))
+        reward_space.add_dim(Dimension("Native"))
         self.ds_rewards = RLDataStoring(reward_space)
         self.episode_num = 0
         self.total_cycle = 0

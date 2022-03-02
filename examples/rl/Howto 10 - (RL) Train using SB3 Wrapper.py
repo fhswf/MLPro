@@ -13,10 +13,11 @@
 ## -- 2021-11-15  1.0.4     DA       Refactoring
 ## -- 2021-12-03  1.0.5     DA       Refactoring
 ## -- 2021-12-07  1.0.6     DA       Refactoring
+## -- 2022-02-25  1.0.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2021-12-07)
+Ver. 1.0.7 (2022-02-25)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
