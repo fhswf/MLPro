@@ -20,10 +20,11 @@
 ## -- 2022-02-14  1.0.6     WB       Update _compute_reward method
 ## -- 2022-02-17  1.0.7     WB       Taking into account the outer pole in reward calculation
 ## -- 2022-02-21  1.0.8     WB       Edit the formulation the of _compute_reward method
+## -- 2022-03-02  1.0.9     WB       Include Torque and Change of state in _compute_reward method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.8 (2022-02-21)
+Ver. 1.0.9 (2022-03-02)
 
 This module provides an RL environment of double pendulum.
 """
@@ -348,47 +349,54 @@ class DoublePendulum(Environment):
 
         """
         reward = Reward(Reward.C_TYPE_OVERALL)
-
+        
+        target = np.array([np.pi, 0.0, np.pi, 0.0])
         state = p_state_new.get_values()
-
+        old_state = p_state_old.get_values()
+        
+        change_costs = (np.linalg.norm(target[::2] - np.array(old_state)[::2]) - 
+                        np.linalg.norm(target[::2] - np.array(state)[::2]))
+        
+        
         th1_count = 0
-        for th1 in self.y[:, 0]:
+        for th1 in self.y[::-1, 0]:
             ang = np.degrees(DoublePendulum.angle_normalize(th1))
             if ang > 170 or ang < 190 or \
                     ang < -170 or ang > -190:
                 th1_count += 1
             else:
-                th1_count = 0
+                break
         th1_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[0])))
         th1_distance_costs = 4 if th1_distance <= 0.1 else 0.3 / th1_distance
         
         th1_speed_costs = np.pi * abs(state[1]) / self.max_speed
         
         # max acceleration in one timestep is assumed to be double the max speed
-        th1_acceleration_costs = np.pi * abs(self.y[-1, 1]-self.y[-2, 1]) / (2 * self.max_speed)#(self.t_step)
+        th1_acceleration_costs = np.pi * abs(self.y[-1, 1]-self.y[-2, 1]) / (2 * self.max_speed)
         
         inner_pole_costs = (th1_distance_costs * th1_count / len(self.y)) - th1_speed_costs - (th1_acceleration_costs ** 0.5)
         inner_pole_weight = (self.l1/2)*self.m1
         
         th2_count = 0
-        for th2 in self.y[:, 2]:
+        for th2 in self.y[::-1, 2]:
             ang = np.degrees(DoublePendulum.angle_normalize(th2))
             if ang > 170 or ang < 190 or \
                     ang < -170 or ang > -190:
                 th2_count += 1
             else:
-                th2_count = 0
+                break
         th2_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[2])))
         th2_distance_costs = 4 if th2_distance <= 0.1 else 0.3 / th2_distance
         
         th2_speed_costs = np.pi * abs(state[3]) / self.max_speed
         
-        th2_acceleration_costs = np.pi * abs(self.y[-1, 3]-self.y[-2, 3]) / (2 * self.max_speed)#(self.t_step)
+        th2_acceleration_costs = np.pi * abs(self.y[-1, 3]-self.y[-2, 3]) / (2 * self.max_speed)
         
         outer_pole_costs = (th2_distance_costs * th2_count / len(self.y)) - th2_speed_costs - (th2_acceleration_costs ** 0.5)
-        outer_pole_weight = (self.l2/2)*self.m2
+        outer_pole_weight = 0.5 * (self.l2/2)*self.m2
         
-        reward.set_overall_reward(inner_pole_costs * inner_pole_weight + outer_pole_costs * outer_pole_weight)
+        reward.set_overall_reward((inner_pole_costs * inner_pole_weight + outer_pole_costs * outer_pole_weight - 
+                                  (self.alpha * np.pi) + (change_costs * np.pi)))
 
         return reward
 
