@@ -749,22 +749,25 @@ class MultiAgent(Agent):
 
         agent_model = self._agents[p_agent.get_id()][0]
         
-        if p_agent.get_id() == 0:
-            self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
-        else:
-            self._hyperparam_space.append(agent_model._policy.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+        if agent_model._policy.get_hyperparam() is not None:
+            if p_agent.get_id() == 0:
+                self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+            else:
+                self._hyperparam_space.append(agent_model._policy.get_hyperparam().get_related_set(), p_new_dim_ids=False)
         
         if agent_model._envmodel is not None:
             self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set())
  
-        self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
-        
-        for x, mod in enumerate(self._agents):
-            self._hyperparam_tuple.add_hp_tuple(mod[0]._policy.get_hyperparam())
+        try:
+            self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
             
-            if mod[0]._envmodel is not None:
-                self._hyperparam_tuple.add_hp_tuple(mod[0]._envmodel.get_hyperparam())
-
+            for x, mod in enumerate(self._agents):
+                self._hyperparam_tuple.add_hp_tuple(mod[0]._policy.get_hyperparam())
+                
+                if mod[0]._envmodel is not None:
+                    self._hyperparam_tuple.add_hp_tuple(mod[0]._envmodel.get_hyperparam())
+        except:
+            pass
         
     ## -------------------------------------------------------------------------------------------------
     def get_agents(self):
