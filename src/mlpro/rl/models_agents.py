@@ -758,7 +758,7 @@ class MultiAgent(Agent):
         if agent_model._envmodel is not None:
             self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set())
  
-        try:
+        if '_hyperparam_space' in dir(self):
             self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
             
             for x, mod in enumerate(self._agents):
@@ -766,8 +766,6 @@ class MultiAgent(Agent):
                 
                 if mod[0]._envmodel is not None:
                     self._hyperparam_tuple.add_hp_tuple(mod[0]._envmodel.get_hyperparam())
-        except:
-            pass
         
     ## -------------------------------------------------------------------------------------------------
     def get_agents(self):
