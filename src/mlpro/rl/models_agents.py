@@ -37,10 +37,11 @@
 ## -- 2022-02-17  1.5.0     DA/SY    Class Agent: redefinition of method _init_hyperparam()
 ## -- 2022-02-24  1.5.1     SY       Class MultiAgent: redefinition of method _init_hyperparam()
 ## -- 2022-02-27  1.5.2     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-03-02  1.5.3     SY       Class MultiAgent: remove init_hyperparam(), update add_agent()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.2(2022-02-27) 
+Ver. 1.5.3 (2022-03-02) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -477,13 +478,10 @@ class Agent(Policy):
 
     ## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self, **p_par):
-
-        # 1 Create overall hyperparameter space of all adaptive components inside
         self._hyperparam_space = self._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
         if self._envmodel is not None:
             self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set(), p_new_dim_ids=False)
 
-        # 2 Create overall hyperparameter (dispatcher) tuple
         self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
         self._hyperparam_tuple.add_hp_tuple(self._policy.get_hyperparam())
         if self._envmodel is not None:
@@ -675,30 +673,6 @@ class MultiAgent(Agent):
 
 
     ## -------------------------------------------------------------------------------------------------
-    def _init_hyperparam(self, **p_par):
-
-        # 1 Create overall hyperparameter space of all adaptive components inside
-        for x in range(len(self.get_agents())):
-            if x == 0:
-                agent_model = self.get_agents[x][0]
-                self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
-            else:
-                self._hyperparam_space.append(agent_model._policy.get_hyperparam().get_related_set(), p_new_dim_ids=False)
-         
-        if self._envmodel is not None:
-            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set())
-
-        # 2 Create overall hyperparameter (dispatcher) tuple
-        self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
-        for x in range(len(self.get_agents())):
-            agent_model = self.get_agents[x][0]
-            self._hyperparam_tuple.add_hp_tuple(agent_model._policy.get_hyperparam())
-            
-        if self._envmodel is not None:
-            self._hyperparam_tuple.add_hp_tuple(self._envmodel.get_hyperparam())
-
-        
-    ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging) -> None:
         Log.switch_logging(self, p_logging=p_logging)
 
@@ -773,6 +747,25 @@ class MultiAgent(Agent):
         p_agent.set_name(str(p_agent.get_id()) + ' ' + p_agent.get_name())
         self.log(Log.C_LOG_TYPE_I, p_agent.C_TYPE + ' ' + p_agent.get_name() + ' added.')
 
+        agent_model = self._agents[p_agent.get_id()][0]
+        
+        if p_agent.get_id() == 0:
+            self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+        else:
+            self._hyperparam_space.append(agent_model._policy.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+        
+        if agent_model._envmodel is not None:
+            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set())
+ 
+        self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+        
+        for x, mod in enumerate(self._agents):
+            self._hyperparam_tuple.add_hp_tuple(mod[0]._policy.get_hyperparam())
+            
+            if mod[0]._envmodel is not None:
+                self._hyperparam_tuple.add_hp_tuple(mod[0]._envmodel.get_hyperparam())
+
+        
     ## -------------------------------------------------------------------------------------------------
     def get_agents(self):
         return self._agents
