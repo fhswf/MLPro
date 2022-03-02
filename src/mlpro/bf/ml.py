@@ -34,10 +34,11 @@
 ## -- 2022-01-28  1.3.4     SY       Class HyperParamTuner: add save(), save_line(), HPDataStoring
 ## -- 2022-02-24  1.3.5     SY       Introduce new class HyperParamDispatcher
 ## -- 2022-03-02  1.3.6     SY       Refactoring class HyperParamDispatcher
+## -- 2022-03-02  1.3.7     DA       Class HyperParamDispatcher:correction of method set_values()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.6 (2022-03-02)
+Ver. 1.3.7 (2022-03-02)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
@@ -103,6 +104,8 @@ class HyperParamTuple (Element):
 
 
 
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class HyperParamDispatcher (HyperParamTuple):
@@ -110,23 +113,28 @@ class HyperParamDispatcher (HyperParamTuple):
     To dispatch multiple hp tuples into one tuple
     """
 
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_set: Set) -> None:
         super().__init__(p_set)
         self._hp_dict = {}
+
 
 ## -------------------------------------------------------------------------------------------------
     def add_hp_tuple(self, p_hpt:HyperParamTuple):
         for idx in p_hpt.get_dim_ids():
             self._hp_dict[idx] = p_hpt
 
+
 ## -------------------------------------------------------------------------------------------------
     def get_value(self, p_dim_id):
         return self._hp_dict.get(p_dim_id).get_value(p_dim_id)
    
+
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
         self._hp_dict.get(p_dim_id).set_value(p_dim_id, p_value)
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_values(self):
@@ -134,11 +142,11 @@ class HyperParamDispatcher (HyperParamTuple):
             self._values[idx] = self.get_value(dim_id)
         return self._values
 
+
 ## -------------------------------------------------------------------------------------------------
     def set_values(self, p_values):
-        for idx in range(len(self._set.get_dim_ids())):
-            dim_id = self._set[idx]
-            self._values[idx] = self.set_value(dim_id, p_values[idx])
+        for idx, dim_id in enumerate(self._set.get_dim_ids()):
+            self.set_value(dim_id, p_values[idx])
 
 
 
