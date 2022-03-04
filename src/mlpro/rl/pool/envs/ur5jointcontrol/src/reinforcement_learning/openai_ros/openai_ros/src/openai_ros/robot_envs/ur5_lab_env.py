@@ -62,6 +62,9 @@ class UR5LabEnv(robot_gazebo_env.RobotGazeboEnv):
                                             start_init_physics_parameters=False,
                                             reset_world_or_sim="WORLD")
 
+        self._gripper = rospy.Publisher('/gripper_controller/command', String, 
+                                            queue_size=1)
+                                            
         rospy.logdebug("UR5LabEnv unpausing")
         self.gazebo.unpauseSim()
                 
@@ -105,8 +108,21 @@ class UR5LabEnv(robot_gazebo_env.RobotGazeboEnv):
 
     def _check_all_publishers_ready(self):
         rospy.logdebug("START ALL PUBLISHER")
+        self._check_gripper_pub_ready()
         rospy.logdebug("All Publishers READY")
-    
+        
+    def _check_gripper_pub_ready(self):
+        rate = rospy.Rate(10)  # 10hz
+        while (self._gripper.get_num_connections() == 0 and not rospy.is_shutdown()):
+            rospy.logdebug(
+                "No susbribers to _gripper yet so we wait and try again")
+            try:
+                rate.sleep()
+            except rospy.ROSInterruptException:
+                # This is to avoid error when world is rested, time when backwards.
+                pass
+        rospy.logdebug("_gripper Publisher Connected")
+        
     def _check_all_sensors_ready(self):
         rospy.logdebug("START ALL SENSORS READY")
         self._check_joint_states_ready()
@@ -205,10 +221,28 @@ class UR5LabEnv(robot_gazebo_env.RobotGazeboEnv):
 
     # Methods that the TrainingEnvironment will need.
     # ----------------------------
+    def open_hand(self):
+        """
+        When called it opens robots hand
+        """
+        self._gripper.publish("open")
+       
+    def close_hand(self):
+        """
+        When called it closes robots hand
+        """
+        self._gripper.publish("close")
+        
     def get_joint_states(self): 
         self.gazebo.unpauseSim()
         #joint = self._move.robot_joints()
         joint = self.joint_states
+        return joint 
+        
+    def get_gripper_states(self):
+        self.gazebo.unpauseSim()
+        #joint = self._move.gripper_joints()
+        joint = self.gripper_states
         return joint 
     
     def get_pc(self):
