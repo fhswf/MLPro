@@ -808,7 +808,7 @@ class MultiAgent(Agent):
             try:
                 self._hyperparam_space.append(agent_model._envmodel.get_hyperparam().get_related_set())
             except:
-                raise NotImplementedError
+                pass
  
         if '_hyperparam_space' in dir(self):
             self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
@@ -820,7 +820,7 @@ class MultiAgent(Agent):
                     try:
                         self._hyperparam_tuple.add_hp_tuple(mod[0]._envmodel.get_hyperparam())
                     except:
-                          raise NotImplementedError
+                          pass
         
 
 ## -------------------------------------------------------------------------------------------------
