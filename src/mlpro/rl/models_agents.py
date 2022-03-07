@@ -39,10 +39,11 @@
 ## -- 2022-02-27  1.5.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-03-02  1.5.3     SY       Class MultiAgent: remove init_hyperparam(), update add_agent()
 ## -- 2022-03-02  1.5.4     DA       Reformatting
+## -- 2022-03-07  1.5.5     SY       Minor Improvement on Class MultiAgent
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.4 (2022-03-02) 
+Ver. 1.5.5 (2022-03-07) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -804,7 +805,10 @@ class MultiAgent(Agent):
                 self._hyperparam_space.append(agent_model._policy.get_hyperparam().get_related_set(), p_new_dim_ids=False)
         
         if agent_model._envmodel is not None:
-            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set())
+            try:
+                self._hyperparam_space.append(agent_model._envmodel.get_hyperparam().get_related_set())
+            except:
+                pass
  
         if '_hyperparam_space' in dir(self):
             self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
@@ -813,7 +817,10 @@ class MultiAgent(Agent):
                 self._hyperparam_tuple.add_hp_tuple(mod[0]._policy.get_hyperparam())
                 
                 if mod[0]._envmodel is not None:
-                    self._hyperparam_tuple.add_hp_tuple(mod[0]._envmodel.get_hyperparam())
+                    try:
+                        self._hyperparam_tuple.add_hp_tuple(mod[0]._envmodel.get_hyperparam())
+                    except:
+                          pass
         
 
 ## -------------------------------------------------------------------------------------------------
