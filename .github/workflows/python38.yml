@@ -35,7 +35,7 @@ jobs:
         pip install matplotlib
         pip install gym
         pip install dill
-        pip install PettingZoo=1.14.0
+        pip install PettingZoo==1.14.0
         pip install stable-baselines3
         pip install pyglet
         pip install pymunk
