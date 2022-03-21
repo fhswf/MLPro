@@ -29,7 +29,8 @@ Please install the following packages to run this examples properly:
 
 Results
 `````````````````
-Descriptions, plots, images, screenshots of expected results.
+An output similar to the one present in :ref:`the third example <Howto RL 3>` 
+will show up, making use of the wrapped training algorithm.
 
 
 Example Code
