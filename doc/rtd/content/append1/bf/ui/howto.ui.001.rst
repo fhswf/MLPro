@@ -13,6 +13,9 @@ Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
 
+Results
+`````````````````
+An empty window of SciUI will be created.
 
 Example Code
 `````````````````
@@ -20,7 +23,4 @@ Example Code
 .. literalinclude:: ../../../../../../examples/sciui/Howto 01 (SciUI) - Reuse of interactive 2D,3D input space.py
     :language: python
 
-Results
-`````````````````
-Descriptions, plots, images, screenshots of expected results.
 

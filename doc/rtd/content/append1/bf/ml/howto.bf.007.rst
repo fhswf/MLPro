@@ -30,12 +30,13 @@ Please install the following packages to run this examples properly:
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
+Results
+`````````````````
+Descriptions, plots, images, screenshots of expected results.
+
+
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../../examples/bf/Howto 07 - (ML) Hyperparameter Tuning using Hyperopt.py
     :language: python
-
-Results
-`````````````````
-Descriptions, plots, images, screenshots of expected results.
