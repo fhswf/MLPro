@@ -1,9 +1,10 @@
 .. _Howto RL 13:
 `Howto 13 - (RL) Comparison Native and Wrapper SB3 Policy <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2013%20-%20(RL)%20Comparison%20Native%20and%20Wrapper%20SB3%20Policy.py>`_
 ================
-Ver. 1.0.2 (2021-12-07)
+Ver. 1.0.7 (2022-03-21)
 
-This module shows how to train with SB3 Wrapper for On-Policy Algorithm
+This module compares the native and wrapped implementation of the SB3 Policy on an
+environment.
 
 Prerequisites
 `````````````````
@@ -29,7 +30,10 @@ Please install the following packages to run this examples properly:
 
 Results
 `````````````````
-...
+.. image:: images/howto13.png
+
+The plot from native and wrapped implementation should be indiscernible between each other. 
+The figure above is an example of successful algorithm wrapping. 
 
 Example Code
 `````````````````
