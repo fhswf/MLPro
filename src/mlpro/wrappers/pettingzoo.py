@@ -31,10 +31,11 @@
 ## --                                - refactored done detection 
 ## --                                - removed artifacts of cycle counting
 ## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-03-21  1.3.5     SY       Refactoring due to PettingZoo version 1.17.0
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2022-02-27)
+Ver. 1.3.5 (2022-03-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -256,7 +257,7 @@ class WrEnvMLPro2PZoo():
 
 ## -------------------------------------------------------------------------------------------------
     class raw_env(AECEnv):
-        metadata = {'render.modes': ['human'], "name": "pzoo_custom"}
+        metadata = {'render_modes': ['human', 'ansi'], "name": "pzoo_custom"}
 
 ## -------------------------------------------------------------------------------------------------
         def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
