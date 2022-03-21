@@ -35,10 +35,11 @@
 ## --                                - removed artifacts of cycle counting
 ## -- 2022-01-28  1.3.3     DA       Class WrEnvMLPro2GYM: stabilized destructor
 ## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-03-21  1.3.5     MRD      Added new parameter to the WrEnvMLPro2GYM.reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2022-02-27)
+Ver. 1.3.5 (2022-03-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -283,8 +284,8 @@ class WrEnvMLPro2GYM(gym.Env):
         return obs, reward.get_overall_reward(), done, info
 
     ## -------------------------------------------------------------------------------------------------
-    def reset(self):
-        self._mlpro_env.reset()
+    def reset(self, seed=None, options=None):
+        self._mlpro_env.reset(seed)
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):
             obs = np.array(self._mlpro_env.get_state().get_values(), dtype=np.float32)
