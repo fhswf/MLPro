@@ -30,7 +30,7 @@ Please install the following packages to run this examples properly:
 
 Results
 `````````````````
-The GridWorld environment will be wrapped to a gym environment. By making use of stable-baselines3's environment
+The GridWorld environment will be wrapped to a gym environment. By making use of gym's environment
 checker, we could confirm the success of the environment wrapping.
 
 
@@ -46,8 +46,8 @@ checker, we could confirm the success of the environment wrapping.
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment GridWorld: Action processing finished successfully 
     ...
     
-There will be several more lines of action processing logs due to the nature of stable-baselines3's environment checker.
-When there is no detected failure, the environmentis successfully wrapped.
+There will be several more lines of action processing logs due to the nature of the environment checker.
+When there is no detected failure, the environment is successfully wrapped.
 
 Example Code
 `````````````````
