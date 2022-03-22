@@ -32,7 +32,16 @@ Please install the following packages to run this examples properly:
 
 Results
 `````````````````
-Descriptions, plots, images, screenshots of expected results.
+.. code-block:: bash
+
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  HyperParam Tuner Hyperopt: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  HyperParam Tuner Hyperopt: Hyperopt configuration is successful 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment BGLP: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment BGLP: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment BGLP: Operation mode set to 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment BGLP: Reset 
+    ...
+    100%|██████████| 10/10 [00:24<00:00,  2.46s/trial, best loss: -25.432588752666504]
 
 
 Example Code
