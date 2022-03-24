@@ -5,12 +5,14 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-mm-dd  0.0.0     FN       Creation 
+## -- 2022-03-24  0.0.0     SY       Creation 
+## -- 2022-03-24  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2021-mm-dd)
-This module provides ...
+Ver. 1.0.0 (2022-03-24)
+
+This module provides a wrapper class for hyperparameter tuning by reusing Optuna framework
 """
 
 

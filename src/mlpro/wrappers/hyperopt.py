@@ -13,11 +13,12 @@
 ## --                                - Store the parameters and its result for each trial
 ## -- 2022-02-28  1.0.4     SY       Enhancement due to redefinition of _init_hyperparam() in Agent
 ## -- 2022-03-02  1.0.5     SY       Refactoring
+## -- 2022-03-24  1.0.6     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-03-02)
-This module provides a wrapper class for hyperparameter tuning by reusinng Hyperopt framework
+Ver. 1.0.6 (2022-03-24)
+This module provides a wrapper class for hyperparameter tuning by reusing Hyperopt framework
 """
 
 
