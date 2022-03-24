@@ -88,11 +88,57 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
             The best result after a number of evaluations.
 
         """
+        
+        if self._training_cls is None:
+            raise ParamError('Mandatory parameter self._training_cls is not supplied')
+        
+        if self._num_trials <= 0:
+            raise ParamError('Parameter self._num_trials must be greater than 0')
+        
+        if self._root_path is None:
+            raise ParamError('Mandatory parameter self._root_path is not supplied')
+        
+        if self._training_param is None:
+            raise ParamError('Mandatory parameter self._training_param is not supplied')
+        
+        # change root path in training param
+        self._training_param['p_training_param']['p_path'] = self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Base (Preparation)'
+        if not os.path.exists(self._training_param['p_training_param']['p_path']):
+            os.mkdir(self._root_path+os.sep+'HyperparameterTuning')
+            os.mkdir(self._training_param['p_training_param']['p_path'])
+        
+        # ignore collecting data during tuning to save tuning time and memory
+        self._training_param['p_training_param']['p_collect_states'] = False
+        self._training_param['p_training_param']['p_collect_actions'] = False
+        self._training_param['p_training_param']['p_collect_rewards'] = False
+        self._training_param['p_training_param']['p_logging'] = Log.C_LOG_NOTHING
+        self._training_param['p_training_param']['p_visualize'] = False
+        self._training_param['p_training_param']['p_collect_eval'] = True
+        
+        # instantiate a scenario class and define the model in a variable
+        training_cls = self._training_cls(**self._training_param['p_training_param'])
+        self._model = training_cls._scenario._model
+        
+        # prepare a data storing class
+        for x, _id in enumerate(self._model._hyperparam_tuple.get_dim_ids()):
+            hp_object = self._model._hyperparam_tuple.get_related_set().get_dim(_id)
+            self.variables.append(hp_object.get_name_short()+'_'+str(x))
+        self.HPDataStoring = DataStoring(self.variables)
+        self.HPDataStoring.add_frame('HP_0')
+    
+        # run the trials and gain the highest score
+        study = optuna.create_study(direction="maximize")
+        study.optimize(self.objective, n_trials=self._num_trials)
+        best_trial = study.best_trial
+        best_result = best_trial.value
+        best_param = study.best_params
+        self.save(best_param, best_result, 'best_parameters.csv')
+        
         return best_result
 
 
 ## -------------------------------------------------------------------------------------------------
-    def objective(trial):
+    def objective(self, trial):
         """
         Wrap model training with an objective function and return the output score.
 
@@ -103,52 +149,85 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
 
         Returns
         -------
-        score : TYPE
-            DESCRIPTION.
+        result.highscore : float
+            final score of a trial.
 
         """
+        self.log(self.C_LOG_TYPE_I, 'Trial number '+str(self.num_trials)+' has started')
+        self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
+
+        # change root path in training param
+        self._training_param['p_training_param']['p_path'] =  self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Trial_'+str(self.num_trials)
+        if not os.path.exists(self._training_param['p_training_param']['p_path']):
+            os.mkdir(self._training_param['p_training_param']['p_path'])
+
+        # instantiate a scenario class
+        training_cls = self._training_cls(**self._training_param['p_training_param'])
+        self._model = training_cls._scenario._model
         
-        return score
+        # setup parameters that compatible to optuna spaces
+        p_params = self.GetParameters(trial)
+        for x, _id in enumerate(self._model._hyperparam_tuple.get_dim_ids()):
+            self._model._hyperparam_tuple.set_value(_id, p_params[x])
+
+        # run the scenario and retrieve the high score
+        result = training_cls.run()
+
+        # store trial parameters and the trial's result
+        self.HPDataStoring.memorize('Trial', 'HP_0', self.num_trials)
+        self.HPDataStoring.memorize('Highscore', 'HP_0', result.highscore)
+        for x, _id in enumerate(self._model._hyperparam_tuple.get_dim_ids()):
+            hp_name_short = self._model._hyperparam_tuple.get_related_set().get_dim(_id).get_name_short()
+            self.HPDataStoring.memorize(hp_name_short+'_'+str(x), 'HP_0', p_params[x])
+
+        self.num_trials += 1
+
+        self.log(self.C_LOG_TYPE_I, 'Trial number '+str(self.num_trials)+' has finished')
+        self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
+        
+        return result.highscore
         
 
 ## -------------------------------------------------------------------------------------------------
-    def SetupSpaces(self):
+    def GetParameters(self, trial):
         """
-        This method is used to setup the hyperparameter spaces, including the tuning boundaries and a suitable discrete value.
+        This method is used to get parameters within boundaries.
         The hyperparameter should be bounded both above and below.
-        We are using the "quantized" continuous distributions for natural and integer numbers.
-        Meanwhile the real numbers are not quantized.
         For different parameter expressions, please redefined this method and check https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html!
         For big data handling, please redifined this method!
+
+        Parameters
+        ----------
+        trial : object
+            Suggest hyperparameters using a trial object.
         
         Returns
         -------
-        spaces : list
+        parameters : list
             List of parameter expressions.
 
         """
         
-        # if self._model._hyperparam_tuple is None:
-        #     self._model._init_hyperparam()
+        if self._model._hyperparam_tuple is None:
+            self._model._init_hyperparam()
         
-        # spaces = []
-        # for x, _id in enumerate(self._model._hyperparam_tuple.get_dim_ids()):
-        #     hp_object = self._model._hyperparam_tuple.get_related_set().get_dim(_id)
-        #     hp_boundaries = hp_object.get_boundaries()
-        #     if not hp_boundaries:
-        #         raise ImplementationError('Missing boundary of a hyperparameter!')
-        #     else:
-        #         hp_low = hp_boundaries[0]
-        #         hp_high = hp_boundaries[1]
-        #         if hp_object._base_set == Dimension.C_BASE_SET_N or hp_object._base_set == Dimension.C_BASE_SET_Z:
-        #             spaces.append(hp.quniform(hp_object.get_name_short()+'_'+str(x),hp_low,hp_high,1))
-        #         elif hp_object._base_set == Dimension.C_BASE_SET_R:
-        #             spaces.append(hp.uniform(hp_object.get_name_short()+'_'+str(x),hp_low,hp_high))
-        #         else:
-        #             raise ImplementationError('Missing a short name of a hyperparameter!')
-        #     self.variables.append(hp_object.get_name_short()+'_'+str(x))
+        parameters = []
+        for x, _id in enumerate(self._model._hyperparam_tuple.get_dim_ids()):
+            hp_object = self._model._hyperparam_tuple.get_related_set().get_dim(_id)
+            hp_boundaries = hp_object.get_boundaries()
+            if not hp_boundaries:
+                raise ImplementationError('Missing boundary of a hyperparameter!')
+            else:
+                hp_low = hp_boundaries[0]
+                hp_high = hp_boundaries[1]
+                if hp_object._base_set == Dimension.C_BASE_SET_N or hp_object._base_set == Dimension.C_BASE_SET_Z:
+                    parameters.append(trial.suggest_int(hp_object.get_name_short()+'_'+str(x),hp_low,hp_high))
+                elif hp_object._base_set == Dimension.C_BASE_SET_R:
+                    parameters.append(trial.suggest_uniform(hp_object.get_name_short()+'_'+str(x),hp_low,hp_high))
+                else:
+                    raise ImplementationError('Missing a short name of a hyperparameter!')
         
-        # self.log(self.C_LOG_TYPE_I, 'Spaces for hyperopt is ready')
-        # self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
+        self.log(self.C_LOG_TYPE_I, 'Spaces for optuna is ready')
+        self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
         
-        return spaces
+        return parameters
