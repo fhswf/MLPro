@@ -227,7 +227,7 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
                 else:
                     raise ImplementationError('Missing a short name of a hyperparameter!')
         
-        self.log(self.C_LOG_TYPE_I, 'Spaces for optuna is ready')
+        self.log(self.C_LOG_TYPE_I, 'New parameters for optuna tuner is ready')
         self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
         
         return parameters
