@@ -16,119 +16,139 @@ This module provides a wrapper class for hyperparameter tuning by reusing Optuna
 """
 
 
-# import sys
-# from mlpro.bf.various import *
-# from mlpro.bf.math import *
-# from mlpro.bf.data import Buffer
-# from mlpro.bf.plot import *
-# import random
+import optuna
+from mlpro.bf.ml import *
+from mlpro.bf.math import *
+from mlpro.bf.various import *
+from mlpro.rl.models import *
+from mlpro.gt.models import *
+import os
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Example:
+class WrHPTOptuna(HyperParamTuner, ScientificObject):
     """
-    The __init__ method should be documented in the class level docstring and the docstring itself
-    should not go beyond 100 characters length (within the dash separator). Sections inside the 
-    docstring can be seperated like the reStructuredText format.
-    
-    Parameters are documented in the Parameters section.
-    Public attributes of classes are documented inisde Attributes section.
-    Returns attronites are documented in the Returns section.
-    
-    A few examples of data types: int / str / bool / list of str / tuple of int / float / None / dict.
-    If the parameters have default values, you should add "TYPE, optional" as part of the type
-    and "The default is ...." as part of the description.
-    
-    .. _Further_formatting_information: 
-        https://numpydoc.readthedocs.io/en/latest/format.html
-    
-    Notes
-    -----
-        The content inside the section should be indented. 
+    This class is a ready to use wrapper class for Optuna framework. 
+    Objects of this type can be treated as a hyperparameter tuner object.
     
     Parameters
     ----------
-    p_arg1 : TYPE
-        explanation of the first parameter.
-    p_arg2 : TYPE, optional
-        explanation of the second parameter. The default is True.
+    p_logging:
+        Log level (see constants for log levels)
+    p_ids : list of str, optional
+        List of hyperparameter ids to be tuned, otherwise all hyperparameters, default: None
         
     Attributes
     ----------
-    attr1: TYPE
-        explanation of the public attribute attr1.
+    C_NAME: str
+        Name of the class.
     """
     
-    attr1 = None
+    C_NAME              = 'Optuna'
+        
+    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_PROCEEDINGS
+    C_SCIREF_AUTHOR     = "Akiba, Takuya and Sano, Shotaro and Yanase, Toshihiko and Ohta, Takeru and Koyama, Masanori"
+    C_SCIREF_TITLE      = "Optuna: A Next-Generation Hyperparameter Optimization Framework"
+    C_SCIREF_YEAR       = "2019"
+    C_SCIREF_ISBN       = "9781450362016"
+    C_SCIREF_PUBLISHER  = "Association for Computing Machinery"
+    C_SCIREF_CITY       = "New York"
+    C_SCIREF_COUNTRY    = "USA"
+    C_SCIREF_URL        = "https://doi.org/10.1145/3292500.3330701"
+    C_SCIREF_DOI        = "10.1145/3292500.3330701"
+    C_SCIREF_PAGES      = "2623–2631"
+    C_SCIREF_BOOKTITLE  = "Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining"
+    
+    C_LOG_SEPARATOR = '------------------------------------------------------------------------------'
+    
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_arg1, p_arg2=True):
-        self.attr1 = p_arg1
-        pass
+    def __init__(self, p_logging=Log.C_LOG_ALL, p_ids=None):
+        super().__init__(p_logging=p_logging)
+
+        self._ids = p_ids
+        self.num_trials = 0
+        self.main_path = None
+        
+        self.log(self.C_LOG_TYPE_I, 'Optuna configuration is successful')
 
 
 ## -------------------------------------------------------------------------------------------------
-    def example_method(self, p_arg1):
+    def _maximize(self) -> TrainingResults:
         """
-        Example on how to document return type. 
-        
-        Notes
-        -----
-            The name of the return value is required for better understanding 
-            of the code. The return value is parsed similarly as parameters 
-            value, meaning that multiple return value is also possible.
-        
-        Parameters
-        ----------
-        p_arg1 : TYPE
-            explanation of the first parameter.
-                
+        This method is a place to setup a hp tuner based on hp structure of the model
+        and run the hp tuner. Create a study object and execute the optimization.
+
         Returns
         -------
-        p_arg1: TYPE
-            Description of the returned value.
+        best_result : float
+            The best result after a number of evaluations.
+
         """
-        return p_arg1
-        
+        return best_result
+
 
 ## -------------------------------------------------------------------------------------------------
-    def example_method_no_return(self, p_arg1):
+    def objective(trial):
         """
-        Example on how to document return type. 
-        
-        Notes
-        -----
-            When there is no item to be returned, the return section is omitted.
-        
+        Wrap model training with an objective function and return the output score.
+
         Parameters
         ----------
-        p_arg1 : TYPE
-            explanation of the first parameter.
-                
+        trial : object
+            Suggest hyperparameters using a trial object.
+
+        Returns
+        -------
+        score : TYPE
+            DESCRIPTION.
+
         """
-        return 
-
-
-
-
+        
+        return score
+        
 
 ## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Example2:
-    """
-    ...
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_arg1, p_arg2):
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def example_method(self, p_arg1):
+    def SetupSpaces(self):
         """
+        This method is used to setup the hyperparameter spaces, including the tuning boundaries and a suitable discrete value.
+        The hyperparameter should be bounded both above and below.
+        We are using the "quantized" continuous distributions for natural and integer numbers.
+        Meanwhile the real numbers are not quantized.
+        For different parameter expressions, please redefined this method and check https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html!
+        For big data handling, please redifined this method!
+        
+        Returns
+        -------
+        spaces : list
+            List of parameter expressions.
+
         """
-        pass
+        
+        # if self._model._hyperparam_tuple is None:
+        #     self._model._init_hyperparam()
+        
+        # spaces = []
+        # for x, _id in enumerate(self._model._hyperparam_tuple.get_dim_ids()):
+        #     hp_object = self._model._hyperparam_tuple.get_related_set().get_dim(_id)
+        #     hp_boundaries = hp_object.get_boundaries()
+        #     if not hp_boundaries:
+        #         raise ImplementationError('Missing boundary of a hyperparameter!')
+        #     else:
+        #         hp_low = hp_boundaries[0]
+        #         hp_high = hp_boundaries[1]
+        #         if hp_object._base_set == Dimension.C_BASE_SET_N or hp_object._base_set == Dimension.C_BASE_SET_Z:
+        #             spaces.append(hp.quniform(hp_object.get_name_short()+'_'+str(x),hp_low,hp_high,1))
+        #         elif hp_object._base_set == Dimension.C_BASE_SET_R:
+        #             spaces.append(hp.uniform(hp_object.get_name_short()+'_'+str(x),hp_low,hp_high))
+        #         else:
+        #             raise ImplementationError('Missing a short name of a hyperparameter!')
+        #     self.variables.append(hp_object.get_name_short()+'_'+str(x))
+        
+        # self.log(self.C_LOG_TYPE_I, 'Spaces for hyperopt is ready')
+        # self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
+        
+        return spaces

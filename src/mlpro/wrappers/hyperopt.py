@@ -42,11 +42,13 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
     
     Parameters
     ----------
-    p_arg1 : TYPE
-        explanation of the first parameter.
-    p_arg2 : TYPE, optional
-        explanation of the second parameter. The default is True.
-        
+    p_logging:
+        Log level (see constants for log levels)
+    p_algo : str, optional    
+        Selection of a hyperparameter tuning algorithm, default: C_ALGO_RAND
+    p_ids : list of str, optional
+        List of hyperparameter ids to be tuned, otherwise all hyperparameters, default: None
+           
     Attributes
     ----------
     C_NAME: str
@@ -76,16 +78,6 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_algo=C_ALGO_RAND, p_ids=None):
-        """
-        Parameters
-        ----------
-        p_logging:
-            Log level (see constants for log levels)
-        p_algo : str, optional    
-            Selection of a hyperparameter tuning algorithm, default: C_ALGO_RAND
-        p_ids : list of str, optional
-            List of hyperparameter ids to be tuned, otherwise all hyperparameters, default: None
-        """
         super().__init__(p_logging=p_logging)
 
         if p_algo is None:
@@ -164,6 +156,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
         
         return -best_result
 
+
 ## -------------------------------------------------------------------------------------------------
     def _ofct_hyperopt(self, p_params):
         """
@@ -208,6 +201,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
         self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
         
         return -(result.highscore)
+
 
 ## -------------------------------------------------------------------------------------------------
     def SetupSpaces(self):
