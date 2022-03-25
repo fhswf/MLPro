@@ -15,6 +15,11 @@ MLPro-GT serves as a child package and MLPro-RL is its parent package, which is 
 
 .. image:: images/MLPro-GT_class_diagram.png
 
+This sub-framework foucuses on the cooperative GT approach on Markov games. A Markov game contains a group of independent players that make decisions simultaneuosly,
+see the figure below for overview.
+
+.. image:: images/MLPro_GT_Game.png
+
 You can easily access the GT module, as follows:
 
     .. code-block:: python
