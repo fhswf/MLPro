@@ -7,7 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-03-24  0.0.0     SY       Creation 
 ## -- 2022-03-24  1.0.0     SY       Release of first version
-## -- 2022-03-25  1.0.1     SY       Change methods names
+## -- 2022-03-25  1.0.1     SY       Change methods names: _ofct_optuna and get_parameters
 ## -------------------------------------------------------------------------------------------------
 
 """
