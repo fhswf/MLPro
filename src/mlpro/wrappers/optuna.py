@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-03-24  0.0.0     SY       Creation 
 ## -- 2022-03-24  1.0.0     SY       Release of first version
+## -- 2022-03-25  1.0.1     SY       Change methods names: _ofct_optuna and get_parameters
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-03-24)
+Ver. 1.0.1 (2022-03-25)
 
 This module provides a wrapper class for hyperparameter tuning by reusing Optuna framework
 """
@@ -128,7 +129,7 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
     
         # run the trials and gain the highest score
         study = optuna.create_study(direction="maximize")
-        study.optimize(self.objective, n_trials=self._num_trials)
+        study.optimize(self._ofct_optuna, n_trials=self._num_trials)
         best_trial = study.best_trial
         best_result = best_trial.value
         best_param = study.best_params
@@ -138,7 +139,7 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def objective(self, trial):
+    def _ofct_optuna(self, trial):
         """
         Wrap model training with an objective function and return the output score.
 
@@ -166,7 +167,7 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
         self._model = training_cls._scenario._model
         
         # setup parameters that compatible to optuna spaces
-        p_params = self.GetParameters(trial)
+        p_params = self.get_parameters(trial)
         for x, _id in enumerate(self._model._hyperparam_tuple.get_dim_ids()):
             self._model._hyperparam_tuple.set_value(_id, p_params[x])
 
@@ -189,7 +190,7 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def GetParameters(self, trial):
+    def get_parameters(self, trial):
         """
         This method is used to get parameters within boundaries.
         The hyperparameter should be bounded both above and below.

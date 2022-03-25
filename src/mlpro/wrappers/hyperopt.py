@@ -14,10 +14,11 @@
 ## -- 2022-02-28  1.0.4     SY       Enhancement due to redefinition of _init_hyperparam() in Agent
 ## -- 2022-03-02  1.0.5     SY       Refactoring
 ## -- 2022-03-24  1.0.6     SY       Refactoring
+## -- 2022-03-25  1.0.7     SY       Change methods names (SetupSpaces to setup_spaces)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2022-03-24)
+Ver. 1.0.7 (2022-03-25)
 This module provides a wrapper class for hyperparameter tuning by reusing Hyperopt framework
 """
 
@@ -136,7 +137,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
         self._model = training_cls._scenario._model
         
         # setup spaces according to Hyperopt requirements
-        spaces = self.SetupSpaces()
+        spaces = self.setup_spaces()
         
         # prepare a data storing class
         self.HPDataStoring = DataStoring(self.variables)
@@ -205,7 +206,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def SetupSpaces(self):
+    def setup_spaces(self):
         """
         This method is used to setup the hyperparameter spaces, including the tuning boundaries and a suitable discrete value.
         The hyperparameter should be bounded both above and below.
