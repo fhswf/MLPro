@@ -26,5 +26,5 @@ You can easily access the GT module, as follows:
 
         from mlpro.gt.models import *
 
-You can check out some of the examples on our :ref:`how to files<target-howto>`
+You can check out some of the examples on our `how to files <https://mlpro.readthedocs.io/en/latest/content/append1/howto.gt.html>`_
 or `here <https://github.com/fhswf/MLPro/tree/main/examples/gt>`_.
