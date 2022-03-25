@@ -11,8 +11,7 @@ Prerequisites
 
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
-    - `NumPy <https://pypi.org/project/numpy/>`_
-    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
+
     
 Results
 `````````````````
