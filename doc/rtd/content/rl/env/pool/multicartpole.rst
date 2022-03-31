@@ -25,13 +25,11 @@ The multicartpole environment can simulate 'n' number of cartpole-v1 environmmen
 
 	env   = MultiCartPole(p_num_envs=3, p_logging=p_logging)
 
-Scenario Description
-====================
 
 The multicartpole environment consists of 'n' number of internal cartpole-v1 gym environments running simultaneously. The environment starts with random state values and the agent computes actions based on the policy. As there are multiple sub-environments running simultaneously, MLPro offers agent object of type :ref:`multi-agent <Multi-Agents>`, where a number of agents simultaneously simulate corresponding sub-environments. The agent computes an action value of 1 or 0 which refers to a left or right push respectively to the cart. These actions computed by the agents are processed in the corresponding gym sub environment through the :ref:`MLPro to Gym wrapper functionality <OpenAI Gym Environments>` of MLPro. The output from the gym sub-environments is the set of new state values and the state flags including success, done, error. The new state of the multicartpole environment is a set of states of all internal sub-environments. For better understanding of the multi-cartpole environment and its implementation refer to this :ref:`example implementation <Howto RL 4>`. Running this example implementation of multi-cartpole environment will produce visualisation as in the image below
 
 .. image:: Images/multicartpole_run.gif
-  :width: 60%
+  :width: 80%
   :align: center
 
 
