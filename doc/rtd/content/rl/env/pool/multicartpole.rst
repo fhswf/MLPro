@@ -25,6 +25,15 @@ The multicartpole environment can simulate 'n' number of cartpole-v1 environmmen
 
 	env   = MultiCartPole(p_num_envs=3, p_logging=p_logging)
 
+Scenario Description
+====================
+
+The multicartpole environment consists of 'n' number of internal cartpole-v1 gym environments running simultaneously. The environment starts with random state values and the agent computes actions based on the policy. As there are multiple sub-environments running simultaneously, MLPro offers agent object of type :ref:`multi-agent <Multi-Agents>`, where a number of agents simultaneously simulate corresponding sub-environments. The agent computes an action value of 1 or 0 which refers to a left or right push respectively to the cart. These actions computed by the agents are processed in the corresponding gym sub environment through the :ref:`MLPro to Gym wrapper functionality <OpenAI Gym Environments>` of MLPro. The output from the gym sub-environments is the set of new state values and the state flags including success, done, error. The new state of the multicartpole environment is a set of states of all internal sub-environments. For better understanding of the multi-cartpole environment and its implementation refer to this :ref:`example implementation <Howto RL 4>`. Running this example implementation of multi-cartpole environment will produce visualisation as in the image below
+
+.. image:: Images/multicartpole_run.gif
+  :width: 60%
+  :align: center
+
 
 
 
@@ -62,8 +71,6 @@ General Information
 +------------------------------------+-------------------------------------------------------+
 | State Space Base Set               | Real number                                           |
 +------------------------------------+-------------------------------------------------------+
-| State Space Boundaries             | [,]                                                   |
-+------------------------------------+-------------------------------------------------------+
 | Reward Structure                   | Overall reward                                        |
 +------------------------------------+-------------------------------------------------------+
   
@@ -81,7 +88,7 @@ Since the goal of the environment is to maintain the upright position of the car
 +------------------------------------+-------------------------------------------------------+
 
 .. note::
-  The action space for muticartpole environment consists of action spaces for all the sub-environments within the environment. Each of the action space actuates the assigned agent or muti-agent for the subenvironment. To know more about the the multi-agent class functionality native to MLPro refer to the :ref:`appendix section <Reinforcement Learning>`.
+  The action space for muticartpole environment consists of action spaces for all the sub-environments within the environment. Each of the action space actuates the assigned agent or muti-agent for the subenvironment. To know more about the the multi-agent class functionality native to MLPro refer to the :ref:`appendix section <Howto RL 4>`.
 
   
 State Space
@@ -108,10 +115,12 @@ The states of the muticartpole environment also return some flags giving additio
 - Broken: The broken flag return true when the multicartpole environment is unsuccessful to run for the specified number of cycles. The broken state is set to true when the corresponding states of any sub-environments exceeds the state boundaries as mentionaed in the table above.
 - Terminal: The flag terminal state defines end of an episode or end of a successful scenario of the multicartpole environment. The flag terminal is set to true when the either of the flags sucess or broken are true. The terminal flag is also set to true if the cycle extends the latency time or at the timeout. Once, the terminal flag is set to true, the environment terminates or resets based on the type of run and number of cycles.
 
+More information about these state parameters related to the multi-cartpole environment can be found in the :ref:`module descriptions <Multi Cartpole>`.
+
 Reward Structure
 ================
 
-add text here!
+For multicartpole environment, an overall reward is awarded to the multi-agent. In a single sub-environment of cartpole-v1 a reward value of 1 is returned for every successful cycle run, keeping the states within boundaries. Subsequently, the reward awarded by the multi-cartpole environment is the weighted average of the rewards returned by every internal cartpole-v1 environment. 
   
 Change Log
 ==========
@@ -126,10 +135,11 @@ Change Log
         
 Cross Reference
 ===============
-Other documents related to the environment should be referenced here. For example, 
-the respecitve API Reference.
+Refer these documents for further understanding of MLPro Multicartpole environment and other functionalities of MLPro
     
 + :ref:`API Reference <Multi Cartpole>`
++ :ref:`How to run a multi-cartpole environment with multi-agent <Howto RL 4>`
++ :ref:`How to train a multi-cartpole environment with multi-agent <Howto RL 5>`
 
 If you apply this environment in your research or work, please kindly cite the following related paper:
 
