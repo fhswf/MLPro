@@ -8,10 +8,11 @@
 ## -- 2022-03-24  0.0.0     SY       Creation 
 ## -- 2022-03-24  1.0.0     SY       Release of first version
 ## -- 2022-03-25  1.0.1     SY       Change methods names: _ofct_optuna and get_parameters
+## -- 2022-04-05  1.0.2     SY       Add tuning recap visualization: class _plot_results
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-03-25)
+Ver. 1.0.2 (2022-04-05)
 
 This module provides a wrapper class for hyperparameter tuning by reusing Optuna framework
 """
@@ -37,10 +38,12 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
     
     Parameters
     ----------
-    p_logging:
+    p_logging: Log
         Log level (see constants for log levels)
     p_ids : list of str, optional
         List of hyperparameter ids to be tuned, otherwise all hyperparameters, default: None
+    p_visualization : boolean
+        enable visualization at the end of the tuning, default: False
         
     Attributes
     ----------
@@ -67,12 +70,12 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, p_ids=None):
+    def __init__(self, p_logging=Log.C_LOG_ALL, p_ids=None, p_visualization=False):
         super().__init__(p_logging=p_logging)
 
         self._ids = p_ids
         self.num_trials = 0
-        self.main_path = None
+        self.visualize = p_visualization
         
         self.log(self.C_LOG_TYPE_I, 'Optuna configuration is successful')
 
@@ -134,6 +137,9 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
         best_result = best_trial.value
         best_param = study.best_params
         self.save(best_param, best_result, 'best_parameters.csv')
+        
+        if self.visualize:
+            self._plot_results(study)
         
         return best_result
 
@@ -232,3 +238,28 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
         self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
         
         return parameters
+
+
+## -------------------------------------------------------------------------------------------------
+    def _plot_results(self, p_study):
+        """
+        Visualize the tuning recap.
+
+        Parameters
+        ----------
+        p_study : Study
+            Optuna Study object.
+
+        """
+        self.log(self.C_LOG_TYPE_I, 'Plotting of tuning recap is started')
+        
+        fig = optuna.visualization.plot_slice(p_study)
+        fig.show()
+        
+        fig = optuna.visualization.plot_param_importances(p_study)
+        fig.show()
+        
+        fig = optuna.visualization.plot_parallel_coordinate(p_study)
+        fig.show()
+        
+        self.log(self.C_LOG_TYPE_I, 'Plotting of tuning recap is succesful')
