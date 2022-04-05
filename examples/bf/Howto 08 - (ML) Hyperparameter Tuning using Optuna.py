@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-03-24  0.0.0     SY       Creation 
 ## -- 2022-03-24  1.0.0     SY       Release of first version
+## -- 2022-04-05  1.0.1     SY       Add tuning recap visualization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-03-24)
+Ver. 1.0.1 (2022-04-05)
 
 This module demonstrates how to utilize wrapper class for Optuna in RL context.
 """
@@ -236,7 +237,8 @@ else:
 
 # 3. Instantiate a hyperopt wrapper
 myOptuna = WrHPTOptuna(p_logging=Log.C_LOG_ALL,
-                       p_ids=None)
+                       p_ids=None,
+                       p_visualization=visualize)
     
 
 # 4. Train players in the scenario and turn the hyperparamter tuning on
