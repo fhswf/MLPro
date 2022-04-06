@@ -17,10 +17,11 @@
 ## -- 2021-12-19  1.2.3     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  1.2.4     DA       Class MultiCartPole: renamed method reset() to _reset()
 ## -- 2022-02-25  1.2.5     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-04-06  1.2.6     LSB      Freezing single environment after done returns true
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.5 (2022-02-25)
+Ver. 1.2.6 (2022-04-06)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
