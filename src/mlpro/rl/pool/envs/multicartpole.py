@@ -111,7 +111,7 @@ class MultiCartPole (Environment):
         success  = True
         broken   = False
         timeout  = False
-        terminal = False
+        terminal = True
 
         for env_id, env in enumerate(self._envs):
             sub_state_val = env.get_state().get_values()
@@ -123,7 +123,7 @@ class MultiCartPole (Environment):
             success = success and env.get_state().get_success()
             broken = broken or env.get_state().get_broken()
             timeout = timeout or env.get_state().get_timeout()
-            terminal = terminal or env.get_state().get_terminal()
+            terminal = terminal and env.get_state().get_terminal()
 
         state.set_terminal(terminal)
         state.set_success(success)
@@ -153,6 +153,7 @@ class MultiCartPole (Environment):
 ## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state:State, p_action:Action) -> State:
         success = True
+        # frozen_envs = 0
 
         for agent_id in p_action.get_agent_ids():
             action_elem = p_action.get_elem(agent_id)
@@ -164,11 +165,29 @@ class MultiCartPole (Environment):
             
             for action_id in action_elem.get_dim_ids():
                 env             = self._envs[self.env_idx]
+
+                # check for terminal state and skip the action simulation for this env
+                if env.get_state().get_terminal():
+                    # frozen_envs =+ 1
+                    if self.env_idx == len(self._envs) - 1:
+                        self.env_idx = 0
+                    else:
+                        self.env_idx += 1
+                    # if frozen_envs == len(self._envs): return self.collect_substates()
+                    continue
+
+
                 action_elem_env = ActionElement(env.get_action_space())
                 action_elem_env.set_value(action_id, action_elem.get_value(action_id))
                 action_env      = Action()
                 action_env.add_elem(agent_id, action_elem_env)
                 env._set_state(env.simulate_reaction(None, action_env))
+
+
+                if env.get_state().get_terminal():
+                    self.log(self.C_LOG_TYPE_W, "Environment "+str(self.env_idx)+" is frozen after "+str(self._num_cycles)+" cycles")
+
+
                 if self.env_idx == len(self._envs)-1:
                     self.env_idx = 0
                 else:
@@ -236,3 +255,5 @@ class MultiCartPole (Environment):
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         for env in self._envs: env.update_plot()
+
+
