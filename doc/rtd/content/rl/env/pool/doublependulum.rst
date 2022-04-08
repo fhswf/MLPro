@@ -23,6 +23,7 @@ Prerequisites
     - `NumPy <https://pypi.org/project/numpy/>`_
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
     - `SciPy <https://pypi.org/project/scipy/>`_
+    - :ref:`MLPro <Installation>`
 
 
 General Information
@@ -142,6 +143,8 @@ Change Log
 | Version            | Changes                                     |
 +====================+=============================================+
 | 1.0.0              | First public version                        |
++--------------------+---------------------------------------------+
+| 1.0.2              | Cleaning the code                           |
 +--------------------+---------------------------------------------+
   
 Cross Reference
