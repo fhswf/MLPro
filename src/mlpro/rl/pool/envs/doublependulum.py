@@ -13,11 +13,19 @@
 ## -- 2022-01-31  0.9.4     WB       Add Circular arrow to the plot 
 ## -- 2022-02-02  1.0.0     WB       Release of first version
 ## -- 2022-02-02  1.0.1     MRD      Cleaning the code
-## -- 2022-02-27  1.0.2     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-02-10  1.0.2     WB       Introduce transparency in arrow depending on applied torque
+## -- 2022-02-10  1.0.3     WB       Set init_angles as presets for starting angles
+## -- 2022-02-10  1.0.4     WB       Normalize angle in reward calculation
+## -- 2022-02-10  1.0.5     WB       Fix arrow head 
+## -- 2022-02-14  1.0.6     WB       Update _compute_reward method
+## -- 2022-02-17  1.0.7     WB       Taking into account the outer pole in reward calculation
+## -- 2022-02-21  1.0.8     WB       Edit the formulation the of _compute_reward method
+## -- 2022-03-02  1.0.9     WB       Include Torque and Change of state in _compute_reward method
+## -- 2022-04-08  1.1.0     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-02-27)
+Ver. 1.1.0 (2022-04-08)
 
 This module provides an RL environment of double pendulum.
 """
@@ -44,7 +52,7 @@ class DoublePendulum(Environment):
     p_logging : Log, optional
         Logging functionalities. The default is Log.C_LOG_ALL.
     t_step : float, optional
-        Time for each time step (in seconds). The default is 0.01.
+        Time for each time step (in seconds). The default is 0.0025.
     t_act : int, optional
         Action frequency (with respect to the time step). The default is 20.
     max_torque : float, optional
@@ -54,19 +62,15 @@ class DoublePendulum(Environment):
     l1 : float, optional
         Length of pendulum 1 in m. The default is 0.5
     l2 : float, optional
-        Length of pendulum 2 in m. The default is 0.5
+        Length of pendulum 2 in m. The default is 0.25
     m1 : float, optional
         Mass of pendulum 1 in kg. The default is 0.5
     m2 : float, optional
-        Mass of pendulum 2 in kg. The default is 0.5
-    th1 : float, optional 
-        Initial angle of pendulum 1 in degrees. The default is 0.0
-    th1dot : float, optional 
-        Initial angular velocities of pendulum 1 in degrees per second. The default is 0.0
-    th2 : float, optional 
-        Initial angle of pendulum 2 in degrees. The default is 0.0
-    th2dot : float, optional 
-        Initial angular velocities of pendulum 2 in degrees per second. The default is 0.0
+        Mass of pendulum 2 in kg. The default is 0.25
+    init_angles: str, optional
+        'up' starts the pendulum in an upright position
+        'down' starts the pendulum in a downward position
+        'random' starts the pendulum from a random position.
     g : float, optional
         Gravitational acceleration. The default is 9.8
     history_length : int, optional
@@ -89,9 +93,9 @@ class DoublePendulum(Environment):
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.01, t_act=20, max_torque=20,
-                 max_speed=10, l1=0.5, l2=0.5, m1=0.5, m2=0.5, th1=0.0, th2=0.0,
-                 th1dot=0.0, th2dot=0.0, g=9.8, history_length=3):
+    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.0025, t_act=20, max_torque=20,
+                 max_speed=10, l1=0.5, l2=0.25, m1=0.5, m2=0.25, init_angles='down', 
+                 g=9.8, history_length=3):
         self.t_step = t_step
         self.t_act = t_act
 
@@ -105,12 +109,24 @@ class DoublePendulum(Environment):
         self.L = l1 + l2
         self.m1 = m1
         self.m2 = m2
-        self.th1 = th1
-        self.th2 = th2
-        self.th1dot = th1dot
-        self.th2dot = th2dot
+        self.M = m1+m2
         self.g = g
-
+        
+        self.th1dot = 0
+        self.th2dot = 0
+        
+        if init_angles=='up':
+            self.th1 = 180
+            self.th2 = 180
+        elif init_angles=='down':
+            self.th1 = 0
+            self.th2 = 0
+        elif init_angles=='random':
+            self.th1 = np.random.rand(1)[0]*180
+            self.th2 = np.random.rand(1)[0]*180
+        else:
+            raise NotImplementedError("init_angles value must be up, down, or random")
+        
         self.history_x = deque(maxlen=history_length)
         self.history_y = deque(maxlen=history_length)
 
@@ -232,6 +248,7 @@ class DoublePendulum(Environment):
         self.history_x.clear()
         self.history_y.clear()
         self.action_cw = False
+        self.alpha = 0
 
     ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
@@ -255,7 +272,9 @@ class DoublePendulum(Environment):
         th1, th1dot, th2, th2dot = state
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
-
+        
+        self.alpha = abs(torque)/self.max_torque
+        
         state[1] = th1dot + (3 * self.g / (2 * self.l1) * sin(th1) + 3.0 /
                              (self.m1 * self.l1 ** 2) * torque) * self.t_step
 
@@ -266,8 +285,10 @@ class DoublePendulum(Environment):
 
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act * self.t_step, self.t_step))
         state = self.y[-1]
-
-        self.action_cw = True if torque >= 0 else False
+        state[0] = DoublePendulum.angle_normalize(state[0])
+        state[2] = DoublePendulum.angle_normalize(state[2])
+        
+        self.action_cw = True if torque <= 0 else False
         state_ids = self._state.get_dim_ids()
         for i in range(len(state)):
             self._state.set_value(state_ids[i], state[i])
@@ -331,17 +352,53 @@ class DoublePendulum(Environment):
 
         """
         reward = Reward(Reward.C_TYPE_OVERALL)
-
+        
+        target = np.array([np.pi, 0.0, np.pi, 0.0])
         state = p_state_new.get_values()
-
-        count = 0
-        for th1 in self.y[:, 0]:
-            if np.degrees(th1) > 179 or np.degrees(th1) < 181 or \
-                    np.degrees(th1) < -179 or np.degrees(th1) > -181:
-                count += 1
-
-        speed_costs = np.pi * abs(state[1]) / self.max_speed
-        reward.set_overall_reward((abs(state[0]) - speed_costs) * count / len(self.y))
+        old_state = p_state_old.get_values()
+        
+        th1_count = 0
+        for th1 in self.y[::-1, 0]:
+            ang = np.degrees(DoublePendulum.angle_normalize(th1))
+            if ang > 170 or ang < 190 or \
+                    ang < -170 or ang > -190:
+                th1_count += 1
+            else:
+                break
+        th1_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[0])))
+        th1_distance_costs = 4 if th1_distance <= 0.1 else 0.3 / th1_distance
+        
+        th1_speed_costs = np.pi * abs(state[1]) / self.max_speed
+        
+        # max acceleration in one timestep is assumed to be double the max speed
+        th1_acceleration_costs = np.pi * abs(self.y[-1, 1]-self.y[-2, 1]) / (2 * self.max_speed)
+        
+        inner_pole_costs = (th1_distance_costs * th1_count / len(self.y)) - th1_speed_costs - (th1_acceleration_costs ** 0.5)
+        inner_pole_weight = (self.l1/2)*self.m1
+        
+        th2_count = 0
+        for th2 in self.y[::-1, 2]:
+            ang = np.degrees(DoublePendulum.angle_normalize(th2))
+            if ang > 170 or ang < 190 or \
+                    ang < -170 or ang > -190:
+                th2_count += 1
+            else:
+                break
+        th2_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[2])))
+        th2_distance_costs = 4 if th2_distance <= 0.1 else 0.3 / th2_distance
+        
+        th2_speed_costs = np.pi * abs(state[3]) / self.max_speed
+        
+        th2_acceleration_costs = np.pi * abs(self.y[-1, 3]-self.y[-2, 3]) / (2 * self.max_speed)
+        
+        outer_pole_costs = (th2_distance_costs * th2_count / len(self.y)) - th2_speed_costs - (th2_acceleration_costs ** 0.5)
+        outer_pole_weight = 0.5 * (self.l2/2)*self.m2
+        
+        change_costs = ((np.linalg.norm(target[::2] - np.array(old_state)[::2])*inner_pole_weight) - 
+                        (np.linalg.norm(target[::2] - np.array(state)[::2])*outer_pole_weight))
+        
+        reward.set_overall_reward((inner_pole_costs * inner_pole_weight) + (outer_pole_costs * outer_pole_weight) )
+                                  # - (self.alpha * np.pi/2) + (change_costs))
 
         return reward
 
@@ -373,9 +430,9 @@ class DoublePendulum(Environment):
 
         self.cw_arc = Arc([0, 0], 0.5 * self.l1, 0.5 * self.l1, angle=0, theta1=0,
                           theta2=250, color='crimson')
-        endX = (0.5 * self.l1 / 2) * np.cos(np.radians(250))
-        endY = (0.5 * self.l1 / 2) * np.sin(np.radians(250))
-        self.cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self.l1 / 9, np.radians(250),
+        endX = (0.5 * self.l1 / 2) * np.cos(np.radians(0))
+        endY = (0.5 * self.l1 / 2) * np.sin(np.radians(0))
+        self.cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self.l1 / 9, np.radians(180),
                                        color='crimson')
 
         self.ccw_arc = Arc([0, 0], 0.5 * self.l1, 0.5 * self.l1, angle=70, theta1=0,
@@ -422,6 +479,8 @@ class DoublePendulum(Environment):
         if self.action_cw:
             self.cw_arc.set_visible(True)
             self.cw_arrow.set_visible(True)
+            self.cw_arc.set_alpha(self.alpha)
+            self.cw_arrow.set_alpha(self.alpha)
             self.ccw_arc.set_visible(False)
             self.ccw_arrow.set_visible(False)
         else:
@@ -429,6 +488,8 @@ class DoublePendulum(Environment):
             self.cw_arrow.set_visible(False)
             self.ccw_arc.set_visible(True)
             self.ccw_arrow.set_visible(True)
+            self.ccw_arc.set_alpha(self.alpha)
+            self.ccw_arrow.set_alpha(self.alpha)
 
         if not self.embedded_fig:
             self.fig.canvas.draw()
