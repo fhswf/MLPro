@@ -14,10 +14,11 @@
 ## -- 2021-10-06  1.1.2     DA       Refactoring 
 ## -- 2021-10-18  1.1.3     DA       Refactoring 
 ## -- 2021-11-15  1.2.0     DA       Refactoring 
+## -- 2022-02-25  1.2.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2021-11-15)
+Ver. 1.2.1 (2022-02-25)
 
 This module shows how to run an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -83,11 +84,13 @@ class MyScenario (RLScenario):
         )
 
         # 2.2 Add Single-Agent #1 with own policy (controlling sub-environment #1)
+        ss_ids = self._env.get_state_space().get_dim_ids()
+        as_ids = self._env.get_action_space().get_dim_ids()
         multi_agent.add_agent(
             p_agent=Agent(
                 p_policy=MyPolicy(
-                    p_observation_space=self._env.get_state_space().spawn([0,1,2,3]),
-                    p_action_space=self._env.get_action_space().spawn([0]),
+                    p_observation_space=self._env.get_state_space().spawn([ss_ids[0],ss_ids[1],ss_ids[2],ss_ids[3]]),
+                    p_action_space=self._env.get_action_space().spawn([as_ids[0]]),
                     p_buffer_size=1,
                     p_ada=True,
                     p_logging=p_logging
@@ -105,8 +108,8 @@ class MyScenario (RLScenario):
         multi_agent.add_agent(
             p_agent=Agent(
                 p_policy=MyPolicy(
-                    p_observation_space=self._env.get_state_space().spawn([4,5,6,7,8,9,10,11]),
-                    p_action_space=self._env.get_action_space().spawn([1,2]),
+                    p_observation_space=self._env.get_state_space().spawn([ss_ids[4],ss_ids[5],ss_ids[6],ss_ids[7],ss_ids[8],ss_ids[9],ss_ids[10],ss_ids[11]]),
+                    p_action_space=self._env.get_action_space().spawn([as_ids[1],as_ids[2]]),
                     p_buffer_size=1,
                     p_ada=True,
                     p_logging=p_logging

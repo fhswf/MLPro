@@ -15,28 +15,23 @@
 ## -- 2021-12-20  1.0.6     WB       Update 'success' and 'broken' rule
 ## -- 2021-12-21  1.0.7     DA       Class UR5JointControl: renamed method reset() to _reset()
 ## -- 2022-01-20  1.0.8     MRD      Use the gym wrapper to wrap the ur5 environment
+## -- 2022-03-04  1.1.0     WB       Adds the ability to control gripper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.8 (2022-01-20)
+Ver. 1.1.0 (2022-03-04)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
 """
 
-
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import numpy as np
-import gym
 import rospy
-import rospkg
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
 from openai_ros.task_envs.task_commons import LoadYamlFileParamsTest
 import subprocess
-
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -47,12 +42,12 @@ class UR5JointControl(WrEnvGYM2MLPro):
     Gym-based environment 'UR5RandomTargetTask-v0'. 
     """
 
-    C_NAME      = 'UR5JointControl'
-    C_LATENCY   = timedelta(0,5,0)
-    C_INFINITY  = np.finfo(np.float32).max      
+    C_NAME = 'UR5JointControl'
+    C_LATENCY = timedelta(0, 5, 0)
+    C_INFINITY = np.finfo(np.float32).max
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=True):
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_seed=0, p_logging=True):
         """
         Parameters:
             p_logging       Boolean switch for logging
@@ -66,17 +61,22 @@ class UR5JointControl(WrEnvGYM2MLPro):
 
         # Init OpenAI_ROS ENV
         task_and_robot_environment_name = rospy.get_param('/ur5_lab/task_and_robot_environment_name')
-    
+
         max_step_episode = rospy.get_param('/ur5_lab/max_iterations')
 
         env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
+        env.seed(p_seed)
 
         super().__init__(p_gym_env=env)
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
         obs = p_state.get_values()
-        close =  np.allclose(a=obs[:3],
+        close = np.allclose(a=obs[:3],
                             b=obs[3:],
-                            atol=0.05)
+                            atol=0.1)
+
+        if close:
+            self._state.set_terminal(True)
+
         return close

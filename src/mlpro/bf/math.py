@@ -15,18 +15,23 @@
 ## --                                - changes in class Element: list instead of np.array
 ## -- 2021-10-25  1.3.0     DA       New class Function
 ## -- 2021-12-03  1.3.1     DA       New methods Dimension.copy(), Set.copy(), Set.append()
-## -- 2021-12-03  1.3.2     MRDS     Fix Set.append() due to the usage of max() on empty list
+## -- 2021-12-03  1.3.2     MRD      Fix Set.append() due to the usage of max() on empty list
 ## -- 2022-01-21  1.4.0     DA       New class TrendAnalyzer
+## -- 2022-02-25  1.4.1     SY       Class Dimension extended by auto generated ID
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-01-21)
+Ver. 1.4.1 (2022-02-25)
 
 This module provides basic mathematical classes .
 """
 
 import numpy as np
 from itertools import repeat
+import uuid
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -37,8 +42,6 @@ class Dimension:
 
     Parameters:
     -----------
-    p_id : int
-        Id of the dimension that is unique in the related set
     p_name_short : str
         Short name of dimension
     p_base_set 
@@ -64,9 +67,9 @@ class Dimension:
     C_BASE_SET_DO = 'DO'  # (big) data objects (like images, point clouds, ...)
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name_short, p_base_set=C_BASE_SET_R, p_name_long='', p_name_latex='', p_unit='',
+    def __init__(self, p_name_short, p_base_set=C_BASE_SET_R, p_name_long='', p_name_latex='', p_unit='',
                  p_unit_latex='', p_boundaries=[], p_description='') -> None:
-        self._id = p_id
+        self._id = str(uuid.uuid4())
         self._name_short = p_name_short
         self._base_set = p_base_set
         self._name_long = p_name_long
@@ -113,14 +116,8 @@ class Dimension:
         return self._description
 
     ## -------------------------------------------------------------------------------------------------
-    def copy(self, p_dim_id=None):
-        if p_dim_id is not None:
-            dim_id = p_dim_id
-        else:
-            dim_id = self._id
-
-        return self.__class__(p_id=dim_id,
-                              p_name_short=self._name_short,
+    def copy(self):
+        return self.__class__(p_name_short=self._name_short,
                               p_base_set=self._base_set,
                               p_name_long=self._name_long,
                               p_name_latex=self._name_latex,
@@ -202,23 +199,22 @@ class Set:
         new_set = self.__class__()
 
         if p_new_dim_ids:
-            dim_id_new = 0
-            for dim_id in self.get_dim_ids():
-                new_set.add_dim(self.get_dim(dim_id).copy(dim_id_new))
-                dim_id_new += 1
-        else:
             for dim_id in self.get_dim_ids():
                 new_set.add_dim(self.get_dim(dim_id).copy())
+        else:
+            for dim_id in self.get_dim_ids():
+                new_set.add_dim(self.get_dim(dim_id))
 
         return new_set
 
     ## -------------------------------------------------------------------------------------------------
-    def append(self, p_set):
-        dim_id_new = (max(self.get_dim_ids()) + 1) if self.get_dim_ids() else 0
-
-        for dim_id in p_set.get_dim_ids():
-            self.add_dim(p_set.get_dim(dim_id).copy(dim_id_new))
-            dim_id_new += 1
+    def append(self, p_set, p_new_dim_ids=True):
+        if p_new_dim_ids:
+            for dim_id in p_set.get_dim_ids():
+                self.add_dim(p_set.get_dim(dim_id).copy())
+        else:
+            for dim_id in p_set.get_dim_ids():
+                self.add_dim(p_set.get_dim(dim_id))
 
 
 ## -------------------------------------------------------------------------------------------------

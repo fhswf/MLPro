@@ -30,10 +30,12 @@
 ## --                                Class WrEnvMLPro2PZoo:  
 ## --                                - refactored done detection 
 ## --                                - removed artifacts of cycle counting
+## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-03-21  1.3.5     SY       Refactoring due to PettingZoo version 1.17.0
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2022-01-21)
+Ver. 1.3.5 (2022-03-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -102,14 +104,12 @@ class WrEnvPZOO2MLPro(Environment):
 ## -------------------------------------------------------------------------------------------------
     def _recognize_space(self, p_zoo_space, dict_name) -> ESpace:
         space = ESpace()
-        id_ = 0
         
         if dict_name == "observation":
-            space.add_dim(Dimension(p_id=0,p_name_short='0', p_base_set='DO'))
+            space.add_dim(Dimension(p_name_short='0', p_base_set='DO'))
         elif dict_name == "action":
             for k in p_zoo_space:
-                space.add_dim(Dimension(p_id=id_,p_name_short=k, p_base_set='DO'))
-                id_ += 1
+                space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
                 
         return space
 
@@ -257,7 +257,7 @@ class WrEnvMLPro2PZoo():
 
 ## -------------------------------------------------------------------------------------------------
     class raw_env(AECEnv):
-        metadata = {'render.modes': ['human'], "name": "pzoo_custom"}
+        metadata = {'render_modes': ['human', 'ansi'], "name": "pzoo_custom"}
 
 ## -------------------------------------------------------------------------------------------------
         def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
@@ -304,9 +304,10 @@ class WrEnvMLPro2PZoo():
                     action = np.array([action])
                 for i in range(idx):
                     _act_set    = Set()
-                    _act_set.add_dim(Dimension(i,'action_'+str(i)))
+                    _act_set.add_dim(Dimension('action_'+str(i)))
                     _act_elem   = Element(_act_set)
-                    _act_elem.set_value(i, self.state[self.possible_agents[i]])
+                    _ids = _act_elem.get_dim_ids()
+                    _act_elem.set_value(_ids[0], self.state[self.possible_agents[i]])
                     _action.add_elem(self.possible_agents[i], _act_elem)
                 
                 self._mlpro_env.process_action(_action)

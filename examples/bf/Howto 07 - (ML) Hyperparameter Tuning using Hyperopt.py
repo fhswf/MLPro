@@ -9,10 +9,11 @@
 ## -- 2021-12-08  1.0.0     SY       Release of first version
 ## -- 2022-01-21  1.0.1     DA       Renaming: tupel -> tuple
 ## -- 2022-01-27  1.0.2     SY       Class WrHPTHyperopt enhancement
+## -- 2022-02-25  1.0.3     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-01-27)
+Ver. 1.0.3 (2022-02-25)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 """
@@ -59,20 +60,21 @@ class myPolicy (Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self):
-        self._hyperparam_space.add_dim(HyperParam(0,'num_states','Z', p_boundaries = [1,100]))
-        self._hyperparam_space.add_dim(HyperParam(1,'smoothing','R', p_boundaries = [0.1,0.5]))
-        self._hyperparam_space.add_dim(HyperParam(2,'lr_rate','R', p_boundaries = [0.001,0.1]))
-        self._hyperparam_space.add_dim(HyperParam(3,'buffer_size','Z', p_boundaries = [10000,100000]))
-        self._hyperparam_space.add_dim(HyperParam(4,'update_rate','Z', p_boundaries = [5,20]))
-        self._hyperparam_space.add_dim(HyperParam(5,'sampling_size','Z', p_boundaries = [64,256]))
+        self._hyperparam_space.add_dim(HyperParam('num_states','Z', p_boundaries = [1,100]))
+        self._hyperparam_space.add_dim(HyperParam('smoothing','R', p_boundaries = [0.1,0.5]))
+        self._hyperparam_space.add_dim(HyperParam('lr_rate','R', p_boundaries = [0.001,0.1]))
+        self._hyperparam_space.add_dim(HyperParam('buffer_size','Z', p_boundaries = [10000,100000]))
+        self._hyperparam_space.add_dim(HyperParam('update_rate','Z', p_boundaries = [5,20]))
+        self._hyperparam_space.add_dim(HyperParam('sampling_size','Z', p_boundaries = [64,256]))
         self._hyperparam_tuple = HyperParamTuple(self._hyperparam_space)
         
-        self._hyperparam_tuple.set_value(0, 100)
-        self._hyperparam_tuple.set_value(1, 0.035)
-        self._hyperparam_tuple.set_value(2, 0.0001)
-        self._hyperparam_tuple.set_value(3, 100000)
-        self._hyperparam_tuple.set_value(4, 100)
-        self._hyperparam_tuple.set_value(4, 256)
+        ids_ = self._hyperparam_tuple.get_dim_ids()
+        self._hyperparam_tuple.set_value(ids_[0], 100)
+        self._hyperparam_tuple.set_value(ids_[1], 0.035)
+        self._hyperparam_tuple.set_value(ids_[2], 0.0001)
+        self._hyperparam_tuple.set_value(ids_[3], 100000)
+        self._hyperparam_tuple.set_value(ids_[4], 100)
+        self._hyperparam_tuple.set_value(ids_[5], 256)
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -113,8 +115,8 @@ class BGLP_Rnd(RLScenario):
         # Agent 1
         _name         = 'BELT_CONVEYOR_A'
         _id           = 0
-        _ospace       = state_space.spawn([0,1])
-        _aspace       = action_space.spawn([0])
+        _ospace       = state_space.spawn([state_space.get_dim_ids()[0],state_space.get_dim_ids()[1]])
+        _aspace       = action_space.spawn([action_space.get_dim_ids()[0]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
@@ -131,8 +133,8 @@ class BGLP_Rnd(RLScenario):
         # Agent 2
         _name         = 'VACUUM_PUMP_B'
         _id           = 1
-        _ospace       = state_space.spawn([1,2])
-        _aspace       = action_space.spawn([1])
+        _ospace       = state_space.spawn([state_space.get_dim_ids()[1],state_space.get_dim_ids()[2]])
+        _aspace       = action_space.spawn([action_space.get_dim_ids()[1]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
@@ -149,8 +151,8 @@ class BGLP_Rnd(RLScenario):
         # Agent 3
         _name         = 'VIBRATORY_CONVEYOR_B'
         _id           = 2
-        _ospace       = state_space.spawn([2,3])
-        _aspace       = action_space.spawn([2])
+        _ospace       = state_space.spawn([state_space.get_dim_ids()[2],state_space.get_dim_ids()[3]])
+        _aspace       = action_space.spawn([action_space.get_dim_ids()[2]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
@@ -167,8 +169,8 @@ class BGLP_Rnd(RLScenario):
         # Agent 4
         _name         = 'VACUUM_PUMP_C'
         _id           = 3
-        _ospace       = state_space.spawn([3,4])
-        _aspace       = action_space.spawn([3])
+        _ospace       = state_space.spawn([state_space.get_dim_ids()[3],state_space.get_dim_ids()[4]])
+        _aspace       = action_space.spawn([action_space.get_dim_ids()[3]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
@@ -185,8 +187,8 @@ class BGLP_Rnd(RLScenario):
         # Agent 5
         _name         = 'ROTARY_FEEDER_C'
         _id           = 4
-        _ospace       = state_space.spawn([4,5])
-        _aspace       = action_space.spawn([4])
+        _ospace       = state_space.spawn([state_space.get_dim_ids()[4],state_space.get_dim_ids()[5]])
+        _aspace       = action_space.spawn([action_space.get_dim_ids()[4]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(

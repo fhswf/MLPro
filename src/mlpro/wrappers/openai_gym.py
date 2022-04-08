@@ -34,10 +34,12 @@
 ## --                                - refactored done detection 
 ## --                                - removed artifacts of cycle counting
 ## -- 2022-01-28  1.3.3     DA       Class WrEnvMLPro2GYM: stabilized destructor
+## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-03-21  1.3.5     MRD      Added new parameter to the WrEnvMLPro2GYM.reset()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2022-01-28)
+Ver. 1.3.5 (2022-03-21)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -95,12 +97,12 @@ class WrEnvGYM2MLPro(Environment):
 
         if isinstance(p_gym_space, gym.spaces.Discrete):
             space.add_dim(
-                Dimension(p_id=0, p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
+                Dimension(p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
         elif isinstance(p_gym_space, gym.spaces.Box):
             shape_dim = len(p_gym_space.shape)
             for i in range(shape_dim):
                 for d in range(p_gym_space.shape[i]):
-                    space.add_dim(Dimension(p_id=d, p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
+                    space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
                                             p_boundaries=[p_gym_space.low[d], p_gym_space.high[d]]))
 
         return space
@@ -227,14 +229,16 @@ class WrEnvMLPro2GYM(gym.Env):
     def recognize_space(p_mlpro_space):
         space = None
         action_dim = p_mlpro_space.get_num_dim()
-        if len(p_mlpro_space.get_dim(0).get_boundaries()) == 1:
-            space = gym.spaces.Discrete(p_mlpro_space.get_dim(0).get_boundaries()[0])
+        id_dim = p_mlpro_space.get_dim_ids()[0]
+        if len(p_mlpro_space.get_dim(id_dim).get_boundaries()) == 1:
+            space = gym.spaces.Discrete(p_mlpro_space.get_dim(id_dim).get_boundaries()[0])
         else:
             lows = []
             highs = []
             for dimension in range(action_dim):
-                lows.append(p_mlpro_space.get_dim(dimension).get_boundaries()[0])
-                highs.append(p_mlpro_space.get_dim(dimension).get_boundaries()[1])
+                id_dim = p_mlpro_space.get_dim_ids()[dimension]
+                lows.append(p_mlpro_space.get_dim(id_dim).get_boundaries()[0])
+                highs.append(p_mlpro_space.get_dim(id_dim).get_boundaries()[1])
 
             space = gym.spaces.Box(
                 low=np.array(lows, dtype=np.float32),
@@ -255,10 +259,11 @@ class WrEnvMLPro2GYM(gym.Env):
             action = np.array([action])
 
         for i in range(idx):
-            _act_set.add_dim(Dimension(i, 'action_' + str(i)))
+            _act_set.add_dim(Dimension('action_' + str(i)))
         _act_elem = Element(_act_set)
         for i in range(idx):
-            _act_elem.set_value(i, action[i].item())
+            _ids = _act_elem.get_dim_ids()
+            _act_elem.set_value(_ids[i], action[i].item())
         _action.add_elem('0', _act_elem)
 
         self._mlpro_env.process_action(_action)
@@ -279,8 +284,8 @@ class WrEnvMLPro2GYM(gym.Env):
         return obs, reward.get_overall_reward(), done, info
 
     ## -------------------------------------------------------------------------------------------------
-    def reset(self):
-        self._mlpro_env.reset()
+    def reset(self, seed=None, options=None):
+        self._mlpro_env.reset(seed)
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):
             obs = np.array(self._mlpro_env.get_state().get_values(), dtype=np.float32)

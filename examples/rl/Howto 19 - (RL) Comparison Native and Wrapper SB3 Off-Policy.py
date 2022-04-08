@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-01-11  0.0.0     MRD      Creation
 ## -- 2022-01-18  1.0.0     MRD      Released first version
+## -- 2022-02-27  1.0.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-01-18)
+Ver. 1.0.1 (2022-02-27)
 
 This module shows comparison between native and wrapper Off-policy SB3
 """
@@ -183,7 +184,7 @@ class CustomCallback(BaseCallback, Log):
     def __init__(self, p_verbose=0):
         super(CustomCallback, self).__init__(p_verbose)
         reward_space = Set()
-        reward_space.add_dim(Dimension(0, "Native"))
+        reward_space.add_dim(Dimension("Native"))
         self.ds_rewards = RLDataStoring(reward_space)
         self.episode_num = 0
         self.total_cycle = 0
@@ -213,7 +214,7 @@ class CustomCallback(BaseCallback, Log):
             self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR, '\n')
             self.new_episodes = False
         # With Cycle Limit
-        self.ds_rewards.memorize_row(self.total_cycle, timedelta(0, 0, 0), self.locals.get("reward"))
+        self.ds_rewards.memorize_row(self.total_cycle, timedelta(0, 0, 0), self.locals.get("rewards"))
         self.total_cycle += 1
         self.cycles += 1
         if self.locals.get("infos")[0]:
