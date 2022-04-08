@@ -62,4 +62,3 @@ Run this code to generate the results as shown above
 .. literalinclude:: ../../../../../../examples/bf/Howto 04 - (Data) Store, plot, and save variables.py
     :language: python
         
-
