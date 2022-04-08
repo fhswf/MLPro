@@ -21,10 +21,11 @@
 ## -- 2022-02-17  1.0.7     WB       Taking into account the outer pole in reward calculation
 ## -- 2022-02-21  1.0.8     WB       Edit the formulation the of _compute_reward method
 ## -- 2022-03-02  1.0.9     WB       Include Torque and Change of state in _compute_reward method
+## -- 2022-04-08  1.1.0     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.9 (2022-03-02)
+Ver. 1.1.0 (2022-04-08)
 
 This module provides an RL environment of double pendulum.
 """
@@ -157,16 +158,16 @@ class DoublePendulum(Environment):
         state_space = ESpace()
         action_space = ESpace()
 
-        state_space.add_dim(Dimension(0, 'theta 1', 'th1', 'Angle of Pendulum 1', '', 'degrees',
+        state_space.add_dim(Dimension('theta 1', 'th1', 'Angle of Pendulum 1', '', 'degrees',
                                       '\textdegrees', [-np.pi, np.pi]))
-        state_space.add_dim(Dimension(1, 'omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
+        state_space.add_dim(Dimension('omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
                                       'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
-        state_space.add_dim(Dimension(2, 'theta 2', 'th2', 'Angle of pendulum 2', '', 'degrees',
+        state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'degrees',
                                       '\textdegrees', [-np.pi, np.pi]))
-        state_space.add_dim(Dimension(3, 'omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
+        state_space.add_dim(Dimension('omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
                                       'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
 
-        action_space.add_dim(Dimension(0, 'torque 1', 'tau1', 'Applied Torque of Motor 1', '',
+        action_space.add_dim(Dimension('torque 1', 'tau1', 'Applied Torque of Motor 1', '',
                                        'Nm', 'Nm', [-self.max_torque, self.max_torque]))
 
         return state_space, action_space
@@ -238,10 +239,11 @@ class DoublePendulum(Environment):
             Not yet implemented. The default is None.
 
         """
-        self._state.set_value(0, np.radians(self.th1))
-        self._state.set_value(1, np.radians(self.th1dot))
-        self._state.set_value(2, np.radians(self.th2))
-        self._state.set_value(3, np.radians(self.th2dot))
+        state_ids = self._state.get_dim_ids()
+        self._state.set_value(state_ids[0], np.radians(self.th1))
+        self._state.set_value(state_ids[1], np.radians(self.th1dot))
+        self._state.set_value(state_ids[2], np.radians(self.th2))
+        self._state.set_value(state_ids[3], np.radians(self.th2dot))
 
         self.history_x.clear()
         self.history_y.clear()
@@ -287,8 +289,9 @@ class DoublePendulum(Environment):
         state[2] = DoublePendulum.angle_normalize(state[2])
         
         self.action_cw = True if torque <= 0 else False
+        state_ids = self._state.get_dim_ids()
         for i in range(len(state)):
-            self._state.set_value(i, state[i])
+            self._state.set_value(state_ids[i], state[i])
 
         return self._state
 
