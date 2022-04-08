@@ -13,7 +13,6 @@
 ## -- 2022-01-31  0.9.4     WB       Add Circular arrow to the plot 
 ## -- 2022-02-02  1.0.0     WB       Release of first version
 ## -- 2022-02-02  1.0.1     MRD      Cleaning the code
-<<<<<<< HEAD
 ## -- 2022-02-10  1.0.2     WB       Introduce transparency in arrow depending on applied torque
 ## -- 2022-02-10  1.0.3     WB       Set init_angles as presets for starting angles
 ## -- 2022-02-10  1.0.4     WB       Normalize angle in reward calculation
@@ -27,13 +26,6 @@
 
 """
 Ver. 1.1.0 (2022-04-08)
-=======
-## -- 2022-02-27  1.0.2     SY       Refactoring due to auto generated ID in class Dimension
-## -------------------------------------------------------------------------------------------------
-
-"""
-Ver. 1.0.2 (2022-02-27)
->>>>>>> main
 
 This module provides an RL environment of double pendulum.
 """
@@ -293,15 +285,10 @@ class DoublePendulum(Environment):
 
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act * self.t_step, self.t_step))
         state = self.y[-1]
-<<<<<<< HEAD
         state[0] = DoublePendulum.angle_normalize(state[0])
         state[2] = DoublePendulum.angle_normalize(state[2])
         
         self.action_cw = True if torque <= 0 else False
-=======
-
-        self.action_cw = True if torque >= 0 else False
->>>>>>> main
         state_ids = self._state.get_dim_ids()
         for i in range(len(state)):
             self._state.set_value(state_ids[i], state[i])
