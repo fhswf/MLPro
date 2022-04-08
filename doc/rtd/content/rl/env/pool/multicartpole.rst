@@ -1,16 +1,16 @@
 `Multi-Cartpole <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/multicartpole.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The multicartpole environment is an extension over the cartpole-v1 environment native to open AI Gym environments, where a cart is sliding over a flat surface and a pole is attached to the the middle of the cart at one end with frictionless turning joint. With multicartpole environment, we provide you the possibility to simulate multiple cartplole-v1 evrironments from gym. The goal of this environment is to maintain vertical position of the pole on the cart and stopping it from falling over with the aid of pushing the cart to left or right.
+The multicartpole environment is an extension over the `cartpole-v1 <https://gym.openai.com/envs/CartPole-v1/>`_ environment native to `OpenAI Gym <https://gym.openai.com>`_ environments, where a cart is sliding over a flat surface and a pole is attached to the the middle of the cart at one end with frictionless turning joint. With multicartpole environment, we provide you the possibility to simulate multiple cartplole-v1 evrironments from gym. The goal of this environment is to maintain vertical position of the pole on the cart and stopping it from falling over with the aid of pushing the cart to left or right.
 The multicartpole environment is visualized in the image below
 
 .. image:: images/multicartpole_0.gif
-	:width: 25%
+	:width: 250px
 
 .. image:: images/multicartpole_1.gif
-	:width: 25%
+	:width: 250px
 
 .. image:: images/multicartpole_2.gif
-	:width: 25%
+	:width: 250px
 
 This multicartpole environment can be imported via:
 
@@ -19,17 +19,17 @@ This multicartpole environment can be imported via:
     import mlpro.rl.pool.envs.multicartpole
 
 
-The multicartpole environment can simulate 'n' number of cartpole-v1 environmments simultaneously, where the parameter 'n' can be set while instantiating the environment. The multicartpole environment can be instantiated by as an mlpro environment class by including
+The multicartpole environment can simulate 'n' number of cartpole-v1 environmments simultaneously, where the parameter 'n' can be set while instantiating the environment. The multicartpole environment can be instantiated as an mlpro environment class by including
 
 .. code-block::
 
 	env   = MultiCartPole(p_num_envs=3, p_logging=p_logging)
 
 
-The multicartpole environment consists of 'n' number of internal cartpole-v1 gym environments running simultaneously. The environment starts with random state values and the agent computes actions based on the policy. As there are multiple sub-environments running simultaneously, MLPro offers agent object of type :ref:`multi-agent <Multi-Agents>`, where a number of agents simultaneously simulate corresponding sub-environments. The agent computes an action value of 1 or 0 which refers to a left or right push respectively to the cart. These actions computed by the agents are processed in the corresponding gym sub environment through the :ref:`MLPro to Gym wrapper functionality <OpenAI Gym Environments>` of MLPro. The output from the gym sub-environments is the set of new state values and the state flags including success, done, error. The new state of the multicartpole environment is a set of states of all internal sub-environments. For better understanding of the multi-cartpole environment and its implementation refer to this :ref:`example implementation <Howto RL 4>`. Running this example implementation of multi-cartpole environment will produce visualisation as in the image below
+The multicartpole environment consists of 'n' number of internal cartpole-v1 gym environments running simultaneously. The environment starts with random state values and the agent computes actions based on the policy. As there are multiple sub-environments running simultaneously, MLPro offers agent object of type :ref:`multi-agent <Multi-Agents>`, where a number of agents simultaneously simulate corresponding sub-environments. The agent computes an action value of 1 or 0 which refers to a left or right push respectively to the cart. These actions computed by the agents are processed in the corresponding gym sub environment through the :ref:`MLPro to Gym wrapper functionality <OpenAI Gym Environments>` of MLPro. The output from the gym sub-environments is the set of new state values and the state flags including success, done, error. The new state of the multicartpole environment is a set of states of all internal sub-environments. The terminal state of multicartpole environment reaches when all the sub-environments are at a terminal state. The sub-environemnt which are terminal before the rest of the sub-environemnts the sub-environment is frozen until the rest of the sub-environemnts are frozen. For better understanding of the multi-cartpole environment and its implementation refer to this :ref:`example implementation <Howto RL 5>`. Running this example implementation of multi-cartpole environment will produce visualisation as in the image below
 
 .. image:: Images/multicartpole_run.gif
-  :width: 80%
+  :width: 900px
   :align: center
 
 
@@ -122,12 +122,12 @@ For multicartpole environment, an overall reward is awarded to the multi-agent. 
   
 Change Log
 ==========
-    
-+--------------------+---------------------------------------------+
-| Version            | Changes                                     |
-+====================+=============================================+
-| 0.0.0              | Description of the change                   |
-+--------------------+---------------------------------------------+
+
++--------------------+-----------------------------------------------------------------------------------+
+| Version            | Changes                                                                           |
++====================+===================================================================================+
+| 1.2.6              | This is the first version for the multicartpole environment release               |
++--------------------+-----------------------------------------------------------------------------------+
 
 
         
@@ -139,9 +139,3 @@ Refer these documents for further understanding of MLPro Multicartpole environme
 + :ref:`How to run a multi-cartpole environment with multi-agent <Howto RL 4>`
 + :ref:`How to train a multi-cartpole environment with multi-agent <Howto RL 5>`
 
-If you apply this environment in your research or work, please kindly cite the following related paper:
-
-.. code-block:: bibtex
-
- @article{NoName2021
-  }
