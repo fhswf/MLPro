@@ -12,6 +12,7 @@ Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
     - `Pytorch <https://pypi.org/project/torch/>`_
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
   ..
     - `NumPy <https://pypi.org/project/numpy/>`_
   ..

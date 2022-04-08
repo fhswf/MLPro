@@ -1,4 +1,4 @@
-.. _Howto RL 3:
+.. _Howto RL 21:
 `Howto 21 - (RL) Train and Load Single Agent <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2021%20-%20(RL)%20Train%20and%20Load%20Single%20Agent.py>`_
 ================
 Ver. 1.0.0 (2022-01-28)
@@ -11,6 +11,7 @@ Prerequisites
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
+    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
   ..
     - `NumPy <https://pypi.org/project/numpy/>`_
   ..

@@ -14,6 +14,7 @@ Please install the following packages to run this examples properly:
     - `Pytorch <https://pypi.org/project/torch/>`_
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
+    - `Panda <https://pypi.org/project/panda/>`_
   ..
     - `NumPy <https://pypi.org/project/numpy/>`_
   ..
