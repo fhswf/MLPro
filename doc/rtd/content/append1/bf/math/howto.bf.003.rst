@@ -29,8 +29,6 @@ Prerequisites
 
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
-    - `NumPy <https://pypi.org/project/numpy/>`_
-
 Results
 `````````````````
 .. code-block:: bash
