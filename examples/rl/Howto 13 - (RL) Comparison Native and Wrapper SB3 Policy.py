@@ -13,12 +13,14 @@
 ## -- 2021-12-23  1.0.4     MRD      Small change on custom _reset Wrapper
 ## -- 2021-12-24  1.0.5     DA       Replaced separtor in log line by Training.C_LOG_SEPARATOR
 ## -- 2022-02-27  1.0.6     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-03-21  1.0.7     WB       Rewrite module description
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2022-02-27)
+Ver. 1.0.7 (2022-03-21)
 
-This module shows how to train with SB3 Wrapper for On-Policy Algorithm
+This module compares the native and wrapped implementation of the SB3 Policy on an
+environment.
 """
 
 import gym
