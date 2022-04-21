@@ -47,11 +47,6 @@ The installation steps are as follow:
                 
             echo "source MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/devel/setup.bash" >> ~/.bashrc
             source ~/.bashrc
-    
-    7. Change the ros_ws_abspath parameter in:
-        .. code-block:: bash
-            
-            MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/src/reinforcement_learning/ur5_lab/config/ur5_simple_task_param.yaml
                 
     
 General Information

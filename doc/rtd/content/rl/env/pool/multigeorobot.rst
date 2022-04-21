@@ -38,10 +38,6 @@ The installation steps are as follow:
         
             echo "source MLPro/src/mlpro/rl/pool/envs/multigeorobot/devel/setup.bash" >> ~/.bashrc
             source ~/.bashrc
-    7. Change the ros_ws_abspath parameter in:
-        .. code-block:: bash
-        
-            MLPro/src/mlpro/rl/pool/envs/multigeorobot/src/multi_geo_robot_rl/multi_geo_robot_training/config/multi_geo_robot.yaml
             
   
 General Information
