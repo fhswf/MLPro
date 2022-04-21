@@ -17,6 +17,7 @@ This module provides an environment for multi geometry robot.
 """
 
 from mlpro.rl.models import *
+import mlpro
 import rospy
 import subprocess
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
@@ -41,6 +42,8 @@ class MultiGeo(WrEnvGYM2MLPro):
                                rel_path_from_package_to_file="config",
                                yaml_file_name="multi_geo_robot.yaml")  
 
+        ros_ws_path = mlpro.rl.pool.envs.multigeorobot.__file__.replace("/__init__.py", "")
+        rospy.set_param('ros_ws_path', ros_ws_path)
         # Init OpenAI_ROS ENV
         task_and_robot_environment_name = rospy.get_param(
         '/multi_geo_robot/task_and_robot_environment_name')

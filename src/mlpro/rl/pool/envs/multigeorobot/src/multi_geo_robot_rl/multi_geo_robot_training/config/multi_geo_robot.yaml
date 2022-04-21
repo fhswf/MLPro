@@ -1,5 +1,4 @@
 multi_geo_robot:
-  ros_ws_abspath: "/home/at-lab/Documents/mlpro/MLPro/src/mlpro/rl/pool/envs/multigeorobot"
   robot_type: "3D"
   arm_num: 3
   arm_joint_seq: [[1,1,0],[0,1,0],[0,1,0]]

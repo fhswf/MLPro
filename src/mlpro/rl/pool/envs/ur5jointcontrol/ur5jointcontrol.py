@@ -27,6 +27,7 @@ based on the Gym-based environment 'UR5RandomTargetTask-v0'.
 
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+import mlpro
 import numpy as np
 import rospy
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
@@ -58,6 +59,9 @@ class UR5JointControl(WrEnvGYM2MLPro):
         LoadYamlFileParamsTest(rospackage_name="ur5_lab",
                                rel_path_from_package_to_file="config",
                                yaml_file_name="ur5_simple_task_param.yaml")
+
+        ros_ws_path = mlpro.rl.pool.envs.ur5jointcontrol.__file__.replace("/__init__.py", "")
+        rospy.set_param('ros_ws_path', ros_ws_path)
 
         # Init OpenAI_ROS ENV
         task_and_robot_environment_name = rospy.get_param('/ur5_lab/task_and_robot_environment_name')

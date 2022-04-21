@@ -25,7 +25,7 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
 
         # This is the path where the simulation files are
 
-        ros_ws_abspath = rospy.get_param("/ur5_lab/ros_ws_abspath", None)
+        ros_ws_abspath = rospy.get_param("ros_ws_path", None)
         assert ros_ws_abspath is not None, "You forgot to set ros_ws_abspath in your yaml file of your main RL script. Set ros_ws_abspath: \'YOUR/SIM_WS/PATH\'"
         assert os.path.exists(ros_ws_abspath), "The Simulation ROS Workspace path " + ros_ws_abspath + \
                                                " DOESNT exist, execute: mkdir -p " + ros_ws_abspath + \
