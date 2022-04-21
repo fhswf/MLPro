@@ -37,10 +37,12 @@ class ScenarioMultiGeoPPO(RLScenario):
             n_steps=20,
             env=None,
             _init_setup_model=False,
-            device="cpu")
+            device="cpu",
+            seed=1)
 
         policy_wrapped = WrPolicySB32MLPro(
             p_sb3_policy=policy_sb3,
+            p_cycle_limit=self._cycle_limit,
             p_observation_space=self._env.get_state_space(),
             p_action_space=self._env.get_action_space(),
             p_ada=p_ada,
@@ -67,7 +69,7 @@ training = RLTraining(
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_visualize=True,
+    p_visualize=False,
     p_path=str(Path.home()),
     p_logging=Log.C_LOG_ALL)
 
