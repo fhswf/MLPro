@@ -33,7 +33,7 @@ Please install the following packages to run this examples properly:
     
 Results
 `````````````````
-.. image:: images/DoublePendulum.png
+.. image:: images/double_pendulum.gif
 
 The Double Pendulum environment window should appear. Afterwards, the training should run 
 for a few episodes before terminating and printing the result. The training log
