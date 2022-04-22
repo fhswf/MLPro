@@ -22,6 +22,7 @@
 ## -- 2022-02-21  1.0.8     WB       Edit the formulation the of _compute_reward method
 ## -- 2022-03-02  1.0.9     WB       Include Torque and Change of state in _compute_reward method
 ## -- 2022-04-08  1.1.0     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-04-19  1.1.1     YI       Editing the State Space and Normalization of State Values
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -115,17 +116,7 @@ class DoublePendulum(Environment):
         self.th1dot = 0
         self.th2dot = 0
         
-        if init_angles=='up':
-            self.th1 = 180
-            self.th2 = 180
-        elif init_angles=='down':
-            self.th1 = 0
-            self.th2 = 0
-        elif init_angles=='random':
-            self.th1 = np.random.rand(1)[0]*180
-            self.th2 = np.random.rand(1)[0]*180
-        else:
-            raise NotImplementedError("init_angles value must be up, down, or random")
+
         
         self.history_x = deque(maxlen=history_length)
         self.history_y = deque(maxlen=history_length)
@@ -159,13 +150,17 @@ class DoublePendulum(Environment):
         action_space = ESpace()
 
         state_space.add_dim(Dimension('theta 1', 'th1', 'Angle of Pendulum 1', '', 'degrees',
-                                      '\textdegrees', [-np.pi, np.pi]))
+                                      '\textdegrees', [-np.pi, np.pi]))      
         state_space.add_dim(Dimension('omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
                                       'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
+        state_space.add_dim(Dimension('acc 1', 'a1', 'Acceleration of Pendulum 1', '',
+                                      'meters/second^2', '\text/s^2', [-50, 50]))      
         state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'degrees',
                                       '\textdegrees', [-np.pi, np.pi]))
         state_space.add_dim(Dimension('omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
                                       'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
+        state_space.add_dim(Dimension('acc 2', 'a2', 'Acceleration of Pendulum 2', '',
+                                      'meters/second^2', '\text/s^2', [-50,50]))
 
         action_space.add_dim(Dimension('torque 1', 'tau1', 'Applied Torque of Motor 1', '',
                                        'Nm', 'Nm', [-self.max_torque, self.max_torque]))
@@ -229,6 +224,20 @@ class DoublePendulum(Environment):
         return ((x + np.pi) % (2 * np.pi)) - np.pi
 
     ## -------------------------------------------------------------------------------------------------
+    def angular_velocity_normalize(x):
+        """
+        This method is called to ensure a normalized angular velocity.
+
+        Returns
+        -------
+        angular velocity : float
+            Normalized angular velocity.
+
+        """
+
+        return (x/np.linalg.norm(x))
+ 
+    ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
         """
         This method is used to reset the environment.
@@ -249,6 +258,18 @@ class DoublePendulum(Environment):
         self.history_y.clear()
         self.action_cw = False
         self.alpha = 0
+        if init_angles=='up':
+            self.th1 = 180
+            self.th2 = 180
+        elif init_angles=='down':
+            self.th1 = 0
+            self.th2 = 0
+        elif init_angles=='random':
+            self.th1 = np.random.rand(1)[0]*180
+            self.th2 = np.random.rand(1)[0]*180
+        else:
+            raise NotImplementedError("init_angles value must be up, down, or random")
+        
 
     ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
