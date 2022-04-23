@@ -66,6 +66,59 @@ class RandomActionGenerator(Policy):
         self.log(self.C_LOG_TYPE_I, 'No adaptation required')
         return False
 
+class MyAgent(Agent):
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        """
+        Default adaptation implementation of a single agent.
+
+        Parameters
+        ----------
+        p_args[0] : State       
+            State object.
+        p_args[1] : Reward     
+            Reward object.
+ 
+        Returns
+        -------
+        result : bool
+            True, if something has been adapted. False otherwise.
+
+        """
+
+        # 1 Check: Adaptation possible?
+        if self._previous_observation is None:
+            self.log(self.C_LOG_TYPE_I, 'Adaption: previous observation is None -> adaptivity skipped')
+            return False
+
+        # 2 Extract agent specific observation data from state
+        state = p_args[0]
+        reward = p_args[1]
+        action_n = p_args[2]
+        action_m = p_args[3]
+        observation = self._extract_observation(state)
+        adapted = False
+
+        # 3 Adaptation
+        if self._envmodel is None:
+            # 3.1 Model-free adaptation
+            adapted = self._policy.adapt(
+                SARSElement(self._previous_observation, self._previous_action, reward, observation))
+
+        else:
+            # 3.2 Model-based adaptation
+            adapted = self._envmodel.adapt(
+                MyOwnBufferElement(self._previous_observation, self._previous_action, action_n, action_m, reward, observation))
+
+            if self._envmodel.get_maturity() >= self._em_mat_thsld:
+                adapted = adapted or self._adapt_policy_by_model()
+
+        return adapted
+
+
+   
 # 2 Implement the random RL scenario
 class ScenarioDoublePendulum(RLScenario):
 
@@ -73,6 +126,8 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         self._env       = DoublePendulum(p_logging=True)
+        # which class should I use for the agent?
+        self._agent     = WrPolicySB32MLPro(p_name='Random Policy', p_ada=1, p_logging=False)
         state_space     = self._env.get_state_space()
         action_space    = self._env.get_action_space()
         
@@ -85,7 +140,6 @@ class ScenarioDoublePendulum(RLScenario):
                                  p_collect_training=False)
         
         
-        # Agent 1
         _name         = 'random_actions_agent'
         _ospace       = state_space.spawn([state_space.get_dim_ids()[0],state_space.get_dim_ids()[1]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[0]])
@@ -93,7 +147,7 @@ class ScenarioDoublePendulum(RLScenario):
         self._agent.add_agent(
             p_agent=MyAgent(
                 p_policy=_policy,
-                p_envmodel=MLPEnvModel(_ospace,_aspace),
+                p_envmodel=DoublePendulum(_ospace,_aspace),
                 p_em_mat_thsld=-1,
                 p_name=_name,
                 p_id=_id,
