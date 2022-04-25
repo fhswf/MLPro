@@ -224,18 +224,17 @@ class DoublePendulum(Environment):
         return ((x + np.pi) % (2 * np.pi)) - np.pi
 
     ## -------------------------------------------------------------------------------------------------
-    def angular_velocity_normalize(x):
+    def data_normalize(x):
         """
-        This method is called to ensure a normalized angular velocity.
+        This method is called to ensure a normalized angular velocity and acceleration.
 
         Returns
         -------
-        angular velocity : float
-            Normalized angular velocity.
+        acceleration or angular velocity: float
 
         """
 
-        return (x/np.linalg.norm(x))
+        return np.interp(x, (x.min(), x.max()), (-1, +1))
  
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
@@ -307,8 +306,11 @@ class DoublePendulum(Environment):
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act * self.t_step, self.t_step))
         state = self.y[-1]
         state[0] = DoublePendulum.angle_normalize(state[0])
-        state[2] = DoublePendulum.angle_normalize(state[2])
-        
+        state[3] = DoublePendulum.angle_normalize(state[3])
+        state[1] = DoublePendulum.data_normalize(state[1])
+        state[2] = DoublePendulum.data_normalize(state[2])
+        state[4] = DoublePendulum.data_normalize(state[4])
+        state[5] = DoublePendulum.data_normalize(state[5])
         self.action_cw = True if torque <= 0 else False
         state_ids = self._state.get_dim_ids()
         for i in range(len(state)):
