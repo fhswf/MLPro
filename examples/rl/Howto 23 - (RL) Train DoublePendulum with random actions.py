@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Apr 28 09:56:52 2022
+
+@author: Yehia Ibrahim
+"""
+
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
@@ -6,6 +13,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-04-23  0.0.0     YI       Creation
+## -- 2022-04-28  0.0.0     YI       Changing the Scenario and Debugging
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -122,41 +130,45 @@ class MyAgent(Agent):
 # 2 Implement the random RL scenario
 class ScenarioDoublePendulum(RLScenario):
 
+
     C_NAME      = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        self._env       = DoublePendulum(p_logging=True)
-        # which class should I use for the agent?
-        self._agent     = WrPolicySB32MLPro(p_name='Random Policy', p_ada=1, p_logging=False)
-        state_space     = self._env.get_state_space()
-        action_space    = self._env.get_action_space()
-        
-        mb_training_param = dict(p_cycle_limit=100,
-                                 p_cycles_per_epi_limit=100,
-                                 p_max_stagnations=0,
-                                 p_collect_states=False,
-                                 p_collect_actions=False,
-                                 p_collect_rewards=False,
-                                 p_collect_training=False)
-        
-        
-        _name         = 'random_actions_agent'
-        _ospace       = state_space.spawn([state_space.get_dim_ids()[0],state_space.get_dim_ids()[1]])
-        _aspace       = action_space.spawn([action_space.get_dim_ids()[0]])
-        _policy       = RandomActionGenerator(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
-        self._agent.add_agent(
-            p_agent=MyAgent(
-                p_policy=_policy,
-                p_envmodel=DoublePendulum(_ospace,_aspace),
-                p_em_mat_thsld=-1,
-                p_name=_name,
-                p_id=_id,
-                p_ada=True,
-                p_logging=True,
-                **mb_training_param),
-            p_weight=1.0
-            )
-        return self._agent
+        # 1 Setup environment
+        self._env   = DoublePendulum(p_logging=True, init_angles='up', max_torque=50)
+        _ospace     = self._env.get_state_space()
+        _aspace     = self._env.get_action_space()
+        policy_kwargs = dict(activation_fn=torch.nn.Tanh,
+                     net_arch=[dict(pi=[128, 128], vf=[128, 128])])
+
+        policy_random = RandomActionGenerator(p_observation_space=_ospace, 
+                                              p_action_space=_aspace,
+                                              p_buffer_size=1,
+                                              p_ada=1,
+                                              p_logging=False)
+#   policy="MlpPolicy",
+#   n_steps=100, 
+#   env=None,
+#   _init_setup_model=False,
+#   policy_kwargs=policy_kwargs,
+#   seed=1)
+
+        policy_wrapped = MyAgent(
+                p_policy=policy_random,
+                p_cycle_limit=self._cycle_limit, 
+                p_observation_space=self._env.get_state_space(),
+                p_action_space=self._env.get_action_space(),
+                p_ada=p_ada,
+                p_logging=p_logging)
+
+        # 2 Setup standard single-agent with own policy
+        return Agent(
+            p_policy=policy_wrapped,  
+            p_envmodel=None,
+            p_name='smith',
+            p_ada=p_ada,
+            p_logging=p_logging
+        )
         
 
 # 2 Create scenario and start training
