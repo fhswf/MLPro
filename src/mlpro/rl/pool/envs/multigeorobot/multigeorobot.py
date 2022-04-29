@@ -8,10 +8,11 @@
 ## -- 2021-12-19  0.0.0     MRD      Creation
 ## -- 2021-12-19  1.0.0     MRD      Released first version
 ## -- 2022-02-25  1.0.1     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-04-29  1.0.2     MRD      Wrap the environment with WrEnvGYM2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-02-25)
+Ver. 1.0.2 (2022-04-29)
 
 This module provides an environment for multi geometry robot.
 """
