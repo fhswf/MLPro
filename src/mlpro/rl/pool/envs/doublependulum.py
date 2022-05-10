@@ -23,6 +23,7 @@
 ## -- 2022-03-02  1.0.9     WB       Include Torque and Change of state in _compute_reward method
 ## -- 2022-04-08  1.1.0     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-04-19  1.1.1     YI       Editing the State Space and Normalization of State Values
+## -- 2022-05-10  1.1.1     YI       Debugging
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -116,6 +117,17 @@ class DoublePendulum(Environment):
         self.th1dot = 0
         self.th2dot = 0
         
+        if init_angles=='up':
+            self.th1 = 180
+            self.th2 = 180
+        elif init_angles=='down':
+            self.th1 = 0
+            self.th2 = 0
+        elif init_angles=='random':
+            self.th1 = np.random.rand(1)[0]*180
+            self.th2 = np.random.rand(1)[0]*180
+        else:
+            raise NotImplementedError("init_angles value must be up, down, or random")        
 
         
         self.history_x = deque(maxlen=history_length)
@@ -257,17 +269,6 @@ class DoublePendulum(Environment):
         self.history_y.clear()
         self.action_cw = False
         self.alpha = 0
-        if init_angles=='up':
-            self.th1 = 180
-            self.th2 = 180
-        elif init_angles=='down':
-            self.th1 = 0
-            self.th2 = 0
-        elif init_angles=='random':
-            self.th1 = np.random.rand(1)[0]*180
-            self.th2 = np.random.rand(1)[0]*180
-        else:
-            raise NotImplementedError("init_angles value must be up, down, or random")
         
 
     ## -------------------------------------------------------------------------------------------------
