@@ -154,13 +154,13 @@ class DoublePendulum(Environment):
         state_space.add_dim(Dimension('omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
                                       'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
         state_space.add_dim(Dimension('acc 1', 'a1', 'Acceleration of Pendulum 1', '',
-                                      'meters/second^2', '\text/s^2', [-50, 50]))      
+                                      'meters/second^2', '\text/s^2', [-np.inf, np.inf]))      
         state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'degrees',
                                       '\textdegrees', [-np.pi, np.pi]))
         state_space.add_dim(Dimension('omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
                                       'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
         state_space.add_dim(Dimension('acc 2', 'a2', 'Acceleration of Pendulum 2', '',
-                                      'meters/second^2', '\text/s^2', [-50,50]))
+                                      'meters/second^2', '\text/s^2', [-np.inf,np.inf]))
 
         action_space.add_dim(Dimension('torque 1', 'tau1', 'Applied Torque of Motor 1', '',
                                        'Nm', 'Nm', [-self.max_torque, self.max_torque]))

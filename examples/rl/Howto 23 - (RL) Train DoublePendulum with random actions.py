@@ -32,7 +32,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random
 import os
-from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 
 
 
@@ -79,51 +78,8 @@ class MyAgent(Agent):
     
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
-        """
-        Default adaptation implementation of a single agent.
 
-        Parameters
-        ----------
-        p_args[0] : State       
-            State object.
-        p_args[1] : Reward     
-            Reward object.
- 
-        Returns
-        -------
-        result : bool
-            True, if something has been adapted. False otherwise.
-
-        """
-
-        # 1 Check: Adaptation possible?
-        if self._previous_observation is None:
-            self.log(self.C_LOG_TYPE_I, 'Adaption: previous observation is None -> adaptivity skipped')
-            return False
-
-        # 2 Extract agent specific observation data from state
-        state = p_args[0]
-        reward = p_args[1]
-        action_n = p_args[2]
-        action_m = p_args[3]
-        observation = self._extract_observation(state)
-        adapted = False
-
-        # 3 Adaptation
-        if self._envmodel is None:
-            # 3.1 Model-free adaptation
-            adapted = self._policy.adapt(
-                SARSElement(self._previous_observation, self._previous_action, reward, observation))
-
-        else:
-            # 3.2 Model-based adaptation
-            adapted = self._envmodel.adapt(
-                MyOwnBufferElement(self._previous_observation, self._previous_action, action_n, action_m, reward, observation))
-
-            if self._envmodel.get_maturity() >= self._em_mat_thsld:
-                adapted = adapted or self._adapt_policy_by_model()
-
-        return adapted
+        return False
 
 
    
@@ -136,22 +92,14 @@ class ScenarioDoublePendulum(RLScenario):
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
         self._env   = DoublePendulum(p_logging=True, init_angles='up', max_torque=50)
-        _ospace     = self._env.get_state_space()
-        _aspace     = self._env.get_action_space()
         policy_kwargs = dict(activation_fn=torch.nn.Tanh,
                      net_arch=[dict(pi=[128, 128], vf=[128, 128])])
 
-        policy_random = RandomActionGenerator(p_observation_space=_ospace, 
-                                              p_action_space=_aspace,
+        policy_random = RandomActionGenerator(p_observation_space=self._env.get_state_space(), 
+                                              p_action_space=self._env.get_action_space(),
                                               p_buffer_size=1,
                                               p_ada=1,
                                               p_logging=False)
-#   policy="MlpPolicy",
-#   n_steps=100, 
-#   env=None,
-#   _init_setup_model=False,
-#   policy_kwargs=policy_kwargs,
-#   seed=1)
 
         policy_wrapped = MyAgent(
                 p_policy=policy_random,
@@ -171,11 +119,11 @@ class ScenarioDoublePendulum(RLScenario):
         )
         
 
-# 2 Create scenario and start training
+# 3 Create scenario and start training
 
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit         = 0
+    cycle_limit         = 100
     adaptation_limit    = 6000
     stagnation_limit    = 0
     eval_frequency      = 5
@@ -186,7 +134,7 @@ if __name__ == "__main__":
     plotting        = True
  
 
-# 3 Train agent in scenario 
+# 4 Train agent in scenario 
 now             = datetime.now()
 
 training        = RLTraining(
@@ -206,7 +154,7 @@ training.run()
 
 
 
-# 4 Create Plotting Class
+# 5 Create Plotting Class
 class MyDataPlotting(DataPlotting):
     def get_plots(self):
         """
@@ -244,7 +192,7 @@ class MyDataPlotting(DataPlotting):
                     plt.close(fig)
 
 
-# 5 Plotting 1 MLpro    
+#  Plotting 1 MLpro    
 data_printing   = {"Cycle":        [False],
                     "Day":          [False],
                     "Second":       [False],
