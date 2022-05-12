@@ -75,7 +75,6 @@ class RandomActionGenerator(Policy):
 
 class MyAgent(Agent):
     
-    
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
 
@@ -101,17 +100,11 @@ class ScenarioDoublePendulum(RLScenario):
                                               p_ada=1,
                                               p_logging=False)
 
-        policy_wrapped = MyAgent(
-                p_policy=policy_random,
-                p_cycle_limit=self._cycle_limit, 
-                p_observation_space=self._env.get_state_space(),
-                p_action_space=self._env.get_action_space(),
-                p_ada=p_ada,
-                p_logging=p_logging)
+
 
         # 2 Setup standard single-agent with own policy
         return Agent(
-            p_policy=policy_wrapped,  
+            p_policy=policy_random,  
             p_envmodel=None,
             p_name='smith',
             p_ada=p_ada,
@@ -123,8 +116,8 @@ class ScenarioDoublePendulum(RLScenario):
 
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit         = 100
-    adaptation_limit    = 6000
+    cycle_limit         = 10
+    adaptation_limit    = 10
     stagnation_limit    = 0
     eval_frequency      = 5
     eval_grp_size       = 5
