@@ -114,6 +114,9 @@ class DoublePendulum(Environment):
         self.M = m1+m2
         self.g = g
         
+        self.a1=0
+        self.a2=0
+        
         self.th1dot = 0
         self.th2dot = 0
         
@@ -262,8 +265,8 @@ class DoublePendulum(Environment):
         state_ids = self._state.get_dim_ids()
         self._state.set_value(state_ids[0], np.radians(self.th1))
         self._state.set_value(state_ids[1], np.radians(self.th1dot))
-        self._state.set_value(state_ids[2], np.radians(self.th2))
-        self._state.set_value(state_ids[3], np.radians(self.th2dot))
+        self._state.set_value(state_ids[3], np.radians(self.th2))
+        self._state.set_value(state_ids[4], np.radians(self.th2dot))
 
         self.history_x.clear()
         self.history_y.clear()
@@ -290,7 +293,7 @@ class DoublePendulum(Environment):
 
         """
         state = p_state.get_values()
-        th1, th1dot, th2, th2dot = state
+        th1, th1dot,a1, th2, th2dot,a2 = state
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
         
@@ -418,8 +421,8 @@ class DoublePendulum(Environment):
         outer_pole_costs = (th2_distance_costs * th2_count / len(self.y)) - th2_speed_costs - (th2_acceleration_costs ** 0.5)
         outer_pole_weight = 0.5 * (self.l2/2)*self.m2
         
-        change_costs = ((np.linalg.norm(target[::2] - np.array(old_state)[::2])*inner_pole_weight) - 
-                        (np.linalg.norm(target[::2] - np.array(state)[::2])*outer_pole_weight))
+        change_costs = ((np.linalg.norm(target[::2] - np.array(old_state)[::3])*(inner_pole_weight)) - 
+                        (np.linalg.norm(target[::2] - np.array(state)[::3])*(outer_pole_weight)))
         
         reward.set_overall_reward((inner_pole_costs * inner_pole_weight) + (outer_pole_costs * outer_pole_weight) )
                                   # - (self.alpha * np.pi/2) + (change_costs))
