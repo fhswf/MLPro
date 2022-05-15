@@ -24,6 +24,7 @@
 ## -- 2022-04-08  1.1.0     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-04-19  1.1.1     YI       Editing the State Space and Normalization of State Values
 ## -- 2022-05-10  1.1.1     YI       Debugging
+## -- 2022-05-14  1.1.1     YI       Scalling manually
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -248,8 +249,9 @@ class DoublePendulum(Environment):
         acceleration or angular velocity: float
 
         """
-
-        return np.interp(x, (x.min(), x.max()), (-1, +1))
+        # scalling manually
+        x = (2*((x-x.min())/(x.min()-x.max())))-1
+        return x
  
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
@@ -265,9 +267,11 @@ class DoublePendulum(Environment):
         state_ids = self._state.get_dim_ids()
         self._state.set_value(state_ids[0], np.radians(self.th1))
         self._state.set_value(state_ids[1], np.radians(self.th1dot))
+        self._state.set_value(state_ids[2], np.radians(self.a1))
         self._state.set_value(state_ids[3], np.radians(self.th2))
         self._state.set_value(state_ids[4], np.radians(self.th2dot))
-
+        self._state.set_value(state_ids[5], np.radians(self.a2))
+        
         self.history_x.clear()
         self.history_y.clear()
         self.action_cw = False

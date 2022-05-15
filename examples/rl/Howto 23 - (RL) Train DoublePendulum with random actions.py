@@ -116,7 +116,7 @@ class ScenarioDoublePendulum(RLScenario):
 
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit         = 100
+    cycle_limit         = 0
     adaptation_limit    = 10000
     stagnation_limit    = 0
     eval_frequency      = 5
