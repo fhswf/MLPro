@@ -1,4 +1,4 @@
-2.4 User Interaction
+2.5 User Interaction
 =========================
 
 MLPro-BF provides a framework called SciUI (Scientific User Interface) for creating and running 

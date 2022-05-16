@@ -1,4 +1,4 @@
-2.3 Machine Learning
+2.4 Machine Learning
 =========================
 
 This module includes hyperparameter setting, hyperparameter tuning, adaptive, and buffer
