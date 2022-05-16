@@ -1,19 +1,13 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Apr 28 09:56:52 2022
-
-@author: Yehia Ibrahim
-"""
-
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Train DoublePendulum with Random Actions Agent
+## -- Module  : Howto 23 - (RL) Train DoublePendulum with random actions.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-04-23  0.0.0     YI       Creation
 ## -- 2022-04-28  0.0.0     YI       Changing the Scenario and Debugging
+## -- 2022-05-16  1.0.0     SY       Code cleaning, remove unnecessary, release the first version
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -59,13 +53,6 @@ class RandomActionGenerator(Policy):
     def compute_action(self, p_state: State) -> Action:
         self.action_current[0] = random.uniform(0,1)
         
-        _id = self._action_space.get_dim_ids()[0]
-        if self._action_space.get_dim(_id).get_base_set() == "Z":
-            if self.action_current[0] >= 0.5:
-                self.action_current[0] = 1
-            else:
-                self.action_current[0] = 0
-                
         return Action(self._id, self._action_space, self.action_current)
 
 ## -------------------------------------------------------------------------------------------------
@@ -73,21 +60,17 @@ class RandomActionGenerator(Policy):
         self.log(self.C_LOG_TYPE_I, 'No adaptation required')
         return False
 
-class MyAgent(Agent):
-    
+
+
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+## -------------------------------------------------------------------------------------------------
 
-        return False
-
-
-   
 # 2 Implement the random RL scenario
 class ScenarioDoublePendulum(RLScenario):
 
-
     C_NAME      = 'Matrix'
 
+## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
         self._env   = DoublePendulum(p_logging=True, init_angles='up', max_torque=50)
@@ -110,7 +93,11 @@ class ScenarioDoublePendulum(RLScenario):
             p_ada=p_ada,
             p_logging=p_logging
         )
-        
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 
 # 3 Create scenario and start training
 
@@ -146,6 +133,9 @@ training        = RLTraining(
 training.run()
 
 
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 
 # 5 Create Plotting Class
 class MyDataPlotting(DataPlotting):

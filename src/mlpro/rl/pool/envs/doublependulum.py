@@ -23,12 +23,13 @@
 ## -- 2022-03-02  1.0.9     WB       Include Torque and Change of state in _compute_reward method
 ## -- 2022-04-08  1.1.0     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-04-19  1.1.1     YI       Editing the State Space and Normalization of State Values
-## -- 2022-05-10  1.1.1     YI       Debugging
-## -- 2022-05-14  1.1.1     YI       Scalling manually
+## -- 2022-05-10  1.1.2     YI       Debugging
+## -- 2022-05-14  1.1.3     YI       Scalling manually
+## -- 2022-05-16  1.1.4     SY       Code cleaning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-04-08)
+Ver. 1.1.4 (2022-05-16)
 
 This module provides an RL environment of double pendulum.
 """
@@ -115,8 +116,8 @@ class DoublePendulum(Environment):
         self.M = m1+m2
         self.g = g
         
-        self.a1=0
-        self.a2=0
+        self.a1 = 0
+        self.a2 = 0
         
         self.th1dot = 0
         self.th2dot = 0
@@ -166,7 +167,7 @@ class DoublePendulum(Environment):
         action_space = ESpace()
 
         state_space.add_dim(Dimension('theta 1', 'th1', 'Angle of Pendulum 1', '', 'degrees',
-                                      '\textdegrees', [-np.pi, np.pi]))      
+                                      '\textdegrees', [-np.pi, np.pi]))
         state_space.add_dim(Dimension('omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
                                       'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
         state_space.add_dim(Dimension('acc 1', 'a1', 'Acceleration of Pendulum 1', '',
@@ -297,7 +298,7 @@ class DoublePendulum(Environment):
 
         """
         state = p_state.get_values()
-        th1, th1dot,a1, th2, th2dot,a2 = state
+        th1, th1dot, a1, th2, th2dot, a2 = state
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
         
