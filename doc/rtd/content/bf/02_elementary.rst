@@ -1,4 +1,4 @@
-2.1 Elementary Functions
+2.2 Elementary Functions
 =============================
 
 This section provides explanation on various classes with elementary 

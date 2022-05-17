@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-01-20  0.0.0     MRD      Creation
 ## -- 2022-01-20  1.0.0     MRD      Released first version
+## -- 2022-05-17  1.0.1     DA       Just a litte comment maintenance
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-01-20)
+Ver. 1.0.1 (2022-05-17)
 
 This module shows how to train with SB3 Wrapper and stagnation detection
 """
@@ -23,6 +24,7 @@ from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 
 
+
 # 1 Implement your own RL scenario
 class MyScenario(RLScenario):
     C_NAME = 'Matrix'
@@ -32,8 +34,7 @@ class MyScenario(RLScenario):
         gym_env = gym.make('CartPole-v1')
         self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
 
-        # 2 Instantiate Policy From SB3
-        # PPO
+        # 2 Instantiate PPO Policy from SB3
         policy_sb3 = PPO(
             policy="MlpPolicy",
             n_steps=5,
@@ -61,10 +62,11 @@ class MyScenario(RLScenario):
         )
 
 
+
 # 2 Create scenario and start training
 
 if __name__ == "__main__":
-    # 3.1 Parameters for demo mode
+    # 2.1 Parameters for demo mode
     cycle_limit = 5000
     adaptation_limit = 50
     stagnation_limit = 5
@@ -75,7 +77,7 @@ if __name__ == "__main__":
     path = str(Path.home())
 
 else:
-    # 3.2 Parameters for internal unit test
+    # 2.2 Parameters for internal unit test
     cycle_limit = 50
     adaptation_limit = 5
     stagnation_limit = 5
