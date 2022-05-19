@@ -9,10 +9,11 @@
 ## -- 2022-01-28  1.0.0     MRD      Released first version
 ## -- 2022-05-19  1.0.1     MRD      Re-use the agent not for the re-training process
 ## --                                Remove commenting and numbering
+## -- 2022-05-19  1.0.2     MRD      Re-add the commneting and reformat the numbering in comment
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-05-19)
+Ver. 1.0.2 (2022-05-19)
 
 This module shows how to train a single agent and load it again to do some extra cycles
 """
@@ -24,13 +25,16 @@ from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 
+# 1 Implement your own RL scenario
 class MyScenario(RLScenario):
     C_NAME = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
+        # 1.1 Setup environment
         gym_env = gym.make('CartPole-v1')
         self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
 
+        # 1.2 Setup Policy From SB3
         policy_sb3 = PPO(
             policy="MlpPolicy",
             n_steps=5,
@@ -39,6 +43,7 @@ class MyScenario(RLScenario):
             device="cpu",
             seed=1)
 
+        # 1.3 Wrap the policy
         policy_wrapped = WrPolicySB32MLPro(
             p_sb3_policy=policy_sb3,
             p_cycle_limit=self._cycle_limit,
@@ -47,6 +52,7 @@ class MyScenario(RLScenario):
             p_ada=p_ada,
             p_logging=p_logging)
 
+        # 1.4 Setup standard single-agent with own policy
         return Agent(
             p_policy=policy_wrapped,
             p_envmodel=None,
@@ -56,6 +62,7 @@ class MyScenario(RLScenario):
         )
 
 if __name__ == "__main__":
+    # Parameters for demo mode
     cycle_limit = 5000
     adaptation_limit = 50
     stagnation_limit = 5
@@ -66,6 +73,7 @@ if __name__ == "__main__":
     path = str(Path.home())
 
 else:
+    # Parameters for internal unit test
     cycle_limit = 50
     adaptation_limit = 5
     stagnation_limit = 5
@@ -75,6 +83,7 @@ else:
     visualize = False
     path = None
 
+# 2 Create scenario and start training
 training = RLTraining(
     p_scenario_cls=MyScenario,
     p_cycle_limit=cycle_limit,
@@ -86,23 +95,35 @@ training = RLTraining(
     p_visualize=visualize,
     p_logging=logging)
 
+# 3 Create scenario and start training
 training.run()
+
+# 4 Save the training path for loading the agent model file
 training_path = training._root_path
 
+# We start from the beginning, in this case we load an existing model
+# 5 Implement your own RL scenario with an existing model
 class MyNdScenario(RLScenario):
     C_NAME = 'Matrix2'
 
     def _setup(self, p_mode, p_ada, p_logging):
+        # 5.1 Setup environment
         gym_env = gym.make('CartPole-v1')
         self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
 
+        # 5.2 In this example we use previous training from the same file
+        # To make easier, we retrieve the save path from the previous training
         return self.load(training_path, "trained model.pkl")
 
+# 6 Instatiate new scenario
 scenario = MyNdScenario(p_mode=Mode.C_MODE_SIM, 
                         p_ada=False,
                         p_cycle_limit=cycle_limit,
                         p_visualize=visualize,
                         p_logging=logging)
 
-scenario.reset()      
+# 7 Reset Scenario
+scenario.reset()  
+
+# 8 Run Scenario
 scenario.run()
