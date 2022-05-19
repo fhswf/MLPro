@@ -12,6 +12,7 @@
 ## -- 2021-10-06  1.0.2     DA       Adjustments after changings on rl models
 ## -- 2021-11-15  1.1.0     DA       Refactoring 
 ## -- 2022-02-25  1.1.1     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-05-19  1.1.2     SY       Remove MyPolicy and add RandomGenerator
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -27,43 +28,13 @@ from mlpro.gt.models import *
 from mlpro.gt.pool.boards.multicartpole import MultiCartPolePGT
 import random
 import numpy as np
+from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
 
 
 
 
-# 1 Implement your own agent policy
-class MyPolicy (Policy):
-
-    C_NAME      = 'MyPolicy'
-
-    def set_random_seed(self, p_seed=None):
-        random.seed(p_seed)
-
-
-    def compute_action(self, p_state: State) -> Action:
-        # 1 Create a numpy array for your action values 
-        my_action_values = np.zeros(self._action_space.get_num_dim())
-
-        # 2 Computing action values is up to you...
-        for d in range(self._action_space.get_num_dim()):
-            my_action_values[d] = random.random() 
-
-        # 3 Return an action object with your values
-        return Action(self._id, self._action_space, my_action_values)
-
-
-    def _adapt(self, *p_args) -> bool:
-        # 1 Adapting the internal policy is up to you...
-        self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
-
-        # 2 Only return True if something has been adapted...
-        return False
-
-
-
-
-# 2 Implement your own game
+# 1 Implement your own game
 class MyGame (Game):
 
     C_NAME      = 'Matrix'
@@ -88,11 +59,12 @@ class MyGame (Game):
         as_ids = self._env.get_action_space().get_dim_ids()
         multi_player.add_player(
             p_player=Player(
-                p_policy=MyPolicy(
+                p_policy=RandomGenerator(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[0],ss_ids[1],ss_ids[2],ss_ids[3]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[0]]),
                     p_ada=True,
-                    p_logging=p_logging
+                    p_logging=p_logging,
+                    p_seed=0
                 ),
                 p_name='Neo',
                 p_id=0,
@@ -106,11 +78,12 @@ class MyGame (Game):
         # 2.3 Add Single-Player #2 with own policy (controlling sub-environments #2,#3)
         multi_player.add_player(
             p_player=Player(
-                p_policy=MyPolicy(
+                p_policy=RandomGenerator(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[4],ss_ids[5],ss_ids[6],ss_ids[7],ss_ids[8],ss_ids[9],ss_ids[10],ss_ids[11]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[1],as_ids[2]]),
                     p_ada=True,
-                    p_logging=p_logging
+                    p_logging=p_logging,
+                    p_seed=1
                 ),
                 p_name='Trinity',
                 p_id=1,

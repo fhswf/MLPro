@@ -61,7 +61,7 @@ class RandomGenerator(Policy):
         if p_seed == None:
             raise ParamError('Please provide seeding parameter p_seed!')
         else:
-            self.set_random_seed(self.seed)
+            self.set_random_seed(p_seed)
 
 ## -------------------------------------------------------------------------------------------------
     def compute_action(self, p_state: State) -> Action:
