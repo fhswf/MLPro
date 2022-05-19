@@ -2,6 +2,15 @@ Release Notes
 ================
 
 
+Version 0.8.6
+---------------------
+
+Release Highlights
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Adding MANIFEST.in for including additional data package for UR5 ROS Environment
+
+
 Version 0.8.5
 ---------------------
 
