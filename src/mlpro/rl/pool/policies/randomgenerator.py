@@ -69,8 +69,18 @@ class RandomGenerator(Policy):
         my_action_values = np.zeros(self._action_space.get_num_dim())
 
         # 2 Generating random actions based on the dimension of ation space
+        ids = self._action_space.get_dim_ids()
         for d in range(self._action_space.get_num_dim()):
-            my_action_values[d] = random.random()
+            try:
+                base_set = self._action_space.get_dim(ids[d]).get_base_set()
+                upper_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[0]
+                lower_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[1]
+                if base_set == 'Z' and base_set == 'N':
+                    my_action_values[d] = random.randint(upper_boundaries, lower_boundaries)
+                elif base_set == 'R' or base_set == 'DO':
+                    my_action_values[d] = random.uniform(upper_boundaries, lower_boundaries)
+            except:
+                my_action_values[d] = random.random()
 
         # 3 Return an action object with the generated random values
         return Action(self._id, self._action_space, my_action_values)
