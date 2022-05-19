@@ -22,13 +22,14 @@ import numpy as np
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.rl.pool.policies.dummy import MyDummyPolicy
+from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
 ## Instructions
 # Please Include your own policy implementation class on the test list parameter
 
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("policy_cls", [MyDummyPolicy])
+@pytest.mark.parametrize("policy_cls", [MyDummyPolicy, RandomGenerator])
 def test_pool_policies(policy_cls):
     class MyScenario (RLScenario):
 
