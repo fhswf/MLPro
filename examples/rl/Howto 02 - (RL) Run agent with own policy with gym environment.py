@@ -15,11 +15,10 @@
 ## -- 2021-11-15  1.2.0     DA       Refactoring 
 ## -- 2021-11-16  1.2.1     DA       Added explicit scenario reset with constant seeding 
 ## -- 2021-12-03  1.2.2     DA       Refactoring 
-## -- 2022-05-19  1.2.3     SY       Remove MyPolicy and add RandomGenerator
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2022-05-19)
+Ver. 1.2.2 (2021-12-03)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 the fhswf_at_ml framework.
@@ -31,12 +30,42 @@ from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import gym
 import random
-from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
 
 
 
-# 1 Implement your own RL scenario
+# 1 Implement your own agent policy
+class MyPolicy (Policy):
+
+    C_NAME      = 'MyPolicy'
+
+    def set_random_seed(self, p_seed=None):
+        random.seed(p_seed)
+
+
+    def compute_action(self, p_state: State) -> Action:
+        # 1 Create a numpy array for your action values 
+        my_action_values = np.zeros(self._action_space.get_num_dim())
+
+        # 2 Computing action values is up to you...
+        for d in range(self._action_space.get_num_dim()):
+            my_action_values[d] = random.random() 
+
+        # 3 Return an action object with your values
+        return Action(self._id, self._action_space, my_action_values)
+
+
+    def _adapt(self, *p_args) -> bool:
+        # 1 Adapting the internal policy is up to you...
+        self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
+
+        # 2 Only return True if something has been adapted...
+        return False
+
+
+
+
+# 2 Implement your own RL scenario
 class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
@@ -47,12 +76,11 @@ class MyScenario (RLScenario):
         self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
         # 2 Setup standard single-agent with own policy
-        return Agent( p_policy=RandomGenerator(p_observation_space=self._env.get_state_space(),
-                                               p_action_space=self._env.get_action_space(),
-                                               p_buffer_size=1,
-                                               p_ada=p_ada,
-                                               p_logging=p_logging,
-                                               p_seed=0),    
+        return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),
+                                         p_action_space=self._env.get_action_space(),
+                                         p_buffer_size=1,
+                                         p_ada=p_ada,
+                                         p_logging=p_logging),    
                       p_envmodel=None,
                       p_name='Smith',
                       p_ada=p_ada,
@@ -61,22 +89,22 @@ class MyScenario (RLScenario):
 
 
 
-# 2 Create scenario and run some cycles
+# 3 Create scenario and run some cycles
 
 if __name__ == "__main__":
-    # 2.1 Parameters for demo mode
+    # 3.1 Parameters for demo mode
     cycle_limit = 100
     logging     = Log.C_LOG_ALL
     visualize   = True
   
 else:
-    # 2.2 Parameters for internal unit test
+    # 3.2 Parameters for internal unit test
     cycle_limit = 10
     logging     = Log.C_LOG_NOTHING
     visualize   = False
  
 
-# 2.3 Create your scenario and run some cycles
+# 3.3 Create your scenario and run some cycles
 myscenario  = MyScenario(
         p_mode=Mode.C_MODE_SIM,
         p_ada=True,
