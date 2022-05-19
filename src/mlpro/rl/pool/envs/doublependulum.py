@@ -26,6 +26,7 @@
 ## -- 2022-05-10  1.1.2     YI       Debugging
 ## -- 2022-05-14  1.1.3     YI       Scalling manually
 ## -- 2022-05-16  1.1.4     SY       Code cleaning
+## -- 2022-05-19  1.1.5     YI       Editing the reward function
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -227,21 +228,7 @@ class DoublePendulum(Environment):
         return dydx
 
     ## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def angle_normalize(x):
-        """
-        This method is called to ensure a normalized angle in radians.
-
-        Returns
-        -------
-        angle : float
-            Normalized angle.
-
-        """
-        return ((x + np.pi) % (2 * np.pi)) - np.pi
-
-    ## -------------------------------------------------------------------------------------------------
-    def data_normalize(x):
+    def _data_normalization(self, p_value, p_boundaries):
         """
         This method is called to ensure a normalized angular velocity and acceleration.
 
@@ -251,8 +238,10 @@ class DoublePendulum(Environment):
 
         """
         # scalling manually
-        x = (2*((x-x.min())/(x.min()-x.max())))-1
-        return x
+        self.p_value = p_value
+        self.p_boundaries = p_boundaries
+
+        return (2*((p_value-p_boundaries.min())/(p_boundaries.min()-p_boundaries.max())))
  
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
@@ -314,12 +303,7 @@ class DoublePendulum(Environment):
 
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act * self.t_step, self.t_step))
         state = self.y[-1]
-        state[0] = DoublePendulum.angle_normalize(state[0])
-        state[3] = DoublePendulum.angle_normalize(state[3])
-        state[1] = DoublePendulum.data_normalize(state[1])
-        state[2] = DoublePendulum.data_normalize(state[2])
-        state[4] = DoublePendulum.data_normalize(state[4])
-        state[5] = DoublePendulum.data_normalize(state[5])
+
         self.action_cw = True if torque <= 0 else False
         state_ids = self._state.get_dim_ids()
         for i in range(len(state)):
@@ -383,6 +367,16 @@ class DoublePendulum(Environment):
             Reward values.
 
         """
+        state = p_state.get_values()
+        th1, th1dot,a1, th2, th2dot,a2 = state
+        
+        state[0] = self._data_normalization(state[0],[-np.inf,np.inf])
+        state[1] = self._data_normalization(state[1],[-np.inf,np.inf])
+        state[2] = self._data_normalization(state[2],[-np.inf,np.inf])
+        state[3] = self._data_normalization(state[3],[-np.inf,np.inf])
+        state[4] = self._data_normalization(state[4],[-np.inf,np.inf])
+        state[5] = self._data_normalization(state[5],[-np.inf,np.inf])
+        
         reward = Reward(Reward.C_TYPE_OVERALL)
         
         target = np.array([np.pi, 0.0, np.pi, 0.0])
@@ -391,13 +385,13 @@ class DoublePendulum(Environment):
         
         th1_count = 0
         for th1 in self.y[::-1, 0]:
-            ang = np.degrees(DoublePendulum.angle_normalize(th1))
+            ang = np.degrees(self._data_normalization(th1))
             if ang > 170 or ang < 190 or \
                     ang < -170 or ang > -190:
                 th1_count += 1
             else:
                 break
-        th1_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[0])))
+        th1_distance = np.pi - abs(self._data_normalization(np.radians(state[0])))
         th1_distance_costs = 4 if th1_distance <= 0.1 else 0.3 / th1_distance
         
         th1_speed_costs = np.pi * abs(state[1]) / self.max_speed
@@ -410,13 +404,13 @@ class DoublePendulum(Environment):
         
         th2_count = 0
         for th2 in self.y[::-1, 2]:
-            ang = np.degrees(DoublePendulum.angle_normalize(th2))
+            ang = np.degrees(self._data_normalization(th2))
             if ang > 170 or ang < 190 or \
                     ang < -170 or ang > -190:
                 th2_count += 1
             else:
                 break
-        th2_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[2])))
+        th2_distance = np.pi - abs(self._data_normalization(np.radians(state[2])))
         th2_distance_costs = 4 if th2_distance <= 0.1 else 0.3 / th2_distance
         
         th2_speed_costs = np.pi * abs(state[3]) / self.max_speed

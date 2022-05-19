@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto 23 - (RL) Train DoublePendulum with random actions.py
+## -- Module  : Howto 22 - (RL) Train DoublePendulum with random actions.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -103,7 +103,7 @@ class ScenarioDoublePendulum(RLScenario):
 
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit         = 0
+    cycle_limit         = 100
     adaptation_limit    = 10000
     stagnation_limit    = 0
     eval_frequency      = 5
