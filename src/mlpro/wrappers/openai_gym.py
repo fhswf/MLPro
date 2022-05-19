@@ -117,7 +117,11 @@ class WrEnvGYM2MLPro(Environment):
     def _reset(self, p_seed=None):
 
         # 1 Reset Gym environment and determine initial state
-        observation = self._gym_env.reset(seed=p_seed)
+        try:
+            observation = self._gym_env.reset(seed=p_seed)
+        except:
+           self._gym_env.seed(p_seed)
+           observation = self._gym_env.reset() 
         obs = DataObject(observation)
 
         # 2 Create state object from Gym observation
