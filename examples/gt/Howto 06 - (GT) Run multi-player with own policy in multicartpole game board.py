@@ -16,7 +16,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-02-25)
+Ver. 1.1.2 (2022-05-19)
 
 This module shows how to run an own multi-player with the enhanced multi-action game board 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -99,15 +99,15 @@ class MyGame (Game):
 
 
 
-# 3 Create game and run some cycles
+# 2 Create game and run some cycles
 
 if __name__ == "__main__":
-    # 3.1 Parameters for demo mode
+    # 2.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
     visualize   = True
   
 else:
-    # 3.2 Parameters for internal unit test
+    # 2.2 Parameters for internal unit test
     logging     = Log.C_LOG_NOTHING
     visualize   = False
 
