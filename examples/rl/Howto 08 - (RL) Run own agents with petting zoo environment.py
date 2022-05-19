@@ -17,11 +17,11 @@
 ## -- 2021-11-16  1.1.5     DA       Added explicit scenario reset with constant seeding 
 ## -- 2021-12-03  1.1.6     DA       Refactoring 
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
-## -- 2022-05-19  1.1.2     SY       Utilize RandomGenerator instead of defining one by one
+## -- 2022-05-19  1.1.8     SY       Utilize RandomGenerator
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.7 (2022-20-25)
+Ver. 1.1.8 (2022-05-19)
 
 This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
 the mlpro framework.

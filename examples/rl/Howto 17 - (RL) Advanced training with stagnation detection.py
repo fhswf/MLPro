@@ -10,10 +10,11 @@
 ## -- 2022-02-04  1.1.0     DA       Introduction of parameter p_stagnation_entry
 ## -- 2022-02-10  1.2.0     DA       Introduction of parameter p_end_at_stagnation
 ## -- 2022-02-27  1.2.1     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-05-19  1.2.2     SY       Utilize RandomGenerator
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2022-02-27)
+Ver. 1.2.2 (2022-05-19)
 
 This module demonstrates advanced training with evaluation and stagnation detection.
 """
@@ -23,42 +24,12 @@ from mlpro.rl.models import *
 from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 import random
 from pathlib import Path
+from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
 
 
 
-# 1 Implement your own agent policy
-class MyPolicy (Policy):
-
-    C_NAME      = 'MyPolicy'
-
-    def set_random_seed(self, p_seed=None):
-        random.seed(p_seed)
-
-
-    def compute_action(self, p_state: State) -> Action:
-        # 1 Create a numpy array for your action values 
-        my_action_values = np.zeros(self._action_space.get_num_dim())
-
-        # 2 Computing action values is up to you...
-        for d in range(self._action_space.get_num_dim()):
-            my_action_values[d] = random.random() 
-
-        # 3 Return an action object with your values
-        return Action(self._id, self._action_space, my_action_values)
-
-
-    def _adapt(self, *p_args) -> bool:
-        # 1 Adapting the internal policy is up to you...
-        self.log(self.C_LOG_TYPE_I, 'Sorry, I am a stupid agent...')
-
-        # 2 Only return True if something has been adapted...
-        return False
-
-
-
-
-# 2 Implement your own RL scenario
+# 1 Implement your own RL scenario
 class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
@@ -83,12 +54,13 @@ class MyScenario (RLScenario):
         as_ids = self._env.get_action_space().get_dim_ids()
         multi_agent.add_agent(
             p_agent=Agent(
-                p_policy=MyPolicy(
+                p_policy=RandomGenerator(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[0],ss_ids[1],ss_ids[2],ss_ids[3]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[0]]),
                     p_buffer_size=1,
                     p_ada=True,
-                    p_logging=p_logging
+                    p_logging=p_logging,
+                    p_seed=0
                 ),
                 p_envmodel=None,
                 p_name='Smith-1',
@@ -102,12 +74,13 @@ class MyScenario (RLScenario):
         # 2.3 Add Single-Agent #2 with own policy (controlling sub-environments #2,#3)
         multi_agent.add_agent(
             p_agent=Agent(
-                p_policy=MyPolicy(
+                p_policy=RandomGenerator(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[4],ss_ids[5],ss_ids[6],ss_ids[7],ss_ids[8],ss_ids[9],ss_ids[10],ss_ids[11]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[1],as_ids[2]]),
                     p_buffer_size=1,
                     p_ada=True,
-                    p_logging=p_logging
+                    p_logging=p_logging,
+                    p_seed=1
                 ),
                 p_envmodel=None,
                 p_name='Smith-2',
