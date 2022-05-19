@@ -18,10 +18,11 @@
 ## -- 2021-11-15  1.3.0     DA       Refactoring 
 ## -- 2021-12-03  1.3.1     DA       Refactoring 
 ## -- 2021-12-07  1.3.2     DA       Refactoring 
+## -- 2022-05-19  1.3.3     SY       Remove MyPolicy and add RandomGenerator
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2021-12-07)
+Ver. 1.3.3 (2022-05-19)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """
@@ -34,42 +35,12 @@ from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import gym
 import random
 from pathlib import Path
+from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
 
 
 
-# 1 Implement your own agent policy
-class MyPolicy (Policy):
-
-    C_NAME      = 'MyPolicy'
-
-    def set_random_seed(self, p_seed=None):
-        random.seed(p_seed)
-
-
-    def compute_action(self, p_state: State) -> Action:
-        # 1 Create a numpy array for your action values 
-        my_action_values = np.zeros(self._action_space.get_num_dim())
-
-        # 2 Computing action values is up to you...
-        for d in range(self._action_space.get_num_dim()):
-            my_action_values[d] = random.random() 
-
-        # 3 Return an action object with your values
-        return Action(self._id, self._action_space, my_action_values)
-
-
-    def _adapt(self, *p_args) -> bool:
-        # 1 Adapting the internal policy is up to you...
-        self.log(self.C_LOG_TYPE_I, 'Sorry, I am a stupid agent...')
-
-        # 2 Only return True if something has been adapted...
-        return False
-
-
-
-
-# 2 Implement your own RL scenario
+# 1 Implement your own RL scenario
 class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
@@ -81,12 +52,13 @@ class MyScenario (RLScenario):
 
         # 2 Setup and return standard single-agent with own policy
         return Agent(
-                p_policy=MyPolicy(
+                p_policy=RandomGenerator(
                     p_observation_space=self._env.get_state_space(),
                     p_action_space=self._env.get_action_space(),
                     p_buffer_size=10,
                     p_ada=p_ada,
-                    p_logging=p_logging
+                    p_logging=p_logging,
+                    p_seed=0
                 ),    
             p_envmodel=None,
             p_name='Smith',
@@ -97,24 +69,24 @@ class MyScenario (RLScenario):
 
 
 
-# 3 Create scenario and start training
+# 2 Create scenario and start training
 
 if __name__ == "__main__":
-    # 3.1 Parameters for demo mode
+    # 2.1 Parameters for demo mode
     cycle_limit = 500
     logging     = Log.C_LOG_WE
     visualize   = True
     path        = str(Path.home())
  
 else:
-    # 3.2 Parameters for internal unit test
+    # 2.2 Parameters for internal unit test
     cycle_limit = 50
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     path        = None
 
 
-# 3.3 Create and run training object
+# 2.3 Create and run training object
 training = RLTraining(
         p_scenario_cls=MyScenario,
         p_cycle_limit=cycle_limit,
