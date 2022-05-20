@@ -17,10 +17,11 @@
 ## -- 2021-11-16  1.1.5     DA       Added explicit scenario reset with constant seeding 
 ## -- 2021-12-03  1.1.6     DA       Refactoring 
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-05-19  1.1.8     SY       Utilize RandomGenerator
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.7 (2022-20-25)
+Ver. 1.1.8 (2022-05-19)
 
 This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
 the mlpro framework.
@@ -33,28 +34,17 @@ from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.wrappers.pettingzoo import WrEnvPZOO2MLPro
 import random
+from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
+
+
+
+
 
 
 # Piston Ball Scenario
 """
 Reference : https://www.pettingzoo.ml/butterfly/pistonball
 """
-class ContRandPolicy (Policy):
-
-    C_NAME      = 'ContRandPolicy'
-
-    def compute_action(self, p_state: State) -> Action:
-        my_action_values = np.zeros(self._action_space.get_num_dim())
-        for d in range(self._action_space.get_num_dim()):
-            my_action_values[d] = random.uniform(-1,1) 
-        return Action(self._id, self._action_space, my_action_values)
-
-
-    def _adapt(self, *p_args) -> bool:
-        self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
-        return False
-    
-    
 class PBScenario (RLScenario):
 
     C_NAME      = 'Pistonball V5'
@@ -70,12 +60,13 @@ class PBScenario (RLScenario):
             as_ids          = self._env.get_action_space().get_dim_ids()
             agent_ospace    = self._env.get_state_space()
             agent_asspace   = self._env.get_action_space().spawn([as_ids[agent_idx]])
-            agent           = Agent(p_policy=ContRandPolicy(p_observation_space=agent_ospace,
-                                                            p_action_space=agent_asspace,
-                                                            p_buffer_size=10,
-                                                            p_ada=p_ada,
-                                                            p_logging=p_logging
-                                                            ),
+            agent           = Agent(p_policy=RandomGenerator(p_observation_space=agent_ospace,
+                                                             p_action_space=agent_asspace,
+                                                             p_buffer_size=10,
+                                                             p_ada=p_ada,
+                                                             p_logging=p_logging,
+                                                             p_seed=agent_idx
+                                                             ),
                                     p_envmodel=None,
                                     p_id=agent_idx,
                                     p_name=agent_name,
@@ -124,12 +115,12 @@ class C4Scenario (RLScenario):
             as_ids          = self._env.get_action_space().get_dim_ids()
             agent_sspace    = self._env.get_state_space()
             agent_asspace   = self._env.get_action_space().spawn([as_ids[agent_idx]])
-            agent           = Agent(p_policy=DiscRandPolicy(p_observation_space=agent_sspace,
-                                                            p_action_space=agent_asspace,
-                                                            p_buffer_size=10,
-                                                            p_ada=p_ada,
-                                                            p_logging=p_logging
-                                                            ),
+            agent           = Agent(p_policy=RandomGenerator(p_observation_space=agent_sspace,
+                                                             p_action_space=agent_asspace,
+                                                             p_buffer_size=10,
+                                                             p_ada=p_ada,
+                                                             p_logging=p_logging
+                                                             ),
                                     p_envmodel=None,
                                     p_id=agent_idx,
                                     p_name=agent_name,
