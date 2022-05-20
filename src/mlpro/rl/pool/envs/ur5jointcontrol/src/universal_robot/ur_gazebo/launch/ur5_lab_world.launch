@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <arg name="paused" default="true" doc="Starts gazebo in paused mode" />
-  <arg name="gui" default="true" doc="Starts gazebo gui" />
+  <arg name="gui" default="false" doc="Starts gazebo gui" />
   <arg name="verbose" default="false"/>
   <arg name="sim" default="true"/>
   

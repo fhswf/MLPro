@@ -48,7 +48,7 @@ class UR5JointControl(WrEnvGYM2MLPro):
     C_INFINITY = np.finfo(np.float32).max
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_seed=0, p_logging=True):
+    def __init__(self, p_seed=0, p_visualize=False, p_logging=True):
         """
         Parameters:
             p_logging       Boolean switch for logging
@@ -62,6 +62,7 @@ class UR5JointControl(WrEnvGYM2MLPro):
 
         ros_ws_path = mlpro.rl.pool.envs.ur5jointcontrol.__file__.replace("/__init__.py", "")
         rospy.set_param('ros_ws_path', ros_ws_path)
+        rospy.set_param('visualize', p_visualize)
 
         # Init OpenAI_ROS ENV
         task_and_robot_environment_name = rospy.get_param('/ur5_lab/task_and_robot_environment_name')
