@@ -7,7 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-05-19  0.0.0     SY       Creation
 ## -- 2022-05-19  1.0.0     SY       Release of first version
-## -- 2022-05-20  1.0.1     SY       Remove constructor and raise error for undifined boundaries
+## -- 2022-05-20  1.0.1     SY       Remove constructor and raise error for undefined boundaries
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -58,12 +58,16 @@ class RandomGenerator(Policy):
                 raise ParamError('Mandatory base set is not defined.')
                 
             try:
-                upper_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[0]
-                lower_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[1]
+                if len(self._action_space.get_dim(ids[d]).get_boundaries()) == 1:
+                    lower_boundaries = 0
+                    upper_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[0]
+                else:
+                    lower_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[0]
+                    upper_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[1]
                 if base_set == 'Z' and base_set == 'N':
-                    my_action_values[d] = random.randint(upper_boundaries, lower_boundaries)
+                    my_action_values[d] = random.randint(lower_boundaries, upper_boundaries)
                 elif base_set == 'R' or base_set == 'DO':
-                    my_action_values[d] = random.uniform(upper_boundaries, lower_boundaries)
+                    my_action_values[d] = random.uniform(lower_boundaries, upper_boundaries)
             except:
                 raise ParamError('Mandatory boundaries are not defined.')
 

@@ -37,11 +37,11 @@
 ## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-03-21  1.3.5     MRD      Added new parameter to the WrEnvMLPro2GYM.reset()
 ## -- 2022-05-19  1.3.6     SY       Gym 0.23: Replace function env.seed(seed) to env.reset(seed=seed)
-## -- 2022-05-20  1.3.7     SY       Refactoring: Action space boundaries in WrEnvGYM2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.7 (2022-05-20)
+Ver. 1.3.6 (2022-05-19)
+
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -99,7 +99,7 @@ class WrEnvGYM2MLPro(Environment):
 
         if isinstance(p_gym_space, gym.spaces.Discrete):
             space.add_dim(
-                Dimension(p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[0, p_gym_space.n]))
+                Dimension(p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
         elif isinstance(p_gym_space, gym.spaces.Box):
             shape_dim = len(p_gym_space.shape)
             for i in range(shape_dim):
