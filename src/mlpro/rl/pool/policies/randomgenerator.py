@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-05-19  0.0.0     SY       Creation
 ## -- 2022-05-19  1.0.0     SY       Release of first version
+## -- 2022-05-20  1.0.1     SY       Remove constructor and raise error for undifined boundaries
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-05-19)
+Ver. 1.0.1 (2022-05-20)
 
 This module providew random genarator for multi purposes, e.g. testing environment, etc..
 """
@@ -39,29 +40,9 @@ class RandomGenerator(Policy):
         Boolean switch for adaptivity. Default = True.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
-    p_seed
-        Initial seed for randomizer. Default = 0.
     """
 
     C_NAME      = 'RandomGenerator'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_observation_space: MSpace,
-                 p_action_space: MSpace,
-                 p_buffer_size=1,
-                 p_ada=True,
-                 p_logging=Log.C_LOG_ALL,
-                 p_seed=0):
-        super().__init__(p_observation_space=p_observation_space,
-                         p_action_space=p_action_space,
-                         p_buffer_size=p_buffer_size,
-                         p_ada=p_ada,
-                         p_logging=p_logging)
-        if p_seed == None:
-            raise ParamError('Please provide seeding parameter p_seed!')
-        else:
-            self.set_random_seed(p_seed)
 
 ## -------------------------------------------------------------------------------------------------
     def compute_action(self, p_state: State) -> Action:
@@ -73,6 +54,10 @@ class RandomGenerator(Policy):
         for d in range(self._action_space.get_num_dim()):
             try:
                 base_set = self._action_space.get_dim(ids[d]).get_base_set()
+            except:
+                raise ParamError('Mandatory base set is not defined.')
+                
+            try:
                 upper_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[0]
                 lower_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[1]
                 if base_set == 'Z' and base_set == 'N':
@@ -80,7 +65,7 @@ class RandomGenerator(Policy):
                 elif base_set == 'R' or base_set == 'DO':
                     my_action_values[d] = random.uniform(upper_boundaries, lower_boundaries)
             except:
-                my_action_values[d] = random.random()
+                raise ParamError('Mandatory boundaries are not defined.')
 
         # 3 Return an action object with the generated random values
         return Action(self._id, self._action_space, my_action_values)
