@@ -31,24 +31,33 @@ import subprocess
 import time
 import os
 import mlpro
+from mlpro.bf.various import Log
+
+logger = Log()
+logger.C_TYPE = "Log"
+logger.C_NAME = "Pre-check ROS"
 
 # Check OS
-print("Checking Operating System....." + "Not OK" if platform.system() != "Linux" else "OK")
+logger.log(Log.C_LOG_TYPE_I, "Checking Operating System ......")
 if platform.system() != "Linux":
-    print("Operating System is not supported!")
-    print("Please use Linux")
-    print("Exiting....")
+    logger.log(Log.C_LOG_TYPE_E, "Operating System is not supported!")
+    logger.log(Log.C_LOG_TYPE_E, "Please use Linux")
+    logger.log(Log.C_LOG_TYPE_E, "Exiting....")
     sys.exit()
+else:
+    logger.log(Log.C_LOG_TYPE_S, "Operating System is supported")
 
 # Check if ROS is installed
 process = subprocess.run("which roscore", shell=True, stdout=subprocess.PIPE)
 output = process.stdout
-print("Checking ROS Installation....." + "OK" if output != bytes() else "Not OK")
+logger.log(Log.C_LOG_TYPE_I, "Checking ROS Installation ......")
 if output==bytes():
-    print("ROS is not installed!")
-    print("Please install ROS")
-    print("Exiting....")
+    logger.log(Log.C_LOG_TYPE_E, "ROS is not installed!")
+    logger.log(Log.C_LOG_TYPE_E, "Please install ROS")
+    logger.log(Log.C_LOG_TYPE_E, "Exiting....")
     sys.exit()
+else:
+    logger.log(Log.C_LOG_TYPE_S, "ROS is installed")
 
 import rospkg
 
@@ -58,29 +67,32 @@ rospack = rospkg.RosPack()
 try:
     rospack.get_path("ur5_lab")
 except rospkg.common.ResourceNotFound:
-    print("UR5 Workspace is not installed")
+    logger.log(Log.C_LOG_TYPE_E, "UR5 Workspace is not installed!")
+    logger.log(Log.C_LOG_TYPE_W, "If you have ran this script, please CTRL+C and restart terminal")
 else:
     installed = True
 
 if not installed:
-    print("Building ROS Workspace in 5 Seconds")
-    for sec in range(5):
+    logger.log(Log.C_LOG_TYPE_W, "Building ROS Workspace in 10 Seconds")
+    for sec in range(10):
         time.sleep(1)
-        print(str(4-sec)+"...")
+        logger.log(Log.C_LOG_TYPE_W, str(9-sec)+"...")
 
     ros_workspace = os.path.dirname(mlpro.__file__)+"/rl/pool/envs/ur5jointcontrol"
     command = "cd " + ros_workspace + " && catkin_make"
     try:
         process = subprocess.check_output(command, shell=True)
     except subprocess.CalledProcessError as e:
-        print("Build Failed")
+        logger.log(Log.C_LOG_TYPE_E, "Build Failed")
         sys.exit()
 
-    print("Successfully Built")
+    logger.log(Log.C_LOG_TYPE_S, "Successfully Built")
     command = "echo 'source "+ros_workspace+"/devel/setup.bash"+"' >> ~/.bashrc"
     process = subprocess.run(command, shell=True)
-    print("Please restart your terminal and run the Howto script again")
+    logger.log(Log.C_LOG_TYPE_W, "Please restart your terminal and run the Howto script again")
     sys.exit()
+else:
+    logger.log(Log.C_LOG_TYPE_S, "UR5 Workspace is installed")
 
 import rospy
 from mlpro.rl.models import *
