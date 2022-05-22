@@ -41,6 +41,7 @@
 
 """
 Ver. 1.3.6 (2022-05-19)
+
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
