@@ -6,13 +6,14 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-05-20  0.0.0     MRD      Creation
+## -- 2022-05-22  1.0.0     MRD      Release first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2022-02-25)
+Ver. 1.0.0 (2022-05-22)
 
-This module provides Environment Model based on MLP Neural Network for
-robotinhtm environment.
+This module provides Environment Model based on Homogeneous Transformations Matrix 
+Neural Network for robotinhtm environment.
 """
 
 import torch
@@ -21,7 +22,7 @@ import transformations
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotArm3D
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
-from mlpro.sl.pool.afct.afctrans_pytorch import TorchAFctTrans
+from mlpro.sl.pool.afct.afct_pytorch import TorchAFct
 
 from torch.utils.data.sampler import SubsetRandomSampler
 from collections import deque
@@ -209,7 +210,7 @@ class MyOwnBuffer(Buffer, torch.utils.data.Dataset):
     def __getitem__(self,idx):
         return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
 
-class RobothtmAFct(TorchAFctTrans):
+class RobothtmAFct(TorchAFct):
     C_NAME = "Robothtm Adaptive Function"
     C_BUFFER_CLS = MyOwnBuffer
 

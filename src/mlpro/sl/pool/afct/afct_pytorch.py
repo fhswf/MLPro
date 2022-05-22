@@ -8,10 +8,11 @@
 ## -- 2021-12-17  0.0.0     MRD       Creation
 ## -- 2021-12-17  1.0.0     MRD       Released first version
 ## -- 2022-01-02  2.0.0     MRD       Re-released afct for pytorch
+## -- 2022-05-22  2.0.1     MRD       Renamed Class to TorchAFct
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2022-01-02)
+Ver. 2.0.1 (2022-05-22)
 
 This module provides Adaptive Functions for state transition with Neural Network based on Pytorch.
 """
@@ -20,7 +21,7 @@ import torch
 
 from mlpro.rl.models import *
 
-class TorchAFctTrans(AdaptiveFunction):
+class TorchAFct(AdaptiveFunction):
     C_NAME = "Pytorch based Adaptive Function"
 
     def __init__(
