@@ -25,14 +25,70 @@ This module provides an environment with multivariate state and action spaces
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
 """
 
+import sys
+import platform
+import subprocess
+import time
+import os
+import mlpro
+
+# Check OS
+print("Checking Operating System....." + "Not OK" if platform.system() != "Linux" else "OK")
+if platform.system() != "Linux":
+    print("Operating System is not supported!")
+    print("Please use Linux")
+    print("Exiting....")
+    sys.exit()
+
+# Check if ROS is installed
+process = subprocess.run("which roscore", shell=True, stdout=subprocess.PIPE)
+output = process.stdout
+print("Checking ROS Installation....." + "OK" if output != bytes() else "Not OK")
+if output==bytes():
+    print("ROS is not installed!")
+    print("Please install ROS")
+    print("Exiting....")
+    sys.exit()
+
+import rospkg
+
+# Check if UR5 Workspace is installed
+installed = False
+rospack = rospkg.RosPack()
+try:
+    rospack.get_path("ur5_lab")
+except rospkg.common.ResourceNotFound:
+    print("UR5 Workspace is not installed")
+else:
+    installed = True
+
+if not installed:
+    print("Building ROS Workspace in 5 Seconds")
+    for sec in range(5):
+        time.sleep(1)
+        print(str(4-sec)+"...")
+
+    ros_workspace = os.path.dirname(mlpro.__file__)+"/rl/pool/envs/ur5jointcontrol"
+    command = "cd " + ros_workspace + " && catkin_make"
+    try:
+        process = subprocess.check_output(command, shell=True)
+    except subprocess.CalledProcessError as e:
+        print("Build Failed")
+        sys.exit()
+
+    print("Successfully Built")
+    command = "echo 'source "+ros_workspace+"/devel/setup.bash"+"' >> ~/.bashrc"
+    process = subprocess.run(command, shell=True)
+    print("Please restart your terminal and run the Howto script again")
+    sys.exit()
+
+import rospy
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
-import mlpro
 import numpy as np
-import rospy
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
 from openai_ros.task_envs.task_commons import LoadYamlFileParamsTest
-import subprocess
+
 
 
 ## -------------------------------------------------------------------------------------------------
