@@ -31,5 +31,8 @@ goto end
 :help
 %SPHINXBUILD% -M help %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 
+:autobuild
+sphinx-autobuild %SOURCEDIR% %BUILDDIR%/html
+
 :end
 popd
