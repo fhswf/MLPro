@@ -9,10 +9,11 @@
 ## -- 2021-11-18  1.0.0     MRD      Initial Release
 ## -- 2021-12-07  1.0.1     DA       Refactoring
 ## -- 2022-02-11  1.1.0     DA       Special derivate for publication
+## -- 2022-05-23  1.2.0     MRD      Add visualize toggle on UR5JointControl for gazebo GUI
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-02-11)
+Ver. 1.2.0 (2022-05-23)
 
 This module shows how to use SB3 wrapper to train UR5 robot.
 """
@@ -30,7 +31,7 @@ class ScenarioUR5A2C(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
-        self._env = UR5JointControl(p_logging=p_logging)
+        self._env = UR5JointControl(p_visualize=False, p_logging=p_logging)
 
         policy_sb3 = PPO(
             policy="MlpPolicy",
