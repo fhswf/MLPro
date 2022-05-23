@@ -23,13 +23,12 @@ Table of Content
 ----------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: 1 Introduction
    
    content/intro/overview
    content/intro/getstarted
    content/intro/architecture
-   content/intro/dependencies
 
 
 
@@ -77,7 +76,7 @@ Table of Content
    content/dsm/*
 
 
-
+.. _target_appendix1:
 .. toctree::
    :maxdepth: 2
    :caption: Appendix 1: Examples
@@ -85,6 +84,7 @@ Table of Content
    content/append1/howto.bf
    content/append1/howto.rl
    content/append1/howto.gt
+
 
 
 .. toctree::
