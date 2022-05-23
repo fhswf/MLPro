@@ -27,10 +27,11 @@
 ## -- 2022-01-21  2.2.0     SY       Add cycle_limit as an input parameter
 ## -- 2022-01-24  2.2.1     SY       Update seeding procedure, refactoring _reset()
 ## -- 2022-02-25  2.2.2     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-05-23  2.2.3     SY       Bug fixing: Reward computation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.2 (2022-02-25)
+Ver. 2.2.3 (2022-05-23)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -1048,24 +1049,24 @@ class BGLP (Environment):
             r_overall = 0
             r_overall = r_overall + sum(self.calc_reward()).item()
             reward.set_overall_reward(r_overall)
-
+        
+        elif self.reward_type == Reward.C_TYPE_EVERY_AGENT:
+           for agent_id in self._last_action.get_agent_ids():
+               r_reward = self.calc_reward()
+               reward.add_agent_reward(agent_id, r_reward[agent_id])
+               
         else:
            for agent_id in self._last_action.get_agent_ids():
-                agent_action_elem   = self._last_action.get_elem(agent_id)
-                agent_action_ids    = agent_action_elem.get_dim_ids()
-                r_agent             = 0
-                r_reward            = self.calc_reward()
-                action_idx          = 0
+                agent_action_elem = self._last_action.get_elem(agent_id)
+                agent_action_ids = agent_action_elem.get_dim_ids()
+                r_agent = 0
+                r_reward = self.calc_reward()
+                action_idx = 0
                 for action_id in agent_action_ids:
-                    r_action        = r_reward[action_idx]
-                    action_idx      += 1
-                    if self.reward_type == Reward.C_TYPE_EVERY_ACTION:
-                        reward.add_action_reward(agent_id, action_id, r_action)
-                    elif self.reward_type == Reward.C_TYPE_EVERY_AGENT:
-                        r_agent = r_agent + r_action
-                if self.reward_type == Reward.C_TYPE_EVERY_AGENT:
-                    r_agent = r_agent / len(agent_action_ids)
-                    reward.add_agent_reward(agent_id, r_agent)
+                    r_action = r_reward[action_idx]
+                    action_idx += 1
+                    reward.add_action_reward(agent_id, action_id, r_action)
+                    
         return reward
 
   
