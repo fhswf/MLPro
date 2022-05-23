@@ -36,10 +36,12 @@
 ## -- 2022-01-28  1.3.3     DA       Class WrEnvMLPro2GYM: stabilized destructor
 ## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-03-21  1.3.5     MRD      Added new parameter to the WrEnvMLPro2GYM.reset()
+## -- 2022-05-19  1.3.6     SY       Gym 0.23: Replace function env.seed(seed) to env.reset(seed=seed)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.5 (2022-03-21)
+Ver. 1.3.6 (2022-05-19)
+
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -116,8 +118,11 @@ class WrEnvGYM2MLPro(Environment):
     def _reset(self, p_seed=None):
 
         # 1 Reset Gym environment and determine initial state
-        self._gym_env.seed(p_seed)
-        observation = self._gym_env.reset()
+        try:
+            observation = self._gym_env.reset(seed=p_seed)
+        except:
+           self._gym_env.seed(p_seed)
+           observation = self._gym_env.reset() 
         obs = DataObject(observation)
 
         # 2 Create state object from Gym observation
