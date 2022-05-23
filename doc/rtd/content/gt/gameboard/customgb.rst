@@ -1,4 +1,4 @@
-Custom Gameboards
+Custom Game boards
 -------------------
 
 .. image:: images/MLPro-GT-GameBoard_class_commented.png
