@@ -129,11 +129,9 @@ class DoublePendulum(Environment):
         elif init_angles=='down':
             self.th1 = 0
             self.th2 = 0
-        elif init_angles=='random':
-            self.th1 = np.random.rand(1)[0]*180
-            self.th2 = np.random.rand(1)[0]*180
+
         else:
-            raise NotImplementedError("init_angles value must be up, down, or random")        
+            raise NotImplementedError("init_angles value must be up or down")        
 
         
         self.history_x = deque(maxlen=history_length)
@@ -167,18 +165,18 @@ class DoublePendulum(Environment):
         state_space = ESpace()
         action_space = ESpace()
 
-        state_space.add_dim(Dimension('theta 1', 'th1', 'Angle of Pendulum 1', '', 'degrees',
+        state_space.add_dim(Dimension('theta 1', 'th1', 'Angle of Pendulum 1', '', 'radians',
                                       '\textdegrees', [-np.pi, np.pi]))
         state_space.add_dim(Dimension('omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
-                                      'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
+                                      'radians/second', '\textdegrees/s', [-np.inf, np.inf]))
         state_space.add_dim(Dimension('acc 1', 'a1', 'Acceleration of Pendulum 1', '',
-                                      'meters/second^2', '\text/s^2', [-np.inf, np.inf]))      
-        state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'degrees',
+                                      'radians/second^2', '\text/s^2', [-np.inf, np.inf]))      
+        state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'radians',
                                       '\textdegrees', [-np.pi, np.pi]))
         state_space.add_dim(Dimension('omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
-                                      'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
+                                      'radians/second', '\textdegrees/s', [-np.inf, np.inf]))
         state_space.add_dim(Dimension('acc 2', 'a2', 'Acceleration of Pendulum 2', '',
-                                      'meters/second^2', '\text/s^2', [-np.inf,np.inf]))
+                                      'radians/second^2', '\text/s^2', [-np.inf,np.inf]))
 
         action_space.add_dim(Dimension('torque 1', 'tau1', 'Applied Torque of Motor 1', '',
                                        'Nm', 'Nm', [-self.max_torque, self.max_torque]))
@@ -241,7 +239,7 @@ class DoublePendulum(Environment):
         self.p_value = p_value
         self.p_boundaries = p_boundaries
 
-        return (2*((p_value-p_boundaries.min())/(p_boundaries.min()-p_boundaries.max())))
+        return (2*((p_value-min(p_boundaries))/(min(p_boundaries)-max(p_boundaries))))
  
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
@@ -254,6 +252,10 @@ class DoublePendulum(Environment):
             Not yet implemented. The default is None.
 
         """
+
+        self.th1 = np.random.rand(1)[0]*180
+        self.th2 = np.random.rand(1)[0]*180
+            
         state_ids = self._state.get_dim_ids()
         self._state.set_value(state_ids[0], np.radians(self.th1))
         self._state.set_value(state_ids[1], np.radians(self.th1dot))
@@ -367,15 +369,15 @@ class DoublePendulum(Environment):
             Reward values.
 
         """
-        state = p_state.get_values()
+        state = p_state_old.get_values()
         th1, th1dot,a1, th2, th2dot,a2 = state
         
-        state[0] = self._data_normalization(state[0],[-np.inf,np.inf])
-        state[1] = self._data_normalization(state[1],[-np.inf,np.inf])
-        state[2] = self._data_normalization(state[2],[-np.inf,np.inf])
-        state[3] = self._data_normalization(state[3],[-np.inf,np.inf])
-        state[4] = self._data_normalization(state[4],[-np.inf,np.inf])
-        state[5] = self._data_normalization(state[5],[-np.inf,np.inf])
+        th1 = self._data_normalization(th1,self._state_space)
+        th1dot = self._data_normalization(th1dot,self._state_space[1])
+        a1 = self._data_normalization(a1,self._state_space[2])
+        th2 = self._data_normalization(th2,self._state_space[3])
+        th2dot = self._data_normalization(th2dot,self._state_space[4])
+        a2 = self._data_normalization(a2,self._state_space[5])
         
         reward = Reward(Reward.C_TYPE_OVERALL)
         
