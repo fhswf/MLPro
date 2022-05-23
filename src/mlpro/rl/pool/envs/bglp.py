@@ -1053,7 +1053,7 @@ class BGLP (Environment):
         elif self.reward_type == Reward.C_TYPE_EVERY_AGENT:
            for agent_id in self._last_action.get_agent_ids():
                r_reward = self.calc_reward()
-               reward.add_agent_reward(agent_id, r_reward[agent_id])
+               reward.add_agent_reward(agent_id, r_reward[int(agent_id)])
                
         else:
            for agent_id in self._last_action.get_agent_ids():
