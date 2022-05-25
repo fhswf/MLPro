@@ -1,8 +1,6 @@
 Gameboard Pool
 --------------
 
-Add text here!
-
 .. toctree::
    :maxdepth: 1
    

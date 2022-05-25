@@ -33,9 +33,10 @@ jobs:
         pip install flake8 pytest
         pip install numpy
         pip install matplotlib
-        pip install gym
-        pip install PettingZoo
+        pip install dill
         pip install stable-baselines3
+        pip install gym
+        pip install PettingZoo==1.17.0
         pip install pyglet
         pip install pymunk
         pip install pygame

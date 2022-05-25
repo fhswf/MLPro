@@ -26,7 +26,6 @@ Ver. 1.3.1 (2021-09-25)
 This module provides various elementary data management classes.
 """
 
-
 from datetime import datetime, timedelta
 # from time import sleep
 import numpy as np
@@ -40,8 +39,6 @@ from mlpro.bf.various import LoadSave
 import random
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class DataStoring(LoadSave):
@@ -50,23 +47,22 @@ class DataStoring(LoadSave):
     training/simulation.
     """
 
-    C_VAR0      = 'Frame ID'
-    
-## -------------------------------------------------------------------------------------------------
+    C_VAR0 = 'Frame ID'
+
+    ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_variables):
         """
         Parameters:
             p_variable    List of variable names
         """
-        self.memory_dict    = {}
-        self.names          = p_variables
-        self.frame_id       = {}
+        self.memory_dict = {}
+        self.names = p_variables
+        self.frame_id = {}
         for name in self.names:
             self.memory_dict[name] = {}
             self.frame_id[name] = []
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def add_frame(self, p_frame_id):
         """
         To store unique sections in a variable (e.g episodes in RL, etc.)
@@ -75,16 +71,14 @@ class DataStoring(LoadSave):
             self.memory_dict[name][p_frame_id] = []
             self.frame_id[name].append(p_frame_id)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def memorize(self, p_variable, p_frame_id, p_value):
         """
         To store a particular variable into a memory
         """
         self.memory_dict[p_variable][p_frame_id].append(p_value)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_values(self, p_variable, p_frame_id=None):
         """
         To obtain value from the memory
@@ -93,45 +87,42 @@ class DataStoring(LoadSave):
             return self.memory_dict[p_variable]
         else:
             return self.memory_dict[p_variable][p_frame_id]
-   
-    
-## -------------------------------------------------------------------------------------------------         
+
+    ## -------------------------------------------------------------------------------------------------
     def list_to_chunks(self, p_data, p_chunksize):
-        NumChunks = int(math.ceil(len(p_data)/(p_chunksize * 1.0)))
+        NumChunks = int(math.ceil(len(p_data) / (p_chunksize * 1.0)))
         retval = []
         for chunk in range(NumChunks):
-            retval.append(sum(p_data[chunk * p_chunksize : (chunk + 1) * p_chunksize])/(1.0 * p_chunksize))
+            retval.append(sum(p_data[chunk * p_chunksize: (chunk + 1) * p_chunksize]) / (1.0 * p_chunksize))
         return retval
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def compress(self, p_chunksize):
         for name in self.names:
             for ep in len(self.memory_dict[name]):
                 self.memory_dict[name][ep] = self.list_to_chunks(self.memory_dict[name][ep], p_chunksize)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def save_data(self, p_path, p_filename=None, p_delimiter="\t") -> bool:
         """
         To save stored data in memory_dict as a readable file format
         """
-        
-        if ( p_filename is not None ) and ( p_filename != '' ):
+
+        if (p_filename is not None) and (p_filename != ''):
             self.filename = p_filename
         else:
             self.filename = self.generate_filename()
 
         if self.filename is None:
             return False
-        
+
         try:
             if not os.path.exists(p_path):
                 os.makedirs(p_path)
-            path_save = p_path+os.sep+self.filename+".csv"
+            path_save = p_path + os.sep + self.filename + ".csv"
             with open(path_save, "w", newline="") as write_file:
                 header = copy.deepcopy(self.names)
-                header.insert(0,self.C_VAR0)
+                header.insert(0, self.C_VAR0)
                 writer = csv.writer(write_file, delimiter=p_delimiter, quoting=csv.QUOTE_ALL)
                 writer.writerow(header)
                 writer = csv.writer(write_file, delimiter=p_delimiter)
@@ -145,16 +136,15 @@ class DataStoring(LoadSave):
             return True
         except:
             return False
-        
-        
-## -------------------------------------------------------------------------------------------------
+
+    ## -------------------------------------------------------------------------------------------------
     def load_data(self, p_path, p_filename, p_delimiter="\t") -> bool:
         """
         To load data from a readable file format and store them into the DataStoring class format
         """
-        
+
         try:
-            path_load = p_path+os.sep+p_filename
+            path_load = p_path + os.sep + p_filename
             with open(path_load, "r") as read_file:
                 reader = csv.reader(read_file, delimiter=p_delimiter)
                 header = True
@@ -175,9 +165,6 @@ class DataStoring(LoadSave):
             return False
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class BufferElement:
@@ -185,8 +172,8 @@ class BufferElement:
     Base class implementation for buffer element
     """
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_element:dict) -> None:
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_element: dict) -> None:
         """
         Parameters:
             p_element (dict): Buffer element in dictionary
@@ -196,9 +183,8 @@ class BufferElement:
 
         self.add_value_element(p_element)
 
-
-## -------------------------------------------------------------------------------------------------
-    def add_value_element(self, p_val:dict):
+    ## -------------------------------------------------------------------------------------------------
+    def add_value_element(self, p_val: dict):
         """
         Adding new value to the element container
 
@@ -207,8 +193,7 @@ class BufferElement:
         """
         self._element = {**self._element, **p_val}
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_data(self):
         """
         Get the buffer element.
@@ -220,9 +205,6 @@ class BufferElement:
         return self._element
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Buffer:
@@ -230,7 +212,7 @@ class Buffer:
     Base class implementation for buffer management.
     """
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_size=1):
         """
         Parameters:
@@ -239,9 +221,8 @@ class Buffer:
         self._size = p_size
         self._data_buffer = {}
 
-
-## -------------------------------------------------------------------------------------------------
-    def add_element(self, p_elem:BufferElement):
+    ## -------------------------------------------------------------------------------------------------
+    def add_element(self, p_elem: BufferElement):
         """
         Add element to the buffer.
 
@@ -259,8 +240,7 @@ class Buffer:
                 if len(self._data_buffer[key]) > self._size:
                     self._data_buffer[key].pop(-len(self._data_buffer[key]))
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def clear(self):
         """
         Resets buffer.
@@ -268,8 +248,7 @@ class Buffer:
 
         self._data_buffer.clear()
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_latest(self):
         """
         Returns latest buffered element. 
@@ -280,8 +259,7 @@ class Buffer:
         except:
             return None
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_all(self):
         """
         Return all buffered elements.
@@ -289,9 +267,8 @@ class Buffer:
         """
         return self._data_buffer
 
-
-## -------------------------------------------------------------------------------------------------
-    def get_sample(self, p_num:int):
+    ## -------------------------------------------------------------------------------------------------
+    def get_sample(self, p_num: int):
         """
         Sample some element from the buffer.
 
@@ -303,9 +280,8 @@ class Buffer:
         """
         return self._extract_rows(self._gen_sample_ind(p_num))
 
-
-## -------------------------------------------------------------------------------------------------
-    def _gen_sample_ind(self, p_num:int) -> list:
+    ## -------------------------------------------------------------------------------------------------
+    def _gen_sample_ind(self, p_num: int) -> list:
         """
         Generate random indices from the buffer.
 
@@ -317,9 +293,8 @@ class Buffer:
         """
         raise NotImplementedError
 
-
-## -------------------------------------------------------------------------------------------------
-    def _extract_rows(self, p_list_idx:list):
+    ## -------------------------------------------------------------------------------------------------
+    def _extract_rows(self, p_list_idx: list):
         """
         Extract the element in the buffer based on a
         list of indices.
@@ -335,8 +310,7 @@ class Buffer:
             rows[key] = [self._data_buffer[key][i] for i in p_list_idx]
         return rows
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def is_full(self) -> bool:
         """
         Check if the buffer is full.
@@ -347,14 +321,10 @@ class Buffer:
         keys = list(self._data_buffer.keys())
         return len(self._data_buffer[keys[0]]) >= self._size
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __len__(self):
         keys = list(self._data_buffer.keys())
         return len(self._data_buffer[keys[0]])
-
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -364,7 +334,7 @@ class BufferRnd(Buffer):
     Buffer implmentation with random sampling
     """
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _gen_sample_ind(self, p_num: int) -> list:
         """
         Generate random indicies
@@ -376,5 +346,4 @@ class BufferRnd(Buffer):
             List of indicies
         """
         keys = list(self._data_buffer.keys())
-        return random.sample(list(range(0,len(self._data_buffer[keys[0]]))),p_num)
-        
+        return random.sample(list(range(0, len(self._data_buffer[keys[0]]))), p_num)

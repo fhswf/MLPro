@@ -18,3 +18,10 @@ The following examples demonstrate various functionalities of MLPro-RL:
    rl/howto.rl.013
    rl/howto.rl.014
    rl/howto.rl.015
+   rl/howto.rl.016
+   rl/howto.rl.017
+   rl/howto.rl.018
+   rl/howto.rl.019
+   rl/howto.rl.020
+   rl/howto.rl.021
+   rl/howto.rl.022

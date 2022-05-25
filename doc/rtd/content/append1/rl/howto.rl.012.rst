@@ -29,12 +29,31 @@ Please install the following packages to run this examples properly:
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
+Results
+`````````````````
+The Bulk Good Laboratory Plant (BGLP) environment will be wrapped to a petting zoo compliant environment. 
+
+
+.. code-block:: bash
+
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment BGLP: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment BGLP: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment BGLP: Operation mode set to 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment BGLP: Reset 
+    Starting API test
+    ...
+    Passed API test
+    test completed
+    
+There are several lines of action processing logs due to the API tests-
+When there is no detected failure, the completed test message will be printed.
+
+
+
+
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 12 - (RL) Wrap mlpro Environment class to petting zoo environment.py
     :language: python
 
-Results
-`````````````````
-...

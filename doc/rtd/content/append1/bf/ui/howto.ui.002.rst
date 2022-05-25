@@ -11,7 +11,8 @@ Prerequisites
 Please install the following packages to run this examples properly:
     - :ref:`MLPro <Installation>`
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-    - `Pytorch <https://pypi.org/project/torch/>`_
+    - `NumPy <https://pypi.org/project/numpy/>`_
+    - `Tkinter <https://pypi.org/project/tk/>`_
     
 
 Example Code
@@ -22,4 +23,6 @@ Example Code
 
 Results
 `````````````````
-Descriptions, plots, images, screenshots of expected results.
+This UI is not ready-to-use and still under development. The current cockpit is shown as follow,
+
+.. image:: images/sciui_rl.png

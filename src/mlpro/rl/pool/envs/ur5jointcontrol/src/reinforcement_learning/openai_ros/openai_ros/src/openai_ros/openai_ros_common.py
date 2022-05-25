@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from click import launch
 import gym
 from .task_envs.task_envs_list import RegisterOpenAI_Ros_Env
 import roslaunch
@@ -36,10 +37,11 @@ def StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_episode_ste
 
 
 class ROSLauncher(object):
-    def __init__(self, rospackage_name, launch_file_name, ros_ws_abspath="/home/user/simulation_ws"):
+    def __init__(self, rospackage_name, launch_file_name, launch_arguments={}, ros_ws_abspath="/home/user/simulation_ws"):
 
         self._rospackage_name = rospackage_name
         self._launch_file_name = launch_file_name
+        self._launch_arguments = launch_arguments
 
         self.rospack = rospkg.RosPack()
 
@@ -65,6 +67,12 @@ class ROSLauncher(object):
             launch_dir = os.path.join(pkg_path, "launch")
             path_launch_file_name = os.path.join(launch_dir, launch_file_name)
 
+            # Convert Launch argument from dictionary to proper argument
+            launch_args = []
+            for key, val in self._launch_arguments.items():
+                launch_args.append(str(key)+":="+str(val))
+        
+
             rospy.logwarn("path_launch_file_name=="+str(path_launch_file_name))
             """
             source_env_command = "source "+ros_ws_abspath+"/devel/setup.bash;"
@@ -85,7 +93,7 @@ class ROSLauncher(object):
             self.uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
             roslaunch.configure_logging(self.uuid)
             self.launch = roslaunch.parent.ROSLaunchParent(
-                self.uuid, [path_launch_file_name])
+                self.uuid, [(path_launch_file_name, launch_args)])
             self.launch.start()
             
 

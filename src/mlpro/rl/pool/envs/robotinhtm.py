@@ -16,27 +16,25 @@
 ## -- 2021-12-19  1.1.3     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  1.1.4     DA       Class RobotHTM: renamed method reset() to _reset()
 ## -- 2021-12-21  1.1.5     MRD      Add Termination on Success
+## -- 2022-01-21  1.1.6     MRD      Add recommended cycle limit and add seed parameter
+## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.5 (2021-12-21)
+Ver. 1.1.7 (2022-02-25)
 
-This module provide an environment of a robot manipulator based on Homogeneous Matrix
+This module provides an environment of a robot manipulator based on Homogeneous Matrix
 """
 import torch
 import transformations
-import numpy as np
-import random
 from mlpro.rl.models import *
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class RobotArm3D:
     """
-    Auxilary class for the implementation of robotinhtm.
+    Auxiliary class for the implementation of robotinhtm.
     Generate the Kinematic of a pre-defined robot in Homogeneous Matrix.
     """
 
@@ -52,14 +50,14 @@ class RobotArm3D:
         self.HM = torch.Tensor([])
         self.HMeef = None
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def add_link_joint(
-        self,
-        jointAxis=None,
-        lvector=None,
-        thetaInit=None,
-        adjustRot=None,
-        adjustTheta=None,
+            self,
+            jointAxis=None,
+            lvector=None,
+            thetaInit=None,
+            adjustRot=None,
+            adjustTheta=None,
     ):
         self.joints = torch.cat([self.joints, torch.Tensor([[0, 0, 0, 1]]).T], dim=1)
         self.jointAxis.append(jointAxis)
@@ -74,7 +72,7 @@ class RobotArm3D:
             self.thetas = torch.cat([self.thetas, thetaInit])
             self.num_joint = self.num_joint + 1
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_transformation_matrix(self, theta, lvector, rotAxis, adjustRots=None, adjustThetas=None):
         transformationMatrix = torch.Tensor([])
 
@@ -166,8 +164,7 @@ class RobotArm3D:
         transformationMatrix = torch.cat([transformationMatrix, torch.Tensor([[0, 0, 0, 1]])], dim=0)
         return transformationMatrix
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def update_joint_coords(self):
         self.HM = torch.Tensor([])
         T = torch.eye(4)
@@ -196,72 +193,63 @@ class RobotArm3D:
         # self.orientation = self.convert_to_quaternion_only()
         self.HMeef = T
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_joint(self):
         return self.joints
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_num_joint(self):
         return self.num_joint
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def set_theta(self, theta):
         self.thetas = theta.flatten()
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_homogeneous(self):
         return self.HM
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_homogeneous_eef(self):
         return self.HMeef
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_orientation(self):
         return self.orientation
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def update_theta(self, deltaTheta):
         self.thetas += deltaTheta.flatten()
 
     ## -------------------------------------------------------------------------------------------------
     def convert_to_quaternion(self):
-         origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
-         hm_reshape = self.HM.reshape(self.joints.shape[1],4,4)
-         hm_length = hm_reshape.shape[0]
+        origin, xaxis, yaxis, zaxis = [0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]
+        hm_reshape = self.HM.reshape(self.joints.shape[1], 4, 4)
+        hm_length = hm_reshape.shape[0]
 
-         out = torch.Tensor([])
-         for x in range(hm_length):
-             _,_,rot,trans,_ = transformations.decompose_matrix(hm_reshape[x].numpy())
+        out = torch.Tensor([])
+        for x in range(hm_length):
+            _, _, rot, trans, _ = transformations.decompose_matrix(hm_reshape[x].numpy())
 
-             qx = transformations.quaternion_about_axis(rot[0], xaxis)
-             qy = transformations.quaternion_about_axis(rot[1], yaxis)
-             qz = transformations.quaternion_about_axis(rot[2], zaxis)
-             q = transformations.quaternion_multiply(qx, qy)
-             q = transformations.quaternion_multiply(q, qz)
+            qx = transformations.quaternion_about_axis(rot[0], xaxis)
+            qy = transformations.quaternion_about_axis(rot[1], yaxis)
+            qz = transformations.quaternion_about_axis(rot[2], zaxis)
+            q = transformations.quaternion_multiply(qx, qy)
+            q = transformations.quaternion_multiply(q, qz)
 
-             outs = torch.Tensor(trans)
-             outs = torch.cat([outs, torch.Tensor(q)])
-             out = torch.cat([out,outs])
+            outs = torch.Tensor(trans)
+            outs = torch.cat([outs, torch.Tensor(q)])
+            out = torch.cat([out, outs])
 
-         return out    
+        return out
+
+    ## -------------------------------------------------------------------------------------------------
 
 
-
-
-
-## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class RobotHTM(Environment):
     """
-    Custom environment for a arm robot represented as Homogeneous Matrix.
+    Custom environment for an arm robot represented as Homogeneous Matrix.
     The goal is to reach a certain point.
     """
 
@@ -269,9 +257,10 @@ class RobotHTM(Environment):
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
     C_LATENCY = timedelta(0, 1, 0)
     C_INFINITY = np.finfo(np.float32).max
+    C_CYCLE_LIMIT = 100
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_num_joints=4, p_target_mode="Random", p_logging=Log.C_LOG_ALL):
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_num_joints=4, p_reset_seed=True, p_seed=None, p_target_mode="random", p_logging=Log.C_LOG_ALL):
         """
         Parameters:
             p_logging               Boolean switch for logging
@@ -281,8 +270,7 @@ class RobotHTM(Environment):
 
         self.RobotArm1 = RobotArm3D()
 
-        roboconf = {}
-        roboconf["Joints"] = []
+        joints = []
 
         jointType = []
         vectLinkLength = [[0, 0, 0], [0, 0, 0]]
@@ -300,12 +288,9 @@ class RobotHTM(Environment):
                 Joint_type=jointType[x],
                 Vector_link_length=vectorLink,
             )
-            roboconf["Joints"].append(joint)
+            joints.append(joint)
 
-        roboconf["Target_mode"] = p_target_mode
-        roboconf["Update_rate"] = 0.01
-
-        for robo in roboconf["Joints"]:
+        for robo in joints:
             self.RobotArm1.add_link_joint(
                 lvector=torch.Tensor(
                     [
@@ -322,8 +307,8 @@ class RobotHTM(Environment):
 
         self.RobotArm1.update_joint_coords()
         self.jointangles = self.RobotArm1.thetas
-        self.dt = roboconf["Update_rate"]
-        self.target_mode = roboconf["Target_mode"]
+        self.dt = 0.01
+        self.target_mode = p_target_mode
         self.target = None
         self.init_distance = None
         self.num_joint = self.RobotArm1.get_num_joint()
@@ -332,17 +317,17 @@ class RobotHTM(Environment):
 
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         self._state_space, self._action_space = self._setup_spaces()
+        self.set_random_seed(p_seed)
+        self._reset_seed = p_reset_seed
 
         self.reset()
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
         return None, None
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self):
         """
         Implement this method to enrich the state and action space with specific
@@ -351,17 +336,16 @@ class RobotHTM(Environment):
 
         # 1 Setup state space
         state_space = ESpace()
-        state_space.add_dim(Dimension(0, "Tx", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        state_space.add_dim(Dimension(1, "Ty", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        state_space.add_dim(Dimension(2, "Tz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        state_space.add_dim(Dimension(3, "Px", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        state_space.add_dim(Dimension(4, "Py", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
-        state_space.add_dim(Dimension(5, "Pz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Tx", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Ty", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Tz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Px", "Targetx", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Py", "Targety", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension("Pz", "Targetz", "", "m", "m", p_boundaries=[-np.inf, np.inf]))
 
         for idx in range(self.num_joint):
             state_space.add_dim(
                 Dimension(
-                    idx + 6,
                     "J%i" % (idx),
                     "Joint%i" % (idx),
                     "",
@@ -376,7 +360,6 @@ class RobotHTM(Environment):
         for idx in range(self.num_joint):
             action_space.add_dim(
                 Dimension(
-                    idx,
                     "A%i" % (idx),
                     "AV%i" % (idx),
                     "",
@@ -388,8 +371,7 @@ class RobotHTM(Environment):
 
         return state_space, action_space
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
         action = p_action.get_sorted_values()
         if not isinstance(action, torch.Tensor):
@@ -412,8 +394,7 @@ class RobotHTM(Environment):
 
         return state
 
-
- ## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _compute_success(self, p_state: State = None) -> bool:
         disterror = np.linalg.norm(np.array(p_state.get_values())[:3] - np.array(p_state.get_values())[3:6])
 
@@ -423,13 +404,11 @@ class RobotHTM(Environment):
         else:
             return False
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
         return False
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
         disterror = np.linalg.norm(np.array(p_state_new.get_values())[:3] - np.array(p_state_new.get_values())[3:6])
@@ -443,17 +422,16 @@ class RobotHTM(Environment):
         reward.set_overall_reward(rew.item())
         return reward
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def set_theta(self, theta):
         self.RobotArm1.thetas = theta.reshape(self.num_joint)
         self.RobotArm1.update_joint_coords()
         self.jointangles = self.RobotArm1.thetas
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
-        self.set_random_seed(p_seed)
+        if self._reset_seed:
+            self.set_random_seed(p_seed)
         theta = torch.zeros(self.RobotArm1.get_num_joint())
         self.RobotArm1.set_theta(theta)
         self.RobotArm1.update_joint_coords()
@@ -490,12 +468,10 @@ class RobotHTM(Environment):
         self._state = State(self._state_space)
         self._state.set_values(obs)
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         pass
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         pass

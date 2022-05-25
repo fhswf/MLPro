@@ -24,10 +24,14 @@
 ## -- 2021-12-09  2.1.7     SY       Clean code assurance
 ## -- 2021-12-19  2.1.8     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  2.1.9     DA       Class BGLP: renamed method reset() to _reset()
+## -- 2022-01-21  2.2.0     SY       Add cycle_limit as an input parameter
+## -- 2022-01-24  2.2.1     SY       Update seeding procedure, refactoring _reset()
+## -- 2022-02-25  2.2.2     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-05-23  2.2.3     SY       Bug fixing: Reward computation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.9 (2021-12-21)
+Ver. 2.2.3 (2022-05-23)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -709,12 +713,15 @@ class BGLP (Environment):
         the production target for batch operation (in L).
     prod_scenario : str
         'batch' means batch production scenario and 'continuous' means continuous production scenario.
+    cycle_limit : int
+        the number of cycle limit.
     
     """
     C_NAME              = "BGLP"
     C_LATENCY           = timedelta(0,1,0)    
     C_INFINITY          = np.finfo(np.float32).max
     C_REWARD_TYPE       = Reward.C_TYPE_EVERY_AGENT
+    C_CYCLE_LIMIT       = 0
     sils                = []
     hops                = []
     ress                = []
@@ -749,7 +756,7 @@ class BGLP (Environment):
     def __init__(self, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_logging=Log.C_LOG_ALL,
                  t_step=0.5, t_set=10.0, demand=0.1, lr_margin=1.0, lr_demand=4.0,
                  lr_energy=0.0010, margin_p=[0.2,0.8,4], prod_target=10000,
-                 prod_scenario='continuous'):
+                 prod_scenario='continuous', cycle_limit=0):
         self.num_envs       = 5                                                 # Number of internal sub-environments
         self.reward_type    = p_reward_type
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
@@ -764,6 +771,7 @@ class BGLP (Environment):
         self.C_SCIREF_VOLUME  = "152"
         self.C_SCIREF_DOI     = "10.1016/j.compchemeng.2021.107382"
         
+        self.C_CYCLE_LIMIT  = cycle_limit
         self.t              = 0
         self.t_step         = t_step
         self.t_set          = t_set
@@ -857,18 +865,18 @@ class BGLP (Environment):
         action_space    = ESpace()
         levels_max      = [17.42, 9.10, 17.42, 9.10, 17.42, 9.10]
 
-        state_space.add_dim(Dimension(0, 'E-0 LvlSiloA', 'R', 'Env-0 Level of Silo A', '', 'L', 'L',[0, levels_max[0]]))
-        state_space.add_dim(Dimension(1, 'E-0 LvlHopperA', 'R', 'Env-0 Level of Hopper A', '', 'L', 'L',[0, levels_max[1]]))
-        state_space.add_dim(Dimension(2, 'E-0 LvlSiloB', 'R', 'Env-0 Level of Silo B', '', 'L', 'L',[0, levels_max[2]]))
-        state_space.add_dim(Dimension(3, 'E-0 LvlHopperB', 'R', 'Env-0 Level of Hopper B', '', 'L', 'L',[0, levels_max[3]]))
-        state_space.add_dim(Dimension(4, 'E-0 LvlSiloC', 'R', 'Env-0 Level of Silo C', '', 'L', 'L',[0, levels_max[4]]))
-        state_space.add_dim(Dimension(5, 'E-0 LvlHopperC', 'R', 'Env-0 Level of Hopper C', '', 'L', 'L',[0, levels_max[5]]))
+        state_space.add_dim(Dimension('E-0 LvlSiloA', 'R', 'Env-0 Level of Silo A', '', 'L', 'L',[0, levels_max[0]]))
+        state_space.add_dim(Dimension('E-0 LvlHopperA', 'R', 'Env-0 Level of Hopper A', '', 'L', 'L',[0, levels_max[1]]))
+        state_space.add_dim(Dimension('E-0 LvlSiloB', 'R', 'Env-0 Level of Silo B', '', 'L', 'L',[0, levels_max[2]]))
+        state_space.add_dim(Dimension('E-0 LvlHopperB', 'R', 'Env-0 Level of Hopper B', '', 'L', 'L',[0, levels_max[3]]))
+        state_space.add_dim(Dimension('E-0 LvlSiloC', 'R', 'Env-0 Level of Silo C', '', 'L', 'L',[0, levels_max[4]]))
+        state_space.add_dim(Dimension('E-0 LvlHopperC', 'R', 'Env-0 Level of Hopper C', '', 'L', 'L',[0, levels_max[5]]))
         
-        action_space.add_dim(Dimension(0, 'E-0 Act', 'R', 'Env-0 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension(1, 'E-1 Act', 'R', 'Env-1 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension(2, 'E-2 Act', 'Z', 'Env-2 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension(3, 'E-3 Act', 'R', 'Env-3 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension(4, 'E-4 Act', 'R', 'Env-4 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-0 Act', 'R', 'Env-0 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-1 Act', 'R', 'Env-1 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-2 Act', 'Z', 'Env-2 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-3 Act', 'R', 'Env-3 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-4 Act', 'R', 'Env-4 Actuator Control', '', '', '', [0,1]))
 
         return state_space, action_space
 
@@ -887,7 +895,7 @@ class BGLP (Environment):
         state = State(self._state_space)
         sub_state_val = self.calc_state()
         for i in range(len(sub_state_val)):
-            state.set_value(i, sub_state_val[i])
+            state.set_value(state.get_dim_ids()[i], sub_state_val[i])
         return state
     
 
@@ -898,11 +906,12 @@ class BGLP (Environment):
 
         Parameters
         ----------
-        p_seed : int, optional
-            Not yet implemented. The default is None.
+        p_seed : int
+            Seed parameter for an internal random generator.
 
         """
-        self.set_random_seed(p_seed)
+        np.random.seed(p_seed)
+        self.levels_init = np.random.rand(6,1)
         self.reset_levels()
         self.reset_actuators()
         obs                 = self.calc_state()
@@ -940,11 +949,7 @@ class BGLP (Environment):
         for agent_id in p_action.get_agent_ids():
             action_elem = p_action.get_elem(agent_id)
             for action_id in action_elem.get_dim_ids():
-                action_elem_env = ActionElement(self.get_action_space())
-                action_elem_env.set_value(action_id, action_elem.get_value(action_id))
-                action_env      = Action()
-                action_env.add_elem(agent_id, action_elem_env)
-                action.append(action_elem_env.get_value(action_id))
+                action.append(action_elem.get_value(action_id))
         
         self.overflow_t         = np.zeros((len(self.ress),1))
         self.demand_t           = np.zeros((len(self.ress),1))
@@ -1044,22 +1049,24 @@ class BGLP (Environment):
             r_overall = 0
             r_overall = r_overall + sum(self.calc_reward()).item()
             reward.set_overall_reward(r_overall)
-
+        
+        elif self.reward_type == Reward.C_TYPE_EVERY_AGENT:
+           for agent_id in self._last_action.get_agent_ids():
+               r_reward = self.calc_reward()
+               reward.add_agent_reward(agent_id, r_reward[int(agent_id)])
+               
         else:
            for agent_id in self._last_action.get_agent_ids():
-                agent_action_elem   = self._last_action.get_elem(agent_id)
-                agent_action_ids    = agent_action_elem.get_dim_ids()
-                r_agent             = 0
-                r_reward            = self.calc_reward()
+                agent_action_elem = self._last_action.get_elem(agent_id)
+                agent_action_ids = agent_action_elem.get_dim_ids()
+                r_agent = 0
+                r_reward = self.calc_reward()
+                action_idx = 0
                 for action_id in agent_action_ids:
-                    r_action        = r_reward[action_id]
-                    if self.reward_type == Reward.C_TYPE_EVERY_ACTION:
-                        reward.add_action_reward(agent_id, action_id, r_action)
-                    elif self.reward_type == Reward.C_TYPE_EVERY_AGENT:
-                        r_agent = r_agent + r_action
-                if self.reward_type == Reward.C_TYPE_EVERY_AGENT:
-                    r_agent = r_agent / len(agent_action_ids)
-                    reward.add_agent_reward(agent_id, r_agent)
+                    r_action = r_reward[action_idx]
+                    action_idx += 1
+                    reward.add_action_reward(agent_id, action_id, r_action)
+                    
         return reward
 
   
@@ -1156,7 +1163,6 @@ class BGLP (Environment):
         This method resets reservoirs.
         
         """
-        self.levels_init = np.random.rand(6,1)
         for resnum in range(len(self.ress)):
             res = self.ress[resnum]
             res.vol_cur_abs = self.levels_init[resnum]*res.vol_max

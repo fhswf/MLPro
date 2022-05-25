@@ -16,10 +16,11 @@
 ## -- 2021-12-03  1.0.6     DA       Refactoring
 ## -- 2021-12-19  1.0.7     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  1.0.8     DA       Class GridWorld: renamed method reset() to _reset()
+## -- 2022-02-25  1.0.9     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.8 (2021-12-21)
+Ver. 1.0.9 (2021-02-25)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -93,10 +94,10 @@ class GridWorld (Environment):
             data *= size
             
         for i in range(data):
-            state_space.add_dim(Dimension( p_id=i, p_name_short=str(i), p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[0,3]))
+            state_space.add_dim(Dimension( p_name_short=str(i), p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[0,3]))
         
         for i in range(len(self.grid_size)):
-            action_space.add_dim(Dimension( p_id=i, p_name_short=str(i), p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[-self.grid_size[i], self.grid_size[i]]))
+            action_space.add_dim(Dimension( p_name_short=str(i), p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[-self.grid_size[i], self.grid_size[i]]))
 
         return state_space, action_space
 

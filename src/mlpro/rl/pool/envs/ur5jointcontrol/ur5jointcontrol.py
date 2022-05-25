@@ -14,43 +14,109 @@
 ## -- 2021-12-20  1.0.5     DA       Replaced 'done' by 'success'
 ## -- 2021-12-20  1.0.6     WB       Update 'success' and 'broken' rule
 ## -- 2021-12-21  1.0.7     DA       Class UR5JointControl: renamed method reset() to _reset()
+## -- 2022-01-20  1.0.8     MRD      Use the gym wrapper to wrap the ur5 environment
+## -- 2022-03-04  1.1.0     WB       Adds the ability to control gripper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2021-12-21)
+Ver. 1.1.0 (2022-03-04)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
 """
 
+import sys
+import platform
+import subprocess
+import time
+import os
+import mlpro
+from mlpro.bf.various import Log
 
-from mlpro.rl.models import *
-import numpy as np
-import gym
-import rospy
+logger = Log()
+logger.C_TYPE = "Log"
+logger.C_NAME = "Pre-check ROS"
+
+# Check OS
+logger.log(Log.C_LOG_TYPE_I, "Checking Operating System ......")
+if platform.system() != "Linux":
+    logger.log(Log.C_LOG_TYPE_E, "Operating System is not supported!")
+    logger.log(Log.C_LOG_TYPE_E, "Please use Linux")
+    logger.log(Log.C_LOG_TYPE_E, "Exiting....")
+    sys.exit()
+else:
+    logger.log(Log.C_LOG_TYPE_S, "Operating System is supported")
+
+# Check if ROS is installed
+process = subprocess.run("which roscore", shell=True, stdout=subprocess.PIPE)
+output = process.stdout
+logger.log(Log.C_LOG_TYPE_I, "Checking ROS Installation ......")
+if output==bytes():
+    logger.log(Log.C_LOG_TYPE_E, "ROS is not installed!")
+    logger.log(Log.C_LOG_TYPE_E, "Please install ROS")
+    logger.log(Log.C_LOG_TYPE_E, "Exiting....")
+    sys.exit()
+else:
+    logger.log(Log.C_LOG_TYPE_S, "ROS is installed")
+
 import rospkg
+
+# Check if UR5 Workspace is installed
+installed = False
+rospack = rospkg.RosPack()
+try:
+    rospack.get_path("ur5_lab")
+except rospkg.common.ResourceNotFound:
+    logger.log(Log.C_LOG_TYPE_E, "UR5 Workspace is not installed!")
+    logger.log(Log.C_LOG_TYPE_W, "If you have ran this script, please CTRL+C and restart terminal")
+else:
+    installed = True
+
+if not installed:
+    logger.log(Log.C_LOG_TYPE_W, "Building ROS Workspace in 10 Seconds")
+    for sec in range(10):
+        time.sleep(1)
+        logger.log(Log.C_LOG_TYPE_W, str(9-sec)+"...")
+
+    ros_workspace = os.path.dirname(mlpro.__file__)+"/rl/pool/envs/ur5jointcontrol"
+    command = "cd " + ros_workspace + " && catkin_make"
+    try:
+        process = subprocess.check_output(command, shell=True)
+    except subprocess.CalledProcessError as e:
+        logger.log(Log.C_LOG_TYPE_E, "Build Failed")
+        sys.exit()
+
+    logger.log(Log.C_LOG_TYPE_S, "Successfully Built")
+    command = "echo 'source "+ros_workspace+"/devel/setup.bash"+"' >> ~/.bashrc"
+    process = subprocess.run(command, shell=True)
+    logger.log(Log.C_LOG_TYPE_W, "Please restart your terminal and run the Howto script again")
+    sys.exit()
+else:
+    logger.log(Log.C_LOG_TYPE_S, "UR5 Workspace is installed")
+
+import rospy
+from mlpro.rl.models import *
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+import numpy as np
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
 from openai_ros.task_envs.task_commons import LoadYamlFileParamsTest
-import subprocess
-
-
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class UR5JointControl(Environment):
+class UR5JointControl(WrEnvGYM2MLPro):
     """
     This environment multivariate space and action spaces by duplicating the
     Gym-based environment 'UR5RandomTargetTask-v0'. 
     """
 
-    C_NAME      = 'UR5JointControl'
-    C_LATENCY   = timedelta(0,5,0)
-    C_INFINITY  = np.finfo(np.float32).max      
+    C_NAME = 'UR5JointControl'
+    C_LATENCY = timedelta(0, 5, 0)
+    C_INFINITY = np.finfo(np.float32).max
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=True):
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_seed=0, p_visualize=False, p_logging=True):
         """
         Parameters:
             p_logging       Boolean switch for logging
@@ -61,115 +127,29 @@ class UR5JointControl(Environment):
         LoadYamlFileParamsTest(rospackage_name="ur5_lab",
                                rel_path_from_package_to_file="config",
                                yaml_file_name="ur5_simple_task_param.yaml")
-                    
-        super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+
+        ros_ws_path = mlpro.rl.pool.envs.ur5jointcontrol.__file__.replace("/__init__.py", "")
+        rospy.set_param('ros_ws_path', ros_ws_path)
+        rospy.set_param('visualize', p_visualize)
 
         # Init OpenAI_ROS ENV
         task_and_robot_environment_name = rospy.get_param('/ur5_lab/task_and_robot_environment_name')
-    
+
         max_step_episode = rospy.get_param('/ur5_lab/max_iterations')
 
-        self.env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
-        
-        self.reset()
-                
-                
-## -------------------------------------------------------------------------------------------------
-    def _obs_to_state(self, observation):
-        state = State(self._state_space)
-        state.set_values(observation)
-        return state
-        
+        env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
+        env.seed(p_seed)
 
-## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def setup_spaces():
-        # Setup state space
-        state_space = ESpace()
+        super().__init__(p_gym_env=env)
 
-        state_space.add_dim(Dimension(0, 'Px', 'PositionX', '', 'm', 'm', 
-                                p_boundaries=[-math.inf,math.inf]))
-        state_space.add_dim(Dimension(1, 'Py', 'PositionY', '', 'm', 'm', 
-                                p_boundaries=[-math.inf,math.inf]))
-        state_space.add_dim(Dimension(2, 'Pz', 'PositionZ', '', 'm', 'm', 
-                                p_boundaries=[-math.inf,math.inf]))
-        state_space.add_dim(Dimension(3, 'Tx', 'Targetx', '', 'm', 'm', 
-                                p_boundaries=[-math.inf,math.inf]))
-        state_space.add_dim(Dimension(4, 'Ty', 'Targety', '', 'm', 'm', 
-                                p_boundaries=[-math.inf,math.inf]))
-        state_space.add_dim(Dimension(5, 'Tz', 'Targetz', '', 'm', 'm', 
-                                p_boundaries=[-math.inf,math.inf]))
-            
-        # Setup action space
-        action_space = ESpace()
+    ## -------------------------------------------------------------------------------------------------
+    def compute_success(self, p_state: State) -> bool:
+        obs = p_state.get_values()
+        close = np.allclose(a=obs[:3],
+                            b=obs[3:],
+                            atol=0.1)
 
-        for idx in range(6):
-            action_space.add_dim(Dimension(idx, 'J%i'%(idx), 'Joint%i'%(idx), '', 'rad', 'rad', p_boundaries=[-0.1,0.1]))
-
-        return state_space, action_space
-
-    
-## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None) -> None:
-        random.seed(p_seed)
-        obs = self.env.reset()
-        self._state = self._obs_to_state(obs)
-        self._state.set_success(True)
-        self._state.set_broken(True)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
-        obs, self.reward_gym, done, info = self.env.step(p_action.get_sorted_values())
-        self._num_cycles += 1
-        state = self._obs_to_state(obs)
-        close = np.allclose(a=obs[:3], b=obs[3:], atol=0.05)
-        
-        if not done:
-            state.set_broken(False)
-            state.set_success(False)
-        elif not close and ( self._num_cycles < self.get_cycle_limit() ):
-            state.set_broken(True)
-            
-        return state
-
-
-## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state:State) -> bool:
-        return self.get_success()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state:State) -> bool:
-        return self.get_broken()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _evaluate_state(self) -> None: 
-        obs = self.env.get_observation()
-        
-        close = np.allclose(a=obs[:3], b=obs[3:], atol=0.05)
         if close:
-            self._state.set_success(True)
+            self._state.set_terminal(True)
 
-
-## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
-        reward = Reward(Reward.C_TYPE_OVERALL)
-        reward.set_overall_reward(self.reward_gym)
-        self.reward = reward
-        return self.reward
-
-
-## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
-        pass
-
-## -------------------------------------------------------------------------------------------------
-    def get_cycle_limit(self):
-        return self.env._max_episode_steps
+        return close

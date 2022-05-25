@@ -23,10 +23,20 @@
 ## --                                - Optimized 'done' detection in both classes
 ## -- 2021-12-23  1.3.1     MRD      Remove adding self._num_cycle on simulate_reaction() due to 
 ## --                                EnvBase.process_actions() is already adding self._num_cycle
+## -- 2022-01-20  1.3.2     SY       - Update PettingZoo2MLPro's reward type to C_TYPE_EVERY_AGENT 
+## --                                - Update Wrapper MLPro2PettingZoo - Method step()
+## -- 2022-01-21  1.3.3     SY       Class WrEnvPZOO2MLPro: 
+## --                                - replace variable _reward to _last_reward 
+## --                                Class WrEnvMLPro2PZoo:  
+## --                                - refactored done detection 
+## --                                - removed artifacts of cycle counting
+## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-03-21  1.3.5     SY       Refactoring due to PettingZoo version 1.17.0
+## -- 2022-05-20  1.3.6     SY       Refactoring: Action space boundaries in WrEnvPZOO2MLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2021-12-23)
+Ver. 1.3.6 (2022-05-20)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -95,14 +105,22 @@ class WrEnvPZOO2MLPro(Environment):
 ## -------------------------------------------------------------------------------------------------
     def _recognize_space(self, p_zoo_space, dict_name) -> ESpace:
         space = ESpace()
-        id_ = 0
         
         if dict_name == "observation":
-            space.add_dim(Dimension(p_id=0,p_name_short='0', p_base_set='DO'))
+            space.add_dim(Dimension(p_name_short='0', p_base_set='DO'))
         elif dict_name == "action":
             for k in p_zoo_space:
-                space.add_dim(Dimension(p_id=id_,p_name_short=k, p_base_set='DO'))
-                id_ += 1
+                if isinstance(p_zoo_space[k], gym.spaces.Discrete):
+                    space.add_dim(Dimension(p_name_short=k, p_base_set=Dimension.C_BASE_SET_Z,
+                                            p_boundaries=[0, p_zoo_space[k].n]))
+                elif isinstance(p_zoo_space[k], gym.spaces.Box):
+                    shape_dim = len(p_zoo_space[k].shape)
+                    for i in range(shape_dim):
+                        for d in range(p_zoo_space[k].shape[i]):
+                            space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
+                                                    p_boundaries=[p_zoo_space[k].low[d], p_zoo_space[k].high[d]]))
+                else:
+                    space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
                 
         return space
 
@@ -172,10 +190,10 @@ class WrEnvPZOO2MLPro(Environment):
             else:
                 new_state.set_values(obs.get_data())
 
-
         # 4 Create and store reward object
-        self._reward = Reward(Reward.C_TYPE_OVERALL)
-        self._reward.set_overall_reward(reward_zoo)
+        self._last_reward = Reward(Reward.C_TYPE_EVERY_AGENT)
+        for key in self._zoo_env.rewards.keys():
+            self._last_reward.add_agent_reward(key, self._zoo_env.rewards.get(key))
 
         return new_state
 
@@ -185,7 +203,7 @@ class WrEnvPZOO2MLPro(Environment):
         if ( p_state_old is not None ) or ( p_state_new is not None ):
             raise NotImplementedError
 
-        return self._reward
+        return self._last_reward
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -250,11 +268,10 @@ class WrEnvMLPro2PZoo():
 
 ## -------------------------------------------------------------------------------------------------
     class raw_env(AECEnv):
-        metadata = {'render.modes': ['human'], "name": "pzoo_custom"}
+        metadata = {'render_modes': ['human', 'ansi'], "name": "pzoo_custom"}
 
 ## -------------------------------------------------------------------------------------------------
         def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
-            self._num_cycles            = 0
             self._mlpro_env             = p_mlpro_env
             self.possible_agents        = [str(r) for r in range(p_num_agents)]
             self.agent_name_mapping     = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
@@ -287,12 +304,9 @@ class WrEnvMLPro2PZoo():
             
             agent = self.agent_selection
             self._cumulative_rewards[agent] = 0
-            self._num_cycles += 1
             cycle_limit = self._mlpro_env.get_cycle_limit()
             
-            if agent == self.possible_agents[0]:
-                self.action_set = []
-            self.action_set.append(action[self.agent_selection.index(agent)])
+            self.state[self.agent_selection] = action[int(self.agent_selection)]
             
             if agent == self.possible_agents[-1]:
                 _action     = Action()
@@ -301,9 +315,10 @@ class WrEnvMLPro2PZoo():
                     action = np.array([action])
                 for i in range(idx):
                     _act_set    = Set()
-                    _act_set.add_dim(Dimension(i,'action_'+str(i)))
+                    _act_set.add_dim(Dimension('action_'+str(i)))
                     _act_elem   = Element(_act_set)
-                    _act_elem.set_value(i, self.action_set[i])
+                    _ids = _act_elem.get_dim_ids()
+                    _act_elem.set_value(_ids[0], self.state[self.possible_agents[i]])
                     _action.add_elem(self.possible_agents[i], _act_elem)
                 
                 self._mlpro_env.process_action(_action)
@@ -312,11 +327,15 @@ class WrEnvMLPro2PZoo():
                     if not self.rewards[self.possible_agents[i]]:
                         self.rewards[self.possible_agents[i]] = 0
             
-                self._mlpro_env.get_state().set_timeout( (cycle_limit>0) and ( self._num_cycles >= cycle_limit ) )
-
-            if self._mlpro_env.get_state().get_terminal():
-                self.dones = {agent: True for agent in self.agents}
+                if self._mlpro_env.get_state().get_terminal():
+                    self.dones = {agent: True for agent in self.agents}
+                    
+                for i in self.agents:
+                    self.observations[i] = self.state[self.agents[1-int(i)]]
             
+            else:
+                self._clear_rewards()
+                
             self.agent_selection = self._agent_selector.next()
             
             self._accumulate_rewards()
@@ -335,7 +354,6 @@ class WrEnvMLPro2PZoo():
 
 ## -------------------------------------------------------------------------------------------------
         def reset(self):
-            self._num_cycles = 0
             self.agents = self.possible_agents[:]
             self.rewards = {agent: 0 for agent in self.agents}
             self._cumulative_rewards = {agent: 0 for agent in self.agents}

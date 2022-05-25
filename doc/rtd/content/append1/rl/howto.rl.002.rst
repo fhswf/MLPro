@@ -29,14 +29,16 @@ Please install the following packages to run this examples properly:
   ..
     - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
+Results
+`````````````````
+.. image:: images/Cartpole.png
+
+
+The Gym cartpole window appears and shows a randowm behavior while the demo run is logged on the console. Deno should terminate after 61 cycles because of the fixed random seed.
 
 Example Code
 `````````````````
 
 .. literalinclude:: ../../../../../examples/rl/Howto 02 - (RL) Run agent with own policy with gym environment.py
     :language: python
-
-Results
-`````````````````
-The Gym cartpole window appears and shows a randowm behavior while the demo run is logged on the console. Deno should terminate after 61 cycles because of the fixed random seed.
 

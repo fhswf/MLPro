@@ -18,15 +18,12 @@ Ver. 1.0.2 (2021-12-10)
 This module provides various classes related to data plotting.
 """
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 from mlpro.bf.various import LoadSave
 from mlpro.bf.data import DataStoring
 import statistics
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -42,22 +39,17 @@ class Plottable:
         Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
     """
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
-        
         pass
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         """
         Updates the plot.
         """
 
         pass
-
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -99,30 +91,29 @@ class DataPlotting(LoadSave):
         one of the plotting types, which plot only the mean value of each variable for each frame.
         
     """
-    
-    C_PLOT_TYPE_CY      = 'Cyclic'
-    C_PLOT_TYPE_EP      = 'Episodic'
-    C_PLOT_TYPE_EP_M    = 'Episodic Mean'
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_data:DataStoring, p_type=C_PLOT_TYPE_EP, p_window=100,
-                 p_showing=True, p_printing=None, p_figsize=(7,7), p_color="darkblue"):
-        self.data       = p_data
-        self.type       = p_type
-        self.window     = p_window
-        self.showing    = p_showing
-        self.plots      = [[],[]]
-        self.printing   = p_printing
-        self.figsize    = p_figsize
-        self.color      = p_color
+    C_PLOT_TYPE_CY = 'Cyclic'
+    C_PLOT_TYPE_EP = 'Episodic'
+    C_PLOT_TYPE_EP_M = 'Episodic Mean'
 
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_data: DataStoring, p_type=C_PLOT_TYPE_EP, p_window=100,
+                 p_showing=True, p_printing=None, p_figsize=(7, 7), p_color="darkblue"):
+        self.data = p_data
+        self.type = p_type
+        self.window = p_window
+        self.showing = p_showing
+        self.plots = [[], []]
+        self.printing = p_printing
+        self.figsize = p_figsize
+        self.color = p_color
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_plots(self):
         """
         A function to plot data.
         """
-        
+
         if self.type == 'Cyclic':
             self.plots_type_cy()
         elif self.type == 'Episodic':
@@ -130,33 +121,33 @@ class DataPlotting(LoadSave):
         elif self.type == 'Episodic Mean':
             self.plots_type_ep_mean()
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def plots_type_cy(self):
         """
         A function to plot data per cycle.
         """
-        
+
         for name in self.data.names:
-            maxval  = 0
+            maxval = 0
             try:
                 if self.printing[name][0]:
-                    fig     = plt.figure(figsize=self.figsize)
-                    lines   = []
-                    label   = []
+                    fig = plt.figure(figsize=self.figsize)
+                    lines = []
+                    label = []
                     plt.title(name)
                     plt.grid(True, which="both", axis="both")
                     for fr in range(len(self.data.memory_dict[name])):
                         fr_id = self.data.frame_id[name][fr]
-                        lines += plt.plot(self.moving_mean(self.data.get_values(name,fr_id),self.window), color=self.color, alpha=(fr+1.0)/(len(self.data.memory_dict[name])+1))
+                        lines += plt.plot(self.moving_mean(self.data.get_values(name, fr_id), self.window),
+                                          color=self.color, alpha=(fr + 1.0) / (len(self.data.memory_dict[name]) + 1))
                         if self.printing[name][2] == -1:
-                            maxval = max(max(self.data.get_values(name,fr_id)), maxval)
+                            maxval = max(max(self.data.get_values(name, fr_id)), maxval)
                         else:
                             maxval = self.printing[name][2]
-                        label.append("%s"%fr_id)
+                        label.append("%s" % fr_id)
                     plt.ylim(self.printing[name][1], maxval)
                     plt.xlabel("cycles")
-                    plt.legend(label, bbox_to_anchor = (1,0.5), loc = "center left")
+                    plt.legend(label, bbox_to_anchor=(1, 0.5), loc="center left")
                     self.plots[0].append(name)
                     self.plots[1].append(fig)
                     if self.showing:
@@ -166,30 +157,29 @@ class DataPlotting(LoadSave):
             except:
                 pass
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def plots_type_ep(self):
         """
         A function to plot data per frame by extending the cyclic plots in one plot.
         """
-        
+
         for name in self.data.names:
-            maxval  = 0
+            maxval = 0
             try:
                 if self.printing[name][0]:
-                    fig     = plt.figure(figsize=self.figsize)
-                    lines   = []
-                    data    = []
+                    fig = plt.figure(figsize=self.figsize)
+                    lines = []
+                    data = []
                     plt.title(name)
                     plt.grid(True, which="both", axis="both")
                     for fr in range(len(self.data.memory_dict[name])):
                         fr_id = self.data.frame_id[name][fr]
-                        data.extend(self.data.get_values(name,fr_id))
+                        data.extend(self.data.get_values(name, fr_id))
                         if self.printing[name][2] == -1:
-                            maxval = max(max(self.data.get_values(name,fr_id)), maxval)
+                            maxval = max(max(self.data.get_values(name, fr_id)), maxval)
                         else:
                             maxval = self.printing[name][2]
-                    lines += plt.plot(self.moving_mean(data[:],self.window), color=self.color)
+                    lines += plt.plot(self.moving_mean(data[:], self.window), color=self.color)
                     plt.ylim(self.printing[name][1], maxval)
                     plt.xlabel("continuous cycles")
                     self.plots[0].append(name)
@@ -201,30 +191,29 @@ class DataPlotting(LoadSave):
             except:
                 pass
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def plots_type_ep_mean(self):
         """
         A function to plot data per frame according to its mean value.
         """
-        
+
         for name in self.data.names:
-            maxval  = 0
+            maxval = 0
             try:
                 if self.printing[name][0]:
-                    fig     = plt.figure(figsize=self.figsize)
-                    lines   = []
-                    data    = []
+                    fig = plt.figure(figsize=self.figsize)
+                    lines = []
+                    data = []
                     plt.title(name)
                     plt.grid(True, which="both", axis="both")
                     for fr in range(len(self.data.memory_dict[name])):
                         fr_id = self.data.frame_id[name][fr]
-                        data.extend([statistics.mean(self.data.get_values(name,fr_id))])
+                        data.extend([statistics.mean(self.data.get_values(name, fr_id))])
                     if self.printing[name][2] == -1:
                         maxval = max(max(data[:]), maxval)
                     else:
                         maxval = self.printing[name][2]
-                    lines += plt.plot(self.moving_mean(data[:],self.window), color=self.color)
+                    lines += plt.plot(self.moving_mean(data[:], self.window), color=self.color)
                     plt.ylim(self.printing[name][1], maxval)
                     plt.xlabel("episodes")
                     self.plots[0].append(name)
@@ -236,8 +225,7 @@ class DataPlotting(LoadSave):
             except:
                 pass
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def moving_mean(self, p_inputs, p_window):
         """
         This method creates a series of averages of different subsets of the full data set.
@@ -255,18 +243,17 @@ class DataPlotting(LoadSave):
             transformed data set.
 
         """
-        
-        inputs  = np.array(p_inputs)
+
+        inputs = np.array(p_inputs)
         outputs = np.zeros_like(inputs)
         if len(inputs.shape) == 1:
-            outputs = np.convolve(inputs, np.ones((p_window,))/p_window, mode='same')
+            outputs = np.convolve(inputs, np.ones((p_window,)) / p_window, mode='same')
         else:
             for col in range(inputs.shape[1]):
-                outputs[:,col] = np.convolve(inputs[:,col], np.ones((p_window,))/p_window, mode='same')
+                outputs[:, col] = np.convolve(inputs[:, col], np.ones((p_window,)) / p_window, mode='same')
         return outputs
 
-
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def save_plots(self, p_path, p_format, p_dpi_mul=1):
         """
         This method is used to save generated plots.
@@ -295,7 +282,8 @@ class DataPlotting(LoadSave):
             if not os.path.exists(p_path):
                 os.makedirs(p_path)
             for idx in range(num_plots):
-                self.plots[1][idx].savefig(p_path + os.sep + self.plots[0][idx] + "." + p_format, dpi=500*p_dpi_mul, bbox_inches = 'tight')
+                self.plots[1][idx].savefig(p_path + os.sep + self.plots[0][idx] + "." + p_format, dpi=500 * p_dpi_mul,
+                                           bbox_inches='tight')
             return True
         except:
             return False

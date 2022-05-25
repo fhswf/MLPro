@@ -7,10 +7,13 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-08  0.0.0     SY       Creation
 ## -- 2021-12-08  1.0.0     SY       Release of first version
+## -- 2022-01-21  1.0.1     DA       Renaming: tupel -> tuple
+## -- 2022-01-27  1.0.2     SY       Class WrHPTHyperopt enhancement
+## -- 2022-02-25  1.0.3     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-08)
+Ver. 1.0.3 (2022-02-25)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 """
@@ -46,7 +49,7 @@ class myPolicy (Policy):
         """
         super().__init__(p_observation_space, p_action_space, p_buffer_size, p_ada, p_logging)
         self._hyperparam_space  = HyperParamSpace()
-        self._hyperparam_tupel  = None
+        self._hyperparam_tuple  = None
         self._init_hyperparam()
     
 
@@ -57,26 +60,28 @@ class myPolicy (Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self):
-        self._hyperparam_space.add_dim(HyperParam(0,'num_states','Z', p_boundaries = [1,100]))
-        self._hyperparam_space.add_dim(HyperParam(1,'smoothing','R', p_boundaries = [0.1,0.5]))
-        self._hyperparam_space.add_dim(HyperParam(2,'lr_rate','R', p_boundaries = [0.001,0.1]))
-        self._hyperparam_space.add_dim(HyperParam(3,'buffer_size','Z', p_boundaries = [10000,100000]))
-        self._hyperparam_space.add_dim(HyperParam(4,'update_rate','Z', p_boundaries = [5,20]))
-        self._hyperparam_space.add_dim(HyperParam(5,'sampling_size','Z', p_boundaries = [64,256]))
-        self._hyperparam_tupel = HyperParamTupel(self._hyperparam_space)
+        self._hyperparam_space.add_dim(HyperParam('num_states','Z', p_boundaries = [1,100]))
+        self._hyperparam_space.add_dim(HyperParam('smoothing','R', p_boundaries = [0.1,0.5]))
+        self._hyperparam_space.add_dim(HyperParam('lr_rate','R', p_boundaries = [0.001,0.1]))
+        self._hyperparam_space.add_dim(HyperParam('buffer_size','Z', p_boundaries = [10000,100000]))
+        self._hyperparam_space.add_dim(HyperParam('update_rate','Z', p_boundaries = [5,20]))
+        self._hyperparam_space.add_dim(HyperParam('sampling_size','Z', p_boundaries = [64,256]))
+        self._hyperparam_tuple = HyperParamTuple(self._hyperparam_space)
         
-        self._hyperparam_tupel.set_value(0, 100)
-        self._hyperparam_tupel.set_value(1, 0.035)
-        self._hyperparam_tupel.set_value(2, 0.0001)
-        self._hyperparam_tupel.set_value(3, 100000)
-        self._hyperparam_tupel.set_value(4, 100)
-        self._hyperparam_tupel.set_value(4, 256)
+        ids_ = self._hyperparam_tuple.get_dim_ids()
+        self._hyperparam_tuple.set_value(ids_[0], 100)
+        self._hyperparam_tuple.set_value(ids_[1], 0.035)
+        self._hyperparam_tuple.set_value(ids_[2], 0.0001)
+        self._hyperparam_tuple.set_value(ids_[3], 100000)
+        self._hyperparam_tuple.set_value(ids_[4], 100)
+        self._hyperparam_tuple.set_value(ids_[5], 256)
     
 
 ## -------------------------------------------------------------------------------------------------
     def compute_action(self, p_state: State) -> Action:
         my_action_values = np.zeros(self._action_space.get_num_dim())
         for d in range(self._action_space.get_num_dim()):
+            self.set_random_seed(None)
             my_action_values[d] = random.random() 
         return Action(self._id, self._action_space, my_action_values)
     
@@ -110,8 +115,8 @@ class BGLP_Rnd(RLScenario):
         # Agent 1
         _name         = 'BELT_CONVEYOR_A'
         _id           = 0
-        _ospace       = state_space.spawn([0,1])
-        _aspace       = action_space.spawn([0])
+        _ospace       = state_space.spawn([state_space.get_dim_ids()[0],state_space.get_dim_ids()[1]])
+        _aspace       = action_space.spawn([action_space.get_dim_ids()[0]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
@@ -128,8 +133,8 @@ class BGLP_Rnd(RLScenario):
         # Agent 2
         _name         = 'VACUUM_PUMP_B'
         _id           = 1
-        _ospace       = state_space.spawn([1,2])
-        _aspace       = action_space.spawn([1])
+        _ospace       = state_space.spawn([state_space.get_dim_ids()[1],state_space.get_dim_ids()[2]])
+        _aspace       = action_space.spawn([action_space.get_dim_ids()[1]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
@@ -146,8 +151,8 @@ class BGLP_Rnd(RLScenario):
         # Agent 3
         _name         = 'VIBRATORY_CONVEYOR_B'
         _id           = 2
-        _ospace       = state_space.spawn([2,3])
-        _aspace       = action_space.spawn([2])
+        _ospace       = state_space.spawn([state_space.get_dim_ids()[2],state_space.get_dim_ids()[3]])
+        _aspace       = action_space.spawn([action_space.get_dim_ids()[2]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
@@ -164,8 +169,8 @@ class BGLP_Rnd(RLScenario):
         # Agent 4
         _name         = 'VACUUM_PUMP_C'
         _id           = 3
-        _ospace       = state_space.spawn([3,4])
-        _aspace       = action_space.spawn([3])
+        _ospace       = state_space.spawn([state_space.get_dim_ids()[3],state_space.get_dim_ids()[4]])
+        _aspace       = action_space.spawn([action_space.get_dim_ids()[3]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
@@ -182,8 +187,8 @@ class BGLP_Rnd(RLScenario):
         # Agent 5
         _name         = 'ROTARY_FEEDER_C'
         _id           = 4
-        _ospace       = state_space.spawn([4,5])
-        _aspace       = action_space.spawn([4])
+        _ospace       = state_space.spawn([state_space.get_dim_ids()[4],state_space.get_dim_ids()[5]])
+        _aspace       = action_space.spawn([action_space.get_dim_ids()[4]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
         self._agent.add_agent(
             p_agent=Agent(
@@ -207,41 +212,47 @@ class BGLP_Rnd(RLScenario):
 
 if __name__ == "__main__":
     # Parameters for demo mode
-    logging     = Log.C_LOG_ALL
-    visualize   = False
-    dest_path   = str(Path.home())
+    logging         = Log.C_LOG_WE
+    visualize       = False
+    dest_path       = str(Path.home())
+    cycle_limit     = 100
+    cycle_per_ep    = 10
+    eval_freq       = 2
+    eval_grp_size   = 5
+    adapt_limit     = 0
+    stagnant_limit  = 5
+    score_ma_hor    = 5
  
 else:
     # Parameters for internal unit test
-    logging     = Log.C_LOG_NOTHING
-    visualize   = False
-    dest_path   = None
+    logging         = Log.C_LOG_NOTHING
+    visualize       = False
+    dest_path       = None
+    cycle_limit     = 100
+    cycle_per_ep    = 10
+    eval_freq       = 2
+    eval_grp_size   = 1
+    adapt_limit     = 0
+    stagnant_limit  = 0
+    score_ma_hor    = 0
 
 
 # 3. Instantiate a hyperopt wrapper
-myHyperopt = WrHPTHyperopt(p_logging=logging,
+myHyperopt = WrHPTHyperopt(p_logging=Log.C_LOG_ALL,
                            p_algo=WrHPTHyperopt.C_ALGO_TPE,
                            p_ids=None)
     
 
-# 4. Instantiate a scenario
-myscenario  = BGLP_Rnd(
-    p_mode=Mode.C_MODE_SIM,
-    p_ada=True,
-    p_cycle_limit=0,
-    p_visualize=visualize,
-    p_logging=logging
-)
-
-
-# 5. Train players in the scenario and turn the hyperparamter tuning on
+# 4. Train players in the scenario and turn the hyperparamter tuning on
 training        = RLTraining(
-    p_scenario=myscenario,
-    p_max_cycles_per_episode=1,
-    p_cycle_limit=10,
-    p_max_adaptations=0,
-    p_max_stagnations=0,
-    p_eval_frequency=0,
+    p_scenario_cls=BGLP_Rnd,
+    p_cycle_limit=cycle_limit,
+    p_cycles_per_epi_limit=cycle_per_ep,
+    p_eval_frequency=eval_freq,
+    p_eval_grp_size=eval_grp_size,
+    p_adaptation_limit=adapt_limit,
+    p_stagnation_limit=stagnant_limit,
+    p_score_ma_horizon=score_ma_hor,
     p_hpt=myHyperopt,
     p_hpt_trials=10,
     p_collect_states=True,

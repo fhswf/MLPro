@@ -16,10 +16,12 @@
 ## -- 2021-12-12  1.2.2     DA       Method MutliCartPole.get_cycle_limit() implemented
 ## -- 2021-12-19  1.2.3     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  1.2.4     DA       Class MultiCartPole: renamed method reset() to _reset()
+## -- 2022-02-25  1.2.5     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-04-06  1.2.6     LSB      Freezing single environment after done returns true
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2021-12-21)
+Ver. 1.2.6 (2022-04-06)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -61,8 +63,10 @@ class MultiCartPole (Environment):
         self._state_space, self._action_space = self._setup_spaces()
 
         for i in range(self._num_envs): 
-            state_space_env  = self._state_space.spawn([i*4, i*4+1, i*4+2, i*4+3])
-            action_space_env = self._action_space.spawn([i])
+            state_space_id   = self._state_space.get_dim_ids()
+            action_space_id  = self._action_space.get_dim_ids()
+            state_space_env  = self._state_space.spawn([state_space_id[i*4], state_space_id[i*4+1], state_space_id[i*4+2], state_space_id[i*4+3]])
+            action_space_env = self._action_space.spawn([action_space_id[i]])
             env              = WrEnvGYM2MLPro(gym.make('CartPole-v1'), state_space_env, action_space_env, p_logging=p_logging)
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)
@@ -90,13 +94,13 @@ class MultiCartPole (Environment):
         for i in range(self._num_envs):
             # Add a set of state dimensions for each sub-environment
             env_str = str(i)
-            state_space.add_dim(Dimension( p_id=i*4, p_name_short='E-' + env_str + ' CPos', p_name_long='Env-' + env_str + ' Cart Position', p_unit='m', p_boundaries=[-4.8, 4.8]))
-            state_space.add_dim(Dimension( p_id=i*4+1, p_name_short='E-' + env_str + ' CVel', p_name_long='Env-' + env_str + ' Cart Velocity', p_unit='m/sec', p_unit_latex='\frac{m}{sec}', p_boundaries=[-self.C_INFINITY,self.C_INFINITY]))
-            state_space.add_dim(Dimension( p_id=i*4+2, p_name_short='E-' + env_str + ' PAng', p_name_long='Env-' + env_str + ' Pole Angle', p_unit='rad', p_boundaries=[-0.418, 0.418]))
-            state_space.add_dim(Dimension( p_id=i*4+3, p_name_short='E-' + env_str + ' PAVel', p_name_long='Env-' + env_str + ' Pole Angular Velocity', p_unit='rad/sec', p_unit_latex='\frac{rad}{sec}',p_boundaries=[-self.C_INFINITY,self.C_INFINITY]))
+            state_space.add_dim(Dimension( p_name_short='E-' + env_str + ' CPos', p_name_long='Env-' + env_str + ' Cart Position', p_unit='m', p_boundaries=[-4.8, 4.8]))
+            state_space.add_dim(Dimension( p_name_short='E-' + env_str + ' CVel', p_name_long='Env-' + env_str + ' Cart Velocity', p_unit='m/sec', p_unit_latex='\frac{m}{sec}', p_boundaries=[-self.C_INFINITY,self.C_INFINITY]))
+            state_space.add_dim(Dimension( p_name_short='E-' + env_str + ' PAng', p_name_long='Env-' + env_str + ' Pole Angle', p_unit='rad', p_boundaries=[-0.418, 0.418]))
+            state_space.add_dim(Dimension( p_name_short='E-' + env_str + ' PAVel', p_name_long='Env-' + env_str + ' Pole Angular Velocity', p_unit='rad/sec', p_unit_latex='\frac{rad}{sec}',p_boundaries=[-self.C_INFINITY,self.C_INFINITY]))
             
             # Add an action dimension for each sub-environment
-            action_space.add_dim(Dimension( p_id=i, p_name_short='E-' + env_str + ' Push', p_name_long='Env-' + env_str + ' Push Cart Left/Right', p_boundaries=[0,1]))
+            action_space.add_dim(Dimension( p_name_short='E-' + env_str + ' Push', p_name_long='Env-' + env_str + ' Push Cart Left/Right', p_boundaries=[0,1]))
 
         return state_space, action_space
 
@@ -108,18 +112,19 @@ class MultiCartPole (Environment):
         success  = True
         broken   = False
         timeout  = False
-        terminal = False
+        terminal = True
 
         for env_id, env in enumerate(self._envs):
             sub_state_val = env.get_state().get_values()
             sub_state_dim = sub_state_val.shape[0]
             for d in range(sub_state_dim):
-                state.set_value(env_id*sub_state_dim + d, sub_state_val[d])
+                state_ids = state.get_dim_ids()
+                state.set_value(state_ids[env_id*sub_state_dim + d], sub_state_val[d])
 
             success = success and env.get_state().get_success()
             broken = broken or env.get_state().get_broken()
             timeout = timeout or env.get_state().get_timeout()
-            terminal = terminal or env.get_state().get_terminal()
+            terminal = terminal and env.get_state().get_terminal()
 
         state.set_terminal(terminal)
         state.set_success(success)
@@ -149,17 +154,45 @@ class MultiCartPole (Environment):
 ## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state:State, p_action:Action) -> State:
         success = True
+        # frozen_envs = 0
 
         for agent_id in p_action.get_agent_ids():
             action_elem = p_action.get_elem(agent_id)
-
+            
+            try:
+                self.env_idx
+            except:
+                self.env_idx = 0    
+            
             for action_id in action_elem.get_dim_ids():
-                env             = self._envs[action_id]
+                env             = self._envs[self.env_idx]
+
+                # check for terminal state and skip the action simulation for this env
+                if env.get_state().get_terminal():
+                    # frozen_envs =+ 1
+                    if self.env_idx == len(self._envs) - 1:
+                        self.env_idx = 0
+                    else:
+                        self.env_idx += 1
+                    # if frozen_envs == len(self._envs): return self.collect_substates()
+                    continue
+
+
                 action_elem_env = ActionElement(env.get_action_space())
                 action_elem_env.set_value(action_id, action_elem.get_value(action_id))
                 action_env      = Action()
                 action_env.add_elem(agent_id, action_elem_env)
                 env._set_state(env.simulate_reaction(None, action_env))
+
+
+                if env.get_state().get_terminal():
+                    self.log(self.C_LOG_TYPE_W, "Environment "+str(self.env_idx)+" is frozen after "+str(self._num_cycles)+" cycles")
+
+
+                if self.env_idx == len(self._envs)-1:
+                    self.env_idx = 0
+                else:
+                    self.env_idx += 1
 
         return self.collect_substates()
 
@@ -180,8 +213,14 @@ class MultiCartPole (Environment):
                 agent_action_elem = self._last_action.get_elem(agent_id)
                 agent_action_ids  = agent_action_elem.get_dim_ids()
                 r_agent = 0
+                
+                try:
+                    self.env_idx_reward
+                except:
+                    self.env_idx_reward = 0
+                    
                 for action_id in agent_action_ids:
-                    r_action = self._envs[action_id].compute_reward().get_overall_reward()
+                    r_action = self._envs[self.env_idx_reward].compute_reward().get_overall_reward()
                     if self._reward_type == Reward.C_TYPE_EVERY_ACTION:
                         reward.add_action_reward(agent_id, action_id, r_action)
                     elif self._reward_type == Reward.C_TYPE_EVERY_AGENT:
@@ -190,6 +229,11 @@ class MultiCartPole (Environment):
                 if self._reward_type == Reward.C_TYPE_EVERY_AGENT:
                     r_agent = r_agent / len(agent_action_ids)
                     reward.add_agent_reward(agent_id, r_agent)
+                
+                if self.env_idx_reward == len(self._envs)-1:
+                    self.env_idx_reward = 0
+                else:
+                    self.env_idx_reward += 1
 
         return reward
 
@@ -212,3 +256,5 @@ class MultiCartPole (Environment):
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         for env in self._envs: env.update_plot()
+
+

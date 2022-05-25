@@ -28,12 +28,17 @@
 ## --                                of adapatations
 ## -- 2021-12-21  1.3.1     DA       - Minor changes on class Training
 ## --                                - Added log functionality to class TrainingResults
-## -- 2022-01-01  1.3.2     MRD      Fix minor bug
+## -- 2022-01-18  1.3.2     MRD      Small optimize on Scenario instantiation in Training class
+## --                                Put the self._cycle_limit directly on the parameter argument
+## -- 2022-01-27  1.3.3     SY       Class Training: enhanced training with hyperparameter tuning
+## -- 2022-01-28  1.3.4     SY       Class HyperParamTuner: add save(), save_line(), HPDataStoring
+## -- 2022-02-24  1.3.5     SY       Introduce new class HyperParamDispatcher
+## -- 2022-03-02  1.3.6     SY       Refactoring class HyperParamDispatcher
+## -- 2022-03-02  1.3.7     DA       Class HyperParamDispatcher:correction of method set_values()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2021-12-21)
-
+Ver. 1.3.7 (2022-03-02)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
@@ -96,6 +101,52 @@ class HyperParamTuple (Element):
     def set_value(self, p_dim_id, p_value):
         super().set_value(p_dim_id, p_value)
         self._set.get_dim(p_dim_id).callback_on_change(p_value)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class HyperParamDispatcher (HyperParamTuple):
+    """
+    To dispatch multiple hp tuples into one tuple
+    """
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_set: Set) -> None:
+        super().__init__(p_set)
+        self._hp_dict = {}
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_hp_tuple(self, p_hpt:HyperParamTuple):
+        for idx in p_hpt.get_dim_ids():
+            self._hp_dict[idx] = p_hpt
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_value(self, p_dim_id):
+        return self._hp_dict.get(p_dim_id).get_value(p_dim_id)
+   
+
+## -------------------------------------------------------------------------------------------------
+    def set_value(self, p_dim_id, p_value):
+        self._hp_dict.get(p_dim_id).set_value(p_dim_id, p_value)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_values(self):
+        for idx, dim_id in enumerate(self._set.get_dim_ids()):
+            self._values[idx] = self.get_value(dim_id)
+        return self._values
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_values(self, p_values):
+        for idx, dim_id in enumerate(self._set.get_dim_ids()):
+            self.set_value(dim_id, p_values[idx])
 
 
 
@@ -811,16 +862,18 @@ class TrainingResults (Log, Saveable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamTuner (Log):
+class HyperParamTuner (Log, Saveable):
     """
     Template class for hyperparameter tuning (HPT).
     """
 
     C_TYPE      = 'HyperParam Tuner'
     C_NAME      = '????'
+    C_VAR_TRIAL = 'Trial'
+    C_VAR_SCORE = 'Highscore'
 
 ## -------------------------------------------------------------------------------------------------
-    def maximize(self, p_training_cls, p_num_trials, **p_training_param ) -> TrainingResults:
+    def maximize(self, p_training_cls, p_num_trials, p_root_path, **p_training_param ) -> TrainingResults:
         """
         ...
 
@@ -830,6 +883,8 @@ class HyperParamTuner (Log):
             Training class to be instantiated/executed 
         p_num_trials : int    
             Number of trials
+        p_num_trials : str    
+            Root path of the training class
         p_training_param : dictionary
             Training parameters
 
@@ -842,7 +897,10 @@ class HyperParamTuner (Log):
 
         self._training_cls      = p_training_cls
         self._num_trials        = p_num_trials
-        self._training_pararm   = p_training_param
+        self._root_path         = p_root_path
+        self._training_param    = p_training_param
+        self.HPDataStoring      = None
+        self.variables          = [self.C_VAR_TRIAL, self.C_VAR_SCORE]
 
         return self._maximize()
 
@@ -850,8 +908,55 @@ class HyperParamTuner (Log):
 ## -------------------------------------------------------------------------------------------------
     def _maximize(self) -> TrainingResults:
         raise NotImplementedError
-        
+    
+## -------------------------------------------------------------------------------------------------
+    def _save_line(self, p_file, p_name, p_value):
+        value = p_value
+        if value is None: value = '-'
+        p_file.write(p_name + '\t' + str(value) + '\n')
 
+
+## -------------------------------------------------------------------------------------------------
+    def save(self, p_param, p_result, p_filename='best_parameters.csv') -> bool:
+        """
+        Saves the best result of the hyperparameter tuning in the root path.
+
+        Parameters
+        ----------
+        p_param : dict
+            A dictionary that consists of list of best parameters
+        p_result : float
+            Highest score
+        p_filename  :str
+            Name of summary file. Default = 'best_parameters.csv'
+
+        Returns
+        -------
+        success : bool
+            True, if summary file was created successfully. False otherwise.
+
+        """
+
+        filename = self._root_path + os.sep + p_filename
+        filename.replace(os.sep + os.sep, os.sep)
+
+        file = open(filename, 'wt')
+        if file is None: return False
+  
+        self._save_line(file, 'Tuner', '"' + self.C_NAME + '"')    
+        self._save_line(file, 'Number of evaluations', self._num_trials)     
+        self._save_line(file, 'Highest Score', p_result)
+        for key in p_param:
+            self._save_line(file, key, p_param[key])
+
+        file.close()
+        
+        try:
+            self.HPDataStoring.save_data(self._root_path, 'tuning_summary', '\t')
+            return True
+        except:
+            return False
+        
 
 
 
@@ -975,9 +1080,9 @@ class Training (Log):
             try:
                 self._scenario = scenario_cls( p_mode=Mode.C_MODE_SIM, 
                                                p_ada=True,
+                                               p_cycle_limit=self._cycle_limit,
                                                p_visualize=visualize,
                                                p_logging=logging )
-                self._scenario.set_cycle_limit(self._cycle_limit)
             except:
                 raise ParamError('Par p_scenario_cls: class "' + scenario_cls.__name__ + '" not compatible')
 
@@ -1126,7 +1231,7 @@ class Training (Log):
             training_param  = self._kwargs.copy()
             training_param.pop('p_hpt')
             training_param.pop('p_hpt_trials')
-            self._results = self._hpt.maximize(p_training_cls=self.__class__(), p_num_trials=self._hpt_trials, p_training_param=training_param)
+            self._results = self._hpt.maximize(p_training_cls=self.__class__, p_num_trials=self._hpt_trials, p_root_path=self._root_path, p_training_param=training_param)
 
         self.log(self.C_LOG_TYPE_I, 'Training completed')
         return self.get_results()

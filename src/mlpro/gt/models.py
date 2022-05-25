@@ -22,26 +22,23 @@ Ver. 1.1.2 (2021-12-07)
 This module provides model classes for tasks related to cooperative Game Theory.
 """
 
-
 from datetime import timedelta
 from mlpro.bf.various import Log
 from mlpro.rl.models import *
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GameBoard (Environment):
+class GameBoard(Environment):
     """
     Model class for a game theoretical game board. See super class for more information.
     """
 
-    C_TYPE              = 'Game Board'
-    C_REWARD_TYPE       = Reward.C_TYPE_EVERY_AGENT
+    C_TYPE = 'Game Board'
+    C_REWARD_TYPE = Reward.C_TYPE_EVERY_AGENT
 
-## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
+    ## -------------------------------------------------------------------------------------------------
+    def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
         reward = Reward(self.get_reward_type())
 
         for player_id in self._last_action.get_agent_ids():
@@ -49,29 +46,25 @@ class GameBoard (Environment):
 
         return reward
 
-
-## -------------------------------------------------------------------------------------------------
-    def _utility_fct(self, p_state:State, p_player_id):
+    ## -------------------------------------------------------------------------------------------------
+    def _utility_fct(self, p_state: State, p_player_id):
         """
         Computes utility of given player. To be redefined.
         """
-        
+
         raise NotImplementedError
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PGameBoard (GameBoard):
+class PGameBoard(GameBoard):
     """
     Model class for a potential game theoretical game board. See super class for more information.
     """
 
-    C_TYPE      = 'Potential Game Board'
+    C_TYPE = 'Potential Game Board'
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def compute_potential(self):
         """
         Computes (weighted) potential level of the game board.
@@ -81,62 +74,51 @@ class PGameBoard (GameBoard):
         self.potential = 0
 
         for player_id in self._last_action.get_agent_ids():
-            self.potential = self.potential + ( self._utility_fct(player_id) * self._last_action.get_elem(player_id).get_weight() )
-        
+            self.potential = self.potential + (
+                        self._utility_fct(player_id) * self._last_action.get_elem(player_id).get_weight())
+
         return self.potential
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Player (Agent):
+class Player(Agent):
     """
     This class implements a game theoretical player model. See super class for more information.
     """
 
-    C_TYPE      = 'Player'
-
-
-
+    C_TYPE = 'Player'
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiPlayer (MultiAgent):
+class MultiPlayer(MultiAgent):
     """
     This class implements a game theoretical model for a team of players. See super class for more 
     information.
     """
 
-    C_TYPE      = 'Multi-Player'
+    C_TYPE = 'Multi-Player'
 
-## -------------------------------------------------------------------------------------------------
-    def add_player(self, p_player:Player, p_weight=1.0) -> None:
+    ## -------------------------------------------------------------------------------------------------
+    def add_player(self, p_player: Player, p_weight=1.0) -> None:
         super().add_agent(p_agent=p_player, p_weight=p_weight)
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Game (RLScenario):
+class Game(RLScenario):
     """
     This class implements a game consisting of a game board and a (multi-)player. See super class for 
     more information.
     """
 
-    C_TYPE      = 'Game'
-
-
-
+    C_TYPE = 'Game'
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTTraining (RLTraining): 
+class GTTraining(RLTraining):
     """
     This class implements a standardized episodical training process. See super class for more 
     information.
@@ -178,9 +160,9 @@ class GTTraining (RLTraining):
 
     """
 
-    C_NAME      = 'GT'
+    C_NAME = 'GT'
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
         kwargs = p_kwargs.copy()
         kwargs['p_scenario_cls'] = kwargs['p_game_cls']

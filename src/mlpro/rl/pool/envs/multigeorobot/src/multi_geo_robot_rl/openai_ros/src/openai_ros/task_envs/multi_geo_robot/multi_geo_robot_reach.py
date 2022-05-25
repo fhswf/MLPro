@@ -14,7 +14,7 @@ from geometry_msgs.msg import Pose, Quaternion, Point
 
 class MultiGeoRobotReachEnv(multi_geo_robot_env.MultiGeoRobotEnv):
     def __init__(self):
-        ros_ws_abspath = rospy.get_param("/multi_geo_robot/ros_ws_abspath", None)
+        ros_ws_abspath = rospy.get_param("ros_ws_path", None)
         assert ros_ws_abspath is not None, "You forgot to set ros_ws_abspath in your yaml file of your main RL script. Set ros_ws_abspath: \'YOUR/SIM_WS/PATH\'"
         assert os.path.exists(ros_ws_abspath), "The Simulation ROS Workspace path "+ros_ws_abspath + \
             " DOESNT exist, execute: mkdir -p "+ros_ws_abspath + \

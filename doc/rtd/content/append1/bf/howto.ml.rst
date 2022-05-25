@@ -7,3 +7,4 @@ Machine Learning
    
    ml/howto.bf.005
    ml/howto.bf.007
+   ml/howto.bf.008

@@ -1,4 +1,5 @@
 .vscode/
+.idea/
 *.egg-info
 *.whl
 *.tar.gz
@@ -9,3 +10,4 @@ venv/
 _build/
 /build
 .DS_Store
+.devcontainer

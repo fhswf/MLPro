@@ -10,3 +10,4 @@ Environment Pool
    pool/robotmanipulator
    pool/ur5jointcontrol
    pool/multigeorobot
+   pool/doublependulum

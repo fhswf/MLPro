@@ -32,26 +32,32 @@
 ## --                                - Class ActionPlanner completed
 ## --                                - Standardization of all docstrings
 ## -- 2022-01-01  1.4.1     MRD      Refactoring and Fixing some bugs
+## -- 2022-01-28  1.4.2     SY       - Added switch_adaptivity method in MultiAgent class
+## --                                - Update _adapt method in MultiAgent class
+## -- 2022-02-17  1.5.0     DA/SY    Class Agent: redefinition of method _init_hyperparam()
+## -- 2022-02-24  1.5.1     SY       Class MultiAgent: redefinition of method _init_hyperparam()
+## -- 2022-02-27  1.5.2     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-03-02  1.5.3     SY       Class MultiAgent: remove init_hyperparam(), update add_agent()
+## -- 2022-03-02  1.5.4     DA       Reformatting
+## -- 2022-03-07  1.5.5     SY       Minor Improvement on Class MultiAgent
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-01-01) 
+Ver. 1.5.5 (2022-03-07) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
 
-
-from mlpro.bf.data import *
-from mlpro.rl.models_sar import *
 from mlpro.rl.models_env import *
 from mlpro.rl.models_train import RLScenario, RLTraining
 
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Policy (Model):
+class Policy(Model):
     """
     This class represents the policy of a single-agent. It is adaptive and can be trained with
     State-Action-Reward (SAR) data that will be expected as a SAR buffer object. 
@@ -66,7 +72,7 @@ class Policy (Model):
     c) Training by Unsupervised Learning
     All state data inside the SAR buffer shall be adapted.
 
-    Furthermore a policy class can compute actions from states.
+    Furthermore, a policy class can compute actions from states.
 
     Hyperparameters of the policy should be stored in the internal object self._hp_list, so that
     they can be tuned from outside. Optionally a policy-specific callback method can be called on 
@@ -87,21 +93,20 @@ class Policy (Model):
 
     """
 
-    C_TYPE          = 'Policy'
-    C_NAME          = '????'
-    C_BUFFER_CLS    = SARSBuffer
+    C_TYPE = 'Policy'
+    C_NAME = '????'
+    C_BUFFER_CLS = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_observation_space:MSpace, 
-                 p_action_space:MSpace, 
-                 p_buffer_size=1, 
-                 p_ada=True, 
+    def __init__(self,
+                 p_observation_space: MSpace,
+                 p_action_space: MSpace,
+                 p_buffer_size=1,
+                 p_ada=True,
                  p_logging=Log.C_LOG_ALL):
-
         super().__init__(p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         self._observation_space = p_observation_space
-        self._action_space      = p_action_space
+        self._action_space = p_action_space
         self.set_id(0)
 
 
@@ -126,7 +131,7 @@ class Policy (Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_obs:State) -> Action:
+    def compute_action(self, p_obs: State) -> Action:
         """
         Specific action computation method to be redefined. 
 
@@ -170,7 +175,7 @@ class Policy (Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ActionPlanner (Log):
+class ActionPlanner(Log):
     """
     Template class for action planning algorithms to be used as part of model-based planning agents. 
     The goal is to find the shortest sequence of actions that leads to a maximum reward.
@@ -184,24 +189,24 @@ class ActionPlanner (Log):
 
     """
 
-    C_TYPE          = 'Action Planner'
+    C_TYPE = 'Action Planner'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_state_thsld=0.00000001, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging=p_logging)
-        self._depth_limit   = 0
-        self._width_limit   = 0
-        self._policy        = None
-        self._env_model     = None
-        self._action_path   = None
-        self._state_thsld   = p_state_thsld
+        self._depth_limit = 0
+        self._width_limit = 0
+        self._policy = None
+        self._env_model = None
+        self._action_path = None
+        self._state_thsld = p_state_thsld
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self, 
-              p_policy:Policy, 
-              p_envmodel:EnvModel,
-              p_depth_limit=0, 
+    def setup(self,
+              p_policy: Policy,
+              p_envmodel: EnvModel,
+              p_depth_limit=0,
               p_width_limit=0):
         """
         Setup of action planner object in concrete planning scenario. Must be called before first
@@ -210,7 +215,7 @@ class ActionPlanner (Log):
         Parameters
         ----------
         p_policy : Policy
-            Poliy of an agent.
+            Policy of an agent.
         p_envmodel : EnvModel
             Environment model.
         p_depth_limit : int             
@@ -222,13 +227,13 @@ class ActionPlanner (Log):
 
         """
 
-        self._policy        = p_policy
-        self._envmodel      = p_envmodel
-        self._depth_limit   = p_depth_limit
-        self._width_limit   = p_width_limit
-        self._path_id       = 0
+        self._policy = p_policy
+        self._envmodel = p_envmodel
+        self._depth_limit = p_depth_limit
+        self._width_limit = p_width_limit
+        self._path_id = 0
         self.clear_action_path()
-        self._action_path   = None
+        self._action_path = None
         self._setup()
 
 
@@ -242,10 +247,10 @@ class ActionPlanner (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, 
-                       p_obs:State, 
-                       p_depth_limit=0, 
-                       p_width_limit=0 ) -> Action:
+    def compute_action(self,
+                       p_obs: State,
+                       p_depth_limit=0,
+                       p_width_limit=0) -> Action:
         """
         Computes a path of actions with defined length that maximizes the reward of the given 
         environment model. The planning algorithm itself is to be implemented in the custom method
@@ -255,15 +260,11 @@ class ActionPlanner (Log):
         ----------
         p_obs : State
             Observation data.
-        p_policy : Policy
-            Poliy of an agent.
-        p_envmodel : EnvModel
-            Environment model.
         p_depth_limit : int             
             Optional dynamic maximum planning depth (=length of action path to be predicted) that 
             overrides the static limit of method setup(). Default=0 (no override).
         p_width_limit : int
-            Optionnal dynamic maximum planning width (=number of alternative actions per planning level) 
+            Optional dynamic maximum planning width (=number of alternative actions per planning level)
             that  overrides the static limit of method setup(). Default=0 (no override).
 
         Returns
@@ -273,35 +274,35 @@ class ActionPlanner (Log):
 
         """
 
-        if ( self._policy is None ) or ( self._envmodel is None ):
+        if (self._policy is None) or (self._envmodel is None):
             raise RuntimeError('Please call method setup() first')
 
-        if ( p_depth_limit > 0 ) and ( p_depth_limit != self._depth_limit ):
+        if (p_depth_limit > 0) and (p_depth_limit != self._depth_limit):
             self._depth_limit = p_depth_limit
             self._action_path = None
 
-        if p_width_limit > 0: 
+        if p_width_limit > 0:
             self._width_limit = p_width_limit
 
-        if ( self._depth_limit <= 0 ) or ( self._width_limit <= 0 ):
+        if (self._depth_limit <= 0) or (self._width_limit <= 0):
             raise RuntimeError('Please set planning depth and width')
 
-        # Check: Replanning required?
+        # Check: Re-planning required?
         replan = self._action_path is None
-        replan = replan or ( self._path_id >= len(self._action_path) )
-        
+        replan = replan or (self._path_id >= len(self._action_path))
+
         if not replan:
             # Check: Is the next action of action path suitable?
-            path_data     = self._action_path.get_all()
-            obs_buffered  = path_data['state'][self._path_id]
-            replan        = self._policy.get_observation_space().distance(p_obs, obs_buffered) > self._state_thsld
+            path_data = self._action_path.get_all()
+            obs_buffered = path_data['state'][self._path_id]
+            replan = self._policy.get_observation_space().distance(p_obs, obs_buffered) > self._state_thsld
 
         if replan:
             # (Re-)Planning of action path
             self._path_id = 0
             self._action_path.clear()
             self._action_path = self._plan_action(p_obs)
-            if ( self._action_path is None ) or ( len(self._action_path) == 0 ):
+            if (self._action_path is None) or (len(self._action_path) == 0):
                 # Planning returned nothing -> direct action computation as fallback solution
                 return self._policy.compute_action(p_obs)
 
@@ -312,7 +313,7 @@ class ActionPlanner (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _plan_action(self, p_obs:State) -> SARSBuffer:
+    def _plan_action(self, p_obs: State) -> SARSBuffer:
         """
         Custom planning algorithm to fill the internal action path (self._action_path). Search width
         and depth are restricted by the attributes self._width_limit and self._depth_limit.
@@ -330,8 +331,8 @@ class ActionPlanner (Log):
         """
 
         raise NotImplementedError
- 
- 
+
+
 ## -------------------------------------------------------------------------------------------------
     def clear_action_path(self):
         if self._action_path is not None:
@@ -343,14 +344,14 @@ class ActionPlanner (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RLScenarioMBInt (RLScenario): 
+class RLScenarioMBInt(RLScenario):
     """
     Internal use in class Agent. Intended for the training of the policy with the environment model of
     a model-based (single) agent.
 
     """
 
-    C_NAME          = 'MB(intern)'
+    C_NAME = 'MB(intern)'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, **p_kwargs) -> Model:
@@ -360,10 +361,10 @@ class RLScenarioMBInt (RLScenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup_ext(self, p_env:EnvBase, p_policy:Policy):
-        self._model     = Agent(p_policy=p_policy)
-        self._agent     = self._model
-        self._env       = p_env
+    def setup_ext(self, p_env: EnvBase, p_policy: Policy):
+        self._model = Agent(p_policy=p_policy)
+        self._agent = self._model
+        self._env = p_env
 
 
 
@@ -371,7 +372,7 @@ class RLScenarioMBInt (RLScenario):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Agent (Policy):
+class Agent(Policy):
     """
     This class represents a single agent model.
 
@@ -382,7 +383,7 @@ class Agent (Policy):
     p_envmodel : EnvModel
         Optional environment model object. Default = None.
     p_em_mat_thsld : float
-        Optional threshold for environment model maturity (whether or not the envmodel is 'good' 
+        Optional threshold for environment model maturity (whether the envmodel is 'good'
         enough to be used to train the policy). Default = 0.9.
     p_action_planner : ActionPlanner   
         Optional action planner object (obligatory for model based agents). Default = None.
@@ -405,24 +406,24 @@ class Agent (Policy):
 
     """
 
-    C_TYPE          = 'Agent'
-    C_NAME          = ''
+    C_TYPE = 'Agent'
+    C_NAME = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_policy:Policy, 
-                 p_envmodel:EnvModel=None, 
-                 p_em_mat_thsld=0.9, 
-                 p_action_planner:ActionPlanner=None, 
-                 p_planning_depth=0, 
-                 p_planning_width=0, 
-                 p_name='', 
-                 p_id=0, 
-                 p_ada=True, 
+    def __init__(self,
+                 p_policy: Policy,
+                 p_envmodel: EnvModel = None,
+                 p_em_mat_thsld=0.9,
+                 p_action_planner: ActionPlanner = None,
+                 p_planning_depth=0,
+                 p_planning_width=0,
+                 p_name='',
+                 p_id=0,
+                 p_ada=True,
                  p_logging=Log.C_LOG_ALL,
                  **p_mb_training_param):
 
-        if p_name != '': 
+        if p_name != '':
             self.set_name(p_name)
         else:
             self.set_name(self.C_NAME)
@@ -431,33 +432,38 @@ class Agent (Policy):
             if len(p_mb_training_param) == 0:
                 raise ParamError('Please provide parameters for model-based training in parameter p_mb_training_param')
 
-            self._mb_training_param                   = p_mb_training_param.copy()
+            self._mb_training_param = p_mb_training_param.copy()
             self._mb_training_param['p_scenario_cls'] = RLScenarioMBInt
-            self._mb_training_param['p_visualize']    = False 
-            self._mb_training_param['p_logging']      = p_logging 
-            if not 'p_collect_states' in self._mb_training_param: self._mb_training_param['p_collect_states'] = False 
-            if not 'p_collect_actions' in self._mb_training_param: self._mb_training_param['p_collect_actions'] = False 
-            if not 'p_collect_rewards' in self._mb_training_param: self._mb_training_param['p_collect_rewards'] = False 
-            if not 'p_collect_eval' in self._mb_training_param: self._mb_training_param['p_collect_eval'] = False 
-            
-            # Hyperparameter tuning is disabled here
-            if 'p_hpt' in self._mb_training_param: self._mb_training_param.pop('p_hpt')
-            if 'p_hpt_trials' in self._mb_training_param: self._mb_training_param.pop('p_hpt_trials')
-            
+            self._mb_training_param['p_visualize'] = False
+            self._mb_training_param['p_logging'] = p_logging
+            if 'p_collect_states' not in self._mb_training_param:
+                self._mb_training_param['p_collect_states'] = False
+            if 'p_collect_actions' not in self._mb_training_param:
+                self._mb_training_param['p_collect_actions'] = False
+            if 'p_collect_rewards' not in self._mb_training_param:
+                self._mb_training_param['p_collect_rewards'] = False
+            if 'p_collect_eval' not in self._mb_training_param:
+                self._mb_training_param['p_collect_eval'] = False
 
-        if   ( p_action_planner is not None ) and ( p_envmodel is None ):
-           raise ParamError('Agents using an action planner also need an environment model')
-           
-        self._previous_observation  = None
-        self._previous_action       = None
-        self._policy                = p_policy
-        self._action_space          = self._policy.get_action_space()
-        self._observation_space     = self._policy.get_observation_space()
-        self._envmodel              = p_envmodel
-        self._em_mat_thsld          = p_em_mat_thsld
-        self._action_planner        = p_action_planner
-        self._planning_depth        = p_planning_depth
-        self._planning_width        = p_planning_width
+            # Hyperparameter tuning is disabled here
+            if 'p_hpt' in self._mb_training_param:
+                self._mb_training_param.pop('p_hpt')
+            if 'p_hpt_trials' in self._mb_training_param:
+                self._mb_training_param.pop('p_hpt_trials')
+
+        if (p_action_planner is not None) and (p_envmodel is None):
+            raise ParamError('Agents using an action planner also need an environment model')
+
+        self._previous_observation = None
+        self._previous_action = None
+        self._policy = p_policy
+        self._action_space = self._policy.get_action_space()
+        self._observation_space = self._policy.get_observation_space()
+        self._envmodel = p_envmodel
+        self._em_mat_thsld = p_em_mat_thsld
+        self._action_planner = p_action_planner
+        self._planning_depth = p_planning_depth
+        self._planning_width = p_planning_width
 
         self._set_id(p_id)
 
@@ -468,14 +474,14 @@ class Agent (Policy):
         self.clear_buffer()
 
         if self._action_planner is not None:
-            self._action_planner.setup(p_policy=self._policy, 
-                                       p_envmodel=self._envmodel, 
-                                       p_depth_limit=self._planning_depth, 
+            self._action_planner.setup(p_policy=self._policy,
+                                       p_envmodel=self._envmodel,
+                                       p_depth_limit=self._planning_depth,
                                        p_width_limit=self._planning_width)
-        
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_id(self, p_id): 
+    def _set_id(self, p_id):
         super().set_id(p_id)
         self._policy.set_id(p_id)
 
@@ -483,7 +489,7 @@ class Agent (Policy):
 ## -------------------------------------------------------------------------------------------------
     def set_id(self, p_id):
         """
-        The unique agent id will be defined while instantiation and can't be changed any more.
+        The unique agent id will be defined while instantiation and can't be changed anymore.
         """
 
         pass
@@ -496,14 +502,35 @@ class Agent (Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def set_name(self, p_name):
-        self._name   = p_name
-        self.C_NAME  = p_name
+        self._name = p_name
+        self.C_NAME = p_name
 
 
+## -------------------------------------------------------------------------------------------------
+    def _init_hyperparam(self, **p_par):
+        self._hyperparam_space = self._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+        if self._envmodel is not None:
+            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+
+        self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+        self._hyperparam_tuple.add_hp_tuple(self._policy.get_hyperparam())
+        if self._envmodel is not None:
+            self._hyperparam_tuple.add_hp_tuple(self._envmodel.get_hyperparam())
+
+        
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         super().switch_logging(p_logging)
         self._policy.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_adaptivity(self, p_ada: bool):
+        super().switch_adaptivity(p_ada)
+        try:
+            self._policy.switch_adaptivity(p_ada)
+        except AttributeError:
+            pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -523,15 +550,18 @@ class Agent (Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _extract_observation(self, p_state:State) -> State:
-        if p_state.get_related_set() == self.get_observation_space(): return p_state
+    def _extract_observation(self, p_state: State) -> State:
+        if p_state.get_related_set() == self.get_observation_space():
+            return p_state
 
-        obs_space   = self.get_observation_space()
+        obs_space = self.get_observation_space()
         obs_dim_ids = obs_space.get_dim_ids()
         observation = State(obs_space)
 
         for dim_id in obs_dim_ids:
-            observation.set_value(dim_id, p_state.get_value(dim_id))
+            p_state_ids = p_state.get_dim_ids()
+            obs_idx = obs_space.get_dim_ids().index(dim_id)
+            observation.set_value(dim_id, p_state.get_value(p_state_ids[obs_idx]))
 
         return observation
 
@@ -544,7 +574,7 @@ class Agent (Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state:State) -> Action:
+    def compute_action(self, p_state: State) -> Action:
         """
         Default implementation of a single agent.
 
@@ -564,7 +594,6 @@ class Agent (Policy):
         self.log(self.C_LOG_TYPE_I, 'Action computation started')
         observation = self._extract_observation(p_state)
 
-
         # 1 Action computation
         if self._action_planner is None:
             # 1.1 W/o action planner
@@ -574,11 +603,10 @@ class Agent (Policy):
             # 1.2 With action planner
             action = self._action_planner.compute_action(observation)
 
-
         # 2 Outro
         self.log(self.C_LOG_TYPE_I, 'Action computation finished')
-        self._previous_observation  = observation
-        self._previous_action       = action
+        self._previous_observation = observation
+        self._previous_action = action
         return action
 
 
@@ -597,7 +625,7 @@ class Agent (Policy):
         Returns
         -------
         result : bool
-            True, if something has beed adapted. False otherwise.
+            True, if something has been adapted. False otherwise.
 
         """
 
@@ -606,22 +634,22 @@ class Agent (Policy):
             self.log(self.C_LOG_TYPE_I, 'Adaption: previous observation is None -> adaptivity skipped')
             return False
 
-
         # 2 Extract agent specific observation data from state
-        state       = p_args[0]
-        reward      = p_args[1]
+        state = p_args[0]
+        reward = p_args[1]
         observation = self._extract_observation(state)
-        adapted     = False
-
+        adapted = False
 
         # 3 Adaptation
         if self._envmodel is None:
             # 3.1 Model-free adaptation
-            adapted = self._policy.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
+            adapted = self._policy.adapt(
+                SARSElement(self._previous_observation, self._previous_action, reward, observation))
 
         else:
             # 3.2 Model-based adaptation
-            adapted = self._envmodel.adapt(SARSElement(self._previous_observation, self._previous_action, reward, observation))
+            adapted = self._envmodel.adapt(
+                SARSElement(self._previous_observation, self._previous_action, reward, observation))
 
             if self._envmodel.get_maturity() >= self._em_mat_thsld:
                 adapted = adapted or self._adapt_policy_by_model()
@@ -632,10 +660,10 @@ class Agent (Policy):
 ## -------------------------------------------------------------------------------------------------
     def _adapt_policy_by_model(self):
         self.log(self.C_LOG_TYPE_I, 'Model-based policy training')
-        training = RLTraining( **self._mb_training_param )
+        training = RLTraining(**self._mb_training_param)
         training.get_scenario().setup_ext(p_env=self._envmodel, p_policy=self._policy)
 
-        # The RLTraining need to be adjust again due to setup_ext()
+        # The RLTraining need to be adjusted again due to setup_ext()
         # And also due to model_train.py line 595 only executed on RLTraining init
         # Not after the setup_ext
         training._env = training.get_scenario().get_env()
@@ -647,7 +675,8 @@ class Agent (Policy):
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         self._policy.clear_buffer()
-        if self._envmodel is not None: self._envmodel.clear_buffer()
+        if self._envmodel is not None:
+            self._envmodel.clear_buffer()
 
 
 
@@ -655,7 +684,7 @@ class Agent (Policy):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiAgent (Agent):
+class MultiAgent(Agent):
     """
     Multi-Agent.
 
@@ -670,13 +699,13 @@ class MultiAgent (Agent):
 
     """
 
-    C_TYPE          = 'Multi-Agent'
-    C_NAME          = ''
-    C_SUFFIX        = '.cfg'
+    C_TYPE = 'Multi-Agent'
+    C_NAME = ''
+    C_SUFFIX = '.cfg'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name='', p_ada=True, p_logging=True):
-        self._agents    = []
+        self._agents = []
         self._agent_ids = []
         self.set_name(p_name)
 
@@ -684,16 +713,24 @@ class MultiAgent (Agent):
         self.switch_logging(p_logging)
         self.switch_adaptivity(p_ada)
         self._set_adapted(False)
-        
+
 
 ## -------------------------------------------------------------------------------------------------
-    def switch_logging(self, p_logging) -> None: 
+    def switch_logging(self, p_logging) -> None:
         Log.switch_logging(self, p_logging=p_logging)
 
         for agent_entry in self._agents:
             agent_entry[0].switch_logging(p_logging)
 
 
+## -------------------------------------------------------------------------------------------------
+    def switch_adaptivity(self, p_ada: bool):
+        super().switch_adaptivity(p_ada)
+        
+        for agent_entry in self._agents:
+            agent_entry[0].switch_adaptivity(p_ada)
+
+    
 ## -------------------------------------------------------------------------------------------------
     def set_log_level(self, p_level):
         Log.set_log_level(self, p_level)
@@ -711,8 +748,8 @@ class MultiAgent (Agent):
     def load(self, p_path, p_filename=None) -> bool:
         # load all subagents
         for i, agent_entry in enumerate(self._agents):
-            agent       = agent_entry[0]
-            agent_name  = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
+            agent = agent_entry[0]
+            agent_name = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
 
             if agent.load(p_path, agent_name + agent.C_SUFFIX):
                 self.log(Log.C_LOG_TYPE_I, agent_name + ' loaded')
@@ -727,8 +764,8 @@ class MultiAgent (Agent):
     def save(self, p_path, p_filename=None) -> bool:
         # save all subagents
         for i, agent_entry in enumerate(self._agents):
-            agent       = agent_entry[0]
-            agent_name  = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
+            agent = agent_entry[0]
+            agent_name = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
 
             if agent.save(p_path, agent_name + agent.C_SUFFIX):
                 self.log(Log.C_LOG_TYPE_I, agent_name + ' saved')
@@ -740,7 +777,7 @@ class MultiAgent (Agent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_agent(self, p_agent:Agent, p_weight=1.0) -> None:
+    def add_agent(self, p_agent: Agent, p_weight=1.0) -> None:
         """
         Adds agent object to internal list of agents. 
 
@@ -759,6 +796,32 @@ class MultiAgent (Agent):
         p_agent.set_name(str(p_agent.get_id()) + ' ' + p_agent.get_name())
         self.log(Log.C_LOG_TYPE_I, p_agent.C_TYPE + ' ' + p_agent.get_name() + ' added.')
 
+        agent_model = self._agents[p_agent.get_id()][0]
+        
+        if agent_model._policy.get_hyperparam() is not None:
+            if p_agent.get_id() == 0:
+                self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
+            else:
+                self._hyperparam_space.append(agent_model._policy.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+        
+        if agent_model._envmodel is not None:
+            try:
+                self._hyperparam_space.append(agent_model._envmodel.get_hyperparam().get_related_set())
+            except:
+                pass
+ 
+        if '_hyperparam_space' in dir(self):
+            self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+            
+            for x, mod in enumerate(self._agents):
+                self._hyperparam_tuple.add_hp_tuple(mod[0]._policy.get_hyperparam())
+                
+                if mod[0]._envmodel is not None:
+                    try:
+                        self._hyperparam_tuple.add_hp_tuple(mod[0]._envmodel.get_hyperparam())
+                    except:
+                          pass
+        
 
 ## -------------------------------------------------------------------------------------------------
     def get_agents(self):
@@ -768,7 +831,7 @@ class MultiAgent (Agent):
 ## -------------------------------------------------------------------------------------------------
     def get_agent(self, p_agent_id):
         """
-        Returns informations of a single agent.
+        Returns information of a single agent.
 
         Returns
         -------
@@ -779,79 +842,82 @@ class MultiAgent (Agent):
 
         return self._agents[self._agent_ids.index(p_agent_id)]
 
-
+    
 ## -------------------------------------------------------------------------------------------------
     def get_observation_space(self) -> MSpace:
         return None
 
-
+    
 ## -------------------------------------------------------------------------------------------------
     def get_action_space(self) -> MSpace:
         return None
 
-
+    
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
         for i, agent_entry in enumerate(self._agents):
-            agent       = agent_entry[0]
+            agent = agent_entry[0]
             agent.set_random_seed(p_seed)
 
-
+    
 ## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state:State) -> Action:
-        self.log(self.C_LOG_TYPE_I, 'Start of action computation for all agents...')      
+    def compute_action(self, p_state: State) -> Action:
+        self.log(self.C_LOG_TYPE_I, 'Start of action computation for all agents...')
 
         action = Action()
 
         for agent, weight in self._agents:
-            action_agent    = agent.compute_action(p_state)
-            action_element  = action_agent.get_elem(agent.get_id())
+            action_agent = agent.compute_action(p_state)
+            action_element = action_agent.get_elem(agent.get_id())
             action_element.set_weight(weight)
             action.add_elem(agent.get_id(), action_element)
 
-        self.log(self.C_LOG_TYPE_I, 'End of action computation for all agents...')  
-        return action      
+        self.log(self.C_LOG_TYPE_I, 'End of action computation for all agents...')
+        return action
 
-
+    
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
-        state     = p_args[0]
-        reward    = p_args[1]
+        state = p_args[0]
+        reward = p_args[1]
 
-        self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')      
+        self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')
 
         adapted = False
         for agent_entry in self._agents:
             agent = agent_entry[0]
-            if ( reward.get_type() != Reward.C_TYPE_OVERALL ) and not reward.is_rewarded(agent.get_id()): continue
+            if (reward.get_type() != Reward.C_TYPE_OVERALL) and not reward.is_rewarded(agent.get_id()):
+                continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-            adapted = adapted or agent.adapt(state,reward)
+            adapted = agent.adapt(state, reward) or adapted
 
-        self.log(self.C_LOG_TYPE_I, 'End of adaptation for all agents...')        
+        self.log(self.C_LOG_TYPE_I, 'End of adaptation for all agents...')
 
         self._set_adapted(adapted)
         return adapted
 
-
+    
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         for agent_entry in self._agents:
             agent_entry[0].clear_buffer()
 
-
+    
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         """
         Doesn't support embedded plot of underlying agent hierarchy.
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Init vizualization for all agents...')      
+        self.log(self.C_LOG_TYPE_I, 'Init vizualization for all agents...')
 
-        for agent_entry in self._agents: agent_entry[0].init_plot(None)
+        for agent_entry in self._agents:
+            agent_entry[0].init_plot(None)
 
-
+    
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
-        self.log(self.C_LOG_TYPE_I, 'Start vizualization for all agents...')      
+        self.log(self.C_LOG_TYPE_I, 'Start vizualization for all agents...')
 
-        for agent_entry in self._agents: agent_entry[0].update_plot()
+        for agent_entry in self._agents:
+            agent_entry[0].update_plot()
