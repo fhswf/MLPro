@@ -5,7 +5,8 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-01-11  0.0.0     DA       Creation 
+## -- 2022-01-11  0.0.0     DA       Creation
+## -- 2022-05-25  1.0.0     LSB      First Release with Stream and StreamProvider class
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -41,10 +42,29 @@ class WrStreamProviderOpenML (StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
     def _get_stream_list(self, **p_kwargs) -> list:
-        raise NotImplementedError
-
+        # raise NotImplementedError
+        stream_list = openml.datasets.list_datasets(output_format="dataframe")
+        print(stream_list)
+        return stream_list
 
 ## -------------------------------------------------------------------------------------------------
     def _get_stream(self, p_id) -> Stream:
-        raise NotImplementedError
+        # raise NotImplementedError
+        dataset = openml.datasets.get_dataset(p_id)
+        stream = WrStreamOpenML(dataset=dataset)
+        return stream
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrStreamOpenML(Stream):
+    """
+    """
+
+    C_NAME = 'OpenML'
+
+    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_SCIREF_AUTHOR = 'OpenML'
+    C_SCIREF_URL = 'new.openml.org'
+
+    def _setup(self):
+        pass

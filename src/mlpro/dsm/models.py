@@ -7,6 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-01-06  0.0.0     DA       Creation
 ## -- 2022-mm-dd  1.0.0     DA       Release of first version
+## -- 2022-05-25  1.0.1     LSB      Minor bug fix
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -228,7 +229,7 @@ class StreamProvider (Log, ScientificObject):
         """
 
         self.log(self.C_LOG_TYPE_I, 'Getting list of streams...')
-        stream_list = self._get_stream_list(p_kwargs)
+        stream_list = self._get_stream_list(**p_kwargs)
         self.log(self.C_LOG_TYPE_I, 'Stream found:', len(stream_list))
         return stream_list
 
