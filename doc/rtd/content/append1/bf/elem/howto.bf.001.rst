@@ -1,5 +1,5 @@
 .. _Howto BF 1:
-`Howto 01 - (Various) Logging <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2001%20-%20(Various)%20Logging.py>`_
+`Howto 01 - (Various) Logging <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto-BF-002_(Various)_Timer.py>`_
 ================
 Ver. 1.1.1 (2021-11-13)
 
@@ -61,6 +61,6 @@ Example Code
 
 Run this script to obtain the results as shown in the snippet above
 
-.. literalinclude:: ../../../../../../examples/bf/Howto 01 - (Various) Logging.py
+.. literalinclude:: ../../../../../../examples/bf/Howto-BF-002_(Various)_Timer.py.py
     :language: python
         
