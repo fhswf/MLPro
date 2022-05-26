@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto 01 - (Various) Logging
+## -- Module  : Howto-BF-001_Logging.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

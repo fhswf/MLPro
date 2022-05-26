@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto 02 - (Various) Timer
+## -- Module  : Howto-BF-002_Timer.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
