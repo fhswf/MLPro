@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto-BF-003_(Math)_Spaces_and_elements.py
+## -- Module  : howto_bf_003_spaces_and_elements.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -123,4 +123,5 @@ class MathDemo(Log):
 
 
 
-demo = MathDemo()
+if __name__ == "__main__":
+    demo = MathDemo()

@@ -1,23 +1,25 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto-BF-008_(ML)_Hyperparameter_Tuning_using_Optuna.py
+## -- Module  : howto_bf_007_hyperparameter_tuning_using_hyperopt.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-03-24  0.0.0     SY       Creation 
-## -- 2022-03-24  1.0.0     SY       Release of first version
-## -- 2022-04-05  1.0.1     SY       Add tuning recap visualization
+## -- 2021-12-08  0.0.0     SY       Creation
+## -- 2021-12-08  1.0.0     SY       Release of first version
+## -- 2022-01-21  1.0.1     DA       Renaming: tupel -> tuple
+## -- 2022-01-27  1.0.2     SY       Class WrHPTHyperopt enhancement
+## -- 2022-02-25  1.0.3     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-04-05)
+Ver. 1.0.3 (2022-02-25)
 
-This module demonstrates how to utilize wrapper class for Optuna in RL context.
+This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 """
 
 
-from mlpro.wrappers.optuna import *
+from mlpro.wrappers.hyperopt import *
 from mlpro.rl.pool.envs.bglp import BGLP
 from mlpro.rl.models import *
 import random
@@ -236,9 +238,9 @@ else:
 
 
 # 3. Instantiate a hyperopt wrapper
-myOptuna = WrHPTOptuna(p_logging=Log.C_LOG_ALL,
-                       p_ids=None,
-                       p_visualization=visualize)
+myHyperopt = WrHPTHyperopt(p_logging=Log.C_LOG_ALL,
+                           p_algo=WrHPTHyperopt.C_ALGO_TPE,
+                           p_ids=None)
     
 
 # 4. Train players in the scenario and turn the hyperparamter tuning on
@@ -251,7 +253,7 @@ training        = RLTraining(
     p_adaptation_limit=adapt_limit,
     p_stagnation_limit=stagnant_limit,
     p_score_ma_horizon=score_ma_hor,
-    p_hpt=myOptuna,
+    p_hpt=myHyperopt,
     p_hpt_trials=10,
     p_collect_states=True,
     p_collect_actions=True,

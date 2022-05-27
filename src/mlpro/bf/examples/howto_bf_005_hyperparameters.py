@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto-BF-005_(ML)_Hyperparameters.py
+## -- Module  : howto_bf_005_hyperparameters.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -59,15 +59,18 @@ class MyHyperparameter:
     
 
 
-# 2 Get value from the hyperparameter tuple 
-myParameter         = MyHyperparameter()
-for idx in myParameter.get_hyperparam().get_dim_ids():
-    print('Variable with ID %s = %.2f'%(idx, myParameter.get_hyperparam().get_value(idx)))
-    
+
+if __name__ == "__main__":
+
+    # 2 Get value from the hyperparameter tuple 
+    myParameter         = MyHyperparameter()
+    for idx in myParameter.get_hyperparam().get_dim_ids():
+        print('Variable with ID %s = %.2f'%(idx, myParameter.get_hyperparam().get_value(idx)))
+        
 
 
-# 3 Overwrite current value with new desired value
-ids_ = myParameter.get_hyperparam().get_dim_ids()
-myParameter.get_hyperparam().set_value(ids_[0], 50)
-print('\nA new value for variable ID ids_[0]')
-print('Variable with ID ids_[0] = %.2f'%(myParameter.get_hyperparam().get_value(ids_[0])))
+    # 3 Overwrite current value with new desired value
+    ids_ = myParameter.get_hyperparam().get_dim_ids()
+    myParameter.get_hyperparam().set_value(ids_[0], 50)
+    print('\nA new value for variable ID ids_[0]')
+    print('Variable with ID ids_[0] = %.2f'%(myParameter.get_hyperparam().get_value(ids_[0])))
