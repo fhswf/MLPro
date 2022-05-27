@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto-BF-001_(Various)_Logging.py
+## -- Module  : howto_bf_001_logging.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -45,31 +45,32 @@ class MyClass(Log):
 
 
 
-
-# 2 Log everything inside your class... 
-print('\n--\n-- Example 1: By default everything is logged...\n--\n')
-mc = MyClass(p_logging=Log.C_LOG_ALL)
-mc.my_method()
-
-
-# 3 Log nothing inside your class
-print('\n--\n-- Example 2: Now logging is switched off...\n--\n')
-mc.switch_logging(Log.C_LOG_NOTHING)
-mc.my_method()
+if __name__ == "__main__":
+    
+    # 2 Log everything inside your class... 
+    print('\n--\n-- Example 1: By default everything is logged...\n--\n')
+    mc = MyClass(p_logging=Log.C_LOG_ALL)
+    mc.my_method()
 
 
-# 4 Log warnings and errors only
-print('\n--\n-- Example 3: Only warnings and errors are logged...\n--\n')
-mc.switch_logging(Log.C_LOG_WE)
-mc.my_method()
+    # 3 Log nothing inside your class
+    print('\n--\n-- Example 2: Now logging is switched off...\n--\n')
+    mc.switch_logging(Log.C_LOG_NOTHING)
+    mc.my_method()
 
-# 5 Log errors only
-print('\n--\n-- Example 4: Only errors are logged...\n--\n')
-mc.switch_logging(Log.C_LOG_E)
-mc.my_method()
 
-# 6 Log everything again
-print('\n--\n-- Example 5: Everything is logged again...\n--\n')
-mc.switch_logging(Log.C_LOG_ALL)
-mc.my_method()
+    # 4 Log warnings and errors only
+    print('\n--\n-- Example 3: Only warnings and errors are logged...\n--\n')
+    mc.switch_logging(Log.C_LOG_WE)
+    mc.my_method()
+
+    # 5 Log errors only
+    print('\n--\n-- Example 4: Only errors are logged...\n--\n')
+    mc.switch_logging(Log.C_LOG_E)
+    mc.my_method()
+
+    # 6 Log everything again
+    print('\n--\n-- Example 5: Everything is logged again...\n--\n')
+    mc.switch_logging(Log.C_LOG_ALL)
+    mc.my_method()
 

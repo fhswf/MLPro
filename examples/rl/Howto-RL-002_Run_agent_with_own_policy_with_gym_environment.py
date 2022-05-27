@@ -90,7 +90,6 @@ class MyScenario (RLScenario):
 
 
 # 3 Create scenario and run some cycles
-
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
     cycle_limit = 100
