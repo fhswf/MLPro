@@ -20,6 +20,9 @@ Example of implementing a multilayer perceptron (MLP) neural network with this m
         C_BUFFER_CLS = TorchBuffer
 
         def _setup_model(self):
+            # Construct Neural Network based on Dimension of Input and Output
+            # In this case we are using 2 hidden layers with 100 hidden neurons each
+            # We are using also sigmoid as the activation function
             self.net_model = torch.nn.Sequential(
                 torch.nn.Linear(self._input_space.get_num_dim(), 100),
                 torch.nn.Sigmoid(),
@@ -28,7 +31,10 @@ Example of implementing a multilayer perceptron (MLP) neural network with this m
                 torch.nn.Linear(100, self._output_space.get_num_dim()),
             )
 
+            # This is for the optimizer, in this case we are using adam optimizer with learning rate of 3e-4
             self.optimizer = torch.optim.Adam(self.net_model.parameters(), lr=3e-4)
+
+            # This is for the loss function, in this case we are using MSE loss
             self.loss_func = torch.nn.MSELoss()
 
         def _input_preproc(self, p_input: torch.Tensor) -> torch.Tensor:
