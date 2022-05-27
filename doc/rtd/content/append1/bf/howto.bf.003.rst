@@ -7,5 +7,5 @@ Howto BF-003: Dimensions, Spaces and Elements
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../../src/mlpro/bf/examples/howto_bf_003_spaces_and_elements.py
+.. literalinclude:: ../../../../../src/mlpro/bf/examples/howto_bf_003_spaces_and_elements.py
 	:language: python

@@ -7,5 +7,5 @@ Howto BF-001: Logging
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../../src/mlpro/bf/examples/howto_bf_001_logging.py
+.. literalinclude:: ../../../../../src/mlpro/bf/examples/howto_bf_001_logging.py
 	:language: python

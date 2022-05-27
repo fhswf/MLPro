@@ -7,5 +7,5 @@ Howto BF-005: Hyperparameters
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../../src/mlpro/bf/examples/howto_bf_005_hyperparameters.py
+.. literalinclude:: ../../../../../src/mlpro/bf/examples/howto_bf_005_hyperparameters.py
 	:language: python
