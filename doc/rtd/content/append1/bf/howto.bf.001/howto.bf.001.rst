@@ -1,4 +1,4 @@
-.. _Howto BF 1:
+.. _Howto BF 001:
 Howto BF-001: Logging
 =====================
 

@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto-BF-002_(Various)_Timer.py
+## -- Module  : howto_bf_002_timer.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -62,15 +62,17 @@ class TimerDemo (Log):
 
 
 
-# Example 1
-print('\n\n\nExample 1: Timer in virtual time mode with lap duration 1 day and 15 seconds...\n\n')
-t = Timer(Timer.C_MODE_VIRTUAL, timedelta(1,15,0))
-d = TimerDemo(t)
-d.run()
+if __name__ == "__main__":
+
+    # Example 1
+    print('\n\n\nExample 1: Timer in virtual time mode with lap duration 1 day and 15 seconds...\n\n')
+    t = Timer(Timer.C_MODE_VIRTUAL, timedelta(1,15,0))
+    d = TimerDemo(t)
+    d.run()
 
 
-# Example 2
-print('\n\n\nExample 2: Timer in real time mode with lap duration 1 second and forced timeout situations...\n\n')
-t = Timer(Timer.C_MODE_REAL, timedelta(0,1,0))
-d = TimerDemo(t)
-d.run()
+    # Example 2
+    print('\n\n\nExample 2: Timer in real time mode with lap duration 1 second and forced timeout situations...\n\n')
+    t = Timer(Timer.C_MODE_REAL, timedelta(0,1,0))
+    d = TimerDemo(t)
+    d.run()
