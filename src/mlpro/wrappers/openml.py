@@ -7,6 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-01-11  0.0.0     DA       Creation
 ## -- 2022-05-25  1.0.0     LSB      First Release with Stream and StreamProvider class
+## -- 2022-05-27  1.0.1     LSB      Feature space setup
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -22,7 +23,8 @@ https://docs.openml.org/APIs/
 """
 
 from mlpro.bf.various import ScientificObject
-from mlpro.dsm.models import StreamProvider, Stream
+from mlpro.oa.models import StreamProvider, Stream
+from mlpro.bf.math import *
 import openml
 
 
@@ -58,6 +60,7 @@ class WrStreamProviderOpenML (StreamProvider):
 ## -------------------------------------------------------------------------------------------------
 class WrStreamOpenML(Stream):
     """
+    Wrapper class for Streams from OpenML
     """
 
     C_NAME = 'OpenML'
@@ -66,5 +69,20 @@ class WrStreamOpenML(Stream):
     C_SCIREF_AUTHOR = 'OpenML'
     C_SCIREF_URL = 'new.openml.org'
 
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, **p_kwargs):
+        self._kwargs = p_kwargs.copy()
+        dataset = self._kwargs['dataset']
+        super().__init__(p_mode=self.C_MODE_SIM, dataset=dataset)
+
+
+## -------------------------------------------------------------------------------------------------
     def _setup(self):
-        pass
+        feature_space = MSpace()
+        _, _, _, features = self._kwargs['dataset'].get_data()
+        for feature in features:
+            feature_space.add_dim(Dimension(p_name_short=feature[0], p_name_long=str(feature)))
+
+        return feature_space
+        # pass
