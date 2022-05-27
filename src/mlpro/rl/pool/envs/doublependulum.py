@@ -169,13 +169,13 @@ class DoublePendulum(Environment):
                                       '\textdegrees', [-np.pi, np.pi]))
         state_space.add_dim(Dimension('omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
                                       'radians/second', '\textdegrees/s', [-np.inf, np.inf]))
-        state_space.add_dim(Dimension('acc 1', 'a1', 'Acceleration of Pendulum 1', '',
+        state_space.add_dim(Dimension('acc 1', 'a1', 'Angular Acceleration of Pendulum 1', '',
                                       'radians/second^2', '\text/s^2', [-np.inf, np.inf]))      
         state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'radians',
                                       '\textdegrees', [-np.pi, np.pi]))
         state_space.add_dim(Dimension('omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
                                       'radians/second', '\textdegrees/s', [-np.inf, np.inf]))
-        state_space.add_dim(Dimension('acc 2', 'a2', 'Acceleration of Pendulum 2', '',
+        state_space.add_dim(Dimension('acc 2', 'a2', 'Angular Acceleration of Pendulum 2', '',
                                       'radians/second^2', '\text/s^2', [-np.inf,np.inf]))
 
         action_space.add_dim(Dimension('torque 1', 'tau1', 'Applied Torque of Motor 1', '',
@@ -209,30 +209,63 @@ class DoublePendulum(Environment):
         delta = state[2] - state[0]
         den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
         dydx[1] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
-                    + self.m2 * self.g * sin(state[2]) * cos(delta)
-                    + self.m2 * self.l2 * state[3] * state[3] * sin(delta)
+                    + self.m2 * self.g * sin(state[3]) * cos(delta)
+                    + self.m2 * self.l2 * state[4] * state[4] * sin(delta)
                     - (self.m1 + self.m2) * self.g * sin(state[0]))
                    / den1)
 
-        dydx[2] = state[3]
+        dydx[3] = state[4]
 
         den2 = (self.l2 / self.l1) * den1
-        dydx[3] = ((- self.m2 * self.l2 * state[3] * state[3] * sin(delta) * cos(delta)
+        dydx[4] = ((- self.m2 * self.l2 * state[4] * state[4] * sin(delta) * cos(delta)
                     + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
                     - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
-                    - (self.m1 + self.m2) * self.g * sin(state[2]))
+                    - (self.m1 + self.m2) * self.g * sin(state[3]))
                    / den2)
 
         return dydx
+    
+    ## -------------------------------------------------------------------------------------------------
+    def first_acceleration(self):
+        """        
+        Returns
+        -------
+        acceleration: float.
+
+        """
+        numerator1 = -self.g * (2 * self.m1 + self.m2) * sin(self.th1)
+        numerator2 = -self.m2 * self.g * sin(self.th1 - 2 * self.th2)
+        numerator3 = -2 * sin(self.th1-self.th2)
+        numerator4 =  self.m2 * ((self.th2dot * self.th2dot) * self.l2 
+                     + (self.th1dot * self.th1dot) * self.l1 * cos(self.th1-self.th2))
+        numerator = numerator1 + numerator2 + (numerator3 * numerator4)
+        denominator = self.l1 * (2 * self.m1 + self.m2 - self.m2 
+                     * cos(2 * self.th1 - 2 * self.th2))
+    
+        return float(numerator/denominator)
+    
+    ## -------------------------------------------------------------------------------------------------
+    def second_acceleration(self):
+        
+        numerator1 = 2 * sin(self.th1 - self.th2)
+        numerator2 = (self.th1dot * self.th1dot) * self.l1 * (self.m1 + self.m2) + self.g * (self.m1+ self.m2) * cos(self.th1)
+                                
+        numerator3 = (self.th2dot * self.th2dot) * self.l2 * self.m2 * cos(self.th1-self.th2)
+    
+        numerator = numerator1 * (numerator2 + numerator3)
+        denominator = self.l2 * (2 * self.m1 + self.m2 - self.m2 
+                      * cos(2 * self.th1 - 2 * self.th2))
+    
+        return float(numerator/denominator)
 
     ## -------------------------------------------------------------------------------------------------
     def _data_normalization(self, p_value, p_boundaries):
         """
-        This method is called to ensure a normalized angular velocity and acceleration.
+        This method is called to ensure a normalized angle, angular velocity and acceleration.
 
         Returns
         -------
-        acceleration or angular velocity: float
+        angle, acceleration or angular velocity: float
 
         """
         # scalling manually
@@ -269,7 +302,6 @@ class DoublePendulum(Environment):
         self.action_cw = False
         self.alpha = 0
         
-
     ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
         """
@@ -290,6 +322,7 @@ class DoublePendulum(Environment):
         """
         state = p_state.get_values()
         th1, th1dot, a1, th2, th2dot, a2 = state
+
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
         
@@ -371,10 +404,11 @@ class DoublePendulum(Environment):
         """
         state = p_state_old.get_values()
         th1, th1dot,a1, th2, th2dot,a2 = state
-        
-        th1 = self._data_normalization(th1,self._state_space)
-        th1dot = self._data_normalization(th1dot,self._state_space[1])
-        a1 = self._data_normalization(a1,self._state_space[2])
+        a1 = self.first_acceleration()
+        a2 = self.second_acceleration()       
+        th1 = self._data_normalization(th1,self._state_space[0])
+        th1dot = self._data_normalization(th1dot,self.state_space[1])
+        a1 = self._data_normalization(a1,self.state_space[2])
         th2 = self._data_normalization(th2,self._state_space[3])
         th2dot = self._data_normalization(th2dot,self._state_space[4])
         a2 = self._data_normalization(a2,self._state_space[5])
