@@ -67,6 +67,7 @@ class TorchAFct(AdaptiveFunction):
         self._output_space
 
         Please return the neural network.
+        self.net_model = neural_network_model
         """
 
         return None
