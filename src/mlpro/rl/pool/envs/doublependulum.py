@@ -27,6 +27,7 @@
 ## -- 2022-05-14  1.1.3     YI       Scalling manually
 ## -- 2022-05-16  1.1.4     SY       Code cleaning
 ## -- 2022-05-19  1.1.5     YI       Editing the reward function
+## -- 2022-05-28  1.1.6     YI       Editing the reward, normalization, and derivs function
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -213,6 +214,16 @@ class DoublePendulum(Environment):
                     + self.m2 * self.l2 * state[4] * state[4] * sin(delta)
                     - (self.m1 + self.m2) * self.g * sin(state[0]))
                    / den1)
+        
+        numerator1 = -self.g * (2 * self.m1 + self.m2) * sin(self.th1)
+        numerator2 = -self.m2 * self.g * sin(self.th1 - 2 * self.th2)
+        numerator3 = -2 * sin(self.th1-self.th2)
+        numerator4 =  self.m2 * ((self.th2dot * self.th2dot) * self.l2 
+                     + (self.th1dot * self.th1dot) * self.l1 * cos(self.th1-self.th2))
+        numerator_1 = numerator1 + numerator2 + (numerator3 * numerator4)
+        denominator_1 = self.l1 * (2 * self.m1 + self.m2 - self.m2 
+                     * cos(2 * self.th1 - 2 * self.th2))
+        dydx[2]= numerator_1/denominator_1
 
         dydx[3] = state[4]
 
@@ -222,41 +233,16 @@ class DoublePendulum(Environment):
                     - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
                     - (self.m1 + self.m2) * self.g * sin(state[3]))
                    / den2)
-
-        return dydx
-    
-    ## -------------------------------------------------------------------------------------------------
-    def first_acceleration(self):
-        """        
-        Returns
-        -------
-        acceleration: float.
-
-        """
-        numerator1 = -self.g * (2 * self.m1 + self.m2) * sin(self.th1)
-        numerator2 = -self.m2 * self.g * sin(self.th1 - 2 * self.th2)
-        numerator3 = -2 * sin(self.th1-self.th2)
-        numerator4 =  self.m2 * ((self.th2dot * self.th2dot) * self.l2 
-                     + (self.th1dot * self.th1dot) * self.l1 * cos(self.th1-self.th2))
-        numerator = numerator1 + numerator2 + (numerator3 * numerator4)
-        denominator = self.l1 * (2 * self.m1 + self.m2 - self.m2 
-                     * cos(2 * self.th1 - 2 * self.th2))
-    
-        return float(numerator/denominator)
-    
-    ## -------------------------------------------------------------------------------------------------
-    def second_acceleration(self):
         
-        numerator1 = 2 * sin(self.th1 - self.th2)
-        numerator2 = (self.th1dot * self.th1dot) * self.l1 * (self.m1 + self.m2) + self.g * (self.m1+ self.m2) * cos(self.th1)
-                                
-        numerator3 = (self.th2dot * self.th2dot) * self.l2 * self.m2 * cos(self.th1-self.th2)
-    
-        numerator = numerator1 * (numerator2 + numerator3)
-        denominator = self.l2 * (2 * self.m1 + self.m2 - self.m2 
+        numerator5 = 2 * sin(self.th1 - self.th2)
+        numerator6 = (self.th1dot * self.th1dot) * self.l1 * (self.m1 + self.m2) + self.g * (self.m1+ self.m2) * cos(self.th1)
+        numerator7 = (self.th2dot * self.th2dot) * self.l2 * self.m2 * cos(self.th1-self.th2)
+        numerator_2 = numerator5 * (numerator6 + numerator7)
+        denominator_2 = self.l2 * (2 * self.m1 + self.m2 - self.m2 
                       * cos(2 * self.th1 - 2 * self.th2))
-    
-        return float(numerator/denominator)
+        dydx[5]=numerator_2/denominator_2
+        
+        return dydx
 
     ## -------------------------------------------------------------------------------------------------
     def _data_normalization(self, p_value, p_boundaries):
@@ -272,7 +258,10 @@ class DoublePendulum(Environment):
         self.p_value = p_value
         self.p_boundaries = p_boundaries
 
-        return (2*((p_value-min(p_boundaries))/(min(p_boundaries)-max(p_boundaries)))-1)
+        if p_boundaries == -np.inf or p_boundaries == np.inf:
+            return p_value
+        else:
+            return (2*((p_value-min(p_boundaries))/(min(p_boundaries)-max(p_boundaries)))-1)
  
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
@@ -322,9 +311,7 @@ class DoublePendulum(Environment):
         """
         state = p_state.get_values()
         th1, th1dot, a1, th2, th2dot, a2 = state
-        a1 = self.first_acceleration()
-        a2 = self.second_acceleration()  
-        
+
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
         
@@ -401,17 +388,41 @@ class DoublePendulum(Environment):
         Returns
         -------
         reward : Reward
+            Reward values.
 
         """
         state = p_state_old.get_values()
         th1, th1dot,a1, th2, th2dot,a2 = state
-     
-        th1 = self._data_normalization(th1,self.)
-        th1dot = self._data_normalization(th1dot,self._state_space[1])
-        a1 = self._data_normalization(a1,self._state_space[2])
-        th2 = self._data_normalization(th2,self._state_space[3])
-        th2dot = self._data_normalization(th2dot,self._state_space[4])
-        a2 = self._data_normalization(a2,self._state_space[5])
+      
+        self._state_space.get_dim_ids()
+        id = self._state_space.get_dim_ids()[0]
+        th1_boundaries = self._state_space.get_dim(id).get_boundaries()
+        th1 = self._data_normalization(th1,th1_boundaries)
+        
+        self._state_space.get_dim_ids()
+        id = self._state_space.get_dim_ids()[1]
+        th1dot_boundaries = self._state_space.get_dim(id).get_boundaries()  
+        th1dot = self._data_normalization(th1dot,th1dot_boundaries)
+        
+        self._state_space.get_dim_ids()
+        id = self._state_space.get_dim_ids()[2]
+        a1_boundaries = self._state_space.get_dim(id).get_boundaries()
+        a1 = self._data_normalization(a1,a1_boundaries)
+        
+        self._state_space.get_dim_ids()
+        id = self._state_space.get_dim_ids()[3]
+        th2_boundaries = self._state_space.get_dim(id).get_boundaries()
+        th2 = self._data_normalization(th2,th2_boundaries)
+        
+        self._state_space.get_dim_ids()
+        id = self._state_space.get_dim_ids()[4]
+        th2dot_boundaries = self._state_space.get_dim(id).get_boundaries()
+        th2dot = self._data_normalization(th2dot,th2dot_boundaries)
+        
+        self._state_space.get_dim_ids()
+        id = self._state_space.get_dim_ids()[5]
+        a2_boundaries = self._state_space.get_dim(id).get_boundaries()
+        a2 = self._data_normalization(a2,a2_boundaries)
         
         reward = Reward(Reward.C_TYPE_OVERALL)
         
@@ -421,13 +432,13 @@ class DoublePendulum(Environment):
         
         th1_count = 0
         for th1 in self.y[::-1, 0]:
-            ang = np.degrees(self._data_normalization(th1))
+            ang = np.degrees(self._data_normalization(th1,th1_boundaries))
             if ang > 170 or ang < 190 or \
                     ang < -170 or ang > -190:
                 th1_count += 1
             else:
                 break
-        th1_distance = np.pi - abs(self._data_normalization(np.radians(state[0])))
+        th1_distance = np.pi - abs(self._data_normalization(th1,th1_boundaries))
         th1_distance_costs = 4 if th1_distance <= 0.1 else 0.3 / th1_distance
         
         th1_speed_costs = np.pi * abs(state[1]) / self.max_speed
@@ -440,13 +451,13 @@ class DoublePendulum(Environment):
         
         th2_count = 0
         for th2 in self.y[::-1, 2]:
-            ang = np.degrees(self._data_normalization(th2))
+            ang = np.degrees(self._data_normalization(th2,th2_boundaries))
             if ang > 170 or ang < 190 or \
                     ang < -170 or ang > -190:
                 th2_count += 1
             else:
                 break
-        th2_distance = np.pi - abs(self._data_normalization(np.radians(state[2])))
+        th2_distance = np.pi - abs(self._data_normalization(th2,th2_boundaries))
         th2_distance_costs = 4 if th2_distance <= 0.1 else 0.3 / th2_distance
         
         th2_speed_costs = np.pi * abs(state[3]) / self.max_speed
