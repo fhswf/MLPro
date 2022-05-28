@@ -272,7 +272,7 @@ class DoublePendulum(Environment):
         self.p_value = p_value
         self.p_boundaries = p_boundaries
 
-        return (2*((p_value-min(p_boundaries))/(min(p_boundaries)-max(p_boundaries))))
+        return (2*((p_value-min(p_boundaries))/(min(p_boundaries)-max(p_boundaries)))-1)
  
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
@@ -322,7 +322,9 @@ class DoublePendulum(Environment):
         """
         state = p_state.get_values()
         th1, th1dot, a1, th2, th2dot, a2 = state
-
+        a1 = self.first_acceleration()
+        a2 = self.second_acceleration()  
+        
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
         
@@ -399,16 +401,14 @@ class DoublePendulum(Environment):
         Returns
         -------
         reward : Reward
-            Reward values.
 
         """
         state = p_state_old.get_values()
         th1, th1dot,a1, th2, th2dot,a2 = state
-        a1 = self.first_acceleration()
-        a2 = self.second_acceleration()       
-        th1 = self._data_normalization(th1,self._state_space[0])
-        th1dot = self._data_normalization(th1dot,self.state_space[1])
-        a1 = self._data_normalization(a1,self.state_space[2])
+     
+        th1 = self._data_normalization(th1,self.)
+        th1dot = self._data_normalization(th1dot,self._state_space[1])
+        a1 = self._data_normalization(a1,self._state_space[2])
         th2 = self._data_normalization(th2,self._state_space[3])
         th2dot = self._data_normalization(th2dot,self._state_space[4])
         a2 = self._data_normalization(a2,self._state_space[5])
