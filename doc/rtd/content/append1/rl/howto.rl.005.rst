@@ -1,46 +1,27 @@
-.. _Howto RL 5:
-`Howto 05 - (RL) Train multi-agent with own policy on multicartpole environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2005%20-%20(RL)%20Train%20multi-agent%20with%20own%20policy%20on%20multicartpole%20environment.py>`_
-================
-Ver. 1.3.1 (2021-12-07)
+.. _Howto RL 005:
+Howto RL-005: Train a multi-agent with an own policy on the Multi-Cartpole environment
+======================================================================================
 
-This module shows how to train an own multi-agent with the enhanced multi-action environment 
-MultiCartPole based on the OpenAI Gym CartPole environment.
+.. automodule:: mlpro.rl.examples.howto_rl_005_train_multi_agent_with_own_policy_on_multicartpole_nvironment
+
+
 
 Prerequisites
-`````````````````
+-------------
 
 Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
-  ..
-    - `NumPy <https://pypi.org/project/numpy/>`_
-  ..
-    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
-    - `Pytorch <https://pypi.org/project/torch/>`_
-  ..
-    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-  ..
-    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-  ..
-    - `Optuna <https://pypi.org/project/optuna/>`_
-  ..
-    - `Hyperopt <https://pypi.org/project/hyperopt/>`_
-  ..
-    - `ROS <http://wiki.ros.org/noetic/Installation>`_
-    
+
+
+
+Executable code
+---------------
+.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_005_train_multi_agent_with_own_policy_on_multicartpole_nvironment.py
+	:language: python
+
+
 
 Results
-`````````````````
-An output similar to the one present in :ref:`the third example <Howto RL 3>` 
-will show up. However, there will be multiple windows of the environment open.
+-------
+Similar output as in :ref:`Howto RL-003 <Howto RL 003>` is displayed. However, there will be multiple windows of the environment open.
 In addition, the training log will contain one more pkl file for the second agent.
-
-
-Example Code
-`````````````````
-
-.. literalinclude:: ../../../../../examples/rl/Howto 05 - (RL) Train multi-agent with own policy on multicartpole environment.py
-    :language: python
-
-
