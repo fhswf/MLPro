@@ -54,8 +54,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Build the Documentation
       run: |
-        cd doc/rtd
-        make html 
-    - name: Test with pytest 
+        make doc
+    - name: Test with pytest
       run: |
-        python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/ --ignore=src/mlpro/rl/pool/envs/multigeorobot/src/
+        make test
