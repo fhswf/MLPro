@@ -57,7 +57,7 @@ howto_list = {
     "rl_016": "mlpro.rl.examples.howto_rl_016_comparison_native_vs_wrapped_sb3_policy",
     "rl_017": "mlpro.rl.examples.howto_rl_017_comparison_native_vs_wrapped_sb3_policy_off_policy",
     # "rl_018": "mlpro.rl.examples.howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment",
-    # "rl_019": "mlpro.rl.examples.howto_rl_019_train_and_reload_single_agent",
+    "rl_019": "mlpro.rl.examples.howto_rl_019_train_and_reload_single_agent",
     "rl_020": "mlpro.rl.examples.howto_rl_020_train_wrapped_sb3_policy_on_doublependulum",
 
 # Game Theory:

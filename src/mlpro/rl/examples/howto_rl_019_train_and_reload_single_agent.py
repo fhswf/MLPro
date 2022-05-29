@@ -85,7 +85,7 @@ else:
     eval_grp_size = 1
     logging = Log.C_LOG_NOTHING
     visualize = False
-    path = None
+    path = str(Path.home())
 
 
 # 2 Create scenario and start training
