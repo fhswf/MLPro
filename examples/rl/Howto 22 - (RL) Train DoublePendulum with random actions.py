@@ -89,7 +89,7 @@ class ScenarioDoublePendulum(RLScenario):
         return Agent(
             p_policy=policy_random,  
             p_envmodel=None,
-            p_name='smith',
+            p_name='Smith',
             p_ada=p_ada,
             p_logging=p_logging
         )
@@ -103,7 +103,7 @@ class ScenarioDoublePendulum(RLScenario):
 
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit         = 100
+    cycle_limit         = 200000
     adaptation_limit    = 10000
     stagnation_limit    = 0
     eval_frequency      = 5
