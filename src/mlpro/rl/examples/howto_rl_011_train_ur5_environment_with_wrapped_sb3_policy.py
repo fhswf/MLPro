@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto-RL-011a_Train_UR5_environment_with_wrapped_SB3_policy.py
+## -- Module  : howto_rl_011_train_ur5_environment_with_wrapped_sb3_policy.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -15,7 +15,7 @@
 """
 Ver. 1.2.0 (2022-05-23)
 
-This module shows how to use SB3 wrapper to train UR5 robot.
+This module shows how to use SB3 wrapper to train UR5 robot (derivate for paper).
 """
 
 from mlpro.rl.models import *

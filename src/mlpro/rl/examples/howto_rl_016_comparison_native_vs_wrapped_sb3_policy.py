@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : Howto-RL-010_Comparison_native_vs_wrapped_SB3_policy.py
+## -- Module  : howto_rl_016_comparison_native_vs_wrapped_sb3_policy.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : Howto-RL-016_Comparison_native_vs_wrapped_SB3_policy_(Off-Policy).py
+## -- Module  : howto_rl_017_comparison_native_vs_wrapped_sb3_policy_off_policy.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -13,8 +13,9 @@
 """
 Ver. 1.0.1 (2022-02-27)
 
-This module shows comparison between native and wrapper Off-policy SB3
+This module shows comparison between native and wrapped SB3 policy (Off-policy).
 """
+
 
 import gym
 import pandas as pd
@@ -26,18 +27,18 @@ from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 
-# 1 Parameter
-# 2 Create scenario and start training
 
+
+# 1 Parameter
 if __name__ == "__main__":
-    # 2.1 Parameters for demo mode
+    # 1.1 Parameters for demo mode
     logging = Log.C_LOG_WE
     visualize = False
     path = str(Path.home())
     max_episode = 400
 
 else:
-    # 2.2 Parameters for internal unit test
+    # 1.2 Parameters for internal unit test
     logging = Log.C_LOG_NOTHING
     visualize = False
     path = None
@@ -114,6 +115,7 @@ training = RLTraining(
     p_path=path,
     p_visualize=visualize,
     p_logging=logging)
+
 
 # 4 Train SB3 Wrapper
 training.run()
@@ -249,6 +251,7 @@ policy_sb3 = DQN(
 cus_callback = CustomCallback()
 policy_sb3.learn(total_timesteps=1200, callback=cus_callback)
 native_plot = cus_callback.plots
+
 
 # 9 Difference Plot
 native_ydata = native_plot[1][0].lines[0].get_ydata()

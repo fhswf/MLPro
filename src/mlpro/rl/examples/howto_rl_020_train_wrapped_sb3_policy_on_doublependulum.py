@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : Howto-RL-019_Train_wrapped_SB3_policy_on_DoublePendulum.py
+## -- Module  : howto_rl_020_train_wrapped_sb3_policy_on_doublependulum.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,8 +12,9 @@
 """
 Ver. 0.0.0 (2022-03-22)
 
-This module shows how to use SB3 wrapper to train double pendulum
+This module shows how to use SB3 wrapper to train double pendulum. Currently under construction...
 """
+
 
 import torch
 from mlpro.bf.math import *
@@ -24,6 +25,8 @@ from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
+
+
 
 # 1 Implement your own RL scenario
 class ScenarioDoublePendulum(RLScenario):
@@ -62,10 +65,10 @@ class ScenarioDoublePendulum(RLScenario):
             p_logging=p_logging
         )
 
-# 2 Create scenario and start training
 
+# 2 Create scenario and start training
 if __name__ == "__main__":
-    # 3.1 Parameters for demo mode
+    # 2.1 Parameters for demo mode
     cycle_limit         = 0
     adaptation_limit    = 6000
     stagnation_limit    = 0
@@ -74,12 +77,21 @@ if __name__ == "__main__":
     logging             = Log.C_LOG_WE
     visualize           = True
     path                = str(Path.home())
-    plotting        = True
+    plotting            = True
+else:
+    # 2.2 Parameters for demo mode
+    cycle_limit         = 0
+    adaptation_limit    = 1
+    stagnation_limit    = 0
+    eval_frequency      = 5
+    eval_grp_size       = 5
+    logging             = Log.C_LOG_NOTHING
+    visualize           = False
+    path                = None
+    plotting            = False
  
 
 # 3 Train agent in scenario 
-now             = datetime.now()
-
 training        = RLTraining(
     p_scenario_cls=ScenarioDoublePendulum,
     p_cycle_limit=cycle_limit,

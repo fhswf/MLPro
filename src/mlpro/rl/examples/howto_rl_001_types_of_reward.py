@@ -1,17 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto-RL-001_Types_of_reward.py
+## -- Module  : howto_rl_001_types_of_reward.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-05-30  0.0.0     DA       Creation
 ## -- 2021-05-31  1.0.0     DA       Release of first version
-## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
+## -- 2021-09-11  1.0.1     MRD      Change Header information to match our new library name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-11)
+Ver. 1.0.1 (2021-09-11)
 
 This module shows how to create and interprete reward objects in own projects.
 """

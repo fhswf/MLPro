@@ -1,45 +1,44 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto-RL-011_Train_UR5_environment_with_wrapped_SB3_policy.py
+## -- Module  : howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-11-18  0.0.0     MRD      Creation
-## -- 2021-11-18  1.0.0     MRD      Initial Release
-## -- 2021-12-07  1.0.1     DA       Refactoring
+## -- 2021-12-19  0.0.0     MRD      Creation
+## -- 2021-12-19  1.0.0     MRD      Initial Release
+## -- 2021-12-23  1.0.1     DA       Minor fix 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-12-07)
+Ver. 1.0.1 (2021-12-23)
 
-This module shows how to use SB3 wrapper to train UR5 robot
+This module shows how to use SB3 wrapper to train Multi Geometry Robot.
 """
 
+from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
+from mlpro.rl.pool.envs.multigeorobot import MultiGeo
 from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 
 
-# 1 Make Sure training_env branch of ur_control is sourced:
-# request access to the ur_control project
-
-# 2 Implement your own RL scenario
-class ScenarioUR5A2C(RLScenario):
+# 1 Implement your own RL scenario
+class ScenarioMultiGeoPPO(RLScenario):
     C_NAME = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        self._env = UR5JointControl(p_logging=p_logging)
+        self._env = MultiGeo(p_logging=p_logging)
 
         policy_sb3 = PPO(
             policy="MlpPolicy",
             n_steps=20,
             env=None,
             _init_setup_model=False,
-            device="cpu",)
+            device="cpu",
+            seed=1)
 
         policy_wrapped = WrPolicySB32MLPro(
             p_sb3_policy=policy_sb3,
@@ -63,12 +62,9 @@ class ScenarioUR5A2C(RLScenario):
 now = datetime.now()
 
 training = RLTraining(
-    p_scenario_cls=ScenarioUR5A2C,
+    p_scenario_cls=ScenarioMultiGeoPPO,
     p_cycle_limit=1000,
     p_cycles_per_epi_limit=-1,
-    p_stagnation_limit=5,
-    p_eval_frequency=10,
-    p_eval_grp_size=5,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,

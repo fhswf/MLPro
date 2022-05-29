@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : Howto-RL-012_Train_wrapped_SB3_policy_on_Robothtm_environment.py
+## -- Module  : howto_rl_012_train_wrapped_SB3_policy_on_robothtm_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

@@ -39,6 +39,26 @@ howto_list = {
     "bf_010": "mlpro.bf.examples.howto_bf_010_sciui_reinforcement_learning_cockpit",
 
 # Reinforcement Learning:
+    "rl_001": "mlpro.rl.examples.howto_rl_001_types_of_reward",
+    "rl_002": "mlpro.rl.examples.howto_rl_002_run_agent_with_own_policy_with_gym_environment",
+    "rl_003": "mlpro.rl.examples.howto_rl_003_train_agent_with_own_policy_on_gym_environment",
+    "rl_004": "mlpro.rl.examples.howto_rl_004_run_multi_agent_with_own_policy_in_multicartpole_environment",
+    "rl_005": "mlpro.rl.examples.howto_rl_005_train_multi_agent_with_own_policy_on_multicartpole_nvironment",
+    "rl_006": "mlpro.rl.examples.howto_rl_006_run_own_agents_with_petting_zoo_environment",
+    "rl_007": "mlpro.rl.examples.howto_rl_007_train_wrapped_SB3_policy",
+    "rl_008": "mlpro.rl.examples.howto_rl_008_wrap_mlpro_environment_to_gym_environment",
+    "rl_009": "mlpro.rl.examples.howto_rl_009_wrap_mlpro_environment_to_pettingzoo_environment",
+    "rl_010": "mlpro.rl.examples.howto_rl_010_train_ur5_environment_with_wrapped_sb3_policy",
+    "rl_011": "mlpro.rl.examples.howto_rl_011_train_ur5_environment_with_wrapped_sb3_policy",
+    "rl_012": "mlpro.rl.examples.howto_rl_012_train_wrapped_SB3_policy_on_robothtm_environment",
+    "rl_013": "mlpro.rl.examples.howto_rl_013_model_based_reinforcement_learning",
+    "rl_014": "mlpro.rl.examples.howto_rl_014_advanced_training_with_stagnation_detection",
+    "rl_015": "mlpro.rl.examples.howto_rl_015_train_wrapped_sb3_policy_with_stagnation_detection",
+    "rl_016": "mlpro.rl.examples.howto_rl_016_comparison_native_vs_wrapped_sb3_policy",
+    "rl_017": "mlpro.rl.examples.howto_rl_017_comparison_native_vs_wrapped_sb3_policy_off_policy",
+    "rl_018": "mlpro.rl.examples.howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment",
+    "rl_019": "mlpro.rl.examples.howto_rl_019_train_and_reload_single_agent",
+    "rl_020": "mlpro.rl.examples.howto_rl_020_train_wrapped_sb3_policy_on_doublependulum",
 
 # Game Theory:
     "gt_001": "mlpro.gt.examples.howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board",

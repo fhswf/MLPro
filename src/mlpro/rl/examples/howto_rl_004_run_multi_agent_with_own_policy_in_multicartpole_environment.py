@@ -1,47 +1,45 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto-RL-005_Train_multi-agent_with_own_policy_on_multicartpole_nvironment.py
+## -- Module  : howto_rl_004_run_multi_agent_with_own_policy_in_multicartpole_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-06-06  0.0.0     DA       Creation
+## -- 2021-05-20  0.0.0     DA       Creation
 ## -- 2021-06-06  1.0.0     DA       Release of first version
-## -- 2021-07-01  1.1.0     DA       Extended by data logging/storing (user home directory)
-## -- 2021-07-06  1.1.1     SY       Bugfix due to method Training.save_data() update
-## -- 2021-08-28  1.2.0     DA       Introduced Policy
-## -- 2021-09-11  1.2.0     MRD      Change Header information to match our new library name
-## -- 2021 09-26  1.2.1     MRD      Change the import module due to the change of the pool
+## -- 2021-08-28  1.1.0     DA       Introduced Policy
+## -- 2021-09-11  1.1.0     MRD      Change Header information to match our new library name
+## -- 2021 09-26  1.1.1     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
-## -- 2021-10-06  1.2.2     DA       Refactoring 
-## -- 2021-11-15  1.3.0     DA       Refactoring 
-## -- 2021-12-07  1.3.1     DA       Refactoring 
-## -- 2022-02-25  1.3.2     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2021-10-06  1.1.2     DA       Refactoring 
+## -- 2021-10-18  1.1.3     DA       Refactoring 
+## -- 2021-11-15  1.2.0     DA       Refactoring 
+## -- 2022-02-25  1.2.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-02-25)
+Ver. 1.2.1 (2022-02-25)
 
-This module shows how to train an own multi-agent with the enhanced multi-action environment 
+This module shows how to run an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
 """
-
 
 
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 import random
-from pathlib import Path
-import os
-from datetime import datetime
 
 
 
 
 # 1 Implement your own agent policy
-class MyPolicy(Policy):
+class MyPolicy (Policy):
 
     C_NAME      = 'MyPolicy'
+
+    def set_random_seed(self, p_seed=None):
+        random.seed(p_seed)
+
 
     def compute_action(self, p_state: State) -> Action:
         # 1 Create a numpy array for your action values 
@@ -57,9 +55,9 @@ class MyPolicy(Policy):
 
     def _adapt(self, *p_args) -> bool:
         # 1 Adapting the internal policy is up to you...
-        self.log(self.C_LOG_TYPE_I, 'Sorry, I am a stupid agent...')
+        self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 
-        # 3 Only return True if something has been adapted...
+        # 2 Only return True if something has been adapted...
         return False
 
 
@@ -70,7 +68,7 @@ class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
 
-    def _setup(self, p_mode, p_ada:bool, p_logging) -> Model:
+    def _setup(self, p_mode, p_ada, p_logging):
 
         # 1 Setup Multi-Agent Environment (consisting of 3 OpenAI Gym Cartpole envs)
         self._env   = MultiCartPole(p_num_envs=3, p_logging=p_logging)
@@ -79,9 +77,9 @@ class MyScenario (RLScenario):
         # 2 Setup Multi-Agent 
 
         # 2.1 Create empty Multi-Agent
-        multi_agent     = MultiAgent(
+        multi_agent = MultiAgent(
             p_name='Smith',
-            p_ada=p_ada,
+            p_ada=True,
             p_logging=p_logging
         )
 
@@ -94,13 +92,13 @@ class MyScenario (RLScenario):
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[0],ss_ids[1],ss_ids[2],ss_ids[3]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[0]]),
                     p_buffer_size=1,
-                    p_ada=p_ada,
+                    p_ada=True,
                     p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-1',
                 p_id=0,
-                p_ada=p_ada,
+                p_ada=True,
                 p_logging=p_logging
             ),
             p_weight=0.3
@@ -113,13 +111,13 @@ class MyScenario (RLScenario):
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[4],ss_ids[5],ss_ids[6],ss_ids[7],ss_ids[8],ss_ids[9],ss_ids[10],ss_ids[11]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[1],as_ids[2]]),
                     p_buffer_size=1,
-                    p_ada=p_ada,
+                    p_ada=True,
                     p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-2',
                 p_id=1,
-                p_ada=p_ada,
+                p_ada=True,
                 p_logging=p_logging
             ),
             p_weight=0.7
@@ -131,29 +129,24 @@ class MyScenario (RLScenario):
 
 
 
-# 3 Create scenario and start training
-
+# 3 Create scenario and run some cycles
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit = 200
-    logging     = Log.C_LOG_WE
+    logging     = Log.C_LOG_ALL
     visualize   = True
-    path        = str(Path.home())
- 
+  
 else:
     # 3.2 Parameters for internal unit test
-    cycle_limit = 10
     logging     = Log.C_LOG_NOTHING
     visualize   = False
-    path        = None
+ 
 
-
-# 3.4 Create and run training object
-training = RLTraining(
-        p_scenario_cls=MyScenario,
-        p_cycle_limit=cycle_limit,
-        p_path=path,
+myscenario  = MyScenario(
+        p_mode=Mode.C_MODE_SIM,
+        p_ada=True,
+        p_cycle_limit=200,
         p_visualize=visualize,
-        p_logging=logging )
+        p_logging=logging
+)
 
-training.run()
+myscenario.run() 
