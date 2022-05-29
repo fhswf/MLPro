@@ -73,4 +73,3 @@ if __name__ == "__main__":
     print('\n--\n-- Example 5: Everything is logged again...\n--\n')
     mc.switch_logging(Log.C_LOG_ALL)
     mc.my_method()
-

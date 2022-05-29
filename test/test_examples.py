@@ -22,30 +22,30 @@ Unit test for all examples available.
 import pytest
 import importlib
 
+
 howto_list = {
-    "bf_01": "examples.bf.Howto 01 - (Various) Logging",
-    "bf_02": "examples.bf.Howto 02 - (Various) Timer",
-    "bf_03": "examples.bf.Howto 03 - (Math) Spaces, subspaces and elements",
-    "bf_05": "examples.bf.Howto 05 - (ML) Hyperparameters setup",
-    "bf_06": "examples.bf.Howto 06 - (Data) Buffer",
-    "gt_06": "examples.gt.Howto 06 - (GT) Run multi-player with own policy in multicartpole game board",
-    "gt_07": "examples.gt.Howto 07 - (GT) Train own multi-player with multicartpole game board",
-    "rl_01": "examples.rl.Howto 01 - (RL) Types of reward",
-    "rl_02": "examples.rl.Howto 02 - (RL) Run agent with own policy with gym environment",
-    "rl_03": "examples.rl.Howto 03 - (RL) Train agent with own policy on gym environment",
-    "rl_04": "examples.rl.Howto 04 - (RL) Run multi-agent with own policy in multicartpole environment",
-    "rl_05": "examples.rl.Howto 05 - (RL) Train multi-agent with own policy on multicartpole environment",
-    "rl_08": "examples.rl.Howto 08 - (RL) Run own agents with petting zoo environment",
-    "rl_10": "examples.rl.Howto 10 - (RL) Train using SB3 Wrapper",
-    "rl_11": "examples.rl.Howto 11 - (RL) Wrap mlpro Environment class to gym environment",
-    "rl_12": "examples.rl.Howto 12 - (RL) Wrap mlpro Environment class to petting zoo environment",
-    "rl_13": "examples.rl.Howto 13 - (RL) Comparison Native and Wrapper SB3 Policy",
-    "rl_15": "examples.rl.Howto 15 - (RL) Train Robothtm with SB3 Wrapper",
-    "rl_16": "examples.rl.Howto 16 - (RL) Model Based Reinforcement Learning",
-    "rl_17": "examples.rl.Howto 17 - (RL) Advanced training with stagnation detection",
-    "rl_18": "examples.rl.Howto 18 - (RL) Single Agent with stagnation detection and SB3 Wrapper",
-    "sciui_01": "examples.sciui.Howto 01 (SciUI) - Reuse of interactive 2D,3D input space"
+    "bf_001": "mlpro.bf.examples.howto_bf_001_logging",
+    "bf_002": "mlpro.bf.examples.howto_bf_002_timer",
+    "bf_003": "mlpro.bf.examples.howto_bf_003_spaces_and_elements",
+    "bf_004": "mlpro.bf.examples.howto_bf_004_store_plot_and_save_variables",
+    "bf_005": "mlpro.bf.examples.howto_bf_005_hyperparameters",
+    "bf_006": "mlpro.bf.examples.howto_bf_006_buffers",
+    "bf_007": "mlpro.bf.examples.howto_bf_007_hyperparameter_tuning_using_hyperopt",
+    "bf_008": "mlpro.bf.examples.howto_bf_008_hyperparameter_tuning_using_optuna",
+    "bf_009": "mlpro.bf.examples.howto_bf_009_sciui_reuse_of_interactive_2d_3d_input_space",
+    "bf_010": "mlpro.bf.examples.howto_bf_010_sciui_reinforcement_learning_cockpit"
 }
+
+
+# import mlpro.bf.examples
+# from pkgutil import iter_modules
+
+# def list_submodules(module):
+#     for submodule in iter_modules(module.__path__):
+#         print(submodule.name)
+
+# list_submodules(mlpro.bf.examples)
+
 
 @pytest.mark.parametrize("cls", list(howto_list.keys()))
 def test_howto(cls):
