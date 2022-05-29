@@ -227,7 +227,7 @@ else:
     # Parameters for internal unit test
     logging         = Log.C_LOG_NOTHING
     visualize       = False
-    dest_path       = None
+    dest_path       = str(Path.home())
     cycle_limit     = 100
     cycle_per_ep    = 10
     eval_freq       = 2

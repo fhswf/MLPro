@@ -33,8 +33,8 @@ howto_list = {
     "bf_004": "mlpro.bf.examples.howto_bf_004_store_plot_and_save_variables",
     "bf_005": "mlpro.bf.examples.howto_bf_005_hyperparameters",
     "bf_006": "mlpro.bf.examples.howto_bf_006_buffers",
-#    "bf_007": "mlpro.bf.examples.howto_bf_007_hyperparameter_tuning_using_hyperopt",
-#    "bf_008": "mlpro.bf.examples.howto_bf_008_hyperparameter_tuning_using_optuna",
+    "bf_007": "mlpro.bf.examples.howto_bf_007_hyperparameter_tuning_using_hyperopt",
+    "bf_008": "mlpro.bf.examples.howto_bf_008_hyperparameter_tuning_using_optuna",
     "bf_009": "mlpro.bf.examples.howto_bf_009_sciui_reuse_of_interactive_2d_3d_input_space",
     "bf_010": "mlpro.bf.examples.howto_bf_010_sciui_reinforcement_learning_cockpit",
 
