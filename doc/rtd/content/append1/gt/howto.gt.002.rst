@@ -1,19 +1,26 @@
-.. _Howto GT 7:
-`Howto 07 - (GT) Train own multi-player with multicartpole game board <https://github.com/fhswf/MLPro/blob/main/examples/gt/Howto%2007%20-%20(GT)%20Train%20own%20multi-player%20with%20multicartpole%20game%20board.py>`_
-================
-Ver. 1.2.2 (2022-02-25)
- 
-This module shows how to train an own multi-player with the enhanced multi-action
-game board MultiCartPole based on the OpenAI Gym CartPole environment.
+.. _Howto GT 002:
+Howto GT-002: Train an own multi-player with multi-cartpole game board
+===========================================================================
+
+.. automodule:: mlpro.gt.examples.howto_gt_002_train_own_multi_player_with_multicartpole_game_board
+
 
 Prerequisites
-`````````````````
+-------------
 
 Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
     - `NumPy <https://pypi.org/project/numpy/>`_
-    
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
+
+
+
+Executable code
+---------------
+.. literalinclude:: ../../../../../src/mlpro/gt/examples/howto_gt_002_train_own_multi_player_with_multicartpole_game_board.py
+	:language: python
+
+
+
 Results
 `````````````````
 After the multiple game boards are initialised, the console will be filled with training logs
@@ -42,11 +49,3 @@ and the final training result should show up at the end of the script.
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
     
-
-Example Code
-`````````````````
-
-.. literalinclude:: ../../../../../examples/gt/Howto 07 - (GT) Train own multi-player with multicartpole game board.py
-    :language: python
-
-

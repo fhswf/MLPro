@@ -25,6 +25,8 @@ import importlib
 
 
 howto_list = {
+
+# Basic Functions:
     "bf_001": "mlpro.bf.examples.howto_bf_001_logging",
     "bf_002": "mlpro.bf.examples.howto_bf_002_timer",
     "bf_003": "mlpro.bf.examples.howto_bf_003_spaces_and_elements",
@@ -34,7 +36,13 @@ howto_list = {
 #    "bf_007": "mlpro.bf.examples.howto_bf_007_hyperparameter_tuning_using_hyperopt",
 #    "bf_008": "mlpro.bf.examples.howto_bf_008_hyperparameter_tuning_using_optuna",
     "bf_009": "mlpro.bf.examples.howto_bf_009_sciui_reuse_of_interactive_2d_3d_input_space",
-    "bf_010": "mlpro.bf.examples.howto_bf_010_sciui_reinforcement_learning_cockpit"
+    "bf_010": "mlpro.bf.examples.howto_bf_010_sciui_reinforcement_learning_cockpit",
+
+# Reinforcement Learning:
+
+# Game Theory:
+    "gt_001": "mlpro.gt.examples.howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board",
+    "gt_002": "mlpro.gt.examples.howto_gt_002_train_own_multi_player_with_multicartpole_game_board"
 }
 
 

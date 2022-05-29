@@ -1,22 +1,29 @@
-.. _Howto GT 6:
-`Howto 06 - (GT) Run multi-player with own policy in multicartpole game board <https://github.com/fhswf/MLPro/blob/main/examples/gt/Howto%2006%20-%20(GT)%20Run%20multi-player%20with%20own%20policy%20in%20multicartpole%20game%20board.py>`_
-================
-Ver. 1.1.1 (2022-02-25)
+.. _Howto GT 001:
+Howto GT-001: Run multi-player with own policy in multi-cartpole game board
+===========================================================================
 
-This module shows how to run an own multi-player with the enhanced multi-action game board 
-MultiCartPole based on the OpenAI Gym CartPole environment.
+.. automodule:: mlpro.gt.examples.howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board
+
 
 Prerequisites
-`````````````````
+-------------
 
 Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
     - `NumPy <https://pypi.org/project/numpy/>`_
-    
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
+
+
+
+Executable code
+---------------
+.. literalinclude:: ../../../../../src/mlpro/gt/examples/howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board.py
+	:language: python
+
+
+  
 Results
-`````````````````
-.. image:: images/Cartpole.png
+-------
+.. image:: images/howto.gt.001/Cartpole.png
 
 Three Gym Cartpole game board windows should appear and the following output should be expected in the console.
 
@@ -88,12 +95,3 @@ Three Gym Cartpole game board windows should appear and the following output sho
     ... 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Start vizualization for all agents... 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Process time 0:00:12 End of processing 
-
-
-
-Example Code
-`````````````````
-
-.. literalinclude:: ../../../../../examples/gt/Howto 06 - (GT) Run multi-player with own policy in multicartpole game board.py
-    :language: python
-

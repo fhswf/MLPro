@@ -9,8 +9,8 @@ Prerequisites
 -------------
 
 Please install the following packages to run this examples properly:
-    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
     - `NumPy <https://pypi.org/project/numpy/>`_
+    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
     - `Tkinter <https://pypi.org/project/tk/>`_
 
 
