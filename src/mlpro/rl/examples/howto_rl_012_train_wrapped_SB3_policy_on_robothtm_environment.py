@@ -9,13 +9,15 @@
 ## -- 2021-12-01  1.0.0     MRD      First Release
 ## -- 2021-12-07  1.0.1     DA       Refactoring
 ## -- 2021-12-08  1.0.2     MRD      Add parameter to change the hidden layer of the policy
+## -- 2022-05.30  1.0.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-12-08)
+Ver. 1.0.3 (2022-05-30)
 
-This module shows how to use SB3 wrapper to train Robothtm
+This module shows how to train a wrapped Stable Baselines 3 policy on MLPro's native Robothtm environment.
 """
+
 
 import torch
 from mlpro.rl.models import *
@@ -23,6 +25,7 @@ from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
+
 
 
 # 1 Implement your own RL scenario
@@ -63,10 +66,10 @@ class ScenarioRobotHTM(RLScenario):
         )
 
 
-# 2 Create scenario and start training
 
+# 2 Create scenario and start training
 if __name__ == "__main__":
-    # 3.1 Parameters for demo mode
+    # 2.1 Parameters for demo mode
     cycle_limit = 100000
     adaptation_limit = 150
     stagnation_limit = 5
@@ -78,7 +81,7 @@ if __name__ == "__main__":
     plotting = True
 
 else:
-    # 3.2 Parameters for internal unit test
+    # 2.2 Parameters for internal unit test
     cycle_limit = 50
     adaptation_limit = 5
     stagnation_limit = 5
@@ -89,9 +92,8 @@ else:
     path = None
     plotting = False
 
-# 3 Train agent in scenario 
-now = datetime.now()
 
+# 3 Train agent in scenario 
 training = RLTraining(
     p_scenario_cls=ScenarioRobotHTM,
     p_cycle_limit=cycle_limit,

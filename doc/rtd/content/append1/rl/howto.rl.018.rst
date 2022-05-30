@@ -1,79 +1,40 @@
-.. _Howto RL 18:
-`Howto 18 - (RL) Single Agent with stagnation detection and SB3 Wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2018%20-%20(RL)%20Single%20Agent%20with%20stagnation%20detection%20and%20SB3%20Wrapper.py>`_
-================
-Ver. 1.0.0 (2022-01-20)
+.. _Howto RL 018:
+Howto RL-018: Train a wrapped Stable Baselines 3 policy on MLPro's native MultiGeo environment
+====================================================================================================
 
-This module shows how to train with SB3 Wrapper and stagnation detection
+.. automodule:: mlpro.rl.examples.howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment
+
+
 
 Prerequisites
-`````````````````
+-------------
 
 Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
-    - `Pytorch <https://pypi.org/project/torch/>`_
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
-  ..
+    - :ref:`RL Environment Multi Geometry Robot <multigeorobot>`
     - `NumPy <https://pypi.org/project/numpy/>`_
-  ..
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
-  ..
-    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-  ..
-    - `Optuna <https://pypi.org/project/optuna/>`_
-  ..
-    - `Hyperopt <https://pypi.org/project/hyperopt/>`_
-  ..
-    - `ROS <http://wiki.ros.org/noetic/Installation>`_
+    - `Pytorch <https://pypi.org/project/torch/>`_
     
+
+
+Executable code
+---------------
+.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment.py
+	:language: python
+
+
 
 Results
-`````````````````
-.. image:: images/Cartpole.png
+-------
 
-After the environment is initialised, the training will run for the specified amount of limits. 
-When stagnation is detected, the training will be stopped.
-Along with the training result summary, the logs are stored in the mentioned location
+.. image:: images/multigeosim.gif
 
+The Gazebo GUI should be the first thing that shows up. 
+The Multi Geometry robot will move depending on the given action and the training is run. 
+When the training is done, the logged rewards will be plotted using the matplotlib library.
 
-.. code-block:: bash
-
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training Results of run 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Scenario          : RL-Scenario Matrix 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Model             : Agent Smith 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Start time stamp  : YYYY-MM-DD HH:MM:SS.SSSSSS 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- End time stamp    : YYYY-MM-DD HH:MM:SS.SSSSSS 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Duration          : HH:MM:SS.SSSSSS 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Start cycle id    : 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- End cycle id      :  
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training cycles   :  
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Evaluation cycles :  
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Adaptations       :  
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- High score        :  
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Results stored in : "C:\Users\%username%\YYYY-MM-DD  HH:MM:SS Training RL" 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training Episodes : 120 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Evaluations       : 25 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    
-In the folder, there should be some files including:
-    - agent_actions.csv
-    - env_rewards.csv
-    - env_states.csv
-    - evaluation.csv
-    - summary.csv
-    - trained model.pkl
-
-The figure plot is not initialised in this example but the logged metrices are available to access in the csv file.
-
-Example Code
-`````````````````
-
-.. literalinclude:: ../../../../../examples/rl/Howto 18 - (RL) Single Agent with stagnation detection and SB3 Wrapper.py
-    :language: python
-
+The plotted figure is is not reproducible due to the simulator's nature of simulating real
+world scenario. Although seeds can be set for the random generator, the sampling cannot be 
+done at the exact same time during different runs.

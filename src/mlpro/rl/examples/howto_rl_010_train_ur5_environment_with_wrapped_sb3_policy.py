@@ -60,8 +60,6 @@ class ScenarioUR5A2C(RLScenario):
 
 
 # 3 Train agent in scenario
-now = datetime.now()
-
 training = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
     p_cycle_limit=1000,

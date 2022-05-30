@@ -31,8 +31,10 @@ from mlpro.rl.pool.envmodels.htm_robotinhtm import HTMEnvModel
 from pathlib import Path
 
 
+
 class ActualTraining(RLTraining):
     C_NAME = "Actual"
+
 
 
 # Implement RL Scenario for the actual environment to train the environment model
@@ -85,23 +87,20 @@ class ScenarioRobotHTMActual(RLScenario):
 
 
 # 3 Train agent in scenario
-now = datetime.now()
-
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
     cycle_limit = 300000
-    logging = Log.C_LOG_ALL
-    visualize = True
-    path = str(Path.home())
-    plotting = True
-
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    path        = str(Path.home())
+    plotting    = True
 else:
     # 3.2 Parameters for internal unit test
     cycle_limit = 100
-    logging = Log.C_LOG_NOTHING
-    visualize = False
-    path = None
-    plotting = False
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    path        = None
+    plotting    = False
 
 training = ActualTraining(
     p_scenario_cls=ScenarioRobotHTMActual,
