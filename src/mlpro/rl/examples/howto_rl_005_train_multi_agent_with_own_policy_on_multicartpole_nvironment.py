@@ -132,7 +132,6 @@ class MyScenario (RLScenario):
 
 
 # 3 Create scenario and start training
-
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
     cycle_limit = 200
@@ -148,7 +147,7 @@ else:
     path        = None
 
 
-# 3.4 Create and run training object
+# 3.3 Create and run training object
 training = RLTraining(
         p_scenario_cls=MyScenario,
         p_cycle_limit=cycle_limit,

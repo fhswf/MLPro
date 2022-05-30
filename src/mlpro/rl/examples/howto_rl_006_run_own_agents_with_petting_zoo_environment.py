@@ -18,13 +18,13 @@
 ## -- 2021-12-03  1.1.6     DA       Refactoring 
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-19  1.1.8     SY       Utilize RandomGenerator
+## -- 2022-05-30  1.1.9     DA       Cleaned up/rearranged a bit
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.8 (2022-05-19)
+Ver. 1.1.9 (2022-05-30)
 
-This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
-the mlpro framework.
+This module shows how to run an own policy inside the MLPro standard agent model with a wrapped Petting Zoo environment.
 """
 
 
@@ -38,14 +38,11 @@ from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
 
 
-
-
-
-# Piston Ball Scenario
-"""
-Reference : https://www.pettingzoo.ml/butterfly/pistonball
-"""
+# 1 RL Scenario based on PettingZoo Pistonball environment
 class PBScenario (RLScenario):
+    """
+    Reference : https://www.pettingzoo.ml/butterfly/pistonball
+    """
 
     C_NAME      = 'Pistonball V5'
 
@@ -79,28 +76,12 @@ class PBScenario (RLScenario):
         return multi_agent
     
     
-# Connect Four Scenario
-"""
-https://www.pettingzoo.ml/classic/connect_four
-"""
-class DiscRandPolicy (Policy):
 
-    C_NAME      = 'DiscRandPolicy'
-
-    def compute_action(self, p_state: State) -> Action:
-        my_action_values = np.zeros(self._action_space.get_num_dim())
-        for d in range(self._action_space.get_num_dim()):
-            my_action_values[d] = random.randint(0,6) 
-        return Action(self._id, self._action_space, my_action_values)
-
-
-    def _adapt(self, *p_args) -> bool:
-        self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
-        return False
-
-
-    
+# 2 Alternative RL Scenario based on PettingZoo Connect Four environment
 class C4Scenario (RLScenario):
+    """
+    https://www.pettingzoo.ml/classic/connect_four
+    """
 
     C_NAME      = 'Connect Four V3'
 
@@ -132,10 +113,9 @@ class C4Scenario (RLScenario):
 
         return multi_agent
 
-
+  
 
 # 3 Create scenario and run some cycles
-
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
@@ -147,16 +127,8 @@ else:
     visualize   = False
  
 
-# 3.3 Create your scenario and run some cycles
-# myscenario  = PBScenario(
-#         p_mode=Mode.C_MODE_SIM,
-#         p_ada=True,
-#         p_cycle_limit=100,
-#         p_visualize=visualize,
-#         p_logging=logging
-# )
-
-myscenario  = C4Scenario(
+# 3.3 Instantiate one of two prepared demo scenarios
+myscenario  = PBScenario(
         p_mode=Mode.C_MODE_SIM,
         p_ada=True,
         p_cycle_limit=100,
@@ -164,6 +136,15 @@ myscenario  = C4Scenario(
         p_logging=logging
 )
 
+# myscenario  = C4Scenario(
+#         p_mode=Mode.C_MODE_SIM,
+#         p_ada=True,
+#         p_cycle_limit=100,
+#         p_visualize=visualize,
+#         p_logging=logging
+# )
 
+
+# 3.4 Reset and run the scenario
 myscenario.reset(1)
 myscenario.run() 
