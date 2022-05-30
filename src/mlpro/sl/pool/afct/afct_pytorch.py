@@ -21,6 +21,28 @@ import torch
 
 from mlpro.rl.models import *
 
+class TorchBuffer(Buffer, torch.utils.data.Dataset):
+    def __init__(self, p_size=1):
+        Buffer.__init__(self, p_size=p_size)
+        self._internal_counter = 0
+
+    def add_element(self, p_elem: BufferElement):
+        Buffer.add_element(self, p_elem)
+        self._internal_counter += 1
+
+    def get_internal_counter(self):
+        return self._internal_counter
+
+    def __getitem__(self,idx):
+        return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
+
+
+class TorchBufferElement(BufferElement):
+    def __init__(self, p_input: torch.Tensor, p_output: torch.Tensor):
+
+        super().__init__({"input": p_input, "output": p_output})
+
+
 class TorchAFct(AdaptiveFunction):
     C_NAME = "Pytorch based Adaptive Function"
 
@@ -67,6 +89,7 @@ class TorchAFct(AdaptiveFunction):
         self._output_space
 
         Please return the neural network.
+        self.net_model = neural_network_model
         """
 
         return None

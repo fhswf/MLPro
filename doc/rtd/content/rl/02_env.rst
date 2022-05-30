@@ -8,5 +8,6 @@ Add text here!
    :maxdepth: 1
    
    env/customenv
+   env/customenvmodel
    env/envmodel
    env/pool
