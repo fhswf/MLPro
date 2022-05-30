@@ -22,3 +22,4 @@ help:
 
 autobuild: Makefile
 	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)"/html
+
