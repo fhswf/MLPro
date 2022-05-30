@@ -119,7 +119,7 @@ class DoublePendulum(Environment):
         self.M = m1+m2
         self.g = g
         
-        self.init_angels = init_angles       
+        self.init_angles = init_angles       
 
         self.history_x = deque(maxlen=history_length)
         self.history_y = deque(maxlen=history_length)
@@ -269,7 +269,7 @@ class DoublePendulum(Environment):
 
         """
         
-        if self.init_angles=='up':
+        if self.init_angles =='up':
             self.th1 = 180
             self.th2 = 180
         elif self.init_angles=='down':
