@@ -32,7 +32,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.3 (2022-05-23)
+Ver. 2.2.4 (2022-05-30)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -292,32 +292,32 @@ class Belt(Actuator):
     Parameters
     ----------
     name : str
-        specific name or id of a vacuum pump (e.g. Belt_A, etc.).
+        specific name or id of an actuator (e.g. Belt_A, etc.).
     actiontype : str
         "C" for continuous action, "B" for binary action.
     minpower : float
-        minimum power of a vacuum pump.
+        minimum power of an actuator.
     maxpower : float
-        maximum power of a vacuum pump.
+        maximum power of an actuator.
     minaction : float
-        minimum action of a vacuum pump.
+        minimum action of an actuator.
     maxaction : float
-        maximum action of a vacuum pump.
+        maximum action of an actuator.
     masscoeff : float
-        mass transport coefficient of a vacuum pump.
+        mass transport coefficient of an actuator.
         
     Attributes
     ----------
     reg_b : list of objects
-        list of existing belts.
+        list of existing actuators.
     idx_b : int
         length of reg_b.
     name : str
-        specific name or id of a belt.
+        specific name or id of an actuator.
     actiontype : str
         "C" for continuous action, "B" for binary action.
     speed : float
-        speed of a bel.
+        speed of an actuator.
     """
     reg_b       = []
     idx_b       = 0
