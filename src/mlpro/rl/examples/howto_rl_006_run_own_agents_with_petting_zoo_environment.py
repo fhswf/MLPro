@@ -62,7 +62,8 @@ class PBScenario (RLScenario):
                                                              p_action_space=agent_asspace,
                                                              p_buffer_size=10,
                                                              p_ada=p_ada,
-                                                             p_logging=p_logging),
+                                                             p_logging=p_logging
+                                                             ),
                                     p_envmodel=None,
                                     p_id=agent_idx,
                                     p_name=agent_name,
@@ -99,7 +100,8 @@ class C4Scenario (RLScenario):
                                                              p_action_space=agent_asspace,
                                                              p_buffer_size=10,
                                                              p_ada=p_ada,
-                                                             p_logging=p_logging),
+                                                             p_logging=p_logging
+                                                             ),
                                     p_envmodel=None,
                                     p_id=agent_idx,
                                     p_name=agent_name,
