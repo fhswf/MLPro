@@ -19,3 +19,6 @@ help:
 %: Makefile
 	sphinx-apidoc -o content/append4 ../../src/mlpro --ext-autodoc -E -T -f
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+autobuild: Makefile
+	sphinx-autobuild "$(SOURCEDIR)" "$(BUILDDIR)"/html
