@@ -19,6 +19,7 @@
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-19  1.1.8     SY       Utilize RandomGenerator
 ## -- 2022-05-30  1.1.9     DA       Cleaned up/rearranged a bit
+## -- 2022-05-30  1.1.8     SY       Update pistonball_v5 to pistonball_v6
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -28,7 +29,7 @@ This module shows how to run an own policy inside the MLPro standard agent model
 """
 
 
-from pettingzoo.butterfly import pistonball_v5
+from pettingzoo.butterfly import pistonball_v6
 from pettingzoo.classic import connect_four_v3
 from mlpro.bf.math import *
 from mlpro.rl.models import *
@@ -44,10 +45,10 @@ class PBScenario (RLScenario):
     Reference : https://www.pettingzoo.ml/butterfly/pistonball
     """
 
-    C_NAME      = 'Pistonball V5'
+    C_NAME      = 'Pistonball V6'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        zoo_env             = pistonball_v5.env()
+        zoo_env             = pistonball_v6.env()
         self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=p_logging)
         
         multi_agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_logging=True)
@@ -61,8 +62,7 @@ class PBScenario (RLScenario):
                                                              p_action_space=agent_asspace,
                                                              p_buffer_size=10,
                                                              p_ada=p_ada,
-                                                             p_logging=p_logging,
-                                                             p_seed=agent_idx
+                                                             p_logging=p_logging
                                                              ),
                                     p_envmodel=None,
                                     p_id=agent_idx,
