@@ -1,41 +1,33 @@
-.. _Howto RL 8:
-`Howto 08 - (RL) Run own agents with petting zoo environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2008%20-%20(RL)%20Run%20own%20agents%20with%20petting%20zoo%20environment.py>`_
-================
-Ver. 1.1.7 (2022-20-25)
+.. _Howto RL 006:
+Howto RL-006: Run own multi-agent with Petting Zoo environment
+==============================================================
 
-This module shows how to run an own policy inside the standard agent model with a Petting Zoo environment using 
-the mlpro framework.
+.. automodule:: mlpro.rl.examples.howto_rl_006_run_own_agents_with_petting_zoo_environment
+
+
 
 Prerequisites
-`````````````````
+-------------
 
 Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
     - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-  ..
-    - `NumPy <https://pypi.org/project/numpy/>`_
-  ..
-    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
-  ..
-    - `Pytorch <https://pypi.org/project/torch/>`_
-  ..
-    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-  ..
-    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-  ..
-    - `Optuna <https://pypi.org/project/optuna/>`_
-  ..
-    - `Hyperopt <https://pypi.org/project/hyperopt/>`_
-  ..
-    - `ROS <http://wiki.ros.org/noetic/Installation>`_
     
 
-Results
-`````````````````
 
-By running the example code, there should be a similar line printed in the terminal output.
+Executable code
+---------------
+.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_006_run_own_agents_with_petting_zoo_environment.py
+	:language: python
+
+We use the Petting Zoo environment `Pistonball <https://www.pettingzoo.ml/butterfly/pistonball>`_ as default testing environment in this example.
+However, in step 3.3 you can also change the environment into `Connect Four <https://www.pettingzoo.ml/classic/connect_four>`_.
+
+
+
+Results
+-------
+
+By running the example code, the environment window appears and the runtime log is dumped to the terminal.
 
 .. code-block:: bash
 
@@ -67,31 +59,3 @@ By running the example code, there should be a similar line printed in the termi
     ....
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Agent Connect4_Agents: Start vizualization for all agents... 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Connect Four V3: Process time 0:00:12 End of processing 
-
-
-Example Code
-`````````````````
-
-.. literalinclude:: ../../../../../examples/rl/Howto 08 - (RL) Run own agents with petting zoo environment.py
-    :language: python
-
-We use Connect Four V3 as default testing environment in this example.
-However, you can also change the environment into Pistonball V5 by uncommenting Line 160-166 and commenting Line 168-174.
-
-.. code-block:: python
-    
-    myscenario  = PBScenario(
-            p_mode=Mode.C_MODE_SIM,
-            p_ada=True,
-            p_cycle_limit=100,
-            p_visualize=visualize,
-            p_logging=logging
-    )
-
-    # myscenario  = C4Scenario(
-    #         p_mode=Mode.C_MODE_SIM,
-    #         p_ada=True,
-    #         p_cycle_limit=100,
-    #         p_visualize=visualize,
-    #         p_logging=logging
-    # )

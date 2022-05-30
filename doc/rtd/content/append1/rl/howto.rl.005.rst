@@ -23,5 +23,5 @@ Executable code
 
 Results
 -------
-Similar output as in :ref:`Howto RL-003 <Howto RL 003>` is displayed. However, there will be multiple windows of the environment open.
-In addition, the training log will contain one more pkl file for the second agent.
+Similar output as in :ref:`Howto RL-003 <Howto RL 003>` is displayed. However, three cartpole windows will be opened while the training
+log runs through. In addition, the training result folder will contain one more pkl file for the second agent.
