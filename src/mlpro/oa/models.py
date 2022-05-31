@@ -50,11 +50,6 @@ class StreamReference (ScientificObject):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id) -> None:
-        self._id = p_id
-
-
-## -------------------------------------------------------------------------------------------------
     def get_id(self) -> str:
         return self._id
 
@@ -67,6 +62,11 @@ class StreamReference (ScientificObject):
 ## -------------------------------------------------------------------------------------------------
     def get_url(self) -> str:
         return self.C_SCIREF_URL
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_id) -> None:
+        self._id = p_id
 
 
 
@@ -90,16 +90,45 @@ class Stream (Mode, LoadSave, ScientificObject):
 
     C_TYPE          = 'Stream'
     C_NAME          = '????'
+    C_ID            = '????'
+    C_URL           = '????'
+
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
+    def __init__(self,
+                 p_id,
+                 p_name,
+                 p_num_features,
                  p_mode=Mode.C_MODE_SIM, 
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs ):
 
         super().__init__(p_mode=p_mode, p_logging=p_logging)
+        self._id = p_id
+        self.C_SCIREF_TITLE = p_name
+        self._num_features = p_num_features
         self._kwargs = p_kwargs.copy()
-        self._feature_space = self.setup()
+        # self._feature_space = self.setup()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_id(self) -> str:
+        return self._id
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_name(self) -> str:
+        return self.C_SCIREF_TITLE
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_url(self) -> str:
+        return self.C_SCIREF_URL
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_num_features(self) -> int:
+        return self._num_features
 
 
 ## -------------------------------------------------------------------------------------------------
