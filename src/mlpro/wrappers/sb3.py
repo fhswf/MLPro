@@ -18,10 +18,11 @@
 ## --                                information on adapt_off_policy()
 ## -- 2022-01-20  1.1.6     MRD      Fix the bug due to new version of SB3 1.4.0
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-05-31  1.1.8     SY       Enable the possibility to process reward type C_TYPE_EVERY_AGENT
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.7 (2022-02-25)
+Ver. 1.1.8 (2022-05-31)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -174,6 +175,10 @@ class WrPolicySB32MLPro(Policy):
             # Add to additional_buffer_element
             self.additional_buffer_element = dict(action=action_buffer, value=values, action_log=log_probs)
         else:
+            if isinstance(obs, list):
+                obs = torch.Tensor(obs).reshape(1, len(obs)).to(self.sb3.device)
+            else:
+                obs = torch.Tensor(obs).reshape(1, obs.size).to(self.sb3.device)
             action, _ = self.sb3.predict(obs, deterministic=True)
 
             action = action.flatten()
@@ -286,7 +291,10 @@ class WrPolicySB32MLPro(Policy):
         self.last_buffer_element = self._add_additional_buffer(p_buffer_element)
         datas = self.last_buffer_element.get_data()
 
-        rewards = datas["reward"].get_overall_reward()
+        try:        
+            rewards = datas["reward"].get_overall_reward()
+        except:
+            rewards = datas["reward"].get_agent_reward(self._id)
 
         if datas["state_new"].get_terminal() and datas["state_new"].get_timeout():
             terminal_obs = torch.Tensor(np.array([datas["state_new"].get_values()])).to(self.sb3.device)
