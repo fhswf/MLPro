@@ -31,9 +31,9 @@
   <exec_depend>rostopic</exec_depend>
   <exec_depend>ur_description</exec_depend>
 
+  <export>
   <gazebo_ros                                                                 
         gazebo_plugin_path="${prefix}/lib"
         gazebo_model_path="${prefix}/.." />
-  <export>
   </export>
 </package>
