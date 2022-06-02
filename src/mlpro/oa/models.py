@@ -8,10 +8,11 @@
 ## -- 2022-01-06  0.0.0     DA       Creation
 ## -- 2022-mm-dd  1.0.0     DA       Release of first version
 ## -- 2022-05-25  1.0.1     LSB      Minor bug fix
+## -- 2022-06-02  1.0.2     LSB      Refactoring for list of stream objects in get stream list
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-01-06)
+Ver. 1.0.2 (2022-06-02)
 
 Model classes for efficient online adaptive data stream processing.
 """
@@ -44,29 +45,29 @@ class Instance (Element): pass
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamReference (ScientificObject):
-    """
-    ...
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def get_id(self) -> str:
-        return self._id
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_name(self) -> str:
-        return self.C_SCIREF_TITLE
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_url(self) -> str:
-        return self.C_SCIREF_URL
-
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id) -> None:
-        self._id = p_id
+# class StreamReference (ScientificObject):
+#     """
+#     ...
+#     """
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def get_id(self) -> str:
+#         return self._id
+#
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def get_name(self) -> str:
+#         return self.C_SCIREF_TITLE
+#
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def get_url(self) -> str:
+#         return self.C_SCIREF_URL
+#
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def __init__(self, p_id) -> None:
+#         self._id = p_id
 
 
 
@@ -85,8 +86,8 @@ class Stream (Mode, LoadSave, ScientificObject):
         id of the stream
     p_name
         name of the stream
-    p_num_features
-        Number of features in the stream
+    p_num_instances
+        Number of instances in the stream
     p_mode
         Operation mode. Valid values are stored in constant C_VALID_MODES.
     p_logging
@@ -104,15 +105,15 @@ class Stream (Mode, LoadSave, ScientificObject):
     def __init__(self,
                  p_id,
                  p_name,
-                 p_num_features,
+                 p_num_instances,
                  p_mode=Mode.C_MODE_SIM, 
                  p_logging=Log.C_LOG_ALL,
-                 **p_kwargs ):
+                 **p_kwargs):
 
         super().__init__(p_mode=p_mode, p_logging=p_logging)
         self._id = p_id
-        self.C_SCIREF_TITLE = p_name
-        self._num_features = p_num_features
+        self._name = self.C_SCIREF_TITLE = p_name
+        self._num_instances = p_num_instances
         self._kwargs = p_kwargs.copy()
         # self._feature_space = self.setup()
 
@@ -134,7 +135,7 @@ class Stream (Mode, LoadSave, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def get_num_features(self) -> int:
-        return self._num_features
+        return self._num_instances
 
 
 ## -------------------------------------------------------------------------------------------------

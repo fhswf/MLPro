@@ -12,3 +12,5 @@ print(stream_list)
 
 # Get a specific stream from the stream provider
 stream = open_ml.get_stream(61)
+
+print(open_ml.C_NAME)

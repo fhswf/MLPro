@@ -11,7 +11,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-01-11)
+Ver. 1.0.1 (2022-05-27)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -77,11 +77,11 @@ class WrStreamProviderOpenML (StreamProvider):
             except:
                 _id = 0
             try:
-                _num_features = d[1]['NumberOfFeatures']
+                _num_instances = d[1]['NumberOfInstances']
             except:
-                _num_features = None
+                _num_instances = 0
 
-            s = WrStreamOpenML(_id, _name, _num_features)
+            s = WrStreamOpenML(_id, _name, _num_instances)
 
             self._stream_list.append(s)
             self._stream_ids.append(_id)
@@ -129,28 +129,26 @@ class WrStreamOpenML(Stream):
         Number of features of the Stream
     """
 
-    # C_NAME = 'OpenML'
-
+    C_NAME = 'OpenML'
     C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
-    # C_SCIREF_AUTHOR = 'OpenML'
-    # C_SCIREF_URL = 'new.openml.org'
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name, p_num_features,**p_kwargs):
+    def __init__(self, p_id, p_name, p_num_instances, **p_kwargs):
 
         self._downloaded = False
-        self._id = p_id
+        self.C_ID = self._id = p_id
+        self.C_NAME = self._name = p_name
         super().__init__(p_id,
                          p_name,
-                         p_num_features,
-                         p_mode=self.C_MODE_SIM,)
-        self._name = p_name
+                         p_num_instances,
+                         p_mode=self.C_MODE_SIM)
         self._kwargs = p_kwargs.copy()
+
 
 ## -------------------------------------------------------------------------------------------------
     def __repr__(self):
-        return str(dict(id=str(self._id),name=self._name))
+        return str(dict(id=str(self._id), name=self._name))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -167,7 +165,7 @@ class WrStreamOpenML(Stream):
         feature_space = MSpace()
         _, _, _, features = self._kwargs['dataset'].get_data()
         for feature in features:
-            feature_space.add_dim(Dimension(p_name_short=feature[0], p_name_long=str(feature)))
+            feature_space.add_dim(Dimension(p_name_long=str(feature)))
 
         return feature_space
         # pass
@@ -185,9 +183,8 @@ class WrStreamOpenML(Stream):
         """
 
         if not self._downloaded:
-            self._dataset = openml.datasets.get_dataset(self.p_id)
+            self._dataset = openml.datasets.get_dataset(self._id)
             self._downloaded = True
-
         return
 
 
