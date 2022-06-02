@@ -31,7 +31,7 @@ class ScenarioUR5A2C(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
-        self._env = UR5JointControl(p_build=True, p_visualize=False, p_logging=p_logging)
+        self._env = UR5JointControl(p_build=True, p_sim=False, p_robot_ip="172.19.10.41", p_visualize=False, p_logging=p_logging)
 
         policy_sb3 = PPO(
             policy="MlpPolicy",

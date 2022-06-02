@@ -27,6 +27,7 @@ class UR5LabRealTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
 
         ros_ws_abspath = rospy.get_param("ros_ws_path", None)
         visualize = rospy.get_param("visualize", False)
+        sim_mode = rospy.get_param("sim", True)
         assert ros_ws_abspath is not None, "You forgot to set ros_ws_abspath in your yaml file of your main RL script. Set ros_ws_abspath: \'YOUR/SIM_WS/PATH\'"
         assert os.path.exists(ros_ws_abspath), "The Simulation ROS Workspace path " + ros_ws_abspath + \
                                                " DOESNT exist, execute: mkdir -p " + ros_ws_abspath + \
@@ -34,7 +35,7 @@ class UR5LabRealTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
 
         ROSLauncher(rospackage_name="ur_gazebo",
                     launch_file_name="ur5_lab_world.launch",
-                    launch_arguments=dict(gui=visualize),
+                    launch_arguments=dict(gui=visualize, sim=sim_mode),
                     ros_ws_abspath=ros_ws_abspath)
 
         super(UR5LabRealTask, self).__init__(ros_ws_abspath)
@@ -46,7 +47,6 @@ class UR5LabRealTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
 
         self.n_observations = 6
         self.observation_space = spaces.Box(low=-2, high=2, shape=(6,))
-        self._draw_goal_pos()
         self.init_distance = None
 
     def get_params(self):
@@ -90,44 +90,6 @@ class UR5LabRealTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
         self.init_distance = np.linalg.norm(np.array(pose[:]) - np.array(self.goal_pos[:]))
 
         return True
-
-    def _create_ball_request(self, px, py, pz):
-        target_path = rospkg.RosPack()
-        target_path = target_path.get_path('ur_description')
-        target_path += '/urdf/target/target_point_Blue.urdf'
-        target_urdf = None
-
-        with open(target_path, "r") as g:
-            target_urdf = g.read()
-
-        target_pose = Pose(Point(x=px, y=py, z=pz), Quaternion(x=0, y=0, z=0, w=1))
-
-        req = SpawnModelRequest()
-        req.model_name = "target_ball"
-        req.model_xml = target_urdf
-        req.initial_pose = target_pose
-
-        return req
-
-    def _check_existence(self):
-        get_world_specs = rospy.ServiceProxy('/gazebo/get_world_properties', GetWorldProperties)()
-        model_names = get_world_specs.model_names
-        if "target_ball" in model_names:
-            return True
-        else:
-            return False
-
-    def _draw_goal_pos(self):
-        del_srv = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
-        del_srv.wait_for_service()
-        spawn_srv = rospy.ServiceProxy('/gazebo/spawn_sdf_model', SpawnModel)
-        spawn_srv.wait_for_service()
-
-        if self._check_existence:
-            del_srv("target_ball")
-
-        spawn_srv(self._create_ball_request(self.goal_pos[0], self.goal_pos[1], self.goal_pos[2]))
-        rospy.sleep(1)
 
     def _init_env_variables(self):
         rospy.logdebug("Init Env Variables...")

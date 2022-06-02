@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from audioop import reverse
 import rospy
 import rospkg
 import roslaunch
@@ -45,8 +46,19 @@ class UR5LabEnv(robot_gazebo_env.RobotGazeboEnv):
         rospy.loginfo("Start UR5LabEnv INIT...")
         
         # We launch the ROSlaunch that spawns the robot into the world
+        visualize = rospy.get_param("visualize", False)
+        sim_mode = rospy.get_param("sim", True)
+        robot_ip = rospy.get_param("robot_ip", "")
+        reverse_ip = rospy.get_param("reverse_ip", "")
+        reverse_port = rospy.get_param("reverse_port", 50001)
+
+        if not sim_mode:
+            assert robot_ip != "", "Please set the Robot IP"
+
         self.launch = ROSLauncher(rospackage_name="ur_gazebo",
                     launch_file_name="ur5_lab.launch",
+                    launch_arguments=dict(gui=visualize, sim=sim_mode, robot_ip=robot_ip, 
+                    reverse_ip=reverse_ip, reverse_port=reverse_port),
                     ros_ws_abspath=ros_ws_abspath)
         
         # Internal Vars

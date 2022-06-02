@@ -51,7 +51,8 @@ class UR5JointControl(WrEnvGYM2MLPro):
     C_INFINITY = np.finfo(np.float32).max
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_seed=0, p_build=False, p_sim=True, p_visualize=False, p_logging=True):
+    def __init__(self, p_seed=0, p_build=False, p_sim=True, p_robot_ip="", p_reverse_ip="", 
+        p_reverse_port=50001, p_visualize=False, p_logging=True):
         """
         Parameters:
             p_logging       Boolean switch for logging
@@ -80,6 +81,7 @@ class UR5JointControl(WrEnvGYM2MLPro):
 
             ros_ws_path = mlpro.rl.pool.envs.ur5jointcontrol.__file__.replace("/__init__.py", "")
             rospy.set_param('ros_ws_path', ros_ws_path)
+            rospy.set_param('sim', p_sim)
 
             # Init OpenAI_ROS ENV
             if p_sim:
@@ -87,6 +89,9 @@ class UR5JointControl(WrEnvGYM2MLPro):
                 rospy.set_param('visualize', p_visualize)
             else:
                 environment = rospy.get_param('/ur5_lab/real_environment')
+                rospy.set_param('robot_ip', p_robot_ip)
+                rospy.set_param('reverse_ip', p_reverse_ip)
+                rospy.set_param('reverse_port', p_reverse_port)
 
             max_step_episode = rospy.get_param('/ur5_lab/max_iterations')
 

@@ -21,8 +21,9 @@
   <arg name="sim" default="true" />
   <arg name="random" default="true" doc="Randomize Spawned Target"/>
   
-  <arg name="robot_ip" default= "172.19.10.250" doc="IP of the controller" />
-  <arg name="reverse_port" default="50001" doc="Port on which controller listens for position values passed to servoj thread from the driver" />
+  <arg name="robot_ip" doc="IP address by which the robot can be reached."/>
+  <arg name="reverse_ip" default="" doc="IP of the driver, if set to empty it will detect it automatically."/>
+  <arg name="reverse_port" default="50001" doc="Port that will be opened by the driver to allow direct communication between the driver and the robot controller."/>
   <arg name="robot_description_file" default="$(find ur_description)/launch/load_ur5_lab.launch" doc="Robot description launch file."/>  
 
                               
