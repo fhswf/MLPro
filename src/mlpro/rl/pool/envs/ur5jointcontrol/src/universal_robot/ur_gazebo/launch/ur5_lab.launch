@@ -28,7 +28,7 @@
                               
   <group if="$(arg sim)">
                           <!-- Load Robot Parameter -->  
-  <param name="robot_description" command="$(find xacro)/xacro '$(find ur_description)/urdf/ur5_new_realsense_lab_gz.urdf.xacro'
+    <param name="robot_description" command="$(find xacro)/xacro '$(find ur_description)/urdf/ur5_new_realsense_lab_gz.urdf.xacro'
     use_nominal_extrinsics:=$(arg use_nominal_extrinsics)
     sim:=$(arg sim)
     prefix:=$(arg prefix)
@@ -71,7 +71,7 @@
         args="pub /calibrated std_msgs/Bool true" />
     
                           <!-- arm controller -->
-    <rosparam file="$(find ur_gazebo)/controller/ur5_controllers.yaml" command="load"/>
+    <rosparam file="$(find ur_gazebo)/config/ur5_controllers.yaml" command="load"/>
     
     <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn joint_state_controller" respawn="false" output="screen"/>
 	  <node name="scaled_pos_joint_traj_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn scaled_pos_joint_traj_controller" respawn="false" output="screen"/>
