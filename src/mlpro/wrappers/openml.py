@@ -34,6 +34,7 @@ import openml
 ## -------------------------------------------------------------------------------------------------
 class WrStreamProviderOpenML (StreamProvider):
     """
+    Wrapper class for OpenML as StreamProvider
     """
 
     C_NAME              = 'OpenML'
@@ -53,6 +54,15 @@ class WrStreamProviderOpenML (StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
     def _get_stream_list(self, **p_kwargs) -> list:
+        """
+        Custom class to get alist of stream objects from OpenML
+
+        Returns
+        -------
+        list_streams:List
+            Returns a list of Streams in OpenML
+
+        """
 
         list_datasets = openml.datasets.list_datasets(output_format='dict')
         # print(stream_list)
@@ -81,6 +91,19 @@ class WrStreamProviderOpenML (StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
     def _get_stream(self, p_id) -> Stream:
+        """
+        Custom class to fetch an OpenML stream object
+
+        Parameters
+        ----------
+        p_id
+            id of the stream to be fetched
+
+        Returns
+        -------
+        stream: Stream
+            Returns the stream corresponding to the id
+        """
 
         stream = self._stream_list[self._stream_ids.index(p_id)]
         return stream
@@ -95,6 +118,15 @@ class WrStreamProviderOpenML (StreamProvider):
 class WrStreamOpenML(Stream):
     """
     Wrapper class for Streams from OpenML
+
+    Parameters
+    ----------
+    p_id
+        id of the Stream
+    p_name
+        name of the stream
+    p_num_features
+        Number of features of the Stream
     """
 
     # C_NAME = 'OpenML'
@@ -123,6 +155,15 @@ class WrStreamOpenML(Stream):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self):
+        """
+        Custom class to setup feature space of an OpenML stream
+
+        Returns
+        -------
+        feature_space = MSpace
+            Feature Space of an OpenML stream
+        """
+
         feature_space = MSpace()
         _, _, _, features = self._kwargs['dataset'].get_data()
         for feature in features:
@@ -134,6 +175,14 @@ class WrStreamOpenML(Stream):
 
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
+        """
+        Custom reset method to download and reset an OpenML stream
+
+        Parameters
+        ----------
+        p_seed
+            Seed for resetting the stream
+        """
 
         if not self._downloaded:
             self._dataset = openml.datasets.get_dataset(self.p_id)

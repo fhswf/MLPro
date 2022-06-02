@@ -81,6 +81,12 @@ class Stream (Mode, LoadSave, ScientificObject):
 
     Parameters
     ----------
+    p_id
+        id of the stream
+    p_name
+        name of the stream
+    p_num_features
+        Number of features in the stream
     p_mode
         Operation mode. Valid values are stored in constant C_VALID_MODES.
     p_logging
