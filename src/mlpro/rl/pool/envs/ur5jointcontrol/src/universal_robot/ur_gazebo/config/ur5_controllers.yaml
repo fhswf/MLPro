@@ -12,8 +12,8 @@ scaled_pos_joint_traj_controller:
     - wrist_2_joint
     - wrist_3_joint
   constraints:
-    goal_time: 0.6
-    stopped_velocity_tolerance: 0.05
+    goal_time: 1
+    stopped_velocity_tolerance: 0.1
     shoulder_pan_joint: {trajectory: 0.1, goal: 0.1}
     shoulder_lift_joint: {trajectory: 0.1, goal: 0.1}
     elbow_joint: {trajectory: 0.1, goal: 0.1}
