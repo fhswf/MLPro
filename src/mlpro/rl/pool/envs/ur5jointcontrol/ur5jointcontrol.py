@@ -51,7 +51,7 @@ class UR5JointControl(WrEnvGYM2MLPro):
     C_INFINITY = np.finfo(np.float32).max
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_seed=0, p_build=False, p_visualize=False, p_logging=True):
+    def __init__(self, p_seed=0, p_build=False, p_sim=True, p_visualize=False, p_logging=True):
         """
         Parameters:
             p_logging       Boolean switch for logging
@@ -76,18 +76,21 @@ class UR5JointControl(WrEnvGYM2MLPro):
 
             LoadYamlFileParamsTest(rospackage_name="ur5_lab",
                                 rel_path_from_package_to_file="config",
-                                yaml_file_name="ur5_simple_task_param.yaml")
+                                yaml_file_name="ur5_lab_task_param.yaml")
 
             ros_ws_path = mlpro.rl.pool.envs.ur5jointcontrol.__file__.replace("/__init__.py", "")
             rospy.set_param('ros_ws_path', ros_ws_path)
-            rospy.set_param('visualize', p_visualize)
 
             # Init OpenAI_ROS ENV
-            task_and_robot_environment_name = rospy.get_param('/ur5_lab/task_and_robot_environment_name')
+            if p_sim:
+                environment = rospy.get_param('/ur5_lab/simulation_environment')
+                rospy.set_param('visualize', p_visualize)
+            else:
+                environment = rospy.get_param('/ur5_lab/real_environment')
 
             max_step_episode = rospy.get_param('/ur5_lab/max_iterations')
 
-            env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
+            env = StartOpenAI_ROS_Environment(environment, max_step_episode)
             env.seed(p_seed)
 
             super().__init__(p_gym_env=env)

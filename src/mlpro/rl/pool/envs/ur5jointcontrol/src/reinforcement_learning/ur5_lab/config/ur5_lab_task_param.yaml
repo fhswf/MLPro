@@ -1,0 +1,7 @@
+ur5_lab: #namespace
+    simulation_environment: 'UR5LabSimTask-v0'
+    real_environment: 'UR5LabRealTask-v0'
+    max_iterations: 20
+
+
+

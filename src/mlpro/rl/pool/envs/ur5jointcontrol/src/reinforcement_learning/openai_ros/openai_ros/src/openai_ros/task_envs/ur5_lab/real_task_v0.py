@@ -16,7 +16,7 @@ from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, GetModelState, Delete
 from geometry_msgs.msg import Point, Quaternion, Pose
 
 
-class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
+class UR5LabRealTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
     def __init__(self):
         # Load Params from the desired Yaml file relative to this TaskEnvironment
         LoadYamlFileParamsTest(rospackage_name="openai_ros",
@@ -37,9 +37,9 @@ class UR5LabSimpleTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
                     launch_arguments=dict(gui=visualize),
                     ros_ws_abspath=ros_ws_abspath)
 
-        super(UR5LabSimpleTask, self).__init__(ros_ws_abspath)
+        super(UR5LabRealTask, self).__init__(ros_ws_abspath)
 
-        rospy.logdebug("Entered UR5LabSimpleTask Env")
+        rospy.logdebug("Entered UR5LabRealTask Env")
         self.get_params()
 
         self.action_space = spaces.Box(low=-0.1, high=0.1, shape=(6,))
