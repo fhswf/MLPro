@@ -87,6 +87,7 @@
     
     <include file="$(find ur_robot_driver)/launch/ur5_bringup.launch">
       <arg name="robot_ip" value="$(arg robot_ip)"/>
+      <arg name="reverse_ip" value="$(arg reverse_ip)"/>
       <arg name="reverse_port" value="$(arg reverse_port)"/>
       <arg name="robot_description_file" value="$(arg robot_description_file)"/>
       <arg name="kinematics_config" value="$(arg kinematics_parameters_file)"/>
