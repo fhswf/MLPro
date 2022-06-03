@@ -6,17 +6,13 @@ import rospy
 import rospkg
 from gym import spaces
 from openai_ros.robot_envs import ur5_lab_env
-from gym.envs.registration import register
 import numpy as np
 from sensor_msgs.msg import JointState
 from openai_ros.openai_ros_common import ROSLauncher
 from openai_ros.task_envs.task_commons import LoadYamlFileParamsTest
 import os
-from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, GetModelState, DeleteModel, GetWorldProperties
-from geometry_msgs.msg import Point, Quaternion, Pose
 
-
-class UR5LabRealTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
+class UR5LabRealTask(ur5_lab_env.UR5LabRealEnv, utils.EzPickle):
     def __init__(self):
         # Load Params from the desired Yaml file relative to this TaskEnvironment
         LoadYamlFileParamsTest(rospackage_name="openai_ros",

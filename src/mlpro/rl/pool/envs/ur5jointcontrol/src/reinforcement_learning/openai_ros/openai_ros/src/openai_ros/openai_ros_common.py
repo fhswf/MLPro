@@ -37,7 +37,7 @@ def StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_episode_ste
 
 
 class ROSLauncher(object):
-    def __init__(self, rospackage_name, launch_file_name, launch_arguments={}, ros_ws_abspath="/home/user/simulation_ws"):
+    def __init__(self, rospackage_name, launch_file_name, launch_arguments={}, use_popen=False, ros_ws_abspath="/home/user/simulation_ws"):
 
         self._rospackage_name = rospackage_name
         self._launch_file_name = launch_file_name
@@ -74,27 +74,20 @@ class ROSLauncher(object):
         
 
             rospy.logwarn("path_launch_file_name=="+str(path_launch_file_name))
-            """
-            source_env_command = "source "+ros_ws_abspath+"/devel/setup.bash;"
-            roslaunch_command = "roslaunch  {0} {1}".format(rospackage_name, launch_file_name)
-            command = source_env_command+roslaunch_command
-            rospy.logwarn("Launching command="+str(command))
+            if use_popen:
+                source_env_command = "source "+ros_ws_abspath+"/devel/setup.bash"
+                roslaunch_command = "roslaunch  {0} {1} {2}".format(rospackage_name, launch_file_name, launch_args)
+                command = source_env_command+roslaunch_command
+                rospy.logwarn("Launching command="+str(command))
 
-            p = subprocess.Popen(command, shell=True)
-
-            state = p.poll()
-            if state is None:
-                rospy.loginfo("process is running fine")
-            elif state < 0:
-                rospy.loginfo("Process terminated with error")
-            elif state > 0:
-                rospy.loginfo("Process terminated without error")
-            """
-            self.uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
-            roslaunch.configure_logging(self.uuid)
-            self.launch = roslaunch.parent.ROSLaunchParent(
-                self.uuid, [(path_launch_file_name, launch_args)])
-            self.launch.start()
+                p = subprocess.Popen(['/bin/bash', '-c', source_env_command, "&&", roslaunch_command], shell=True)
+                
+            else:
+                self.uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+                roslaunch.configure_logging(self.uuid)
+                self.launch = roslaunch.parent.ROSLaunchParent(
+                    self.uuid, [(path_launch_file_name, launch_args)])
+                self.launch.start()
             
 
 

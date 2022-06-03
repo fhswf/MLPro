@@ -6,7 +6,6 @@ import rospy
 import rospkg
 from gym import spaces
 from openai_ros.robot_envs import ur5_lab_env
-from gym.envs.registration import register
 import numpy as np
 from sensor_msgs.msg import JointState
 from openai_ros.openai_ros_common import ROSLauncher

@@ -4,7 +4,7 @@
   
   <arg name="joint_limits_parameters_file" default="$(find ur_description)/config/ur5/joint_limits.yaml"/>  
   <arg name="prefix" default=""/>
-  <arg name="kinematics_parameters_file" default="$(find ur_description)/config/ur5/default_kinematics.yaml"/>
+  <arg name="kinematics_parameters_file" default="$(find ur_description)/config/my_robot_calibration.yaml"/>
   <arg name="physical_parameters_file" default="$(find ur_description)/config/ur5/physical_parameters.yaml"/>
   <arg name="visual_parameters_file" default="$(find ur_description)/config/ur5/visual_parameters.yaml"/>
   <arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface"/>
@@ -93,6 +93,8 @@
       <arg name="robot_description_file" value="$(arg robot_description_file)"/>
       <arg name="kinematics_config" value="$(arg kinematics_parameters_file)"/>
     </include>
+
+    <!-- <include file="$(find ur5_moveit_config)/launch/move_group.launch"/> -->
     
   </group>
 </launch>

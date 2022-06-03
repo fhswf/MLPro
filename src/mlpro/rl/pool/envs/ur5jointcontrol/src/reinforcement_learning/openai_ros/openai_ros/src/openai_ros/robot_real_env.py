@@ -13,9 +13,12 @@ class RobotRealEnv(gym.Env):
         self.reset_controls = reset_controls
         self.seed()
 
-        if self.reset_controls:
-            self.controllers_object.reset_controllers()
+        self.episode_num = 0
+        self.cumulated_episode_reward = 0
+        self.reward_pub = rospy.Publisher('/openai/reward', RLExperimentInfo, queue_size=1)
 
+        if self.reset_controls:
+           self.controllers_object.reset_controllers()
         rospy.logdebug("END init RobotRealEnv")
 
     def seed(self, seed=None):
@@ -100,19 +103,19 @@ class RobotRealEnv(gym.Env):
         """Resets a simulation
         """
         rospy.logdebug("RESET ENV START")
-        if self.reset_controls :
-            rospy.logdebug("RESET CONTROLLERS")
-            self.controllers_object.reset_controllers()
-            self._check_all_systems_ready()
-            self._set_init_pose()
-            self.controllers_object.reset_controllers()
-            self._check_all_systems_ready()
+        # if self.reset_controls :
+        #     rospy.logdebug("RESET CONTROLLERS")
+        #     self.controllers_object.reset_controllers()
+        #     self._check_all_systems_ready()
+        #     self._set_init_pose()
+        #     self.controllers_object.reset_controllers()
+        #     self._check_all_systems_ready()
 
-        else:
-            rospy.logwarn("DONT RESET CONTROLLERS")
-            self._check_all_systems_ready()
-            self._set_init_pose()
-            self._check_all_systems_ready()
+        # else:
+        rospy.logwarn("DONT RESET CONTROLLERS")
+        self._check_all_systems_ready()
+        self._set_init_pose()
+        self._check_all_systems_ready()
 
         rospy.logdebug("RESET ENV END")
         return True
