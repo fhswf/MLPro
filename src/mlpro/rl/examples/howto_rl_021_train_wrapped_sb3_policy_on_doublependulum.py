@@ -1,11 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-<<<<<<<< HEAD:src/mlpro/rl/examples/Howto 23 - (RL) Train DoublePendulum with SB3 wrapper.py
-## -- Module  : Howto 23 - Train DoublePendulum with SB3 Wrapper
-========
 ## -- Module  : howto_rl_021_train_wrapped_sb3_policy_on_doublependulum.py
->>>>>>>> main:src/mlpro/rl/examples/howto_rl_021_train_wrapped_sb3_policy_on_doublependulum.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
