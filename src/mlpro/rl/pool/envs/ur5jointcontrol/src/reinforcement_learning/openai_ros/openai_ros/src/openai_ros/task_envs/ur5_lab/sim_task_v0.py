@@ -16,7 +16,7 @@ from gazebo_msgs.srv import SpawnModel, SpawnModelRequest, GetModelState, Delete
 from geometry_msgs.msg import Point, Quaternion, Pose
 
 
-class UR5LabSimTask(ur5_lab_env.UR5LabEnv, utils.EzPickle):
+class UR5LabSimTask(ur5_lab_env.UR5LabSimEnv, utils.EzPickle):
     def __init__(self):
         # Load Params from the desired Yaml file relative to this TaskEnvironment
         LoadYamlFileParamsTest(rospackage_name="openai_ros",

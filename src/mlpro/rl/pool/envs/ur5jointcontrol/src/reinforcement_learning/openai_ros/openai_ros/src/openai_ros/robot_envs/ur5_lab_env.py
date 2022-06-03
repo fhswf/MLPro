@@ -18,10 +18,11 @@ from gazebo_msgs.srv import GetWorldProperties, GetModelState
 from gazebo_msgs.msg import ContactsState
 
 from openai_ros import robot_gazebo_env
+from openai_ros import robot_real_env
 from openai_ros.openai_ros_common import ROSLauncher
 
 
-class UR5LabEnv(robot_gazebo_env.RobotGazeboEnv):
+class UR5LabDSimEnv(robot_gazebo_env.RobotGazeboEnv):
     """Superclass for all UR5LabEnv environments.
     """
     
