@@ -32,8 +32,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import openml
 
 from mlpro.bf.ui.sciui.framework import *
-from mlpro.dsm.models import *
-from mlpro.dsm.sciui.iis import *
+from mlpro.oa.models import *
+from mlpro.oa.sciui.iis import *
 from mlpro.bf.math import ESpace
 
 

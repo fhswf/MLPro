@@ -70,10 +70,10 @@ Table of Content
 
 .. toctree::
    :maxdepth: 1
-   :caption: 6 MLPro-DSM – Data Stream Mining   
+   :caption: 6 MLPro-OA – Online Adaptivity
    :glob:
 
-   content/dsm/*
+   content/oa/*
 
 
 .. _target_appendix1:
@@ -84,6 +84,7 @@ Table of Content
    content/append1/howto.bf
    content/append1/howto.rl
    content/append1/howto.gt
+   content/append1/howto.oa
 
 
 
