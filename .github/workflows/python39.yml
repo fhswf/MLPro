@@ -35,7 +35,8 @@ jobs:
         pip install matplotlib
         pip install dill
         pip install stable-baselines3
-        pip install PettingZoo==1.17.0
+        pip install gym
+        pip install PettingZoo
         pip install pyglet
         pip install pymunk
         pip install pygame
@@ -43,6 +44,7 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install hyperopt
+        pip install optuna
         pip install transformations
     - name: Lint with flake8
       run: |
@@ -52,8 +54,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics 
     - name: Build the Documentation
       run: |
-        cd doc/rtd
-        make html 
+        make doc
     - name: Test with pytest
       run: |
-        python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/ --ignore=src/mlpro/rl/pool/envs/multigeorobot/src/
+        make test

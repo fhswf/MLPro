@@ -3,7 +3,7 @@
 [![py39](https://github.com/fhswf/MLPro/actions/workflows/python39.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/python39.yml)
 [![Documentation Status](https://readthedocs.org/projects/mlpro/badge/?version=latest)](https://mlpro.readthedocs.io/en/latest/?badge=latest)
 
-<img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png" align="right" width="40%"/>
+<img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png?raw=True" align="right" width="40%"/>
 
 # MLPro - A Synoptic Framework for Standardized Machine Learning Tasks in Python
 

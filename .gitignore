@@ -10,3 +10,5 @@ venv/
 _build/
 /build
 .DS_Store
+.devcontainer
+.spyproject

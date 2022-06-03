@@ -32,10 +32,12 @@
 ## --                                - removed artifacts of cycle counting
 ## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-03-21  1.3.5     SY       Refactoring due to PettingZoo version 1.17.0
+## -- 2022-05-20  1.3.6     SY       Refactoring: Action space boundaries in WrEnvPZOO2MLPro
+## -- 2022-05-30  1.3.7     SY       Replace function env.seed(seed) to env.reset(seed=seed)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.5 (2022-03-21)
+Ver. 1.3.7 (2022-05-30)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -109,7 +111,17 @@ class WrEnvPZOO2MLPro(Environment):
             space.add_dim(Dimension(p_name_short='0', p_base_set='DO'))
         elif dict_name == "action":
             for k in p_zoo_space:
-                space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
+                if isinstance(p_zoo_space[k], gym.spaces.Discrete):
+                    space.add_dim(Dimension(p_name_short=k, p_base_set=Dimension.C_BASE_SET_Z,
+                                            p_boundaries=[0, p_zoo_space[k].n]))
+                elif isinstance(p_zoo_space[k], gym.spaces.Box):
+                    shape_dim = len(p_zoo_space[k].shape)
+                    for i in range(shape_dim):
+                        for d in range(p_zoo_space[k].shape[i]):
+                            space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
+                                                    p_boundaries=[p_zoo_space[k].low[d], p_zoo_space[k].high[d]]))
+                else:
+                    space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
                 
         return space
 
@@ -124,8 +136,11 @@ class WrEnvPZOO2MLPro(Environment):
     def _reset(self, p_seed=None):
 
         # 1 Reset Zoo environment and determine initial state
-        self._zoo_env.seed(p_seed)
-        self._zoo_env.reset()
+        try:
+            self._zoo_env.reset(seed=p_seed)
+        except:
+            self._zoo_env.seed(p_seed)
+            self._zoo_env.reset()
         observation, _, _, _ = self._zoo_env.last()
         obs     = DataObject(observation)
         

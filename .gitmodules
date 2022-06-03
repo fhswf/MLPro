@@ -1,6 +1,0 @@
-[submodule "src/mlpro/rl/pool/envs/ur5jointcontrol/src/ur_msgs"]
-	path = src/mlpro/rl/pool/envs/ur5jointcontrol/src/ur_msgs
-	url = https://github.com/ros-industrial/ur_msgs.git
-[submodule "src/mlpro/rl/pool/envs/ur5jointcontrol/src/xacro"]
-	path = src/mlpro/rl/pool/envs/ur5jointcontrol/src/xacro
-	url = https://github.com/ros/xacro.git

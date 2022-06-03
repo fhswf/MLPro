@@ -1,57 +1,41 @@
-.. _Howto RL 11:
-`Howto 11 - (RL) Wrap mlpro Environment class to gym environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2011%20-%20(RL)%20Wrap%20mlpro%20Environment%20class%20to%20gym%20environment.py>`_
-================
-Ver. 1.0.3 (2022-03-21)
+.. _Howto RL 011:
+Howto RL-011: Train a wrapped Stable Baslines 3 policy on MLPro's native UR5 environment (Paper)
+================================================================================================
 
-This module shows how to wrap mlpro's Environment class to gym compatible.
+.. automodule:: mlpro.rl.examples.howto_rl_011_train_ur5_environment_with_wrapped_sb3_policy
+
+
 
 Prerequisites
-`````````````````
+-------------
 
 Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
-    - `OpenAI Gym <https://pypi.org/project/gym/0.19.0/>`_
-  ..
+    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
+    - :ref:`RL Environment UR5 Joint Control <ur5jointcontrol>`
     - `NumPy <https://pypi.org/project/numpy/>`_
-  ..
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
     - `Pytorch <https://pypi.org/project/torch/>`_
-  ..
-    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-  ..
-    - `Optuna <https://pypi.org/project/optuna/>`_
-  ..
-    - `Hyperopt <https://pypi.org/project/hyperopt/>`_
-  ..
-    - `ROS <http://wiki.ros.org/noetic/Installation>`_
-    
+
+
+
+Executable code
+---------------
+.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_011_train_ur5_environment_with_wrapped_sb3_policy.py
+	:language: python
+
+
 
 Results
-`````````````````
-The GridWorld environment will be wrapped to a gym environment. By making use of gym's environment
-checker, we could confirm the success of the environment wrapping.
+-------
 
+.. image:: images/ur5simulation.gif
 
-.. code-block:: bash
+The Gazebo GUI should be the first thing that shows up. 
+The UR5 robot will move depending on the given action and the training is run. 
+When the training is done, the logged rewards will be plotted using the matplotlib library.
 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment GridWorld: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment GridWorld: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment GridWorld: Operation mode set to 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment GridWorld: Reset 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment GridWorld: Reset 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment GridWorld: Start processing action 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment GridWorld: Actions of agent 0 = [3.415721893310547, -7.9934492111206055] 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment GridWorld: Action processing finished successfully 
-    ...
-    
-There will be several more lines of action processing logs due to the nature of the environment checker.
-When there is no detected failure, the environment is successfully wrapped.
-
-Example Code
-`````````````````
-
-.. literalinclude:: ../../../../../examples/rl/Howto 11 - (RL) Wrap mlpro Environment class to gym environment.py
-    :language: python
-
-
+The plotted figure is not reproducible due to the simulator's nature of simulating real
+world scenario. Although seeds can be set for the random generator, the sampling cannot be 
+done at the exact same time during different runs. For a more reproducible results, 
+:ref:`Howto RL-012 <Howto RL 012>` is more appropriate.

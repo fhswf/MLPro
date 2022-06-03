@@ -1,24 +1,38 @@
 Release Notes
 ================
 
-Coming soon
------------
+
+Version 0.8.6
+---------------------
 
 Release Highlights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+- Adding MANIFEST.in for including additional data package for UR5 ROS Environment
 
-New Features
+
+Version 0.8.5
+---------------------
+
+Release Highlights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- RL, Agent: Model-based policy training implemented
-- RL, Agent: Template for action planning implemented/embedded
+- RL/GT: Improvements and fixes of training - especially stagnation detection
+- RL/GT: Introduction of new environment Double Pendulum
+- RL/GT: Improvement of installation procedure of UR5 environment
+- Numerous corrections and improvements
 
+
+.. New Features
+.. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Fixed Issues
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- Wrappers OpenAI Gym and PettingZoo: removed redundant cycle counting
+- BF: Loading/storing of objects uses Dill instead of Pickle
+- RL/GT: minor corrections on MultiCartPole environment 
+- RL/GT: performance optimization of SB3 wrapper (off-policy)
+- RL/GT: Wrappers OpenAI Gym and PettingZoo: removed redundant cycle counting
 
 
 Documentation Changes
@@ -29,9 +43,9 @@ Documentation Changes
 - Appendix 1 (examples) restructured
 - Disclaimer added
 
+
 .. Others
 .. ^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 
 
 

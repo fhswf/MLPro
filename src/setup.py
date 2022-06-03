@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 setup(name='mlpro',
-version='0.8.1',
+version='0.8.6',
 description='Machine Learning Professional',
 author='MLPro Team',
 author_mail='mlpro@listen.fh-swf.de',

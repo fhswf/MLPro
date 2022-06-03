@@ -1,44 +1,57 @@
-.. _Howto RL 13:
-`Howto 13 - (RL) Comparison Native and Wrapper SB3 Policy <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2013%20-%20(RL)%20Comparison%20Native%20and%20Wrapper%20SB3%20Policy.py>`_
-================
-Ver. 1.0.7 (2022-03-21)
+.. _Howto RL 013:
+Howto RL-013: Model Based Reinforcement Learning
+================================================
 
-This module compares the native and wrapped implementation of the SB3 Policy on an
-environment.
+.. automodule:: mlpro.rl.examples.howto_rl_013_model_based_reinforcement_learning
+  
+
 
 Prerequisites
-`````````````````
+-------------
 
 Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
     - `Pytorch <https://pypi.org/project/torch/>`_
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-    - `Panda <https://pypi.org/project/panda/>`_
-  ..
-    - `NumPy <https://pypi.org/project/numpy/>`_
-  ..
-    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
-    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-  ..
-    - `Optuna <https://pypi.org/project/optuna/>`_
-  ..
-    - `Hyperopt <https://pypi.org/project/hyperopt/>`_
-  ..
-    - `ROS <http://wiki.ros.org/noetic/Installation>`_
-    
+
+
+
+Executable code
+---------------
+.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_013_model_based_reinforcement_learning.py
+	:language: python
+
+
 
 Results
-`````````````````
-.. image:: images/howto13.png
+-------
 
-The plot from native and wrapped implementation should be indiscernible between each other. 
-The figure above is an example of successful algorithm wrapping. 
+After the environment is initiated, the training will run for the specified amount of limits.
+The expected initial console output can be seen below.
 
-Example Code
-`````````````````
 
-.. literalinclude:: ../../../../../examples/rl/Howto 13 - (RL) Comparison Native and Wrapper SB3 Policy.py
-    :language: python
+.. code-block:: bash
 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Training Actual: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Operation mode set to 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Reset 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  SB3 Policy ????: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  SB3 Policy ????: Adaptivity switched on 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Agent Smith1: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Agent Smith1: Adaptivity switched on 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  SB3 Policy ????: Adaptivity switched on 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Matrix1: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Matrix1: Operation mode set to 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Training Actual: Training started (without hyperparameter tuning) 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Results  RL: Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training Actual: ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training Actual: ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training Actual: -- Training run 0 started... 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training Actual: ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training Actual: ------------------------------------------------------------------------------ 
+     
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Matrix1: Process time 0:00:00 : Scenario reset with seed 0 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Reset 
+    ...
+    
