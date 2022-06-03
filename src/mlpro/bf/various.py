@@ -380,7 +380,7 @@ class TStamp:
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ScientificObject:
+class  ScientificObject:
     """
     This class provides elementary functionality for storing a scientific reference.
     """
