@@ -20,7 +20,7 @@ Can be executed directly...
 
 
 from mlpro.bf.ui.sciui.framework import *
-from mlpro.dsm.sciui.iis import InteractiveInputSpace
+from mlpro.oa.sciui.iis import InteractiveInputSpace
 from mlpro.bf.math import *
 
 
