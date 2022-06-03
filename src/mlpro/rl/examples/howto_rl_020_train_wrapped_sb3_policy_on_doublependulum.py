@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : howto_rl_021_train_wrapped_sb3_policy_on_doublependulum.py
+## -- Module  : howto_rl_020_train_wrapped_sb3_policy_on_doublependulum.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
