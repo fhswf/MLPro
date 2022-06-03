@@ -42,7 +42,7 @@ Table of Content
 
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: 3 MLPro-SL - Supervised Learning
    :glob:
    

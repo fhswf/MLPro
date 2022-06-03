@@ -28,10 +28,11 @@
 ## -- 2022-01-24  2.2.1     SY       Update seeding procedure, refactoring _reset()
 ## -- 2022-02-25  2.2.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-23  2.2.3     SY       Bug fixing: Reward computation
+## -- 2022-05-30  2.2.4     SY       Replace 'energy' related parameters to 'power'
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.3 (2022-05-23)
+Ver. 2.2.4 (2022-05-30)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -235,7 +236,7 @@ class VacuumPump (Actuator):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def calc_energy(self):
+    def calc_power(self):
         """
         This method calculates the power consumption of a vacuum pump.
 
@@ -291,32 +292,32 @@ class Belt(Actuator):
     Parameters
     ----------
     name : str
-        specific name or id of a vacuum pump (e.g. Belt_A, etc.).
+        specific name or id of an actuator (e.g. Belt_A, etc.).
     actiontype : str
         "C" for continuous action, "B" for binary action.
     minpower : float
-        minimum power of a vacuum pump.
+        minimum power of an actuator.
     maxpower : float
-        maximum power of a vacuum pump.
+        maximum power of an actuator.
     minaction : float
-        minimum action of a vacuum pump.
+        minimum action of an actuator.
     maxaction : float
-        maximum action of a vacuum pump.
+        maximum action of an actuator.
     masscoeff : float
-        mass transport coefficient of a vacuum pump.
+        mass transport coefficient of an actuator.
         
     Attributes
     ----------
     reg_b : list of objects
-        list of existing belts.
+        list of existing actuators.
     idx_b : int
         length of reg_b.
     name : str
-        specific name or id of a belt.
+        specific name or id of an actuator.
     actiontype : str
         "C" for continuous action, "B" for binary action.
     speed : float
-        speed of a bel.
+        speed of an actuator.
     """
     reg_b       = []
     idx_b       = 0
@@ -393,7 +394,7 @@ class Belt(Actuator):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def calc_energy(self):
+    def calc_power(self):
         """
         This method calculates the power consumption of a belt.
 
@@ -640,8 +641,8 @@ class BGLP (Environment):
         the learning rate for margin parameter, related to implemented reward function. The default is 1.0.
     lr_demand : float, optional
         the learning rate for production demand, related to implemented reward function. The default is 4.0.
-    lr_energy : float, optional
-        the learning rate for energy consumption, related to implemented reward function. The default is 0.0010.
+    lr_power : float, optional
+        the learning rate for power consumption, related to implemented reward function. The default is 0.0010.
     margin_p : list of floats, optional
         the margin parameter of reservoirs [low, high, multplicator]. The default is [0.2,0.8,4].
     prod_target : float, optional
@@ -685,11 +686,11 @@ class BGLP (Environment):
         the learning rate for margin parameter.
     lr_demand : float
         the learning rate for production demand.
-    lr_energy : float
-        the learning rate for energy consumption.
+    lr_power : float
+        the learning rate for power consumption.
     overflow : list of floats
         current overflow.
-    energy : list of floats
+    power : list of floats
         current power consumption.
     transport : list of floats
         current transported mass flow.
@@ -701,7 +702,7 @@ class BGLP (Environment):
         current overflow for a specific buffer in a specific time.
     demand_t : float
         current demand for a specific buffer in a specific time.
-    energy_t : float
+    power_t : float
         current power consumption for a specific actuator in a specific time.
     transport_t : float
         current transported material by a specific actuaor in a specific time.
@@ -735,17 +736,17 @@ class BGLP (Environment):
     t_step              = 0
     lr_margin           = 0
     lr_demand           = 0
-    lr_energy           = 0
+    lr_power            = 0
     overflow            = []
     demand              = []
-    energy              = []
+    power               = []
     transport           = []
     reward              = []
     levels_init         = 0
     reset_levels        = 0
     overflow_t          = 0
     demand_t            = 0
-    energy_t            = 0
+    power_t             = 0
     transport_t         = 0
     margin_t            = 0
     prod_reached        = 0
@@ -755,7 +756,7 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_logging=Log.C_LOG_ALL,
                  t_step=0.5, t_set=10.0, demand=0.1, lr_margin=1.0, lr_demand=4.0,
-                 lr_energy=0.0010, margin_p=[0.2,0.8,4], prod_target=10000,
+                 lr_power=0.0010, margin_p=[0.2,0.8,4], prod_target=10000,
                  prod_scenario='continuous', cycle_limit=0):
         self.num_envs       = 5                                                 # Number of internal sub-environments
         self.reward_type    = p_reward_type
@@ -778,7 +779,7 @@ class BGLP (Environment):
         self._demand        = demand
         self.lr_margin      = lr_margin
         self.lr_demand      = lr_demand
-        self.lr_energy      = lr_energy
+        self.lr_power       = lr_power
         self.prod_target    = prod_target
         self.prod_scenario  = prod_scenario
         self.levels_init    = np.ones((6,1))*0.5
@@ -830,17 +831,17 @@ class BGLP (Environment):
         self.margin             = np.zeros((len(self.ress),1))
         self.overflow           = np.zeros((len(self.ress),1))
         self.demand             = np.zeros((len(self.ress),1))
-        self.energy             = np.zeros((len(self.acts),1))
+        self.power              = np.zeros((len(self.acts),1))
         self.transport          = np.zeros((len(self.acts),1))
         self.overflow_t         = np.zeros((len(self.ress),1))
         self.demand_t           = np.zeros((len(self.ress),1))
-        self.energy_t           = np.zeros((len(self.acts),1))
+        self.power_t            = np.zeros((len(self.acts),1))
         self.transport_t        = np.zeros((len(self.acts),1))
         self.margin_t           = np.zeros((len(self.ress),1))
         self.reward             = np.zeros((len(self.acts),1))
         self.con_res_to_act     = [[-1,0],[0,1],[1,2],[2,3],[3,4],[4,-1]]
         
-        self.data_lists         = ["time","overflow","energy","demand"]
+        self.data_lists         = ["time","overflow","power","demand"]
         self.data_storing       = DataStoring(self.data_lists)
         self.data_frame         = None
         
@@ -953,16 +954,16 @@ class BGLP (Environment):
         
         self.overflow_t         = np.zeros((len(self.ress),1))
         self.demand_t           = np.zeros((len(self.ress),1))
-        self.energy_t           = np.zeros((len(self.acts),1))
+        self.power_t            = np.zeros((len(self.acts),1))
         self.transport_t        = np.zeros((len(self.acts),1))
         self.margin_t           = np.zeros((len(self.ress),1))
         
         x = 0
         while x < (self.t_set//self.t_step):
-            overflow_diff, demand_diff, energy_diff, transport_diff, margin_diff = self.get_status(self.t, self._demand)
+            overflow_diff, demand_diff, power_diff, transport_diff, margin_diff = self.get_status(self.t, self._demand)
             self.overflow_t     += overflow_diff
             self.demand_t       += demand_diff
-            self.energy_t       += energy_diff
+            self.power_t       += power_diff
             self.transport_t    += transport_diff
             self.margin_t       += margin_diff
             self.t              += self.t_step
@@ -975,7 +976,7 @@ class BGLP (Environment):
         
         self.data_storing.memorize("time",str(self.data_frame),self.t)
         self.data_storing.memorize("overflow",str(self.data_frame), (sum(self.overflow_t[:])/self.t_set).item())
-        self.data_storing.memorize("energy",str(self.data_frame), (sum(self.energy_t[:])/self.t_set).item())
+        self.data_storing.memorize("power",str(self.data_frame), (sum(self.power_t[:])/self.t_set).item())
         self.data_storing.memorize("demand",str(self.data_frame), (self.demand_t[-1]/self.t_set).item())
 
         return self._state
@@ -1081,13 +1082,13 @@ class BGLP (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def calc_energy(self):
+    def calc_power(self):
         """
         This method calculates the power consumptions per actuator.
         
         """
         for act_num in range(len(self.acts)):
-            self.energy[act_num] = self.acts[act_num].calc_energy()*self.t_step
+            self.power[act_num] = self.acts[act_num].calc_power()*self.t_step
                 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1208,7 +1209,7 @@ class BGLP (Environment):
 ## -------------------------------------------------------------------------------------------------
     def get_status(self, t, demandval):
         """
-        This method calculates overflow, demand, energy, transport, and margin.
+        This method calculates overflow, demand, power, transport, and margin.
         This function will be called every time step.
         
         Parameters
@@ -1224,7 +1225,7 @@ class BGLP (Environment):
             overflow levels.
         demand : list of floats
             demand fulfilled.
-        energy : list of floats
+        power : list of floats
             power consumptions.
         transport : list of floats
             transported materials.
@@ -1234,10 +1235,10 @@ class BGLP (Environment):
         """
         self.t = t       
         self.calc_mass_flows()
-        self.calc_energy()
+        self.calc_power()
         self.calc_margin()
         self.update(demandval)        
-        return self.overflow, self.demand, self.energy, self.transport, self.margin
+        return self.overflow, self.demand, self.power, self.transport, self.margin
             
 
 ## -------------------------------------------------------------------------------------------------
@@ -1291,7 +1292,7 @@ class BGLP (Environment):
         """
         for actnum in range(len(self.acts)):
             acts = self.acts[actnum]
-            self.reward[actnum] = 1/(1+self.lr_margin*self.margin_t[actnum])+1/(1+self.lr_energy*self.energy_t[actnum]/(acts.power_max/1000.0))
+            self.reward[actnum] = 1/(1+self.lr_margin*self.margin_t[actnum])+1/(1+self.lr_power*self.power_t[actnum]/(acts.power_max/1000.0))
             if actnum == len(self.acts)-1:
                 self.reward[actnum] += 1/(1-self.lr_demand*self.demand_t[-1])
             else:
