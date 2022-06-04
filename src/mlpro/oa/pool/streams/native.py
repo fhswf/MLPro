@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.dsm.pool.streams
+## -- Package : mlpro.oa.pool.streams
 ## -- Module  : native.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -16,7 +16,7 @@ This module provides native stream classes.
 """
 
 from mlpro.bf.various import ScientificObject
-from mlpro.dsm.models import StreamProvider, Stream
+from mlpro.oa.models import StreamProvider, Stream
 
 
 
