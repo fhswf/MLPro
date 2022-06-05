@@ -4,7 +4,7 @@ Online Adaptivity
 Stream Providers and Streams
 ----------------------------
 
-.. image:: images/oa/MLPro-OA-STREAMS_class_diagram.drawio.png
+.. image:: images/oa/MLPro-OA-Streams_class_diagram.drawio.png
 
 .. automodule:: mlpro.oa.models_streams
    :members:
@@ -16,7 +16,7 @@ Stream Providers and Streams
 Serial Processing
 -----------------
 
-.. image:: images/oa/MLPro-OA-PROC_class_diagram.drawio.png
+.. image:: images/oa/MLPro-OA-Proc_class_diagram.drawio.png
 
 .. automodule:: mlpro.oa.models_proc
    :members:
