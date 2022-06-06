@@ -1062,6 +1062,13 @@ class Training (Log):
             logging = Log.C_LOG_WE
             self._kwargs['p_logging'] = logging
 
+        # 1.9 Optional environment mode
+        try:
+            env_mode = self._kwargs['p_env_mode']
+        except:
+            env_mode = Mode.C_MODE_SIM
+            self._kwargs['p_env_mode'] = env_mode
+
 
         # 2 Initialization
         super().__init__(p_logging=logging)
@@ -1078,7 +1085,7 @@ class Training (Log):
         # 3 Setup scenario
         if self._hpt is None:
             try:
-                self._scenario = scenario_cls( p_mode=Mode.C_MODE_SIM, 
+                self._scenario = scenario_cls( p_mode=env_mode, 
                                                p_ada=True,
                                                p_cycle_limit=self._cycle_limit,
                                                p_visualize=visualize,
