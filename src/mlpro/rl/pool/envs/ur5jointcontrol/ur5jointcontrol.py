@@ -51,19 +51,27 @@ class UR5JointControl(Environment):
     C_NAME = 'UR5JointControl'
     C_LATENCY = timedelta(0, 5, 0)
     C_INFINITY = np.finfo(np.float32).max
-    C_REAL_MODE_ROS = 0
-    C_REAL_MODE_SOCKET = 1
+    C_COM_MODE_ROS = 0
+    C_COM_MODE_PLAIN = 1
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_seed=0, p_build=False, p_sim=True, p_real_method=C_REAL_MODE_ROS, p_robot_ip="", p_reverse_ip="", 
+    def __init__(self, p_seed=0, p_build=True, p_real=False, p_com_method=C_COM_MODE_ROS, p_robot_ip="", p_reverse_ip="", 
         p_reverse_port=50001, p_visualize=False, p_logging=True):
         """
         Parameters:
             p_logging       Boolean switch for logging
         """
 
-        if p_real_method == self.C_REAL_MODE_ROS:
-            # Use ROS as the simulation and real
+        # Use ROS as the simulation and real
+        if p_com_method == self.C_COM_MODE_ROS:
+            self.setup_spaces = WrEnvGYM2MLPro.setup_spaces
+            if not p_real:
+                super().__init__(p_mode=Mode.C_MODE_SIM, p_logging=p_logging)
+            else:
+                super().__init__(p_mode=Mode.C_MODE_REAL, p_logging=p_logging)
+                self._export_action = self._export_action_ros
+                self._import_state = self._import_state_ros
+
             if p_build:
                 self._build()
 
@@ -72,12 +80,9 @@ class UR5JointControl(Environment):
                 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
                 from openai_ros.task_envs.task_commons import LoadYamlFileParamsTest
             except (ModuleNotFoundError, ImportError) as e:
-                logger = Log()
-                logger.C_TYPE = "Log"
-                logger.C_NAME = "Pre-check ROS"
-                logger.log(Log.C_LOG_TYPE_E, "ROS or UR5 Workspace is not installed")
-                logger.log(Log.C_LOG_TYPE_W, "Please use the guideline here:")
-                logger.log(Log.C_LOG_TYPE_W, "https://mlpro.readthedocs.io/en/latest/content/rl/env/pool/ur5jointcontrol.html")
+                self.log(Log.C_LOG_TYPE_E, "ROS or UR5 Workspace is not installed")
+                self.log(Log.C_LOG_TYPE_W, "Please use the guideline here:")
+                self.log(Log.C_LOG_TYPE_W, "https://mlpro.readthedocs.io/en/latest/content/rl/env/pool/ur5jointcontrol.html")
             else:
                 roscore = subprocess.Popen('roscore')
                 rospy.init_node('ur5_lab_training_start', anonymous=True, log_level=rospy.WARN)
@@ -88,10 +93,10 @@ class UR5JointControl(Environment):
 
                 ros_ws_path = mlpro.rl.pool.envs.ur5jointcontrol.__file__.replace("/__init__.py", "")
                 rospy.set_param('ros_ws_path', ros_ws_path)
-                rospy.set_param('sim', p_sim)
+                rospy.set_param('sim', not p_real)
 
                 # Init OpenAI_ROS ENV
-                if p_sim:
+                if not p_real:
                     environment = rospy.get_param('/ur5_lab/simulation_environment')
                     rospy.set_param('visualize', p_visualize)
                 else:
@@ -107,23 +112,55 @@ class UR5JointControl(Environment):
 
                 self.C_NAME = 'Env "' + self._gym_env.spec.id + '"'
 
-                if p_sim:
-                    super().__init__(p_mode=Mode.C_MODE_SIM, p_logging=p_logging)
-                else:
-                    super().__init__(p_mode=Mode.C_MODE_REAL, p_logging=p_logging)
-
                 self._state_space = WrEnvGYM2MLPro.recognize_space(self._gym_env.observation_space)
                 self._action_space = WrEnvGYM2MLPro.recognize_space(self._gym_env.action_space)
-
-        elif not p_sim:
-            # Socket for the real robot
+        
+        # Use plain as the real
+        elif p_real:
             # Check the library
-            # try:
-            #     import rospy
-            #     from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
-            #     from openai_ros.task_envs.task_commons import LoadYamlFileParamsTest
-            # except (ModuleNotFoundError, ImportError) as e:
-            pass
+            try:
+                from fhswf_at_ia.hc.pool.hardware.ur5_base import UR5Base
+            except (ModuleNotFoundError, ImportError) as e:
+                self.log(Log.C_LOG_TYPE_E, "Hardware Control Library is not found!")
+
+            super().__init__(p_mode=Mode.C_MODE_REAL, p_logging=p_logging)
+
+            self._export_action = self._export_action_plain
+            self._import_state = self._import_state_plain
+
+            # Initialize communication with the real
+            ur5     = UR5Base(p_logging=True)
+
+            ur5.set_connection_param(p_pc_ip  = p_reverse_ip,
+                        p_pc_port = 31001,
+                        p_robot_ip = p_robot_ip,
+                        p_robot_port = 30002,
+                        p_timeout = 10.0)
+
+            # Create state space from controller
+            self._state_space = ur5.get_sensor_space()
+
+            # Create action space from controller
+            self._action_space = ur5.get_actuator_space()
+        else:
+            raise NotImplementedError
+
+
+    ## -------------------------------------------------------------------------------------------------
+    def _export_action_ros(self, p_action: Action) -> bool:
+        pass
+
+    ## -------------------------------------------------------------------------------------------------
+    def _export_action_plain(self, p_action: Action) -> bool:
+        pass
+
+    ## -------------------------------------------------------------------------------------------------
+    def _import_state_ros(self) -> bool:
+        pass
+
+    ## -------------------------------------------------------------------------------------------------
+    def _import_state_plain(self) -> bool:
+        pass
 
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
@@ -142,7 +179,7 @@ class UR5JointControl(Environment):
         self._set_state(state)
 
     ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
 
         # 1 Convert action to Gym syntax
         action_sorted = p_action.get_sorted_values()
@@ -176,30 +213,27 @@ class UR5JointControl(Environment):
         return state
 
     ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
-        if (p_state_old is not None) or (p_state_new is not None):
-            raise NotImplementedError
-
+    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         return self._last_reward
 
     ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: State) -> bool:
+    def _compute_broken(self, p_state: State) -> bool:
         return self.get_broken()
 
     ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
-        self._gym_env.render()
+        pass
 
     ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
-        self._gym_env.render()
+        pass
 
     ## -------------------------------------------------------------------------------------------------
     def get_cycle_limit(self):
         return self._gym_env._max_episode_steps
 
     ## -------------------------------------------------------------------------------------------------
-    def compute_success(self, p_state: State) -> bool:
+    def _compute_success(self, p_state: State) -> bool:
         obs = p_state.get_values()
         close = np.allclose(a=obs[:3],
                             b=obs[3:],
@@ -212,31 +246,27 @@ class UR5JointControl(Environment):
 
     ## -------------------------------------------------------------------------------------------------
     def _build(self):
-        logger = Log()
-        logger.C_TYPE = "Log"
-        logger.C_NAME = "Pre-check ROS"
-
         # Check OS
-        logger.log(Log.C_LOG_TYPE_I, "Checking Operating System ......")
+        self.log(Log.C_LOG_TYPE_I, "Checking Operating System ......")
         if platform.system() != "Linux":
-            logger.log(Log.C_LOG_TYPE_E, "Operating System is not supported!")
-            logger.log(Log.C_LOG_TYPE_E, "Please use Linux")
-            logger.log(Log.C_LOG_TYPE_E, "Exiting....")
+            self.log(Log.C_LOG_TYPE_E, "Operating System is not supported!")
+            self.log(Log.C_LOG_TYPE_E, "Please use Linux")
+            self.log(Log.C_LOG_TYPE_E, "Exiting....")
             sys.exit()
         else:
-            logger.log(Log.C_LOG_TYPE_S, "Operating System is supported")
+            self.log(Log.C_LOG_TYPE_S, "Operating System is supported")
 
         # Check if ROS is installed
         process = subprocess.run("which roscore", shell=True, stdout=subprocess.PIPE)
         output = process.stdout
-        logger.log(Log.C_LOG_TYPE_I, "Checking ROS Installation ......")
+        self.log(Log.C_LOG_TYPE_I, "Checking ROS Installation ......")
         if output==bytes():
-            logger.log(Log.C_LOG_TYPE_E, "ROS is not installed!")
-            logger.log(Log.C_LOG_TYPE_E, "Please install ROS")
-            logger.log(Log.C_LOG_TYPE_E, "Exiting....")
+            self.log(Log.C_LOG_TYPE_E, "ROS is not installed!")
+            self.log(Log.C_LOG_TYPE_E, "Please install ROS")
+            self.log(Log.C_LOG_TYPE_E, "Exiting....")
             sys.exit()
         else:
-            logger.log(Log.C_LOG_TYPE_S, "ROS is installed")
+            self.log(Log.C_LOG_TYPE_S, "ROS is installed")
 
         import rospkg
 
@@ -246,29 +276,29 @@ class UR5JointControl(Environment):
         try:
             rospack.get_path("ur5_lab")
         except rospkg.common.ResourceNotFound:
-            logger.log(Log.C_LOG_TYPE_E, "UR5 Workspace is not installed!")
-            logger.log(Log.C_LOG_TYPE_W, "If you have ran this script, please CTRL+C and restart terminal")
+            self.log(Log.C_LOG_TYPE_E, "UR5 Workspace is not installed!")
+            self.log(Log.C_LOG_TYPE_W, "If you have ran this script, please CTRL+C and restart terminal")
         else:
             installed = True
 
         if not installed:
-            logger.log(Log.C_LOG_TYPE_W, "Building ROS Workspace in 10 Seconds")
+            self.log(Log.C_LOG_TYPE_W, "Building ROS Workspace in 10 Seconds")
             for sec in range(10):
                 time.sleep(1)
-                logger.log(Log.C_LOG_TYPE_W, str(9-sec)+"...")
+                self.log(Log.C_LOG_TYPE_W, str(9-sec)+"...")
 
             ros_workspace = os.path.dirname(mlpro.__file__)+"/rl/pool/envs/ur5jointcontrol"
             command = "cd " + ros_workspace + " && catkin_make"
             try:
                 process = subprocess.check_output(command, shell=True)
             except subprocess.CalledProcessError as e:
-                logger.log(Log.C_LOG_TYPE_E, "Build Failed")
+                self.log(Log.C_LOG_TYPE_E, "Build Failed")
                 sys.exit()
 
-            logger.log(Log.C_LOG_TYPE_S, "Successfully Built")
+            self.log(Log.C_LOG_TYPE_S, "Successfully Built")
             command = "echo 'source "+ros_workspace+"/devel/setup.bash"+"' >> ~/.bashrc"
             process = subprocess.run(command, shell=True)
-            logger.log(Log.C_LOG_TYPE_W, "Please restart your terminal and run the Howto script again")
+            self.log(Log.C_LOG_TYPE_W, "Please restart your terminal and run the Howto script again")
             sys.exit()
         else:
-            logger.log(Log.C_LOG_TYPE_S, "UR5 Workspace is installed")
+            self.log(Log.C_LOG_TYPE_S, "UR5 Workspace is installed")
