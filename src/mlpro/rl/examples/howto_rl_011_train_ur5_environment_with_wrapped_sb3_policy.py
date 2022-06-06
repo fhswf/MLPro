@@ -10,10 +10,11 @@
 ## -- 2021-12-07  1.0.1     DA       Refactoring
 ## -- 2022-02-11  1.1.0     DA       Special derivate for publication
 ## -- 2022-05-23  1.2.0     MRD      Add visualize toggle on UR5JointControl for gazebo GUI
+## -- 2022-06-06  1.2.1     MRD      Add real connection option
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-05-23)
+Ver. 1.2.1 (2022-06-06)
 
 This module shows how to use SB3 wrapper to train UR5 robot (derivate for paper).
 """
@@ -31,7 +32,13 @@ class ScenarioUR5A2C(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
-        self._env = UR5JointControl(p_build=True, p_sim=False, p_robot_ip="192.168.0.155", p_reverse_ip="192.168.0.196", p_visualize=False, p_logging=p_logging)
+        self._env = UR5JointControl(
+            p_build=True, 
+            p_real=p_mode, 
+            p_robot_ip="192.168.0.155", 
+            p_reverse_ip="192.168.0.196", 
+            p_visualize=self._visualize, 
+            p_logging=p_logging)
 
         policy_sb3 = PPO(
             policy="MlpPolicy",
@@ -64,6 +71,7 @@ now = datetime.now()
 
 training = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
+    p_env_mode=Mode.C_MODE_SIM,
     p_cycle_limit=5500,
     p_cycles_per_epi_limit=-1,
     p_stagnation_limit=5,
