@@ -35,10 +35,12 @@
 ## -- 2022-02-24  1.3.5     SY       Introduce new class HyperParamDispatcher
 ## -- 2022-03-02  1.3.6     SY       Refactoring class HyperParamDispatcher
 ## -- 2022-03-02  1.3.7     DA       Class HyperParamDispatcher:correction of method set_values()
+## -- 2022-06-06  1.3.8     MRD      Add additional parameter to Training class, p_env_mode for
+## --                                setting up environment mode
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.7 (2022-03-02)
+Ver. 1.3.8 (2022-06-06)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
