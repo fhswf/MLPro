@@ -18,10 +18,11 @@
 ## -- 2022-03-04  1.1.0     WB       Adds the ability to control gripper
 ## -- 2022-06-06  2.0.0     MRD      Add ability to self build the ros workspace
 ## --                       MRD      Add the connection to the real robot, wrapped in Gym environment
+## -- 2022-06-07  2.0.1     MRD      Define _export_action and _import_action for each communication type
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2022-06-06)
+Ver. 2.0.1 (2022-06-07)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
@@ -69,6 +70,7 @@ class UR5JointControl(Environment):
                 super().__init__(p_mode=Mode.C_MODE_SIM, p_logging=p_logging)
             else:
                 super().__init__(p_mode=Mode.C_MODE_REAL, p_logging=p_logging)
+                self._real_ros_state = None
                 self._export_action = self._export_action_ros
                 self._import_state = self._import_state_ros
 
@@ -129,38 +131,72 @@ class UR5JointControl(Environment):
             self._import_state = self._import_state_plain
 
             # Initialize communication with the real
-            ur5     = UR5Base(p_logging=True)
+            self.ur5     = UR5Base(p_logging=True)
 
-            ur5.set_connection_param(p_pc_ip  = p_reverse_ip,
+            self.ur5.set_connection_param(p_pc_ip  = p_reverse_ip,
                         p_pc_port = 31001,
                         p_robot_ip = p_robot_ip,
                         p_robot_port = 30002,
                         p_timeout = 10.0)
 
+            # Connect to Robot
+            try:
+                con = self.ur5.connect()
+            except:
+                self.log(Log.C_LOG_TYPE_E, "Failed during establishing connection")
+                raise ConnectionError
+            else:
+                if con:
+                    self.log(Log.C_LOG_TYPE_S, "Connected to the robot")
+                else:
+                    self.log(Log.C_LOG_TYPE_E, "Cannot connect to the robot")
+                    raise ConnectionError
+
             # Create state space from controller
-            self._state_space = ur5.get_sensor_space()
+            self._state_space = self.ur5.get_sensor_space()
 
             # Create action space from controller
-            self._action_space = ur5.get_actuator_space()
+            self._action_space = self.ur5.get_actuator_space()
         else:
             raise NotImplementedError
 
 
     ## -------------------------------------------------------------------------------------------------
     def _export_action_ros(self, p_action: Action) -> bool:
-        pass
+        try:
+            self._real_ros_state = self._simulate_reaction(p_action)  
+        except:
+            return False
+        else:
+            return True
 
     ## -------------------------------------------------------------------------------------------------
     def _export_action_plain(self, p_action: Action) -> bool:
-        pass
+        action_sorted = p_action.get_sorted_values()
+        action = action_sorted.astype(self._gym_env.action_space.dtype)
+        try:
+            self.ur5.move_joints(action, p_time=2)
+        except:
+            return False
+        else:
+            return True
 
     ## -------------------------------------------------------------------------------------------------
     def _import_state_ros(self) -> bool:
-        pass
+        self._set_state(self._real_ros_state)
 
     ## -------------------------------------------------------------------------------------------------
     def _import_state_plain(self) -> bool:
-        pass
+        try:
+            observation = self.ur5.get_joints()
+        except:
+            return False
+        else:
+            obs = DataObject(observation)
+            state = State(self._state_space)
+            state.set_values(obs.get_data())
+            self._set_state(state)
+            return True
 
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
