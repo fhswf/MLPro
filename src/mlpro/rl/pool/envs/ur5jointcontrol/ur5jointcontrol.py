@@ -35,7 +35,7 @@ import time
 import os
 import mlpro
 from mlpro.bf.various import Log
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.openai_gym import *
 from mlpro.rl.models import *
 import numpy as np
 
@@ -50,7 +50,7 @@ class UR5JointControl(Environment):
     """
 
     C_NAME = 'UR5JointControl'
-    C_LATENCY = timedelta(0, 5, 0)
+    C_LATENCY = timedelta(0, 0, 100)
     C_INFINITY = np.finfo(np.float32).max
     C_COM_MODE_ROS = 0
     C_COM_MODE_PLAIN = 1
@@ -64,8 +64,8 @@ class UR5JointControl(Environment):
         """
 
         # Use ROS as the simulation and real
-        if p_com_method == self.C_COM_MODE_ROS:
-            self.setup_spaces = WrEnvGYM2MLPro.setup_spaces
+        self._com_method = p_com_method
+        if self._com_method == self.C_COM_MODE_ROS:
             if not p_real:
                 super().__init__(p_mode=Mode.C_MODE_SIM, p_logging=p_logging)
             else:
@@ -73,6 +73,8 @@ class UR5JointControl(Environment):
                 self._real_ros_state = None
                 self._export_action = self._export_action_ros
                 self._import_state = self._import_state_ros
+                self._compute_reward = self._compute_reward_ros
+                self._reset = self._reset_ros
 
             if p_build:
                 self._build()
@@ -115,7 +117,7 @@ class UR5JointControl(Environment):
                 self.C_NAME = 'Env "' + self._gym_env.spec.id + '"'
 
                 self._state_space = WrEnvGYM2MLPro.recognize_space(self._gym_env.observation_space)
-                self._action_space = WrEnvGYM2MLPro.recognize_space(self._gym_env.action_space)
+                self._action_space = WrEnvGYM2MLPro.recognize_space(gym.spaces.Box(low=-0.1, high=0.1, shape=(6,)))
         
         # Use plain as the real
         elif p_real:
@@ -129,6 +131,8 @@ class UR5JointControl(Environment):
 
             self._export_action = self._export_action_plain
             self._import_state = self._import_state_plain
+            self._compute_reward = self._compute_reward_plain
+            self._reset = self._reset_plain
 
             # Initialize communication with the real
             self.ur5     = UR5Base(p_logging=True)
@@ -156,15 +160,32 @@ class UR5JointControl(Environment):
             self._state_space = self.ur5.get_sensor_space()
 
             # Create action space from controller
-            self._action_space = self.ur5.get_actuator_space()
+            self._action_space = WrEnvGYM2MLPro.recognize_space(gym.spaces.Box(low=-0.1, high=0.1, shape=(6,)))
+
+            # Set Maximum Step
+            self._max_step_episode = 10
+
+            # Set reset position
+            self._reset_pos_plain = [0.0, -1.0, -1.15, -1.30, 1.57, 1.57]
+
+            # Set goal position
+            self._goal_pos_plain = [0.29796, -0.14046, 0.10748]
+
+            # Initial Design
+            self.init_distance = None
         else:
             raise NotImplementedError
+
+    ## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def setup_spaces():
+        return None, None
 
 
     ## -------------------------------------------------------------------------------------------------
     def _export_action_ros(self, p_action: Action) -> bool:
         try:
-            self._real_ros_state = self._simulate_reaction(p_action)  
+            self._real_ros_state = self.simulate_reaction(None, p_action)  
         except:
             return False
         else:
@@ -173,12 +194,16 @@ class UR5JointControl(Environment):
     ## -------------------------------------------------------------------------------------------------
     def _export_action_plain(self, p_action: Action) -> bool:
         action_sorted = p_action.get_sorted_values()
-        action = action_sorted.astype(self._gym_env.action_space.dtype)
         try:
-            self.ur5.move_joints(action, p_time=2)
-        except:
+            current_joint = np.array(self.ur5.get_joints())
+            next_joint = current_joint + action_sorted
+            next_joint = np.clip(next_joint, -math.pi, math.pi)
+            self.ur5.move_joints(next_joint.tolist(), p_time=2)
+        except Exception as e:
+            self.log(Log.C_LOG_TYPE_E, e)
             return False
         else:
+            print("Done")
             return True
 
     ## -------------------------------------------------------------------------------------------------
@@ -188,19 +213,40 @@ class UR5JointControl(Environment):
     ## -------------------------------------------------------------------------------------------------
     def _import_state_plain(self) -> bool:
         try:
-            observation = self.ur5.get_joints()
+            observation = self.ur5.get_tcp()
         except:
             return False
         else:
+            observation = observation[:3]
+            observation.extend(self._goal_pos_plain)
             obs = DataObject(observation)
             state = State(self._state_space)
             state.set_values(obs.get_data())
             self._set_state(state)
             return True
+    
+    def _reset_plain(self, p_seed=None):
+        # 1 Reset Gym environment and determine initial state
+        try:
+            self.ur5.move_joints(self._reset_pos_plain, p_time=2)
+        except:
+            return False
+        else:
+            try:
+                observation = self.ur5.get_tcp()
+            except:
+                return False
+            else:
+                observation = observation[:3]
+                observation.extend(self._goal_pos_plain)
+                self.init_distance = np.linalg.norm(np.array(observation[:3]) - np.array(observation[3:]))
+                obs = DataObject(observation)
+                state = State(self._state_space)
+                state.set_values(obs.get_data())
+                self._set_state(state)
 
     ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None):
-
+    def _reset_ros(self, p_seed=None):
         # 1 Reset Gym environment and determine initial state
         try:
             observation = self._gym_env.reset(seed=p_seed)
@@ -247,9 +293,21 @@ class UR5JointControl(Environment):
 
         # 5 Return next state
         return state
+    
+    ## -------------------------------------------------------------------------------------------------
+    def _compute_reward_plain(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+        obs = p_state_new.get_values()
+        distance = np.linalg.norm(np.array(obs[:3]) - np.array(obs[3:]))
+        ratio = distance / self.init_distance
+        reward = -np.ones(1) * ratio
+        reward = reward - 10e-2
+        
+        rewards = Reward(Reward.C_TYPE_OVERALL)
+        rewards.set_overall_reward(reward)
+        return rewards
 
     ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+    def _compute_reward_ros(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         return self._last_reward
 
     ## -------------------------------------------------------------------------------------------------
@@ -266,7 +324,10 @@ class UR5JointControl(Environment):
 
     ## -------------------------------------------------------------------------------------------------
     def get_cycle_limit(self):
-        return self._gym_env._max_episode_steps
+        if self._com_method == self.C_COM_MODE_ROS:
+            return self._gym_env._max_episode_steps
+        else:
+            return self._max_step_episode
 
     ## -------------------------------------------------------------------------------------------------
     def _compute_success(self, p_state: State) -> bool:
