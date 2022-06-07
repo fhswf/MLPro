@@ -455,7 +455,7 @@ class Scenario (Mode, LoadSave, Plottable):
 
 
         # 1 Setup entire scenario
-        self._model = self._setup(p_mode=self.C_MODE_SIM, p_ada=p_ada, p_logging=p_logging)
+        self._model = self._setup(p_mode=p_mode, p_ada=p_ada, p_logging=p_logging)
         if self._model is None: 
             raise ImplementationError('Please return your ML model in method self._setup()')
 

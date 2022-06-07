@@ -34,9 +34,10 @@ class ScenarioUR5A2C(RLScenario):
         # 1.1 Setup environment
         self._env = UR5JointControl(
             p_build=True, 
-            p_real=p_mode, 
-            p_robot_ip="192.168.0.155", 
-            p_reverse_ip="192.168.0.196", 
+            p_real=p_mode,
+            p_com_method=UR5JointControl.C_COM_MODE_PLAIN,
+            p_robot_ip="172.19.10.41",
+            p_reverse_ip="172.19.10.170", 
             p_visualize=self._visualize, 
             p_logging=p_logging)
 
@@ -71,15 +72,9 @@ now = datetime.now()
 
 training = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
-    p_env_mode=Mode.C_MODE_SIM,
+    p_env_mode=Mode.C_MODE_REAL,
     p_cycle_limit=5500,
     p_cycles_per_epi_limit=-1,
-    p_stagnation_limit=5,
-    p_stagnation_entry=15,
-    p_end_at_stagnation=False,
-    p_eval_frequency=10,
-    p_eval_grp_size=2,
-    p_score_ma_horizon=20,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
