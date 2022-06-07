@@ -50,7 +50,7 @@ class UR5JointControl(Environment):
     """
 
     C_NAME = 'UR5JointControl'
-    C_LATENCY = timedelta(0, 0, 100)
+    C_LATENCY = timedelta(0, 0, 0)
     C_INFINITY = np.finfo(np.float32).max
     C_COM_MODE_ROS = 0
     C_COM_MODE_PLAIN = 1
@@ -186,7 +186,8 @@ class UR5JointControl(Environment):
     def _export_action_ros(self, p_action: Action) -> bool:
         try:
             self._real_ros_state = self.simulate_reaction(None, p_action)  
-        except:
+        except Exception as e:
+            self.log(Log.C_LOG_TYPE_E, e)
             return False
         else:
             return True
@@ -198,23 +199,29 @@ class UR5JointControl(Environment):
             current_joint = np.array(self.ur5.get_joints())
             next_joint = current_joint + action_sorted
             next_joint = np.clip(next_joint, -math.pi, math.pi)
-            self.ur5.move_joints(next_joint.tolist(), p_time=2)
+            self.ur5.move_joints(next_joint.tolist())
         except Exception as e:
             self.log(Log.C_LOG_TYPE_E, e)
             return False
         else:
-            print("Done")
             return True
 
     ## -------------------------------------------------------------------------------------------------
     def _import_state_ros(self) -> bool:
-        self._set_state(self._real_ros_state)
+        try:
+            self._set_state(self._real_ros_state)  
+        except Exception as e:
+            self.log(Log.C_LOG_TYPE_E, e)
+            return False
+        else:
+            return True
 
     ## -------------------------------------------------------------------------------------------------
     def _import_state_plain(self) -> bool:
         try:
             observation = self.ur5.get_tcp()
-        except:
+        except Exception as e:
+            self.log(Log.C_LOG_TYPE_E, e)
             return False
         else:
             observation = observation[:3]
@@ -228,8 +235,9 @@ class UR5JointControl(Environment):
     def _reset_plain(self, p_seed=None):
         # 1 Reset Gym environment and determine initial state
         try:
-            self.ur5.move_joints(self._reset_pos_plain, p_time=2)
-        except:
+            self.ur5.move_joints(self._reset_pos_plain)
+        except Exception as e:
+            self.log(Log.C_LOG_TYPE_E, e)
             return False
         else:
             try:
