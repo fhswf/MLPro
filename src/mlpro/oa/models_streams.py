@@ -71,12 +71,12 @@ class Stream (Mode, LoadSave, ScientificObject):
     C_URL           = '????'
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_id,
                  p_name,
                  p_num_instances,
-                 p_mode=Mode.C_MODE_SIM, 
+                 p_mode=Mode.C_MODE_SIM,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
 
@@ -85,30 +85,29 @@ class Stream (Mode, LoadSave, ScientificObject):
         self._name = self.C_SCIREF_TITLE = p_name
         self._num_instances = p_num_instances
         self._kwargs = p_kwargs.copy()
-        # self._feature_space = self.setup()
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_id(self) -> str:
         return self._id
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
         return self.C_SCIREF_TITLE
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_url(self) -> str:
         return self.C_SCIREF_URL
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_num_features(self) -> int:
         return self._num_instances
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def setup(self) -> MSpace:
         """
         Sets up the data stream and specially the related feature space by calling custom method
@@ -124,7 +123,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         return self._setup()
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _setup(self) -> MSpace:
         """
         Custom method to set up the data stream and related feature space. See method setup() for
@@ -140,12 +139,12 @@ class Stream (Mode, LoadSave, ScientificObject):
         raise NotImplementedError
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_feature_space(self):
-        return self._feature_space
+        return self.get_feature_space()
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None):
         """
         Resets stream generator and initializes an internal random generator with the given seed
@@ -161,7 +160,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         self._reset(p_seed=p_seed)
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
         """
         Custom reset method for data stream. See method reset() for more details.
@@ -176,7 +175,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         raise NotImplementedError
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_next(self) -> Instance:
         """
         Returns next data stream instance or None at the end of the stream. The next instance is
@@ -192,7 +191,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         return self._get_next()
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
         """
         Custom method to determine the next data stream instance. See method get_next() for more

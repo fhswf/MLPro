@@ -23,7 +23,7 @@ https://docs.openml.org/APIs/
 """
 
 from mlpro.bf.various import ScientificObject
-from mlpro.oa.models import StreamProvider, Stream
+from mlpro.oa.models import *
 from mlpro.bf.math import *
 import openml
 
@@ -104,8 +104,10 @@ class WrStreamProviderOpenML (StreamProvider):
         stream: Stream
             Returns the stream corresponding to the id
         """
-
-        stream = self._stream_list[self._stream_ids.index(p_id)]
+        try:
+            stream = self._stream_list[self._stream_ids.index(p_id)]
+        except:
+            stream = None
         return stream
 
 
@@ -188,4 +190,29 @@ class WrStreamOpenML(Stream):
         return
 
 
+    ## --------------------------------------------------------------------------------------------------
+    def get_feature_space(self):
+        if not self._downloaded:
+            self._download()
+            self._downloaded = True
 
+        try:
+
+            feature_space = self._feature_space
+
+        except:
+
+            self._feature_space = feature_space = MSpace()
+            _, _, _, features = self._dataset.get_data()
+            for feature in features:
+                self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
+            feature_space = self._feature_space
+        return feature_space
+
+
+
+    ## --------------------------------------------------------------------------------------------------
+    def _download(self):
+
+        self._dataset = openml.datasets.get_dataset(self._id)
+        return
