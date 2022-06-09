@@ -9,10 +9,11 @@
 ## -- 2022-05-25  0.0.1     LSB      Minor bug fix
 ## -- 2022-06-02  0.1.0     LSB      Refactoring for list of stream objects in get stream list
 ## -- 2022-06-04  0.1.1     DA       Specialization in stream providers and streams
+## -- 2022-06-09  0.1.2     LSB      Additional attributes to stream object
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2022-06-04)
+Ver. 0.1.2 (2022-06-09)
 
 Model classes for stream providers and streams.
 """
@@ -76,6 +77,7 @@ class Stream (Mode, LoadSave, ScientificObject):
                  p_id,
                  p_name,
                  p_num_instances,
+                 p_version,
                  p_mode=Mode.C_MODE_SIM,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
@@ -84,6 +86,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         self._id = p_id
         self._name = self.C_SCIREF_TITLE = p_name
         self._num_instances = p_num_instances
+        self._version = p_version
         self._kwargs = p_kwargs.copy()
 
 

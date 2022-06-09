@@ -81,8 +81,12 @@ class WrStreamProviderOpenML (StreamProvider):
                 _num_instances = d[1]['NumberOfInstances']
             except:
                 _num_instances = 0
+            try:
+                _version = d[1]['Version']
+            except:
+                _version = 0
 
-            s = WrStreamOpenML(_id, _name, _num_instances)
+            s = WrStreamOpenML(_id, _name, _num_instances, _version)
 
             self._stream_list.append(s)
             self._stream_ids.append(_id)
@@ -137,7 +141,7 @@ class WrStreamOpenML(Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name, p_num_instances, **p_kwargs):
+    def __init__(self, p_id, p_name, p_num_instances, p_version, **p_kwargs):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
@@ -145,6 +149,7 @@ class WrStreamOpenML(Stream):
         super().__init__(p_id,
                          p_name,
                          p_num_instances,
+                         p_version,
                          p_mode=self.C_MODE_SIM)
         self._kwargs = p_kwargs.copy()
 
@@ -176,7 +181,7 @@ class WrStreamOpenML(Stream):
 
 
 
-    ## --------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------
     def get_feature_space(self):
         """
         Method to get the feature space of a stream object
