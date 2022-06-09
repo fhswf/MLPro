@@ -74,7 +74,7 @@ class UR5JointControl(Environment):
                 self._export_action = self._export_action_ros
                 self._import_state = self._import_state_ros
                 self._compute_reward = self._compute_reward_ros
-                self._reset = self._reset_ros
+            self._reset = self._reset_ros
 
             if p_build:
                 self._build()
