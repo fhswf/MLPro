@@ -107,44 +107,12 @@ class Stream (Mode, LoadSave, ScientificObject):
         return self._num_instances
 
 
-    ## -------------------------------------------------------------------------------------------------
-    def setup(self) -> MSpace:
-        """
-        Sets up the data stream and specially the related feature space by calling custom method
-        _setup().
-
-        Returns
-        -------
-        feature_space : MSpace
-            The feature space of the data stream.
-
-        """
-
-        return self._setup()
-
-
-    ## -------------------------------------------------------------------------------------------------
-    def _setup(self) -> MSpace:
-        """
-        Custom method to set up the data stream and related feature space. See method setup() for
-        more details. Use class Feature to define the feature space.
-
-        Returns
-        -------
-        feature_space : MSpace
-            The feature space of the data stream.
-
-        """
-
-        raise NotImplementedError
-
-
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def get_feature_space(self):
         return self.get_feature_space()
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None):
         """
         Resets stream generator and initializes an internal random generator with the given seed
@@ -160,7 +128,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         self._reset(p_seed=p_seed)
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
         """
         Custom reset method for data stream. See method reset() for more details.
@@ -175,7 +143,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         raise NotImplementedError
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def get_next(self) -> Instance:
         """
         Returns next data stream instance or None at the end of the stream. The next instance is
@@ -191,7 +159,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         return self._get_next()
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
         """
         Custom method to determine the next data stream instance. See method get_next() for more

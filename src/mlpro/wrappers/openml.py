@@ -8,10 +8,11 @@
 ## -- 2022-01-11  0.0.0     DA       Creation
 ## -- 2022-05-25  1.0.0     LSB      First Release with Stream and StreamProvider class
 ## -- 2022-05-27  1.0.1     LSB      Feature space setup
+## -- 2022-06-09  1.0.2     LSB      Downloading, resetting OpenML stream and handling instances
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-05-27)
+Ver. 1.0.2 (2022-06-09)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -65,7 +66,7 @@ class WrStreamProviderOpenML (StreamProvider):
         """
 
         list_datasets = openml.datasets.list_datasets(output_format='dict')
-        # print(stream_list)
+
 
         for d in list_datasets.items():
             try:
@@ -154,26 +155,6 @@ class WrStreamOpenML(Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self):
-        """
-        Custom class to setup feature space of an OpenML stream
-
-        Returns
-        -------
-        feature_space = MSpace
-            Feature Space of an OpenML stream
-        """
-
-        feature_space = MSpace()
-        _, _, _, features = self._kwargs['dataset'].get_data()
-        for feature in features:
-            feature_space.add_dim(Dimension(p_name_long=str(feature)))
-
-        return feature_space
-        # pass
-
-
-    ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
         """
         Custom reset method to download and reset an OpenML stream
@@ -185,13 +166,27 @@ class WrStreamOpenML(Stream):
         """
 
         if not self._downloaded:
-            self._dataset = openml.datasets.get_dataset(self._id)
+            self._dataset = self._download()
             self._downloaded = True
-        return
+
+        self._index = 0
+
+        self._instance = Instance(self.get_feature_space())
+
+
 
 
     ## --------------------------------------------------------------------------------------------------
     def get_feature_space(self):
+        """
+        Method to get the feature space of a stream object
+
+        Returns
+        -------
+        feature_space:
+            Returns the Feature space as MSpace of MLPro
+        """
+
         if not self._downloaded:
             self._download()
             self._downloaded = True
@@ -203,7 +198,7 @@ class WrStreamOpenML(Stream):
         except:
 
             self._feature_space = feature_space = MSpace()
-            _, _, _, features = self._dataset.get_data()
+            _, _, _, features = self._dataset
             for feature in features:
                 self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
             feature_space = self._feature_space
@@ -213,6 +208,27 @@ class WrStreamOpenML(Stream):
 
     ## --------------------------------------------------------------------------------------------------
     def _download(self):
-
-        self._dataset = openml.datasets.get_dataset(self._id)
+        """
+        Custom method to download the corresponding OpenML dataset
+        """
+        self._dataset = openml.datasets.get_dataset(self._id).get_data(dataset_format = 'array')
         return
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _get_next(self) -> Instance:
+        """
+        Custom method to get the instances one after another sequentially in the OpenML stream
+
+        Returns
+        -------
+        instance:
+            Next instance in the OpenML stream object (None after the last instance in the dataset).
+        """
+
+        if self._index < len(self._dataset[0]):
+            instance = self._dataset[0][self._index]
+            self._index += 1
+            return instance
+
+        return None
