@@ -232,8 +232,8 @@ class WrStreamOpenML(Stream):
         """
 
         if self._index < len(self._dataset[0]):
-            instance = self._dataset[0][self._index]
+            self._instance.set_values(self._dataset[0][self._index])
             self._index += 1
-            return instance
+            return self._instance
 
         return None
