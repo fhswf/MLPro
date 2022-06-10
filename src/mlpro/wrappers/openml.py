@@ -9,10 +9,11 @@
 ## -- 2022-05-25  1.0.0     LSB      First Release with Stream and StreamProvider class
 ## -- 2022-05-27  1.0.1     LSB      Feature space setup
 ## -- 2022-06-09  1.0.2     LSB      Downloading, resetting OpenML stream and handling instances
+## -- 2022-06-10  1.0.3     LSB      Code Optmization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-06-09)
+Ver. 1.0.3 (2022-06-10)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -52,7 +53,6 @@ class WrStreamProviderOpenML (StreamProvider):
         self._stream_list = []
         self._stream_ids = []
 
-
 ## -------------------------------------------------------------------------------------------------
     def _get_stream_list(self, **p_kwargs) -> list:
         """
@@ -64,32 +64,32 @@ class WrStreamProviderOpenML (StreamProvider):
             Returns a list of Streams in OpenML
 
         """
+        if len(self._stream_list) == 0:
+            list_datasets = openml.datasets.list_datasets(output_format='dict')
 
-        list_datasets = openml.datasets.list_datasets(output_format='dict')
 
+            for d in list_datasets.items():
+                try:
+                    _name = d[1]['name']
+                except:
+                    _name = None
+                try:
+                    _id = d[1]['did']
+                except:
+                    _id = 0
+                try:
+                    _num_instances = d[1]['NumberOfInstances']
+                except:
+                    _num_instances = 0
+                try:
+                    _version = d[1]['Version']
+                except:
+                    _version = 0
 
-        for d in list_datasets.items():
-            try:
-                _name = d[1]['name']
-            except:
-                _name = None
-            try:
-                _id = d[1]['did']
-            except:
-                _id = 0
-            try:
-                _num_instances = d[1]['NumberOfInstances']
-            except:
-                _num_instances = 0
-            try:
-                _version = d[1]['Version']
-            except:
-                _version = 0
+                s = WrStreamOpenML(_id, _name, _num_instances, _version)
 
-            s = WrStreamOpenML(_id, _name, _num_instances, _version)
-
-            self._stream_list.append(s)
-            self._stream_ids.append(_id)
+                self._stream_list.append(s)
+                self._stream_ids.append(_id)
 
         return self._stream_list
 
@@ -110,11 +110,14 @@ class WrStreamProviderOpenML (StreamProvider):
             Returns the stream corresponding to the id
         """
         try:
-            stream = self._stream_list[self._stream_ids.index(p_id)]
-        except:
-            stream = None
-        return stream
-
+            try:
+                stream = self._stream_list[self._stream_ids.index(p_id)]
+            except:
+                self.get_stream_list()
+                stream = self._stream_list[self._stream_ids.index(p_id)]
+                return stream
+        except ValueError:
+            raise ValueError('Stream id not in the available list')
 
 
 
@@ -171,8 +174,7 @@ class WrStreamOpenML(Stream):
         """
 
         if not self._downloaded:
-            self._dataset = self._download()
-            self._downloaded = True
+            self._downloaded = self._download()
 
         self._index = 0
 
@@ -193,12 +195,11 @@ class WrStreamOpenML(Stream):
         """
 
         if not self._downloaded:
-            self._download()
-            self._downloaded = True
+            self._downloaded = self._download()
 
         try:
 
-            feature_space = self._feature_space
+            return self._feature_space
 
         except:
 
@@ -206,8 +207,7 @@ class WrStreamOpenML(Stream):
             _, _, _, features = self._dataset
             for feature in features:
                 self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
-            feature_space = self._feature_space
-        return feature_space
+            return self._feature_space
 
 
 
@@ -215,9 +215,17 @@ class WrStreamOpenML(Stream):
     def _download(self):
         """
         Custom method to download the corresponding OpenML dataset
+
+        Returns
+        -------
+        bool
+            True for the download status of the stream
         """
         self._dataset = openml.datasets.get_dataset(self._id).get_data(dataset_format = 'array')
-        return
+        if self._dataset is not None:
+            return True
+        else:
+            raise ValueError("Dataset not downloaded or not available")
 
 
 ## ------------------------------------------------------------------------------------------------------
