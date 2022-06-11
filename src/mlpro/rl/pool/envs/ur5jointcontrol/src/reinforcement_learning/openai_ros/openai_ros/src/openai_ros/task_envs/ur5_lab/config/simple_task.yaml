@@ -12,4 +12,9 @@ ur5_lab: #namespace
         y_pos: 0.14046
         z_pos: 1.0748
 
+    offset_real:
+        x_pos: 0.0
+        y_pos: 0.0
+        z_pos: 0.648
+
     reached_goal_reward: 10
