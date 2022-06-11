@@ -2,6 +2,8 @@ import rospy
 import gym
 from gym.utils import seeding
 from .controllers_connection import ControllersConnection
+from geometry_msgs.msg import Pose
+from tf2_msgs.msg import TFMessage
 from openai_ros.msg import RLExperimentInfo
 
 class RobotRealEnv(gym.Env):
@@ -15,7 +17,10 @@ class RobotRealEnv(gym.Env):
 
         self.episode_num = 0
         self.cumulated_episode_reward = 0
-        self.reward_pub = rospy.Publisher('/openai/reward', RLExperimentInfo, queue_size=1)
+        rospy.Subscriber("/tf", TFMessage, self._tf_real_sub)
+        self._reward_pub = rospy.Publisher('/openai/reward', RLExperimentInfo, queue_size=1)
+        self._tcp_real_pose_pub = rospy.Publisher('/tcp_pose_real', Pose, queue_size=10)
+        self._tcp_real_msg = Pose()
 
         if self.reset_controls:
            self.controllers_object.reset_controllers()
@@ -86,6 +91,13 @@ class RobotRealEnv(gym.Env):
         self.episode_num += 1
         self.cumulated_episode_reward = 0
 
+    def _tf_real_sub(self, data):
+        if data.transforms[0].child_frame_id == "tool0_controller":
+            self._tcp_real_msg.position.x = data.transforms[0].transform.translation.x
+            self._tcp_real_msg.position.y = data.transforms[0].transform.translation.y
+            self._tcp_real_msg.position.z = data.transforms[0].transform.translation.z
+            self._tcp_real_msg.orientation = data.transforms[0].transform.rotation
+
     def _publish_reward_topic(self, reward, episode_number=1):
         """
         This function publishes the given reward in the reward topic for
@@ -97,21 +109,12 @@ class RobotRealEnv(gym.Env):
         reward_msg = RLExperimentInfo()
         reward_msg.episode_number = episode_number
         reward_msg.episode_reward = reward
-        self.reward_pub.publish(reward_msg)
+        self._reward_pub.publish(reward_msg)
 
     def _reset_env(self):
         """Resets a simulation
         """
         rospy.logdebug("RESET ENV START")
-        # if self.reset_controls :
-        #     rospy.logdebug("RESET CONTROLLERS")
-        #     self.controllers_object.reset_controllers()
-        #     self._check_all_systems_ready()
-        #     self._set_init_pose()
-        #     self.controllers_object.reset_controllers()
-        #     self._check_all_systems_ready()
-
-        # else:
         rospy.logwarn("DONT RESET CONTROLLERS")
         self._check_all_systems_ready()
         self._set_init_pose()

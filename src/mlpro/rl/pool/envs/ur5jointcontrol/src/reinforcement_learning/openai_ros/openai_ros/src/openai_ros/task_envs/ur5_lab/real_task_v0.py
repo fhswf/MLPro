@@ -62,6 +62,10 @@ class UR5LabRealTask(ur5_lab_env.UR5LabRealEnv, utils.EzPickle):
                          goal_pos_dict["y_pos"],
                          goal_pos_dict["z_pos"]]
 
+        self._tcp_offset_position_x = rospy.get_param('/ur5_lab/offset_real/x_pos', 0)
+        self._tcp_offset_position_y = rospy.get_param('/ur5_lab/offset_real/y_pos', 0)
+        self._tcp_offset_position_z = rospy.get_param('/ur5_lab/offset_real/z_pos', 0)
+
         self.reached_goal_reward = rospy.get_param(
             '/ur5_lab/reached_goal_reward')
 
@@ -105,6 +109,11 @@ class UR5LabRealTask(ur5_lab_env.UR5LabRealEnv, utils.EzPickle):
 
     def _get_obs(self):
         current_pose = self.get_ee_pose()
+        self._tcp_pose_pub.publish(current_pose)
+        self._tcp_real_msg.position.x = self._tcp_real_msg.position.x + self._tcp_offset_position_x
+        self._tcp_real_msg.position.y = self._tcp_real_msg.position.y + self._tcp_offset_position_y
+        self._tcp_real_msg.position.z = self._tcp_real_msg.position.z + self._tcp_offset_position_z
+        self._tcp_real_pose_pub.publish(self._tcp_real_msg)
         obs_pose = np.array([current_pose.position.x,
                              current_pose.position.y,
                              current_pose.position.z,

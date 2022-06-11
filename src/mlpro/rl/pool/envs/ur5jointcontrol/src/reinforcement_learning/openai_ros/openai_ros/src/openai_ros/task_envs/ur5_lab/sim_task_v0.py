@@ -147,6 +147,7 @@ class UR5LabSimTask(ur5_lab_env.UR5LabSimEnv, utils.EzPickle):
 
     def _get_obs(self):
         current_pose = self.get_ee_pose()
+        self._tcp_pose_pub.publish(current_pose)
         obs_pose = np.array([current_pose.position.x,
                              current_pose.position.y,
                              current_pose.position.z,

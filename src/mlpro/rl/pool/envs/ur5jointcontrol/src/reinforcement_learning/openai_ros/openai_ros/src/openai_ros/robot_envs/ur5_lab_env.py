@@ -104,6 +104,7 @@ class UR5LabRealEnv(robot_real_env.RobotRealEnv):
 
         rospy.Subscriber("/joint_states", JointState, self._joints_state_callback)
         rospy.Subscriber("/move_group/status", GoalStatusArray, self._plan_status_feedback)
+        self._tcp_pose_pub = rospy.Publisher("/tcp_pose", Pose, queue_size=10)
         self.last_contact_r = 0
         self.last_contact_l = 0
         
