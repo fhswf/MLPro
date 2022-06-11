@@ -8,7 +8,7 @@ ur5_lab: #namespace
       wrist_3_joint: 1.57
 
     goal_pos:
-        x_pos: -0.29796
+        x_pos: 0.29796
         y_pos: 0.14046
         z_pos: 1.0748
 
