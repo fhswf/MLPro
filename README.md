@@ -1,6 +1,4 @@
-[![py37](https://github.com/fhswf/MLPro/actions/workflows/python37.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/python37.yml)
-[![py38](https://github.com/fhswf/MLPro/actions/workflows/python38.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/python38.yml)
-[![py39](https://github.com/fhswf/MLPro/actions/workflows/python39.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/python39.yml)
+[![CI](https://github.com/fhswf/MLPro/actions/workflows/ci.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/mlpro/badge/?version=latest)](https://mlpro.readthedocs.io/en/latest/?badge=latest)
 
 <img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png?raw=True" align="right" width="40%"/>
