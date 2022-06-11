@@ -18,23 +18,23 @@ def RegisterOpenAI_Ros_Env(task_env, max_episode_steps=10000):
         rospy.logwarn("Environment already registered, . . .\n re-registering. . .")
         del gym.envs.registry.env_specs[task_env]
         
-    if task_env == 'UR5LabSimpleTask-v0':
+    if task_env == 'UR5LabSimTask-v0':
         # We have to import the Class that we registered so that it can be found afterwards in the Make
-        from openai_ros.task_envs.ur5_lab import simple_task
+        from openai_ros.task_envs.ur5_lab import sim_task_v0
         # We register the Class through the Gym system
         register(
             id=task_env,
-            entry_point='openai_ros.task_envs.ur5_lab.simple_task:UR5LabSimpleTask',
+            entry_point='openai_ros.task_envs.ur5_lab.sim_task_v0:UR5LabSimTask',
             max_episode_steps=max_episode_steps,
         )
         
-    elif task_env == 'UR5LabSimpleTask-v1':
+    elif task_env == 'UR5LabRealTask-v0':
         # We have to import the Class that we registered so that it can be found afterwards in the Make
-        from openai_ros.task_envs.ur5_lab import simple_task_v1
+        from openai_ros.task_envs.ur5_lab import real_task_v0
         # We register the Class through the Gym system
         register(
             id=task_env,
-            entry_point='openai_ros.task_envs.ur5_lab.simple_task_v1:UR5LabSimpleTask',
+            entry_point='openai_ros.task_envs.ur5_lab.real_task_v0:UR5LabRealTask',
             max_episode_steps=max_episode_steps,
         )
         

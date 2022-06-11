@@ -3,7 +3,7 @@
   <name>ur_description</name>
   <version>1.2.5</version>
   <description>
-      URDF description for Universal UR5(e) robots
+      URDF description for Universal UR3(e), UR5(e), UR10(e) and UR16e robots
   </description>
 
   <author>Wim Meeussen</author>

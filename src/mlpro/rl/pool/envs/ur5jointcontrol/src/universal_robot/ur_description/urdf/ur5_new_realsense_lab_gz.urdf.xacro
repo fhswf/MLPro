@@ -46,7 +46,7 @@
   <joint name="world_joint" type="fixed">
     <parent link="world" />
     <child link = "base_link" />
-    <origin xyz="0.0 0.0 0.648" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.0 0.0 0.648" rpy="0.0 0.0 3.1416" />
   </joint>
 
   <link name="offset_dummy">
@@ -79,7 +79,7 @@
   <joint name="table_joint" type="fixed">
     <parent link="world" />
     <child link = "center_link" />
-    <origin xyz="-0.140 0.415 0" rpy="0.0 0.0 0.0" />
+    <origin xyz="0.140 -0.415 0" rpy="0.0 0.0 3.1416" />
   </joint>
   
   <link name="center_link">    

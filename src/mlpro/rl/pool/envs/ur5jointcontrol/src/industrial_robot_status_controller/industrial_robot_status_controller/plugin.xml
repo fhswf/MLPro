@@ -1,7 +1,0 @@
-<library path="lib/libindustrial_robot_status_controller">
-  <class name="industrial_robot_status_controller/IndustrialRobotStatusController"
-         type="industrial_robot_status_controller::IndustrialRobotStatusController"
-         base_class_type="controller_interface::ControllerBase">
-    <description>A ros_control controller that reports robot status using the ROS-Industrial RobotStatus message.</description>
-  </class>
-</library>
