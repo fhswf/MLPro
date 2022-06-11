@@ -35,7 +35,6 @@ class ScenarioUR5A2C(RLScenario):
         self._env = UR5JointControl(
             p_build=True, 
             p_real=p_mode,
-            p_com_method=UR5JointControl.C_COM_MODE_ROS,
             p_robot_ip="172.19.10.41",
             p_reverse_ip="172.19.10.170", 
             p_visualize=self._visualize, 
