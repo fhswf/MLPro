@@ -54,7 +54,7 @@ class UR5JointControl(Environment):
     C_INFINITY = np.finfo(np.float32).max
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_seed=0, p_build=True, p_real=False, p_robot_ip="", p_reverse_ip="", 
+    def __init__(self, p_seed=0, p_build=True, p_real=False, p_robot_ip="172.17.0.3", p_reverse_ip="172.17.0.2", 
         p_reverse_port=50001, p_visualize=False, p_logging=True):
         """
         Parameters:
@@ -110,7 +110,7 @@ class UR5JointControl(Environment):
             self.C_NAME = 'Env "' + self._gym_env.spec.id + '"'
 
             self._state_space = WrEnvGYM2MLPro.recognize_space(self._gym_env.observation_space)
-            self._action_space = WrEnvGYM2MLPro.recognize_space(gym.spaces.Box(low=-0.1, high=0.1, shape=(6,)))
+            self._action_space = WrEnvGYM2MLPro.recognize_space(self._gym_env.action_space)
         
 
     ## -------------------------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ class UR5JointControl(Environment):
     ## -------------------------------------------------------------------------------------------------
     def _export_action(self, p_action: Action) -> bool:
         try:
-            self._real_ros_state = self.simulate_reaction(None, p_action)  
+            self._real_ros_state = self.simulate_reaction(None, p_action)
         except Exception as e:
             self.log(Log.C_LOG_TYPE_E, e)
             return False
@@ -132,7 +132,7 @@ class UR5JointControl(Environment):
     ## -------------------------------------------------------------------------------------------------
     def _import_state(self) -> bool:
         try:
-            self._set_state(self._real_ros_state)  
+            self._set_state(self._real_ros_state)
         except Exception as e:
             self.log(Log.C_LOG_TYPE_E, e)
             return False
@@ -266,7 +266,7 @@ class UR5JointControl(Environment):
             ros_workspace = os.path.dirname(mlpro.__file__)+"/rl/pool/envs/ur5jointcontrol"
 
             # Check dependencies
-            command = "cd " + ros_workspace + " && rosdep update && rosdep install --from-paths src --ignore-src -r -y"
+            command = "cd " + ros_workspace + " && sudo apt-get update && rosdep update && rosdep install --from-paths src --ignore-src -r -y"
             try:
                 process = subprocess.check_output(command, shell=True)
             except subprocess.CalledProcessError as e:
