@@ -19,10 +19,11 @@
 ## -- 2022-06-06  2.0.0     MRD      Add ability to self build the ros workspace
 ## --                       MRD      Add the connection to the real robot, wrapped in Gym environment
 ## -- 2022-06-07  2.0.1     MRD      Define _export_action and _import_action for each communication type
+## -- 2022-06-11  2.1.0     MRD      Finalizing simulation and real environment
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2022-06-07)
+Ver. 2.1.0 (2022-06-11)
 
 This module provides an environment with multivariate state and action spaces 
 based on the Gym-based environment 'UR5RandomTargetTask-v0'. 
