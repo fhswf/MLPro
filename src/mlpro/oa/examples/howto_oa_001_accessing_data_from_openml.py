@@ -24,8 +24,10 @@ open_ml = WrStreamProviderOpenML()
 
 # 2. Get a list of streams available at the stream provider
 stream_list = open_ml.get_stream_list()
-for stream in stream_list:
-    print('stream id: '+ str(stream.get_id( )) + ' stream name: ' + str(stream.get_name()))
+
+if __name__ == "__main__":
+    for stream in stream_list:
+        print('stream id: '+ str(stream.get_id( )) + ' stream name: ' + str(stream.get_name()))
 
 
 # 3. Get a specific stream from the stream provider
