@@ -10,10 +10,11 @@
 ## -- 2022-05-27  1.0.1     LSB      Feature space setup
 ## -- 2022-06-09  1.0.2     LSB      Downloading, resetting OpenML stream and handling instances
 ## -- 2022-06-10  1.0.3     LSB      Code Optmization
+## -- 2022-06-13  1.0.4     LSB      Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-06-10)
+Ver. 1.0.4 (2022-06-10)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -115,7 +116,7 @@ class WrStreamProviderOpenML (StreamProvider):
             except:
                 self.get_stream_list()
                 stream = self._stream_list[self._stream_ids.index(p_id)]
-                return stream
+            return stream
         except ValueError:
             raise ValueError('Stream id not in the available list')
 
