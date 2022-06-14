@@ -10,6 +10,7 @@
 ## -- 2022-06-02  0.1.0     LSB      Refactoring for list of stream objects in get stream list
 ## -- 2022-06-04  0.1.1     DA       Specialization in stream providers and streams
 ## -- 2022-06-09  0.1.2     LSB      Additional attributes to stream object
+## -- 2022-06-14  0.1.3     LSB      Enhancement
 ## -------------------------------------------------------------------------------------------------
 
 """
