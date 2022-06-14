@@ -40,6 +40,7 @@ class ScenarioUR5A2C(RLScenario):
             p_start_simulator=True,
             p_start_ur_driver=False,
             p_ros_server_ip="172.19.10.199",
+            p_net_interface="enp0s31f6",
             # p_robot_ip="172.19.10.41",
             # p_reverse_ip="172.19.10.170", 
             p_visualize=self._visualize, 
