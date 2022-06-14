@@ -5,54 +5,76 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-01-11  0.0.0     DA       Creation
-## -- 2022-05-25  1.0.0     LSB      First Release with Stream and StreamProvider class
-## -- 2022-05-27  1.0.1     LSB      Feature space setup
-## -- 2022-06-09  1.0.2     LSB      Downloading, resetting OpenML stream and handling instances
-## -- 2022-06-10  1.0.3     LSB      Code Optmization
-## -- 2022-06-13  1.0.4     LSB      Bug Fix
+## -- 2022-06-14  0.0.0     LSB      Creation
+## -- 2022-06-14  1.0.0     LSB      Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-06-10)
+Ver. 1.0.0 (2022-06-14)
 
-This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
+This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
-Learn more: 
-https://www.openml.org/
-https://new.openml.org/
-https://docs.openml.org/APIs/
+Learn more:
+https://www.riverml.xyz/
 
 """
 
 from mlpro.bf.various import ScientificObject
 from mlpro.oa.models import *
 from mlpro.bf.math import *
-import openml
+import river
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamProviderOpenML (StreamProvider):
+class WrStreamProviderRiver (StreamProvider):
     """
     Wrapper class for OpenML as StreamProvider
     """
 
-    C_NAME              = 'OpenML'
+    C_NAME              = 'River'
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
-    C_SCIREF_AUTHOR     = 'OpenML'
-    C_SCIREF_URL        = 'new.openml.org'
+    C_SCIREF_AUTHOR     = 'River'
+    C_SCIREF_URL        = 'riverml.xyz'
 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self):
-
-        super().__init__()
+        _datasets = [
+                "AirlinePassengers",
+                "Bananas",
+                "Bikes",
+                "ChickWeights",
+                "CreditCard",
+                "Elec2",
+                "Higgs",
+                "HTTP",
+                "ImageSegments",
+                "Insects",
+                "Keystroke",
+                "MaliciousURL",
+                "MovieLens100K",
+                "Music",
+                "Phishing",
+                "Restaurants",
+                "SMSSpam",
+                "SMTP",
+                "SolarFlare",
+                "Taxis",
+                "TREC07",
+                "TrumpApproval",
+            ]
         self._stream_list = []
         self._stream_ids = []
+        super().__init__()
+        for i in range(len(_datasets)):
+            self._stream_ids.append(i)
+            _num_instances = eval("river.datasets."+_datasets[i]+"().n_samples")
+            self._stream_list.append(WrStreamRiver(self._stream_ids[i],_datasets[i],_num_instances))
+
 
 ## -------------------------------------------------------------------------------------------------
     def _get_stream_list(self, **p_kwargs) -> list:
@@ -65,33 +87,6 @@ class WrStreamProviderOpenML (StreamProvider):
             Returns a list of Streams in OpenML
 
         """
-        if len(self._stream_list) == 0:
-            list_datasets = openml.datasets.list_datasets(output_format='dict')
-
-
-            for d in list_datasets.items():
-                try:
-                    _name = d[1]['name']
-                except:
-                    _name = None
-                try:
-                    _id = d[1]['did']
-                except:
-                    _id = 0
-                try:
-                    _num_instances = d[1]['NumberOfInstances']
-                except:
-                    _num_instances = 0
-                try:
-                    _version = d[1]['Version']
-                except:
-                    _version = 0
-
-                s = WrStreamOpenML(_id, _name, _num_instances, _version)
-
-                self._stream_list.append(s)
-                self._stream_ids.append(_id)
-
         return self._stream_list
 
 
@@ -111,11 +106,7 @@ class WrStreamProviderOpenML (StreamProvider):
             Returns the stream corresponding to the id
         """
         try:
-            try:
-                stream = self._stream_list[self._stream_ids.index(p_id)]
-            except:
-                self.get_stream_list()
-                stream = self._stream_list[self._stream_ids.index(p_id)]
+            stream = self._stream_list[self._stream_ids.index(int(p_id))]
             return stream
         except ValueError:
             raise ValueError('Stream id not in the available list')
@@ -126,7 +117,7 @@ class WrStreamProviderOpenML (StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamOpenML(Stream):
+class WrStreamRiver(Stream):
     """
     Wrapper class for Streams from OpenML
 
@@ -140,12 +131,12 @@ class WrStreamOpenML(Stream):
         Number of features of the Stream
     """
 
-    C_NAME = 'OpenML'
+    C_NAME = 'River'
     C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name, p_num_instances, p_version, **p_kwargs):
+    def __init__(self, p_id, p_name, p_num_instances=None, p_version=None, **p_kwargs):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
@@ -178,7 +169,7 @@ class WrStreamOpenML(Stream):
             self._downloaded = self._download()
 
         self._index = 0
-
+        self._dataset = iter(eval("river.datasets."+self._name+"()"))
         self._instance = Instance(self.get_feature_space())
 
 
@@ -205,7 +196,7 @@ class WrStreamOpenML(Stream):
         except:
 
             self._feature_space = MSpace()
-            _, _, _, features = self._dataset
+            features = next(self._dataset)[0].keys()
             for feature in features:
                 self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
             return self._feature_space
@@ -222,7 +213,7 @@ class WrStreamOpenML(Stream):
         bool
             True for the download status of the stream
         """
-        self._dataset = openml.datasets.get_dataset(self._id).get_data(dataset_format = 'array')
+        self._dataset = iter(eval("river.datasets."+self._name+"()"))
         if self._dataset is not None:
             return True
         else:
@@ -240,9 +231,8 @@ class WrStreamOpenML(Stream):
             Next instance in the OpenML stream object (None after the last instance in the dataset).
         """
 
-        if self._index < len(self._dataset[0]):
-            self._instance.set_values(self._dataset[0][self._index])
-            self._index += 1
-            return self._instance
+        if not self._index < self._num_instances:return None
+        self._instance.set_values(next(self._dataset))
+        self._index += 1
+        return self._instance
 
-        return None

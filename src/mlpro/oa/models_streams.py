@@ -74,10 +74,10 @@ class Stream (Mode, LoadSave, ScientificObject):
 
     ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_id,
-                 p_name,
-                 p_num_instances,
-                 p_version,
+                 p_id=0,
+                 p_name=None,
+                 p_num_instances=None,
+                 p_version=None,
                  p_mode=Mode.C_MODE_SIM,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
@@ -129,6 +129,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         """
 
         self._reset(p_seed=p_seed)
+        self.log(self.C_LOG_TYPE_I,"Stream reset")
 
 
 ## -------------------------------------------------------------------------------------------------
