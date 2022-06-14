@@ -29,10 +29,11 @@
 ## -- 2022-02-25  2.2.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-23  2.2.3     SY       Bug fixing: Reward computation
 ## -- 2022-05-30  2.2.4     SY       Replace 'energy' related parameters to 'power'
+## -- 2022-06-14  2.2.5     SY       Add termination condition for batch production scenario
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.4 (2022-05-30)
+Ver. 2.2.5 (2022-06-14)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -1002,6 +1003,7 @@ class BGLP (Environment):
             return False
         else:
             if self.prod_reached >= self.prod_target:
+                self._state.set_terminal(True)
                 return True
             else:
                 return False
