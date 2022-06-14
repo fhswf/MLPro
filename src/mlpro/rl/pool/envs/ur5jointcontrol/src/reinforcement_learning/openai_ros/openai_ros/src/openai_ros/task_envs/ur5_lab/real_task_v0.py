@@ -128,7 +128,7 @@ class UR5LabRealTask(ur5_lab_env.UR5LabRealEnv, utils.EzPickle):
     def _is_done(self, observations):
         done = np.allclose(a=observations[:3],
                            b=observations[3:],
-                           atol=0.1)
+                           atol=0.05)
 
         return done or self.no_motion_plan
 
