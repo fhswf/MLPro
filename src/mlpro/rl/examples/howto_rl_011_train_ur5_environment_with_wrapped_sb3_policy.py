@@ -1,4 +1,4 @@
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : howto_rl_011_train_ur5_environment_with_wrapped_sb3_policy.py
@@ -35,10 +35,11 @@ class ScenarioUR5A2C(RLScenario):
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
         self._env = UR5JointControl(
-            p_build=True, 
+            p_build=False, 
             p_real=p_mode,
             p_start_simulator=True,
-            # p_ros_server_ip="172.19.10.219",
+            p_start_ur_driver=False,
+            p_ros_server_ip="172.19.10.199",
             # p_robot_ip="172.19.10.41",
             # p_reverse_ip="172.19.10.170", 
             p_visualize=self._visualize, 
@@ -75,8 +76,8 @@ now = datetime.now()
 
 training = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
-    p_env_mode=Mode.C_MODE_SIM,
-    p_cycle_limit=5500,
+    p_env_mode=Mode.C_MODE_REAL,
+    p_cycle_limit=100,
     p_cycles_per_epi_limit=-1,
     p_collect_states=True,
     p_collect_actions=True,

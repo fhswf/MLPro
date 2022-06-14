@@ -50,6 +50,7 @@ class UR5LabRealEnv(robot_real_env.RobotRealEnv):
         # We launch the ROSlaunch that spawns the robot into the world
         visualize = rospy.get_param("visualize", False)
         sim_mode = rospy.get_param("sim", True)
+        start_ur_driver = rospy.get_param("start_ur_driver", True)
         robot_ip = rospy.get_param("robot_ip", "")
         reverse_ip = rospy.get_param("reverse_ip", "")
         reverse_port = rospy.get_param("reverse_port", 50001)
@@ -57,10 +58,9 @@ class UR5LabRealEnv(robot_real_env.RobotRealEnv):
         if not sim_mode:
             assert robot_ip != "", "Please set the Robot IP"
 
-        # Start the ur_robot_driver
-        ROSLauncher(rospackage_name="ur_gazebo",
+        self.launch = ROSLauncher(rospackage_name="ur_gazebo",
                     launch_file_name="ur5_lab.launch",
-                    launch_arguments=dict(gui=visualize, sim=sim_mode, robot_ip=robot_ip, 
+                    launch_arguments=dict(gui=visualize, start_ur_driver=start_ur_driver, sim=sim_mode, robot_ip=robot_ip, 
                     reverse_ip=reverse_ip, reverse_port=reverse_port),
                     ros_ws_abspath=ros_ws_abspath)
         

@@ -25,7 +25,7 @@
   <arg name="reverse_ip" default="" doc="IP of the driver, if set to empty it will detect it automatically."/>
   <arg name="reverse_port" default="50001" doc="Port that will be opened by the driver to allow direct communication between the driver and the robot controller."/>
   <arg name="robot_description_file" default="$(find ur_description)/launch/load_ur5_lab.launch" doc="Robot description launch file."/>  
-
+  <arg name="start_ur_driver" default="true"/>
                               
   <group if="$(arg sim)">
                           <!-- Load Robot Parameter -->  
@@ -89,7 +89,7 @@
   
   <group unless="$(arg sim)">			 
     
-    <include file="$(find ur_robot_driver)/launch/ur5_bringup.launch">
+    <include if="$(arg start_ur_driver)" file="$(find ur_robot_driver)/launch/ur5_bringup.launch">
       <arg name="robot_ip" value="$(arg robot_ip)"/>
       <arg name="reverse_ip" value="$(arg reverse_ip)"/>
       <arg name="reverse_port" value="$(arg reverse_port)"/>

@@ -58,9 +58,9 @@ class UR5JointControl(Environment):
     C_INFINITY = np.finfo(np.float32).max
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_seed=0, p_build=True, p_real=False, p_start_simulator=True, p_ros_server_ip="localhost", 
-        p_server_port=11311, p_net_interface="eth0", p_robot_ip="", p_reverse_ip="", p_reverse_port=50001, 
-        p_visualize=False, p_logging=True):
+    def __init__(self, p_seed=0, p_build=True, p_real=False, p_start_simulator=True, p_start_ur_driver=False,
+        p_ros_server_ip="localhost", p_server_port=11311, p_net_interface="eth0", p_robot_ip="", p_reverse_ip="", 
+        p_reverse_port=50001, p_visualize=False, p_logging=True):
         """
         Parameters:
             p_logging       Boolean switch for logging
@@ -124,6 +124,7 @@ class UR5JointControl(Environment):
                 rospy.set_param('robot_ip', p_robot_ip)
                 rospy.set_param('reverse_ip', p_reverse_ip)
                 rospy.set_param('reverse_port', p_reverse_port)
+                rospy.set_param('start_driver', p_start_ur_driver)
 
             max_step_episode = rospy.get_param('/ur5_lab/max_iterations')
 
