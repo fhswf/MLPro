@@ -104,7 +104,8 @@ class UR5JointControl(Environment):
 
             load_dotenv(dot_env_file)
             
-            roscore = subprocess.Popen('roscore')
+            if p_ros_server_ip == "localhost":
+                roscore = subprocess.Popen('roscore')
             rospy.init_node('ur5_lab_training_start', anonymous=True, log_level=rospy.WARN)
 
             LoadYamlFileParamsTest(rospackage_name="ur5_lab",
