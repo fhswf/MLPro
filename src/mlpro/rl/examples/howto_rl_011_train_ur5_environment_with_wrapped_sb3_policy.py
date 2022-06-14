@@ -11,10 +11,12 @@
 ## -- 2022-02-11  1.1.0     DA       Special derivate for publication
 ## -- 2022-05-23  1.2.0     MRD      Add visualize toggle on UR5JointControl for gazebo GUI
 ## -- 2022-06-06  1.2.1     MRD      Add real connection option
+## -- 2022-06-13  1.2.2     MRD      Update possibility to run separate simulator and training
+## --                                setting separate ROS Server IP
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2022-06-06)
+Ver. 1.2.2 (2022-06-13)
 
 This module shows how to use SB3 wrapper to train UR5 robot (derivate for paper).
 """
@@ -35,6 +37,8 @@ class ScenarioUR5A2C(RLScenario):
         self._env = UR5JointControl(
             p_build=True, 
             p_real=p_mode,
+            p_start_simulator=True,
+            # p_ros_server_ip="172.19.10.219",
             # p_robot_ip="172.19.10.41",
             # p_reverse_ip="172.19.10.170", 
             p_visualize=self._visualize, 
@@ -71,14 +75,14 @@ now = datetime.now()
 
 training = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
-    p_env_mode=Mode.C_MODE_REAL,
+    p_env_mode=Mode.C_MODE_SIM,
     p_cycle_limit=5500,
     p_cycles_per_epi_limit=-1,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_visualize=True,
+    p_visualize=False,
     p_path=str(Path.home()),
     p_logging=Log.C_LOG_WE)
 
