@@ -33,10 +33,11 @@
 ## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-03-21  1.3.5     SY       Refactoring due to PettingZoo version 1.17.0
 ## -- 2022-05-20  1.3.6     SY       Refactoring: Action space boundaries in WrEnvPZOO2MLPro
+## -- 2022-05-30  1.3.7     SY       Replace function env.seed(seed) to env.reset(seed=seed)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.6 (2022-05-20)
+Ver. 1.3.7 (2022-05-30)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -135,8 +136,11 @@ class WrEnvPZOO2MLPro(Environment):
     def _reset(self, p_seed=None):
 
         # 1 Reset Zoo environment and determine initial state
-        self._zoo_env.seed(p_seed)
-        self._zoo_env.reset()
+        try:
+            self._zoo_env.reset(seed=p_seed)
+        except:
+            self._zoo_env.seed(p_seed)
+            self._zoo_env.reset()
         observation, _, _, _ = self._zoo_env.last()
         obs     = DataObject(observation)
         

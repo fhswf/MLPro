@@ -28,10 +28,11 @@
 ## -- 2022-05-16  1.1.4     SY       Code cleaning
 ## -- 2022-05-19  1.1.5     YI       Editing the reward function
 ## -- 2022-05-28  1.1.6     YI       Editing the reward, normalization, and derivs function
+## -- 2022-05-30  1.1.7     SY       Enhance data normalization method, reset method, and code cleaning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4 (2022-05-16)
+Ver. 1.1.7 (2022-05-30)
 
 This module provides an RL environment of double pendulum.
 """
@@ -118,23 +119,8 @@ class DoublePendulum(Environment):
         self.M = m1+m2
         self.g = g
         
-        self.a1 = 0
-        self.a2 = 0
-        
-        self.th1dot = 0
-        self.th2dot = 0
-        
-        if init_angles=='up':
-            self.th1 = 180
-            self.th2 = 180
-        elif init_angles=='down':
-            self.th1 = 0
-            self.th2 = 0
+        self.init_angles = init_angles       
 
-        else:
-            raise NotImplementedError("init_angles value must be up or down")        
-
-        
         self.history_x = deque(maxlen=history_length)
         self.history_y = deque(maxlen=history_length)
 
@@ -247,21 +233,29 @@ class DoublePendulum(Environment):
     ## -------------------------------------------------------------------------------------------------
     def _data_normalization(self, p_value, p_boundaries):
         """
-        This method is called to ensure a normalized angle, angular velocity and acceleration.
+        This method is called to normalize any data in between -1 to 1 by considering their boundaries.
+        If the boundaries are infinity, then the data is not normalized.
+
+        Parameters
+        ----------
+        p_value : float
+            Input values.
+        p_boundaries : Array
+            The min-max boundaries of the parameter, e.g. [min, max]
 
         Returns
         -------
-        angle, acceleration or angular velocity: float
+        normalized_value: float
 
         """
-        # scalling manually
-        self.p_value = p_value
-        self.p_boundaries = p_boundaries
-
-        if p_boundaries == -np.inf or p_boundaries == np.inf:
+        normalized_value = (2*((p_value-min(p_boundaries))/(max(p_boundaries)-min(p_boundaries)))-1)
+        
+        if p_boundaries[0] == -np.inf or p_boundaries[0] == np.inf:
+            return p_value
+        elif p_boundaries[1] == -np.inf or p_boundaries[1] == np.inf:
             return p_value
         else:
-            return (2*((p_value-min(p_boundaries))/(min(p_boundaries)-max(p_boundaries)))-1)
+            return normalized_value
  
     ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
@@ -274,9 +268,24 @@ class DoublePendulum(Environment):
             Not yet implemented. The default is None.
 
         """
-
-        self.th1 = np.random.rand(1)[0]*180
-        self.th2 = np.random.rand(1)[0]*180
+        
+        if self.init_angles =='up':
+            self.th1 = 180
+            self.th2 = 180
+        elif self.init_angles=='down':
+            self.th1 = 0
+            self.th2 = 0
+        elif self.init_angles=='random':
+            self.th1 = np.random.rand(1)[0]*180
+            self.th2 = np.random.rand(1)[0]*180
+        else:
+            raise NotImplementedError("init_angles value must be up or down") 
+            
+        self.a1 = 0
+        self.a2 = 0
+        
+        self.th1dot = 0
+        self.th2dot = 0
             
         state_ids = self._state.get_dim_ids()
         self._state.set_value(state_ids[0], np.radians(self.th1))
@@ -397,32 +406,32 @@ class DoublePendulum(Environment):
         self._state_space.get_dim_ids()
         id = self._state_space.get_dim_ids()[0]
         th1_boundaries = self._state_space.get_dim(id).get_boundaries()
-        th1 = self._data_normalization(th1,th1_boundaries)
+        th1 = self._data_normalization(th1, th1_boundaries)
         
         self._state_space.get_dim_ids()
         id = self._state_space.get_dim_ids()[1]
         th1dot_boundaries = self._state_space.get_dim(id).get_boundaries()  
-        th1dot = self._data_normalization(th1dot,th1dot_boundaries)
+        th1dot = self._data_normalization(th1dot, th1dot_boundaries)
         
         self._state_space.get_dim_ids()
         id = self._state_space.get_dim_ids()[2]
         a1_boundaries = self._state_space.get_dim(id).get_boundaries()
-        a1 = self._data_normalization(a1,a1_boundaries)
+        a1 = self._data_normalization(a1, a1_boundaries)
         
         self._state_space.get_dim_ids()
         id = self._state_space.get_dim_ids()[3]
         th2_boundaries = self._state_space.get_dim(id).get_boundaries()
-        th2 = self._data_normalization(th2,th2_boundaries)
+        th2 = self._data_normalization(th2, th2_boundaries)
         
         self._state_space.get_dim_ids()
         id = self._state_space.get_dim_ids()[4]
         th2dot_boundaries = self._state_space.get_dim(id).get_boundaries()
-        th2dot = self._data_normalization(th2dot,th2dot_boundaries)
+        th2dot = self._data_normalization(th2dot, th2dot_boundaries)
         
         self._state_space.get_dim_ids()
         id = self._state_space.get_dim_ids()[5]
         a2_boundaries = self._state_space.get_dim(id).get_boundaries()
-        a2 = self._data_normalization(a2,a2_boundaries)
+        a2 = self._data_normalization(a2, a2_boundaries)
         
         reward = Reward(Reward.C_TYPE_OVERALL)
         
@@ -432,13 +441,13 @@ class DoublePendulum(Environment):
         
         th1_count = 0
         for th1 in self.y[::-1, 0]:
-            ang = np.degrees(self._data_normalization(th1,th1_boundaries))
+            ang = np.degrees(self._data_normalization(th1, th1_boundaries))
             if ang > 170 or ang < 190 or \
                     ang < -170 or ang > -190:
                 th1_count += 1
             else:
                 break
-        th1_distance = np.pi - abs(self._data_normalization(th1,th1_boundaries))
+        th1_distance = np.pi - abs(self._data_normalization(th1, th1_boundaries))
         th1_distance_costs = 4 if th1_distance <= 0.1 else 0.3 / th1_distance
         
         th1_speed_costs = np.pi * abs(state[1]) / self.max_speed
@@ -451,13 +460,13 @@ class DoublePendulum(Environment):
         
         th2_count = 0
         for th2 in self.y[::-1, 2]:
-            ang = np.degrees(self._data_normalization(th2,th2_boundaries))
+            ang = np.degrees(self._data_normalization(th2, th2_boundaries))
             if ang > 170 or ang < 190 or \
                     ang < -170 or ang > -190:
                 th2_count += 1
             else:
                 break
-        th2_distance = np.pi - abs(self._data_normalization(th2,th2_boundaries))
+        th2_distance = np.pi - abs(self._data_normalization(th2, th2_boundaries))
         th2_distance_costs = 4 if th2_distance <= 0.1 else 0.3 / th2_distance
         
         th2_speed_costs = np.pi * abs(state[3]) / self.max_speed

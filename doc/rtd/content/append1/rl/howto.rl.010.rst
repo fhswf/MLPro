@@ -1,41 +1,41 @@
-.. _Howto RL 10:
-`Howto 10 - (RL) Train using SB3 Wrapper <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2010%20-%20(RL)%20Train%20using%20SB3%20Wrapper.py>`_
-================
-Ver. 1.0.7 (2022-02-25)
+.. _Howto RL 010:
+Howto RL-010: Train a wrapped Stable Baslines 3 policy on MLPro's native UR5 environment
+========================================================================================
 
-This module shows how to train with SB3 Wrapper for On-Policy Algorithm
+.. automodule:: mlpro.rl.examples.howto_rl_010_train_ur5_environment_with_wrapped_sb3_policy
+
+
 
 Prerequisites
-`````````````````
+-------------
 
 Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
-    - `Pytorch <https://pypi.org/project/torch/>`_
-    - `OpenAI Gym <https://pypi.org/project/gym/>`_
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-  ..
+    - :ref:`RL Environment UR5 Joint Control <ur5jointcontrol>`
     - `NumPy <https://pypi.org/project/numpy/>`_
-  ..
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
-    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-  ..
-    - `Optuna <https://pypi.org/project/optuna/>`_
-  ..
-    - `Hyperopt <https://pypi.org/project/hyperopt/>`_
-  ..
-    - `ROS <http://wiki.ros.org/noetic/Installation>`_
-    
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
+    - `Pytorch <https://pypi.org/project/torch/>`_
+
+
+
+Executable code
+---------------
+.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_010_train_ur5_environment_with_wrapped_sb3_policy.py
+	:language: python
+
+
 
 Results
-`````````````````
-An output similar to the one present in :ref:`the third example <Howto RL 3>` 
-will show up, making use of the wrapped training algorithm.
+-------
 
+.. image:: images/ur5simulation.gif
 
-Example Code
-`````````````````
+The Gazebo GUI should be the first thing that shows up. 
+The UR5 robot will move depending on the given action and the training is run. 
+When the training is done, the logged rewards will be plotted using the matplotlib library.
 
-.. literalinclude:: ../../../../../examples/rl/Howto 10 - (RL) Train using SB3 Wrapper.py
-    :language: python
-
+The plotted figure is not reproducible due to the simulator's nature of simulating real
+world scenario. Although seeds can be set for the random generator, the sampling cannot be 
+done at the exact same time during different runs. For a more reproducible results, 
+:ref:`Howto RL-012 <Howto RL 012>` is more appropriate.

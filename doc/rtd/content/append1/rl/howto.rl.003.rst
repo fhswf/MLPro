@@ -1,40 +1,33 @@
-.. _Howto RL 3:
-`Howto 03 - (RL) Train agent with own policy on gym environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2003%20-%20(RL)%20Train%20agent%20with%20own%20policy%20on%20gym%20environment.py>`_
-================
-Ver. 1.3.2 (2021-12-07)
+.. _Howto RL 003:
+Howto RL-003: Train an agent with an own policy on an OpenAI Gym environment
+============================================================================
 
-This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
+.. automodule:: mlpro.rl.examples.howto_rl_003_train_agent_with_own_policy_on_gym_environment
+
+
 
 Prerequisites
-`````````````````
+-------------
 
 Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
-  ..
-    - `NumPy <https://pypi.org/project/numpy/>`_
-  ..
-    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
-    - `PyTorch <https://pypi.org/project/torch/>`_
-  ..
-    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-  ..
-    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-  ..
-    - `Optuna <https://pypi.org/project/optuna/>`_
-  ..
-    - `Hyperopt <https://pypi.org/project/hyperopt/>`_
-  ..
-    - `ROS <http://wiki.ros.org/noetic/Installation>`_
-    
-Results
-`````````````````
-.. image:: images/Cartpole.png
 
+
+
+Executable code
+---------------
+.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_003_train_agent_with_own_policy_on_gym_environment.py
+	:language: python
+
+
+
+Results
+-------
 The Gym Cartpole environment window should appear. Afterwards, the training should run 
 for a few episodes before terminating and printing the result. The training log
 is also stored in the location specified. 
+
+.. image:: images/Cartpole.png
 
 .. code-block:: bash
 
@@ -59,7 +52,8 @@ is also stored in the location specified.
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
 
-In the folder, there should be some files including:
+
+The local result folder contains the training result files:
     - agent_actions.csv
     - env_rewards.csv
     - env_states.csv
@@ -67,8 +61,3 @@ In the folder, there should be some files including:
     - summary.csv
     - trained model.pkl
     
-Example Code
-`````````````````
-
-.. literalinclude:: ../../../../../examples/rl/Howto 03 - (RL) Train agent with own policy on gym environment.py
-    :language: python

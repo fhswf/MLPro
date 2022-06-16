@@ -1,43 +1,26 @@
-.. _Howto RL 4:
-`Howto 04 - (RL) Run multi-agent with own policy in multicartpole environment <https://github.com/fhswf/MLPro/blob/main/examples/rl/Howto%2004%20-%20(RL)%20Run%20multi-agent%20with%20own%20policy%20in%20multicartpole%20environment.py>`_
-================
-Ver. 1.2.0 (2021-11-15)
+.. _Howto RL 004:
+Howto RL-004: Run a multi-agent with an own policy with an OpenAI Gym environment
+=================================================================================
 
-This module shows how to run an own multi-agent with the enhanced multi-action environment 
-MultiCartPole based on the OpenAI Gym CartPole environment.
+.. automodule:: mlpro.rl.examples.howto_rl_004_run_multi_agent_with_own_policy_in_multicartpole_environment
+
+
 
 Prerequisites
-`````````````````
+-------------
 
 Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
-  ..
-    - `NumPy <https://pypi.org/project/numpy/>`_
-  ..
-    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
-  ..
-    - `Pytorch <https://pypi.org/project/torch/>`_
-  ..
-    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-  ..
-    - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
-  ..
-    - `Optuna <https://pypi.org/project/optuna/>`_
-  ..
-    - `Hyperopt <https://pypi.org/project/hyperopt/>`_
-  ..
-    - `ROS <http://wiki.ros.org/noetic/Installation>`_
-    
+
+
+
+Executable code
+---------------
+.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_004_run_multi_agent_with_own_policy_in_multicartpole_environment.py
+	:language: python
+
+
+
 Results
-`````````````````
-An output similar to the one present in :ref:`the second example <Howto RL 2>` 
-will show up. However, there will be multiple windows of the environment open.
-
-
-Example Code
-`````````````````
-
-.. literalinclude:: ../../../../../examples/rl/Howto 04 - (RL) Run multi-agent with own policy in multicartpole environment.py
-    :language: python
-
+-------
+Similar output as in :ref:`Howto RL-002 <Howto RL 002>` is displayed. However, there will be multiple windows of the environment open.

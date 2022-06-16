@@ -33,22 +33,28 @@ The installation steps are as follow:
 
         .. code-block:: bash
 
-            pip3 install catkin_tools gym empy defusedxml pymodbus numpy netifaces pycryptodomex rospkg gnupg
+            pip3 install stable-baselines3 gym pytest transformations dill rospkg catkin_tools empy defusedxml pymodbus numpy netifaces pycryptodomex gnupg
                     
     5. Build the Environment:
-        .. code-block:: bash
-        
-            cd MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/src
-            git submodule update --init
-            cd .. && catkin_make
-            
-    6. Source the package:
-        .. code-block:: bash
-                
-            echo "source MLPro/src/mlpro/rl/pool/envs/ur5jointcontrol/devel/setup.bash" >> ~/.bashrc
-            source ~/.bashrc
-                
+
+        The environment can be built automatically by passing p_build to the UR5JointControl class. Otherwise, the environment can be built with the following command:
+            .. code-block:: bash
+
+                cd $(python3 -c 'import os; import mlpro; print(os.path.dirname(mlpro.__file__))')/rl/pool/envs/ur5jointcontrol
+                catkin_make
+
+    6. Gazebo GUI:
+        The user can decide wether they want to use the GUI or not, by passing p_visualize to the UR5JointControl class.
+
+.. code-block:: python
     
+    from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
+
+    # p_visualize : Gazebo GUI
+    # p_build : Automated Builder
+    environment = UR5JointControl(p_build=True, p_visualize=True)
+                
+
 General Information
 ===================
 

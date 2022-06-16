@@ -1,4 +1,4 @@
-Gameboard Pool
+Game board Pool
 --------------
 
 .. toctree::
