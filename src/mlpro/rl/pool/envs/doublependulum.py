@@ -153,17 +153,17 @@ class DoublePendulum(Environment):
         action_space = ESpace()
 
         state_space.add_dim(Dimension('theta 1', 'th1', 'Angle of Pendulum 1', '', 'radians',
-                                      '\textdegrees', [-np.pi, np.pi]))
+                                      '\textdegrees', [-290.518, 227.4182]))
         state_space.add_dim(Dimension('omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
-                                      'radians/second', '\textdegrees/s', [-np.inf, np.inf]))
+                                      'radians/second', '\textdegrees/s', [-344.982, 354.3467]))
         state_space.add_dim(Dimension('acc 1', 'a1', 'Angular Acceleration of Pendulum 1', '',
-                                      'radians/second^2', '\text/s^2', [-np.inf, np.inf]))      
+                                      'radians/second^2', '\text/s^2', [-141.53, 141.5184]))      
         state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'radians',
-                                      '\textdegrees', [-np.pi, np.pi]))
+                                      '\textdegrees', [-580.418, 604.7454]))
         state_space.add_dim(Dimension('omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
-                                      'radians/second', '\textdegrees/s', [-np.inf, np.inf]))
+                                      'radians/second', '\textdegrees/s', [-930.535, 905.531]))
         state_space.add_dim(Dimension('acc 2', 'a2', 'Angular Acceleration of Pendulum 2', '',
-                                      'radians/second^2', '\text/s^2', [-np.inf,np.inf]))
+                                      'radians/second^2', '\text/s^2', [-277.35,277.413]))
 
         action_space.add_dim(Dimension('torque 1', 'tau1', 'Applied Torque of Motor 1', '',
                                        'Nm', 'Nm', [-self.max_torque, self.max_torque]))
