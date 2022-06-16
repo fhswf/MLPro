@@ -9,10 +9,11 @@
 ## -- 2021-11-18  1.0.0     MRD      Initial Release
 ## -- 2021-12-07  1.0.1     DA       Refactoring
 ## -- 2022-02-11  1.1.0     DA       Special derivate for publication
+## -- 2022-05-23  1.2.0     MRD      Add visualize toggle on UR5JointControl for gazebo GUI
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-02-11)
+Ver. 1.2.0 (2022-05-23)
 
 This module shows how to use SB3 wrapper to train UR5 robot.
 """
@@ -24,16 +25,13 @@ from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 
 
-# 1 Make Sure training_env branch of ur_control is sourced:
-# request access to the ur_control project
-
-# 2 Implement your own RL scenario
+# 1 Implement your own RL scenario
 class ScenarioUR5A2C(RLScenario):
     C_NAME = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        # 1 Setup environment
-        self._env = UR5JointControl(p_logging=p_logging)
+        # 1.1 Setup environment
+        self._env = UR5JointControl(p_visualize=False, p_logging=p_logging)
 
         policy_sb3 = PPO(
             policy="MlpPolicy",
@@ -51,7 +49,7 @@ class ScenarioUR5A2C(RLScenario):
             p_ada=p_ada,
             p_logging=p_logging)
 
-        # 2 Setup standard single-agent with own policy
+        # 1.2 Setup standard single-agent with own policy
         return Agent(
             p_policy=policy_wrapped,
             p_envmodel=None,
@@ -61,7 +59,7 @@ class ScenarioUR5A2C(RLScenario):
         )
 
 
-# 3 Train agent in scenario
+# 2 Train agent in scenario
 now = datetime.now()
 
 training = RLTraining(

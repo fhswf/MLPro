@@ -37,10 +37,11 @@
 ## --                                - file evaluation.csv: new columns 'Score until Stagnation', 
 ## --                                  'Score(MA) until Stagnation'
 ## -- 2022-02-27  1.7.1     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-05-23  1.7.2     SY       Bug fixing: storing data reward
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.1 (2022-02-27)
+Ver. 1.7.2 (2022-05-23)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -403,7 +404,7 @@ class RLScenario(Scenario):
                 reward_values = np.zeros(self._ds_rewards.get_space().get_num_dim())
 
                 for i, agent_id in enumerate(self._ds_rewards.get_space().get_dim_ids()):
-                    reward_values[i] = reward.get_agent_reward(agent_id)
+                    reward_values[i] = reward.get_agent_reward(i)
 
                 self._ds_rewards.memorize_row(self._cycle_id, ts, reward_values)
 
