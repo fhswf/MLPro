@@ -48,7 +48,7 @@ The Documentation is available here: [https://mlpro.readthedocs.io/](https://mlp
 ## Project and Team
 Project MLPro was started in 2021 by the [Group for Automation Technology and Learning Systems at the South Westphalia University of Applied Sciences, Germany](https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php).
 
-MLPro is currently designed and developed by [Detlef Arend](https://github.com/detlefarend), [M Rizky Diprasetya](https://github.com/rizkydiprasetya), [Steve Yuwono](https://github.com/steveyuwono) and [William Budiatmadjaja](https://github.com/budiatmadjajaWill).
+MLPro is currently designed and developed by [Detlef Arend](https://github.com/detlefarend), [M Rizky Diprasetya](https://github.com/rizkydiprasetya), [Steve Yuwono](https://github.com/steveyuwono) and further [contributors](https://github.com/fhswf/MLPro/graphs/contributors). 
 
 
 ## How to contribute
