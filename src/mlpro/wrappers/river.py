@@ -31,7 +31,7 @@ import river
 ## -------------------------------------------------------------------------------------------------
 class WrStreamProviderRiver (StreamProvider):
     """
-    Wrapper class for OpenML as StreamProvider
+    Wrapper class for River as StreamProvider
     """
 
     C_NAME              = 'River'
@@ -79,12 +79,12 @@ class WrStreamProviderRiver (StreamProvider):
 ## -------------------------------------------------------------------------------------------------
     def _get_stream_list(self, **p_kwargs) -> list:
         """
-        Custom class to get alist of stream objects from OpenML
+        Custom class to get alist of stream objects from River
 
         Returns
         -------
         list_streams:List
-            Returns a list of Streams in OpenML
+            Returns a list of Streams in River
 
         """
         return self._stream_list
@@ -93,7 +93,7 @@ class WrStreamProviderRiver (StreamProvider):
 ## -------------------------------------------------------------------------------------------------
     def _get_stream(self, p_id) -> Stream:
         """
-        Custom class to fetch an OpenML stream object
+        Custom class to fetch an River stream object
 
         Parameters
         ----------
@@ -119,7 +119,7 @@ class WrStreamProviderRiver (StreamProvider):
 ## -------------------------------------------------------------------------------------------------
 class WrStreamRiver(Stream):
     """
-    Wrapper class for Streams from OpenML
+    Wrapper class for Streams from River
 
     Parameters
     ----------
@@ -157,7 +157,7 @@ class WrStreamRiver(Stream):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
         """
-        Custom reset method to download and reset an OpenML stream
+        Custom reset method to download and reset an River stream
 
         Parameters
         ----------
@@ -206,7 +206,7 @@ class WrStreamRiver(Stream):
     ## --------------------------------------------------------------------------------------------------
     def _download(self):
         """
-        Custom method to download the corresponding OpenML dataset
+        Custom method to download the corresponding River dataset
 
         Returns
         -------
@@ -223,12 +223,12 @@ class WrStreamRiver(Stream):
 ## ------------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
         """
-        Custom method to get the instances one after another sequentially in the OpenML stream
+        Custom method to get the instances one after another sequentially in the River stream
 
         Returns
         -------
         instance:
-            Next instance in the OpenML stream object (None after the last instance in the dataset).
+            Next instance in the River stream object (None after the last instance in the dataset).
         """
 
         if not self._index < self._num_instances:return None

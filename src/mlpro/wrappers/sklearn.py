@@ -10,11 +10,12 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-06-16)
+Ver. 1.0.0 (2022-06-16)
 
 This module provides wrapper functionalities to incorporate public data sets of the Sklearn ecosystem.
 
 Learn more:
+https://scikit-learn.org
 
 
 """
@@ -32,14 +33,14 @@ from sklearn import datasets
 ## -------------------------------------------------------------------------------------------------
 class WrStreamProviderSklearn (StreamProvider):
     """
-    Wrapper class for OpenML as StreamProvider
+    Wrapper class for Sklearn as StreamProvider
     """
 
     C_NAME              = 'Sklearn'
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
-    C_SCIREF_AUTHOR     = 'River'
-    C_SCIREF_URL        = 'riverml.xyz'
+    C_SCIREF_AUTHOR     = 'sklearn'
+    C_SCIREF_URL        = 'https://scikit-learn.org'
 
     _load_utils = [
         "fetch_20newsgroups()",
@@ -85,12 +86,12 @@ class WrStreamProviderSklearn (StreamProvider):
 ## -------------------------------------------------------------------------------------------------
     def _get_stream_list(self, **p_kwargs) -> list:
         """
-        Custom class to get alist of stream objects from OpenML
+        Custom class to get alist of stream objects from Sklearn
 
         Returns
         -------
         list_streams:List
-            Returns a list of Streams in OpenML
+            Returns a list of Streams in Sklearn
 
         """
         return self._stream_list
@@ -99,7 +100,7 @@ class WrStreamProviderSklearn (StreamProvider):
 ## -------------------------------------------------------------------------------------------------
     def _get_stream(self, p_id) -> Stream:
         """
-        Custom class to fetch an OpenML stream object
+        Custom class to fetch an Sklearn stream object
 
         Parameters
         ----------
@@ -125,7 +126,7 @@ class WrStreamProviderSklearn (StreamProvider):
 ## -------------------------------------------------------------------------------------------------
 class WrStreamSklearn(Stream):
     """
-    Wrapper class for Streams from OpenML
+    Wrapper class for Streams from Sklearn
 
     Parameters
     ----------
@@ -137,7 +138,7 @@ class WrStreamSklearn(Stream):
         Number of features of the Stream
     """
 
-    C_NAME = 'River'
+    C_NAME = 'Sklearn'
     C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
 
 
@@ -155,7 +156,6 @@ class WrStreamSklearn(Stream):
         self._kwargs = p_kwargs.copy()
 
 
-
 ## -------------------------------------------------------------------------------------------------
     def __repr__(self):
         return str(dict(id=str(self._id), name=self._name))
@@ -164,7 +164,7 @@ class WrStreamSklearn(Stream):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
         """
-        Custom reset method to download and reset an OpenML stream
+        Custom reset method to download and reset an Sklearn stream
 
         Parameters
         ----------
@@ -179,7 +179,7 @@ class WrStreamSklearn(Stream):
 
 
 ## --------------------------------------------------------------------------------------------------
-    def get_feature_space(self):
+    def get_feature_space(self) -> MSpace:
         """
         Method to get the feature space of a stream object
 
@@ -205,33 +205,15 @@ class WrStreamSklearn(Stream):
             return self._feature_space
 
 
-
-    ## --------------------------------------------------------------------------------------------------
-    # def _download(self):
-    #     """
-    #     Custom method to download the corresponding OpenML dataset
-    #
-    #     Returns
-    #     -------
-    #     bool
-    #         True for the download status of the stream
-    #     """
-    #     self._dataset = iter(eval("river.datasets."+self._name+"()"))
-    #     if self._dataset is not None:
-    #         return True
-    #     else:
-    #         raise ValueError("Dataset not downloaded or not available")
-    #
-
-## ------------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
         """
-        Custom method to get the instances one after another sequentially in the OpenML stream
+        Custom method to get the instances one after another sequentially in the Sklearn stream
 
         Returns
         -------
         instance:
-            Next instance in the OpenML stream object (None after the last instance in the dataset).
+            Next instance in the Sklearn stream object (None after the last instance in the dataset).
         """
 
         if not self._index < self._num_instances:return None
