@@ -104,18 +104,11 @@ Table of Content
    
    content/append3/versions
    content/append3/publications
+   content/append3/citation
    content/append3/cont
    content/append3/disclaimer
    
 
-Citing MLPro
-------------------------
-To cite this project in publications:
-
-.. code-block:: bibtex
-
-    @misc{...
-    }
 
 Contact Data
 ------------------------
