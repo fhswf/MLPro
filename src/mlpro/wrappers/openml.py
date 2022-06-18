@@ -79,7 +79,7 @@ class WrStreamProviderOpenML (StreamProvider):
                 try:
                     _id = d[1]['did']
                 except:
-                    _id = 0
+                    _id = None
                 try:
                     _num_instances = d[1]['NumberOfInstances']
                 except:

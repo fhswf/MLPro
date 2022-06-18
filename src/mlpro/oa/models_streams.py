@@ -11,10 +11,11 @@
 ## -- 2022-06-04  0.1.1     DA       Specialization in stream providers and streams
 ## -- 2022-06-09  0.1.2     LSB      Additional attributes to stream object
 ## -- 2022-06-14  0.1.3     LSB      Enhancement
+## -- 2022-06-18  0.1.4     LSB      Logging of stream list based on p_display_list parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.3 (2022-06-14)
+Ver. 0.1.4 (2022-06-18)
 
 Model classes for stream providers and streams.
 """
@@ -130,7 +131,8 @@ class Stream (Mode, LoadSave, ScientificObject):
         """
 
         self._reset(p_seed=p_seed)
-        self.log(self.C_LOG_TYPE_I,"Stream reset")
+        self.log(self.C_LOG_TYPE_W, "\n\n")
+        self.log(self.C_LOG_TYPE_W, "Resetting the stream")
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -198,9 +200,14 @@ class StreamProvider (Log, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_stream_list(self, **p_kwargs) -> list:
+    def get_stream_list(self, p_display_list:bool=False, **p_kwargs) -> list:
         """
         Gets a list of provided streams by calling custom method _get_stream_list().
+
+        Parameters
+        ----------
+        p_display_list:bool
+            boolean value to log the list of streams
 
         Returns
         -------
@@ -208,10 +215,13 @@ class StreamProvider (Log, ScientificObject):
             List of provided streams.
 
         """
-
-        self.log(self.C_LOG_TYPE_I, 'Getting list of streams...')
         stream_list = self._get_stream_list(**p_kwargs)
-        self.log(self.C_LOG_TYPE_I, 'Stream found:', len(stream_list))
+        self.log(self.C_LOG_TYPE_I, "\n\n\n")
+        self.log(self.C_LOG_TYPE_W, 'Getting list of streams...')
+        if p_display_list:
+            for stream in stream_list:
+                self.log(self.C_LOG_TYPE_I, "Stream ID: {:<15} Stream Name: {:<30}".format(stream.C_ID, stream.C_NAME))
+            self.log(self.C_LOG_TYPE_I, 'Number of streams found:', len(stream_list),'\n\n\n')
         return stream_list
 
 
@@ -248,10 +258,10 @@ class StreamProvider (Log, ScientificObject):
 
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Requested stream:', str(p_id)) 
+        self.log(self.C_LOG_TYPE_I, 'Requested stream:', str(p_id))
         s = self._get_stream(p_id)
         if s is None:
-            self.log(self.C_LOG_TYPE_E, 'Stream', str(p_id), 'not found') 
+            self.log(self.C_LOG_TYPE_E, 'Stream', str(p_id), 'not found\n')
 
         return s
 

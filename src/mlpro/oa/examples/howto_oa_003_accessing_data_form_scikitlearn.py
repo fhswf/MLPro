@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-06-16  0.0.0     LSB      Creation
 ## -- 2022-06-16  1.0.0     LSB      Release of first version
+## -- 2022-06-18  1.0.1     LSB      Restructured logging output
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-06-16)
+Ver. 1.0.1 (2022-06-18)
 
 This module shows how to wrap mlpro's Stream and StreamProvider class to ScikitLearn.
 """
@@ -22,25 +23,22 @@ sk_learn = WrStreamProviderSklearn()
 
 
 # 2. Get a list of streams available at the stream provider
-stream_list = sk_learn.get_stream_list()
-
-if __name__ == "__main__":
-    for stream in stream_list:
-        print('stream id: '+ str(stream.get_id( )) + ' stream name: ' + str(stream.get_name()))
+stream_list = sk_learn.get_stream_list(p_display_list=True)
 
 
 # 3. Get a specific stream from the stream provider
-stream = sk_learn.get_stream(3)
+stream = sk_learn.get_stream('20newsgroups')
 
 
 # 4. get the feature space of the stream
-sk_learn.log(stream.C_LOG_TYPE_I,"Number of features in the stream:",stream.get_feature_space().get_num_dim())
+feature_space = stream.get_feature_space()
+sk_learn.log(stream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim(),'\n\n')
 
 
 # 5. resetting the stream
 stream.reset()
 
-
+stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 # 6. Loading stream instances
 for i in range(10):
     curr_instance = stream.get_next().get_values()
@@ -52,6 +50,7 @@ stream.reset()
 
 
 # 8. Getting stream instances
+stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(5):
     curr_instance = stream.get_next().get_values()
     stream.log(stream.C_LOG_TYPE_I, 'Current Instance:' , curr_instance)

@@ -6,11 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-06-16  0.0.0     LSB      Creation
-## -- 2022-mm-dd  1.0.0     LSB      Release of first version
+## -- 2022-06-16  1.0.0     LSB      Release of first version
+## -- 2022-06-18  1.0.1     LSB      Stream names as Stream ids
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-06-16)
+Ver. 1.0.1 (2022-06-18)
 
 This module provides wrapper functionalities to incorporate public data sets of the Sklearn ecosystem.
 
@@ -54,33 +55,32 @@ class WrStreamProviderSklearn (StreamProvider):
         "load_breast_cancer()",
         "load_wine()",
     ]
+    _data_utils = [
+        "clear_data_home",
+        "dump_svmlight_file"
+    ]
+
+    _datasets = [
+        "20newsgroups",
+        "20newsgroups_vectorized",
+        "california_housing",
+        "covtype",
+        "rcv1",
+        "kddcup99",
+        "diabetes",
+        "iris",
+        "breast_cancer",
+        "wine",
+    ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self):
-        _data_utils = [
-            "clear_data_home",
-            "dump_svmlight_file"
-        ]
 
-        _datasets = [
-            "20newsgroups",
-            "20newsgroups_vectorized",
-            "california_housing",
-            "covtype",
-            "rcv1",
-            "kddcup99",
-            "diabetes",
-            "iris",
-            "breast_cancer",
-            "wine",
-        ]
         self._stream_list = []
-        self._stream_ids = []
+        self._stream_ids = self._datasets
         super().__init__()
-        for i in range(len(_datasets)):
-            self._stream_ids.append(i)
-            # _num_instances = eval("len(sklearn.datasets."+self._load_utils[i]+".data)")
-            self._stream_list.append(WrStreamSklearn(self._stream_ids[i],_datasets[i]))
+        for i in range(len(self._datasets)):
+            self._stream_list.append(WrStreamSklearn(self._stream_ids[i],self._datasets[i]))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -113,9 +113,9 @@ class WrStreamProviderSklearn (StreamProvider):
             Returns the stream corresponding to the id
         """
         try:
-            stream = self._stream_list[self._stream_ids.index(int(p_id))]
+            stream = self._stream_list[self._stream_ids.index(p_id)]
             return stream
-        except ValueError:
+        except:
             raise ValueError('Stream id not in the available list')
 
 
@@ -173,8 +173,12 @@ class WrStreamSklearn(Stream):
         """
 
         self._index = 0
-        self._dataset = eval("sklearn.datasets." + WrStreamProviderSklearn._load_utils[self.C_ID] + ".data")
-        self._num_instances = eval("len(sklearn.datasets." + WrStreamProviderSklearn._load_utils[self.C_ID] + ".data)")
+        self._dataset = eval("sklearn.datasets."
+                             + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
+                             + ".data")
+        self._num_instances = eval("len(sklearn.datasets."
+                                   + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
+                                   + ".data)")
         self._instance = Instance(self.get_feature_space())
 
 
@@ -199,7 +203,14 @@ class WrStreamSklearn(Stream):
         except:
 
             self._feature_space = MSpace()
-            features = eval("sklearn.datasets." +WrStreamProviderSklearn._load_utils[self.C_ID] +".feature_names")
+            try:
+                features = eval("sklearn.datasets." +WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)] +".feature_names")
+            except:
+                self._dataset = eval("sklearn.datasets." +WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)] +".data")
+                if not isinstance(self._dataset,list):
+                    features = [('Attr_'+str(i)) for i in range(len(self._dataset.shape[1]))]
+                else:
+                    features = ['Attr_1']
             for feature in features:
                 self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
             return self._feature_space

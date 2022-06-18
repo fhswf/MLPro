@@ -22,37 +22,36 @@ river_wrap = WrStreamProviderRiver()
 
 
 # 2. Get a list of streams available at the stream provider
-stream_list = river_wrap.get_stream_list()
-
-if __name__ == "__main__":
-    for stream in stream_list:
-        print('stream id: '+ str(stream.get_id( )) + ' stream name: ' + str(stream.get_name()))
+stream_list = river_wrap.get_stream_list(p_display_list=True)
 
 
 # 3. Get a specific stream from the stream provider
-stream = river_wrap.get_stream(2)
+stream = river_wrap.get_stream('Insects')
 
 
 # 4. get the feature space of the stream
-river_wrap.log(stream.C_LOG_TYPE_I,"Number of features in the stream:",stream.get_feature_space().get_num_dim())
-# print("Number of features in the stream:",stream.get_feature_space().get_num_dim())
+feature_space = stream.get_feature_space()
+river_wrap.log(stream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim(),'\n\n')
+
 
 
 # 5. resetting the stream
 stream.reset()
 
 
+stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 # 6. Loading stream instances
 for i in range(10):
     curr_instance = stream.get_next().get_values()
-    stream.log(stream.C_LOG_TYPE_I,'Current Instance:' , curr_instance)
+    stream.log(stream.C_LOG_TYPE_I,'\n\nCurrent Instance:' , curr_instance)
 
 
 # 7. resetting the stream
 stream.reset()
 
 
+stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 # 8. Getting stream instances
 for i in range(5):
     curr_instance = stream.get_next().get_values()
-    stream.log(stream.C_LOG_TYPE_I, 'Current Instance:' , curr_instance)
+    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_instance)

@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-06-14  0.0.0     LSB      Creation
 ## -- 2022-06-14  1.0.0     LSB      Release of first version
+## -- 2022-06-18  1.0.1     LSB      Stream names as Stream ids
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-06-14)
+Ver. 1.0.1 (2022-06-18)
 
 This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
@@ -68,10 +69,9 @@ class WrStreamProviderRiver (StreamProvider):
                 "TrumpApproval",
             ]
         self._stream_list = []
-        self._stream_ids = []
+        self._stream_ids = _datasets
         super().__init__()
         for i in range(len(_datasets)):
-            self._stream_ids.append(i)
             _num_instances = eval("river.datasets."+_datasets[i]+"().n_samples")
             self._stream_list.append(WrStreamRiver(self._stream_ids[i],_datasets[i],_num_instances))
 
@@ -106,7 +106,7 @@ class WrStreamProviderRiver (StreamProvider):
             Returns the stream corresponding to the id
         """
         try:
-            stream = self._stream_list[self._stream_ids.index(int(p_id))]
+            stream = self._stream_list[self._stream_ids.index(p_id)]
             return stream
         except ValueError:
             raise ValueError('Stream id not in the available list')
