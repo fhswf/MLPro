@@ -12,18 +12,17 @@
 ## -- 2022-06-09  0.1.2     LSB      Additional attributes to stream object
 ## -- 2022-06-14  0.1.3     LSB      Enhancement
 ## -- 2022-06-18  0.1.4     LSB      Logging of stream list based on p_display_list parameter
+## -- 2022-06-19  0.1.5     DA       - Class Stream: internal use of self.C_NAME instead of self._name
+## --                                - Check/completion of doc strings 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.4 (2022-06-18)
+Ver. 0.1.5 (2022-06-19)
 
-Model classes for stream providers and streams.
+Model classes for stream providers and streams. 
 """
 
 
-
-#from time import CLOCK_THREAD_CPUTIME_ID
-#from itertools import combinations_with_replacement
 from mlpro.bf.various import *
 from mlpro.bf.ml import *
 from mlpro.bf.math import *
@@ -57,36 +56,36 @@ class Stream (Mode, LoadSave, ScientificObject):
     ----------
     p_id
         id of the stream
-    p_name
+    p_name : str
         name of the stream
-    p_num_instances
+    p_num_instances : int
         Number of instances in the stream
+    p_version : str
+        Version of the stream
     p_mode
         Operation mode. Valid values are stored in constant C_VALID_MODES.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs
+        Further stream specific parameters
 
     """
 
     C_TYPE          = 'Stream'
-    C_NAME          = '????'
-    C_ID            = '????'
-    C_URL           = '????'
-
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_id=0,
-                 p_name=None,
-                 p_num_instances=None,
-                 p_version=None,
-                 p_mode=Mode.C_MODE_SIM,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_kwargs):
+    def __init__( self,
+                  p_id=0,
+                  p_name:str='',
+                  p_num_instances:int=0,
+                  p_version:str='',
+                  p_mode=Mode.C_MODE_SIM,
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs):
 
         super().__init__(p_mode=p_mode, p_logging=p_logging)
         self._id = p_id
-        self._name = self.C_SCIREF_TITLE = p_name
+        self.C_NAME = self.C_SCIREF_TITLE = p_name
         self._num_instances = p_num_instances
         self._version = p_version
         self._kwargs = p_kwargs.copy()
@@ -99,7 +98,7 @@ class Stream (Mode, LoadSave, ScientificObject):
 
     ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
-        return self.C_SCIREF_TITLE
+        return self.C_NAME
 
 
     ## -------------------------------------------------------------------------------------------------
@@ -190,6 +189,12 @@ class Stream (Mode, LoadSave, ScientificObject):
 class StreamProvider (Log, ScientificObject):
     """
     Template class for stream providers.
+
+    Parameters
+    ----------
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+
     """
 
     C_TYPE          = 'Stream Provider'
