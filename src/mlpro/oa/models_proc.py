@@ -6,32 +6,46 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-06-04  0.0.0     DA       Creation
+## -- 2022-06-19  0.1.0     DA       Initial implemetation of classes OAStep, OAProcessor
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-06-04)
+Ver. 0.1.0 (2022-06-19)
 
-Model classes for serial processing.
+Template classes for serial processing of stream data.
 """
 
 
 from mlpro.bf.various import Log
 from mlpro.bf.math import MSpace
-from mlpro.bf.ml import Model
+from mlpro.bf.ml import *
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PreProStep (Model):
+class SharedMemory:
     """
-    Template class for an adaptive data stream preprocessing step.
+    Template class for a shared memory. 
+    """ 
+    
+    pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class OAStep (Model):
+    """
+    Template class for an online adaptive processing step. Internal and external adaptatation is 
+    supported. For internal adaptation (=unsupervised learning) please implement custom method _adapt_u().
+    For external adaptation (=supervised/reinforcement learning) custom method _adapt() can be implemented.
 
     Parameters
     ----------
-    p_buffer_size : int
-        Initial size of internal data buffer. Defaut = 0 (no buffering).
     p_input_space : MSpace
         Optional fixed input feature space. Default = None.
     p_output_space : MSpace
@@ -45,24 +59,29 @@ class PreProStep (Model):
 
     """
 
-    C_TYPE          = 'Prepro Step'
+    C_TYPE          = 'OAStep'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
-                 p_buffer_size=0,
-                 p_input_space:MSpace=None,
-                 p_output_space:MSpace=None,
-                 p_ada=True,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_kwargs):
+    def __init__( self, 
+                  p_input_space:MSpace=None,
+                  p_output_space:MSpace=None,
+                  p_ada=True,
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs):
 
-        super().__init__( p_buffer_size=p_buffer_size,
+        super().__init__( p_buffer_size=0,
                           p_ada=p_ada,
                           p_logging=p_logging,
                           p_par=p_kwargs )
 
+        self._smem          = None
         self._input_space   = p_input_space
         self._output_space  = p_output_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_shared_memory(self, p_smem:SharedMemory):
+        self._smem = p_smem
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -91,9 +110,16 @@ class PreProStep (Model):
         """
 
         self.log(self.C_LOG_TYPE_I, 'Start processing:', len(p_in_add), 'new and', len(p_in_del), 'obsolete instaces')
+
         self._process_before(p_in_add, p_in_del)
-        self.adapt(p_in_add, p_in_del)
+
+        if self._adaptivity: 
+            self._adapted = self._adapt_int(p_in_add, p_in_del)
+        else:
+            self._adapted = False
+
         self._process_after(p_in_add, p_in_del)
+
         self.log(self.C_LOG_TYPE_I, 'End processing')
 
 
@@ -115,9 +141,10 @@ class PreProStep (Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_in_add, p_in_del) -> bool:
+    def _adapt_int(self, p_in_add, p_in_del) -> bool:
         """
-        Custom adaptation method. See method process() for further details.
+        Custom method for internal adaptation (=unsupervised learning). See method process() for 
+        further details.
 
         Parameters
         ----------
@@ -153,9 +180,9 @@ class PreProStep (Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Preprocessor (Model):
+class OAProcessor (Model):
     """
-    Adaptive data stream preprocessor.
+    Ready to use class for serial data processing. 
 
     Parameters
     ----------
@@ -166,41 +193,49 @@ class Preprocessor (Model):
     
     """
 
-    C_TYPE          = 'Preprocessor'
+    C_TYPE          = 'OAProcessor'
     C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_ada=True, p_logging=Log.C_LOG_ALL):
+    def __init__( self, 
+                  p_ada=True, 
+                  p_logging=Log.C_LOG_ALL,
+                  p_cls_smem=SharedMemory ):
+
         super().__init__(p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
-        self._prepro_steps  = []
-        self._input_space   = None
-        self._output_space  = None
+        self._oasteps  = []
+        self._smem     = p_cls_smem()
 
 
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         super().switch_logging(p_logging)
-        for step in self._prepro_steps:
+        for step in self._oasteps:
             step.switch_logging(p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada: bool):
         super().switch_adaptivity(p_ada)
-        for step in self._prepro_steps:
+        for step in self._oa_steps:
             step.switch_adaptivity(p_ada)
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_hyperparam(self) -> HyperParamTuple:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
-        for step in self._prepro_steps:
+        for step in self._oa_steps:
             step.set_random_seed(p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_adapted(self) -> bool:
         adapted = False
-        for step in self._prepro_steps:
+        for step in self._oa_steps:
             if step.get_adapted():
                 adapted = True
                 break
@@ -209,35 +244,29 @@ class Preprocessor (Model):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def add_prepro_step(self, p_step:PreProStep):
-        if len(self._prepro_steps) == 0: self._input_space = p_step.get_input_space()
-        self._output_space = p_step.get_output_space()
-        self._prepro_steps.append(p_step)
+    def add_step(self, p_step:OAStep):
+        self._oasteps.append(p_step)
 
 
 ## -------------------------------------------------------------------------------------------------
     def process(self, p_in_add, p_in_del):
-        self.log(self.C_LOG_TYPE_I, 'Start preprocessing')
+        self.log(self.C_LOG_TYPE_I, 'Start of processing')
 
-        for step in self._prepro_steps:
-            self.log(self.C_LOG_TYPE_I, 'Start processing step', step.C_TYPE, self.C_NAME)
+        for step in self._oasteps:
+            self.log(self.C_LOG_TYPE_I, 'Start processing step', step.C_TYPE, step.C_NAME)
             step.process( p_in_add, p_in_del )
 
-        self.log(self.C_LOG_TYPE_I, 'End preprocessing')
+        self.log(self.C_LOG_TYPE_I, 'End of processing')
 
 
 # -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool: 
-        """
-        No adaptation steps at this level.
-        """
-
-        return False
+    def _adapt(self, *p_args) -> bool: 
+        for step in self._oasteps: step.adapt( p_args )
 
 
 # -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
-       for step in self._prepro_steps:
+       for step in self._oasteps:
             step.clear_buffer()
 
 
@@ -253,288 +282,34 @@ class Preprocessor (Model):
 
         """
 
-        if len(self._prepro_steps) == 0: return 0
+        if len(self._oasteps) == 0: return 0
 
         maturity = 0
-        for step in self._prepro_steps:
+        for step in self._oasteps:
             maturity += step.get_maturity()
 
-        return maturity / len(self._prepro_steps)
+        return maturity / len(self._oasteps)
 
 
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class DSMApp: pass
+# -------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+class OAScenario (Scenario): pass
 
 
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Cluster: pass
+# -------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+class OATrainingResults (TrainingResults): pass
 
 
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class ClusterAnalyzer (DSMApp): 
-
-    def add_cluster(self):
-        pass
-
-
-
-
-
-# ## -------------------------------------------------------------------------------------------------
-# ## -------------------------------------------------------------------------------------------------
-# class StreamProcessor(ProcessingStep):
-#     """
-#     Model class for sequential adaptive stream processing with optional data preprocessing. Owhn 
-#     policy adaption and processing steps can be implemented by redefining methods adapt_policy() and
-#     process_custom().
-#     """
-
-#     C_TYPE          = 'Stream Processor'
-
-# ## -------------------------------------------------------------------------------------------------
-#     def __init__(self, p_ada=True, p_logging=Log.C_LOG_ALL):
-#         super().__init__(p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
-#         self.prepro_steps   = []
- 
-
-# ## -------------------------------------------------------------------------------------------------
-#     def switch_logging(self, p_logging):
-#         Log.switch_logging(self, p_logging=p_logging)
-#         for step in self.prepro_steps:
-#             step.switch_logging(p_logging=p_logging)
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def add_prepro_step(self, p_step:ProcessingStep):
-#         """
-#         Adds a preprocessing step.
-
-#         Parameters:
-#             p_step      Preprocessing step object to be added
- 
-#         Returns: 
-#             Nothing
-#         """
-
-#         p_step.set_adaptivity(self.adaptivity)
-#         p_step.switch_logging(p_logging=self.logging)
-#         self.prepro_steps.append(p_step)
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def process(self, p_x):
-#         """
-#         Processes input in three phases: at first all preprocessing steps will be executed. After that
-#         the own policy will be adapted and at last the own process steps will be executed.
-
-#         Parameters:
-#             p_x         Input vector x
-
-#         Returns: 
-#             Nothing
-#         """
-
-#         # 0 Intro
-#         x_add   = []
-#         x_del   = []
-#         x_add.append(p_x)
-#         self.log(self.C_LOG_TYPE_I, 'Start processing of input ', p_x)
-
-#         # 1 Preprocessing
-#         if len(self.prepro_steps) > 0:
-#             self.log(self.C_LOG_TYPE_I, 'Start of preprocessing')
-
-#             for step_id, step in enumerate(self.prepro_steps): 
-#                 self.log(self.C_LOG_TYPE_I, 'Preprocessing step ' + str(step_id) + ': ' + step.C_TYPE + ' ' + step.C_NAME)
-#                 step.process_step(x_add, x_del)
-
-#             self.log('End of preprocessing')
-
-        
-#         # 2 Adaption of own policy and main processing
-#         self.process_step(x_add, x_del)
-
-
-
-
-
-# ## -------------------------------------------------------------------------------------------------
-# ## -------------------------------------------------------------------------------------------------
-# class StreamProcess(Log):
-#     """
-#     Stream process, consisting of stream and stream processor object.
-#     """
-
-#     C_TYPE      = 'Stream Process'
-#     C_NAME      = ''
-
-# ## -------------------------------------------------------------------------------------------------
-#     def __init__(self, p_stream:Stream, p_sproc:StreamProcessor, p_logging=True):
-#         """
-#         Parameters:
-#             p_stream        Stream object
-#             p_sproc         Stream processor object
-#             p_logging       Boolean switch for logging
-#         """
-
-#         super().__init__(p_logging=p_logging)
-#         self.stream = p_stream
-#         self.sproc  = p_sproc
-
-#         self.log(self.C_LOG_TYPE_I, 'Stream', self.stream.C_NAME, ' registered')
-#         self.log(self.C_LOG_TYPE_I, self.sproc.C_TYPE, self.sproc.C_NAME, ' registered')
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def run(self, p_inst_limit=0, p_feature_ids=None):
-#         """
-#         Reads and processes all/limited number of stream instances.
-
-#         Parameters:
-#             p_inst_limit    Optional limitation of instances.
-#             p_feature_ids   Optional list of ids of features to be processed
-
-#         Returns:
-#             Number of processed instances.
-#         """
-
-#         # 1 Intro
-#         self.log(self.C_LOG_TYPE_I, 'Start of stream processing (limit='+ str(p_inst_limit) + ')')
-#         num_inst = 0
-
-
-#         # 2 Main processing loop
-#         while True:
-#             inst = self.stream.get_next()
-#             if inst == None:
-#                 self.log(self.C_LOG_TYPE_I, 'Stream limit reached') 
-#                 break
-
-#             num_inst += 1
-#             self.sproc.process(inst)
-#             self.log(self.C_LOG_TYPE_I, 'Instance', inst, 'processed')
-#             if ( p_inst_limit > 0 ) and ( num_inst == p_inst_limit ): break          
-
-
-#         # 3 Outro
-#         self.log(self.C_LOG_TYPE_I, 'End of stream processing (' + str(num_inst) + ' instances)')
-#         return num_inst
-
-
-
-
-
-# ## -------------------------------------------------------------------------------------------------
-# ## -- Class Group: Special types of preprocessing steps
-# ## -------------------------------------------------------------------------------------------------
-
-
-# ## -------------------------------------------------------------------------------------------------
-# ## -------------------------------------------------------------------------------------------------
-# class DataWindow (ProcessingStep):
-#     """
-#     Model class for data windows that can be used to deal with concept drift. 
-#     """
-
-#     C_TYPE      = 'Data Window'
-
-
-
-
-
-# ## -------------------------------------------------------------------------------------------------
-# ## -------------------------------------------------------------------------------------------------
-# class Normalization (ProcessingStep):
-#     """
-#     Model class for adaptive normalization algorithms. 
-#     """
-
-#     C_TYPE      = 'Normalization'
-
-# ## -------------------------------------------------------------------------------------------------
-#     def process_before(self, p_x_add, p_x_del):
-#         self.backup_policy()
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def process_after(self, p_x_add, p_x_del):
-#         for x in p_x_add:
-#             x = self.normalize(x)
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def normalize(self, p_x):
-#         """
-#         Normalizes an input vector - either by using the recent or the backup policy. To be redefined.
-
-#         Parameters:
-#             p_x         Input vector x to be denormalized
-        
-#         Returns:
-#             Normalized input vector.
-#         """
-        
-#         pass   
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def denormalize(self, p_x, p_backup=True):
-#         """
-#         Denormalizes an input - either by using the recent or the backup policy. To be redefined.
-
-#         Parameters:
-#             p_x         Input vector x to be denormalized
-#             p_backup    If True, the backup policy shall be used. Recent policy otherwise.
-
-#         Returns:
-#             Denormalized input vector.    
-#         """
-        
-#         pass
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def renormalize(self, p_x):
-#         """
-#         Reormalizes an input vector by denormalizing it with the backup policy and normalizing it
-#         with the recent policy after that.
-
-#         Parameters:
-#             p_x         Input vector x to be denormalized
-
-#         Returns:
-#             Reormalized input vector.    
-#         """
-
-#         return self.normalize(self.denormalize(p_x, p_backup=True))
-
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def backup_policy(self):
-#         """
-#         Backups the recent policy. To be redefined.
-#         """
-
-#         pass
-
-
-
-
-# ## -------------------------------------------------------------------------------------------------
-# ## -- Class Group: Special types of stream processing applications
-# ## -------------------------------------------------------------------------------------------------
-
-
+# -------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+class OATraining (Training): pass
