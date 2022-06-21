@@ -1,18 +1,19 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : Howto 22 - (RL) Train DoublePendulum with random actions.py
+## -- Module  : howto_rl_020_run_double_pendulum_with_random_actions.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-04-23  0.0.0     YI       Creation
 ## -- 2022-04-28  0.0.0     YI       Changing the Scenario and Debugging
 ## -- 2022-05-16  1.0.0     SY       Code cleaning, remove unnecessary, release the first version
+## -- 2022-06-21  1.0.1     SY       Adjust the name of the module, utilize RandomGenerator class
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 0.0.0 (2022-04-23)
+Ver. 1.0.1 (2022-06-21)
 
 This module shows how to use train the dpuble pendulum using random actions agent
 """
@@ -21,6 +22,7 @@ import torch
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.doublependulum import DoublePendulum
+from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
@@ -32,60 +34,27 @@ import os
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-# 1. Create a policy for action sampling
-class RandomActionGenerator(Policy):
-
-    C_NAME      = 'RandomActionGenerator'
-    
-    
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=1.0, p_logging=True):
-        super().__init__(p_observation_space=p_observation_space, p_action_space=p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
-        self.additional_buffer_element = {}
-        self.action_current = np.zeros(p_action_space.get_num_dim())
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_hyperparam(self):
-        pass
-
-## -------------------------------------------------------------------------------------------------
-    def compute_action(self, p_state: State) -> Action:
-        self.action_current[0] = random.uniform(0,1)
-        
-        return Action(self._id, self._action_space, self.action_current)
-
-## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
-        self.log(self.C_LOG_TYPE_I, 'No adaptation required')
-        return False
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-
-# 2 Implement the random RL scenario
+# 1 Implement the random RL scenario
 class ScenarioDoublePendulum(RLScenario):
 
     C_NAME      = 'Matrix'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada, p_logging):
-        # 1 Setup environment
+        # 1.1 Setup environment
         self._env   = DoublePendulum(p_logging=True, init_angles='up', max_torque=50)
         policy_kwargs = dict(activation_fn=torch.nn.Tanh,
                      net_arch=[dict(pi=[128, 128], vf=[128, 128])])
 
-        policy_random = RandomActionGenerator(p_observation_space=self._env.get_state_space(), 
-                                              p_action_space=self._env.get_action_space(),
-                                              p_buffer_size=1,
-                                              p_ada=1,
-                                              p_logging=False)
+        policy_random = RandomGenerator(p_observation_space=self._env.get_state_space(), 
+                                        p_action_space=self._env.get_action_space(),
+                                        p_buffer_size=1,
+                                        p_ada=1,
+                                        p_logging=False)
 
 
 
-        # 2 Setup standard single-agent with own policy
+        # 2.1 Setup standard single-agent with own policy
         return Agent(
             p_policy=policy_random,  
             p_envmodel=None,
@@ -99,10 +68,9 @@ class ScenarioDoublePendulum(RLScenario):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-# 3 Create scenario and start training
+# 2 Create scenario and start training
 
 if __name__ == "__main__":
-    # 3.1 Parameters for demo mode
     cycle_limit         = 200000
     adaptation_limit    = 10000
     stagnation_limit    = 0
@@ -111,10 +79,10 @@ if __name__ == "__main__":
     logging             = Log.C_LOG_WE
     visualize           = True
     path                = str(Path.home())
-    plotting        = True
+    plotting            = True
  
 
-# 4 Train agent in scenario 
+# 3 Train agent in scenario 
 now             = datetime.now()
 
 training        = RLTraining(
@@ -137,7 +105,7 @@ training.run()
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-# 5 Create Plotting Class
+# 4 Create Plotting Class
 class MyDataPlotting(DataPlotting):
     def get_plots(self):
         """
@@ -173,9 +141,7 @@ class MyDataPlotting(DataPlotting):
                     plt.show()
                 else:
                     plt.close(fig)
-
-
-#  Plotting 1 MLpro    
+   
 data_printing   = {"Cycle":        [False],
                     "Day":          [False],
                     "Second":       [False],
