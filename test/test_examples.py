@@ -12,11 +12,10 @@
 ## -- 2022-02-28  1.0.3     SY       Howto 06, 07 of basic functions are added
 ## -- 2022-02-28  1.0.4     SY       Howto 07 of basic functions is disabled
 ## -- 2022-05-29  1.1.0     DA       Update howto list after refactoring of all howto files
-## -- 2022-06-21  1.1.1     SY       Update howto 20 and 21 RL
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-06-21)
+Ver. 1.1.0 (2022-05-29)
 
 Unit test for all examples available.
 """
@@ -59,8 +58,7 @@ howto_list = {
     "rl_017": "mlpro.rl.examples.howto_rl_017_comparison_native_vs_wrapped_sb3_policy_off_policy",
     # "rl_018": "mlpro.rl.examples.howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment",
     "rl_019": "mlpro.rl.examples.howto_rl_019_train_and_reload_single_agent",
-    "rl_020": "mlpro.rl.examples.howto_rl_020_run_double_pendulum_with_random_actions",
-    # "rl_021": "mlpro.rl.examples.howto_rl_021_train_wrapped_sb3_policy_on_doublependulum",
+    "rl_021": "mlpro.rl.examples.howto_rl_021_train_wrapped_sb3_policy_on_doublependulum",
 
 # Game Theory:
     "gt_001": "mlpro.gt.examples.howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board",
