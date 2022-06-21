@@ -166,4 +166,3 @@ gripper_sub = rospy.Subscriber('/gripper_controller/command', String, gripper_cl
 
 rospy.loginfo('gripper action server initialized')
 rospy.spin()
-

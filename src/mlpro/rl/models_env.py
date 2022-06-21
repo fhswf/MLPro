@@ -984,7 +984,8 @@ class Environment(EnvBase, Mode):
             self.log(self.C_LOG_TYPE_I, 'Actions of agent', agent, '=', p_action.get_elem(agent).get_values())
 
         # 1 State transition
-        if self._mode == self.C_MODE_SIM:
+        if self.\
+                _mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
             self._set_state(self.simulate_reaction(self.get_state(), p_action))
 

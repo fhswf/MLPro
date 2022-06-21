@@ -4,7 +4,7 @@
   
   <arg name="joint_limits_parameters_file" default="$(find ur_description)/config/ur5/joint_limits.yaml"/>  
   <arg name="prefix" default=""/>
-  <arg name="kinematics_parameters_file" default="$(find ur_description)/config/ur5/default_kinematics.yaml"/>
+  <arg name="kinematics_parameters_file" default="$(find ur_description)/config/my_robot_calibration.yaml"/>
   <arg name="physical_parameters_file" default="$(find ur_description)/config/ur5/physical_parameters.yaml"/>
   <arg name="visual_parameters_file" default="$(find ur_description)/config/ur5/visual_parameters.yaml"/>
   <arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface"/>
@@ -21,14 +21,15 @@
   <arg name="sim" default="true" />
   <arg name="random" default="true" doc="Randomize Spawned Target"/>
   
-  <arg name="robot_ip" default= "172.19.10.250" doc="IP of the controller" />
-  <arg name="reverse_port" default="50001" doc="Port on which controller listens for position values passed to servoj thread from the driver" />
+  <arg name="robot_ip" doc="IP address by which the robot can be reached."/>
+  <arg name="reverse_ip" default="" doc="IP of the driver, if set to empty it will detect it automatically."/>
+  <arg name="reverse_port" default="50001" doc="Port that will be opened by the driver to allow direct communication between the driver and the robot controller."/>
   <arg name="robot_description_file" default="$(find ur_description)/launch/load_ur5_lab.launch" doc="Robot description launch file."/>  
 
                               
   <group if="$(arg sim)">
                           <!-- Load Robot Parameter -->  
-  <param name="robot_description" command="$(find xacro)/xacro '$(find ur_description)/urdf/ur5_new_realsense_lab_gz.urdf.xacro'
+    <param name="robot_description" command="$(find xacro)/xacro '$(find ur_description)/urdf/ur5_new_realsense_lab_gz.urdf.xacro'
     use_nominal_extrinsics:=$(arg use_nominal_extrinsics)
     sim:=$(arg sim)
     prefix:=$(arg prefix)
@@ -71,7 +72,7 @@
         args="pub /calibrated std_msgs/Bool true" />
     
                           <!-- arm controller -->
-    <rosparam file="$(find ur_gazebo)/controller/ur5_controllers.yaml" command="load"/>
+    <rosparam file="$(find ur_gazebo)/config/ur5_controllers.yaml" command="load"/>
     
     <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn joint_state_controller" respawn="false" output="screen"/>
 	  <node name="scaled_pos_joint_traj_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn scaled_pos_joint_traj_controller" respawn="false" output="screen"/>
@@ -87,10 +88,13 @@
     
     <include file="$(find ur_robot_driver)/launch/ur5_bringup.launch">
       <arg name="robot_ip" value="$(arg robot_ip)"/>
+      <arg name="reverse_ip" value="$(arg reverse_ip)"/>
       <arg name="reverse_port" value="$(arg reverse_port)"/>
       <arg name="robot_description_file" value="$(arg robot_description_file)"/>
       <arg name="kinematics_config" value="$(arg kinematics_parameters_file)"/>
     </include>
+
+    <!-- <include file="$(find ur5_moveit_config)/launch/move_group.launch"/> -->
     
   </group>
 </launch>

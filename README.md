@@ -1,6 +1,4 @@
-[![py37](https://github.com/fhswf/MLPro/actions/workflows/python37.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/python37.yml)
-[![py38](https://github.com/fhswf/MLPro/actions/workflows/python38.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/python38.yml)
-[![py39](https://github.com/fhswf/MLPro/actions/workflows/python39.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/python39.yml)
+[![CI](https://github.com/fhswf/MLPro/actions/workflows/ci.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/mlpro/badge/?version=latest)](https://mlpro.readthedocs.io/en/latest/?badge=latest)
 
 <img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png?raw=True" align="right" width="40%"/>
@@ -50,7 +48,7 @@ The Documentation is available here: [https://mlpro.readthedocs.io/](https://mlp
 ## Project and Team
 Project MLPro was started in 2021 by the [Group for Automation Technology and Learning Systems at the South Westphalia University of Applied Sciences, Germany](https://www.fh-swf.de/de/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php).
 
-MLPro is currently designed and developed by [Detlef Arend](https://github.com/detlefarend), [M Rizky Diprasetya](https://github.com/rizkydiprasetya), [Steve Yuwono](https://github.com/steveyuwono) and [William Budiatmadjaja](https://github.com/budiatmadjajaWill).
+MLPro is currently designed and developed by [Detlef Arend](https://github.com/detlefarend), [M Rizky Diprasetya](https://github.com/rizkydiprasetya), [Steve Yuwono](https://github.com/steveyuwono) and further [contributors](https://github.com/fhswf/MLPro/graphs/contributors). 
 
 
 ## How to contribute

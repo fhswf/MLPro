@@ -2,6 +2,20 @@ Release Notes
 ================
 
 
+Version 0.9.0
+---------------------
+
+Release Highlights
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- RL/GT: New environment model Homogeneous Matrix
+- Revision of all example files (howtos)
+- Extensions to the documentation
+- Minor corrections
+- Integration to Zenodo (doi management)
+
+
+
 Version 0.8.6
 ---------------------
 
@@ -9,6 +23,7 @@ Release Highlights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - Adding MANIFEST.in for including additional data package for UR5 ROS Environment
+
 
 
 Version 0.8.5

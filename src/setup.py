@@ -2,8 +2,8 @@ from setuptools import setup
 
 
 setup(name='mlpro',
-version='0.8.6',
-description='Machine Learning Professional',
+version='0.9.0',
+description='MLPro - A synoptic framework for standardized machine learning tasks',
 author='MLPro Team',
 author_mail='mlpro@listen.fh-swf.de',
 license='MIT',

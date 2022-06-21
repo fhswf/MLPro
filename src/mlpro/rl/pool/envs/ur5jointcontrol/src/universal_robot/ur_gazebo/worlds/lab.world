@@ -13,7 +13,7 @@
     
     <!-- The lab table -->
     <model name="Lab Table">
-      <pose> -0.14 0.415 0 0 0 0</pose>
+      <pose> 0.14 -0.415 0 0 0 3.1416</pose>
       <static>true</static>
       <link name="table">
         <collision name="table">

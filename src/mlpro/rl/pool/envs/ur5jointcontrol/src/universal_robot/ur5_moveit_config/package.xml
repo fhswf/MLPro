@@ -17,6 +17,7 @@
   <url type="bugtracker">https://github.com/ros-planning/moveit_setup_assistant/issues</url>
   <url type="repository">https://github.com/ros-planning/moveit_setup_assistant</url>
 
+  <exec_depend>moveit</exec_depend>
   <exec_depend>moveit_ros_move_group</exec_depend>
   <exec_depend>moveit_planners_ompl</exec_depend>
   <exec_depend>moveit_ros_visualization</exec_depend>

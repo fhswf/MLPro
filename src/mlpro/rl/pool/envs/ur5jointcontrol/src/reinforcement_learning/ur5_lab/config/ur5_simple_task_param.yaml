@@ -1,6 +1,0 @@
-ur5_lab: #namespace
-    task_and_robot_environment_name: 'UR5LabSimpleTask-v0'
-    max_iterations: 20
-
-
-
