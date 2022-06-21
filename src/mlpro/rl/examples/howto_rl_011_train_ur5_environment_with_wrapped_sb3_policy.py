@@ -77,7 +77,7 @@ now = datetime.now()
 
 training = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
-    p_env_mode=Mode.C_MODE_REAL,
+    p_env_mode=Mode.C_MODE_SIM,
     p_cycle_limit=5000,
     p_cycles_per_epi_limit=-1,
     p_collect_states=True,

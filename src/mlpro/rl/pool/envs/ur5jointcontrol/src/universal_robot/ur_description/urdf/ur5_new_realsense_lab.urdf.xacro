@@ -129,7 +129,7 @@
   
   <!-- Collision Second Robot -->
   <link name="second_robot_collision">
-    <inertial>
+    <!-- <inertial>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <mass value="1.0"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
@@ -137,13 +137,13 @@
     <visual name="">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <box size="0.76 0.05 1.0"/>
+        <box size="0.001 0.001 0.001"/>
       </geometry>
       <material name="">
         <color rgba="1.0 0.0 0.0 1.0"/>
         <texture filename=""/>
       </material>
-    </visual>
+    </visual> -->
     <collision>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
@@ -160,7 +160,7 @@
 
   <!-- Collision Front Robot -->
   <link name="front_robot_collision">
-    <inertial>
+    <!-- <inertial>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <mass value="1.0"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
@@ -168,13 +168,13 @@
     <visual name="">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <box size="0.05 1.5 1.6"/>
+        <box size="0.001 0.001 0.001"/>
       </geometry>
       <material name="">
         <color rgba="1.0 0.0 0.0 1.0"/>
         <texture filename=""/>
       </material>
-    </visual>
+    </visual> -->
     <collision>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
@@ -191,7 +191,7 @@
 
   <!-- Collision Back Robot -->
   <link name="back_robot_collision">
-    <inertial>
+    <!-- <inertial>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <mass value="1.0"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
@@ -199,13 +199,13 @@
     <visual name="">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <box size="0.05 1.5 1.6"/>
+        <box size="0.001 0.001 0.001"/>
       </geometry>
       <material name="">
         <color rgba="1.0 0.0 0.0 1.0"/>
         <texture filename=""/>
       </material>
-    </visual>
+    </visual> -->
     <collision>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
@@ -222,7 +222,7 @@
 
   <!-- Collision Left Robot -->
   <link name="left_robot_collision">
-    <inertial>
+    <!-- <inertial>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <mass value="1.0"/>
       <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
@@ -230,13 +230,13 @@
     <visual name="">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <box size="0.05 0.8 1.6"/>
+        <box size="0.001 0.001 0.001"/>
       </geometry>
       <material name="">
         <color rgba="1.0 0.0 0.0 1.0"/>
         <texture filename=""/>
       </material>
-    </visual>
+    </visual> -->
     <collision>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
