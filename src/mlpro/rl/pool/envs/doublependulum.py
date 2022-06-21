@@ -29,10 +29,11 @@
 ## -- 2022-05-19  1.1.5     YI       Editing the reward function
 ## -- 2022-05-28  1.1.6     YI       Editing the reward, normalization, and derivs function
 ## -- 2022-05-30  1.1.7     SY       Enhance data normalization method, reset method, and code cleaning
+## -- 2022-06-21  1.1.8     SY       Code cleaning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.7 (2022-05-30)
+Ver. 1.1.8 (2022-06-21)
 
 This module provides an RL environment of double pendulum.
 """
@@ -201,32 +202,31 @@ class DoublePendulum(Environment):
                     - (self.m1 + self.m2) * self.g * sin(state[0]))
                    / den1)
         
-        numerator1 = -self.g * (2 * self.m1 + self.m2) * sin(self.th1)
-        numerator2 = -self.m2 * self.g * sin(self.th1 - 2 * self.th2)
-        numerator3 = -2 * sin(self.th1-self.th2)
-        numerator4 =  self.m2 * ((self.th2dot * self.th2dot) * self.l2 
-                     + (self.th1dot * self.th1dot) * self.l1 * cos(self.th1-self.th2))
-        numerator_1 = numerator1 + numerator2 + (numerator3 * numerator4)
-        denominator_1 = self.l1 * (2 * self.m1 + self.m2 - self.m2 
-                     * cos(2 * self.th1 - 2 * self.th2))
-        dydx[2]= numerator_1/denominator_1
+        num1 = -self.g * (2 * self.m1 + self.m2) * sin(self.th1)
+        num2 = -self.m2 * self.g * sin(self.th1 - 2 * self.th2)
+        num3 = -2 * sin(self.th1 - self.th2)
+        num4 =  self.m2 * ((self.th2dot * self.th2dot) * self.l2 + (self.th1dot * self.th1dot)
+                           * self.l1 * cos(self.th1 - self.th2))
+        num = num1 + num2 + (num3 * num4)
+        den2 = self.l1 * (2 * self.m1 + self.m2 - self.m2 * cos(2 * self.th1 - 2 * self.th2))
+        dydx[2]= num/den2
 
         dydx[3] = state[4]
 
-        den2 = (self.l2 / self.l1) * den1
+        den3 = (self.l2 / self.l1) * den1
         dydx[4] = ((- self.m2 * self.l2 * state[4] * state[4] * sin(delta) * cos(delta)
                     + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
                     - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
                     - (self.m1 + self.m2) * self.g * sin(state[3]))
-                   / den2)
+                   / den3)
         
-        numerator5 = 2 * sin(self.th1 - self.th2)
-        numerator6 = (self.th1dot * self.th1dot) * self.l1 * (self.m1 + self.m2) + self.g * (self.m1+ self.m2) * cos(self.th1)
-        numerator7 = (self.th2dot * self.th2dot) * self.l2 * self.m2 * cos(self.th1-self.th2)
-        numerator_2 = numerator5 * (numerator6 + numerator7)
-        denominator_2 = self.l2 * (2 * self.m1 + self.m2 - self.m2 
+        num1 = 2 * sin(self.th1 - self.th2)
+        num2 = (self.th1dot * self.th1dot) * self.l1 * (self.m1 + self.m2) + self.g * (self.m1 + self.m2) * cos(self.th1)
+        num3 = (self.th2dot * self.th2dot) * self.l2 * self.m2 * cos(self.th1 - self.th2)
+        num = num1 * (num2 + num3)
+        den4 = self.l2 * (2 * self.m1 + self.m2 - self.m2 
                       * cos(2 * self.th1 - 2 * self.th2))
-        dydx[5]=numerator_2/denominator_2
+        dydx[5] = num/den4
         
         return dydx
 
