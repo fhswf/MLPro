@@ -39,17 +39,29 @@
   <joint name="gripper_joint" type="fixed">
     <parent link="tool0" />
     <child link = "robotiq_arg2f_base_link" />
-    <origin xyz="0.0 0.0 0.02" rpy="0.0 0.0 1.5708" />
+    <origin xyz="0.0 0.0 0.017" rpy="0.0 0.0 1.5708" />
   </joint>
   
   <link name="world" />
-  <joint name="world_joint" type="fixed">
-    <parent link="world" />
-    <child link = "base_link" />
-    <origin xyz="0.0 0.0 0.648" rpy="0.0 0.0 3.1416" />
-  </joint>
 
-  <link name="offset_dummy" />
+  <link name="offset_dummy">
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <sphere radius="0.015"/>
+      </geometry>
+  </visual>
+
+  <inertial>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <mass value="1"/>
+    <inertia
+      ixx="1.0" ixy="0.0" ixz="0.0"
+      iyy="1.0" iyz="0.0"
+      izz="1.0"/>
+  </inertial>
+  </link>
+
   <joint name="offset_dummy_joint" type="fixed">
     <parent link="tool0" />
     <child link = "offset_dummy" />
@@ -62,18 +74,183 @@
     <origin xyz="0.140 -0.415 0" rpy="0.0 0.0 3.1416" />
   </joint>
   
+  <!-- Collision Table -->
   <link name="center_link">    
     <collision name="table">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-          <mesh filename="package://ur_description/meshes/lab_table_with_wall.dae" />
+          <mesh filename="package://ur_description/meshes/lab_table-mod.dae" />
       </geometry>
     </collision>
     <visual name="table">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-          <mesh filename="package://ur_description/meshes/lab_table_with_wall.dae" />
+          <mesh filename="package://ur_description/meshes/lab_table-mod.dae" />
       </geometry>
     </visual>
   </link>
+
+  <joint name="center_joint" type="fixed">
+    <parent link="center_link" />
+    <child link = "base_link" />
+    <origin xyz="0.140 -0.415 0.648" rpy="0.0 0.0 0.0" />
+  </joint>
+
+  <!-- Collision Rack -->
+  <link name="rack_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual name="">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.265 0.120 0.40"/>
+      </geometry>
+      <material name="">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+        <texture filename=""/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.265 0.120 0.40"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="rack_joint" type="fixed">
+    <parent link="center_link"/>
+    <child link="rack_link"/>
+    <origin xyz="-0.245 -0.170 0.848" rpy="0.0 0.0 0.0"/>
+  </joint>
+  
+  <!-- Collision Second Robot -->
+  <link name="second_robot_collision">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual name="">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.76 0.05 1.0"/>
+      </geometry>
+      <material name="">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+        <texture filename=""/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.76 0.05 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="second_robot_joint" type="fixed">
+    <parent link="center_link"/>
+    <child link="second_robot_collision"/>
+    <origin xyz="0.0 0.1 1.148" rpy="0.0 0.0 0.0"/>
+  </joint>
+
+  <!-- Collision Front Robot -->
+  <link name="front_robot_collision">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual name="">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.05 1.5 1.6"/>
+      </geometry>
+      <material name="">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+        <texture filename=""/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.05 1.5 1.6"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="front_robot_joint" type="fixed">
+    <parent link="center_link"/>
+    <child link="front_robot_collision"/>
+    <origin xyz="-0.5 0.0 0.8" rpy="0.0 0.0 0.0"/>
+  </joint>
+
+  <!-- Collision Back Robot -->
+  <link name="back_robot_collision">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual name="">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.05 1.5 1.6"/>
+      </geometry>
+      <material name="">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+        <texture filename=""/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.05 1.5 1.6"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="back_robot_joint" type="fixed">
+    <parent link="center_link"/>
+    <child link="back_robot_collision"/>
+    <origin xyz="0.5 0.0 0.8" rpy="0.0 0.0 0.0"/>
+  </joint>
+
+  <!-- Collision Left Robot -->
+  <link name="left_robot_collision">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual name="">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.05 0.8 1.6"/>
+      </geometry>
+      <material name="">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+        <texture filename=""/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.05 0.8 1.6"/>
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="left_robot_joint" type="fixed">
+    <parent link="center_link"/>
+    <child link="left_robot_collision"/>
+    <origin xyz="0.0 -0.8 0.8" rpy="0.0 0.0 1.5708"/>
+  </joint>
+
 </robot>
 
 

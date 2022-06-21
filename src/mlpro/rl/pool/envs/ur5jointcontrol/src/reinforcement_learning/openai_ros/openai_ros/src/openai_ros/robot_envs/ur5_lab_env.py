@@ -457,7 +457,8 @@ class UR5LabSimEnv(robot_gazebo_env.RobotGazeboEnv):
 
         self._gripper = rospy.Publisher('/gripper_controller/command', String, 
                                             queue_size=1)
-                                            
+
+        rospy.sleep(5)      
         rospy.logdebug("UR5LabEnv unpausing")
         self.gazebo.unpauseSim()
                 

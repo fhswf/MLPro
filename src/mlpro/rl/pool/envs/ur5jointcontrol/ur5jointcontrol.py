@@ -238,7 +238,7 @@ class UR5JointControl(Environment):
         obs = p_state.get_values()
         close = np.allclose(a=obs[:3],
                             b=obs[3:],
-                            atol=0.05)
+                            atol=0.1)
 
         if close:
             self._state.set_terminal(True)
