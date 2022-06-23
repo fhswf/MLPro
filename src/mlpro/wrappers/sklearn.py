@@ -8,6 +8,7 @@
 ## -- 2022-06-16  0.0.0     LSB      Creation
 ## -- 2022-06-16  1.0.0     LSB      Release of first version
 ## -- 2022-06-18  1.0.1     LSB      Stream names as Stream ids
+## -- 2022-06-23  1.0.2     LSB      Fetching stream meta data
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -180,6 +181,9 @@ class WrStreamSklearn(Stream):
                                    + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
                                    + ".data)")
         self._instance = Instance(self.get_feature_space())
+        self.C_SCIREF_ABSTRACT = eval("len(sklearn.datasets."
+                                   + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
+                                   + ".DESCR")
 
 
 ## --------------------------------------------------------------------------------------------------

@@ -11,10 +11,11 @@
 ## -- 2022-06-09  1.0.2     LSB      Downloading, resetting OpenML stream and handling instances
 ## -- 2022-06-10  1.0.3     LSB      Code Optmization
 ## -- 2022-06-13  1.0.4     LSB      Bug Fix
+## -- 2022-06-23  1.0.5     LSB      fetching meta data
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-06-10)
+Ver. 1.0.5 (2022-06-23)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -75,11 +76,11 @@ class WrStreamProviderOpenML (StreamProvider):
                 try:
                     _name = d[1]['name']
                 except:
-                    _name = None
+                    _name = ''
                 try:
                     _id = d[1]['did']
                 except:
-                    _id = None
+                    _id = ''
                 try:
                     _num_instances = d[1]['NumberOfInstances']
                 except:
@@ -114,10 +115,10 @@ class WrStreamProviderOpenML (StreamProvider):
         """
         try:
             try:
-                stream = self._stream_list[self._stream_ids.index(p_id)]
+                stream = self._stream_list[self._stream_ids.index(int(p_id))]
             except:
                 self.get_stream_list()
-                stream = self._stream_list[self._stream_ids.index(p_id)]
+                stream = self._stream_list[self._stream_ids.index(int(p_id))]
             return stream
         except ValueError:
             raise ValueError('Stream id not in the available list')
@@ -221,7 +222,21 @@ class WrStreamOpenML(Stream):
         bool
             True for the download status of the stream
         """
-        self._dataset = openml.datasets.get_dataset(self._id).get_data(dataset_format = 'array')
+        _stream_meta = openml.datasets.get_dataset(self._id)
+        try:
+            self.C_SCIREF_URL = _stream_meta.url
+        except:
+            self.C_SCIREF_URL = ''
+        try:
+            self.C_SCIREF_AUTHOR = _stream_meta.creator
+        except:
+            self.C_SCIREF_AUTHOR =''
+        try:
+            self.C_SCIREF_ABSTRACT = _stream_meta.description
+        except:
+            self.C_SCIREF_ABSTRACT =''
+            self._dataset = _stream_meta.get_data(dataset_format = 'array')
+
         if self._dataset is not None:
             return True
         else:

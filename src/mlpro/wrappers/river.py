@@ -8,10 +8,11 @@
 ## -- 2022-06-14  0.0.0     LSB      Creation
 ## -- 2022-06-14  1.0.0     LSB      Release of first version
 ## -- 2022-06-18  1.0.1     LSB      Stream names as Stream ids
+## -- 2022-06-23  1.0.2     LSB      Meta data and instances in Numpy format
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-06-18)
+Ver. 1.0.2 (2022-06-23)
 
 This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
@@ -24,6 +25,7 @@ from mlpro.bf.various import ScientificObject
 from mlpro.oa.models import *
 from mlpro.bf.math import *
 import river
+import numpy
 
 
 
@@ -141,6 +143,14 @@ class WrStreamRiver(Stream):
         self._downloaded = False
         self.C_ID = self._id = p_id
         self.C_NAME = self._name = p_name
+        try:
+            self.C_SCIREF_URL = eval("river.datasets."+self._name+"().url")
+        except:
+            self.C_SCIREF_URL = ''
+        try:
+            self.C_SCIREF_ABSTRACT = eval("river.datasets."+self._name+"().desc")
+        except:
+            self.C_SCIREF_ABSTRACT = ''
         super().__init__(p_id,
                          p_name,
                          p_num_instances,
@@ -176,7 +186,7 @@ class WrStreamRiver(Stream):
 
 
 ## --------------------------------------------------------------------------------------------------
-    def get_feature_space(self):
+    def get_feature_space(self) -> MSpace:
         """
         Method to get the feature space of a stream object
 
@@ -232,7 +242,8 @@ class WrStreamRiver(Stream):
         """
 
         if not self._index < self._num_instances:return None
-        self._instance.set_values(next(self._dataset))
+        _instance_dict = next(self._dataset)
+        self._instance.set_values(numpy.asarray(list(_instance_dict[0].values())))
         self._index += 1
         return self._instance
 
