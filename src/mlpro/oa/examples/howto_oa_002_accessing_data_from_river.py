@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : howto002_oa_accessing_data_from_river
+## -- Module  : howto_oa_002_accessing_data_from_river.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -34,13 +34,12 @@ feature_space = stream.get_feature_space()
 river_wrap.log(stream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim(),'\n\n')
 
 
-
 # 5. resetting the stream
 stream.reset()
 
 
-stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 # 6. Loading stream instances
+stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(10):
     curr_instance = stream.get_next().get_values()
     stream.log(stream.C_LOG_TYPE_I,'\n\nCurrent Instance:' , curr_instance)
@@ -50,8 +49,8 @@ for i in range(10):
 stream.reset()
 
 
-stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 # 8. Getting stream instances
+stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(5):
     curr_instance = stream.get_next().get_values()
     stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_instance)
