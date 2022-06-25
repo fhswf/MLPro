@@ -186,6 +186,14 @@ class WrStreamOpenML(Stream):
 
 
 ## --------------------------------------------------------------------------------------------------
+    def _set_feature_space(self):
+        self._feature_space = MSpace()
+        _, _, _, features = self._dataset
+        for feature in features:
+            self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
+
+
+## --------------------------------------------------------------------------------------------------
     def get_feature_space(self):
         """
         Method to get the feature space of a stream object
@@ -204,10 +212,7 @@ class WrStreamOpenML(Stream):
             return self._feature_space
 
         except:
-            self._feature_space = MSpace()
-            _, _, _, features = self._dataset
-            for feature in features:
-                self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
+            self._set_feature_space()
             return self._feature_space
 
 
@@ -222,6 +227,7 @@ class WrStreamOpenML(Stream):
             True for the download status of the stream
         """
         _stream_meta = openml.datasets.get_dataset(self._id)
+
         self._label_space = MSpace()
         self._label = _stream_meta.default_target_attribute
         self._label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
@@ -239,6 +245,7 @@ class WrStreamOpenML(Stream):
             self.C_SCIREF_ABSTRACT =''
 
         self._dataset = _stream_meta.get_data(dataset_format = 'array')
+        self._set_feature_space()
 
         if self._dataset is not None:
             return True

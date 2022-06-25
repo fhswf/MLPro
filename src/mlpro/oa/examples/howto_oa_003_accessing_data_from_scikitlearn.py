@@ -14,7 +14,7 @@
 """
 Ver. 1.0.2 (2022-06-25)
 
-This module shows how to wrap mlpro's Stream and StreamProvider class to ScikitLearn.
+This module shows how to wrap MLPro's Stream and StreamProvider class to ScikitLearn.
 """
 from mlpro.wrappers.sklearn import *
 

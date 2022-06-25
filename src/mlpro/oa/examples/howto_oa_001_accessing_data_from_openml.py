@@ -9,10 +9,11 @@
 ## -- 2022-06-09  1.0.0     LSB      Release of first version
 ## -- 2022-06-13  1.0.1     LSB      Bug Fix
 ## -- 2022-06-18  1.0.2     LSB      Restructured logging output
+## -- 2022-06-25  1.0.3     LSB      Refactoring for new instance and Label class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-06-18)
+Ver. 1.0.3 (2022-06-25)
 
 This module shows how to wrap MLPro's Stream and StreamProvider class to OpenML .
 """
@@ -46,8 +47,10 @@ stream.reset()
 stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(10):
     # curr_instance = stream.get_next().get_values()
-    curr_instance = stream.get_next()
-    stream.log(stream.C_LOG_TYPE_I,'\n\nCurrent Instance:' , curr_instance)
+    curr_features = stream.get_next().get_feature_data().get_values()
+    curr_label = stream.get_next().get_label_data().get_values()
+    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_features, '\nLabel:', curr_label)
+
 
 
 # 7. resetting the stream
@@ -57,7 +60,6 @@ stream.reset()
 # 8. Getting stream instances
 stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(5):
-    curr_instance_feature = stream.get_next().get_feature_data().get_values()
-    curr_instance_label = stream.get_next().get_label_data().get_values()
-    # curr_instance = stream.get_next().get_values()
-    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_instance_feature, curr_instance_label)
+    curr_features = stream.get_next().get_feature_data().get_values()
+    curr_label = stream.get_next().get_label_data().get_values()
+    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_features, '\nLabel:', curr_label)

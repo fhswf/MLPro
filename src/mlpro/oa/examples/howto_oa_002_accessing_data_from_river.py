@@ -13,7 +13,7 @@
 """
 Ver. 1.0.1 (2022-06-25)
 
-This module shows how to wrap mlpro's Stream and StreamProvider class to River.
+This module shows how to wrap MLPro's Stream and StreamProvider class to River.
 """
 from mlpro.wrappers.river import *
 
