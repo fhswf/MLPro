@@ -30,7 +30,7 @@ stream_list = open_ml.get_stream_list(p_display_list=True)
 
 
 # 3. Get a specific stream from the stream provider
-stream = open_ml.get_stream(2)
+stream = open_ml.get_stream(3)
 
 
 # 4. get the feature space of the stream
@@ -45,7 +45,8 @@ stream.reset()
 # 6. Loading stream instances
 stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(10):
-    curr_instance = stream.get_next().get_values()
+    # curr_instance = stream.get_next().get_values()
+    curr_instance = stream.get_next()
     stream.log(stream.C_LOG_TYPE_I,'\n\nCurrent Instance:' , curr_instance)
 
 
@@ -56,5 +57,7 @@ stream.reset()
 # 8. Getting stream instances
 stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(5):
-    curr_instance = stream.get_next().get_values()
-    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_instance)
+    curr_instance_feature = stream.get_next().get_feature_data().get_values()
+    curr_instance_label = stream.get_next().get_label_data().get_values()
+    # curr_instance = stream.get_next().get_values()
+    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_instance_feature, curr_instance_label)

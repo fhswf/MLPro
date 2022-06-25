@@ -12,10 +12,11 @@
 ## -- 2022-06-10  1.0.3     LSB      Code Optmization
 ## -- 2022-06-13  1.0.4     LSB      Bug Fix
 ## -- 2022-06-23  1.0.5     LSB      fetching meta data
+## -- 2022-06-25  1.0.6     LSB      Refactoring due to new label and instance class, new instance
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-06-23)
+Ver. 1.0.6 (2022-06-25)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -26,6 +27,7 @@ https://docs.openml.org/APIs/
 
 """
 
+import numpy
 from mlpro.bf.various import ScientificObject
 from mlpro.oa.models import *
 from mlpro.bf.math import *
@@ -182,8 +184,6 @@ class WrStreamOpenML(Stream):
 
         self._index = 0
 
-        self._instance = Instance(self.get_feature_space())
-
 
 ## --------------------------------------------------------------------------------------------------
     def get_feature_space(self):
@@ -204,7 +204,6 @@ class WrStreamOpenML(Stream):
             return self._feature_space
 
         except:
-
             self._feature_space = MSpace()
             _, _, _, features = self._dataset
             for feature in features:
@@ -223,6 +222,9 @@ class WrStreamOpenML(Stream):
             True for the download status of the stream
         """
         _stream_meta = openml.datasets.get_dataset(self._id)
+        self._label_space = MSpace()
+        self._label = _stream_meta.default_target_attribute
+        self._label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
         try:
             self.C_SCIREF_URL = _stream_meta.url
         except:
@@ -256,8 +258,12 @@ class WrStreamOpenML(Stream):
         """
 
         if self._index < len(self._dataset[0]):
-            self._instance.set_values(self._dataset[0][self._index])
+            _feature = Element(self._feature_space)
+            _label = Element(self._label_space)
+            _feature.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
+            _label.set_values(self._dataset[0][self._index][self._dataset[3].index(self._label)])
+            _instance = Instance(_feature, _label)
             self._index += 1
-            return self._instance
+            return _instance
 
         return None
