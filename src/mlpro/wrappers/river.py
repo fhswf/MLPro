@@ -9,10 +9,11 @@
 ## -- 2022-06-14  1.0.0     LSB      Release of first version
 ## -- 2022-06-18  1.0.1     LSB      Stream names as Stream ids
 ## -- 2022-06-23  1.0.2     LSB      Meta data and instances in Numpy format
+## -- 2022-06-25  1.0.3     LSB      Refactoring for label and instance class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-06-23)
+Ver. 1.0.3 (2022-06-25)
 
 This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
@@ -46,6 +47,7 @@ class WrStreamProviderRiver (StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self):
+
         _datasets = [
                 "AirlinePassengers",
                 "Bananas",
@@ -157,7 +159,7 @@ class WrStreamRiver(Stream):
                          p_version,
                          p_mode=self.C_MODE_SIM)
         self._kwargs = p_kwargs.copy()
-
+        self._label = 'Label'
 
 ## -------------------------------------------------------------------------------------------------
     def __repr__(self):
@@ -180,12 +182,26 @@ class WrStreamRiver(Stream):
 
         self._index = 0
         self._dataset = iter(eval("river.datasets."+self._name+"()"))
-        self._instance = Instance(self.get_feature_space())
-
-
+        # self._instance = Instance(self.get_feature_space())
 
 
 ## --------------------------------------------------------------------------------------------------
+    def _set_feature_space(self):
+        self._feature_space = MSpace()
+        features = next(self._dataset)[0].keys()
+        for feature in features:
+            self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
+        self._label_space = MSpace()
+
+        if isinstance(next(self._dataset)[1], dict):
+            self._label = next(self._dataset)[1].keys()
+            for label in self._label:
+                self._label_space.add_dim(Label(p_name_long=str(label), p_name_short=str(label[0:5])))
+
+        else:
+            self._label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
+
+    ## --------------------------------------------------------------------------------------------------
     def get_feature_space(self) -> MSpace:
         """
         Method to get the feature space of a stream object
@@ -204,13 +220,8 @@ class WrStreamRiver(Stream):
             return self._feature_space
 
         except:
-
-            self._feature_space = MSpace()
-            features = next(self._dataset)[0].keys()
-            for feature in features:
-                self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
+            self._set_feature_space()
             return self._feature_space
-
 
 
     ## --------------------------------------------------------------------------------------------------
@@ -223,9 +234,13 @@ class WrStreamRiver(Stream):
         bool
             True for the download status of the stream
         """
+
         self._dataset = iter(eval("river.datasets."+self._name+"()"))
+        self._set_feature_space()
+
         if self._dataset is not None:
             return True
+
         else:
             raise ValueError("Dataset not downloaded or not available")
 
@@ -243,7 +258,17 @@ class WrStreamRiver(Stream):
 
         if not self._index < self._num_instances:return None
         _instance_dict = next(self._dataset)
-        self._instance.set_values(numpy.asarray(list(_instance_dict[0].values())))
+
+        _feature_data = Element(self._feature_space)
+        _label_data = Element(self._label_space)
+
+        _feature_data.set_values(list(_instance_dict[0].values()))
+
+        if isinstance(_instance_dict[1], dict):
+            _label_data.set_values(list(_instance_dict[1].values()))
+        else: _label_data.set_values(_instance_dict[1])
+
+
         self._index += 1
-        return self._instance
+        return Instance(_feature_data, _label_data)
 

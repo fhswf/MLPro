@@ -9,10 +9,11 @@
 ## -- 2022-06-16  1.0.0     LSB      Release of first version
 ## -- 2022-06-18  1.0.1     LSB      Stream names as Stream ids
 ## -- 2022-06-23  1.0.2     LSB      Fetching stream meta data
+## -- 2022-06-25  1.0.3     LSB      Refactoring for new label and instance class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-06-18)
+Ver. 1.0.3 (2022-06-dd)
 
 This module provides wrapper functionalities to incorporate public data sets of the Sklearn ecosystem.
 
@@ -146,7 +147,7 @@ class WrStreamSklearn(Stream):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_id, p_name, p_num_instances=None, p_version=None, **p_kwargs):
 
-        # self._downloaded = False
+        self._downloaded = False
         self.C_ID = self._id = p_id
         self.C_NAME = self._name = p_name
         super().__init__(p_id,
@@ -174,17 +175,35 @@ class WrStreamSklearn(Stream):
         """
 
         self._index = 0
-        self._dataset = eval("sklearn.datasets."
-                             + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
-                             + ".data")
-        self._num_instances = eval("len(sklearn.datasets."
-                                   + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
-                                   + ".data)")
-        self._instance = Instance(self.get_feature_space())
-        self.C_SCIREF_ABSTRACT = eval("len(sklearn.datasets."
-                                   + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
-                                   + ".DESCR")
+        if self._dataset is not None:
+           self._downloaded = self._download()
 
+        self._num_instances = len(self._dataset.data)
+
+        try:
+            self.C_SCIREF_ABSTRACT = eval("len(sklearn.datasets."
+                                     + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
+                                     + ".DESCR")
+        except:
+            self.C_SCIREF_ABSTRACT = ''
+        # self._instance = Instance(self.get_feature_space())
+
+## --------------------------------------------------------------------------------------------------
+    def _set_feature_space(self):
+        self._feature_space = MSpace()
+        self._label_space = MSpace()
+        try:
+            features = self._dataset.feature_names
+        except:
+            self._downloaded = self._download()
+            if not isinstance(self._dataset['data'], list):
+                features = self._dataset['feature_names']
+            else:
+                features = ['Attr_1']
+        for feature in features:
+            self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(feature[0:5])))
+        for label in self._dataset['target_names']:
+            self._label_space.add_dim(Feature(p_name_long=str(label), p_name_short=str(label[0:5])))
 
 ## --------------------------------------------------------------------------------------------------
     def get_feature_space(self) -> MSpace:
@@ -206,18 +225,14 @@ class WrStreamSklearn(Stream):
 
         except:
 
-            self._feature_space = MSpace()
-            try:
-                features = eval("sklearn.datasets." +WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)] +".feature_names")
-            except:
-                self._dataset = eval("sklearn.datasets." +WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)] +".data")
-                if not isinstance(self._dataset,list):
-                    features = [('Attr_'+str(i)) for i in range(len(self._dataset.shape[1]))]
-                else:
-                    features = ['Attr_1']
-            for feature in features:
-                self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
+            self._set_feature_space()
             return self._feature_space
+
+
+## --------------------------------------------------------------------------------------------------
+    def _download(self):
+        self._dataset = eval("sklearn.datasets."
+                         + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)])
 
 
 ## --------------------------------------------------------------------------------------------------
@@ -232,7 +247,10 @@ class WrStreamSklearn(Stream):
         """
 
         if not self._index < self._num_instances:return None
-        self._instance.set_values(self._dataset[self._index])
+        _feature_data = Element(self._feature_space)
+        _label_data = Element(self._label_space)
+        _feature_data.set_values(self._dataset['data'][self._index])
+        _label_data.set_values(self._dataset['target'][self._index])
         self._index += 1
-        return self._instance
+        return Instance(_feature_data, _label_data)
 

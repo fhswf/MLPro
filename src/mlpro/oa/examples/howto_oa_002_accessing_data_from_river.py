@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-06-14  0.0.0     LSB      Creation
 ## -- 2022-06-14  1.0.0     LSB      Release of first version
+## -- 2022-06-25  1.0.1     LSB      Refactoring for new label and instance class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-06-14)
+Ver. 1.0.1 (2022-06-25)
 
 This module shows how to wrap mlpro's Stream and StreamProvider class to River.
 """
@@ -26,7 +27,7 @@ stream_list = river_wrap.get_stream_list(p_display_list=True)
 
 
 # 3. Get a specific stream from the stream provider
-stream = river_wrap.get_stream('Insects')
+stream = river_wrap.get_stream('Bikes')
 
 
 # 4. get the feature space of the stream
@@ -41,7 +42,7 @@ stream.reset()
 # 6. Loading stream instances
 stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(10):
-    curr_instance = stream.get_next().get_values()
+    curr_instance = stream.get_next().get_feature_data().get_values()
     stream.log(stream.C_LOG_TYPE_I,'\n\nCurrent Instance:' , curr_instance)
 
 
@@ -52,5 +53,6 @@ stream.reset()
 # 8. Getting stream instances
 stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(5):
-    curr_instance = stream.get_next().get_values()
-    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_instance)
+    curr_instance = stream.get_next().get_feature_data().get_values()
+    curr_label = stream.get_next().get_label_data().get_values()
+    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_instance, '\nLabel:', curr_label, '\n')
