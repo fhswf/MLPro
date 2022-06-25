@@ -40,7 +40,50 @@ class Feature (Dimension): pass
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Instance (Element): pass
+class Label (Dimension): pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Instance:
+    """
+    Instance class to store the current instance and the corresponding labels of the stream
+
+    Parameters
+    ----------
+    p_feature_data : Element
+        feature data of the instance
+    p_label_data : Element
+        label data of the corresponding instance
+
+    """
+
+    C_TYPE          = 'Instance'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_feature_data:Element, p_label_data:Element = None, **p_kwargs):
+
+        self._feature_data = p_feature_data
+        self._label_data = p_label_data
+        self._kwargs = p_kwargs.copy()
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_feature_data(self) -> Element:
+        return self._feature_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_label_data(self) -> Element:
+        return self._label_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_kwargs(self):
+        return self._kwargs
 
 
 
