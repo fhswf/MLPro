@@ -13,11 +13,12 @@
 ## -- 2022-06-14  0.1.3     LSB      Enhancement
 ## -- 2022-06-18  0.1.4     LSB      Logging of stream list based on p_display_list parameter
 ## -- 2022-06-19  0.1.5     DA       - Class Stream: internal use of self.C_NAME instead of self._name
-## --                                - Check/completion of doc strings 
+## --                                - Check/completion of doc strings
+## -- 2022-06-25  0.1.6     LSB      New Label class with modified instance class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.5 (2022-06-19)
+Ver. 0.1.6 (2022-06-19)
 
 Model classes for stream providers and streams. 
 """
