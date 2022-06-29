@@ -13,8 +13,15 @@
 """
 Ver. 1.0.1 (2022-06-25)
 
-This module shows how to wrap MLPro's Stream and StreamProvider class to River.
+This module shows how to wrap MLPro's Stream and StreamProvider class to River, including how to fetch the list of
+streams and downloading a stream from the list of streams available with the stream provider, getting the feature
+spaces of the particular stream. This module also illustrates how to reset the stream and fetch the stream instances
+as needed.
+Please run the following code to understand the wrapper functionality and produce similar results.
 """
+
+
+
 from mlpro.wrappers.river import *
 
 
@@ -23,7 +30,7 @@ river_wrap = WrStreamProviderRiver()
 
 
 # 2. Get a list of streams available at the stream provider
-stream_list = river_wrap.get_stream_list(p_display_list=True)
+stream_list = river_wrap.get_stream_list()
 
 
 # 3. Get a specific stream from the stream provider
@@ -43,7 +50,8 @@ stream.reset()
 stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(10):
     curr_instance = stream.get_next().get_feature_data().get_values()
-    stream.log(stream.C_LOG_TYPE_I,'\n\nCurrent Instance:' , curr_instance)
+    curr_label = stream.get_next().get_label_data().get_values()
+    stream.log(stream.C_LOG_TYPE_I,'\n\nCurrent Instance:' , curr_instance, '\nLabel:', curr_label, '\n')
 
 
 # 7. resetting the stream

@@ -116,12 +116,17 @@ class WrStreamProviderOpenML (StreamProvider):
             Returns the stream corresponding to the id
         """
         try:
+
             try:
                 stream = self._stream_list[self._stream_ids.index(int(p_id))]
+
             except:
                 self.get_stream_list()
                 stream = self._stream_list[self._stream_ids.index(int(p_id))]
+
             return stream
+
+
         except ValueError:
             raise ValueError('Stream id not in the available list')
 
@@ -155,12 +160,14 @@ class WrStreamOpenML(Stream):
         self._downloaded = False
         self.C_ID = self._id = p_id
         self.C_NAME = self._name = p_name
+
         super().__init__(p_id,
                          p_name,
                          p_num_instances,
                          p_version,
                          p_logging = p_logging,
                          p_mode=p_mode)
+
         self._kwargs = p_kwargs.copy()
 
 
@@ -188,7 +195,9 @@ class WrStreamOpenML(Stream):
 
 ## --------------------------------------------------------------------------------------------------
     def _set_feature_space(self):
+
         self._feature_space = MSpace()
+
         _, _, _, features = self._dataset
         for feature in features:
             self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
@@ -230,14 +239,18 @@ class WrStreamOpenML(Stream):
         _stream_meta = openml.datasets.get_dataset(self._id)
 
         self._label_space = MSpace()
+
         self._label = _stream_meta.default_target_attribute
         self._label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
+
         try:
             self.C_SCIREF_URL = _stream_meta.url
         except:
             self.C_SCIREF_URL = ''
         try:
             self.C_SCIREF_AUTHOR = _stream_meta.creator
+            if isinstance(self.C_SCIREF_AUTHOR, list):
+                self.C_SCIREF_AUTHOR = ' and '.join(self.C_SCIREF_AUTHOR)
         except:
             self.C_SCIREF_AUTHOR =''
         try:
@@ -250,6 +263,7 @@ class WrStreamOpenML(Stream):
 
         if self._dataset is not None:
             return True
+
         else:
             raise ValueError("Dataset not downloaded or not available")
 
@@ -272,6 +286,7 @@ class WrStreamOpenML(Stream):
             _label.set_values(self._dataset[0][self._index][self._dataset[3].index(self._label)])
             _instance = Instance(_feature, _label)
             self._index += 1
+
             return _instance
 
         return None

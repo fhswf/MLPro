@@ -14,8 +14,16 @@
 """
 Ver. 1.0.2 (2022-06-25)
 
-This module shows how to wrap MLPro's Stream and StreamProvider class to ScikitLearn.
+
+This module shows how to wrap MLPro's Stream and StreamProvider class to Scikit learn, including how to fetch the
+list of streams and downloading a stream from the list of streams available with the stream provider, getting the
+feature spaces of the particular stream. This module also illustrates how to reset the stream and fetch the stream
+instances as needed.
+Please run the following code to understand the wrapper functionality and produce similar results.
 """
+
+
+
 from mlpro.wrappers.sklearn import *
 
 
@@ -24,11 +32,11 @@ sk_learn = WrStreamProviderSklearn()
 
 
 # 2. Get a list of streams available at the stream provider
-stream_list = sk_learn.get_stream_list(p_display_list=True)
+stream_list = sk_learn.get_stream_list()
 
 
 # 3. Get a specific stream from the stream provider
-stream = sk_learn.get_stream('20newsgroups')
+stream = sk_learn.get_stream('iris')
 
 
 # 4. get the feature space of the stream
@@ -43,7 +51,8 @@ stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 # 6. Loading stream instances
 for i in range(10):
     curr_instance = stream.get_next().get_feature_data().get_values()
-    stream.log(stream.C_LOG_TYPE_I,'Current Instance:' , curr_instance)
+    curr_label = stream.get_next().get_label_data().get_values()
+    stream.log(stream.C_LOG_TYPE_I,'Current Instance:' , curr_instance, '\nLabel:', curr_label, '\n')
 
 
 # 7. resetting the stream
@@ -55,4 +64,4 @@ stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(5):
     curr_instance = stream.get_next().get_feature_data().get_values()
     curr_label =  stream.get_next().get_label_data().get_values()
-    stream.log(stream.C_LOG_TYPE_I, 'Current Instance:' , curr_instance, '\nLabel:', curr_label)
+    stream.log(stream.C_LOG_TYPE_I, 'Current Instance:' , curr_instance, '\nLabel:', curr_label, '\n')

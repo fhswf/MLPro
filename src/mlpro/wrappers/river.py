@@ -31,6 +31,7 @@ import numpy
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class WrStreamProviderRiver (StreamProvider):
@@ -72,9 +73,12 @@ class WrStreamProviderRiver (StreamProvider):
                 "TREC07",
                 "TrumpApproval",
             ]
+
         self._stream_list = []
         self._stream_ids = _datasets
+
         super().__init__(p_logging = p_logging)
+
         for i in range(len(_datasets)):
             _num_instances = eval("river.datasets."+_datasets[i]+"().n_samples")
             self._stream_list.append(WrStreamRiver(self._stream_ids[i],_datasets[i],_num_instances))
@@ -109,9 +113,11 @@ class WrStreamProviderRiver (StreamProvider):
         stream: Stream
             Returns the stream corresponding to the id
         """
+
         try:
             stream = self._stream_list[self._stream_ids.index(p_id)]
             return stream
+
         except ValueError:
             raise ValueError('Stream id not in the available list')
 
@@ -145,20 +151,26 @@ class WrStreamRiver(Stream):
         self._downloaded = False
         self.C_ID = self._id = p_id
         self.C_NAME = self._name = p_name
+
         try:
             self.C_SCIREF_URL = eval("river.datasets."+self._name+"().url")
+
         except:
             self.C_SCIREF_URL = ''
+
         try:
             self.C_SCIREF_ABSTRACT = eval("river.datasets."+self._name+"().desc")
+
         except:
             self.C_SCIREF_ABSTRACT = ''
+
         super().__init__(p_id,
                          p_name,
                          p_num_instances,
                          p_version,
                          p_logging = p_logging,
                          p_mode=p_mode)
+
         self._kwargs = p_kwargs.copy()
         self._label = 'Label'
 
@@ -188,7 +200,9 @@ class WrStreamRiver(Stream):
 
 ## --------------------------------------------------------------------------------------------------
     def _set_feature_space(self):
+
         self._feature_space = MSpace()
+
         features = next(self._dataset)[0].keys()
         for feature in features:
             self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
@@ -217,7 +231,6 @@ class WrStreamRiver(Stream):
             self._downloaded = self._download()
 
         try:
-
             return self._feature_space
 
         except:

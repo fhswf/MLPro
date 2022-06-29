@@ -32,6 +32,7 @@ from sklearn import datasets
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class WrStreamProviderSklearn (StreamProvider):
@@ -74,6 +75,7 @@ class WrStreamProviderSklearn (StreamProvider):
         "breast_cancer",
         "wine",
     ]
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging = Log.C_LOG_ALL):
