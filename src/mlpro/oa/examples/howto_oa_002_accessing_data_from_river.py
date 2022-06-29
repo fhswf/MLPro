@@ -17,7 +17,7 @@ This module shows how to wrap MLPro's Stream and StreamProvider class to River, 
 streams and downloading a stream from the list of streams available with the stream provider, getting the feature
 spaces of the particular stream. This module also illustrates how to reset the stream and fetch the stream instances
 as needed.
-Please run the following code to understand the wrapper functionality and produce similar results.
+Please run the following code to understand the wrapper functionality and to produce similar results.
 """
 
 
