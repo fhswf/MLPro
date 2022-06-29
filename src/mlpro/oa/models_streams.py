@@ -14,11 +14,11 @@
 ## -- 2022-06-18  0.1.4     LSB      Logging of stream list based on p_display_list parameter
 ## -- 2022-06-19  0.1.5     DA       - Class Stream: internal use of self.C_NAME instead of self._name
 ## --                                - Check/completion of doc strings
-## -- 2022-06-25  0.1.6     LSB      New Label class with modified instance class
+## -- 2022-06-25  0.2.5     LSB      New Label class with modified instance class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.6 (2022-06-25)
+Ver. 0.2.5 (2022-06-25)
 
 Model classes for stream providers and streams. 
 """
@@ -249,7 +249,7 @@ class StreamProvider (Log, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_stream_list(self, p_display_list:bool=False, **p_kwargs) -> list:
+    def get_stream_list(self, **p_kwargs) -> list:
         """
         Gets a list of provided streams by calling custom method _get_stream_list().
 
@@ -267,10 +267,9 @@ class StreamProvider (Log, ScientificObject):
         stream_list = self._get_stream_list(**p_kwargs)
         self.log(self.C_LOG_TYPE_I, "\n\n\n")
         self.log(self.C_LOG_TYPE_W, 'Getting list of streams...')
-        if p_display_list:
-            for stream in stream_list:
-                self.log(self.C_LOG_TYPE_I, "Stream ID: {:<15} Stream Name: {:<30}".format(stream.C_ID, stream.C_NAME))
-            self.log(self.C_LOG_TYPE_I, 'Number of streams found:', len(stream_list),'\n\n\n')
+        for stream in stream_list:
+            self.log(self.C_LOG_TYPE_I, "Stream ID: {:<15} Stream Name: {:<30}".format(stream.C_ID, stream.C_NAME))
+        self.log(self.C_LOG_TYPE_I, 'Number of streams found:', len(stream_list),'\n\n\n')
         return stream_list
 
 

@@ -46,7 +46,7 @@ class WrStreamProviderRiver (StreamProvider):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
+    def __init__(self, p_logging = Log.C_LOG_ALL):
 
         _datasets = [
                 "AirlinePassengers",
@@ -74,7 +74,7 @@ class WrStreamProviderRiver (StreamProvider):
             ]
         self._stream_list = []
         self._stream_ids = _datasets
-        super().__init__()
+        super().__init__(p_logging = p_logging)
         for i in range(len(_datasets)):
             _num_instances = eval("river.datasets."+_datasets[i]+"().n_samples")
             self._stream_list.append(WrStreamRiver(self._stream_ids[i],_datasets[i],_num_instances))
@@ -140,7 +140,7 @@ class WrStreamRiver(Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name, p_num_instances=None, p_version=None, **p_kwargs):
+    def __init__(self, p_id, p_name, p_num_instances=None, p_version=None, p_logging = Log.C_LOG_ALL, p_mode = Mode.C_MODE_SIM, **p_kwargs):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
@@ -157,7 +157,8 @@ class WrStreamRiver(Stream):
                          p_name,
                          p_num_instances,
                          p_version,
-                         p_mode=self.C_MODE_SIM)
+                         p_logging = p_logging,
+                         p_mode=p_mode)
         self._kwargs = p_kwargs.copy()
         self._label = 'Label'
 

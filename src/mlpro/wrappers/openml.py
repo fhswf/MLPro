@@ -52,9 +52,9 @@ class WrStreamProviderOpenML (StreamProvider):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
+    def __init__(self, p_logging = Log.C_LOG_ALL):
 
-        super().__init__()
+        super().__init__(p_logging = p_logging)
         self._stream_list = []
         self._stream_ids = []
 
@@ -150,7 +150,7 @@ class WrStreamOpenML(Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name, p_num_instances, p_version, **p_kwargs):
+    def __init__(self, p_id, p_name, p_num_instances, p_version, p_logging = Log.C_LOG_ALL, p_mode = Mode.C_MODE_SIM, **p_kwargs):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
@@ -159,7 +159,8 @@ class WrStreamOpenML(Stream):
                          p_name,
                          p_num_instances,
                          p_version,
-                         p_mode=self.C_MODE_SIM)
+                         p_logging = p_logging,
+                         p_mode=p_mode)
         self._kwargs = p_kwargs.copy()
 
 

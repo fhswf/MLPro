@@ -76,11 +76,13 @@ class WrStreamProviderSklearn (StreamProvider):
     ]
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
+    def __init__(self, p_logging = Log.C_LOG_ALL):
 
         self._stream_list = []
         self._stream_ids = self._datasets
-        super().__init__()
+
+        super().__init__(p_logging = p_logging)
+
         for i in range(len(self._datasets)):
             self._stream_list.append(WrStreamSklearn(self._stream_ids[i],self._datasets[i]))
 
@@ -96,6 +98,7 @@ class WrStreamProviderSklearn (StreamProvider):
             Returns a list of Streams in Sklearn
 
         """
+
         return self._stream_list
 
 
@@ -114,9 +117,11 @@ class WrStreamProviderSklearn (StreamProvider):
         stream: Stream
             Returns the stream corresponding to the id
         """
+
         try:
             stream = self._stream_list[self._stream_ids.index(p_id)]
             return stream
+
         except:
             raise ValueError('Stream id not in the available list')
 
@@ -145,16 +150,19 @@ class WrStreamSklearn(Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name, p_num_instances=None, p_version=None, **p_kwargs):
+    def __init__(self, p_id, p_name, p_num_instances=None, p_version=None, p_logging = Log.C_LOG_ALL, p_mode= Mode.C_MODE_SIM, **p_kwargs):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
         self.C_NAME = self._name = p_name
+
         super().__init__(p_id,
                          p_name,
                          p_num_instances,
                          p_version,
-                         p_mode=self.C_MODE_SIM)
+                         p_logging=p_logging,
+                         p_mode=p_mode)
+
         self._kwargs = p_kwargs.copy()
 
 
@@ -175,6 +183,7 @@ class WrStreamSklearn(Stream):
         """
 
         self._index = 0
+
         if self._dataset is not None:
            self._downloaded = self._download()
 
@@ -184,24 +193,31 @@ class WrStreamSklearn(Stream):
             self.C_SCIREF_ABSTRACT = eval("len(sklearn.datasets."
                                      + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
                                      + ".DESCR")
+
         except:
             self.C_SCIREF_ABSTRACT = ''
-        # self._instance = Instance(self.get_feature_space())
+
 
 ## --------------------------------------------------------------------------------------------------
     def _set_feature_space(self):
+
         self._feature_space = MSpace()
         self._label_space = MSpace()
+
+
         try:
             features = self._dataset.feature_names
+
         except:
             self._downloaded = self._download()
             if not isinstance(self._dataset['data'], list):
                 features = self._dataset['feature_names']
             else:
                 features = ['Attr_1']
+
         for feature in features:
             self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(feature[0:5])))
+
         for label in self._dataset['target_names']:
             self._label_space.add_dim(Feature(p_name_long=str(label), p_name_short=str(label[0:5])))
 
@@ -231,6 +247,10 @@ class WrStreamSklearn(Stream):
 
 ## --------------------------------------------------------------------------------------------------
     def _download(self):
+        """
+        Custom download class that assigns the related sklearn dataset and its functionalities to _dataset attribute
+        """
+
         self._dataset = eval("sklearn.datasets."
                          + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)])
 
@@ -247,10 +267,14 @@ class WrStreamSklearn(Stream):
         """
 
         if not self._index < self._num_instances:return None
+
+
         _feature_data = Element(self._feature_space)
         _label_data = Element(self._label_space)
         _feature_data.set_values(self._dataset['data'][self._index])
         _label_data.set_values(self._dataset['target'][self._index])
         self._index += 1
+
+
         return Instance(_feature_data, _label_data)
 
