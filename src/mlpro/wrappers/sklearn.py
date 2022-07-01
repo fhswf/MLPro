@@ -28,7 +28,7 @@ from mlpro.oa.models import *
 from mlpro.bf.math import *
 import sklearn
 from sklearn import datasets
-
+import numpy
 
 
 
@@ -86,7 +86,7 @@ class WrStreamProviderSklearn (StreamProvider):
         super().__init__(p_logging = p_logging)
 
         for i in range(len(self._datasets)):
-            self._stream_list.append(WrStreamSklearn(self._stream_ids[i],self._datasets[i]))
+            self._stream_list.append(WrStreamSklearn(self._stream_ids[i],self._datasets[i], p_logging=p_logging))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -274,7 +274,7 @@ class WrStreamSklearn(Stream):
         _feature_data = Element(self._feature_space)
         _label_data = Element(self._label_space)
         _feature_data.set_values(self._dataset['data'][self._index])
-        _label_data.set_values(self._dataset['target'][self._index])
+        _label_data.set_values(numpy.asarray([self._dataset['target'][self._index]]))
         self._index += 1
 
 

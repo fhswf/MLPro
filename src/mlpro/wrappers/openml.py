@@ -60,7 +60,7 @@ class WrStreamProviderOpenML (StreamProvider):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream_list(self, **p_kwargs) -> list:
+    def _get_stream_list(self, p_logging = Log.C_LOG_ALL, **p_kwargs) -> list:
         """
         Custom class to get alist of stream objects from OpenML
 
@@ -92,7 +92,7 @@ class WrStreamProviderOpenML (StreamProvider):
                 except:
                     _version = 0
 
-                s = WrStreamOpenML(_id, _name, _num_instances, _version)
+                s = WrStreamOpenML(_id, _name, _num_instances, _version, p_logging= p_logging)
 
                 self._stream_list.append(s)
                 self._stream_ids.append(_id)
@@ -280,11 +280,11 @@ class WrStreamOpenML(Stream):
         """
 
         if self._index < len(self._dataset[0]):
-            _feature = Element(self._feature_space)
-            _label = Element(self._label_space)
-            _feature.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
-            _label.set_values(self._dataset[0][self._index][self._dataset[3].index(self._label)])
-            _instance = Instance(_feature, _label)
+            _feature_data = Element(self._feature_space)
+            _label_data = Element(self._label_space)
+            _feature_data.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
+            _label_data.set_values(numpy.asarray([self._dataset[0][self._index][self._dataset[3].index(self._label)]]))
+            _instance = Instance(_feature_data, _label_data)
             self._index += 1
 
             return _instance

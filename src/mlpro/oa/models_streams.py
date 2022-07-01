@@ -249,7 +249,7 @@ class StreamProvider (Log, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_stream_list(self, **p_kwargs) -> list:
+    def get_stream_list(self, p_logging = Log.C_LOG_ALL, **p_kwargs) -> list:
         """
         Gets a list of provided streams by calling custom method _get_stream_list().
 
@@ -264,7 +264,7 @@ class StreamProvider (Log, ScientificObject):
             List of provided streams.
 
         """
-        stream_list = self._get_stream_list(**p_kwargs)
+        stream_list = self._get_stream_list(p_logging = p_logging ,**p_kwargs)
         self.log(self.C_LOG_TYPE_I, "\n\n\n")
         self.log(self.C_LOG_TYPE_W, 'Getting list of streams...')
         for stream in stream_list:

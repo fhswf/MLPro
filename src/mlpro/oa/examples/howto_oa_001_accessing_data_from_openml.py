@@ -24,14 +24,22 @@ Please run the following code to understand the wrapper functionality and to pro
 
 
 from mlpro.wrappers.openml import WrStreamProviderOpenML
+from mlpro.bf.various import Log
+
+
+# checking for internal unit test
+if not __name__ == '__main__':
+    p_logging = Log.C_LOG_NOTHING
+else:
+    p_logging = Log.C_LOG_ALL
 
 
 # 1. Create a Wrapper for OpenML stream provider
-open_ml = WrStreamProviderOpenML()
+open_ml = WrStreamProviderOpenML(p_logging = p_logging)
 
 
 # 2. Get a list of streams available at the stream provider
-stream_list = open_ml.get_stream_list()
+stream_list = open_ml.get_stream_list(p_logging = p_logging)
 
 
 # 3. Get a specific stream from the stream provider
@@ -50,10 +58,10 @@ stream.reset()
 # 6. Loading stream instances
 stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(10):
-    # curr_instance = stream.get_next().get_values()
-    curr_features = stream.get_next().get_feature_data().get_values()
-    curr_label = stream.get_next().get_label_data().get_values()
-    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_features, '\nLabel:', curr_label, '\n')
+    curr_instance = stream.get_next()
+    curr_features = curr_instance.get_feature_data().get_values()
+    curr_label = curr_instance.get_label_data().get_values()
+    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:', curr_features, '\nLabel:', curr_label, '\n')
 
 
 
@@ -64,6 +72,7 @@ stream.reset()
 # 8. Getting stream instances
 stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
 for i in range(5):
-    curr_features = stream.get_next().get_feature_data().get_values()
-    curr_label = stream.get_next().get_label_data().get_values()
+    curr_instance = stream.get_next()
+    curr_features = curr_instance.get_feature_data().get_values()
+    curr_label = curr_instance.get_label_data().get_values()
     stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:' , curr_features, '\nLabel:', curr_label, '\n')

@@ -81,7 +81,7 @@ class WrStreamProviderRiver (StreamProvider):
 
         for i in range(len(_datasets)):
             _num_instances = eval("river.datasets."+_datasets[i]+"().n_samples")
-            self._stream_list.append(WrStreamRiver(self._stream_ids[i],_datasets[i],_num_instances))
+            self._stream_list.append(WrStreamRiver(self._stream_ids[i],_datasets[i],_num_instances, p_logging=p_logging))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -279,8 +279,8 @@ class WrStreamRiver(Stream):
         _feature_data.set_values(list(_instance_dict[0].values()))
 
         if isinstance(_instance_dict[1], dict):
-            _label_data.set_values(list(_instance_dict[1].values()))
-        else: _label_data.set_values(_instance_dict[1])
+            _label_data.set_values(numpy.asarray(list(_instance_dict[1].values())))
+        else: _label_data.set_values(numpy.asarray([_instance_dict[1]]))
 
 
         self._index += 1
