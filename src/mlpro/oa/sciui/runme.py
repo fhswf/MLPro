@@ -16,7 +16,7 @@ Ver. 0.0.0 (2022-01-06)
 
 
 
-from mlpro.oa.sciui.scenario_dsm1 import DSM2D, DSM3D
+from mlpro.oa.sciui.scenario_oa1 import DSM2D, DSM3D
 
 
 
