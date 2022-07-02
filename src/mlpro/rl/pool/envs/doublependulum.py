@@ -153,18 +153,18 @@ class DoublePendulum(Environment):
         state_space = ESpace()
         action_space = ESpace()
 
-        state_space.add_dim(Dimension('theta 1', 'th1', 'Angle of Pendulum 1', '', 'radians',
-                                      '\textdegrees', [-290.518, 227.4182]))
+        state_space.add_dim(Dimension('theta 1', 'th1', 'Angle of Pendulum 1', '', 'degrees',
+                                      '\textdegrees', [-np.inf,np.inf]))
         state_space.add_dim(Dimension('omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
-                                      'radians/second', '\textdegrees/s', [-344.982, 354.3467]))
+                                      'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
         state_space.add_dim(Dimension('acc 1', 'a1', 'Angular Acceleration of Pendulum 1', '',
-                                      'radians/second^2', '\text/s^2', [-141.53, 141.5184]))      
-        state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'radians',
-                                      '\textdegrees', [-580.418, 604.7454]))
+                                      'degrees/second^2', '\text/s^2', [-np.inf, np.inf]))      
+        state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'degrees',
+                                      '\textdegrees', [-np.inf, np.inf]))
         state_space.add_dim(Dimension('omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
-                                      'radians/second', '\textdegrees/s', [-930.535, 905.531]))
+                                      'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
         state_space.add_dim(Dimension('acc 2', 'a2', 'Angular Acceleration of Pendulum 2', '',
-                                      'radians/second^2', '\text/s^2', [-277.35,277.413]))
+                                      'degrees/second^2', '\text/s^2', [-np.inf, np.inf]))
 
         action_space.add_dim(Dimension('torque 1', 'tau1', 'Applied Torque of Motor 1', '',
                                        'Nm', 'Nm', [-self.max_torque, self.max_torque]))
@@ -192,16 +192,16 @@ class DoublePendulum(Environment):
 
         """
         dydx = np.zeros_like(state)
-        dydx[0] = state[1]
+        dydx[0] =state[1]
 
-        delta = state[2] - state[0]
+        delta = state[3] - state[0]
         den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
         dydx[1] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
                     + self.m2 * self.g * sin(state[3]) * cos(delta)
                     + self.m2 * self.l2 * state[4] * state[4] * sin(delta)
                     - (self.m1 + self.m2) * self.g * sin(state[0]))
                    / den1)
-        
+                             
         num1 = -self.g * (2 * self.m1 + self.m2) * sin(self.th1)
         num2 = -self.m2 * self.g * sin(self.th1 - 2 * self.th2)
         num3 = -2 * sin(self.th1 - self.th2)
@@ -210,7 +210,6 @@ class DoublePendulum(Environment):
         num = num1 + num2 + (num3 * num4)
         den2 = self.l1 * (2 * self.m1 + self.m2 - self.m2 * cos(2 * self.th1 - 2 * self.th2))
         dydx[2]= num/den2
-
         dydx[3] = state[4]
 
         den3 = (self.l2 / self.l1) * den1
@@ -288,12 +287,12 @@ class DoublePendulum(Environment):
         self.th2dot = 0
             
         state_ids = self._state.get_dim_ids()
-        self._state.set_value(state_ids[0], np.radians(self.th1))
-        self._state.set_value(state_ids[1], np.radians(self.th1dot))
-        self._state.set_value(state_ids[2], np.radians(self.a1))
-        self._state.set_value(state_ids[3], np.radians(self.th2))
-        self._state.set_value(state_ids[4], np.radians(self.th2dot))
-        self._state.set_value(state_ids[5], np.radians(self.a2))
+        self._state.set_value(state_ids[0], (self.th1))
+        self._state.set_value(state_ids[1], (self.th1dot))
+        self._state.set_value(state_ids[2], (self.a1))
+        self._state.set_value(state_ids[3], (self.th2))
+        self._state.set_value(state_ids[4], (self.th2dot))
+        self._state.set_value(state_ids[5], (self.a2))
         
         self.history_x.clear()
         self.history_y.clear()
