@@ -30,6 +30,7 @@
 ## -- 2022-05-28  1.1.6     YI       Editing the reward, normalization, and derivs function
 ## -- 2022-05-30  1.1.7     SY       Enhance data normalization method, reset method, and code cleaning
 ## -- 2022-06-21  1.1.8     SY       Code cleaning
+## -- 2022-07-10  1.1.9     YI       Changing the units from radians to degrees
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -339,7 +340,9 @@ class DoublePendulum(Environment):
         self.action_cw = True if torque <= 0 else False
         state_ids = self._state.get_dim_ids()
         for i in range(len(state)):
+            
             self._state.set_value(state_ids[i], state[i])
+            self._state = State(p_state_space = self._state)
 
         return self._state
 
