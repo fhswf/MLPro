@@ -339,7 +339,21 @@ class ActionPlanner(Log, ScientificObject):
         self.C_SCIREF_YEAR          = "2017"
         self.C_SCIREF_MONTH         = "05"
         self.C_SCIREF_DOI           = "10.1109/ICRA.2017.7989202"
-
+        
+        # initial states = get current states
+        # initialize variable to store best action and its predicted reward in the trajectory
+        
+        # for loop self._width_limit
+            # for loop self._depth_limit
+                # if t=0, then current states equal to initial states, otherwise none
+                # select random action
+                # if t=0, then store selected action
+                # use env model to process the action, the output would be next states and reward
+                # current_states equal to predicted next states
+            # if the actions lead to a greater reward than the stored reward, then best action equal to the processed initial action
+        
+        # return a best action
+        
         raise NotImplementedError
 
 
