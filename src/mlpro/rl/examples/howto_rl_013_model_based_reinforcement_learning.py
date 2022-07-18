@@ -9,17 +9,17 @@
 ## -- 2021-12-17  1.0.0     MRD       Released first version
 ## -- 2022-01-01  1.0.1     MRD       Refactoring due to new model implementation
 ## -- 2022-05-20  1.0.2     MRD       Add HTMEnvModel
+## -- 2022-07-18  1.0.3     SY        Update due to introduction of ActionPlanner
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-05-20)
+Ver. 1.0.3 (2022-07-18)
 
-This module demonstrates model-based reinforcement learning (MBRL).
+This module demonstrates model-based reinforcement learning (MBRL) with action planner using MPC.
 """
 
 
 import torch
-
 from mlpro.bf.ml import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
@@ -27,7 +27,6 @@ from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from mlpro.rl.pool.envmodels.mlp_robotinhtm import MLPEnvModel
 from mlpro.rl.pool.envmodels.htm_robotinhtm import HTMEnvModel
-
 from pathlib import Path
 
 
