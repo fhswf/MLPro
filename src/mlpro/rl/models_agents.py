@@ -40,10 +40,11 @@
 ## -- 2022-03-02  1.5.3     SY       Class MultiAgent: remove init_hyperparam(), update add_agent()
 ## -- 2022-03-02  1.5.4     DA       Reformatting
 ## -- 2022-03-07  1.5.5     SY       Minor Improvement on Class MultiAgent
+## -- 2022-07-18  1.5.6     SY       Add MPC to ActionPlanner as a default algorithm
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.5 (2022-03-07) 
+Ver. 1.5.6 (2022-07-18) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -175,7 +176,7 @@ class Policy(Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ActionPlanner(Log):
+class ActionPlanner(Log, ScientificObject):
     """
     Template class for action planning algorithms to be used as part of model-based planning agents. 
     The goal is to find the shortest sequence of actions that leads to a maximum reward.
@@ -317,6 +318,7 @@ class ActionPlanner(Log):
         """
         Custom planning algorithm to fill the internal action path (self._action_path). Search width
         and depth are restricted by the attributes self._width_limit and self._depth_limit.
+        The default implementation utilizes MPC.
 
         Parameters
         ----------
@@ -329,6 +331,14 @@ class ActionPlanner(Log):
             Sequence of SARSElement objects with included actions that lead to the best possible reward.
 
         """
+
+        self.C_SCIREF_TYPE          = self.C_SCIREF_TYPE_ARTICLE
+        self.C_SCIREF_AUTHOR        = "Grady Williams, Nolan Wagener, Brian Goldfain, Paul Drews, James M. Rehg, Byron Boots, Evangelos A. Theodorou"
+        self.C_SCIREF_TITLE         = "Information theoretic MPC for model-based reinforcement learning"
+        self.C_SCIREF_CONFERENCE    = "2017 IEEE International Conference on Robotics and Automation (ICRA)"
+        self.C_SCIREF_YEAR          = "2017"
+        self.C_SCIREF_MONTH         = "05"
+        self.C_SCIREF_DOI           = "10.1109/ICRA.2017.7989202"
 
         raise NotImplementedError
 
