@@ -32,7 +32,7 @@ class RobotGazeboEnv(gym.Env):
         This has to do with the fact that some plugins with tf, dont understand the reset of the simulation
         and need to be reseted to work properly.
         """
-        self.gazebo.unpauseSim()
+        # self.gazebo.unpauseSim()
         if self.reset_controls:
             self.controllers_object.reset_controllers()
 
