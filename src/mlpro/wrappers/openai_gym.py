@@ -337,7 +337,7 @@ class WrEnvMLPro2GYM(gym.Env):
             info = {}
             return obs, info
         else:
-            obs
+            return obs
 
     ## -------------------------------------------------------------------------------------------------
     def render(self, mode='human'):
