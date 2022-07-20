@@ -7,8 +7,8 @@ if "%1" == "doc" goto :doc
 if "%1" == "doc-autobuild" goto :doc-autobuild
 if "%1" == "" (goto :end) else (goto :end)
 
-:test
-python -m pytest test
+:pytest
+python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/ --ignore=src/mlpro/rl/pool/envs/multigeorobot/src/
 goto end
 
 :doc
