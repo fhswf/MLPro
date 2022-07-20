@@ -8,10 +8,11 @@
 ## -- 2022-01-20  0.0.0     MRD      Creation
 ## -- 2022-01-20  1.0.0     MRD      Released first version
 ## -- 2022-05-17  1.0.1     DA       Just a litte comment maintenance
+## -- 2022-07-20  1.0.2     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-05-17)
+Ver. 1.0.2 (2022-07-20)
 
 This module shows how to train with SB3 Wrapper and stagnation detection
 """
@@ -31,7 +32,7 @@ class MyScenario(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        gym_env = gym.make('CartPole-v1')
+        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode='human')
         self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
 
         # 2 Instantiate PPO Policy from SB3

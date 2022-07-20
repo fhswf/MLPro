@@ -18,10 +18,11 @@
 ## -- 2021-11-15  1.3.0     DA       Refactoring 
 ## -- 2021-12-03  1.3.1     DA       Refactoring 
 ## -- 2021-12-07  1.3.2     DA       Refactoring 
+## -- 2022-07-20  1.3.3     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2021-12-07)
+Ver. 1.3.3 (2022-07-20)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using the fhswf_at_ml framework.
 """
@@ -76,7 +77,7 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        gym_env     = gym.make('CartPole-v1')
+        gym_env     = gym.make('CartPole-v1', new_step_api=True, render_mode='human')
         self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
         # 2 Setup and return standard single-agent with own policy

@@ -10,10 +10,11 @@
 ## -- 2022-05-19  1.0.1     MRD      Re-use the agent not for the re-training process
 ## --                                Remove commenting and numbering
 ## -- 2022-05-19  1.0.2     MRD      Re-add the commneting and reformat the numbering in comment
+## -- 2022-07-20  1.0.3     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-05-19)
+Ver. 1.0.3 (2022-07-20)
 
 This module shows how to train a single agent and load it again to do some extra cycles
 """
@@ -33,7 +34,7 @@ class MyScenario(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
-        gym_env = gym.make('CartPole-v1')
+        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode='human')
         self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
 
         # 1.2 Setup Policy From SB3

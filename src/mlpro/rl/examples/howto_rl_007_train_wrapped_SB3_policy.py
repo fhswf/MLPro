@@ -14,10 +14,11 @@
 ## -- 2021-12-03  1.0.5     DA       Refactoring
 ## -- 2021-12-07  1.0.6     DA       Refactoring
 ## -- 2022-02-25  1.0.7     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-07-20  1.0.8     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2022-02-25)
+Ver. 1.0.8 (2022-07-20)
 
 This module shows how to train with SB3 Wrapper for On-Policy Algorithm
 """
@@ -38,7 +39,7 @@ class MyScenario(RLScenario):
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
         # self._env   = RobotHTM(p_logging=False)
-        gym_env = gym.make('CartPole-v1')
+        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode='human')
         self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
 
         # 2 Instantiate Policy From SB3

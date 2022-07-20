@@ -8,10 +8,11 @@
 ## -- 2022-01-11  0.0.0     MRD      Creation
 ## -- 2022-01-18  1.0.0     MRD      Released first version
 ## -- 2022-02-27  1.0.1     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-07-20  1.0.2     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-02-27)
+Ver. 1.0.2 (2022-07-20)
 
 This module shows comparison between native and wrapped SB3 policy (Off-policy).
 """
@@ -69,7 +70,7 @@ class MyScenario(RLScenario):
                 self._set_state(state)
 
         # 1 Setup environment
-        gym_env = gym.make('CartPole-v1')
+        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode='human')
         gym_env.seed(2)
         self._env = CustomWrapperFixedSeed(gym_env, p_logging=p_logging)
 

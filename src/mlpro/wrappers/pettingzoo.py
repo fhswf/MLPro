@@ -34,10 +34,11 @@
 ## -- 2022-03-21  1.3.5     SY       Refactoring due to PettingZoo version 1.17.0
 ## -- 2022-05-20  1.3.6     SY       Refactoring: Action space boundaries in WrEnvPZOO2MLPro
 ## -- 2022-05-30  1.3.7     SY       Replace function env.seed(seed) to env.reset(seed=seed)
+## -- 2022-07-20  1.3.8     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.7 (2022-05-30)
+Ver. 1.3.8 (2022-07-20)
 This module provides wrapper classes for reinforcement learning tasks.
 """
 
@@ -357,7 +358,7 @@ class WrEnvMLPro2PZoo():
 
 
 ## -------------------------------------------------------------------------------------------------
-        def reset(self):
+        def reset(self, seed):
             self.agents = self.possible_agents[:]
             self.rewards = {agent: 0 for agent in self.agents}
             self._cumulative_rewards = {agent: 0 for agent in self.agents}
@@ -366,7 +367,7 @@ class WrEnvMLPro2PZoo():
             self.state = {agent: None for agent in self.agents}
             self.observations = {agent: None for agent in self.agents}
             
-            self._mlpro_env.reset()
+            self._mlpro_env.reset(seed)
             
             self._agent_selector = agent_selector(self.agents)
             self.agent_selection = self._agent_selector.next()
