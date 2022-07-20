@@ -78,7 +78,7 @@ class MyScenario(RLScenario):
                 self._set_state(state)
 
         # 1 Setup environment
-        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode='human')
+        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
         gym_env.seed(1)
         # self._env   = mlpro_env
         self._env = CustomWrapperFixedSeed(gym_env, p_logging=p_logging)

@@ -34,7 +34,7 @@ class MyScenario(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
-        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode='human')
+        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
         self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
 
         # 1.2 Setup Policy From SB3
