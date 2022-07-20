@@ -31,10 +31,11 @@
 ## -- 2022-05-30  1.1.7     SY       Enhance data normalization method, reset method, and code cleaning
 ## -- 2022-06-21  1.1.8     SY       Code cleaning
 ## -- 2022-07-10  1.1.9     YI       Changing the units from radians to degrees
+## -- 2022-07-20  1.2.0     SY       Updating _simulate_reaction, debugging _data_normalization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.8 (2022-06-21)
+Ver. 1.2.0 (2022-07-20)
 
 This module provides an RL environment of double pendulum.
 """
@@ -96,6 +97,7 @@ class DoublePendulum(Environment):
     C_REWARD_TYPE : Reward
         Rewarding type.
     """
+    
     C_NAME = "DoublePendulum"
     C_CYCLE_LIMIT = 0
     C_LATENCY = timedelta(0, 0, 0)
@@ -193,7 +195,7 @@ class DoublePendulum(Environment):
 
         """
         dydx = np.zeros_like(state)
-        dydx[0] =state[1]
+        dydx[0] = state[1]
 
         delta = state[3] - state[0]
         den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
@@ -210,7 +212,8 @@ class DoublePendulum(Environment):
                            * self.l1 * cos(self.th1 - self.th2))
         num = num1 + num2 + (num3 * num4)
         den2 = self.l1 * (2 * self.m1 + self.m2 - self.m2 * cos(2 * self.th1 - 2 * self.th2))
-        dydx[2]= num/den2
+        dydx[2] = num/den2
+        
         dydx[3] = state[4]
 
         den3 = (self.l2 / self.l1) * den1
@@ -248,13 +251,12 @@ class DoublePendulum(Environment):
         normalized_value: float
 
         """
-        normalized_value = (2*((p_value-min(p_boundaries))/(max(p_boundaries)-min(p_boundaries)))-1)
-        
         if p_boundaries[0] == -np.inf or p_boundaries[0] == np.inf:
             return p_value
         elif p_boundaries[1] == -np.inf or p_boundaries[1] == np.inf:
             return p_value
         else:
+            normalized_value = (2*((p_value-min(p_boundaries))/(max(p_boundaries)-min(p_boundaries)))-1)
             return normalized_value
  
     ## -------------------------------------------------------------------------------------------------
@@ -339,10 +341,9 @@ class DoublePendulum(Environment):
 
         self.action_cw = True if torque <= 0 else False
         state_ids = self._state.get_dim_ids()
+        
         for i in range(len(state)):
-            
             self._state.set_value(state_ids[i], state[i])
-            self._state = State(p_state_space = self._state)
 
         return self._state
 
