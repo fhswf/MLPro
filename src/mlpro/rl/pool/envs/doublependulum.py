@@ -481,8 +481,8 @@ class DoublePendulum(Environment):
         change_costs = ((np.linalg.norm(target[::2] - np.array(old_state)[::3])*(inner_pole_weight)) - 
                         (np.linalg.norm(target[::2] - np.array(state)[::3])*(outer_pole_weight)))
         
-        reward.set_overall_reward((inner_pole_costs * inner_pole_weight) + (outer_pole_costs * outer_pole_weight) )
-                                  # - (self.alpha * np.pi/2) + (change_costs))
+        reward.set_overall_reward((inner_pole_costs * inner_pole_weight) + (outer_pole_costs * outer_pole_weight) - (self.alpha * np.pi/2) + (change_costs))
+                                                  
 
         return reward
 
