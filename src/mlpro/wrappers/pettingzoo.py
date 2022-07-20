@@ -358,7 +358,7 @@ class WrEnvMLPro2PZoo():
 
 
 ## -------------------------------------------------------------------------------------------------
-        def reset(self, seed):
+        def reset(self, seed, options):
             self.agents = self.possible_agents[:]
             self.rewards = {agent: 0 for agent in self.agents}
             self._cumulative_rewards = {agent: 0 for agent in self.agents}
