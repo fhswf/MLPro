@@ -1,4 +1,4 @@
-test: Makefile
+pytest: Makefile
 	python3 -m pytest test
 
 doc: Makefile

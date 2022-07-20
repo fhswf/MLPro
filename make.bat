@@ -7,7 +7,7 @@ if "%1" == "doc" goto :doc
 if "%1" == "doc-autobuild" goto :doc-autobuild
 if "%1" == "" (goto :end) else (goto :end)
 
-:test
+:pytest
 python -m pytest test
 goto end
 
