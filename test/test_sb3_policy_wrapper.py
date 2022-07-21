@@ -77,7 +77,7 @@ def test_sb3_policy_wrapper(env_cls):
             else:
                 if issubclass(env_cls, DQN):
                     # 1 Setup environment
-                    gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
+                    gym_env = gym.make('CartPole-v1', render_mode=None)
                     gym_env.seed(2)
                     self._env = CustomWrapperFixedSeed(gym_env, p_logging=False)
                 else:
@@ -200,7 +200,7 @@ def test_sb3_policy_wrapper(env_cls):
     else:
         if issubclass(env_cls, DQN):
             # 1 Setup environment
-            gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
+            gym_env = gym.make('CartPole-v1', render_mode=None)
             gym_env.seed(2)
         else:
             env = RobotHTM(p_reset_seed=False, p_target_mode="fix", p_logging=False)
