@@ -29,13 +29,14 @@
 ## --                                Class Saveable: new constant C_SUFFIX
 ## -- 2021-12-07  1.7.3     SY       Add a new attribute in ScientificObject
 ## -- 2021-12-31  1.7.4     DA       Class Log: udpated docstrings
+## -- 2022-07-21  1.8.0     DA       New class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.4 (2021-12-31)
+Ver. 1.8.0 (2022-07-21)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
-For example: logging, load/save, timer, ...
+For example: logging, load/save, timer, wrapper...
 """
 
 from datetime import datetime, timedelta
@@ -45,6 +46,8 @@ import os
 from mlpro.bf.exceptions import *
 
 
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Loadable:
@@ -52,7 +55,7 @@ class Loadable:
     This abstract class adds the ability to be loadable to inherited classes. 
     """
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     @staticmethod
     def load(p_path, p_filename):
         """
@@ -70,6 +73,9 @@ class Loadable:
             return None
 
         return pkl.load(open(p_path + os.sep + p_filename, 'rb'))
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -93,7 +99,7 @@ class Saveable:
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def save(self, p_path, p_filename=None) -> bool:
         """
         Saves content to the given path and file name. If file name is None, a unique file name will
@@ -124,6 +130,9 @@ class Saveable:
             return False
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class LoadSave(Loadable, Saveable):
@@ -134,6 +143,9 @@ class LoadSave(Loadable, Saveable):
     """
 
     pass
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -167,7 +179,7 @@ class Log:
 
     C_LOG_LEVELS = [C_LOG_ALL, C_LOG_NOTHING, C_LOG_WE, C_LOG_E]
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=C_LOG_ALL):
         """
         Parameters:
@@ -177,7 +189,7 @@ class Log:
         self.switch_logging(p_logging)
         self.log(self.C_LOG_TYPE_I, 'Instantiated')
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         """
         Sets new log level. 
@@ -192,24 +204,8 @@ class Log:
         if p_logging not in self.C_LOG_LEVELS: raise ParamError('Wrong log level. See class Log for valid log levels')
         self._level = p_logging
 
-    # ## -------------------------------------------------------------------------------------------------
-    #     def set_log_level(self, p_level):
-    #         """
-    #         Sets the log level.
-
-    #         Parameters:
-    #             p_level         Possible values are
-    #                             C_LOG_TYPE_I (everything will be looged)
-    #                             C_LOG_TYPE_W (warnings and errors will be logged)
-    #                             C_LOG_TYPE_E (only errors will be logged)
-    #         """
-
-    #         if p_level in self.C_LOG_TYPES:
-    #             self._level = p_level
-    #         else:
-    #             raise ParamError('Wrong log level. Please use constants C_LOG_TYPE_* of class Log')
-
-    ## -------------------------------------------------------------------------------------------------
+ 
+ ## -------------------------------------------------------------------------------------------------
     def log(self, p_type, *p_args):
         """
         Writes log line to standard output in format:
@@ -246,6 +242,9 @@ class Log:
               p_type + '  ' + self.C_TYPE + ' ' + self.C_NAME + ':', *p_args, self.C_COL_RESET)
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Timer:
@@ -258,7 +257,7 @@ class Timer:
 
     C_LAP_LIMIT = 999999
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_mode, p_lap_duration: timedelta, p_lap_limit=C_LAP_LIMIT) -> None:
         """
         Parameters:
@@ -278,7 +277,8 @@ class Timer:
 
         self.reset()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def reset(self) -> None:
         """
         Resets timer.
@@ -296,7 +296,8 @@ class Timer:
             self.lap_start_real = self.timer_start_real
             self.time_real = self.timer_start_real
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_time(self) -> timedelta:
         if self.mode == self.C_MODE_REAL:
             self.time_real = datetime.now()
@@ -304,24 +305,28 @@ class Timer:
 
         return self.time
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_lap_time(self) -> timedelta:
         if self.mode == self.C_MODE_REAL:
             self.lap_time = datetime.now() - self.lap_start_real
 
         return self.lap_time
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_lap_id(self):
         return self.lap_id
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def add_time(self, p_delta: timedelta):
         if self.mode == self.C_MODE_VIRTUAL:
             self.lap_time = self.lap_time + p_delta
             self.time = self.time + p_delta
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def finish_lap(self) -> bool:
         """
         Finishes the current lap. In timer mode C_MODE_REAL the remaining time
@@ -358,6 +363,9 @@ class Timer:
         return not timeout
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class TStamp:
@@ -365,17 +373,23 @@ class TStamp:
     This class provides elementry time stamp functionality for inherited classes.
     """
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_tstamp: timedelta = None):
         self.set_tstamp(p_tstamp)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_tstamp(self) -> timedelta:
         return self.tstamp
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_tstamp(self, p_tstamp: timedelta):
         self.tstamp = p_tstamp
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -418,3 +432,56 @@ class  ScientificObject:
     C_SCIREF_CONFERENCE = None
     C_SCIREF_NOTES = None
     C_SCIREF_EDITOR = None
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Wrapper (Log):
+    """
+    Root class for all MLPro wrapper classes. Please specify the wrapped package in attibute 
+    C_WRAPPED_PACKAGE and an optional minimum version in attribute C_MINIMUM_VERSION.
+
+    Parameters:
+    -----------
+     p_logging
+        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
+
+    """
+
+    C_TYPE              = 'Wrapper'
+    C_WRAPPED_PACKAGE   = None
+    C_MINIMUM_VERSION   = None
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_logging=Log.C_LOG_ALL):
+        super().__init__(p_logging=p_logging)
+
+        if self.C_WRAPPED_PACKAGE is None:
+            raise Error('Please specify the wrapped package')
+
+        import pkg_resources
+
+        try:
+            version = pkg_resources.get_distribution(self.C_WRAPPED_PACKAGE).version
+            self.log(Log.C_LOG_TYPE_I, 'Wrapped package ' + self.C_WRAPPED_PACKAGE + ' installed in version ' + version)
+
+        except:
+            raise Error('Package ' + self.C_WRAPPED_PACKAGE + ' not installed')
+
+        if self.C_MINIMUM_VERSION is not None:
+            ver_actual = version.split('.')
+            ver_setpoint = self.C_MINIMUM_VERSION.split('.')
+
+            for i, val_setpoint in enumerate(ver_setpoint):
+                val_actual = ver_actual[i]
+
+                if val_actual < val_setpoint:
+                    self.log(Log.C_LOG_TYPE_W, 'Minimum version ' + self.C_MINIMUM_VERSION + ' of package ' + self.C_WRAPPED_PACKAGE + ' undershot')
+                    break
+
+                elif val_actual > val_setpoint:
+                    break
+ 
