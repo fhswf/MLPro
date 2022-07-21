@@ -37,12 +37,15 @@
 ## -- 2022-02-27  1.3.4     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-03-21  1.3.5     MRD      Added new parameter to the WrEnvMLPro2GYM.reset()
 ## -- 2022-05-19  1.3.6     SY       Gym 0.23: Replace function env.seed(seed) to env.reset(seed=seed)
+## -- 2022-07-20  1.4.0     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.6 (2022-05-19)
+Ver. 1.4.0 (2022-07-20)
 
 This module provides wrapper classes for reinforcement learning tasks.
+This wrappers has been updated and follow the gym version of 0.25.0.
+The previous gym versions are still compatible, but it will not be available in the future.
 """
 
 import gym
@@ -147,14 +150,37 @@ class WrEnvGYM2MLPro(Environment):
 
         # 2 Process step of Gym environment
         try:
-            observation, reward_gym, done, info = self._gym_env.step(action_gym)
+            # For gym version 0.25 or above
+            if self._gym_env.new_step_api:
+                try:
+                    observation, reward_gym, termination, truncation, info = self._gym_env.step(action_gym)
+                except:
+                    observation, reward_gym, termination, truncation, info = self._gym_env.step(np.atleast_1d(action_gym))
+            else:
+                try:
+                    observation, reward_gym, done, info = self._gym_env.step(action_gym)
+                except:
+                    observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
         except:
-            observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
-
+            # For gym version below than 0.25 (This will be removed soon)
+            self.log(self.C_LOG_TYPE_W, 'Please upgrade your gym version to 0.25.0 or above. This behaviour will be removed in near future.')
+            try:
+                observation, reward_gym, done, info = self._gym_env.step(action_gym)
+            except:
+                observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
+            
         obs = DataObject(observation)
 
         # 3 Create state object from Gym observation
-        state = State(self._state_space, p_terminal=done)
+        try:
+            # For gym version 0.25 or above
+            if self._gym_env.new_step_api:
+                state = State(self._state_space, p_terminal=termination, p_timeout=truncation)
+            else:
+                state = State(self._state_space, p_terminal=done)
+        except:
+            # For gym version below than 0.25 (This will be removed soon)
+            state = State(self._state_space, p_terminal=done)
         state.set_values(obs.get_data())
 
         # 4 Create reward object
@@ -205,7 +231,8 @@ class WrEnvMLPro2GYM(gym.Env):
     metadata = {'render.modes': ['human']}
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mlpro_env, p_state_space: MSpace = None, p_action_space: MSpace = None):
+    def __init__(self, p_mlpro_env, p_state_space: MSpace = None, p_action_space: MSpace = None, p_new_step_api: bool = False,
+                 p_render_mode: str = None):
         """
         Parameters:
             p_mlpro_env     MLPro's Environment object
@@ -226,6 +253,13 @@ class WrEnvMLPro2GYM(gym.Env):
             self.action_space = p_action_space
         else:
             self.action_space = self.recognize_space(self._mlpro_env.get_action_space())
+
+        if p_render_mode is not None:
+            self.render_mode = p_render_mode
+        else:
+            self.render_mode = 'human'
+
+        self.new_step_api = p_new_step_api
 
         self.first_refresh = True
 
@@ -281,22 +315,34 @@ class WrEnvMLPro2GYM(gym.Env):
             obs = np.array(self._mlpro_env.get_state().get_values())
 
         state = self._mlpro_env.get_state()
-        done = state.get_terminal()
+        terminated = state.get_terminal()
+        truncated = state.get_timeout()
 
         info = {}
-        info["TimeLimit.truncated"] = state.get_timeout()
 
-        return obs, reward.get_overall_reward(), done, info
+        if self.new_step_api:
+            return obs, reward.get_overall_reward(), terminated, truncated, info
+        else:
+            info["TimeLimit.truncated"] = state.get_timeout()
+            return obs, reward.get_overall_reward(), terminated, info
 
     ## -------------------------------------------------------------------------------------------------
-    def reset(self, seed=None, options=None):
+    def reset(self, seed=None, return_info=False, options=None):
+        # We need the following line to seed self.np_random
+        super().reset(seed=seed)
+        
         self._mlpro_env.reset(seed)
         obs = None
         if isinstance(self.observation_space, gym.spaces.Box):
             obs = np.array(self._mlpro_env.get_state().get_values(), dtype=np.float32)
         else:
             obs = np.array(self._mlpro_env.get_state().get_values())
-        return obs
+        
+        if return_info:
+            info = {}
+            return obs, info
+        else:
+            return obs
 
     ## -------------------------------------------------------------------------------------------------
     def render(self, mode='human'):
