@@ -49,7 +49,6 @@ The previous gym versions are still compatible, but it will not be available in 
 """
 
 import gym
-from numpy import bool8
 from mlpro.rl.models import *
 
 
