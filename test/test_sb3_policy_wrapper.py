@@ -12,10 +12,11 @@
 ## -- 2021-12-20  1.0.3     DA       Refactoring
 ## -- 2022-01-18  2.0.0     MRD      Add Off Policy Algorithm into the test
 ## -- 2022-01-21  2.0.1     MRD      Include RobotHTM as the continues action envrionment
+## -- 2022-07-21  2.0.2     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2022-01-21)
+Ver. 2.0.2 (2022-07-21)
 
 Unit test classes for environment.
 """
@@ -76,7 +77,7 @@ def test_sb3_policy_wrapper(env_cls):
             else:
                 if issubclass(env_cls, DQN):
                     # 1 Setup environment
-                    gym_env = gym.make('CartPole-v1')
+                    gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
                     gym_env.seed(2)
                     self._env = CustomWrapperFixedSeed(gym_env, p_logging=False)
                 else:
@@ -199,7 +200,7 @@ def test_sb3_policy_wrapper(env_cls):
     else:
         if issubclass(env_cls, DQN):
             # 1 Setup environment
-            gym_env = gym.make('CartPole-v1')
+            gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
             gym_env.seed(2)
         else:
             env = RobotHTM(p_reset_seed=False, p_target_mode="fix", p_logging=False)
