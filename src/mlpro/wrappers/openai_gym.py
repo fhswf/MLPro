@@ -49,6 +49,7 @@ The previous gym versions are still compatible, but it will not be available in 
 """
 
 import gym
+from numpy import bool8
 from mlpro.rl.models import *
 
 
@@ -231,7 +232,7 @@ class WrEnvMLPro2GYM(gym.Env):
     metadata = {'render.modes': ['human']}
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mlpro_env, p_state_space: MSpace = None, p_action_space: MSpace = None,
+    def __init__(self, p_mlpro_env, p_state_space: MSpace = None, p_action_space: MSpace = None, p_new_step_api: bool = False,
                  p_render_mode: str = None):
         """
         Parameters:
@@ -255,9 +256,11 @@ class WrEnvMLPro2GYM(gym.Env):
             self.action_space = self.recognize_space(self._mlpro_env.get_action_space())
 
         if p_render_mode is not None:
-            self.render_mode = render_mode
+            self.render_mode = p_render_mode
         else:
             self.render_mode = 'human'
+
+        self.new_step_api = p_new_step_api
 
         self.first_refresh = True
 
@@ -317,9 +320,12 @@ class WrEnvMLPro2GYM(gym.Env):
         truncated = state.get_timeout()
 
         info = {}
-        info["TimeLimit.truncated"] = state.get_timeout()
 
-        return obs, reward.get_overall_reward(), terminated, truncated, info
+        if self.new_step_api:
+            return obs, reward.get_overall_reward(), terminated, truncated, info
+        else:
+            info["TimeLimit.truncated"] = state.get_timeout()
+            return obs, reward.get_overall_reward(), terminated, info
 
     ## -------------------------------------------------------------------------------------------------
     def reset(self, seed=None, return_info=False, options=None):
