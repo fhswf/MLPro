@@ -2,6 +2,20 @@ Release Notes
 ================
 
 
+Version 0.9.1
+---------------------
+
+Release Highlights
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- Changes in gym wrapper due to new gym version of 0.25.0
+- Gym wrapper can now use either the new step api or the old step api
+- UR5 Environment (Simulation and Real)
+- Wrapper for Scikit-learn, OpenML, River
+- Extensions to the documentation
+
+
+
 Version 0.9.0
 ---------------------
 
