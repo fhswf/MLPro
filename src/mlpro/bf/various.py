@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.bf
 ## -- Module  : various
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -29,15 +29,16 @@
 ## --                                Class Saveable: new constant C_SUFFIX
 ## -- 2021-12-07  1.7.3     SY       Add a new attribute in ScientificObject
 ## -- 2021-12-31  1.7.4     DA       Class Log: udpated docstrings
-## -- 2022-07-21  1.8.0     DA       New class Wrapper
+## -- 2022-07-27  1.7.5     DA       A little refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2022-07-21)
+Ver. 1.7.5 (2022-07-27)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
-For example: logging, load/save, timer, wrapper...
+For example: logging, load/save, timer...
 """
+
 
 from datetime import datetime, timedelta
 from time import sleep
@@ -155,29 +156,32 @@ class Log:
     This class adds elementry log functionality to inherited classes.
     """
 
-    C_TYPE = '????'
-    C_NAME = '????'
+    C_TYPE              = '????'
+    C_NAME              = '????'
 
     # Types of log lines
-    C_LOG_TYPE_I = 'I'  # Information
-    C_LOG_TYPE_W = 'W'  # Warning
-    C_LOG_TYPE_E = 'E'  # Error
-    C_LOG_TYPE_S = 'S'  # Success / Milestone
+    C_LOG_TYPE_I        = 'I'  # Information
+    C_LOG_TYPE_W        = 'W'  # Warning
+    C_LOG_TYPE_E        = 'E'  # Error
+    C_LOG_TYPE_S        = 'S'  # Success / Milestone
 
-    C_LOG_TYPES = [C_LOG_TYPE_I, C_LOG_TYPE_W, C_LOG_TYPE_E, C_LOG_TYPE_S]
+    C_LOG_TYPES         = [C_LOG_TYPE_I, C_LOG_TYPE_W, C_LOG_TYPE_E, C_LOG_TYPE_S]
 
-    C_COL_WARNING = '\033[93m'  # Yellow
-    C_COL_ERROR = '\033[91m'  # Red
-    C_COL_SUCCESS = '\033[32m'  # Green
-    C_COL_RESET = '\033[0m'  # Reset color
+    C_COL_WARNING       = '\033[93m'  # Yellow
+    C_COL_ERROR         = '\033[91m'  # Red
+    C_COL_SUCCESS       = '\033[32m'  # Green
+    C_COL_RESET         = '\033[0m'  # Reset color
 
     # Log levels
-    C_LOG_ALL = True
-    C_LOG_NOTHING = False
-    C_LOG_WE = C_LOG_TYPE_W
-    C_LOG_E = C_LOG_TYPE_E
+    C_LOG_ALL           = True
+    C_LOG_NOTHING       = False
+    C_LOG_WE            = C_LOG_TYPE_W
+    C_LOG_E             = C_LOG_TYPE_E
 
-    C_LOG_LEVELS = [C_LOG_ALL, C_LOG_NOTHING, C_LOG_WE, C_LOG_E]
+    C_LOG_LEVELS        = [C_LOG_ALL, C_LOG_NOTHING, C_LOG_WE, C_LOG_E]
+
+    # Internals
+    C_INST_MSG          = True
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=C_LOG_ALL):
@@ -187,7 +191,10 @@ class Log:
         """
 
         self.switch_logging(p_logging)
-        self.log(self.C_LOG_TYPE_I, 'Instantiated')
+        if self.C_INST_MSG:
+            self.log(self.C_LOG_TYPE_I, 'Instantiated')
+            self.C_INST_MSG = False
+
 
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
@@ -432,56 +439,3 @@ class  ScientificObject:
     C_SCIREF_CONFERENCE = None
     C_SCIREF_NOTES = None
     C_SCIREF_EDITOR = None
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Wrapper (Log):
-    """
-    Root class for all MLPro wrapper classes. Please specify the wrapped package in attibute 
-    C_WRAPPED_PACKAGE and an optional minimum version in attribute C_MINIMUM_VERSION.
-
-    Parameters:
-    -----------
-     p_logging
-        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
-
-    """
-
-    C_TYPE              = 'Wrapper'
-    C_WRAPPED_PACKAGE   = None
-    C_MINIMUM_VERSION   = None
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging=p_logging)
-
-        if self.C_WRAPPED_PACKAGE is None:
-            raise Error('Please specify the wrapped package')
-
-        import pkg_resources
-
-        try:
-            version = pkg_resources.get_distribution(self.C_WRAPPED_PACKAGE).version
-            self.log(Log.C_LOG_TYPE_I, 'Wrapped package ' + self.C_WRAPPED_PACKAGE + ' installed in version ' + version)
-
-        except:
-            raise Error('Package ' + self.C_WRAPPED_PACKAGE + ' not installed')
-
-        if self.C_MINIMUM_VERSION is not None:
-            ver_actual = version.split('.')
-            ver_setpoint = self.C_MINIMUM_VERSION.split('.')
-
-            for i, val_setpoint in enumerate(ver_setpoint):
-                val_actual = ver_actual[i]
-
-                if val_actual < val_setpoint:
-                    self.log(Log.C_LOG_TYPE_W, 'Minimum version ' + self.C_MINIMUM_VERSION + ' of package ' + self.C_WRAPPED_PACKAGE + ' undershot')
-                    break
-
-                elif val_actual > val_setpoint:
-                    break
- 

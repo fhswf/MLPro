@@ -38,10 +38,11 @@
 ## -- 2022-03-21  1.3.5     MRD      Added new parameter to the WrEnvMLPro2GYM.reset()
 ## -- 2022-05-19  1.3.6     SY       Gym 0.23: Replace function env.seed(seed) to env.reset(seed=seed)
 ## -- 2022-07-20  1.4.0     SY       Update due to the latest introduction of Gym 0.25
+## -- 2022-07-27  1.4.1     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-07-20)
+Ver. 1.4.1 (2022-07-27)
 
 This module provides wrapper classes for reinforcement learning tasks.
 This wrappers has been updated and follow the gym version of 0.25.0.
@@ -49,33 +50,50 @@ The previous gym versions are still compatible, but it will not be available in 
 """
 
 import gym
+from gym.core import Env
+from mlpro.wrappers.models import Wrapper
 from mlpro.rl.models import *
 
 
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvGYM2MLPro(Environment):
+class WrEnvGYM2MLPro(Wrapper, Environment):
     """
     This class is a ready to use wrapper class for OpenAI Gym environments. 
     Objects of this type can be treated as an environment object. Encapsulated 
     gym environment must be compatible to class gym.Env.
+
+    Parameters
+    ----------
+    p_gym_env : Env   
+            Gym environment object
+    p_state_space : MSpace  
+            Optional external state space object that meets the state space of the Gym environment
+    p_action_space : MSpace 
+            Optional external action space object that meets the state space of the Gym environment
+    p_logging
+        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
-    C_TYPE = 'OpenAI Gym Env'
 
-    ## -------------------------------------------------------------------------------------------------
+    C_TYPE              = 'Wrapper OpenAI Gym -> MLPro'
+    C_WRAPPED_PACKAGE   = 'gym'
+    C_MINIMUM_VERSION   = '0.24.1'
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_gym_env,  # Gym environment object
-                 p_state_space: MSpace = None,  # Optional external state space object that meets the
-                 # state space of the gym environment
-                 p_action_space: MSpace = None,  # ptional external action space object that meets the
-                 # state space of the gym environment
-                 p_logging=Log.C_LOG_ALL):  # Log level (see constants of class Log)
+                 p_gym_env,  
+                 p_state_space: MSpace = None,  
+                 p_action_space: MSpace = None,  
+                 p_logging=Log.C_LOG_ALL):  
 
         self._gym_env = p_gym_env
         self.C_NAME = 'Env "' + self._gym_env.spec.id + '"'
 
-        super().__init__(p_mode=Environment.C_MODE_SIM, p_latency=None, p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
+        Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_latency=None, p_logging=p_logging)
 
         if p_state_space is not None:
             self._state_space = p_state_space
@@ -87,7 +105,8 @@ class WrEnvGYM2MLPro(Environment):
         else:
             self._action_space = self.recognize_space(self._gym_env.action_space)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def __del__(self):
         try:
             self._gym_env.close()
@@ -95,7 +114,8 @@ class WrEnvGYM2MLPro(Environment):
         except:
             pass
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     @staticmethod
     def recognize_space(p_gym_space) -> ESpace:
         space = ESpace()
@@ -112,12 +132,14 @@ class WrEnvGYM2MLPro(Environment):
 
         return space
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
         return None, None
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
 
         # 1 Reset Gym environment and determine initial state
@@ -133,7 +155,8 @@ class WrEnvGYM2MLPro(Environment):
         state.set_values(obs.get_data())
         self._set_state(state)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state: State, p_action: Action) -> State:
 
         # 1 Convert action to Gym syntax
@@ -190,57 +213,82 @@ class WrEnvGYM2MLPro(Environment):
         # 5 Return next state
         return state
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         if (p_state_old is not None) or (p_state_new is not None):
             raise NotImplementedError
 
         return self._last_reward
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
         return self.get_success()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def compute_broken(self, p_state: State) -> bool:
         return self.get_broken()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         self._gym_env.render()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         self._gym_env.render()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_cycle_limit(self):
         return self._gym_env._max_episode_steps
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvMLPro2GYM(gym.Env):
+class WrEnvMLPro2GYM(Wrapper, gym.Env):
     """
     This class is a ready to use wrapper class for MLPro to OpenAI Gym environments. 
     Objects of this type can be treated as an gym.Env object. Encapsulated 
     MLPro environment must be compatible to class Environment.
+
+    Parameters
+    ----------
+    p_mlpro_env : Environment    
+            MLPro's Environment object
+    p_state_space : MSpace  
+            Optional external state space object that meets the state space of the MLPro environment
+    p_action_space : MSpace 
+            Optional external action space object that meets the state space of the MLPro environment
+    p_new_step_api : bool
+            ????
+    p_render_mde : str
+            ????
+    p_logging
+        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
-    C_TYPE = 'MLPro to Gym Env'
-    metadata = {'render.modes': ['human']}
+    C_TYPE              = 'Wrapper MLPro -> OpenAI Gym'
+    C_WRAPPED_PACKAGE   = 'gym'
+    C_MINIMUM_VERSION   = '0.24.1'
+    metadata            = {'render.modes': ['human']}
 
-    ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mlpro_env, p_state_space: MSpace = None, p_action_space: MSpace = None, p_new_step_api: bool = False,
-                 p_render_mode: str = None):
-        """
-        Parameters:
-            p_mlpro_env     MLPro's Environment object
-            p_state_space   Optional external state space object that meets the
-                            state space of the MLPro environment
-            p_action_space  Optional external action space object that meets the
-                            state space of the MLPro environment
-        """
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_mlpro_env:Environment, 
+                  p_state_space: MSpace = None, 
+                  p_action_space: MSpace = None, 
+                  p_new_step_api: bool = False,
+                  p_render_mode: str = None,
+                  p_logging = Log.C_LOG_ALL ):
+
+        Wrapper.__init__(self, p_logging=p_logging)
 
         self._mlpro_env = p_mlpro_env
 
@@ -263,7 +311,8 @@ class WrEnvMLPro2GYM(gym.Env):
 
         self.first_refresh = True
 
-    ## -------------------------------------------------------------------------------------------------
+    
+## -------------------------------------------------------------------------------------------------
     @staticmethod
     def recognize_space(p_mlpro_space):
         space = None
@@ -288,7 +337,8 @@ class WrEnvMLPro2GYM(gym.Env):
 
         return space
 
-    ## -------------------------------------------------------------------------------------------------
+    
+## -------------------------------------------------------------------------------------------------
     def step(self, action):
         _action = Action()
         _act_set = Set()
@@ -326,7 +376,8 @@ class WrEnvMLPro2GYM(gym.Env):
             info["TimeLimit.truncated"] = state.get_timeout()
             return obs, reward.get_overall_reward(), terminated, info
 
-    ## -------------------------------------------------------------------------------------------------
+    
+## -------------------------------------------------------------------------------------------------
     def reset(self, seed=None, return_info=False, options=None):
         # We need the following line to seed self.np_random
         super().reset(seed=seed)
@@ -344,7 +395,8 @@ class WrEnvMLPro2GYM(gym.Env):
         else:
             return obs
 
-    ## -------------------------------------------------------------------------------------------------
+    
+## -------------------------------------------------------------------------------------------------
     def render(self, mode='human'):
         try:
             if self.first_refresh:
@@ -356,6 +408,7 @@ class WrEnvMLPro2GYM(gym.Env):
         except:
             return False
 
-    ## -------------------------------------------------------------------------------------------------
+    
+## -------------------------------------------------------------------------------------------------
     def close(self):
         self._mlpro_env.__del__()
