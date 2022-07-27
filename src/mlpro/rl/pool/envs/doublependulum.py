@@ -35,6 +35,7 @@
 ## -- 2022-mm-dd  1.3.0     LSB      Updating:
 ##                                      - Numericals for torque and acceleration
 ##                                      _ Updating visualisation
+## -- 2022-mm-dd  1.3.1     LSB      Returning new state object at simulate reaction method
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -357,11 +358,12 @@ class DoublePendulum(Environment):
                    / den3)
         self.action_cw = True if torque[0] <= 0 else False
         state_ids = self._state.get_dim_ids()
-        
-        for i in range(len(state)):
-            self._state.set_value(state_ids[i], state[i])
+        current_state = State(self._state_space)
 
-        return self._state
+        for i in range(len(state)):
+            current_state.set_value(state_ids[i], state[i])
+
+        return current_state
 
     ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
