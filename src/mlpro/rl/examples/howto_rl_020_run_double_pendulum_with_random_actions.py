@@ -25,6 +25,7 @@ from mlpro.rl.pool.envs.doublependulum import DoublePendulum
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 from pathlib import Path
 import matplotlib.pyplot as plt
+plt.ion()
 import numpy as np
 import random
 import os
@@ -71,7 +72,7 @@ class ScenarioDoublePendulum(RLScenario):
 # 2 Create scenario and start training
 
 if __name__ == "__main__":
-    cycle_limit         = 200000
+    cycle_limit         = 200
     adaptation_limit    = 10000
     stagnation_limit    = 0
     eval_frequency      = 5
@@ -88,7 +89,7 @@ now             = datetime.now()
 training        = RLTraining(
     p_scenario_cls=ScenarioDoublePendulum,
     p_cycle_limit=cycle_limit,
-    p_cycles_per_epi_limit=150,
+    p_cycles_per_epi_limit=15,
     p_adaptation_limit=adaptation_limit,
     p_stagnation_limit=stagnation_limit,
     p_eval_frequency=eval_frequency,

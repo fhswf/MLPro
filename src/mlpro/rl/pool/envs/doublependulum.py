@@ -32,6 +32,9 @@
 ## -- 2022-06-21  1.1.8     SY       Code cleaning
 ## -- 2022-07-10  1.1.9     YI       Changing the units from radians to degrees
 ## -- 2022-07-20  1.2.0     SY       Updating _simulate_reaction, debugging _data_normalization
+## -- 2022-mm-dd  1.3.0     LSB      Updating:
+##                                      - Numericals for torque and acceleration
+##                                      _ Updating visualisation
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -45,6 +48,7 @@ from mlpro.bf.various import *
 import numpy as np
 from numpy import sin, cos
 import matplotlib.pyplot as plt
+plt.ion()
 from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
 from collections import deque
@@ -104,8 +108,8 @@ class DoublePendulum(Environment):
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.0025, t_act=20, max_torque=20,
-                 max_speed=10, l1=0.5, l2=0.25, m1=0.5, m2=0.25, init_angles='down', 
+    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.02, t_act=5, max_torque=20,
+                 max_speed=10, l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
                  g=9.8, history_length=3):
         self.t_step = t_step
         self.t_act = t_act
@@ -175,7 +179,7 @@ class DoublePendulum(Environment):
         return state_space, action_space
 
     ## -------------------------------------------------------------------------------------------------
-    def derivs(self, state, t=None):
+    def derivs(self, state, t, torque):
         """
         This method is used to calculate the derivatives of the system, given the
         current states.
@@ -202,17 +206,17 @@ class DoublePendulum(Environment):
         dydx[1] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
                     + self.m2 * self.g * sin(state[3]) * cos(delta)
                     + self.m2 * self.l2 * state[4] * state[4] * sin(delta)
-                    - (self.m1 + self.m2) * self.g * sin(state[0]))
+                    - (self.m1 + self.m2) * self.g * sin(state[0])-torque)
                    / den1)
                              
-        num1 = -self.g * (2 * self.m1 + self.m2) * sin(self.th1)
-        num2 = -self.m2 * self.g * sin(self.th1 - 2 * self.th2)
-        num3 = -2 * sin(self.th1 - self.th2)
-        num4 =  self.m2 * ((self.th2dot * self.th2dot) * self.l2 + (self.th1dot * self.th1dot)
-                           * self.l1 * cos(self.th1 - self.th2))
-        num = num1 + num2 + (num3 * num4)
-        den2 = self.l1 * (2 * self.m1 + self.m2 - self.m2 * cos(2 * self.th1 - 2 * self.th2))
-        dydx[2] = num/den2
+        # num1 = -self.g * (2 * self.m1 + self.m2) * sin(self.th1)
+        # num2 = -self.m2 * self.g * sin(self.th1 - 2 * self.th2)
+        # num3 = -2 * sin(self.th1 - self.th2)
+        # num4 =  self.m2 * ((self.th2dot * self.th2dot) * self.l2 + (self.th1dot * self.th1dot)
+        #                    * self.l1 * cos(self.th1 - self.th2))
+        # num = num1 + num2 + (num3 * num4)
+        # den2 = self.l1 * (2 * self.m1 + self.m2 - self.m2 * cos(2 * self.th1 - 2 * self.th2))
+        # dydx[2] = num/den2
         
         dydx[3] = state[4]
 
@@ -222,14 +226,14 @@ class DoublePendulum(Environment):
                     - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
                     - (self.m1 + self.m2) * self.g * sin(state[3]))
                    / den3)
-        
-        num1 = 2 * sin(self.th1 - self.th2)
-        num2 = (self.th1dot * self.th1dot) * self.l1 * (self.m1 + self.m2) + self.g * (self.m1 + self.m2) * cos(self.th1)
-        num3 = (self.th2dot * self.th2dot) * self.l2 * self.m2 * cos(self.th1 - self.th2)
-        num = num1 * (num2 + num3)
-        den4 = self.l2 * (2 * self.m1 + self.m2 - self.m2 
-                      * cos(2 * self.th1 - 2 * self.th2))
-        dydx[5] = num/den4
+        #
+        # num1 = 2 * sin(self.th1 - self.th2)
+        # num2 = (self.th1dot * self.th1dot) * self.l1 * (self.m1 + self.m2) + self.g * (self.m1 + self.m2) * cos(self.th1)
+        # num3 = (self.th2dot * self.th2dot) * self.l2 * self.m2 * cos(self.th1 - self.th2)
+        # num = num1 * (num2 + num3)
+        # den4 = self.l2 * (2 * self.m1 + self.m2 - self.m2
+        #               * cos(2 * self.th1 - 2 * self.th2))
+        # dydx[5] = num/den4
         
         return dydx
 
@@ -272,14 +276,14 @@ class DoublePendulum(Environment):
         """
         
         if self.init_angles =='up':
-            self.th1 = 180
-            self.th2 = 180
+            self.th1 = np.radians(80)
+            self.th2 = np.radians(180)
         elif self.init_angles=='down':
             self.th1 = 0
             self.th2 = 0
         elif self.init_angles=='random':
-            self.th1 = np.random.rand(1)[0]*180
-            self.th2 = np.random.rand(1)[0]*180
+            self.th1 = np.radians(np.random.rand(1)[0]*180)
+            self.th2 = np.radians(np.random.rand(1)[0]*180)
         else:
             raise NotImplementedError("init_angles value must be up or down") 
             
@@ -325,21 +329,33 @@ class DoublePendulum(Environment):
 
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
+        torque = tuple(torque.reshape([1]))
+        self.alpha = abs(torque[0])/self.max_torque
         
-        self.alpha = abs(torque)/self.max_torque
-        
-        state[1] = th1dot + (3 * self.g / (2 * self.l1) * sin(th1) + 3.0 /
-                             (self.m1 * self.l1 ** 2) * torque) * self.t_step
+        # state[1] = th1dot + (3 * self.g / (2 * self.l1) * sin(th1) + 3.0 /
+        #                      (self.m1 * self.l1 ** 2) * torque) * self.t_step
+        #
+        # if abs(th1dot) > self.max_speed:
+        #     state[1] = np.clip(state[1], -th1dot, th1dot)
+        # else:
+        #     state[1] = np.clip(state[1], -self.max_speed, self.max_speed)
 
-        if abs(th1dot) > self.max_speed:
-            state[1] = np.clip(state[1], -th1dot, th1dot)
-        else:
-            state[1] = np.clip(state[1], -self.max_speed, self.max_speed)
-
-        self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act * self.t_step, self.t_step))
+        self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act, self.t_step), args=(torque,))
         state = self.y[-1]
-
-        self.action_cw = True if torque <= 0 else False
+        delta = state[3]-state[0]
+        den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
+        state[2]= ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
+                    + self.m2 * self.g * sin(state[3]) * cos(delta)
+                    + self.m2 * self.l2 * state[4] * state[4] * sin(delta)
+                    - (self.m1 + self.m2) * self.g * sin(state[0])-torque)
+                   / den1)
+        den3 = (self.l2 / self.l1) * den1
+        state[5] = ((- self.m2 * self.l2 * state[4] * state[4] * sin(delta) * cos(delta)
+                    + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
+                    - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
+                    - (self.m1 + self.m2) * self.g * sin(state[3]))
+                   / den3)
+        self.action_cw = True if torque[0] <= 0 else False
         state_ids = self._state.get_dim_ids()
         
         for i in range(len(state)):
@@ -551,31 +567,36 @@ class DoublePendulum(Environment):
         x1 = self.l1 * sin(self.y[:, 0])
         y1 = -self.l1 * cos(self.y[:, 0])
 
-        x2 = self.l2 * sin(self.y[:, 2]) + x1
-        y2 = -self.l2 * cos(self.y[:, 2]) + y1
+        x2 = self.l2 * sin(self.y[:, 3]) + x1
+        y2 = -self.l2 * cos(self.y[:, 3]) + y1
 
-        thisx = [0, x1[-1], x2[-1]]
-        thisy = [0, y1[-1], y2[-1]]
-        self.history_x.appendleft(thisx[2])
-        self.history_y.appendleft(thisy[2])
-        self.line.set_data(thisx, thisy)
-        self.trace.set_data(self.history_x, self.history_y)
+        # def animate(i):
+        for i in range(len(self.y)):
+            thisx = [0, x1[i], x2[i]]
+            thisy = [0, y1[i], y2[i]]
 
-        if self.action_cw:
-            self.cw_arc.set_visible(True)
-            self.cw_arrow.set_visible(True)
-            self.cw_arc.set_alpha(self.alpha)
-            self.cw_arrow.set_alpha(self.alpha)
-            self.ccw_arc.set_visible(False)
-            self.ccw_arrow.set_visible(False)
-        else:
-            self.cw_arc.set_visible(False)
-            self.cw_arrow.set_visible(False)
-            self.ccw_arc.set_visible(True)
-            self.ccw_arrow.set_visible(True)
-            self.ccw_arc.set_alpha(self.alpha)
-            self.ccw_arrow.set_alpha(self.alpha)
+            self.history_x.appendleft(thisx[2])
+            self.history_y.appendleft(thisy[2])
+            self.line.set_data(thisx, thisy)
+            self.trace.set_data(self.history_x, self.history_y)
 
-        if not self.embedded_fig:
-            self.fig.canvas.draw()
-            self.fig.canvas.flush_events()
+
+
+            if self.action_cw:
+                self.cw_arc.set_visible(True)
+                self.cw_arrow.set_visible(True)
+                self.cw_arc.set_alpha(self.alpha)
+                self.cw_arrow.set_alpha(self.alpha)
+                self.ccw_arc.set_visible(False)
+                self.ccw_arrow.set_visible(False)
+            else:
+                self.cw_arc.set_visible(False)
+                self.cw_arrow.set_visible(False)
+                self.ccw_arc.set_visible(True)
+                self.ccw_arrow.set_visible(True)
+                self.ccw_arc.set_alpha(self.alpha)
+                self.ccw_arrow.set_alpha(self.alpha)
+
+            if not self.embedded_fig and i%3 ==0 :
+                self.fig.canvas.draw()
+                self.fig.canvas.flush_events()
