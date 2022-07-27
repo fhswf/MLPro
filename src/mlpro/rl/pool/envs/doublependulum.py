@@ -32,10 +32,10 @@
 ## -- 2022-06-21  1.1.8     SY       Code cleaning
 ## -- 2022-07-10  1.1.9     YI       Changing the units from radians to degrees
 ## -- 2022-07-20  1.2.0     SY       Updating _simulate_reaction, debugging _data_normalization
-## -- 2022-mm-dd  1.3.0     LSB      Updating:
+## -- 2022-07-28  1.3.0     LSB      Updating:
 ##                                      - Numericals for torque and acceleration
 ##                                      _ Updating visualisation
-## -- 2022-mm-dd  1.3.1     LSB      Returning new state object at simulate reaction method
+## -- 2022-07-28  1.3.1     LSB      Returning new state object at simulate reaction method
 ## -------------------------------------------------------------------------------------------------
 
 """
