@@ -81,7 +81,6 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
     C_TYPE              = 'Wrapper OpenAI Gym -> MLPro'
     C_WRAPPED_PACKAGE   = 'gym'
-    C_MINIMUM_VERSION   = '0.24.1'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -400,7 +399,6 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
 
     C_TYPE              = 'Wrapper MLPro -> OpenAI Gym'
     C_WRAPPED_PACKAGE   = 'gym'
-    C_MINIMUM_VERSION   = '0.24.1'
     metadata            = {'render.modes': ['human']}
 
 ## -------------------------------------------------------------------------------------------------
