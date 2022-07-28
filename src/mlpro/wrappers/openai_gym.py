@@ -39,11 +39,11 @@
 ## -- 2022-05-19  1.3.6     SY       Gym 0.23: Replace function env.seed(seed) to env.reset(seed=seed)
 ## -- 2022-07-20  1.4.0     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-07-27  1.4.1     DA       Introduction of root class Wrapper
-## -- 2022-07-27  1.4.2     SY       Minor improvements: API documentation and logging
+## -- 2022-07-28  1.4.2     SY       Minor improvements: API documentation and logging
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2022-07-27)
+Ver. 1.4.2 (2022-07-28)
 
 This module provides wrapper classes for reinforcement learning tasks.
 This wrappers has been updated and follow the gym version of 0.25.0.
