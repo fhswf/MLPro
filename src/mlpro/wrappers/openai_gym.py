@@ -39,10 +39,11 @@
 ## -- 2022-05-19  1.3.6     SY       Gym 0.23: Replace function env.seed(seed) to env.reset(seed=seed)
 ## -- 2022-07-20  1.4.0     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-07-27  1.4.1     DA       Introduction of root class Wrapper
+## -- 2022-07-27  1.4.2     SY       Minor improvements: API documentation and logging
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-07-27)
+Ver. 1.4.2 (2022-07-27)
 
 This module provides wrapper classes for reinforcement learning tasks.
 This wrappers has been updated and follow the gym version of 0.25.0.
@@ -74,7 +75,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
     p_action_space : MSpace 
             Optional external action space object that meets the state space of the Gym environment
     p_logging
-        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
+            Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
 
@@ -87,7 +88,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
                  p_gym_env,  
                  p_state_space: MSpace = None,  
                  p_action_space: MSpace = None,  
-                 p_logging=Log.C_LOG_ALL):  
+                 p_logging=Log.C_LOG_ALL):
 
         self._gym_env = p_gym_env
         self.C_NAME = 'Env "' + self._gym_env.spec.id + '"'
@@ -104,10 +105,16 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
             self._action_space = p_action_space
         else:
             self._action_space = self.recognize_space(self._gym_env.action_space)
+        
+        self.log(self.C_LOG_TYPE_I, 'Gym Environment has been sucessfully wrapped as MLPro Environment.')
 
 
 ## -------------------------------------------------------------------------------------------------
     def __del__(self):
+        """
+        To shut down or close an environment.
+
+        """
         try:
             self._gym_env.close()
             self.log(self.C_LOG_TYPE_I, 'Closed')
@@ -118,6 +125,21 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def recognize_space(p_gym_space) -> ESpace:
+        """
+        Detecting a gym space and transform it to MLPro space. Hence, the transformed space can be
+        directly compatible in MLPro.
+
+        Parameters
+        ----------
+        p_gym_space : container spaces (:class:`Tuple` and :class:`Dict`)
+            Spaces are crucially used in Gym to define the format of valid actions and observations.
+
+        Returns
+        -------
+        space : ESpace
+            MLPro compatible space.
+
+        """
         space = ESpace()
 
         if isinstance(p_gym_space, gym.spaces.Discrete):
@@ -136,11 +158,24 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
+        """
+        To setup spaces. To be optionally defined by the users.
+
+        """
         return None, None
 
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
+        """
+        Custom method to reset the environment to an initial/defined state. 
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed parameter for an internal random generator. Default = None.
+
+        """
 
         # 1 Reset Gym environment and determine initial state
         try:
@@ -158,6 +193,24 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state: State, p_action: Action) -> State:
+        """
+        Simulates a state transition based on a state and an action. The simulation step itself is
+        carried out either by an internal custom implementation in method _simulate_reaction() or
+        by an embedded adaptive function.
+
+        Parameters
+        ----------
+        p_state : State
+            Current state.
+        p_action : Action
+            Action.
+
+        Returns
+        -------
+        state : State
+            Subsequent state after transition
+
+        """
 
         # 1 Convert action to Gym syntax
         action_sorted = p_action.get_sorted_values()
@@ -216,6 +269,26 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+        """
+        Computes a reward for the state transition, given by two successive states. The reward
+        computation itself is carried out either by a custom implementation in method
+        _compute_reward() or by an embedded adaptive function.
+
+        Parameters
+        ----------
+        p_state_old : State
+            Optional state before transition. If None the internal previous state of the environment
+            is used.
+        p_state_new : State
+            Optional tate after transition. If None the internal current state of the environment
+            is used.
+
+        Returns
+        -------
+        Reward
+            Reward object.
+
+        """
         if (p_state_old is not None) or (p_state_new is not None):
             raise NotImplementedError
 
@@ -224,26 +297,75 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
+        """
+        Assesses the given state whether it is a 'success' state. Assessment is carried out either by
+        a custom implementation in method _compute_success() or by an embedded adaptive function.
+
+        Parameters
+        ----------
+        p_state : State
+            State to be assessed.
+
+        Returns
+        -------
+        bool
+            True, if the given state is a 'success' state. False otherwise.
+
+        """
+
         return self.get_success()
 
 
 ## -------------------------------------------------------------------------------------------------
     def compute_broken(self, p_state: State) -> bool:
+        """
+        Assesses the given state whether it is a 'broken' state. Assessment is carried out either by
+        a custom implementation in method _compute_broken() or by an embedded adaptive function.
+
+        Parameters
+        ----------
+        p_state : State
+            State to be assessed.
+
+        Returns
+        -------
+        bool
+            True, if the given state is a 'broken' state. False otherwise.
+            
+        """
+        
         return self.get_broken()
 
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
+        """
+        Plot initialization function, deployed by render functionality from OpenAI Gym.
+
+        """
         self._gym_env.render()
 
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
+        """
+        Updating the actual plot, deployed by render functionality from OpenAI Gym.
+
+        """
         self._gym_env.render()
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_cycle_limit(self):
+        """
+        To obtain the information regarding the cycle limit from the environment.
+
+        Returns
+        -------
+        float
+            the number of the cycle limit.
+
+        """
         return self._gym_env._max_episode_steps
 
 
@@ -267,11 +389,13 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
     p_action_space : MSpace 
             Optional external action space object that meets the state space of the MLPro environment
     p_new_step_api : bool
-            ????
+            If true, the user assures that the environment compatible to Gym version 0.25.0 or above.
+            Otherwise, it is false. Default = False. 
     p_render_mde : str
-            ????
+            To allow the user to specify render_mode handled by the environment, for instance,
+            'human', 'rgb_array', and 'single_rgb_array'. Default = None.
     p_logging
-        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
+            Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
     C_TYPE              = 'Wrapper MLPro -> OpenAI Gym'
@@ -305,16 +429,33 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
         if p_render_mode is not None:
             self.render_mode = p_render_mode
         else:
-            self.render_mode = 'human'
+            self.render_mode = None
 
         self.new_step_api = p_new_step_api
 
         self.first_refresh = True
+    
+        self.log(self.C_LOG_TYPE_I, 'MLPro Environment has been sucessfully wrapped as Gym Environment.')
 
     
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def recognize_space(p_mlpro_space):
+        """
+        Detecting a MLPro space and transform it to gym space. Hence, the transformed space can be
+        directly compatible in gym.
+
+        Parameters
+        ----------
+        p_mlpro_space : ESpace
+            MLPro compatible space.
+
+        Returns
+        -------
+        space : container spaces (:class:`Tuple` and :class:`Dict`)
+            Spaces are crucially used in Gym to define the format of valid actions and observations.
+
+        """
         space = None
         action_dim = p_mlpro_space.get_num_dim()
         id_dim = p_mlpro_space.get_dim_ids()[0]
@@ -340,6 +481,36 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
     
 ## -------------------------------------------------------------------------------------------------
     def step(self, action):
+        """
+        To execute one time step within the environment.
+
+        Parameters
+        ----------
+        action : ActType
+            an action provided by the agent.
+
+        Returns
+        -------
+        obs : object
+            This will be an element of the environment's :attr:`observation_space`.
+            This may, for instance, be a numpy array containing the positions and velocities of certain objects.
+        reward.get_overall_reward() : float
+            The amount of reward returned as a result of taking the action.
+        terminated : bool
+            whether a `terminal state` (as defined under the MDP of the task) is reached.
+            In this case further step() calls could return undefined results.
+        truncated : bool
+            whether a truncation condition outside the scope of the MDP is satisfied.
+            Typically a timelimit, but could also be used to indicate agent physically going out of bounds.
+            Can be used to end the episode prematurely before a `terminal state` is reached.
+        info : dict
+            It contains auxiliary diagnostic information (helpful for debugging, learning, and logging).
+            This might, for instance, contain: metrics that describe the agent's performance state, variables that are
+            hidden from observations, or individual reward terms that are combined to produce the total reward.
+            It also can contain information that distinguishes truncation and termination, however this is deprecated in favour
+            of returning two booleans, and will be removed in a future version.
+
+        """
         _action = Action()
         _act_set = Set()
         idx = self._mlpro_env._action_space.get_num_dim()
@@ -379,6 +550,41 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
     
 ## -------------------------------------------------------------------------------------------------
     def reset(self, seed=None, return_info=False, options=None):
+        """
+        Resets the environment to an initial state and returns the initial observation.
+
+        Parameters
+        ----------
+        seed : int, optional
+           The seed that is used to initialize the environment's PRNG.
+           If the environment does not already have a PRNG and ``seed=None`` (the default option) is passed,
+           a seed will be chosen from some source of entropy (e.g. timestamp or /dev/urandom).
+           However, if the environment already has a PRNG and ``seed=None`` is passed, the PRNG will *not* be reset.
+           If you pass an integer, the PRNG will be reset even if it already exists.
+           Usually, you want to pass an integer *right after the environment has been initialized and then never again*.
+           Please refer to the minimal example above to see this paradigm in action.
+           The default is None.
+        return_info : bool
+            If true, return additional information along with initial observation.
+            This info should be analogous to the info returned in :meth:`step`.
+            The default is False.
+        options : dict, optional
+            Additional information to specify how the environment is reset (optional,
+            depending on the specific environment). The default is None.
+
+        Returns
+        -------
+        obs : object
+            This will be an element of the environment's :attr:`observation_space`.
+            This may, for instance, be a numpy array containing the positions and velocities of certain objects.
+        info : dict
+            It contains auxiliary diagnostic information (helpful for debugging, learning, and logging).
+            This might, for instance, contain: metrics that describe the agent's performance state, variables that are
+            hidden from observations, or individual reward terms that are combined to produce the total reward.
+            It also can contain information that distinguishes truncation and termination, however this is deprecated in favour
+            of returning two booleans, and will be removed in a future version.
+
+        """
         # We need the following line to seed self.np_random
         super().reset(seed=seed)
         
@@ -398,6 +604,21 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
     
 ## -------------------------------------------------------------------------------------------------
     def render(self, mode='human'):
+        """
+        Compute the render frames as specified by render_mode attribute during initialization of the environment.
+
+        Parameters
+        ----------
+        mode : str, optional
+            To allow the user to specify render_mode handled by the environment, for instance,
+            'human', 'rgb_array', and 'single_rgb_array'. The default is 'human'.
+
+        Returns
+        -------
+        bool
+            Rendering is successful or not.
+
+        """
         try:
             if self.first_refresh:
                 self._mlpro_env.init_plot()
@@ -411,4 +632,9 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
     
 ## -------------------------------------------------------------------------------------------------
     def close(self):
+        """
+        Override close in your subclass to perform any necessary cleanup.
+        Environments will automatically :meth:`close()` themselves when garbage collected or when the program exits.
+
+        """
         self._mlpro_env.__del__()
