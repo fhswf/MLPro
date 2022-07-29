@@ -29,7 +29,7 @@ class GazeboConnection():
         self.init_values()
         
         # Pause only important for legged robots learning
-        # self.pauseSim()
+        self.pauseSim()
 
     def pauseSim(self):
         rospy.logdebug("PAUSING service found...")

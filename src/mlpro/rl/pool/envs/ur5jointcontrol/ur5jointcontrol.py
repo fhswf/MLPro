@@ -34,6 +34,9 @@ import platform
 import subprocess
 import time
 import os
+from dotenv import load_dotenv
+import em
+import netifaces as ni
 import mlpro
 from mlpro.bf.various import Log
 from mlpro.wrappers.openai_gym import *
@@ -55,7 +58,8 @@ class UR5JointControl(Environment):
     C_INFINITY = np.finfo(np.float32).max
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_seed=0, p_build=True, p_real=False, p_robot_ip="172.17.0.3", p_reverse_ip="172.17.0.2", 
+    def __init__(self, p_seed=0, p_build=True, p_real=False, p_start_simulator=True, p_start_ur_driver=False,
+        p_ros_server_ip="localhost", p_server_port=11311, p_net_interface="eth0", p_robot_ip="", p_reverse_ip="", 
         p_reverse_port=50001, p_visualize=False, p_logging=True):
         """
         Parameters:
@@ -82,14 +86,32 @@ class UR5JointControl(Environment):
             self.log(Log.C_LOG_TYPE_W, "Please use the guideline here:")
             self.log(Log.C_LOG_TYPE_W, "https://mlpro.readthedocs.io/en/latest/content/rl/env/pool/ur5jointcontrol.html")
         else:
-            roscore = subprocess.Popen('roscore')
+            ros_ws_path = mlpro.rl.pool.envs.ur5jointcontrol.__file__.replace("/__init__.py", "")
+            dot_env_file_template = os.path.join(ros_ws_path, "ur5.env.template")
+            dot_env_file = os.path.join(ros_ws_path, "ur5.env")
+            env_data = {
+                "ros_master_ip" : "http://"+p_ros_server_ip+":"+str(p_server_port),
+                "ros_ip" : ni.ifaddresses(p_net_interface)[ni.AF_INET][0]['addr']
+            }
+
+            data = None
+            with open(dot_env_file_template, 'r') as f:
+                data = f.read()
+            data = em.expand(data, env_data)
+
+            with open(dot_env_file, 'w+') as f:
+                f.write(data)
+
+            load_dotenv(dot_env_file)
+            
+            if p_ros_server_ip == "localhost":
+                roscore = subprocess.Popen('roscore')
             rospy.init_node('ur5_lab_training_start', anonymous=True, log_level=rospy.WARN)
 
             LoadYamlFileParamsTest(rospackage_name="ur5_lab",
                                 rel_path_from_package_to_file="config",
                                 yaml_file_name="ur5_lab_task_param.yaml")
 
-            ros_ws_path = mlpro.rl.pool.envs.ur5jointcontrol.__file__.replace("/__init__.py", "")
             rospy.set_param('ros_ws_path', ros_ws_path)
             rospy.set_param('sim', not p_real)
 
@@ -97,11 +119,13 @@ class UR5JointControl(Environment):
             if not p_real:
                 environment = rospy.get_param('/ur5_lab/simulation_environment')
                 rospy.set_param('visualize', p_visualize)
+                rospy.set_param('start_gazebo', p_start_simulator)
             else:
                 environment = rospy.get_param('/ur5_lab/real_environment')
                 rospy.set_param('robot_ip', p_robot_ip)
                 rospy.set_param('reverse_ip', p_reverse_ip)
                 rospy.set_param('reverse_port', p_reverse_port)
+                rospy.set_param('start_driver', p_start_ur_driver)
 
             max_step_episode = rospy.get_param('/ur5_lab/max_iterations')
 

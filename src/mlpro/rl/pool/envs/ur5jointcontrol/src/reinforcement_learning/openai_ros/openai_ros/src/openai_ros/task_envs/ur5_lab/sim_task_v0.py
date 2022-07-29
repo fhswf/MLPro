@@ -25,16 +25,12 @@ class UR5LabSimTask(ur5_lab_env.UR5LabSimEnv, utils.EzPickle):
         # This is the path where the simulation files are
 
         ros_ws_abspath = rospy.get_param("ros_ws_path", None)
+        start_gazebo = rospy.get_param("start_gazebo", True)
         visualize = rospy.get_param("visualize", False)
-        sim_mode = rospy.get_param("sim", True)
-        assert ros_ws_abspath is not None, "You forgot to set ros_ws_abspath in your yaml file of your main RL script. Set ros_ws_abspath: \'YOUR/SIM_WS/PATH\'"
-        assert os.path.exists(ros_ws_abspath), "The Simulation ROS Workspace path " + ros_ws_abspath + \
-                                               " DOESNT exist, execute: mkdir -p " + ros_ws_abspath + \
-                                               "/src;cd " + ros_ws_abspath + ";catkin_make"
 
         ROSLauncher(rospackage_name="ur_gazebo",
                     launch_file_name="ur5_lab_world.launch",
-                    launch_arguments=dict(gui=visualize, sim=sim_mode),
+                    launch_arguments=dict(gui=visualize, start_gazebo=start_gazebo),
                     ros_ws_abspath=ros_ws_abspath)
 
         super(UR5LabSimTask, self).__init__(ros_ws_abspath)
@@ -162,7 +158,7 @@ class UR5LabSimTask(ur5_lab_env.UR5LabSimEnv, utils.EzPickle):
     def _is_done(self, observations):
         done = np.allclose(a=observations[:3],
                            b=observations[3:],
-                           atol=0.1)
+                           atol=0.05)
 
         return done or self.no_motion_plan
 

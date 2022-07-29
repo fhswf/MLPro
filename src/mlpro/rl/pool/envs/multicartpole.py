@@ -18,10 +18,11 @@
 ## -- 2021-12-21  1.2.4     DA       Class MultiCartPole: renamed method reset() to _reset()
 ## -- 2022-02-25  1.2.5     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-04-06  1.2.6     LSB      Freezing single environment after done returns true
+## -- 2022-07-20  1.2.7     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.6 (2022-04-06)
+Ver. 1.2.7 (2022-07-20)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -67,7 +68,8 @@ class MultiCartPole (Environment):
             action_space_id  = self._action_space.get_dim_ids()
             state_space_env  = self._state_space.spawn([state_space_id[i*4], state_space_id[i*4+1], state_space_id[i*4+2], state_space_id[i*4+3]])
             action_space_env = self._action_space.spawn([action_space_id[i]])
-            env              = WrEnvGYM2MLPro(gym.make('CartPole-v1'), state_space_env, action_space_env, p_logging=p_logging)
+            env_make         = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
+            env              = WrEnvGYM2MLPro(env_make, state_space_env, action_space_env, p_logging=p_logging)
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)
         
