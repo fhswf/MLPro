@@ -40,10 +40,11 @@
 ## -- 2022-03-02  1.5.3     SY       Class MultiAgent: remove init_hyperparam(), update add_agent()
 ## -- 2022-03-02  1.5.4     DA       Reformatting
 ## -- 2022-03-07  1.5.5     SY       Minor Improvement on Class MultiAgent
+## -- 2022-07-18  1.5.6     SY       Add MPC to ActionPlanner as a default algorithm
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.5 (2022-03-07) 
+Ver. 1.5.6 (2022-07-18) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -175,7 +176,7 @@ class Policy(Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ActionPlanner(Log):
+class ActionPlanner(Log, ScientificObject):
     """
     Template class for action planning algorithms to be used as part of model-based planning agents. 
     The goal is to find the shortest sequence of actions that leads to a maximum reward.
@@ -300,7 +301,8 @@ class ActionPlanner(Log):
         if replan:
             # (Re-)Planning of action path
             self._path_id = 0
-            self._action_path.clear()
+            if self._action_path is not None:
+                self._action_path.clear()
             self._action_path = self._plan_action(p_obs)
             if (self._action_path is None) or (len(self._action_path) == 0):
                 # Planning returned nothing -> direct action computation as fallback solution
@@ -317,6 +319,7 @@ class ActionPlanner(Log):
         """
         Custom planning algorithm to fill the internal action path (self._action_path). Search width
         and depth are restricted by the attributes self._width_limit and self._depth_limit.
+        The default implementation utilizes MPC.
 
         Parameters
         ----------
@@ -330,6 +333,28 @@ class ActionPlanner(Log):
 
         """
 
+        self.C_SCIREF_TYPE          = self.C_SCIREF_TYPE_ARTICLE
+        self.C_SCIREF_AUTHOR        = "Grady Williams, Nolan Wagener, Brian Goldfain, Paul Drews, James M. Rehg, Byron Boots, Evangelos A. Theodorou"
+        self.C_SCIREF_TITLE         = "Information theoretic MPC for model-based reinforcement learning"
+        self.C_SCIREF_CONFERENCE    = "2017 IEEE International Conference on Robotics and Automation (ICRA)"
+        self.C_SCIREF_YEAR          = "2017"
+        self.C_SCIREF_MONTH         = "05"
+        self.C_SCIREF_DOI           = "10.1109/ICRA.2017.7989202"
+        
+        # initial states = get current states
+        # initialize variable to store best action and its predicted reward in the trajectory
+        
+        # for loop self._width_limit
+            # for loop self._depth_limit
+                # if t=0, then current states equal to initial states, otherwise none
+                # select random action
+                # if t=0, then store selected action
+                # use env model to process the action, the output would be next states and reward
+                # current_states equal to predicted next states
+            # if the actions lead to a greater reward than the stored reward, then best action equal to the processed initial action
+        
+        # return a best action
+        
         raise NotImplementedError
 
 
