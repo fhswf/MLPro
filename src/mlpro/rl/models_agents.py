@@ -301,7 +301,8 @@ class ActionPlanner(Log, ScientificObject):
         if replan:
             # (Re-)Planning of action path
             self._path_id = 0
-            self._action_path.clear()
+            if self._action_path is not None:
+                self._action_path.clear()
             self._action_path = self._plan_action(p_obs)
             if (self._action_path is None) or (len(self._action_path) == 0):
                 # Planning returned nothing -> direct action computation as fallback solution
