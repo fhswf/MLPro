@@ -277,14 +277,14 @@ class DoublePendulum(Environment):
         """
         
         if self.init_angles =='up':
-            self.th1 = np.radians(180)
-            self.th2 = np.radians(180)
+            self.th1 = 80
+            self.th2 = 180
         elif self.init_angles=='down':
             self.th1 = 0
             self.th2 = 0
         elif self.init_angles=='random':
-            self.th1 = np.radians(np.random.rand(1)[0]*180)
-            self.th2 = np.radians(np.random.rand(1)[0]*180)
+            self.th1 = np.random.rand(1)[0]*180
+            self.th2 = np.random.rand(1)[0]*180
         else:
             raise NotImplementedError("init_angles value must be up or down") 
             
@@ -325,7 +325,7 @@ class DoublePendulum(Environment):
             Current states.
 
         """
-        state = p_state.get_values()
+        state = np.radians(p_state.get_values())
         th1, th1dot, a1, th2, th2dot, a2 = state
 
         torque = p_action.get_sorted_values()[0]
@@ -342,7 +342,15 @@ class DoublePendulum(Environment):
         #     state[1] = np.clip(state[1], -self.max_speed, self.max_speed)
 
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act, self.t_step), args=(torque,))
+        y_deg = np.degrees(self.y)
         state = self.y[-1]
+
+        # for i in [0,3]:
+        #     if np.degrees(state[i])%360<180:
+        #         state[i] = np.radians(np.degrees(state[i])%360)
+        #     elif np.degrees(state[i])%360>180:
+        #         state[i] = np.radians((np.degrees(state[i])%360)-180)
+
         delta = state[3]-state[0]
         den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
         state[2]= ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
@@ -356,6 +364,8 @@ class DoublePendulum(Environment):
                     - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
                     - (self.m1 + self.m2) * self.g * sin(state[3]))
                    / den3)
+
+        state = np.degrees(state)
         self.action_cw = True if torque[0] <= 0 else False
         state_ids = self._state.get_dim_ids()
         current_state = State(self._state_space)
