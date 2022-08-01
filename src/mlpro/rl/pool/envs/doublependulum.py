@@ -325,31 +325,20 @@ class DoublePendulum(Environment):
             Current states.
 
         """
-        state = np.radians(p_state.get_values())
-        th1, th1dot, a1, th2, th2dot, a2 = state
-
+        th1, th1dot, a1, th2, th2dot, a2 = np.radians(p_state.get_values())
+        state = [th1, th1dot, 0, th2, th2dot, 0]
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
         torque = tuple(torque.reshape([1]))
         self.alpha = abs(torque[0])/self.max_torque
-        
-        # state[1] = th1dot + (3 * self.g / (2 * self.l1) * sin(th1) + 3.0 /
-        #                      (self.m1 * self.l1 ** 2) * torque) * self.t_step
-        #
-        # if abs(th1dot) > self.max_speed:
-        #     state[1] = np.clip(state[1], -th1dot, th1dot)
-        # else:
-        #     state[1] = np.clip(state[1], -self.max_speed, self.max_speed)
+
+
 
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act, self.t_step), args=(torque,))
         y_deg = np.degrees(self.y)
-        state = self.y[-1]
+        state = self.y[-1].copy()
 
-        # for i in [0,3]:
-        #     if np.degrees(state[i])%360<180:
-        #         state[i] = np.radians(np.degrees(state[i])%360)
-        #     elif np.degrees(state[i])%360>180:
-        #         state[i] = np.radians((np.degrees(state[i])%360)-180)
+
 
         delta = state[3]-state[0]
         den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
