@@ -36,6 +36,7 @@
 ##                                      - Numericals for torque and acceleration
 ##                                      _ Updating visualisation
 ## -- 2022-07-28  1.3.1     LSB      Returning new state object at simulate reaction method
+## -- 2022-08-01  1.3.2     LSB      Coverting radians to degrees only in the state space
 ## -------------------------------------------------------------------------------------------------
 
 """
