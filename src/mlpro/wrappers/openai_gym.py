@@ -45,9 +45,10 @@
 """
 Ver. 1.4.2 (2022-07-28)
 
-This module provides wrapper classes for reinforcement learning tasks.
-This wrappers has been updated and follow the gym version of 0.25.0.
-The previous gym versions are still compatible, but it will not be available in the future.
+This module provides wrapper classes for OpenAI Gym environments.
+
+See also: https://pypi.org/project/gym
+
 """
 
 import gym

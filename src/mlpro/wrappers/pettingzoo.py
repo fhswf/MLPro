@@ -39,7 +39,11 @@
 
 """
 Ver. 1.3.8 (2022-07-20)
-This module provides wrapper classes for reinforcement learning tasks.
+
+This module provides wrapper classes for PettingZoo multi-agent environments.
+
+See also: https://pypi.org/project/PettingZoo/
+
 """
 
 
