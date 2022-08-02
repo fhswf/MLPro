@@ -19,7 +19,11 @@
 
 """
 Ver. 1.0.7 (2022-03-25)
-This module provides a wrapper class for hyperparameter tuning by reusing Hyperopt framework
+
+This module provides a wrapper class for hyperparameter tuning by reusing the Hyperopt framework.
+
+See also: https://pypi.org/project/hyperopt/
+
 """
 
 

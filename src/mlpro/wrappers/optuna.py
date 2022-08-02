@@ -14,7 +14,10 @@
 """
 Ver. 1.0.2 (2022-04-05)
 
-This module provides a wrapper class for hyperparameter tuning by reusing Optuna framework
+This module provides a wrapper class for hyperparameter tuning by reusing Optuna framework.
+
+See also: https://pypi.org/project/optuna/
+
 """
 
 
