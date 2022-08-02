@@ -1,9 +1,12 @@
 Wrappers 
-================
-
+========
 
 .. toctree::
    :maxdepth: 4
    
-   wrappers/mlpro.rl.wrappers
+   wrappers/hyperopt
+   wrappers/openai_gym
+   wrappers/optuna
+   wrappers/pettingzoo
+   wrappers/sb3
 

@@ -19,18 +19,26 @@
 ## -- 2022-01-20  1.1.6     MRD      Fix the bug due to new version of SB3 1.4.0
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-31  1.1.8     SY       Enable the possibility to process reward type C_TYPE_EVERY_AGENT
+## -- 2022-08-02  1.1.9     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.8 (2022-05-31)
-This module provides wrapper classes for reinforcement learning tasks.
+Ver. 1.1.9 (2022-08-02)
+
+This module provides wrapper classes for integrating stable baselines3 policy algorithms.
+
+See also: https://pypi.org/project/stable-baselines3/
+
 """
+
 
 import gym
 import torch
 from stable_baselines3.common import utils
 from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from mlpro.rl.models import *
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -41,10 +49,14 @@ class DummyEnv(gym.Env):
     an Environment. As for now, it only needs the observation space and the action space.
     """
 
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_observation_space, p_action_space) -> None:
         super().__init__()
         self.observation_space = p_observation_space
         self.action_space = p_action_space
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -57,7 +69,7 @@ class WrPolicySB32MLPro(Policy):
 
     C_TYPE = 'SB3 Policy'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space, p_action_space, p_ada=True, p_logging=True):
         """
         Args:
@@ -144,6 +156,8 @@ class WrPolicySB32MLPro(Policy):
         self.sb3._total_timesteps = p_cycle_limit
         self.sb3._logger = utils.configure_logger()
 
+
+## -------------------------------------------------------------------------------------------------
     def _compute_action_on_policy(self, p_obs: State) -> Action:
         obs = p_obs.get_values()
 
@@ -185,6 +199,8 @@ class WrPolicySB32MLPro(Policy):
             action = Action(self._id, self._action_space, action)
         return action
 
+
+## -------------------------------------------------------------------------------------------------
     def _compute_action_off_policy(self, p_obs: State) -> Action:
         self.sb3._last_obs = p_obs.get_values()
         action, buffer_action = self.sb3._sample_action(self.sb3.learning_starts)
@@ -199,6 +215,8 @@ class WrPolicySB32MLPro(Policy):
         self.additional_buffer_element = dict(action=buffer_action)
         return action
 
+
+## -------------------------------------------------------------------------------------------------
     def _adapt_off_policy(self, *p_args) -> bool:
         # Add to buffer
         self._add_buffer(p_args[0])
@@ -218,6 +236,8 @@ class WrPolicySB32MLPro(Policy):
         self.collected_steps = 0
         return False
 
+
+## -------------------------------------------------------------------------------------------------
     def _adapt_on_policy(self, *p_args) -> bool:
         # Add to buffer
         self._add_buffer(p_args[0])
@@ -247,12 +267,18 @@ class WrPolicySB32MLPro(Policy):
 
         return True
 
+
+## -------------------------------------------------------------------------------------------------
     def _clear_buffer_on_policy(self):
         self.sb3.rollout_buffer.reset()
 
+
+## -------------------------------------------------------------------------------------------------
     def _clear_buffer_off_policy(self):
         self.sb3.replay_buffer.reset()
 
+
+## -------------------------------------------------------------------------------------------------
     def _add_buffer_off_policy(self, p_buffer_element: SARSElement):
         """
         Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
@@ -282,6 +308,8 @@ class WrPolicySB32MLPro(Policy):
         self.sb3._update_current_progress_remaining(self.sb3.num_timesteps, self.sb3._total_timesteps)
         self.sb3._on_step()
 
+
+## -------------------------------------------------------------------------------------------------
     def _add_buffer_on_policy(self, p_buffer_element: SARSElement):
         """
         Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
@@ -310,7 +338,8 @@ class WrPolicySB32MLPro(Policy):
             datas["value"],
             datas["action_log"])
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _add_additional_buffer(self, p_buffer_element: SARSElement):
         p_buffer_element.add_value_element(self.additional_buffer_element)
         return p_buffer_element

@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.bf
 ## -- Module  : various
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -29,20 +29,24 @@
 ## --                                Class Saveable: new constant C_SUFFIX
 ## -- 2021-12-07  1.7.3     SY       Add a new attribute in ScientificObject
 ## -- 2021-12-31  1.7.4     DA       Class Log: udpated docstrings
+## -- 2022-07-27  1.7.5     DA       A little refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.4 (2021-12-31)
+Ver. 1.7.5 (2022-07-27)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
-For example: logging, load/save, timer, ...
+For example: logging, load/save, timer...
 """
+
 
 from datetime import datetime, timedelta
 from time import sleep
 import dill as pkl
 import os
 from mlpro.bf.exceptions import *
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -52,7 +56,7 @@ class Loadable:
     This abstract class adds the ability to be loadable to inherited classes. 
     """
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     @staticmethod
     def load(p_path, p_filename):
         """
@@ -70,6 +74,9 @@ class Loadable:
             return None
 
         return pkl.load(open(p_path + os.sep + p_filename, 'rb'))
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -93,7 +100,7 @@ class Saveable:
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def save(self, p_path, p_filename=None) -> bool:
         """
         Saves content to the given path and file name. If file name is None, a unique file name will
@@ -124,6 +131,9 @@ class Saveable:
             return False
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class LoadSave(Loadable, Saveable):
@@ -136,6 +146,9 @@ class LoadSave(Loadable, Saveable):
     pass
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Log:
@@ -143,31 +156,34 @@ class Log:
     This class adds elementry log functionality to inherited classes.
     """
 
-    C_TYPE = '????'
-    C_NAME = '????'
+    C_TYPE              = '????'
+    C_NAME              = '????'
 
     # Types of log lines
-    C_LOG_TYPE_I = 'I'  # Information
-    C_LOG_TYPE_W = 'W'  # Warning
-    C_LOG_TYPE_E = 'E'  # Error
-    C_LOG_TYPE_S = 'S'  # Success / Milestone
+    C_LOG_TYPE_I        = 'I'  # Information
+    C_LOG_TYPE_W        = 'W'  # Warning
+    C_LOG_TYPE_E        = 'E'  # Error
+    C_LOG_TYPE_S        = 'S'  # Success / Milestone
 
-    C_LOG_TYPES = [C_LOG_TYPE_I, C_LOG_TYPE_W, C_LOG_TYPE_E, C_LOG_TYPE_S]
+    C_LOG_TYPES         = [C_LOG_TYPE_I, C_LOG_TYPE_W, C_LOG_TYPE_E, C_LOG_TYPE_S]
 
-    C_COL_WARNING = '\033[93m'  # Yellow
-    C_COL_ERROR = '\033[91m'  # Red
-    C_COL_SUCCESS = '\033[32m'  # Green
-    C_COL_RESET = '\033[0m'  # Reset color
+    C_COL_WARNING       = '\033[93m'  # Yellow
+    C_COL_ERROR         = '\033[91m'  # Red
+    C_COL_SUCCESS       = '\033[32m'  # Green
+    C_COL_RESET         = '\033[0m'  # Reset color
 
     # Log levels
-    C_LOG_ALL = True
-    C_LOG_NOTHING = False
-    C_LOG_WE = C_LOG_TYPE_W
-    C_LOG_E = C_LOG_TYPE_E
+    C_LOG_ALL           = True
+    C_LOG_NOTHING       = False
+    C_LOG_WE            = C_LOG_TYPE_W
+    C_LOG_E             = C_LOG_TYPE_E
 
-    C_LOG_LEVELS = [C_LOG_ALL, C_LOG_NOTHING, C_LOG_WE, C_LOG_E]
+    C_LOG_LEVELS        = [C_LOG_ALL, C_LOG_NOTHING, C_LOG_WE, C_LOG_E]
 
-    ## -------------------------------------------------------------------------------------------------
+    # Internals
+    C_INST_MSG          = True
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=C_LOG_ALL):
         """
         Parameters:
@@ -175,9 +191,12 @@ class Log:
         """
 
         self.switch_logging(p_logging)
-        self.log(self.C_LOG_TYPE_I, 'Instantiated')
+        if self.C_INST_MSG:
+            self.log(self.C_LOG_TYPE_I, 'Instantiated')
+            self.C_INST_MSG = False
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         """
         Sets new log level. 
@@ -192,24 +211,8 @@ class Log:
         if p_logging not in self.C_LOG_LEVELS: raise ParamError('Wrong log level. See class Log for valid log levels')
         self._level = p_logging
 
-    # ## -------------------------------------------------------------------------------------------------
-    #     def set_log_level(self, p_level):
-    #         """
-    #         Sets the log level.
-
-    #         Parameters:
-    #             p_level         Possible values are
-    #                             C_LOG_TYPE_I (everything will be looged)
-    #                             C_LOG_TYPE_W (warnings and errors will be logged)
-    #                             C_LOG_TYPE_E (only errors will be logged)
-    #         """
-
-    #         if p_level in self.C_LOG_TYPES:
-    #             self._level = p_level
-    #         else:
-    #             raise ParamError('Wrong log level. Please use constants C_LOG_TYPE_* of class Log')
-
-    ## -------------------------------------------------------------------------------------------------
+ 
+ ## -------------------------------------------------------------------------------------------------
     def log(self, p_type, *p_args):
         """
         Writes log line to standard output in format:
@@ -246,6 +249,9 @@ class Log:
               p_type + '  ' + self.C_TYPE + ' ' + self.C_NAME + ':', *p_args, self.C_COL_RESET)
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Timer:
@@ -258,7 +264,7 @@ class Timer:
 
     C_LAP_LIMIT = 999999
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_mode, p_lap_duration: timedelta, p_lap_limit=C_LAP_LIMIT) -> None:
         """
         Parameters:
@@ -278,7 +284,8 @@ class Timer:
 
         self.reset()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def reset(self) -> None:
         """
         Resets timer.
@@ -296,7 +303,8 @@ class Timer:
             self.lap_start_real = self.timer_start_real
             self.time_real = self.timer_start_real
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_time(self) -> timedelta:
         if self.mode == self.C_MODE_REAL:
             self.time_real = datetime.now()
@@ -304,24 +312,28 @@ class Timer:
 
         return self.time
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_lap_time(self) -> timedelta:
         if self.mode == self.C_MODE_REAL:
             self.lap_time = datetime.now() - self.lap_start_real
 
         return self.lap_time
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_lap_id(self):
         return self.lap_id
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def add_time(self, p_delta: timedelta):
         if self.mode == self.C_MODE_VIRTUAL:
             self.lap_time = self.lap_time + p_delta
             self.time = self.time + p_delta
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def finish_lap(self) -> bool:
         """
         Finishes the current lap. In timer mode C_MODE_REAL the remaining time
@@ -358,6 +370,9 @@ class Timer:
         return not timeout
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class TStamp:
@@ -365,17 +380,23 @@ class TStamp:
     This class provides elementry time stamp functionality for inherited classes.
     """
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_tstamp: timedelta = None):
         self.set_tstamp(p_tstamp)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_tstamp(self) -> timedelta:
         return self.tstamp
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_tstamp(self, p_tstamp: timedelta):
         self.tstamp = p_tstamp
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
