@@ -9,6 +9,7 @@
 ## -- 2022-04-28  0.0.0     YI       Changing the Scenario and Debugging
 ## -- 2022-05-16  1.0.0     SY       Code cleaning, remove unnecessary, release the first version
 ## -- 2022-06-21  1.0.1     SY       Adjust the name of the module, utilize RandomGenerator class
+## -- 2022-08-02  1.0.2     LSB      Parameters for internal unit testing
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -32,13 +33,15 @@ import os
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
 
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 # 1 Implement the random RL scenario
 class ScenarioDoublePendulum(RLScenario):
 
     C_NAME      = 'Matrix'
+
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada, p_logging):
@@ -70,7 +73,6 @@ class ScenarioDoublePendulum(RLScenario):
 ## -------------------------------------------------------------------------------------------------
 
 # 2 Create scenario and start training
-
 if __name__ == "__main__":
     cycle_limit         = 200
     adaptation_limit    = 10000
@@ -81,10 +83,24 @@ if __name__ == "__main__":
     visualize           = True
     path                = str(Path.home())
     plotting            = True
- 
+
+
+if not __name__ == "__main__":
+    cycle_limit = 20
+    adaptation_limit = 10
+    stagnation_limit = 0
+    eval_frequency = 5
+    eval_grp_size = 5
+    logging = Log.C_LOG_WE
+    visualize = True
+    path = str(Path.home())
+    plotting = True
+
 
 # 3 Train agent in scenario 
 now             = datetime.now()
+
+
 
 training        = RLTraining(
     p_scenario_cls=ScenarioDoublePendulum,
@@ -99,7 +115,10 @@ training        = RLTraining(
     p_logging=logging
 )
 
+
 training.run()
+
+
 
 
 

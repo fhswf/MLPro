@@ -34,7 +34,7 @@
 ## -- 2022-07-20  1.2.0     SY       Updating _simulate_reaction, debugging _data_normalization
 ## -- 2022-07-28  1.3.0     LSB      Updating:
 ##                                      - Numericals for torque and acceleration
-##                                      _ Updating visualisation
+##                                      - Updating visualisation
 ## -- 2022-07-28  1.3.1     LSB      Returning new state object at simulate reaction method
 ## -- 2022-08-01  1.3.2     LSB      Coverting radians to degrees only in the state space
 ## -------------------------------------------------------------------------------------------------
