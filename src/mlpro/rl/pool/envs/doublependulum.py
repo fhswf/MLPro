@@ -212,14 +212,7 @@ class DoublePendulum(Environment):
                     - (self.m1 + self.m2) * self.g * sin(state[0])-torque)
                    / den1)
                              
-        # num1 = -self.g * (2 * self.m1 + self.m2) * sin(self.th1)
-        # num2 = -self.m2 * self.g * sin(self.th1 - 2 * self.th2)
-        # num3 = -2 * sin(self.th1 - self.th2)
-        # num4 =  self.m2 * ((self.th2dot * self.th2dot) * self.l2 + (self.th1dot * self.th1dot)
-        #                    * self.l1 * cos(self.th1 - self.th2))
-        # num = num1 + num2 + (num3 * num4)
-        # den2 = self.l1 * (2 * self.m1 + self.m2 - self.m2 * cos(2 * self.th1 - 2 * self.th2))
-        # dydx[2] = num/den2
+
         
         dydx[3] = state[4]
 
@@ -229,14 +222,7 @@ class DoublePendulum(Environment):
                     - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
                     - (self.m1 + self.m2) * self.g * sin(state[3]))
                    / den3)
-        #
-        # num1 = 2 * sin(self.th1 - self.th2)
-        # num2 = (self.th1dot * self.th1dot) * self.l1 * (self.m1 + self.m2) + self.g * (self.m1 + self.m2) * cos(self.th1)
-        # num3 = (self.th2dot * self.th2dot) * self.l2 * self.m2 * cos(self.th1 - self.th2)
-        # num = num1 * (num2 + num3)
-        # den4 = self.l2 * (2 * self.m1 + self.m2 - self.m2
-        #               * cos(2 * self.th1 - 2 * self.th2))
-        # dydx[5] = num/den4
+
         
         return dydx
 
