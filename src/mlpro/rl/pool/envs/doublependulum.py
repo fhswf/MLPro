@@ -37,6 +37,7 @@
 ##                                      - Updating visualisation
 ## -- 2022-07-28  1.3.1     LSB      Returning new state object at simulate reaction method
 ## -- 2022-08-01  1.3.2     LSB      Coverting radians to degrees only in the state space
+## -- 2022-08-05  1.3.3     LSB      Limiting the th1 and th2 within 180 to -180 degrees
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -278,7 +279,7 @@ class DoublePendulum(Environment):
         """
         
         if self.init_angles =='up':
-            self.th1 = 80
+            self.th1 = 180
             self.th2 = 180
         elif self.init_angles=='down':
             self.th1 = 0
@@ -336,8 +337,9 @@ class DoublePendulum(Environment):
 
 
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act, self.t_step), args=(torque,))
-        y_deg = np.degrees(self.y)
         state = self.y[-1].copy()
+
+
 
 
 
@@ -359,6 +361,14 @@ class DoublePendulum(Environment):
         self.action_cw = True if torque[0] <= 0 else False
         state_ids = self._state.get_dim_ids()
         current_state = State(self._state_space)
+
+
+        for i in [0,3]:
+            if state[i] % 360 < 180:
+                state[i] = state[i] % 360
+            elif state[i] % 360 > 180:
+                state[i] = state[i] % 360 - 360
+
 
         for i in range(len(state)):
             current_state.set_value(state_ids[i], state[i])
