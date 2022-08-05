@@ -114,7 +114,7 @@ class DoublePendulum(Environment):
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.02, t_act=5, max_torque=20,
+    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.02, t_act=5, max_torque=0.2,
                  max_speed=10, l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
                  g=9.8, history_length=3):
         self.t_step = t_step
@@ -340,7 +340,7 @@ class DoublePendulum(Environment):
                    / den3)
 
         state = np.degrees(state)
-        self.action_cw = True if torque[0] <= 0 else False
+        self.action_cw = True if torque[0] > 0 else False
         state_ids = self._state.get_dim_ids()
 
         for i in [0,3]:
