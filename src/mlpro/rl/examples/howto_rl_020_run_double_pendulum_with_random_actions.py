@@ -40,7 +40,7 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulum(p_logging=True, init_angles='up', max_torque=50)
+        self._env   = DoublePendulum(p_logging=True, init_angles='up', max_torque=5)
         # policy_kwargs = dict(activation_fn=torch.nn.Tanh,
         #              net_arch=[dict(pi=[128, 128], vf=[128, 128])])
 
