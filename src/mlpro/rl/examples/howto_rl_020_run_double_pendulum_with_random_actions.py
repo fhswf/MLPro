@@ -93,7 +93,7 @@ if not __name__ == "__main__":
     eval_grp_size = 5
     logging = Log.C_LOG_WE
     visualize = True
-    path = str(Path.home())
+    path = None
     plotting = True
 
 

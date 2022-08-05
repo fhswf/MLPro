@@ -14,10 +14,11 @@
 ## -- 2021-12-24  1.0.5     DA       Replaced separtor in log line by Training.C_LOG_SEPARATOR
 ## -- 2022-02-27  1.0.6     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-03-21  1.0.7     WB       Rewrite module description
+## -- 2022-07-20  1.0.8     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2022-03-21)
+Ver. 1.0.8 (2022-07-20)
 
 This module compares the native and wrapped implementation of the SB3 Policy on an
 environment.
@@ -77,7 +78,7 @@ class MyScenario(RLScenario):
                 self._set_state(state)
 
         # 1 Setup environment
-        gym_env = gym.make('CartPole-v1')
+        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
         gym_env.seed(1)
         # self._env   = mlpro_env
         self._env = CustomWrapperFixedSeed(gym_env, p_logging=p_logging)

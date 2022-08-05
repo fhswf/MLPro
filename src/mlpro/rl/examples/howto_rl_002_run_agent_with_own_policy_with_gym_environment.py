@@ -15,10 +15,11 @@
 ## -- 2021-11-15  1.2.0     DA       Refactoring 
 ## -- 2021-11-16  1.2.1     DA       Added explicit scenario reset with constant seeding 
 ## -- 2021-12-03  1.2.2     DA       Refactoring 
+## -- 2022-07-20  1.2.3     SY       Update due to the latest introduction of Gym 0.25
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2021-12-03)
+Ver. 1.2.3 (2022-07-20)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 the fhswf_at_ml framework.
@@ -72,7 +73,7 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        gym_env     = gym.make('CartPole-v1')
+        gym_env     = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
         self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
         # 2 Setup standard single-agent with own policy
