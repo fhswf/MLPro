@@ -38,10 +38,11 @@
 ## -- 2022-07-28  1.3.1     LSB      Returning new state object at simulate reaction method
 ## -- 2022-08-01  1.3.2     LSB      Coverting radians to degrees only in the state space
 ## -- 2022-08-05  1.3.3     LSB      Limiting the th1 and th2 within 180 to -180 degrees
+## -- 2022-08-05  1.3.4     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-07-20)
+Ver. 1.3.4 (2022-08-05)
 
 This module provides an RL environment of double pendulum.
 """
@@ -55,6 +56,8 @@ plt.ion()
 from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
 from collections import deque
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -190,10 +193,11 @@ class DoublePendulum(Environment):
         Parameters
         ----------
         state : list
-            [th, th1dot, th2, th2dot]
-
+            [theta 1, omega 1, acc 1, theta 2, omega 2, acc 2]
         t : list
             Timestep
+        torque : float
+            Applied torque of the motor
 
         Returns
         -------
@@ -212,8 +216,6 @@ class DoublePendulum(Environment):
                     - (self.m1 + self.m2) * self.g * sin(state[0])-torque)
                    / den1)
                              
-
-        
         dydx[3] = state[4]
 
         den3 = (self.l2 / self.l1) * den1
@@ -223,7 +225,6 @@ class DoublePendulum(Environment):
                     - (self.m1 + self.m2) * self.g * sin(state[3]))
                    / den3)
 
-        
         return dydx
 
     ## -------------------------------------------------------------------------------------------------
@@ -263,7 +264,6 @@ class DoublePendulum(Environment):
             Not yet implemented. The default is None.
 
         """
-        
         if self.init_angles =='up':
             self.th1 = 180
             self.th2 = 180
@@ -320,22 +320,18 @@ class DoublePendulum(Environment):
         torque = tuple(torque.reshape([1]))
         self.alpha = abs(torque[0])/self.max_torque
 
-
-
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act, self.t_step), args=(torque,))
         state = self.y[-1].copy()
 
-
-
-
-
         delta = state[3]-state[0]
+        
         den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
         state[2]= ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
                     + self.m2 * self.g * sin(state[3]) * cos(delta)
                     + self.m2 * self.l2 * state[4] * state[4] * sin(delta)
                     - (self.m1 + self.m2) * self.g * sin(state[0])-torque)
                    / den1)
+        
         den3 = (self.l2 / self.l1) * den1
         state[5] = ((- self.m2 * self.l2 * state[4] * state[4] * sin(delta) * cos(delta)
                     + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
@@ -346,8 +342,6 @@ class DoublePendulum(Environment):
         state = np.degrees(state)
         self.action_cw = True if torque[0] <= 0 else False
         state_ids = self._state.get_dim_ids()
-        current_state = State(self._state_space)
-
 
         for i in [0,3]:
             if state[i] % 360 < 180:
@@ -355,7 +349,7 @@ class DoublePendulum(Environment):
             elif state[i] % 360 > 180:
                 state[i] = state[i] % 360 - 360
 
-
+        current_state = State(self._state_space)
         for i in range(len(state)):
             current_state.set_value(state_ids[i], state[i])
 
