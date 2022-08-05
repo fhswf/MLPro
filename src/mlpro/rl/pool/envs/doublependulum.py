@@ -166,21 +166,21 @@ class DoublePendulum(Environment):
         state_space = ESpace()
         action_space = ESpace()
 
-        state_space.add_dim(Dimension('theta 1', 'th1', 'Angle of Pendulum 1', '', 'degrees',
-                                      '\textdegrees', [-np.inf,np.inf]))
-        state_space.add_dim(Dimension('omega 1', 'w1', 'Angular Velocity of Pendulum 1', '',
-                                      'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
-        state_space.add_dim(Dimension('acc 1', 'a1', 'Angular Acceleration of Pendulum 1', '',
-                                      'degrees/second^2', '\text/s^2', [-np.inf, np.inf]))      
-        state_space.add_dim(Dimension('theta 2', 'th2', 'Angle of pendulum 2', '', 'degrees',
-                                      '\textdegrees', [-np.inf, np.inf]))
-        state_space.add_dim(Dimension('omega 2', 'w2', 'Angular Velocity of Pendulum 2', '',
-                                      'degrees/second', '\textdegrees/s', [-np.inf, np.inf]))
-        state_space.add_dim(Dimension('acc 2', 'a2', 'Angular Acceleration of Pendulum 2', '',
-                                      'degrees/second^2', '\text/s^2', [-np.inf, np.inf]))
+        state_space.add_dim(Dimension(p_name_long='theta 1', p_name_short='th1', p_description='Angle of Pendulum 1', p_name_latex='', p_unit='degrees',
+                                      p_unit_latex='\textdegrees', p_boundaries=[-np.inf,np.inf]))
+        state_space.add_dim(Dimension(p_name_long='omega 1', p_name_short='w1', p_description='Angular Velocity of Pendulum 1', p_name_latex='',
+                                      p_unit='degrees/second', p_unit_latex='\textdegrees/s', p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension(p_name_long='acc 1', p_name_short='a1', p_description='Angular Acceleration of Pendulum 1', p_name_latex='',
+                                      p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension(p_name_long='theta 2', p_name_short='th2', p_description='Angle of pendulum 2', p_name_latex='',p_unit= 'degrees',
+                                      p_unit_latex='\textdegrees', p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension(p_name_long='omega 2', p_name_short='w2', p_description='Angular Velocity of Pendulum 2', p_name_latex='',
+                                      p_unit='degrees/second', p_unit_latex='\textdegrees/s', p_boundaries=[-np.inf, np.inf]))
+        state_space.add_dim(Dimension(p_name_long='acc 2', p_name_short='a2', p_description='Angular Acceleration of Pendulum 2', p_name_latex='',
+                                      p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-np.inf, np.inf]))
 
-        action_space.add_dim(Dimension('torque 1', 'tau1', 'Applied Torque of Motor 1', '',
-                                       'Nm', 'Nm', [-self.max_torque, self.max_torque]))
+        action_space.add_dim(Dimension(p_name_long='torque 1', p_name_short='tau1', p_description='Applied Torque of Motor 1', p_name_latex='',
+                                       p_unit='Nm', p_unit_latex='Nm', p_boundaries=[-self.max_torque, self.max_torque]))
 
         return state_space, action_space
 
