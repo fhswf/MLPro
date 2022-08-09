@@ -333,7 +333,7 @@ class ActionPlanner(Log, ScientificObject):
     def _plan_action(self, p_obs: State) -> SARSBuffer:
         """
         Custom planning algorithm to fill the internal action path (self._action_path). Search width
-        and depth are restricted by the attributes self._width_limit and self._depth_limit.
+        and depth are restricted by the attributes self._width_limit and self._prediction_horizon.
         The default implementation utilizes MPC.
 
         Parameters
@@ -427,8 +427,10 @@ class Agent(Policy):
         enough to be used to train the policy). Default = 0.9.
     p_action_planner : ActionPlanner   
         Optional action planner object (obligatory for model based agents). Default = None.
-    p_planning_depth : int    
-        Optional planning depth (obligatory for model based agents). Default = 0.
+    p_predicting_horizon : int    
+        Optional predicting horizon (obligatory for model based agents). Default = 0.
+    p_controlling_horizon : int    
+        Optional controlling (obligatory for model based agents). Default = 0.
     p_planning_width : int   
         Optional planning width (obligatory for model based agents). Default = 0.
     p_name : str             
@@ -455,7 +457,8 @@ class Agent(Policy):
                  p_envmodel: EnvModel = None,
                  p_em_mat_thsld=0.9,
                  p_action_planner: ActionPlanner = None,
-                 p_planning_depth=0,
+                 p_predicting_horizon=0,
+                 p_controlling_horizon=0,
                  p_planning_width=0,
                  p_name='',
                  p_id=0,
@@ -502,7 +505,8 @@ class Agent(Policy):
         self._envmodel = p_envmodel
         self._em_mat_thsld = p_em_mat_thsld
         self._action_planner = p_action_planner
-        self._planning_depth = p_planning_depth
+        self._predicting_horizon = p_predicting_horizon
+        self._controlling_horizon = p_controlling_horizon
         self._planning_width = p_planning_width
 
         self._set_id(p_id)
@@ -516,7 +520,8 @@ class Agent(Policy):
         if self._action_planner is not None:
             self._action_planner.setup(p_policy=self._policy,
                                        p_envmodel=self._envmodel,
-                                       p_depth_limit=self._planning_depth,
+                                       p_prediction_horizon=self._predicting_horizon,
+                                       p_control_horizon=self._controlling_horizon,
                                        p_width_limit=self._planning_width)
 
 
