@@ -40,11 +40,11 @@
 ## -- 2022-03-02  1.5.3     SY       Class MultiAgent: remove init_hyperparam(), update add_agent()
 ## -- 2022-03-02  1.5.4     DA       Reformatting
 ## -- 2022-03-07  1.5.5     SY       Minor Improvement on Class MultiAgent
-## -- 2022-07-18  1.5.6     SY       Add MPC to ActionPlanner as a default algorithm
+## -- 2022-08-09  1.5.6     SY       Add MPC to ActionPlanner as a default algorithm
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.6 (2022-07-18) 
+Ver. 1.5.6 (2022-08-09) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -207,7 +207,8 @@ class ActionPlanner(Log, ScientificObject):
     def setup(self,
               p_policy: Policy,
               p_envmodel: EnvModel,
-              p_depth_limit=0,
+              p_prediction_horizon=0,
+              p_control_horizon=0,
               p_width_limit=0):
         """
         Setup of action planner object in concrete planning scenario. Must be called before first
@@ -219,9 +220,12 @@ class ActionPlanner(Log, ScientificObject):
             Policy of an agent.
         p_envmodel : EnvModel
             Environment model.
-        p_depth_limit : int             
+        p_prediction_horizon : int             
             Optional static maximum planning depth (=length of action path to be predicted). Can
             be overridden by method compute_action(). Default=0. 
+        p_control_horizon : int             
+            The length of predicted action path to be applied. Can be overridden by method
+            compute_action(). Default=0.
         p_width_limit : int
             Optional static maximum planning width (=number of alternative actions per planning level).
             Can be overridden by method compute_action(). Default=0. 
@@ -230,7 +234,8 @@ class ActionPlanner(Log, ScientificObject):
 
         self._policy = p_policy
         self._envmodel = p_envmodel
-        self._depth_limit = p_depth_limit
+        self._prediction_horizon = p_prediction_horizon
+        self._control_horizon = p_control_horizon
         self._width_limit = p_width_limit
         self._path_id = 0
         self.clear_action_path()
@@ -250,7 +255,8 @@ class ActionPlanner(Log, ScientificObject):
 ## -------------------------------------------------------------------------------------------------
     def compute_action(self,
                        p_obs: State,
-                       p_depth_limit=0,
+                       p_prediction_horizon=0,
+                       p_control_horizon=0,
                        p_width_limit=0) -> Action:
         """
         Computes a path of actions with defined length that maximizes the reward of the given 
@@ -261,12 +267,15 @@ class ActionPlanner(Log, ScientificObject):
         ----------
         p_obs : State
             Observation data.
-        p_depth_limit : int             
+        p_prediction_horizon : int             
             Optional dynamic maximum planning depth (=length of action path to be predicted) that 
             overrides the static limit of method setup(). Default=0 (no override).
+        p_control_horizon : int             
+            The length of predicted action path to be applied that overrides the static limit of
+            method setup(). Default=0 (no override).
         p_width_limit : int
             Optional dynamic maximum planning width (=number of alternative actions per planning level)
-            that  overrides the static limit of method setup(). Default=0 (no override).
+            that overrides the static limit of method setup(). Default=0 (no override).
 
         Returns
         -------
@@ -278,19 +287,25 @@ class ActionPlanner(Log, ScientificObject):
         if (self._policy is None) or (self._envmodel is None):
             raise RuntimeError('Please call method setup() first')
 
-        if (p_depth_limit > 0) and (p_depth_limit != self._depth_limit):
-            self._depth_limit = p_depth_limit
+        if (p_prediction_horizon > 0) and (p_prediction_horizon != self._prediction_horizon):
+            self._prediction_horizon = p_prediction_horizon
             self._action_path = None
+            
+        if (p_control_horizon > 0) and (p_control_horizon != self._control_horizon):
+            self._control_horizon = p_control_horizon
 
         if p_width_limit > 0:
             self._width_limit = p_width_limit
 
-        if (self._depth_limit <= 0) or (self._width_limit <= 0):
-            raise RuntimeError('Please set planning depth and width')
+        if (self._prediction_horizon <= 0) or (self._width_limit <= 0) or (self._control_horizon <= 0):
+            raise RuntimeError('Please set planning width, prediction horizon, and control horizon.')
+
+        if self._control_horizon > self._prediction_horizon:
+            raise RuntimeError('The control horizon must be at least 1 and less than or equal to prediction horizon.')
 
         # Check: Re-planning required?
         replan = self._action_path is None
-        replan = replan or (self._path_id >= len(self._action_path))
+        replan = replan or (self._path_id > len(self._control_horizon))
 
         if not replan:
             # Check: Is the next action of action path suitable?
