@@ -80,7 +80,7 @@ class ScenarioRobotHTMActual(RLScenario):
             p_em_mat_thsld=0.5,
             p_action_planner=ActionPlanner(),
             p_predicting_horizon=5,
-            p_controlling_horizon=3,
+            p_controlling_horizon=2,
             p_planning_width=5,
             p_name="Smith1",
             p_ada=p_ada,
