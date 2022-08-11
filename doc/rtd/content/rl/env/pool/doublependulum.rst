@@ -1,24 +1,29 @@
 `Double Pendulum <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/doublependulum.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. image:: images/double_pendulum.gif
-    :width: 600
-    
-By default the lengths and weights of the pendulum are set to be 0.5 meters each and 0.5 kg each.
-The user can customize this parameter and many other parameter to better suit the research
-purpose. The other customizable parameter includes the starting pendulum positions and speeds, 
-maximum torque and speed of the motor, the action frequency, and the time step. In addition, for 
-visualization purpose, the history lengths can also be modified to a higher value to add more 
-of the orange traces as shown on the figrue above. The environment is not episodical, which means
-that the cycle limit should be defined manually to fit some training algorihtms. 
+The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_ implementation by `Matplotlib <https://matplotlib.org/>`_. The double pendulum is a system of two poles, with the inner pole connected to a fixed point at one end and to outer pole at other end. The native implementation of Double Pendulum consists of an input motor providing the torque in either directions to actuate the system. The figure below shows the the visualisation of MLPro's Double Pendulum environment.
 
+.. image:: images/doublependulum.gif
+    :width: 400px
+    
 The double pendulum environment can be imported via:
 
 .. code-block:: python
 
     import mlpro.rl.pool.envs.doublependulum
+
+The environment can be initialised with specifying the initial angles of both poles, masses of both poles, lenghts of poles, maximum torque value and scenario related parameters including step size and actuation step size. The initial positions of the poles refer to the position of the poles at the beginning of each RL episode, which can be set to 'up', 'down', 'random'. The default values for length and mass of each pole in the double pendulum are set to 1 and 1 respectively. The environment behaviour can be understood by running How To 20 in MLPro's sample implementation examples. Running How to 20 will produce following logging and visualisation.
+
+.. image:: images/doublependulum_run.gif
+	:width: 1000px
+	
+.. note::
+ + The visualisation of the environment can be turned off by setting the visualize parameter in training/scenario initialisation to false
+ + Since it is not an episodical environment, the length of the run can be set by setting the number of cycles parameter
+ 
     
 Prerequisites
 =============
+Please install below packages to use the MLPro's double pendulum environment
 
     - `NumPy <https://pypi.org/project/numpy/>`_
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
@@ -42,37 +47,54 @@ General Information
 +------------------------------------+-------------------------------------------------------+
 | Action Space Boundaries            | Depends on max_torque                                 |
 +------------------------------------+-------------------------------------------------------+
-| State Space Dimension              | [4,]                                                  |
+| State Space Dimension              | [7,]                                                  |
 +------------------------------------+-------------------------------------------------------+
 | State Space Base Set               | Real number                                           |
 +------------------------------------+-------------------------------------------------------+
-| State Space Boundaries             | Pi for position and None for speed                    |
+| State Space Boundaries             | [-180, 180] for angle and None for speed              |
 +------------------------------------+-------------------------------------------------------+
 | Reward Structure                   | Overall reward                                        |
 +------------------------------------+-------------------------------------------------------+
  
 Action Space
 ============
+The goal of the environment is to maintain the vertical position of both the poles. The inner pole is actuated by a motor, and thus the action space of Double Pendulum environment is a continuous variable ranging between the negative maximum torque and positive maximum torque, where positive torque refers to clockwise torque and vice versa. The max torque can be passed as a :ref:`parameter <Double Pendulum>` in the initialisation of environment. 
 
-The continuous action is interpreted as a torque applied to the pendulum for a given time step. 
-Depending on the max_speed parameter, this might not affect the system due to the pendulum
-moving faster than the motor can handle.
++------------------------------------+-------------------------------------------------------+
+|         Parameter                  |                         Range                         |
++====================================+=======================================================+
+| Torque                             | [-max_torque, max_torque]                             |
++------------------------------------+-------------------------------------------------------+
 
 State Space
 ===========
 
-The state space of the system is a continuous space in the order of:
-    - Position of Inner Pendulum
-    - Speed of Inner Pendulum
-    - Position of Outer Pendulum
-    - Speed of Outer Pendulum
-    
-The position of the pendulum is guaranteed to be within -pi and pi, however the speed is not 
-limited within a boundary due to the effects of gravitational acceleration.
+The state space for the double pendulum environment returns state of poles in the system including angles of both poles, velocity of poles, angular acceleration of the poles. The states for double pendulum environment can be understood by the table below.
 
-  
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
+|         State                      |         Description                |               Range              |			Unit				     |
++====================================+====================================+==================================+=======================================================+
+| Theta 1                            |Angle of the inner pole             | [-180, 180]	                     |	degrees                                              |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
+| Omega 1                            |Angular velocity of inner pole      | N.A.     	                     |	degrees per second                                   |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
+| Acc 1                              |Angular Acceleration of outer pole  | N.A.     	                     |	degrees per second squared                           |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
+| Theta 2                            |Angle of the outer pole             | [-180, 180]	                     |	degrees                                              |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
+| Omega 2                            |Angular velocity of outer pole      | N.A.                             |	degrees per second                                   |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
+| Acc 2                              |Angular acceleration of outer pole  | N.A.     	                     |	degrees per second squared                           |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
+
+.. note:: 
+ The boundaries for the velocity and acceleration are highly influenced by the initital position of the arms and the current torque being actuated on the inner pole. These parameters are further dependent on the specific application, scenario or purpose of research.  
+
 Reward Structure
 ================
+
+The reward calculation takes into account the position, speed and acceleration both pendulum. The class variable y take notes of the ODE frames of the states. This is formulated with the purpose of giving high reward whenever the pendulum stays upright while also minding the speed and acceleration of each pendulum. The position, speed, and acceleration is not taken at face value but instead is treated as a percentage of a defined constant (\pi). Additionally, a weighting system is used in the reward calculation to scale the importance of inner and outer pendulum rewards. The torque exerted by the motor (alpha) is taken as negative reward and the difference between the old state and new state is also taken into account.
+
 
 .. code-block:: python
     
@@ -127,14 +149,6 @@ Reward Structure
 
     return reward
     
-The reward calculation takes into account the position, speed and acceleration both pendulum. 
-The class variable y take notes of the ODE frames of the states. This is formulated with the purpose of giving high reward whenever the pendulum stays upright 
-while also minding the speed and acceleration of each pendulum. The position, speed, and acceleration
-is not taken at face value but instead is treated as a percentage of a defined constant (\pi). Additionally,
-a weighting system is used in the reward calculation to scale the importance of inner and outer pendulum rewards.
-The torque exerted by the motor (alpha) is taken as negative reward and the difference between the old state and new state
-is also taken into account.
-
 
 Change Log
 ==========
@@ -145,6 +159,8 @@ Change Log
 | 1.0.0              | First public version                        |
 +--------------------+---------------------------------------------+
 | 1.0.2              | Cleaning the code                           |
++--------------------+---------------------------------------------+
+| 1.3.1              | Current release version                     |
 +--------------------+---------------------------------------------+
   
 Cross Reference
