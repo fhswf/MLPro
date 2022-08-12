@@ -11,6 +11,7 @@
 ## -- 2022-06-21  1.0.1     SY       Adjust the name of the module, utilize RandomGenerator class
 ## -- 2022-08-02  1.0.2     LSB      Parameters for internal unit testing
 ## -- 2022-08-05  1.0.3     SY       Refactoring
+## -- 2022-08-05  1.0.4     YI       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -88,16 +89,20 @@ else:
 
 
 # 3 Create your scenario and run some cycles 
-myscenario  = ScenarioDoublePendulum(
-        p_mode=Mode.C_MODE_SIM,
-        p_ada=True,
-        p_cycle_limit=cycle_limit,
-        p_visualize=visualize,
-        p_logging=logging
+training        = RLTraining(
+    p_scenario_cls=ScenarioDoublePendulum,
+    p_cycle_limit=cycle_limit,
+    p_cycles_per_epi_limit=15,
+    p_adaptation_limit=adaptation_limit,
+    p_stagnation_limit=stagnation_limit,
+    p_eval_frequency=eval_frequency,
+    p_eval_grp_size=eval_grp_size,
+    p_path=path,
+    p_visualize=visualize,
+    p_logging=logging
 )
 
-myscenario.reset(p_seed=3)
-myscenario.run() 
+training.run() 
 
 
 
