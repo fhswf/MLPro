@@ -114,9 +114,9 @@ class DoublePendulum(Environment):
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.02, t_act=5, max_torque=0.2,
+    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=0.2,
                  max_speed=10, l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
-                 g=9.8, history_length=3):
+                 g=9.8, history_length=300):
         self.t_step = t_step
         self.t_act = t_act
 
@@ -320,7 +320,7 @@ class DoublePendulum(Environment):
         torque = tuple(torque.reshape([1]))
         self.alpha = abs(torque[0])/self.max_torque
 
-        self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act*self.t_step, 0.01), args=(torque,))
+        self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_step/self.t_act, 0.001), args=(torque,))
         state = self.y[-1].copy()
 
         delta = state[3]-state[0]
@@ -589,6 +589,6 @@ class DoublePendulum(Environment):
                 self.ccw_arc.set_alpha(self.alpha)
                 self.ccw_arrow.set_alpha(self.alpha)
 
-            if not self.embedded_fig and i%3 ==0 :
+            if not self.embedded_fig and i%50 ==0 :
                 self.fig.canvas.draw()
                 self.fig.canvas.flush_events()
