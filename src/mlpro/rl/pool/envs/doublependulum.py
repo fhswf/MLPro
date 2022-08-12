@@ -320,7 +320,7 @@ class DoublePendulum(Environment):
         torque = tuple(torque.reshape([1]))
         self.alpha = abs(torque[0])/self.max_torque
 
-        self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act, self.t_step), args=(torque,))
+        self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_act*self.t_step, 0.01), args=(torque,))
         state = self.y[-1].copy()
 
         delta = state[3]-state[0]
