@@ -6,7 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-03-22  0.0.0     WB       Creation
-## -- 2022-08-14  1.0.0     WB       Training howto released with a lower value of torque
+## -- 2022-08-14  1.0.0     LSB       Training howto released with a lower value of torque
 ## -------------------------------------------------------------------------------------------------
 
 
