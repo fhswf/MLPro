@@ -39,10 +39,12 @@
 ## -- 2022-08-01  1.3.2     LSB      Coverting radians to degrees only in the state space
 ## -- 2022-08-05  1.3.3     LSB      Limiting the th1 and th2 within 180 to -180 degrees
 ## -- 2022-08-05  1.3.4     SY       Refactoring
+## -- 2022-08-14  1.3.5     LSB      - Minor change in the max torque value, step size in integration
+##                                   - Inverted angles with 0 degrees at top
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2022-08-05)
+Ver. 1.3.5 (2022-08-14)
 
 This module provides an RL environment of double pendulum.
 """
@@ -114,9 +116,9 @@ class DoublePendulum(Environment):
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
 
     ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=0.2,
+    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=1,
                  max_speed=10, l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
-                 g=9.8, history_length=300):
+                 g=9.8, history_length=2):
         self.t_step = t_step
         self.t_act = t_act
 
@@ -265,11 +267,11 @@ class DoublePendulum(Environment):
 
         """
         if self.init_angles =='up':
-            self.th1 = 180
-            self.th2 = 180
-        elif self.init_angles=='down':
             self.th1 = 0
             self.th2 = 0
+        elif self.init_angles=='down':
+            self.th1 = 180
+            self.th2 = 180
         elif self.init_angles=='random':
             self.th1 = np.random.rand(1)[0]*180
             self.th2 = np.random.rand(1)[0]*180
@@ -313,12 +315,23 @@ class DoublePendulum(Environment):
             Current states.
 
         """
-        th1, th1dot, a1, th2, th2dot, a2 = np.radians(p_state.get_values())
+        state = p_state.get_values()
+        for i in [0, 3]:
+            if state[i] == 0:
+                state[i] = 180
+            elif state[i] != 0:
+                state[i] = list(range(-180, 180))[int(-state[i])]
+        th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
         state = [th1, th1dot, 0, th2, th2dot, 0]
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
         torque = tuple(torque.reshape([1]))
-        self.alpha = abs(torque[0])/self.max_torque
+
+
+        if self.max_torque != 0:
+            self.alpha = abs(torque[0])/self.max_torque
+        else: self.alpha = 0
+
 
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_step/self.t_act, 0.001), args=(torque,))
         state = self.y[-1].copy()
@@ -348,6 +361,7 @@ class DoublePendulum(Environment):
                 state[i] = state[i] % 360
             elif state[i] % 360 > 180:
                 state[i] = state[i] % 360 - 360
+            state[i] = list(range(-180, 180))[int(-state[i])]
 
         current_state = State(self._state_space)
         for i in range(len(state)):
@@ -589,6 +603,6 @@ class DoublePendulum(Environment):
                 self.ccw_arc.set_alpha(self.alpha)
                 self.ccw_arrow.set_alpha(self.alpha)
 
-            if not self.embedded_fig and i%50 ==0 :
+            if not self.embedded_fig and i%30 ==0 :
                 self.fig.canvas.draw()
                 self.fig.canvas.flush_events()

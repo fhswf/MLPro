@@ -6,11 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-03-22  0.0.0     WB       Creation
+## -- 2022-08-14  1.0.0     WB       Training howto released with a lower value of torque
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 0.0.0 (2022-03-22)
+Ver. 1.0.0 (2022-08-14)
 
 This module shows how to use SB3 wrapper to train double pendulum. Currently under construction...
 """
@@ -35,7 +36,7 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1 Setup environment
-        self._env   = DoublePendulum(p_logging=True, init_angles='up', max_torque=50)
+        self._env   = DoublePendulum(p_logging=True, init_angles='up', max_torque=1)
 
         policy_kwargs = dict(activation_fn=torch.nn.Tanh,
                      net_arch=[dict(pi=[128, 128], vf=[128, 128])])
