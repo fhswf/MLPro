@@ -70,13 +70,13 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
     Parameters
     ----------
     p_gym_env : Env   
-            Gym environment object
+        Gym environment object
     p_state_space : MSpace  
-            Optional external state space object that meets the state space of the Gym environment
+        Optional external state space object that meets the state space of the Gym environment
     p_action_space : MSpace 
-            Optional external action space object that meets the state space of the Gym environment
+        Optional external action space object that meets the action space of the Gym environment
     p_logging
-            Log level (see constants of class Log). Default = Log.C_LOG_ALL.
+        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
 

@@ -9,10 +9,11 @@
 ## -- 2022-03-24  1.0.0     SY       Release of first version
 ## -- 2022-03-25  1.0.1     SY       Change methods names: _ofct_optuna and get_parameters
 ## -- 2022-04-05  1.0.2     SY       Add tuning recap visualization: class _plot_results
+## -- 2022-08-14  1.1.0     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-04-05)
+Ver. 1.1.0 (2022-08-14)
 
 This module provides a wrapper class for hyperparameter tuning by reusing Optuna framework.
 
@@ -22,6 +23,7 @@ See also: https://pypi.org/project/optuna/
 
 
 import optuna
+from mlpro.wrappers.models import Wrapper
 from mlpro.bf.ml import *
 from mlpro.bf.math import *
 from mlpro.bf.various import *
@@ -34,7 +36,7 @@ import os
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrHPTOptuna(HyperParamTuner, ScientificObject):
+class WrHPTOptuna(Wrapper, HyperParamTuner, ScientificObject):
     """
     This class is a ready to use wrapper class for Optuna framework. 
     Objects of this type can be treated as a hyperparameter tuner object.
@@ -55,6 +57,7 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
     """
     
     C_NAME              = 'Optuna'
+    C_WRAPPED_PACKAGE   = 'optuna'
         
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_PROCEEDINGS
     C_SCIREF_AUTHOR     = "Akiba, Takuya and Sano, Shotaro and Yanase, Toshihiko and Ohta, Takeru and Koyama, Masanori"
@@ -69,12 +72,13 @@ class WrHPTOptuna(HyperParamTuner, ScientificObject):
     C_SCIREF_PAGES      = "2623–2631"
     C_SCIREF_BOOKTITLE  = "Proceedings of the 25th ACM SIGKDD International Conference on Knowledge Discovery & Data Mining"
     
-    C_LOG_SEPARATOR = '------------------------------------------------------------------------------'
+    C_LOG_SEPARATOR     = '------------------------------------------------------------------------------'
     
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_ids=None, p_visualization=False):
-        super().__init__(p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
+        HyperParamTuner.__init__(self, p_logging=p_logging)
 
         self._ids = p_ids
         self.num_trials = 0

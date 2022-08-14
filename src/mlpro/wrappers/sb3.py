@@ -19,11 +19,11 @@
 ## -- 2022-01-20  1.1.6     MRD      Fix the bug due to new version of SB3 1.4.0
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-31  1.1.8     SY       Enable the possibility to process reward type C_TYPE_EVERY_AGENT
-## -- 2022-08-02  1.1.9     DA       Introduction of root class Wrapper
+## -- 2022-08-14  1.2.0     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.9 (2022-08-02)
+Ver. 1.2.0 (2022-08-14)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
@@ -36,6 +36,7 @@ import gym
 import torch
 from stable_baselines3.common import utils
 from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
+from mlpro.wrappers.models import Wrapper
 from mlpro.rl.models import *
 
 
@@ -61,26 +62,32 @@ class DummyEnv(gym.Env):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrPolicySB32MLPro(Policy):
+class WrPolicySB32MLPro(Wrapper, Policy):
     """
     This class provides a policy wrapper from Standard Baselines 3 (SB3).
     Especially On-Policy Algorithm
+
+    Parameters
+    ----------
+    p_sb3_policy
+        SB3 Policy
+    p_observation_space : MSpace
+        Observation Space
+    p_action_space : MSpace
+        Environment Action Space
+    p_ada : bool
+        Adaptability. Defaults to True.
+    p_logging
+        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
-    C_TYPE = 'SB3 Policy'
+    C_TYPE              = 'SB3 Policy'
+    C_WRAPPED_PACKAGE   = 'stable_baselines3'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space, p_action_space, p_ada=True, p_logging=True):
-        """
-        Args:
-            p_sb3_policy : SB3 Policy
-            p_observation_space : Observation Space
-            p_action_space : Environment Action Space
-            p_ada (bool, optional): Adaptability. Defaults to True.
-            p_logging (bool, optional): Logging. Defaults to True.
-        """
-
-        super().__init__(p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
+    def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace, p_action_space:MSpace, p_ada:bool=True, p_logging=Log.C_LOG_ALL):
+        Wrapper.__init__(self, p_logging=p_logging)
+        Policy.__init__(self, p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
 
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None
