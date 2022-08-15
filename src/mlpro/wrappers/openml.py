@@ -13,10 +13,11 @@
 ## -- 2022-06-13  1.0.4     LSB      Bug Fix
 ## -- 2022-06-23  1.0.5     LSB      fetching meta data
 ## -- 2022-06-25  1.0.6     LSB      Refactoring due to new label and instance class, new instance
+## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2022-06-25)
+Ver. 1.1.0 (2022-08-15)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -29,6 +30,7 @@ https://docs.openml.org/APIs/
 
 import numpy
 from mlpro.bf.various import ScientificObject
+from mlpro.wrappers.models import Wrapper
 from mlpro.oa.models import *
 from mlpro.bf.math import *
 import openml
@@ -39,12 +41,13 @@ import openml
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamProviderOpenML (StreamProvider):
+class WrStreamProviderOpenML (Wrapper, StreamProvider):
     """
     Wrapper class for OpenML as StreamProvider
     """
 
-    C_NAME              = 'OpenML'
+    C_NAME              = 'Stream Provider OpenML'
+    C_WRAPPED_PACKAGE   = 'openml'
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
     C_SCIREF_AUTHOR     = 'OpenML'
@@ -54,7 +57,8 @@ class WrStreamProviderOpenML (StreamProvider):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging = Log.C_LOG_ALL):
 
-        super().__init__(p_logging = p_logging)
+        StreamProvider.__init__(self, p_logging = p_logging)
+        Wrapper.__init__(self, p_logging = p_logging)
         self._stream_list = []
         self._stream_ids = []
 
@@ -136,7 +140,7 @@ class WrStreamProviderOpenML (StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamOpenML(Stream):
+class WrStreamOpenML(Wrapper, Stream):
     """
     Wrapper class for Streams from OpenML
 
@@ -150,8 +154,9 @@ class WrStreamOpenML(Stream):
         Number of features of the Stream
     """
 
-    C_NAME = 'OpenML'
-    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_NAME              = 'OpenML stream'
+    C_WRAPPED_PACKAGE   = 'openml'
+    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -159,14 +164,17 @@ class WrStreamOpenML(Stream):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
-        self.C_NAME = self._name = p_name
+        self._name = p_name
 
-        super().__init__(p_id,
-                         p_name,
-                         p_num_instances,
-                         p_version,
+        Stream.__init__( self,
+                         p_id=p_id,
+                         p_name=self.C_NAME + ' "' + p_name + '"',
+                         p_num_instances=p_num_instances,
+                         p_version=p_version,
                          p_logging = p_logging,
                          p_mode=p_mode)
+
+        Wrapper.__init__( self, p_logging=p_logging )
 
         self._kwargs = p_kwargs.copy()
 

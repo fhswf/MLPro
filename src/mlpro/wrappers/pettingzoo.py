@@ -35,16 +35,22 @@
 ## -- 2022-05-20  1.3.6     SY       Refactoring: Action space boundaries in WrEnvPZOO2MLPro
 ## -- 2022-05-30  1.3.7     SY       Replace function env.seed(seed) to env.reset(seed=seed)
 ## -- 2022-07-20  1.3.8     SY       Update due to the latest introduction of Gym 0.25
+## -- 2022-08-15  1.4.0     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.8 (2022-07-20)
-This module provides wrapper classes for reinforcement learning tasks.
+Ver. 1.4.0 (2022-08-15)
+
+This module provides wrapper classes for PettingZoo multi-agent environments.
+
+See also: https://pypi.org/project/PettingZoo/
+
 """
 
 
 import gym
 import numpy as np
+from mlpro.wrappers.models import Wrapper
 from mlpro.rl.models import *
 from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM
 from pettingzoo import AECEnv
@@ -57,31 +63,35 @@ from pettingzoo.utils import wrappers
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvPZOO2MLPro(Environment):
+class WrEnvPZOO2MLPro(Wrapper, Environment):
     """
     This class is a ready to use wrapper class for Petting Zoo environments. 
     Objects of this type can be treated as an environment object. Encapsulated 
     petting zoo environment must be compatible to class pettingzoo.env.
+
+    Parameters
+    ----------
+    p_pzoo_env
+        Petting Zoo environment object
+    p_state_space : MSpace
+        Optional external state space object that meets the state space of the gym environment
+    p_action_space : MSpace 
+        Optional external action space object that meets the action space of the gym environment
+    p_logging
+        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
-    C_TYPE        = 'Petting Zoo Env'
+    C_TYPE              = 'Wrapper PettingZoo -> MLPro'
+    C_WRAPPED_PACKAGE   = 'pettingzoo'
+    C_MINIMUM_VERSION   = '1.20.0'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_zoo_env, p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=Log.C_LOG_ALL):
-        """
-        Parameters:
-            p_pzoo_env      Petting Zoo environment object
-            p_state_space   Optional external state space object that meets the
-                            state space of the gym environment
-            p_action_space  Optional external action space object that meets the
-                            state space of the gym environment
-            p_logging       Switch for logging
-        """
-
         self._zoo_env     = p_zoo_env
         self.C_NAME       = 'Env "' + self._zoo_env.metadata['name'] + '"'
 
         Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
         
         if p_state_space is not None: 
             self._state_space = p_state_space
@@ -244,28 +254,33 @@ class WrEnvPZOO2MLPro(Environment):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvMLPro2PZoo():
+class WrEnvMLPro2PZoo(Wrapper):
     """
     This class is a ready to use wrapper class for MLPro to PettingZoo environments. 
     Objects of this type can be treated as an AECEnv object. Encapsulated 
     MLPro environment must be compatible to class Environment.
     To be noted, this wrapper is not capable for parallel environment yet.
+
+    Parameters
+    ----------
+    p_mlpro_env : Environment    
+        MLPro's Environment object
+    p_num_agents : int   
+        Number of Agents
+    p_state_space : MSpace  
+        Optional external state space object that meets the state space of the MLPro environment
+    p_action_space : MSpace  
+        Optional external action space object that meets the action space of the MLPro environment
     """
 
-    C_TYPE        = 'MLPro to PZoo Env'
+    C_TYPE              = 'Wrapper MLPro -> PettingZoo'
+    C_WRAPPED_PACKAGE   = 'pettingzoo'
+    C_MINIMUM_VERSION   = '1.20.0'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
-        """
-        Parameters:
-            p_mlpro_env     MLPro's Environment object
-            p_num_agents    Number of Agents
-            p_state_space   Optional external state space object that meets the
-                            state space of the MLPro environment
-            p_action_space  Optional external action space object that meets the
-                            state space of the MLPro environment
-        """
-        
+    def __init__(self, p_mlpro_env:Environment, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=Log.C_LOG_ALL):       
+        self.C_NAME = 'Env "' + p_mlpro_env.C_NAME + '"'
+        Wrapper.__init__(self, p_logging=p_logging)
         self.pzoo_env   = self.raw_env(p_mlpro_env, p_num_agents, p_state_space, p_action_space)
         self.pzoo_env   = wrappers.CaptureStdoutWrapper(self.pzoo_env)
         self.pzoo_env   = wrappers.OrderEnforcingWrapper(self.pzoo_env)

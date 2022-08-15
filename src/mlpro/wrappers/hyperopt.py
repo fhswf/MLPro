@@ -15,15 +15,21 @@
 ## -- 2022-03-02  1.0.5     SY       Refactoring
 ## -- 2022-03-24  1.0.6     SY       Refactoring
 ## -- 2022-03-25  1.0.7     SY       Change methods names (SetupSpaces to setup_spaces)
+## -- 2022-08-14  1.1.0     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2022-03-25)
-This module provides a wrapper class for hyperparameter tuning by reusing Hyperopt framework
+Ver. 1.1.0 (2022-08-14)
+
+This module provides a wrapper class for hyperparameter tuning by reusing the Hyperopt framework.
+
+See also: https://pypi.org/project/hyperopt/
+
 """
 
 
 from hyperopt import *
+from mlpro.wrappers.models import Wrapper
 from mlpro.bf.ml import *
 from mlpro.bf.math import *
 from mlpro.bf.various import *
@@ -36,7 +42,7 @@ import os
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrHPTHyperopt(HyperParamTuner, ScientificObject):
+class WrHPTHyperopt(HyperParamTuner, Wrapper, ScientificObject):
     """
     This class is a ready to use wrapper class for Hyperopt framework. 
     Objects of this type can be treated as a hyperparameter tuner object.
@@ -61,6 +67,7 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
     """
     
     C_NAME              = 'Hyperopt'
+    C_WRAPPED_PACKAGE   = 'hyperopt'
     
     C_ALGO_TPE          = 'TPE'
     C_ALGO_RAND         = 'RND'
@@ -74,12 +81,13 @@ class WrHPTHyperopt(HyperParamTuner, ScientificObject):
     C_SCIREF_DOI        = "10.25080/Majora-8b375195-003"
     C_SCIREF_EDITOR     = "Stefan van der Walt, Jarrod Millman, Katy Huff"
     
-    C_LOG_SEPARATOR = '------------------------------------------------------------------------------'
+    C_LOG_SEPARATOR     = '------------------------------------------------------------------------------'
     
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_algo=C_ALGO_RAND, p_ids=None):
-        super().__init__(p_logging=p_logging)
+        HyperParamTuner.__init__(self, p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
 
         if p_algo is None:
             raise ParamError('Mandatory parameter p_algo is not supplied')
