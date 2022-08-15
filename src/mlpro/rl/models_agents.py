@@ -41,7 +41,9 @@
 ## -- 2022-03-02  1.5.4     DA       Reformatting
 ## -- 2022-03-07  1.5.5     SY       Minor Improvement on Class MultiAgent
 ## -- 2022-08-09  1.5.6     SY       Add MPC to ActionPlanner as a default algorithm
-## -- 2022-08-15  1.5.7     SY       Renaming maturity to accuracy
+## -- 2022-08-15  1.5.7     SY       - Renaming maturity to accuracy
+## --                                - Move MPC implementation to the pool of objects
+## --                                - Update compute_action in Agent for action planning
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -177,7 +179,7 @@ class Policy(Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ActionPlanner(Log, ScientificObject):
+class ActionPlanner(Log):
     """
     Template class for action planning algorithms to be used as part of model-based planning agents. 
     The goal is to find the shortest sequence of actions that leads to a maximum reward.
@@ -196,7 +198,8 @@ class ActionPlanner(Log, ScientificObject):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_state_thsld=0.00000001, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging=p_logging)
-        self._depth_limit = 0
+        self._control_horizon = 0
+        self._prediction_horizon = 0
         self._width_limit = 0
         self._policy = None
         self._env_model = None
@@ -336,7 +339,6 @@ class ActionPlanner(Log, ScientificObject):
         """
         Custom planning algorithm to fill the internal action path (self._action_path). Search width
         and depth are restricted by the attributes self._width_limit and self._prediction_horizon.
-        The default implementation utilizes MPC.
 
         Parameters
         ----------
@@ -350,65 +352,7 @@ class ActionPlanner(Log, ScientificObject):
 
         """
 
-        self.C_SCIREF_TYPE          = self.C_SCIREF_TYPE_ARTICLE
-        self.C_SCIREF_AUTHOR        = "Grady Williams, Nolan Wagener, Brian Goldfain, Paul Drews, James M. Rehg, Byron Boots, Evangelos A. Theodorou"
-        self.C_SCIREF_TITLE         = "Information theoretic MPC for model-based reinforcement learning"
-        self.C_SCIREF_CONFERENCE    = "2017 IEEE International Conference on Robotics and Automation (ICRA)"
-        self.C_SCIREF_YEAR          = "2017"
-        self.C_SCIREF_MONTH         = "05"
-        self.C_SCIREF_DOI           = "10.1109/ICRA.2017.7989202"
-        
-        # initialize variable to store best path and its predicted overall reward
-        best_path = None
-        best_overall_reward = None
-        
-        for width in range(self._width_limit):
-            state = p_obs
-            path = SARSBuffer(p_size=self._prediction_horizon)
-            overall_reward = 0
-            
-            for pred in range(self._prediction_horizon):
-                # generate random actions
-                action_values = np.zeros(self._envmodel._action_space.get_num_dim())
-                ids = self._envmodel._action_space.get_dim_ids()
-                for d in range(self._envmodel._action_space.get_num_dim()):
-                    try:
-                        base_set = self._envmodel._action_space.get_dim(ids[d]).get_base_set()
-                    except:
-                        raise ParamError('Mandatory base set is not defined.')
-                        
-                    try:
-                        if len(self._envmodel._action_space.get_dim(ids[d]).get_boundaries()) == 1:
-                            lower_boundaries = 0
-                            upper_boundaries = self._envmodel._action_space.get_dim(ids[d]).get_boundaries()[0]
-                        else:
-                            lower_boundaries = self._envmodel._action_space.get_dim(ids[d]).get_boundaries()[0]
-                            upper_boundaries = self._envmodel._action_space.get_dim(ids[d]).get_boundaries()[1]
-                        if base_set == 'Z' and base_set == 'N':
-                            action_values[d] = random.randint(lower_boundaries, upper_boundaries)
-                        else:
-                            action_values[d] = random.uniform(lower_boundaries, upper_boundaries)
-                    except:
-                        raise ParamError('Mandatory boundaries are not defined.')
-                action = Action(pred, self._envmodel._action_space, action_values)
-                
-                # compute next states and reward according to current state
-                next_state = self._envmodel.simulate_reaction(state, action)
-                reward = self._envmodel.compute_reward(p_state_old=state, p_state_new=next_state)
-                overall_reward += reward.get_overall_reward()
-                
-                # add to SARSBuffer
-                path.add_element(SARSElement(state, action, reward, next_state))
-                
-                # adjust the current state with next state
-                state = next_state
-            
-            # comparison between the current best path and the computed path
-            if (best_path is None) or (overall_reward > best_overall_reward):
-                best_path = path
-                best_overall_reward = overall_reward
-                
-        return best_path
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -684,7 +628,10 @@ class Agent(Policy):
 
         else:
             # 1.2 With action planner
-            action = self._action_planner.compute_action(observation)
+            if self._envmodel.get_accuracy() >= self._em_acc_thsld:
+                action = self._action_planner.compute_action(observation)
+            else:
+                action = self._policy.compute_action(observation)
 
         # 2 Outro
         self.log(self.C_LOG_TYPE_I, 'Action computation finished')

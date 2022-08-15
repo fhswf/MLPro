@@ -10,7 +10,8 @@
 ## -- 2022-01-01  1.0.1     MRD       Refactoring due to new model implementation
 ## -- 2022-05-20  1.0.2     MRD       Add HTMEnvModel
 ## -- 2022-08-09  1.0.3     SY        Update due to introduction of ActionPlanner
-## -- 2022-08-15  1.0.4     SY        Renaming maturity to accuracy
+## -- 2022-08-15  1.0.4     SY        - Renaming maturity to accuracy
+## --                                 - Utilize MPC from pool of objects
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -28,6 +29,7 @@ from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from mlpro.rl.pool.envmodels.mlp_robotinhtm import MLPEnvModel
 from mlpro.rl.pool.envmodels.htm_robotinhtm import HTMEnvModel
+from mlpro.rl.pool.actionplanner.mpc import MPC
 from pathlib import Path
 
 
@@ -79,7 +81,7 @@ class ScenarioRobotHTMActual(RLScenario):
             p_policy=policy_wrapped,
             p_envmodel=HTMEnvModel(),
             p_em_acc_thsld=0.5,
-            p_action_planner=ActionPlanner(),
+            p_action_planner=MPC(),
             p_predicting_horizon=5,
             p_controlling_horizon=2,
             p_planning_width=5,
