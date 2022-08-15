@@ -71,6 +71,8 @@ class WrPolicySB32MLPro(Wrapper, Policy):
     ----------
     p_sb3_policy
         SB3 Policy
+    p_cycle_limit
+        Maximum number of cycles
     p_observation_space : MSpace
         Observation Space
     p_action_space : MSpace

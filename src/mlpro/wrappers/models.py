@@ -68,7 +68,8 @@ class Wrapper (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging=p_logging)
+        Log.__init__(self, p_logging=p_logging)
+        # super().__init__(p_logging=p_logging)
 
         if self.C_WRAPPED_PACKAGE is None:
             raise Error('Please specify the wrapped package')
