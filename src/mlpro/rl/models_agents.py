@@ -41,10 +41,11 @@
 ## -- 2022-03-02  1.5.4     DA       Reformatting
 ## -- 2022-03-07  1.5.5     SY       Minor Improvement on Class MultiAgent
 ## -- 2022-08-09  1.5.6     SY       Add MPC to ActionPlanner as a default algorithm
+## -- 2022-08-15  1.5.7     SY       Renaming maturity to accuracy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.6 (2022-08-09) 
+Ver. 1.5.7 (2022-08-15) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -459,8 +460,8 @@ class Agent(Policy):
         Policy object.
     p_envmodel : EnvModel
         Optional environment model object. Default = None.
-    p_em_mat_thsld : float
-        Optional threshold for environment model maturity (whether the envmodel is 'good'
+    p_em_acc_thsld : float
+        Optional threshold for environment model accuracy (whether the envmodel is 'good'
         enough to be used to train the policy). Default = 0.9.
     p_action_planner : ActionPlanner   
         Optional action planner object (obligatory for model based agents). Default = None.
@@ -492,7 +493,7 @@ class Agent(Policy):
     def __init__(self,
                  p_policy: Policy,
                  p_envmodel: EnvModel = None,
-                 p_em_mat_thsld=0.9,
+                 p_em_acc_thsld=0.9,
                  p_action_planner: ActionPlanner = None,
                  p_predicting_horizon=0,
                  p_controlling_horizon=0,
@@ -540,7 +541,7 @@ class Agent(Policy):
         self._action_space = self._policy.get_action_space()
         self._observation_space = self._policy.get_observation_space()
         self._envmodel = p_envmodel
-        self._em_mat_thsld = p_em_mat_thsld
+        self._em_acc_thsld = p_em_acc_thsld
         self._action_planner = p_action_planner
         self._predicting_horizon = p_predicting_horizon
         self._controlling_horizon = p_controlling_horizon
@@ -733,7 +734,7 @@ class Agent(Policy):
             adapted = self._envmodel.adapt(
                 SARSElement(self._previous_observation, self._previous_action, reward, observation))
 
-            if self._envmodel.get_maturity() >= self._em_mat_thsld:
+            if self._envmodel.get_accuracy() >= self._em_acc_thsld:
                 adapted = adapted or self._adapt_policy_by_model()
 
         return adapted

@@ -10,10 +10,11 @@
 ## -- 2022-01-01  1.0.1     MRD       Refactoring due to new model implementation
 ## -- 2022-05-20  1.0.2     MRD       Add HTMEnvModel
 ## -- 2022-08-09  1.0.3     SY        Update due to introduction of ActionPlanner
+## -- 2022-08-15  1.0.4     SY        Renaming maturity to accuracy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-08-09)
+Ver. 1.0.4 (2022-08-15)
 
 This module demonstrates model-based reinforcement learning (MBRL) with action planner using MPC.
 """
@@ -77,7 +78,7 @@ class ScenarioRobotHTMActual(RLScenario):
         return Agent(
             p_policy=policy_wrapped,
             p_envmodel=HTMEnvModel(),
-            p_em_mat_thsld=0.5,
+            p_em_acc_thsld=0.5,
             p_action_planner=ActionPlanner(),
             p_predicting_horizon=5,
             p_controlling_horizon=2,
