@@ -42,7 +42,7 @@ import os
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrHPTHyperopt(Wrapper, HyperParamTuner, ScientificObject):
+class WrHPTHyperopt(HyperParamTuner, Wrapper, ScientificObject):
     """
     This class is a ready to use wrapper class for Hyperopt framework. 
     Objects of this type can be treated as a hyperparameter tuner object.
@@ -86,8 +86,8 @@ class WrHPTHyperopt(Wrapper, HyperParamTuner, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_algo=C_ALGO_RAND, p_ids=None):
-        Wrapper.__init__(self, p_logging=p_logging)
         HyperParamTuner.__init__(self, p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
 
         if p_algo is None:
             raise ParamError('Mandatory parameter p_algo is not supplied')

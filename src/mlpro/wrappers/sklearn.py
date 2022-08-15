@@ -10,12 +10,13 @@
 ## -- 2022-06-18  1.0.1     LSB      Stream names as Stream ids
 ## -- 2022-06-23  1.0.2     LSB      Fetching stream meta data
 ## -- 2022-06-25  1.0.3     LSB      Refactoring for new label and instance class
+## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-06-dd)
+Ver. 1.1.0 (2022-08-15)
 
-This module provides wrapper functionalities to incorporate public data sets of the Sklearn ecosystem.
+This module provides wrapper functionalities to incorporate public data sets of the Scikit-learn ecosystem.
 
 Learn more:
 https://scikit-learn.org
@@ -24,6 +25,7 @@ https://scikit-learn.org
 """
 
 from mlpro.bf.various import ScientificObject
+from mlpro.wrappers.models import Wrapper
 from mlpro.oa.models import *
 from mlpro.bf.math import *
 import sklearn
@@ -35,12 +37,13 @@ import numpy
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamProviderSklearn (StreamProvider):
+class WrStreamProviderSklearn (Wrapper, StreamProvider):
     """
     Wrapper class for Sklearn as StreamProvider
     """
 
-    C_NAME              = 'Sklearn'
+    C_NAME              = 'Stream Provider Sklearn'
+    C_WRAPPED_PACKAGE   = 'sklearn'
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
     C_SCIREF_AUTHOR     = 'sklearn'
@@ -83,7 +86,8 @@ class WrStreamProviderSklearn (StreamProvider):
         self._stream_list = []
         self._stream_ids = self._datasets
 
-        super().__init__(p_logging = p_logging)
+        StreamProvider.__init__(self, p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
 
         for i in range(len(self._datasets)):
             self._stream_list.append(WrStreamSklearn(self._stream_ids[i],self._datasets[i], p_logging=p_logging))
@@ -133,7 +137,7 @@ class WrStreamProviderSklearn (StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamSklearn(Stream):
+class WrStreamSklearn(Wrapper, Stream):
     """
     Wrapper class for Streams from Sklearn
 
@@ -147,8 +151,9 @@ class WrStreamSklearn(Stream):
         Number of features of the Stream
     """
 
-    C_NAME = 'Sklearn'
-    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_NAME              = 'Sklearn stream'
+    C_WRAPPED_PACKAGE   = 'sklearn'
+    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -156,14 +161,17 @@ class WrStreamSklearn(Stream):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
-        self.C_NAME = self._name = p_name
+        self._name = p_name
 
-        super().__init__(p_id,
-                         p_name,
-                         p_num_instances,
-                         p_version,
+        Stream.__init__( self,
+                         p_id=p_id,
+                         p_name=self.C_NAME + ' "' + p_name + '"',
+                         p_num_instances=p_num_instances,
+                         p_version=p_version,
                          p_logging=p_logging,
                          p_mode=p_mode)
+
+        Wrapper.__init__( self, p_logging=p_logging )
 
         self._kwargs = p_kwargs.copy()
 

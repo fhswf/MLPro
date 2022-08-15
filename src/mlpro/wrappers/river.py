@@ -10,10 +10,11 @@
 ## -- 2022-06-18  1.0.1     LSB      Stream names as Stream ids
 ## -- 2022-06-23  1.0.2     LSB      Meta data and instances in Numpy format
 ## -- 2022-06-25  1.0.3     LSB      Refactoring for label and instance class
+## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-06-25)
+Ver. 1.1.0 (2022-08-15)
 
 This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
@@ -23,6 +24,7 @@ https://www.riverml.xyz/
 """
 
 from mlpro.bf.various import ScientificObject
+from mlpro.wrappers.models import Wrapper
 from mlpro.oa.models import *
 from mlpro.bf.math import *
 import river
@@ -34,12 +36,13 @@ import numpy
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamProviderRiver (StreamProvider):
+class WrStreamProviderRiver (Wrapper, StreamProvider):
     """
     Wrapper class for River as StreamProvider
     """
 
-    C_NAME              = 'River'
+    C_NAME              = 'Stream Provider River'
+    C_WRAPPED_PACKAGE   = 'river'
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
     C_SCIREF_AUTHOR     = 'River'
@@ -77,7 +80,8 @@ class WrStreamProviderRiver (StreamProvider):
         self._stream_list = []
         self._stream_ids = _datasets
 
-        super().__init__(p_logging = p_logging)
+        StreamProvider.__init__(self, p_logging = p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
 
         for i in range(len(_datasets)):
             _num_instances = eval("river.datasets."+_datasets[i]+"().n_samples")
@@ -127,7 +131,7 @@ class WrStreamProviderRiver (StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamRiver(Stream):
+class WrStreamRiver(Wrapper, Stream):
     """
     Wrapper class for Streams from River
 
@@ -141,8 +145,9 @@ class WrStreamRiver(Stream):
         Number of features of the Stream
     """
 
-    C_NAME = 'River'
-    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_NAME              = 'River stream'
+    C_WRAPPED_PACKAGE   = 'river'
+    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -150,7 +155,7 @@ class WrStreamRiver(Stream):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
-        self.C_NAME = self._name = p_name
+        self._name = p_name
 
         try:
             self.C_SCIREF_URL = eval("river.datasets."+self._name+"().url")
@@ -164,12 +169,15 @@ class WrStreamRiver(Stream):
         except:
             self.C_SCIREF_ABSTRACT = ''
 
-        super().__init__(p_id,
-                         p_name,
-                         p_num_instances,
-                         p_version,
-                         p_logging = p_logging,
-                         p_mode=p_mode)
+        Stream.__init__( self, 
+                         p_id=p_id,
+                         p_name=self.C_NAME + ' "' + p_name + '"',
+                         p_num_instances=p_num_instances,
+                         p_version=p_version,
+                         p_logging=p_logging,
+                         p_mode=p_mode )
+
+        Wrapper.__init__(self, p_logging=p_logging)
 
         self._kwargs = p_kwargs.copy()
         self._label = 'Label'

@@ -35,11 +35,11 @@
 ## -- 2022-05-20  1.3.6     SY       Refactoring: Action space boundaries in WrEnvPZOO2MLPro
 ## -- 2022-05-30  1.3.7     SY       Replace function env.seed(seed) to env.reset(seed=seed)
 ## -- 2022-07-20  1.3.8     SY       Update due to the latest introduction of Gym 0.25
-## -- 2022-08-14  1.4.0     DA       Introduction of root class Wrapper
+## -- 2022-08-15  1.4.0     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-08-14)
+Ver. 1.4.0 (2022-08-15)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -90,8 +90,8 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
         self._zoo_env     = p_zoo_env
         self.C_NAME       = 'Env "' + self._zoo_env.metadata['name'] + '"'
 
-        Wrapper.__init__(self, p_logging=p_logging)
         Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
         
         if p_state_space is not None: 
             self._state_space = p_state_space

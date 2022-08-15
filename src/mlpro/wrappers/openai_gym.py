@@ -40,10 +40,11 @@
 ## -- 2022-07-20  1.4.0     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-07-27  1.4.1     DA       Introduction of root class Wrapper
 ## -- 2022-07-28  1.4.2     SY       Minor improvements: API documentation and logging
+## -- 2022-08-15  1.4.3     DA       Correction of integration of class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2022-07-28)
+Ver. 1.4.3 (2022-08-15)
 
 This module provides wrapper classes for OpenAI Gym environments.
 
@@ -93,8 +94,8 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
         self._gym_env = p_gym_env
         self.C_NAME = 'Env "' + self._gym_env.spec.id + '"'
 
-        Wrapper.__init__(self, p_logging=p_logging)
         Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_latency=None, p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
 
         if p_state_space is not None:
             self._state_space = p_state_space

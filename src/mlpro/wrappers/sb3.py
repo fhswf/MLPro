@@ -19,7 +19,7 @@
 ## -- 2022-01-20  1.1.6     MRD      Fix the bug due to new version of SB3 1.4.0
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-31  1.1.8     SY       Enable the possibility to process reward type C_TYPE_EVERY_AGENT
-## -- 2022-08-14  1.2.0     DA       Introduction of root class Wrapper
+## -- 2022-08-15  1.2.0     DA       Introduction of root class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -88,8 +88,8 @@ class WrPolicySB32MLPro(Wrapper, Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace, p_action_space:MSpace, p_ada:bool=True, p_logging=Log.C_LOG_ALL):
-        Wrapper.__init__(self, p_logging=p_logging)
         Policy.__init__(self, p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
 
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None

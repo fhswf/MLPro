@@ -77,8 +77,8 @@ class WrHPTOptuna(Wrapper, HyperParamTuner, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_ids=None, p_visualization=False):
-        Wrapper.__init__(self, p_logging=p_logging)
         HyperParamTuner.__init__(self, p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
 
         self._ids = p_ids
         self.num_trials = 0
