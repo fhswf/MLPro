@@ -42,10 +42,11 @@
 ## -- 2022-08-05  1.3.5     YI       Updating the bondaries of the environment's states
 ## -- 2022-08-14  1.3.6     LSB      - Minor change in the max torque value, step size in integration
 ##                                   - Inverted angles with 0 degrees at top
+## -- 2022-08-05  1.3.7     SY       Minor changing: Boundaries of the pendulums' angle
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.6 (2022-08-05)
+Ver. 1.3.7 (2022-08-05)
 
 This module provides an RL environment of double pendulum.
 """
@@ -170,13 +171,13 @@ class DoublePendulum(Environment):
         action_space = ESpace()
 
         state_space.add_dim(Dimension(p_name_long='theta 1', p_name_short='th1', p_description='Angle of Pendulum 1', p_name_latex='', p_unit='degrees',
-                                      p_unit_latex='\textdegrees', p_boundaries=[-175.754,180]))
+                                      p_unit_latex='\textdegrees', p_boundaries=[-180,180]))
         state_space.add_dim(Dimension(p_name_long='omega 1', p_name_short='w1', p_description='Angular Velocity of Pendulum 1', p_name_latex='',
                                       p_unit='degrees/second', p_unit_latex='\textdegrees/s', p_boundaries=[-796.617, 559.5576]))
         state_space.add_dim(Dimension(p_name_long='acc 1', p_name_short='a1', p_description='Angular Acceleration of Pendulum 1', p_name_latex='',
                                       p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-6732.31, 5870.988]))
         state_space.add_dim(Dimension(p_name_long='theta 2', p_name_short='th2', p_description='Angle of pendulum 2', p_name_latex='',p_unit= 'degrees',
-                                      p_unit_latex='\textdegrees', p_boundaries=[-177.767, 180]))
+                                      p_unit_latex='\textdegrees', p_boundaries=[-180, 180]))
         state_space.add_dim(Dimension(p_name_long='omega 2', p_name_short='w2', p_description='Angular Velocity of Pendulum 2', p_name_latex='',
                                       p_unit='degrees/second', p_unit_latex='\textdegrees/s', p_boundaries=[-904.93, 844.5236]))
         state_space.add_dim(Dimension(p_name_long='acc 2', p_name_short='a2', p_description='Angular Acceleration of Pendulum 2', p_name_latex='',
