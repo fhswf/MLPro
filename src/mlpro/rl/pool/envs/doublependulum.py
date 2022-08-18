@@ -627,6 +627,8 @@ class DoublePendulum(Environment):
 ## ---------------------------------------------------------------------------------------------------------------------
 ## ---------------------------------------------------------------------------------------------------------------------
 class DoublePendulum_bak(Environment):
+
+
     C_NAME = "DoublePendulum"
     C_CYCLE_LIMIT = 0
     C_LATENCY = timedelta(0, 0, 0)
@@ -779,7 +781,7 @@ class DoublePendulum_bak(Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_action:float, p_state:float):
+    def _simulate_reaction(self, p_state:list, p_action:float):
         """
                This method is used to calculate the next states of the system after a set of actions.
 
@@ -796,17 +798,7 @@ class DoublePendulum_bak(Environment):
                    Current states.
 
                """
-        # state = p_state.get_values()
-        # for i in [0, 2]:
-        #     if state[i] == 0:
-        #         state[i] = 180
-        #     elif state[i] != 0:
-        #         state[i] = list(range(-180, 180))[int(-state[i])]
-        # th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
-        # state = [th1, th1dot, th2, th2dot]
-        # torque = p_action.get_sorted_values()[0]
-        # torque = np.clip(torque, -self.max_torque, self.max_torque)
-        # torque = tuple(torque.reshape([1]))
+
         state = p_state
         torque = p_action
         if self.max_torque != 0:
@@ -817,38 +809,10 @@ class DoublePendulum_bak(Environment):
         self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_step / self.t_act, 0.001), args=(torque,))
         state = self.y[-1].copy()
 
-        # delta = state[3] - state[0]
-        #
-        # den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
-        # state[2] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
-        #              + self.m2 * self.g * sin(state[3]) * cos(delta)
-        #              + self.m2 * self.l2 * state[4] * state[4] * sin(delta)
-        #              - (self.m1 + self.m2) * self.g * sin(state[0]) - torque)
-        #             / den1)
-        #
-        # den3 = (self.l2 / self.l1) * den1
-        # state[5] = ((- self.m2 * self.l2 * state[4] * state[4] * sin(delta) * cos(delta)
-        #              + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
-        #              - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
-        #              - (self.m1 + self.m2) * self.g * sin(state[3]))
-        #             / den3)
 
-        # state = np.degrees(state)
         self.action_cw = True if torque > 0 else False
-        state_ids = self._state.get_dim_ids()
 
-        # for i in [0, 2]:
-        #     if state[i] % 360 < 180:
-        #         state[i] = state[i] % 360
-        #     elif state[i] % 360 > 180:
-        #         state[i] = state[i] % 360 - 360
-        #     state[i] = list(range(-180, 180))[int(-state[i])]
-
-        # current_state = State(self._state_space)
-        # for i in range(len(state)):
-        #     current_state.set_value(state_ids[i], state[i])
-
-        return list(state)
+        return state
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -869,14 +833,14 @@ class DoublePendulum_bak(Environment):
 ## ------------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         """
-                This method initializes the plot figure of each episode. When the environment
-                is reset, the previous figure is closed and reinitialized.
+            This method initializes the plot figure of each episode. When the environment
+            is reset, the previous figure is closed and reinitialized.
 
-                Parameters
-                ----------
-                p_figure : matplotlib.figure.Figure
-                    A Figure object of the matplotlib library.
-                """
+            Parameters
+            ----------
+            p_figure : matplotlib.figure.Figure
+                A Figure object of the matplotlib library.
+        """
         if hasattr(self, 'fig'):
             plt.close(self.fig)
 
@@ -923,11 +887,10 @@ class DoublePendulum_bak(Environment):
 ## ------------------------------------------------------------------------------------------------------
     def update_plot(self):
         """
-                This method updates the plot figure of each episode. When the figure is
-                detected to be an embedded figure, this method will only set up the
-                necessary data of the figure.
-
-                """
+        This method updates the plot figure of each episode. When the figure is
+        detected to be an embedded figure, this method will only set up the
+        necessary data of the figure.
+        """
         x1 = self.l1 * sin(self.y[:, 0])
         y1 = -self.l1 * cos(self.y[:, 0])
 
@@ -1033,7 +996,7 @@ class DoublePendulumClassic(DoublePendulum_bak):
 
         state = np.radians(state)
 
-        state = super()._simulate_reaction(torque[0], state)
+        state = super()._simulate_reaction(state, torque[0])
 
 
         delta = state[2] - state[0]
@@ -1077,3 +1040,83 @@ class DoublePendulumClassic(DoublePendulum_bak):
 ## ------------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_new, p_state_old):
         return super()._compute_reward(p_state_new, p_state_old)
+
+
+
+
+
+## ------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------
+class DoublePendulumStatic(DoublePendulum_bak):
+
+
+
+    C_TYPE = ''
+    C_NAME = ''
+
+
+## ------------------------------------------------------------------------------------------------------
+    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=1,
+                 max_speed=10, l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
+                 g=9.8, history_length=2):
+        super().__init__(p_logging=p_logging, t_step=t_step, t_act=t_act, max_torque=max_torque,
+                 max_speed=max_speed, l1=l1, l2=l2, m1=m1, m2=m2, init_angles=init_angles,
+                 g=g, history_length=history_length)
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed) -> None:
+        super()._reset(p_seed)
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace):
+        return p_state_space, p_action_space
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state:State, p_action:Action):
+        state = p_state.get_values()
+        for i in [0, 2]:
+            if state[i] == 0:
+                state[i] = 180
+            elif state[i] != 0:
+                if state[i] > 0:
+                    sign = 1
+                else:
+                    sign = -1
+                state[i] = sign * (abs(state[i]) - 180)
+        # th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
+        # state = [th1, th1dot, th2, th2dot]
+        torque = p_action.get_sorted_values()[0]
+        torque = np.clip(torque, -self.max_torque, self.max_torque)
+        torque = tuple(torque.reshape([1]))
+
+        state = np.radians(state)
+
+        state = super()._simulate_reaction(state, torque[0])
+        state = np.degrees(state)
+        self.action_cw = True if torque[0] > 0 else False
+        state_ids = self._state.get_dim_ids()
+
+        for i in [0, 2]:
+            if state[i] % 360 < 180:
+                state[i] = state[i] % 360
+            elif state[i] % 360 > 180:
+                state[i] = state[i] % 360 - 360
+            if state[i] > 0:
+                sign = 1
+            else:
+                sign = -1
+            state[i] = sign * (abs(state[i]) - 180)
+
+        current_state = State(self._state_space)
+        for i in range(len(state)):
+            current_state.set_value(state_ids[i], state[i])
+
+        return current_state
+
+
+## -----------------------------------------------------------------------------------------------
+    def _compute_reward(self, p_state_old:State, p_state_new:State):
+        return super()._compute_reward(p_state_old=p_state_old, p_state_new=p_state_new)

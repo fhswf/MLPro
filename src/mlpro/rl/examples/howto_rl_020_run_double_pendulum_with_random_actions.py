@@ -22,7 +22,7 @@ This module shows how to use run the double pendulum environment using random ac
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.rl.pool.envs.doublependulum import DoublePendulumClassic, DoublePendulum
+from mlpro.rl.pool.envs.doublependulum import DoublePendulumClassic, DoublePendulum, DoublePendulumStatic
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 from pathlib import Path
 import matplotlib.pyplot as plt
@@ -40,7 +40,7 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulumClassic(p_logging=True, init_angles='up', max_torque=5)
+        self._env   = DoublePendulumStatic(p_logging=True, init_angles='up', max_torque=5)
         # policy_kwargs = dict(activation_fn=torch.nn.Tanh,
         #              net_arch=[dict(pi=[128, 128], vf=[128, 128])])
 
