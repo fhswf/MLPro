@@ -322,7 +322,13 @@ class DoublePendulum(Environment):
             if state[i] == 0:
                 state[i] = 180
             elif state[i] != 0:
-                state[i] = list(range(-180, 180))[int(-state[i])]
+                # state[i] = list(range(-180, 180))[int(-state[i])]
+                if state[i] > 0:
+                    sign = 1
+                else:
+                    sign = -1
+                state[i] = sign*(abs(state[i]) - 180)
+
         th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
         state = [th1, th1dot, 0, th2, th2dot, 0]
         torque = p_action.get_sorted_values()[0]
@@ -363,7 +369,12 @@ class DoublePendulum(Environment):
                 state[i] = state[i] % 360
             elif state[i] % 360 > 180:
                 state[i] = state[i] % 360 - 360
-            state[i] = list(range(-180, 180))[int(-state[i])]
+            # state[i] = list(range(-180, 180))[int(-state[i])]
+            if state[i] > 0:
+                sign = 1
+            else:
+                sign = -1
+            state[i] = sign*(abs(state[i]) - 180)
 
         current_state = State(self._state_space)
         for i in range(len(state)):
@@ -684,38 +695,273 @@ class DoublePendulum_bak(Environment):
 
         return self._setup_spaces(state_space, action_space)
 ## ------------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None):
-        raise NotImplementedError
+    def _reset(self, p_seed=None) -> None:
+        """
+        This method is used to reset the environment.
+
+        Parameters
+        ----------
+        p_seed : int, optional
+            Not yet implemented. The default is None.
+
+        """
+        if self.init_angles =='up':
+            self.th1 = 0
+            self.th2 = 0
+        elif self.init_angles=='down':
+            self.th1 = 180
+            self.th2 = 180
+        elif self.init_angles=='random':
+            self.th1 = np.random.rand(1)[0]*180
+            self.th2 = np.random.rand(1)[0]*180
+        else:
+            raise NotImplementedError("init_angles value must be up or down")
+
+
+        self.th1dot = 0
+        self.th2dot = 0
+
+        state_ids = self._state.get_dim_ids()
+        self._state.set_value(state_ids[0], (self.th1))
+        self._state.set_value(state_ids[1], (self.th1dot))
+        self._state.set_value(state_ids[2], (self.th2))
+        self._state.set_value(state_ids[3], (self.th2dot))
+
+
+        self.history_x.clear()
+        self.history_y.clear()
+        self.action_cw = False
+        self.alpha = 0
+
+
+    ## ------------------------------------------------------------------------------------------------------
+    def derivs(self, state, t, torque):
+        """
+        This method is used to calculate the derivatives of the system, given the
+        current states.
+
+        Parameters
+        ----------
+        state : list
+            [theta 1, omega 1, acc 1, theta 2, omega 2, acc 2]
+        t : list
+            Timestep
+        torque : float
+            Applied torque of the motor
+
+        Returns
+        -------
+        dydx : list
+            The derivatives of the given state
+
+        """
+        dydx = np.zeros_like(state)
+        dydx[0] = state[1]
+
+        delta = state[2] - state[0]
+        den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
+        dydx[1] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
+                    + self.m2 * self.g * sin(state[2]) * cos(delta)
+                    + self.m2 * self.l2 * state[3] * state[3] * sin(delta)
+                    - (self.m1 + self.m2) * self.g * sin(state[0])-torque)
+                   / den1)
+
+        dydx[2] = state[3]
+
+        den2 = (self.l2 / self.l1) * den1
+        dydx[3] = ((- self.m2 * self.l2 * state[3] * state[3] * sin(delta) * cos(delta)
+                    + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
+                    - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
+                    - (self.m1 + self.m2) * self.g * sin(state[2]))
+                   / den2)
+
+        return dydx
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_action, p_state):
-        raise NotImplementedError
+    def _simulate_reaction(self, p_action:float, p_state:float):
+        """
+               This method is used to calculate the next states of the system after a set of actions.
+
+               Parameters
+               ----------
+               p_state : State
+                   State.
+               p_action : Action
+                   Action.
+
+               Returns
+               -------
+               _state : State
+                   Current states.
+
+               """
+        # state = p_state.get_values()
+        # for i in [0, 2]:
+        #     if state[i] == 0:
+        #         state[i] = 180
+        #     elif state[i] != 0:
+        #         state[i] = list(range(-180, 180))[int(-state[i])]
+        # th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
+        # state = [th1, th1dot, th2, th2dot]
+        # torque = p_action.get_sorted_values()[0]
+        # torque = np.clip(torque, -self.max_torque, self.max_torque)
+        # torque = tuple(torque.reshape([1]))
+        state = p_state
+        torque = p_action
+        if self.max_torque != 0:
+            self.alpha = abs(torque) / self.max_torque
+        else:
+            self.alpha = 0
+
+        self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_step / self.t_act, 0.001), args=(torque,))
+        state = self.y[-1].copy()
+
+        # delta = state[3] - state[0]
+        #
+        # den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
+        # state[2] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
+        #              + self.m2 * self.g * sin(state[3]) * cos(delta)
+        #              + self.m2 * self.l2 * state[4] * state[4] * sin(delta)
+        #              - (self.m1 + self.m2) * self.g * sin(state[0]) - torque)
+        #             / den1)
+        #
+        # den3 = (self.l2 / self.l1) * den1
+        # state[5] = ((- self.m2 * self.l2 * state[4] * state[4] * sin(delta) * cos(delta)
+        #              + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
+        #              - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
+        #              - (self.m1 + self.m2) * self.g * sin(state[3]))
+        #             / den3)
+
+        # state = np.degrees(state)
+        self.action_cw = True if torque > 0 else False
+        state_ids = self._state.get_dim_ids()
+
+        # for i in [0, 2]:
+        #     if state[i] % 360 < 180:
+        #         state[i] = state[i] % 360
+        #     elif state[i] % 360 > 180:
+        #         state[i] = state[i] % 360 - 360
+        #     state[i] = list(range(-180, 180))[int(-state[i])]
+
+        # current_state = State(self._state_space)
+        # for i in range(len(state)):
+        #     current_state.set_value(state_ids[i], state[i])
+
+        return list(state)
 
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
-        raise NotImplementedError
+        return Reward()
 
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
-        raise NotImplementedError
+        return False
 
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_success(self, p_state):
-        raise NotImplementedError
+        return False
 
 
 ## ------------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
-        pass
+        """
+                This method initializes the plot figure of each episode. When the environment
+                is reset, the previous figure is closed and reinitialized.
+
+                Parameters
+                ----------
+                p_figure : matplotlib.figure.Figure
+                    A Figure object of the matplotlib library.
+                """
+        if hasattr(self, 'fig'):
+            plt.close(self.fig)
+
+        if p_figure is None:
+            self.fig = plt.figure(figsize=(5, 4))
+            self.embedded_fig = False
+        else:
+            self.fig = p_figure
+            self.embedded_fig = True
+
+        self.ax = self.fig.add_subplot(autoscale_on=False,
+                                       xlim=(-self.L * 1.2, self.L * 1.2), ylim=(-self.L * 1.2, self.L * 1.2))
+        self.ax.set_aspect('equal')
+        self.ax.grid()
+
+        self.cw_arc = Arc([0, 0], 0.5 * self.l1, 0.5 * self.l1, angle=0, theta1=0,
+                          theta2=250, color='crimson')
+        endX = (0.5 * self.l1 / 2) * np.cos(np.radians(0))
+        endY = (0.5 * self.l1 / 2) * np.sin(np.radians(0))
+        self.cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self.l1 / 9, np.radians(180),
+                                       color='crimson')
+
+        self.ccw_arc = Arc([0, 0], 0.5 * self.l1, 0.5 * self.l1, angle=70, theta1=0,
+                           theta2=320, color='crimson')
+        endX = (0.5 * self.l1 / 2) * np.cos(np.radians(70 + 320))
+        endY = (0.5 * self.l1 / 2) * np.sin(np.radians(70 + 320))
+        self.ccw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self.l1 / 9, np.radians(70 + 320),
+                                        color='crimson')
+
+        self.ax.add_patch(self.cw_arc)
+        self.ax.add_patch(self.cw_arrow)
+        self.ax.add_patch(self.ccw_arc)
+        self.ax.add_patch(self.ccw_arrow)
+
+        self.cw_arc.set_visible(False)
+        self.cw_arrow.set_visible(False)
+        self.ccw_arc.set_visible(False)
+        self.ccw_arrow.set_visible(False)
+
+        self.line, = self.ax.plot([], [], 'o-', lw=2)
+        self.trace, = self.ax.plot([], [], '.-', lw=1, ms=2)
 
 
 ## ------------------------------------------------------------------------------------------------------
     def update_plot(self):
-        pass
+        """
+                This method updates the plot figure of each episode. When the figure is
+                detected to be an embedded figure, this method will only set up the
+                necessary data of the figure.
+
+                """
+        x1 = self.l1 * sin(self.y[:, 0])
+        y1 = -self.l1 * cos(self.y[:, 0])
+
+        x2 = self.l2 * sin(self.y[:, 2]) + x1
+        y2 = -self.l2 * cos(self.y[:, 2]) + y1
+
+        # def animate(i):
+        for i in range(len(self.y)):
+            thisx = [0, x1[i], x2[i]]
+            thisy = [0, y1[i], y2[i]]
+
+            self.history_x.appendleft(thisx[2])
+            self.history_y.appendleft(thisy[2])
+            self.line.set_data(thisx, thisy)
+            self.trace.set_data(self.history_x, self.history_y)
+
+            if self.action_cw:
+                self.cw_arc.set_visible(True)
+                self.cw_arrow.set_visible(True)
+                self.cw_arc.set_alpha(self.alpha)
+                self.cw_arrow.set_alpha(self.alpha)
+                self.ccw_arc.set_visible(False)
+                self.ccw_arrow.set_visible(False)
+            else:
+                self.cw_arc.set_visible(False)
+                self.cw_arrow.set_visible(False)
+                self.ccw_arc.set_visible(True)
+                self.ccw_arrow.set_visible(True)
+                self.ccw_arc.set_alpha(self.alpha)
+                self.ccw_arrow.set_alpha(self.alpha)
+
+            if not self.embedded_fig and i % 30 == 0:
+                self.fig.canvas.draw()
+                self.fig.canvas.flush_events()
 
 
 
@@ -757,11 +1003,77 @@ class DoublePendulumClassic(DoublePendulum_bak):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state, p_action):
-        self._state = super()._simulate_reaction(p_action, p_state)
-        raise NotImplementedError
+    def _reset(self, p_seed) -> None:
+
+        super()._reset()
+        self.a1 = 0
+        self.a2 = 0
+        for i in self._state_space.get_dim_ids()[0:-2]:
+            self._state.set_value(i, 0)
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state:State, p_action:Action):
+
+        state = p_state.get_values()
+        for i in [0, 2]:
+            if state[i] == 0:
+                state[i] = 180
+            elif state[i] != 0:
+                if state[i] > 0:
+                    sign = 1
+                else:
+                    sign = -1
+                state[i] = sign * (abs(state[i]) - 180)
+        # th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
+        # state = [th1, th1dot, th2, th2dot]
+        torque = p_action.get_sorted_values()[0]
+        torque = np.clip(torque, -self.max_torque, self.max_torque)
+        torque = tuple(torque.reshape([1]))
+
+        state = np.radians(state)
+
+        state = super()._simulate_reaction(torque[0], state)
+
+
+        delta = state[2] - state[0]
+
+        den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
+        state[4] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
+                     + self.m2 * self.g * sin(state[2]) * cos(delta)
+                     + self.m2 * self.l2 * state[3] * state[3] * sin(delta)
+                     - (self.m1 + self.m2) * self.g * sin(state[0]) - torque[0])
+                    / den1)
+
+        den3 = (self.l2 / self.l1) * den1
+        state[5] = ((- self.m2 * self.l2 * state[3] * state[3] * sin(delta) * cos(delta)
+                     + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
+                     - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
+                     - (self.m1 + self.m2) * self.g * sin(state[2]))
+                    / den3)
+        state = np.degrees(state)
+        self.action_cw = True if torque[0] > 0 else False
+        state_ids = self._state.get_dim_ids()
+
+        for i in [0, 2]:
+            if state[i] % 360 < 180:
+                state[i] = state[i] % 360
+            elif state[i] % 360 > 180:
+                state[i] = state[i] % 360 - 360
+            if state[i] > 0:
+                sign = 1
+            else:
+                sign = -1
+            state[i] = sign * (abs(state[i]) - 180)
+
+        current_state = State(self._state_space)
+        for i in range(len(state)):
+            current_state.set_value(state_ids[i], state[i])
+
+        return current_state
+
 
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_new, p_state_old):
-        raise NotImplementedError
+        return super()._compute_reward(p_state_new, p_state_old)
