@@ -626,7 +626,7 @@ class DoublePendulum(Environment):
 
 ## ---------------------------------------------------------------------------------------------------------------------
 ## ---------------------------------------------------------------------------------------------------------------------
-class DoublePendulum_bak(Environment):
+class DoublePendulumRoot(Environment):
 
 
     C_NAME = "DoublePendulum"
@@ -974,7 +974,7 @@ class DoublePendulum_bak(Environment):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumClassic(DoublePendulum_bak):
+class DoublePendulumClassic(DoublePendulumRoot):
 
 
 
@@ -992,18 +992,18 @@ class DoublePendulumClassic(DoublePendulum_bak):
 
 
 ## -----------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space, p_action_space):
-
-        p_state_space.add_dim(
+    def setup_spaces(self):
+        state_space, action_space = super().setup_spaces()
+        state_space.add_dim(
             Dimension(p_name_long='acc 1', p_name_short='a1', p_description='Angular Acceleration of Pendulum 1',
                       p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-6732.31, 5870.988]))
 
-        p_state_space.add_dim(
+        state_space.add_dim(
             Dimension(p_name_long='acc 2', p_name_short='a2', p_description='Angular Acceleration of Pendulum 2',
                       p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-9650.26, 6805.587]))
 
 
-        return p_state_space, p_action_space
+        return state_space, action_space
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -1012,34 +1012,18 @@ class DoublePendulumClassic(DoublePendulum_bak):
         super()._reset()
         self.a1 = 0
         self.a2 = 0
-        for i in self._state_space.get_dim_ids()[0:-2]:
+        for i in self._state_space.get_dim_ids()[-1:-3:-1]:
             self._state.set_value(i, 0)
 
 
 ## ------------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state:State, p_action:Action):
 
-        # state = p_state.get_values()
-        # for i in [0, 2]:
-        #     if state[i] == 0:
-        #         state[i] = 180
-        #     elif state[i] != 0:
-        #         if state[i] > 0:
-        #             sign = 1
-        #         else:
-        #             sign = -1
-        #         state[i] = sign * (abs(state[i]) - 180)
-        # # th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
-        # # state = [th1, th1dot, th2, th2dot]
+
         torque = p_action.get_sorted_values()[0]
-        # torque = np.clip(torque, -self.max_torque, self.max_torque)
-        # torque = tuple(torque.reshape([1]))
-        #
-        # state = np.radians(state)
 
         state = super()._simulate_reaction(p_state, p_action).get_values()
 
-        state = p_state.get_values()
         for i in [0, 2]:
             if state[i] == 0:
                 state[i] = 180
@@ -1050,27 +1034,24 @@ class DoublePendulumClassic(DoublePendulum_bak):
                     sign = -1
                 state[i] = sign * (abs(state[i]) - 180)
 
-        state = np.radians(state)
+        state = list(np.radians(state))
         delta = state[2] - state[0]
 
         den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
-        acc1 = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
+        state[4] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
                      + self.m2 * self.g * sin(state[2]) * cos(delta)
                      + self.m2 * self.l2 * state[3] * state[3] * sin(delta)
                      - (self.m1 + self.m2) * self.g * sin(state[0]) - torque)
                     / den1)
-        np.append(state,acc1)
+
         den3 = (self.l2 / self.l1) * den1
-        acc2 = ((- self.m2 * self.l2 * state[3] * state[3] * sin(delta) * cos(delta)
+        state[5] = ((- self.m2 * self.l2 * state[3] * state[3] * sin(delta) * cos(delta)
                      + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
                      - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
                      - (self.m1 + self.m2) * self.g * sin(state[2]))
                     / den3)
 
-        np.append(state,acc2)
         state = np.degrees(state)
-        # self.action_cw = True if torque[0] > 0 else False
-        # state_ids = self._state.get_dim_ids()
 
         for i in [0, 2]:
             if state[i] % 360 < 180:
@@ -1083,7 +1064,7 @@ class DoublePendulumClassic(DoublePendulum_bak):
                 sign = -1
             state[i] = sign * (abs(state[i]) - 180)
 
-        state_ids = self._state.get_dim_ids()
+        state_ids = self._state_space.get_dim_ids()
         current_state = State(self._state_space)
         for i in range(len(state)):
             current_state.set_value(state_ids[i], state[i])
@@ -1094,15 +1075,36 @@ class DoublePendulumClassic(DoublePendulum_bak):
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_new, p_state_old):
-        return super()._compute_reward(p_state_new, p_state_old)
+        current_reward = Reward()
+        goal_state = State(self.get_state_space())
+        goal_state.set_values([0,0,0,0,0,0])
+        dim_ids = self.get_state_space().get_dim_ids()
+        # boundaries = []
+        max_values = []
+        min_values = []
+        for i in self._state_space.get_dim_ids():
+            boundaries = self._state_space.get_dim(i).get_boundaries()
+            max_values.append(boundaries[1])
+            min_values.append(boundaries[0])
 
+        max_state = State(self.get_state_space())
+        max_state.set_values(max_values)
+        min_state = State(self.get_state_space())
+        min_state.set_values(min_values)
+
+        d_max = ESpace.distance(ESpace, max_state, min_state)
+        d = ESpace.distance(ESpace, p_state_new, goal_state)
+        value = d_max - d
+        current_reward.set_overall_reward(value)
+
+        return current_reward
 
 
 
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumStatic(DoublePendulum_bak):
+class DoublePendulumStatic(DoublePendulumRoot):
 
 
 
