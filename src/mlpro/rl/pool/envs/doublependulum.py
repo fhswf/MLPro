@@ -43,6 +43,7 @@
 ## -- 2022-08-14  1.3.6     LSB      - Minor change in the max torque value, step size in integration
 ##                                   - Inverted angles with 0 degrees at top
 ## -- 2022-08-05  1.3.7     SY       Minor changing: Boundaries of the pendulums' angle
+## -- 2022-08-19  1.4.8     LSB      Classic Variant inherited from the root DP
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -627,7 +628,11 @@ class DoublePendulum(Environment):
 ## ---------------------------------------------------------------------------------------------------------------------
 ## ---------------------------------------------------------------------------------------------------------------------
 class DoublePendulumRoot(Environment):
-
+    """
+        This is the root class for the double pendulum Environment. This root environment is a basic implementation of
+        Double pendulum with a four dimensional state space consisting angle and angular velocities of the corresponding
+        poles of the pedulum respectively.
+    """
 
     C_NAME = "DoublePendulum"
     C_CYCLE_LIMIT = 0
@@ -675,7 +680,10 @@ class DoublePendulumRoot(Environment):
 
 ## ------------------------------------------------------------------------------------------------------
     def setup_spaces(self):
-        # raise NotImplementedError
+        """
+        Method to setup the spaces for the Double Pendulum environment
+        """
+
         state_space = ESpace()
         action_space = ESpace()
 
@@ -695,10 +703,10 @@ class DoublePendulumRoot(Environment):
             Dimension(p_name_long='torque 1', p_name_short='tau1', p_description='Applied Torque of Motor 1',
                       p_name_latex='', p_unit='Nm', p_unit_latex='Nm',p_boundaries=[-self.max_torque, self.max_torque]))
 
-        # if self.__class__.__name__ != DoublePendulum_bak:
-        #     return self._setup_spaces(state_space, action_space)
 
         return state_space, action_space
+
+
 ## ------------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
         """
@@ -811,11 +819,9 @@ class DoublePendulumRoot(Environment):
                 else:
                     sign = -1
                 state[i] = sign * (abs(state[i]) - 180)
-        # th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
-        # state = [th1, th1dot, th2, th2dot]
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
-        # torque = tuple(torque.reshape([1]))
+
 
         state = np.radians(state)
 
@@ -830,8 +836,6 @@ class DoublePendulumRoot(Environment):
 
         self.action_cw = True if torque > 0 else False
 
-        # if self.__class__.__name__ != DoublePendulum_bak:
-        #     return state
 
         state = np.degrees(state)
 
@@ -874,13 +878,13 @@ class DoublePendulumRoot(Environment):
 ## ------------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         """
-            This method initializes the plot figure of each episode. When the environment
-            is reset, the previous figure is closed and reinitialized.
+        This method initializes the plot figure of each episode. When the environment
+        is reset, the previous figure is closed and reinitialized.
 
-            Parameters
-            ----------
-            p_figure : matplotlib.figure.Figure
-                A Figure object of the matplotlib library.
+        Parameters
+        ----------
+        p_figure : matplotlib.figure.Figure
+            A Figure object of the matplotlib library.
         """
         if hasattr(self, 'fig'):
             plt.close(self.fig)
@@ -938,15 +942,16 @@ class DoublePendulumRoot(Environment):
         x2 = self.l2 * sin(self.y[:, 2]) + x1
         y2 = -self.l2 * cos(self.y[:, 2]) + y1
 
-        # def animate(i):
+
         for i in range(len(self.y)):
             thisx = [0, x1[i], x2[i]]
             thisy = [0, y1[i], y2[i]]
 
-            self.history_x.appendleft(thisx[2])
-            self.history_y.appendleft(thisy[2])
-            self.line.set_data(thisx, thisy)
-            self.trace.set_data(self.history_x, self.history_y)
+            if i % 30 == 0:
+                self.history_x.appendleft(thisx[2])
+                self.history_y.appendleft(thisy[2])
+                self.line.set_data(thisx, thisy)
+                self.trace.set_data(self.history_x, self.history_y)
 
             if self.action_cw:
                 self.cw_arc.set_visible(True)
@@ -993,6 +998,9 @@ class DoublePendulumClassic(DoublePendulumRoot):
 
 ## -----------------------------------------------------------------------------------------------------
     def setup_spaces(self):
+        """
+        Method to set up the state and action spaces
+        """
         state_space, action_space = super().setup_spaces()
         state_space.add_dim(
             Dimension(p_name_long='acc 1', p_name_short='a1', p_description='Angular Acceleration of Pendulum 1',
@@ -1002,23 +1010,50 @@ class DoublePendulumClassic(DoublePendulumRoot):
             Dimension(p_name_long='acc 2', p_name_short='a2', p_description='Angular Acceleration of Pendulum 2',
                       p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-9650.26, 6805.587]))
 
+        state_space.add_dim(
+            Dimension(p_name_long='torque', p_name_short='tau', p_description='input torque',
+                      p_name_latex='', p_unit='Newton times meters', p_unit_latex='\tNm',
+                      p_boundaries=[-self.max_torque, self.max_torque]))
 
         return state_space, action_space
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed) -> None:
+    def _reset(self, p_seed=None) -> None:
+        """
+        This method is used to reset the environment.
 
+        Parameters
+        ----------
+        p_seed : int, optional
+            Not yet implemented. The default is None.
+
+        """
         super()._reset()
         self.a1 = 0
         self.a2 = 0
-        for i in self._state_space.get_dim_ids()[-1:-3:-1]:
+        for i in self._state_space.get_dim_ids()[-2:-4:-1]:
             self._state.set_value(i, 0)
 
 
 ## ------------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state:State, p_action:Action):
+        """
+            This method is used to calculate the next states of the system after a set of actions.
 
+            Parameters
+            ----------
+                p_state : State
+                   State.
+                p_action : Action
+                   Action.
+
+            Returns
+            -------
+                _state : State
+                Current states.
+
+        """
 
         torque = p_action.get_sorted_values()[0]
 
@@ -1063,7 +1098,7 @@ class DoublePendulumClassic(DoublePendulumRoot):
             else:
                 sign = -1
             state[i] = sign * (abs(state[i]) - 180)
-
+        state[-1] = torque
         state_ids = self._state_space.get_dim_ids()
         current_state = State(self._state_space)
         for i in range(len(state)):
@@ -1074,12 +1109,59 @@ class DoublePendulumClassic(DoublePendulumRoot):
 
 
 ## ------------------------------------------------------------------------------------------------------
+    def _data_normalization(self, p_state):
+        """
+        This method is called to normalize any data in between -1 to 1 by considering their boundaries.
+        If the boundaries are infinity, then the data is not normalized.
+
+        Parameters
+        ----------
+        p_value : float
+            Input values.
+        p_boundaries : Array
+            The min-max boundaries of the parameter, e.g. [min, max]
+
+        Returns
+        -------
+        normalized_value: float
+
+        """
+        state = p_state
+        for i,j in enumerate(self.get_state_space().get_dim_ids()):
+            boundaries = self._state_space.get_dim(j).get_boundaries()
+            state[i] = (2 * ((state[i] - min(boundaries))
+                             / (max(boundaries) - min(boundaries))) - 1)
+
+
+        return state
+
+
+## ------------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_new, p_state_old):
+        """
+            This method calculates the reward for C_TYPE_OVERALL reward type.
+
+            Parameters
+            ----------
+            p_state_old : State
+                Previous state.
+            p_state_new : State
+                New state.
+
+            Returns
+            -------
+            reward : Reward
+                Reward values.
+        """
+
         current_reward = Reward()
+        state = p_state_new.get_values().copy()
+        p_state_normalized = self._data_normalization(state)
+        norm_state = State(self.get_state_space())
+        norm_state.set_values(p_state_normalized)
         goal_state = State(self.get_state_space())
-        goal_state.set_values([0,0,0,0,0,0])
-        dim_ids = self.get_state_space().get_dim_ids()
-        # boundaries = []
+        goal_state.set_values([0,0,0,0,0,0,0])
+
         max_values = []
         min_values = []
         for i in self._state_space.get_dim_ids():
@@ -1087,13 +1169,16 @@ class DoublePendulumClassic(DoublePendulumRoot):
             max_values.append(boundaries[1])
             min_values.append(boundaries[0])
 
+
+        max_values = self._data_normalization(max_values)
         max_state = State(self.get_state_space())
         max_state.set_values(max_values)
+        min_values = self._data_normalization(min_values)
         min_state = State(self.get_state_space())
         min_state.set_values(min_values)
 
         d_max = ESpace.distance(ESpace, max_state, min_state)
-        d = ESpace.distance(ESpace, p_state_new, goal_state)
+        d = ESpace.distance(ESpace, norm_state, goal_state)
         value = d_max - d
         current_reward.set_overall_reward(value)
 
