@@ -695,7 +695,10 @@ class DoublePendulum_bak(Environment):
             Dimension(p_name_long='torque 1', p_name_short='tau1', p_description='Applied Torque of Motor 1',
                       p_name_latex='', p_unit='Nm', p_unit_latex='Nm',p_boundaries=[-self.max_torque, self.max_torque]))
 
-        return self._setup_spaces(state_space, action_space)
+        # if self.__class__.__name__ != DoublePendulum_bak:
+        #     return self._setup_spaces(state_space, action_space)
+
+        return state_space, action_space
 ## ------------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
         """
@@ -781,7 +784,7 @@ class DoublePendulum_bak(Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state:list, p_action:float):
+    def _simulate_reaction(self, p_state:State, p_action:Action):
         """
                This method is used to calculate the next states of the system after a set of actions.
 
@@ -798,9 +801,24 @@ class DoublePendulum_bak(Environment):
                    Current states.
 
                """
+        state = p_state.get_values()[0:4]
+        for i in [0, 2]:
+            if state[i] == 0:
+                state[i] = 180
+            elif state[i] != 0:
+                if state[i] > 0:
+                    sign = 1
+                else:
+                    sign = -1
+                state[i] = sign * (abs(state[i]) - 180)
+        # th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
+        # state = [th1, th1dot, th2, th2dot]
+        torque = p_action.get_sorted_values()[0]
+        torque = np.clip(torque, -self.max_torque, self.max_torque)
+        # torque = tuple(torque.reshape([1]))
 
-        state = p_state
-        torque = p_action
+        state = np.radians(state)
+
         if self.max_torque != 0:
             self.alpha = abs(torque) / self.max_torque
         else:
@@ -812,11 +830,34 @@ class DoublePendulum_bak(Environment):
 
         self.action_cw = True if torque > 0 else False
 
-        return state
+        # if self.__class__.__name__ != DoublePendulum_bak:
+        #     return state
+
+        state = np.degrees(state)
+
+        state_ids = self._state.get_dim_ids()
+
+        for i in [0, 2]:
+            if state[i] % 360 < 180:
+                state[i] = state[i] % 360
+            elif state[i] % 360 > 180:
+                state[i] = state[i] % 360 - 360
+            if state[i] > 0:
+                sign = 1
+            else:
+                sign = -1
+            state[i] = sign * (abs(state[i]) - 180)
+
+        current_state = State(self._state_space)
+        for i in range(len(state)):
+            current_state.set_value(state_ids[i], state[i])
+
+        return current_state
 
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
+
         return Reward()
 
 
@@ -978,6 +1019,26 @@ class DoublePendulumClassic(DoublePendulum_bak):
 ## ------------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state:State, p_action:Action):
 
+        # state = p_state.get_values()
+        # for i in [0, 2]:
+        #     if state[i] == 0:
+        #         state[i] = 180
+        #     elif state[i] != 0:
+        #         if state[i] > 0:
+        #             sign = 1
+        #         else:
+        #             sign = -1
+        #         state[i] = sign * (abs(state[i]) - 180)
+        # # th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
+        # # state = [th1, th1dot, th2, th2dot]
+        torque = p_action.get_sorted_values()[0]
+        # torque = np.clip(torque, -self.max_torque, self.max_torque)
+        # torque = tuple(torque.reshape([1]))
+        #
+        # state = np.radians(state)
+
+        state = super()._simulate_reaction(p_state, p_action).get_values()
+
         state = p_state.get_values()
         for i in [0, 2]:
             if state[i] == 0:
@@ -988,35 +1049,28 @@ class DoublePendulumClassic(DoublePendulum_bak):
                 else:
                     sign = -1
                 state[i] = sign * (abs(state[i]) - 180)
-        # th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
-        # state = [th1, th1dot, th2, th2dot]
-        torque = p_action.get_sorted_values()[0]
-        torque = np.clip(torque, -self.max_torque, self.max_torque)
-        torque = tuple(torque.reshape([1]))
 
         state = np.radians(state)
-
-        state = super()._simulate_reaction(state, torque[0])
-
-
         delta = state[2] - state[0]
 
         den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
-        state[4] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
+        acc1 = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
                      + self.m2 * self.g * sin(state[2]) * cos(delta)
                      + self.m2 * self.l2 * state[3] * state[3] * sin(delta)
-                     - (self.m1 + self.m2) * self.g * sin(state[0]) - torque[0])
+                     - (self.m1 + self.m2) * self.g * sin(state[0]) - torque)
                     / den1)
-
+        np.append(state,acc1)
         den3 = (self.l2 / self.l1) * den1
-        state[5] = ((- self.m2 * self.l2 * state[3] * state[3] * sin(delta) * cos(delta)
+        acc2 = ((- self.m2 * self.l2 * state[3] * state[3] * sin(delta) * cos(delta)
                      + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
                      - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
                      - (self.m1 + self.m2) * self.g * sin(state[2]))
                     / den3)
+
+        np.append(state,acc2)
         state = np.degrees(state)
-        self.action_cw = True if torque[0] > 0 else False
-        state_ids = self._state.get_dim_ids()
+        # self.action_cw = True if torque[0] > 0 else False
+        # state_ids = self._state.get_dim_ids()
 
         for i in [0, 2]:
             if state[i] % 360 < 180:
@@ -1029,6 +1083,7 @@ class DoublePendulumClassic(DoublePendulum_bak):
                 sign = -1
             state[i] = sign * (abs(state[i]) - 180)
 
+        state_ids = self._state.get_dim_ids()
         current_state = State(self._state_space)
         for i in range(len(state)):
             current_state.set_value(state_ids[i], state[i])
