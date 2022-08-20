@@ -51,7 +51,7 @@ UR5 Arm Robot
 :ref:`Double Pendulum <DoublePendulum>`
 ----------------
 
-.. image:: images/doublependulum.drawio.png
+.. image:: images/MLPro-RL-DoublePendulum_class_diagram.drawio.png
 
 .. automodule:: mlpro.rl.pool.envs.doublependulum
    :members:
