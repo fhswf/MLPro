@@ -1,10 +1,19 @@
-`Double Pendulum <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/doublependulum.py>`_
+.. _DoublePendulum:
+`Double Pendulum Classic <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/doublependulum.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_ implementation by `Matplotlib <https://matplotlib.org/>`_. The double pendulum is a system of two poles, with the inner pole connected to a fixed point at one end and to outer pole at other end. The native implementation of Double Pendulum consists of an input motor providing the torque in either directions to actuate the system. The figure below shows the the visualisation of MLPro's Double Pendulum environment.
+
+.. automodule:: mlpro.rl.pool.envs.doublependulum
 
 .. image:: images/doublependulum.gif
     :width: 400px
-    
+
+.. note::
+    + MLPro provides two implementation of Double Pendulum environment named DoublePendulumRoot and DoublePendulumClassic. The DoublePendulumRoot environment is a basic implementation with four dimensional state space including angles and angular acceleration of both the poles.
+    + The Classic implementation of Double Pendulum environment in MLPro, is an overarching implementation of the environment inheriting internal dynamics from the root class. The classic implementation is a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and :ref:`Euclidean Distances <Howto BF 003>` of the states.
+
+.. note::
+    + Further documentation is more specific to the DoublePendulumClassic implementation, however, utilizing the DoublePendulumRoot environment is fairly consistent with MLPro's environments :ref:`API <customEnv>`.
+
 The double pendulum environment can be imported via:
 
 .. code-block:: python
@@ -93,61 +102,10 @@ The state space for the double pendulum environment returns state of poles in th
 Reward Structure
 ================
 
-The reward calculation takes into account the position, speed and acceleration both pendulum. The class variable y take notes of the ODE frames of the states. This is formulated with the purpose of giving high reward whenever the pendulum stays upright while also minding the speed and acceleration of each pendulum. The position, speed, and acceleration is not taken at face value but instead is treated as a percentage of a defined constant (\pi). Additionally, a weighting system is used in the reward calculation to scale the importance of inner and outer pendulum rewards. The torque exerted by the motor (alpha) is taken as negative reward and the difference between the old state and new state is also taken into account.
+The current reward structure is a basic reward strategy, with reward value being the difference between the worst possible Euclidean distance between any two states and the actual Euclidean distance between current state and the goal state. The reward calculation takes into consideration the seven dimensional state space including the input torque to the system
 
-
-.. code-block:: python
-    
-    reward = Reward(Reward.C_TYPE_OVERALL)
-        
-    target = np.array([np.pi, 0.0, np.pi, 0.0])
-    state = p_state_new.get_values()
-    old_state = p_state_old.get_values()
-    
-    th1_count = 0
-    for th1 in self.y[::-1, 0]:
-        ang = np.degrees(DoublePendulum.angle_normalize(th1))
-        if ang > 170 or ang < 190 or \
-                ang < -170 or ang > -190:
-            th1_count += 1
-        else:
-            break
-    th1_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[0])))
-    th1_distance_costs = 4 if th1_distance <= 0.1 else 0.3 / th1_distance
-    
-    th1_speed_costs = np.pi * abs(state[1]) / self.max_speed
-    
-    # max acceleration in one timestep is assumed to be double the max speed
-    th1_acceleration_costs = np.pi * abs(self.y[-1, 1]-self.y[-2, 1]) / (2 * self.max_speed)
-    
-    inner_pole_costs = (th1_distance_costs * th1_count / len(self.y)) - th1_speed_costs - (th1_acceleration_costs ** 0.5)
-    inner_pole_weight = (self.l1/2)*self.m1
-    
-    th2_count = 0
-    for th2 in self.y[::-1, 2]:
-        ang = np.degrees(DoublePendulum.angle_normalize(th2))
-        if ang > 170 or ang < 190 or \
-                ang < -170 or ang > -190:
-            th2_count += 1
-        else:
-            break
-    th2_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[2])))
-    th2_distance_costs = 4 if th2_distance <= 0.1 else 0.3 / th2_distance
-    
-    th2_speed_costs = np.pi * abs(state[3]) / self.max_speed
-    
-    th2_acceleration_costs = np.pi * abs(self.y[-1, 3]-self.y[-2, 3]) / (2 * self.max_speed)
-    
-    outer_pole_costs = (th2_distance_costs * th2_count / len(self.y)) - th2_speed_costs - (th2_acceleration_costs ** 0.5)
-    outer_pole_weight = 0.5 * (self.l2/2)*self.m2
-    
-    change_costs = ((np.linalg.norm(target[::2] - np.array(old_state)[::2])*inner_pole_weight) - 
-                    (np.linalg.norm(target[::2] - np.array(state)[::2])*outer_pole_weight))
-    
-    reward.set_overall_reward((inner_pole_costs * inner_pole_weight) + (outer_pole_costs * outer_pole_weight) 
-                              - (self.alpha * np.pi/2) + (change_costs))
-
-    return reward
+.. math::
+	CurrentReward = d_{max} - d
     
 
 Change Log

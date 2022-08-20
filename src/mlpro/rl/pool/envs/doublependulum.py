@@ -43,13 +43,18 @@
 ## -- 2022-08-14  1.3.6     LSB      - Minor change in the max torque value, step size in integration
 ##                                   - Inverted angles with 0 degrees at top
 ## -- 2022-08-05  1.3.7     SY       Minor changing: Boundaries of the pendulums' angle
-## -- 2022-08-19  1.4.8     LSB      Classic Variant inherited from the root DP
+## -- 2022-08-19  1.4.7     LSB      Classic Variant inherited from the root DP
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.7 (2022-08-05)
+Ver. 1.4.7 (2022-08-20)
 
-This module provides an RL environment of double pendulum.
+The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
+dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
+`Matplotlib <https://matplotlib.org/>`_. The double pendulum is a system of two poles, with the inner pole
+connected to a fixed point at one end and to outer pole at other end. The native implementation of Double
+Pendulum consists of an input motor providing the torque in either directions to actuate the system. The figure
+below shows the visualisation of MLPro's Double Pendulum environment.
 """
 
 from mlpro.rl.models import *
@@ -69,9 +74,9 @@ from collections import deque
 ## -------------------------------------------------------------------------------------------------
 class DoublePendulum(Environment):
     """
-    This is the main class of the Double Pendulum environment that inherits 
+    This is the main class of the Double Pendulum environment that inherits
     Environment class from MLPro.
-    
+
     Parameters
     ----------
     p_logging : Log, optional
@@ -100,7 +105,7 @@ class DoublePendulum(Environment):
         Gravitational acceleration. The default is 9.8
     history_length : int, optional
         Historical trajectory points to display. The default is 2.
-        
+
     Attributes
     ----------
     C_NAME : str
@@ -527,8 +532,8 @@ class DoublePendulum(Environment):
     def init_plot(self, p_figure=None):
         """
         This method initializes the plot figure of each episode. When the environment
-        is reset, the previous figure is closed and reinitialized. 
-        
+        is reset, the previous figure is closed and reinitialized.
+
         Parameters
         ----------
         p_figure : matplotlib.figure.Figure
@@ -580,9 +585,9 @@ class DoublePendulum(Environment):
     def update_plot(self):
         """
         This method updates the plot figure of each episode. When the figure is
-        detected to be an embedded figure, this method will only set up the 
+        detected to be an embedded figure, this method will only set up the
         necessary data of the figure.
-        
+
         """
         x1 = self.l1 * sin(self.y[:, 0])
         y1 = -self.l1 * cos(self.y[:, 0])
@@ -629,21 +634,20 @@ class DoublePendulum(Environment):
 ## ---------------------------------------------------------------------------------------------------------------------
 class DoublePendulumRoot(Environment):
     """
-        This is the root class for the double pendulum Environment. This root environment is a basic implementation of
-        Double pendulum with a four dimensional state space consisting angle and angular velocities of the corresponding
-        poles of the pedulum respectively.
+    This is the root double pendulum environment class inherited from Environment class with four dimensional state
+    space and underlying implementation of the Double Pendulum dynamics.
     """
 
-    C_NAME = "DoublePendulum"
+    C_NAME = "DoublePendulumRoot"
     C_CYCLE_LIMIT = 0
     C_LATENCY = timedelta(0, 0, 0)
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=1,
+    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=0,
                  max_speed=10, l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
-                 g=9.8, history_length=2):
+                 g=9.8, history_length=5):
         self.t_step = t_step
         self.t_act = t_act
 
@@ -681,7 +685,8 @@ class DoublePendulumRoot(Environment):
 ## ------------------------------------------------------------------------------------------------------
     def setup_spaces(self):
         """
-        Method to setup the spaces for the Double Pendulum environment
+        Method to setup the spaces for the Double Pendulum root environment. This method sets up four dimensional
+        Euclidean space for the root DP environment.
         """
 
         state_space = ESpace()
@@ -710,7 +715,8 @@ class DoublePendulumRoot(Environment):
 ## ------------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
         """
-        This method is used to reset the environment.
+        This method is used to reset the environment. The environment is reset to the initial position set during
+        the initialization of the environment.
 
         Parameters
         ----------
@@ -794,30 +800,27 @@ class DoublePendulumRoot(Environment):
 ## ------------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state:State, p_action:Action):
         """
-               This method is used to calculate the next states of the system after a set of actions.
+        This method is used to calculate the next states of the system after a set of actions.
 
-               Parameters
-               ----------
-               p_state : State
-                   State.
-               p_action : Action
-                   Action.
+        Parameters
+        ----------
+        p_state : State
+            State.
+            p_action : Action
+                Action.
 
-               Returns
-               -------
-               _state : State
-                   Current states.
+        Returns
+        -------
+            _state : State
+                Current states.
 
-               """
+        """
         state = p_state.get_values()[0:4]
         for i in [0, 2]:
             if state[i] == 0:
                 state[i] = 180
             elif state[i] != 0:
-                if state[i] > 0:
-                    sign = 1
-                else:
-                    sign = -1
+                sign = 1 if state[i] > 0 else -1
                 state[i] = sign * (abs(state[i]) - 180)
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
@@ -846,10 +849,7 @@ class DoublePendulumRoot(Environment):
                 state[i] = state[i] % 360
             elif state[i] % 360 > 180:
                 state[i] = state[i] % 360 - 360
-            if state[i] > 0:
-                sign = 1
-            else:
-                sign = -1
+            sign = 1 if state[i] > 0 else -1
             state[i] = sign * (abs(state[i]) - 180)
 
         current_state = State(self._state_space)
@@ -861,7 +861,6 @@ class DoublePendulumRoot(Environment):
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
-
         return Reward()
 
 
@@ -980,12 +979,16 @@ class DoublePendulumRoot(Environment):
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
 class DoublePendulumClassic(DoublePendulumRoot):
+    """
+    This is the classic implementation of Double Pendulum with 7 dimensional state space including derived
+    accelerations of both the poles and the input torque. The dynamics of the system are inherited from the Double
+    Pendulum Root class.
+    """
 
 
 
-
-    C_TYPE = ''
-    C_NAME = ''
+    C_TYPE = 'Environment'
+    C_NAME = 'DoublePendulumClassic'
 
 ## -----------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=1,
@@ -999,7 +1002,8 @@ class DoublePendulumClassic(DoublePendulumRoot):
 ## -----------------------------------------------------------------------------------------------------
     def setup_spaces(self):
         """
-        Method to set up the state and action spaces
+        Method to set up the state and action spaces of the classic Double Pendulum Environment. Inheriting from the
+        root class, this method adds 3 dimensions for accelerations and torque respectively.
         """
         state_space, action_space = super().setup_spaces()
         state_space.add_dim(
@@ -1039,19 +1043,19 @@ class DoublePendulumClassic(DoublePendulumRoot):
 ## ------------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state:State, p_action:Action):
         """
-            This method is used to calculate the next states of the system after a set of actions.
+        This method is used to calculate the next states of the system after a set of actions.
 
-            Parameters
-            ----------
-                p_state : State
-                   State.
-                p_action : Action
-                   Action.
+        Parameters
+        ----------
+            p_state : State
+                State.
+            p_action : Action
+                Action.
 
-            Returns
-            -------
-                _state : State
-                Current states.
+        Returns
+        -------
+            _state : State
+            Current states.
 
         """
 
@@ -1063,10 +1067,7 @@ class DoublePendulumClassic(DoublePendulumRoot):
             if state[i] == 0:
                 state[i] = 180
             elif state[i] != 0:
-                if state[i] > 0:
-                    sign = 1
-                else:
-                    sign = -1
+                sign = 1 if state[i] > 0 else -1
                 state[i] = sign * (abs(state[i]) - 180)
 
         state = list(np.radians(state))
@@ -1093,10 +1094,7 @@ class DoublePendulumClassic(DoublePendulumRoot):
                 state[i] = state[i] % 360
             elif state[i] % 360 > 180:
                 state[i] = state[i] % 360 - 360
-            if state[i] > 0:
-                sign = 1
-            else:
-                sign = -1
+            sign = 1 if state[i] > 0 else -1
             state[i] = sign * (abs(state[i]) - 180)
         state[-1] = torque
         state_ids = self._state_space.get_dim_ids()
@@ -1137,9 +1135,11 @@ class DoublePendulumClassic(DoublePendulumRoot):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_new, p_state_old):
+    def _compute_reward(self, p_state_old, p_state_new):
         """
-            This method calculates the reward for C_TYPE_OVERALL reward type.
+            This method calculates the reward for C_TYPE_OVERALL reward type. The current reward is based on the
+            worst possible distance between two states and the best possible minimum distance between current and
+            goal state.
 
             Parameters
             ----------
@@ -1228,8 +1228,8 @@ class DoublePendulumStatic(DoublePendulumRoot):
                 else:
                     sign = -1
                 state[i] = sign * (abs(state[i]) - 180)
-        # th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
-        # state = [th1, th1dot, th2, th2dot]
+        self.th1, self.th1dot, self.a1, self.th2, self.th2dot, self.a2 = state
+
         torque = p_action.get_sorted_values()[0]
         torque = np.clip(torque, -self.max_torque, self.max_torque)
         torque = tuple(torque.reshape([1]))
