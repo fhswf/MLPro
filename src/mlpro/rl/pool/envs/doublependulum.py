@@ -654,7 +654,7 @@ class DoublePendulumRoot(Environment):
         self.set_latency(timedelta(0, t_act * t_step, 0))
 
         self.max_torque = max_torque
-        self.max_speed = max_speed
+
 
         self.l1 = l1
         self.l2 = l2
