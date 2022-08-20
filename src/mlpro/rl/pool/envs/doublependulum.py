@@ -646,7 +646,7 @@ class DoublePendulumRoot(Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=0,
-                 max_speed=10, l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
+                 l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
                  g=9.8, history_length=5):
         self.t_step = t_step
         self.t_act = t_act
@@ -992,10 +992,10 @@ class DoublePendulumClassic(DoublePendulumRoot):
 
 ## -----------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=1,
-                 max_speed=10, l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
+                 l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
                  g=9.8, history_length=2):
 
-        super().__init__(p_logging, t_step, t_act, max_torque,max_speed, l1, l2, m1, m2, init_angles,
+        super().__init__(p_logging, t_step, t_act, max_torque, l1, l2, m1, m2, init_angles,
                          g, history_length)
 
 
@@ -1199,10 +1199,9 @@ class DoublePendulumStatic(DoublePendulumRoot):
 
 ## ------------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=1,
-                 max_speed=10, l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
+                 l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
                  g=9.8, history_length=2):
-        super().__init__(p_logging=p_logging, t_step=t_step, t_act=t_act, max_torque=max_torque,
-                 max_speed=max_speed, l1=l1, l2=l2, m1=m1, m2=m2, init_angles=init_angles,
+        super().__init__(p_logging=p_logging, t_step=t_step, t_act=t_act, max_torque=max_torque,                 l1=l1, l2=l2, m1=m1, m2=m2, init_angles=init_angles,
                  g=g, history_length=history_length)
 
 
