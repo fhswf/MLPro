@@ -44,6 +44,7 @@
 ##                                   - Inverted angles with 0 degrees at top
 ## -- 2022-08-05  1.3.7     SY       Minor changing: Boundaries of the pendulums' angle
 ## -- 2022-08-19  1.4.7     LSB      Classic Variant inherited from the root DP
+## -- 2022-08-20  1.4.8     LSB      New attribute target state
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -678,7 +679,8 @@ class DoublePendulumRoot(Environment):
         self.C_SCIREF_URL = "https://matplotlib.org/stable/gallery/animation/double_pendulum.html"
 
         self._state = State(self._state_space)
-
+        self.target_state = State(self._state_space)
+        self.target_state.set_values(np.zeros(7))
         self.reset()
 
 
@@ -1159,8 +1161,8 @@ class DoublePendulumClassic(DoublePendulumRoot):
         p_state_normalized = self._data_normalization(state)
         norm_state = State(self.get_state_space())
         norm_state.set_values(p_state_normalized)
-        goal_state = State(self.get_state_space())
-        goal_state.set_values([0,0,0,0,0,0,0])
+        goal_state = self.target_state
+
 
         max_values = []
         min_values = []
