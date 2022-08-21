@@ -47,6 +47,17 @@ Machine Learning
    :undoc-members:
    :show-inheritance:
    
+
+Event Handling
+--------------
+
+.. image:: images/bf/MLPro-BF-Events_class_diagram.drawio.png
+.. automodule:: mlpro.bf.events
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+
    
 Exceptions
 ----------
