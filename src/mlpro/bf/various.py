@@ -30,10 +30,11 @@
 ## -- 2021-12-07  1.7.3     SY       Add a new attribute in ScientificObject
 ## -- 2021-12-31  1.7.4     DA       Class Log: udpated docstrings
 ## -- 2022-07-27  1.7.5     DA       A little refactoring
+## -- 2022-08-21  1.7.6     DA       A little refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.5 (2022-07-27)
+Ver. 1.7.6 (2022-08-21)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer...
@@ -89,7 +90,7 @@ class Saveable:
 
     C_SUFFIX = '.pkl'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def generate_filename(self):
         """
         To be redefined in case of use of internal generated file names.
@@ -99,6 +100,7 @@ class Saveable:
         """
 
         raise NotImplementedError
+
 
 ## -------------------------------------------------------------------------------------------------
     def save(self, p_path, p_filename=None) -> bool:
@@ -154,6 +156,12 @@ class LoadSave(Loadable, Saveable):
 class Log:
     """
     This class adds elementry log functionality to inherited classes.
+
+    Parameters
+    ----------
+    p_logging
+        Log level (see constants C_LOG_*). Default: Log.C_LOG_ALL
+
     """
 
     C_TYPE              = '????'
@@ -185,11 +193,6 @@ class Log:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=C_LOG_ALL):
-        """
-        Parameters:
-            p_logging     Log level (see constants for log levels)
-        """
-
         self.switch_logging(p_logging)
         if self.C_INST_MSG:
             self.log(self.C_LOG_TYPE_I, 'Instantiated')
