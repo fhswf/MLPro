@@ -9,10 +9,11 @@
 ## -- 2022-05-22  1.0.0     MRD      Release first version
 ## -- 2022-05-30  1.0.1     MRD      Cleaning up HTMEnvModel, now inherit directly from the
 ## --                                actual environment
+## -- 2022-08-22  1.1.0     MRD      Re-structure HTMEnvModel to fix its MRO for EventManager class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-05-30)
+Ver. 1.1.0 (2022-08-22)
 
 This module provides Environment Model based on Homogeneous Transformations Matrix 
 Neural Network for robotinhtm environment.
@@ -339,7 +340,7 @@ class RobothtmAFct(TorchAFct):
     def _add_buffer(self, p_buffer_element: IOElement):
         self._buffer.add_element(p_buffer_element)
 
-class HTMEnvModel(RobotHTM, EnvModel):
+class HTMEnvModel(EnvModel):
     C_NAME = "HTM Env Model"
 
     def __init__(
@@ -350,14 +351,14 @@ class HTMEnvModel(RobotHTM, EnvModel):
         p_logging=False,
     ):
 
-        RobotHTM.__init__(self, p_num_joints=p_num_joints, p_target_mode=p_target_mode)
+        self._robot_htm = RobotHTM(p_num_joints=p_num_joints, p_target_mode=p_target_mode)
         
         # Setup Adaptive Function
         # HTM Function Here
         afct_strans = AFctSTrans(
             RobothtmAFct,
-            p_state_space=self._state_space,
-            p_action_space=self._action_space,
+            p_state_space=self._robot_htm._state_space,
+            p_action_space=self._robot_htm._action_space,
             p_threshold=1.8,
             p_buffer_size=20000,
             p_ada=p_ada,
@@ -366,9 +367,9 @@ class HTMEnvModel(RobotHTM, EnvModel):
 
         EnvModel.__init__(
             self,
-            p_observation_space=self._state_space,
-            p_action_space=self._action_space,
-            p_latency=timedelta(seconds=self.dt),
+            p_observation_space=self._robot_htm._state_space,
+            p_action_space=self._robot_htm._action_space,
+            p_latency=timedelta(seconds=self._robot_htm.dt),
             p_afct_strans=afct_strans,
             p_afct_reward=None,
             p_afct_success=None,

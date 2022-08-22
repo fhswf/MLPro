@@ -89,11 +89,11 @@ class WrPolicySB32MLPro(Wrapper, Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace, p_action_space:MSpace, p_ada:bool=True, p_logging=Log.C_LOG_ALL):
-        Policy.__init__(self, p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
-        Wrapper.__init__(self, p_logging=p_logging)
-
         # Set Name
         WrPolicySB32MLPro.C_NAME = "Policy " + type(p_sb3_policy).__name__
+        
+        Policy.__init__(self, p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
+        Wrapper.__init__(self, p_logging=p_logging)
 
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None
