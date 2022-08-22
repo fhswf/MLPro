@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-08  0.0.0     DA       Creation 
 ## -- 2021-12-10  0.1.0     DA       Took over class AdaptiveFunction from bf.ml
+## -- 2022-08-15  0.1.1     SY       Renaming maturity to accuracy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2021-12-10)
+Ver. 0.1.1 (2022-08-15)
 
 This module provides model classes for supervised learning tasks. 
 """
@@ -126,9 +127,9 @@ class AdaptiveFunction(Model, Function):
         raise NotImplementedError
 
     ## -------------------------------------------------------------------------------------------------
-    def get_maturity(self):
+    def get_accuracy(self):
         """
-        Returns the maturity of the adaptive function. The maturity is defined as the relation 
+        Returns the accuracy of the adaptive function. The accuracy is defined as the relation 
         between the number of successful mapped inputs and the total number of mappings since the 
         last adaptation.
         """

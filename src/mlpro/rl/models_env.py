@@ -30,10 +30,11 @@
 ## --                                avoids the timeout labelling
 ## -- 2022-02-28  1.4.2     SY       - Class EnvModel : redefine method _init_hyperparam()
 ## --                                - Refactoring due to auto generated ID in class Dimension
+## -- 2022-08-15  1.4.3     SY       Renaming maturity to accuracy
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2022-02-28)
+Ver. 1.4.3 (2022-08-15)
 
 This module provides model classes for environments and environment models.
 """
@@ -195,8 +196,8 @@ class AFctBase(Model):
         self._afct.clear_buffer()
 
     ## -------------------------------------------------------------------------------------------------
-    def get_maturity(self):
-        return self._afct.get_maturity()
+    def get_accuracy(self):
+        return self._afct.get_accuracy()
 
     ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
@@ -531,9 +532,9 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
         raise NotImplementedError('Classes of type ' + self.C_TYPE + ' are not adaptive!')
 
     ## -------------------------------------------------------------------------------------------------
-    def get_maturity(self):
+    def get_accuracy(self):
         """
-        Maturity computation is switched off here. If called, the something went wrong.
+        Accuracy computation is switched off here. If called, the something went wrong.
         """
 
         raise NotImplementedError('Classes of type ' + self.C_TYPE + ' are not adaptive!')
@@ -1300,36 +1301,36 @@ class EnvModel(EnvBase, Model):
         return Model.get_adapted(self)
 
     ## -------------------------------------------------------------------------------------------------
-    def get_maturity(self):
+    def get_accuracy(self):
         """
-        Returns maturity of environment model as average maturity of the embedded adaptive functions.
+        Returns accuracy of environment model as average accuracy of the embedded adaptive functions.
         """
 
-        maturity = self._afct_strans.get_maturity()
+        accuracy = self._afct_strans.get_accuracy()
         num_afct = 1
 
         try:
             if self._afct_reward is not None:
-                maturity += self._afct_reward.get_maturity()
+                accuracy += self._afct_reward.get_accuracy()
                 num_afct += 1
         except:
             pass
 
         try:
             if self._afct_success is not None:
-                maturity += self._afct_success.get_maturity()
+                accuracy += self._afct_success.get_accuracy()
                 num_afct += 1
         except:
             pass
 
         try:
             if self._afct_broken is not None:
-                maturity += self._afct_broken.get_maturity()
+                accuracy += self._afct_broken.get_accuracy()
                 num_afct += 1
         except:
             pass
 
-        return maturity / num_afct
+        return accuracy / num_afct
 
     ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):

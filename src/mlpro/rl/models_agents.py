@@ -40,10 +40,14 @@
 ## -- 2022-03-02  1.5.3     SY       Class MultiAgent: remove init_hyperparam(), update add_agent()
 ## -- 2022-03-02  1.5.4     DA       Reformatting
 ## -- 2022-03-07  1.5.5     SY       Minor Improvement on Class MultiAgent
+## -- 2022-08-09  1.5.6     SY       Add MPC to ActionPlanner as a default algorithm
+## -- 2022-08-15  1.5.7     SY       - Renaming maturity to accuracy
+## --                                - Move MPC implementation to the pool of objects
+## --                                - Update compute_action in Agent for action planning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.5 (2022-03-07) 
+Ver. 1.5.7 (2022-08-15) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -194,7 +198,8 @@ class ActionPlanner(Log):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_state_thsld=0.00000001, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging=p_logging)
-        self._depth_limit = 0
+        self._control_horizon = 0
+        self._prediction_horizon = 0
         self._width_limit = 0
         self._policy = None
         self._env_model = None
@@ -206,7 +211,8 @@ class ActionPlanner(Log):
     def setup(self,
               p_policy: Policy,
               p_envmodel: EnvModel,
-              p_depth_limit=0,
+              p_prediction_horizon=0,
+              p_control_horizon=0,
               p_width_limit=0):
         """
         Setup of action planner object in concrete planning scenario. Must be called before first
@@ -218,9 +224,12 @@ class ActionPlanner(Log):
             Policy of an agent.
         p_envmodel : EnvModel
             Environment model.
-        p_depth_limit : int             
+        p_prediction_horizon : int             
             Optional static maximum planning depth (=length of action path to be predicted). Can
             be overridden by method compute_action(). Default=0. 
+        p_control_horizon : int             
+            The length of predicted action path to be applied. Can be overridden by method
+            compute_action(). Default=0.
         p_width_limit : int
             Optional static maximum planning width (=number of alternative actions per planning level).
             Can be overridden by method compute_action(). Default=0. 
@@ -229,7 +238,8 @@ class ActionPlanner(Log):
 
         self._policy = p_policy
         self._envmodel = p_envmodel
-        self._depth_limit = p_depth_limit
+        self._prediction_horizon = p_prediction_horizon
+        self._control_horizon = p_control_horizon
         self._width_limit = p_width_limit
         self._path_id = 0
         self.clear_action_path()
@@ -249,7 +259,8 @@ class ActionPlanner(Log):
 ## -------------------------------------------------------------------------------------------------
     def compute_action(self,
                        p_obs: State,
-                       p_depth_limit=0,
+                       p_prediction_horizon=0,
+                       p_control_horizon=0,
                        p_width_limit=0) -> Action:
         """
         Computes a path of actions with defined length that maximizes the reward of the given 
@@ -260,12 +271,15 @@ class ActionPlanner(Log):
         ----------
         p_obs : State
             Observation data.
-        p_depth_limit : int             
+        p_prediction_horizon : int             
             Optional dynamic maximum planning depth (=length of action path to be predicted) that 
             overrides the static limit of method setup(). Default=0 (no override).
+        p_control_horizon : int             
+            The length of predicted action path to be applied that overrides the static limit of
+            method setup(). Default=0 (no override).
         p_width_limit : int
             Optional dynamic maximum planning width (=number of alternative actions per planning level)
-            that  overrides the static limit of method setup(). Default=0 (no override).
+            that overrides the static limit of method setup(). Default=0 (no override).
 
         Returns
         -------
@@ -277,19 +291,25 @@ class ActionPlanner(Log):
         if (self._policy is None) or (self._envmodel is None):
             raise RuntimeError('Please call method setup() first')
 
-        if (p_depth_limit > 0) and (p_depth_limit != self._depth_limit):
-            self._depth_limit = p_depth_limit
+        if (p_prediction_horizon > 0) and (p_prediction_horizon != self._prediction_horizon):
+            self._prediction_horizon = p_prediction_horizon
             self._action_path = None
+            
+        if (p_control_horizon > 0) and (p_control_horizon != self._control_horizon):
+            self._control_horizon = p_control_horizon
 
         if p_width_limit > 0:
             self._width_limit = p_width_limit
 
-        if (self._depth_limit <= 0) or (self._width_limit <= 0):
-            raise RuntimeError('Please set planning depth and width')
+        if (self._prediction_horizon <= 0) or (self._width_limit <= 0) or (self._control_horizon <= 0):
+            raise RuntimeError('Please set planning width, prediction horizon, and control horizon.')
+
+        if self._control_horizon > self._prediction_horizon:
+            raise RuntimeError('The control horizon must be at least 1 and less than or equal to prediction horizon.')
 
         # Check: Re-planning required?
         replan = self._action_path is None
-        replan = replan or (self._path_id >= len(self._action_path))
+        replan = replan or (self._path_id >= self._control_horizon)
 
         if not replan:
             # Check: Is the next action of action path suitable?
@@ -300,13 +320,15 @@ class ActionPlanner(Log):
         if replan:
             # (Re-)Planning of action path
             self._path_id = 0
-            self._action_path.clear()
+            if self._action_path is not None:
+                self._action_path.clear()
             self._action_path = self._plan_action(p_obs)
             if (self._action_path is None) or (len(self._action_path) == 0):
                 # Planning returned nothing -> direct action computation as fallback solution
                 return self._policy.compute_action(p_obs)
 
         # Next action of action path can be used
+        path_data = self._action_path.get_all()
         action = path_data['action'][self._path_id]
         self._path_id += 1
         return action
@@ -316,7 +338,7 @@ class ActionPlanner(Log):
     def _plan_action(self, p_obs: State) -> SARSBuffer:
         """
         Custom planning algorithm to fill the internal action path (self._action_path). Search width
-        and depth are restricted by the attributes self._width_limit and self._depth_limit.
+        and depth are restricted by the attributes self._width_limit and self._prediction_horizon.
 
         Parameters
         ----------
@@ -382,13 +404,15 @@ class Agent(Policy):
         Policy object.
     p_envmodel : EnvModel
         Optional environment model object. Default = None.
-    p_em_mat_thsld : float
-        Optional threshold for environment model maturity (whether the envmodel is 'good'
+    p_em_acc_thsld : float
+        Optional threshold for environment model accuracy (whether the envmodel is 'good'
         enough to be used to train the policy). Default = 0.9.
     p_action_planner : ActionPlanner   
         Optional action planner object (obligatory for model based agents). Default = None.
-    p_planning_depth : int    
-        Optional planning depth (obligatory for model based agents). Default = 0.
+    p_predicting_horizon : int    
+        Optional predicting horizon (obligatory for model based agents). Default = 0.
+    p_controlling_horizon : int    
+        Optional controlling (obligatory for model based agents). Default = 0.
     p_planning_width : int   
         Optional planning width (obligatory for model based agents). Default = 0.
     p_name : str             
@@ -413,9 +437,10 @@ class Agent(Policy):
     def __init__(self,
                  p_policy: Policy,
                  p_envmodel: EnvModel = None,
-                 p_em_mat_thsld=0.9,
+                 p_em_acc_thsld=0.9,
                  p_action_planner: ActionPlanner = None,
-                 p_planning_depth=0,
+                 p_predicting_horizon=0,
+                 p_controlling_horizon=0,
                  p_planning_width=0,
                  p_name='',
                  p_id=0,
@@ -460,9 +485,10 @@ class Agent(Policy):
         self._action_space = self._policy.get_action_space()
         self._observation_space = self._policy.get_observation_space()
         self._envmodel = p_envmodel
-        self._em_mat_thsld = p_em_mat_thsld
+        self._em_acc_thsld = p_em_acc_thsld
         self._action_planner = p_action_planner
-        self._planning_depth = p_planning_depth
+        self._predicting_horizon = p_predicting_horizon
+        self._controlling_horizon = p_controlling_horizon
         self._planning_width = p_planning_width
 
         self._set_id(p_id)
@@ -476,7 +502,8 @@ class Agent(Policy):
         if self._action_planner is not None:
             self._action_planner.setup(p_policy=self._policy,
                                        p_envmodel=self._envmodel,
-                                       p_depth_limit=self._planning_depth,
+                                       p_prediction_horizon=self._predicting_horizon,
+                                       p_control_horizon=self._controlling_horizon,
                                        p_width_limit=self._planning_width)
 
 
@@ -601,7 +628,10 @@ class Agent(Policy):
 
         else:
             # 1.2 With action planner
-            action = self._action_planner.compute_action(observation)
+            if self._envmodel.get_accuracy() >= self._em_acc_thsld:
+                action = self._action_planner.compute_action(observation)
+            else:
+                action = self._policy.compute_action(observation)
 
         # 2 Outro
         self.log(self.C_LOG_TYPE_I, 'Action computation finished')
@@ -651,7 +681,7 @@ class Agent(Policy):
             adapted = self._envmodel.adapt(
                 SARSElement(self._previous_observation, self._previous_action, reward, observation))
 
-            if self._envmodel.get_maturity() >= self._em_mat_thsld:
+            if self._envmodel.get_accuracy() >= self._em_acc_thsld:
                 adapted = adapted or self._adapt_policy_by_model()
 
         return adapted
