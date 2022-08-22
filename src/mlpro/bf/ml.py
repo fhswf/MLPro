@@ -37,10 +37,11 @@
 ## -- 2022-03-02  1.3.7     DA       Class HyperParamDispatcher:correction of method set_values()
 ## -- 2022-06-06  1.3.8     MRD      Add additional parameter to Training class, p_env_mode for
 ## --                                setting up environment mode
+## -- 2022-08-22  1.4.0     DA       Class Model: event management added
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.8 (2022-06-06)
+Ver. 1.4.0 (2022-08-22)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
@@ -51,6 +52,7 @@ from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
 from mlpro.bf.plot import *
+from mlpro.bf.events import *
 import random
 
 
@@ -156,7 +158,7 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Model (Log, LoadSave, Plottable, ScientificObject):
+class Model (EventManager, LoadSave, Plottable, ScientificObject):
     """
     Fundamental template class for adaptive ML models. Supports especially
       - Adaptivity
@@ -178,17 +180,19 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
 
     """
 
-    C_TYPE          = 'Model'
-    C_NAME          = '????'
+    C_TYPE              = 'Model'
+    C_NAME              = '????'
 
-    C_BUFFER_CLS    = Buffer       
+    C_EVENT_ADAPTED     = 0
 
-    C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_NONE     
+    C_BUFFER_CLS        = Buffer       
+
+    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_NONE     
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL, **p_par):  
 
-        Log.__init__(self, p_logging=p_logging)
+        EventManager.__init__(self, p_logging=p_logging)
         self._adapted           = False
         self.switch_adaptivity(p_ada)
         self._hyperparam_space  = HyperParamSpace()
@@ -273,6 +277,8 @@ class Model (Log, LoadSave, Plottable, ScientificObject):
         """
 
         self._adapted = p_adapted
+
+        if self._adapted: self._raise_event(self.C_EVENT_ADAPTED, Event(p_raising_object=self))
 
 
 ## -------------------------------------------------------------------------------------------------
