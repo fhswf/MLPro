@@ -20,10 +20,11 @@
 ## -- 2022-02-25  1.1.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-31  1.1.8     SY       Enable the possibility to process reward type C_TYPE_EVERY_AGENT
 ## -- 2022-08-15  1.2.0     DA       Introduction of root class Wrapper
+## -- 2022-08-22  1.2.1     MRD      Set proper name for class variable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-08-14)
+Ver. 1.2.1 (2022-08-22)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
@@ -83,13 +84,16 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
-    C_TYPE              = 'SB3 Policy'
+    C_TYPE              = 'Wrapper SB3 -> MLPro'
     C_WRAPPED_PACKAGE   = 'stable_baselines3'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace, p_action_space:MSpace, p_ada:bool=True, p_logging=Log.C_LOG_ALL):
         Policy.__init__(self, p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
+
+        # Set Name
+        WrPolicySB32MLPro.C_NAME = "Policy " + type(p_sb3_policy).__name__
 
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None
