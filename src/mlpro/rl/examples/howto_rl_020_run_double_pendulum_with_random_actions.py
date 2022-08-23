@@ -11,14 +11,25 @@
 ## -- 2022-06-21  1.0.1     SY       Adjust the name of the module, utilize RandomGenerator class
 ## -- 2022-08-02  1.0.2     LSB      Parameters for internal unit testing
 ## -- 2022-08-05  1.0.3     SY       Refactoring
+## -- 2022-08-23  1.0.4     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.3 (2022-08-05)
+Ver. 1.0.4 (2022-08-23)
 
 This module shows how to run the double pendulum environment using random actions agent.
+
+You will learn:
+
+1) How to set up an own agent using MLPro's builtin random actions policy
+
+2) How to set up an own RL scenario including your agent and MLPro's double pendulum environment
+
+3) How to reset and run your own scenario
+
 """
+
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
