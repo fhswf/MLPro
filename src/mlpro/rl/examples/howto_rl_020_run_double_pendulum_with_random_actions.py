@@ -17,7 +17,7 @@
 """
 Ver. 1.0.3 (2022-08-05)
 
-This module shows how to use run the double pendulum environment using random actions agent
+This module shows how to run the double pendulum environment using random actions agent.
 """
 
 from mlpro.bf.math import *
@@ -41,10 +41,8 @@ class ScenarioDoublePendulum(RLScenario):
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
         self._env   = DoublePendulumClassic(p_logging=True, init_angles='up', max_torque=5)
-        # policy_kwargs = dict(activation_fn=torch.nn.Tanh,
-        #              net_arch=[dict(pi=[128, 128], vf=[128, 128])])
 
-        # 1.2 Setup random action generator
+        # 1.2 Setup and return random action agent
         policy_random = RandomGenerator(p_observation_space=self._env.get_state_space(), 
                                         p_action_space=self._env.get_action_space(),
                                         p_buffer_size=1,
