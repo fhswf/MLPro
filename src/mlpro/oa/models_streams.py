@@ -27,6 +27,7 @@ Model classes for stream providers and streams.
 from mlpro.bf.various import *
 from mlpro.bf.ml import *
 from mlpro.bf.math import *
+import datetime
 
 
 
@@ -69,6 +70,7 @@ class Instance:
 
         self._feature_data = p_feature_data
         self._label_data = p_label_data
+        self._time_stamp = datetime.now()
         self._kwargs = p_kwargs.copy()
 
 
@@ -80,6 +82,11 @@ class Instance:
 ## -------------------------------------------------------------------------------------------------
     def get_label_data(self) -> Element:
         return self._label_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_time_stamp(self):
+        return self._time_stamp
 
 
 ## -------------------------------------------------------------------------------------------------
