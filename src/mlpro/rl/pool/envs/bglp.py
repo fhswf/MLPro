@@ -30,10 +30,11 @@
 ## -- 2022-05-23  2.2.3     SY       Bug fixing: Reward computation
 ## -- 2022-05-30  2.2.4     SY       Replace 'energy' related parameters to 'power'
 ## -- 2022-06-14  2.2.5     SY       Add termination condition for batch production scenario
+## -- 2022-08-24  2.2.6     SY       Update state calculation function
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.5 (2022-06-14)
+Ver. 2.2.6 (2022-08-24)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -854,6 +855,10 @@ class BGLP (Environment):
     def setup_spaces():
         """
         This method is used to setup action and state spaces of the system.
+        
+        The actions and states are normalized between 0 to 1.
+        For the actions, 0 means minimum action and 1 means maximum action.
+        Meanwhile, for the states, 0 means minimum capacity (empty) and 1 means maximum capacity (full)
 
         Returns
         -------
@@ -865,20 +870,19 @@ class BGLP (Environment):
         """
         state_space     = ESpace()
         action_space    = ESpace()
-        levels_max      = [17.42, 9.10, 17.42, 9.10, 17.42, 9.10]
 
-        state_space.add_dim(Dimension('E-0 LvlSiloA', 'R', 'Env-0 Level of Silo A', '', 'L', 'L',[0, levels_max[0]]))
-        state_space.add_dim(Dimension('E-0 LvlHopperA', 'R', 'Env-0 Level of Hopper A', '', 'L', 'L',[0, levels_max[1]]))
-        state_space.add_dim(Dimension('E-0 LvlSiloB', 'R', 'Env-0 Level of Silo B', '', 'L', 'L',[0, levels_max[2]]))
-        state_space.add_dim(Dimension('E-0 LvlHopperB', 'R', 'Env-0 Level of Hopper B', '', 'L', 'L',[0, levels_max[3]]))
-        state_space.add_dim(Dimension('E-0 LvlSiloC', 'R', 'Env-0 Level of Silo C', '', 'L', 'L',[0, levels_max[4]]))
-        state_space.add_dim(Dimension('E-0 LvlHopperC', 'R', 'Env-0 Level of Hopper C', '', 'L', 'L',[0, levels_max[5]]))
+        state_space.add_dim(Dimension('E-0 LvlSiloA', 'R', 'Res-1 Level of Silo A', '', '', '', [0, 1]))
+        state_space.add_dim(Dimension('E-0 LvlHopperA', 'R', 'Res-2 Level of Hopper A', '', '', '', [0, 1]))
+        state_space.add_dim(Dimension('E-0 LvlSiloB', 'R', 'Res-3 Level of Silo B', '', '', '', [0, 1]))
+        state_space.add_dim(Dimension('E-0 LvlHopperB', 'R', 'Res-4 Level of Hopper B', '', '', '', [0, 1]))
+        state_space.add_dim(Dimension('E-0 LvlSiloC', 'R', 'Res-5 Level of Silo C', '', '', '', [0, 1]))
+        state_space.add_dim(Dimension('E-0 LvlHopperC', 'R', 'Res-6 Level of Hopper C', '', '', '', [0, 1]))
         
-        action_space.add_dim(Dimension('E-0 Act', 'R', 'Env-0 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension('E-1 Act', 'R', 'Env-1 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension('E-2 Act', 'Z', 'Env-2 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension('E-3 Act', 'R', 'Env-3 Actuator Control', '', '', '', [0,1]))
-        action_space.add_dim(Dimension('E-4 Act', 'R', 'Env-4 Actuator Control', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-0 Act', 'R', 'Act-0 Belt Conveyor A', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-1 Act', 'R', 'Act-1 Vacuum Pump B', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-2 Act', 'Z', 'Act-2 Vibratory Conveyor B', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-3 Act', 'R', 'Act-3 Vacuum Pump C', '', '', '', [0,1]))
+        action_space.add_dim(Dimension('E-4 Act', 'R', 'Act-4 Rotary Feeder C', '', '', '', [0,1]))
 
         return state_space, action_space
 
