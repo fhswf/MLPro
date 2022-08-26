@@ -12,15 +12,19 @@ MLPro-GT is developed as a sub-framework for the cooperative GT approach to solv
 such as the environment model, the agent model, and the environment-agent interaction model. This sub-framework foucuses on the cooperative GT approach on Markov games.
 A Markov game contains a group of independent players that make decisions simultaneuosly, see the figure below for overview.
 
-.. image:: images/MLPro_GT_Game.png
+.. figure:: images/MLPro_GT_Game.png
   :width: 600
+  
+  This figure is taken from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
 Additionally, you can find the more comprehensive explanations of MLPro-GT including a sample application and difference with a native RL approach in this paper:
-`MLPro 1.0 - Standardized Reinforcement Learning and Game Theory in Python <https://www.researchgate.net/publication/359440328_MLPro_10_-_Standardized_Reinforcement_Learning_and_Game_Theory_in_Python>`_.
+`MLPro 1.0 - Standardized Reinforcement Learning and Game Theory in Python <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 The simplified diagram below shows the architecture of MLPro-GT, where MLPro-GT serves as a child package and MLPro-RL is its parent package.
 
-.. image:: images/MLPro-GT_class_diagram.png
+.. figure:: images/MLPro-GT_class_diagram.png
   :width: 700
+  
+  This figure is taken from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
 If you are interested to utilize MLPro-GT, you can easily access the GT modules, as follows:
 
@@ -28,5 +32,6 @@ If you are interested to utilize MLPro-GT, you can easily access the GT modules,
 
         from mlpro.gt.models import *
 
-You can also check out some of the examples on our `how to files <https://mlpro.readthedocs.io/en/latest/content/append1/howto.gt.html>`_
-or `here <https://github.com/fhswf/MLPro/tree/main/examples/gt>`_.
+You can also check out numerous ready to run examples on our `how to files <https://mlpro.readthedocs.io/en/latest/content/append1/howto.gt.html>`_
+or on our `MLPro GitHub <https://github.com/fhswf/MLPro/tree/main/src/mlpro/gt/examples>`_.
+Moreover, a technical API documentation can be found in the appendix 2.
