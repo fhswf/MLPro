@@ -4,23 +4,44 @@
    contain the root `toctree` directive.
 
 MLPro - Machine Learning Professional
-================================================
+=====================================
 
-Welcome to MLPro - the synoptic framework for standardized machine learning tasks in Python!
+Welcome to MLPro - the integrative middleware framework for standardized machine learning (ML) in Python!
 
-MLPro provides complete, standardized and reusable functionalities to support your scientific research, 
-industrial projects or educational tasks in machine learning.
+MLPro provides advanced, scientific-level models and templates for a continuously growing number of sub-areas of ML.
+These are embedded in standard processes for training and real operations. Furthermore, numerous popular 3rd party 
+packages can easily be integrated.
 
-The documentation is currently under construction, but we are working flat out to complete it. The framework 
-itself is ready for use and we are proud to offer you extensive functionalities, especially in the area of 
-reinforcement learning and game theory. A number of self-study examples are available in Appendix 1 and 
-the API documentation in Appendix 2 is pretty complete. Try it out and get in touch with any questions or problems. 
-Have fun! 
+MLPro is intended for data scientists, engineers, developers, and students who value
+   - powerful and flexible templates for their next ML project
+   - standard proceedings for training, hyperparameter tuning, and real operations
+   - numerous ready-to-run example codes and benchmark objects for self-study
+
+
+Key Features
+------------
+   - Numerous extensive sub-frameworks for relevant ML areas like reinforcement learning, game theory, online machine learning, etc.
+   - Powerful substructure of overarching basic functionalities for mathematics, data management, training and tuning of ML models, and much more
+   - Numerous wrapper classes to integrate 3rd party packages
+
+
+MLPro is made by scientists to
+   - speed up your next ML project
+   - achieve comparable results for your next publication
+   - enable you to share or reuse standardized ML code
+
+
+Follow us on
+------------
+
+   - `GitHub <https://github.com/fhswf/MLPro>`_
+   - `Python Package Index (PyPI) <https://pypi.org/project/mlpro/>`_
+   - `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
 
 
 
 Table of Content
-----------------
+================
 
 .. toctree::
    :maxdepth: 1
