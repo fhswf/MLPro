@@ -9,7 +9,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-08-d)
+Ver. 1.0.0 (2022-08-dd)
 
 This module demonstrates the use of MLPro's multiprocessing mechanisms.
 
