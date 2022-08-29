@@ -1,18 +1,18 @@
 .. _DoublePendulum:
-`Double Pendulum Classic <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/doublependulum.py>`_
+`Double Pendulum <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/doublependulum.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: mlpro.rl.pool.envs.doublependulum
 
-.. image:: images/doublependulum.gif
+.. image:: images/doublependulumenv.gif
     :width: 400px
 
 .. note::
-    + MLPro provides two implementation of Double Pendulum environment named DoublePendulumRoot and DoublePendulumClassic. The DoublePendulumRoot environment is a basic implementation with four dimensional state space including angles and angular acceleration of both the poles.
-    + The Classic implementation of Double Pendulum environment in MLPro, is an overarching implementation of the environment inheriting internal dynamics from the root class. The classic implementation is a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and :ref:`Euclidean Distances <Howto BF 003>` of the states.
+    + MLPro provides two implementation of Double Pendulum environment named DoublePendulumS4 and DoublePendulumS7. The DoublePendulumS4 environment is a basic implementation with four dimensional state space including angles and angular acceleration of both the poles.
+    + The static 7 dimensional implementation of Double Pendulum environment in MLPro, is an overarching implementation of the environment inheriting internal dynamics from the root class. The classic implementation is a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and :ref:`Euclidean Distances <Howto BF 003>` of the states.
 
 .. note::
-    + Further documentation is more specific to the DoublePendulumClassic implementation, however, utilizing the DoublePendulumRoot environment is fairly consistent with MLPro's environments :ref:`API <customEnv>`.
+    + Further documentation is more specific to the DoublePendulumClassic implementation, however, utilizing the DoublePendulumS4 environment is fairly consistent with MLPro's environments :ref:`API <customEnv>`.
 
 The double pendulum environment can be imported via:
 
@@ -20,7 +20,7 @@ The double pendulum environment can be imported via:
 
     import mlpro.rl.pool.envs.doublependulum
 
-The environment can be initialised with specifying the initial angles of both poles, masses of both poles, lenghts of poles, maximum torque value and scenario related parameters including step size and actuation step size. The initial positions of the poles refer to the position of the poles at the beginning of each RL episode, which can be set to 'up', 'down', 'random'. The default values for length and mass of each pole in the double pendulum are set to 1 and 1 respectively. The environment behaviour can be understood by running How To 20 in MLPro's sample implementation examples. Running How to 20 will produce following logging and visualisation.
+The environment can be initialised with specifying the initial angles of both poles, masses of both poles, lenghts of poles, maximum torque value and scenario related parameters including step size and actuation step size. The initial positions of the poles refer to the position of the poles at the beginning of each RL episode, which can be set to 'up', 'down', 'random'. The default values for length and mass of each pole in the double pendulum are set to 1 and 1 respectively. The environment behaviour can be understood by running How To 20 in MLPro's sample implementation examples. Running :ref:`How to 20 <Howto RL 020>` will produce following logging and visualisation.
 
 .. image:: images/doublependulum_run.gif
 	:width: 1000px
@@ -99,6 +99,8 @@ The state space for the double pendulum environment returns state of poles in th
 .. note:: 
  The boundaries for the velocity and acceleration are highly influenced by the initital position of the arms and the current torque being actuated on the inner pole. These parameters are further dependent on the specific application, scenario or purpose of research.  
 
+Current implementation of DP environment in MLPro returns success when the current state of the environment is within a distance lesser than threshold distance from the goal state. 
+
 Reward Structure
 ================
 
@@ -120,7 +122,10 @@ Change Log
 +--------------------+---------------------------------------------+
 | 1.3.1              | Current release version                     |
 +--------------------+---------------------------------------------+
+| 2.4.8              | Current release with variants S4 and S7     |
++--------------------+---------------------------------------------+
   
 Cross Reference
 ===============
     + :ref:`API Reference <Double Pendulum>`
+    + How to example files :ref:`How to 20 <Howto RL 020>` and :ref:`How to 21<Howto RL 021>`
