@@ -38,11 +38,26 @@ import random
 ## -------------------------------------------------------------------------------------------------
 
 class Actuator:
+    """
+    This class serves as a parent class of different types of actuators, which provides the main 
+    attributes of an actuator in the BGLP environment.
+    Parameters
+    ----------
+    
+        
+    Attributes
+    ----------
+    reg : list of objects
+        list of existing actuators in the environment.
 
+    """
+
+    reg = []
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name, **p_param):
-        ...
+    def __init__(self):
+        self.idx = len(self.reg)
+        self.reg.append(self)
 
 
 ## -------------------------------------------------------------------------------------------------
