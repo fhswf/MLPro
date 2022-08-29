@@ -45,10 +45,12 @@
 ## -- 2022-08-05  1.3.7     SY       Minor changing: Boundaries of the pendulums' angle
 ## -- 2022-08-19  1.4.7     LSB      Classic Variant inherited from the root DP
 ## -- 2022-08-20  1.4.8     LSB      New attribute target state
+## -- 2022-08-29  2.4.8     LSB      - New varients to be used
+##                                   - Default reward strategy and success strategy and bug fixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.7 (2022-08-20)
+Ver. 2.4.8 (2022-08-29)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -63,570 +65,10 @@ from mlpro.bf.various import *
 import numpy as np
 from numpy import sin, cos
 import matplotlib.pyplot as plt
-plt.ion()
 from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
 from collections import deque
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class DoublePendulum(Environment):
-    """
-    This is the main class of the Double Pendulum environment that inherits
-    Environment class from MLPro.
-
-    Parameters
-    ----------
-    p_logging : Log, optional
-        Logging functionalities. The default is Log.C_LOG_ALL.
-    t_step : float, optional
-        Time for each time step (in seconds). The default is 0.0025.
-    t_act : int, optional
-        Action frequency (with respect to the time step). The default is 20.
-    max_torque : float, optional
-        Maximum torque applied to pendulum 1. The default is 20.
-    max_speed : float, optional
-        Maximum speed applied to pendulum 1. The default is 10.
-    l1 : float, optional
-        Length of pendulum 1 in m. The default is 0.5
-    l2 : float, optional
-        Length of pendulum 2 in m. The default is 0.25
-    m1 : float, optional
-        Mass of pendulum 1 in kg. The default is 0.5
-    m2 : float, optional
-        Mass of pendulum 2 in kg. The default is 0.25
-    init_angles: str, optional
-        'up' starts the pendulum in an upright position
-        'down' starts the pendulum in a downward position
-        'random' starts the pendulum from a random position.
-    g : float, optional
-        Gravitational acceleration. The default is 9.8
-    history_length : int, optional
-        Historical trajectory points to display. The default is 2.
-
-    Attributes
-    ----------
-    C_NAME : str
-        Name of the environment.
-    C_CYCLE_LIMIT : int
-        The number of cycle limit.
-    C_LATENCY : timedelta()
-        Latency.
-    C_REWARD_TYPE : Reward
-        Rewarding type.
-    """
-
-    C_NAME = "DoublePendulum"
-    C_CYCLE_LIMIT = 0
-    C_LATENCY = timedelta(0, 0, 0)
-    C_REWARD_TYPE = Reward.C_TYPE_OVERALL
-
-    ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=1,
-                 max_speed=10, l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
-                 g=9.8, history_length=2):
-        self.t_step = t_step
-        self.t_act = t_act
-
-        self.set_latency(timedelta(0, t_act * t_step, 0))
-
-        self.max_torque = max_torque
-        self.max_speed = max_speed
-
-        self.l1 = l1
-        self.l2 = l2
-        self.L = l1 + l2
-        self.m1 = m1
-        self.m2 = m2
-        self.M = m1+m2
-        self.g = g
-
-        self.init_angles = init_angles
-
-        self.history_x = deque(maxlen=history_length)
-        self.history_y = deque(maxlen=history_length)
-
-        super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
-
-        self.C_SCIREF_TYPE = self.C_SCIREF_TYPE_ONLINE
-        self.C_SCIREF_AUTHOR = "John Hunter, Darren Dale, Eric Firing, Michael \
-                                Droettboom and the Matplotlib development team"
-        self.C_SCIREF_TITLE = "The Double Pendulum Problem"
-        self.C_SCIREF_URL = "https://matplotlib.org/stable/gallery/animation/double_pendulum.html"
-
-        self._state = State(self._state_space)
-
-        self.reset()
-
-    ## -------------------------------------------------------------------------------------------------
-    def setup_spaces(self):
-        """
-        This method is used to set up action and state spaces of the system.
-
-        Returns
-        -------
-        state_space : ESpace()
-            State space of the system.
-        action_space : ESpace()
-            Action space of the system.
-
-        """
-        state_space = ESpace()
-        action_space = ESpace()
-
-        state_space.add_dim(Dimension(p_name_long='theta 1', p_name_short='th1', p_description='Angle of Pendulum 1', p_name_latex='', p_unit='degrees',
-                                      p_unit_latex='\textdegrees', p_boundaries=[-180,180]))
-        state_space.add_dim(Dimension(p_name_long='omega 1', p_name_short='w1', p_description='Angular Velocity of Pendulum 1', p_name_latex='',
-                                      p_unit='degrees/second', p_unit_latex='\textdegrees/s', p_boundaries=[-796.617, 559.5576]))
-        state_space.add_dim(Dimension(p_name_long='acc 1', p_name_short='a1', p_description='Angular Acceleration of Pendulum 1', p_name_latex='',
-                                      p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-6732.31, 5870.988]))
-        state_space.add_dim(Dimension(p_name_long='theta 2', p_name_short='th2', p_description='Angle of pendulum 2', p_name_latex='',p_unit= 'degrees',
-                                      p_unit_latex='\textdegrees', p_boundaries=[-180, 180]))
-        state_space.add_dim(Dimension(p_name_long='omega 2', p_name_short='w2', p_description='Angular Velocity of Pendulum 2', p_name_latex='',
-                                      p_unit='degrees/second', p_unit_latex='\textdegrees/s', p_boundaries=[-904.93, 844.5236]))
-        state_space.add_dim(Dimension(p_name_long='acc 2', p_name_short='a2', p_description='Angular Acceleration of Pendulum 2', p_name_latex='',
-                                      p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-9650.26, 6805.587]))
-
-        action_space.add_dim(Dimension(p_name_long='torque 1', p_name_short='tau1', p_description='Applied Torque of Motor 1', p_name_latex='',
-                                       p_unit='Nm', p_unit_latex='Nm', p_boundaries=[-self.max_torque, self.max_torque]))
-
-        return state_space, action_space
-
-    ## -------------------------------------------------------------------------------------------------
-    def derivs(self, state, t, torque):
-        """
-        This method is used to calculate the derivatives of the system, given the
-        current states.
-
-        Parameters
-        ----------
-        state : list
-            [theta 1, omega 1, acc 1, theta 2, omega 2, acc 2]
-        t : list
-            Timestep
-        torque : float
-            Applied torque of the motor
-
-        Returns
-        -------
-        dydx : list
-            The derivatives of the given state
-
-        """
-        dydx = np.zeros_like(state)
-        dydx[0] = state[1]
-
-        delta = state[3] - state[0]
-        den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
-        dydx[1] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
-                    + self.m2 * self.g * sin(state[3]) * cos(delta)
-                    + self.m2 * self.l2 * state[4] * state[4] * sin(delta)
-                    - (self.m1 + self.m2) * self.g * sin(state[0])-torque)
-                   / den1)
-
-        dydx[3] = state[4]
-
-        den3 = (self.l2 / self.l1) * den1
-        dydx[4] = ((- self.m2 * self.l2 * state[4] * state[4] * sin(delta) * cos(delta)
-                    + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
-                    - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
-                    - (self.m1 + self.m2) * self.g * sin(state[3]))
-                   / den3)
-
-        return dydx
-
-    ## -------------------------------------------------------------------------------------------------
-    def _data_normalization(self, p_value, p_boundaries):
-        """
-        This method is called to normalize any data in between -1 to 1 by considering their boundaries.
-        If the boundaries are infinity, then the data is not normalized.
-
-        Parameters
-        ----------
-        p_value : float
-            Input values.
-        p_boundaries : Array
-            The min-max boundaries of the parameter, e.g. [min, max]
-
-        Returns
-        -------
-        normalized_value: float
-
-        """
-        if p_boundaries[0] == -np.inf or p_boundaries[0] == np.inf:
-            return p_value
-        elif p_boundaries[1] == -np.inf or p_boundaries[1] == np.inf:
-            return p_value
-        else:
-            normalized_value = (2*((p_value-min(p_boundaries))/(max(p_boundaries)-min(p_boundaries)))-1)
-            return normalized_value
-
-    ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None) -> None:
-        """
-        This method is used to reset the environment.
-
-        Parameters
-        ----------
-        p_seed : int, optional
-            Not yet implemented. The default is None.
-
-        """
-        if self.init_angles =='up':
-            self.th1 = 0
-            self.th2 = 0
-        elif self.init_angles=='down':
-            self.th1 = 180
-            self.th2 = 180
-        elif self.init_angles=='random':
-            self.th1 = np.random.rand(1)[0]*180
-            self.th2 = np.random.rand(1)[0]*180
-        else:
-            raise NotImplementedError("init_angles value must be up or down")
-
-        self.a1 = 0
-        self.a2 = 0
-
-        self.th1dot = 0
-        self.th2dot = 0
-
-        state_ids = self._state.get_dim_ids()
-        self._state.set_value(state_ids[0], (self.th1))
-        self._state.set_value(state_ids[1], (self.th1dot))
-        self._state.set_value(state_ids[2], (self.a1))
-        self._state.set_value(state_ids[3], (self.th2))
-        self._state.set_value(state_ids[4], (self.th2dot))
-        self._state.set_value(state_ids[5], (self.a2))
-
-        self.history_x.clear()
-        self.history_y.clear()
-        self.action_cw = False
-        self.alpha = 0
-
-    ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
-        """
-        This method is used to calculate the next states of the system after a set of actions.
-
-        Parameters
-        ----------
-        p_state : State
-            State.
-        p_action : Action
-            Action.
-
-        Returns
-        -------
-        _state : State
-            Current states.
-
-        """
-        state = p_state.get_values()
-        for i in [0, 3]:
-            if state[i] == 0:
-                state[i] = 180
-            elif state[i] != 0:
-                # state[i] = list(range(-180, 180))[int(-state[i])]
-                if state[i] > 0:
-                    sign = 1
-                else:
-                    sign = -1
-                state[i] = sign*(abs(state[i]) - 180)
-
-        th1, th1dot, a1, th2, th2dot, a2 = np.radians(state)
-        state = [th1, th1dot, 0, th2, th2dot, 0]
-        torque = p_action.get_sorted_values()[0]
-        torque = np.clip(torque, -self.max_torque, self.max_torque)
-        torque = tuple(torque.reshape([1]))
-
-
-        if self.max_torque != 0:
-            self.alpha = abs(torque[0])/self.max_torque
-        else: self.alpha = 0
-
-
-        self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_step/self.t_act, 0.001), args=(torque,))
-        state = self.y[-1].copy()
-
-        delta = state[3]-state[0]
-
-        den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
-        state[2]= ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
-                    + self.m2 * self.g * sin(state[3]) * cos(delta)
-                    + self.m2 * self.l2 * state[4] * state[4] * sin(delta)
-                    - (self.m1 + self.m2) * self.g * sin(state[0])-torque)
-                   / den1)
-
-        den3 = (self.l2 / self.l1) * den1
-        state[5] = ((- self.m2 * self.l2 * state[4] * state[4] * sin(delta) * cos(delta)
-                    + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
-                    - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
-                    - (self.m1 + self.m2) * self.g * sin(state[3]))
-                   / den3)
-
-        state = np.degrees(state)
-        self.action_cw = True if torque[0] > 0 else False
-        state_ids = self._state.get_dim_ids()
-
-        for i in [0,3]:
-            if state[i] % 360 < 180:
-                state[i] = state[i] % 360
-            elif state[i] % 360 > 180:
-                state[i] = state[i] % 360 - 360
-            # state[i] = list(range(-180, 180))[int(-state[i])]
-            if state[i] > 0:
-                sign = 1
-            else:
-                sign = -1
-            state[i] = sign*(abs(state[i]) - 180)
-
-        current_state = State(self._state_space)
-        for i in range(len(state)):
-            current_state.set_value(state_ids[i], state[i])
-
-        return current_state
-
-    ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state: State) -> bool:
-        """
-        This method computes the broken flag. This method can be redefined.
-
-        Parameters
-        ----------
-        p_state : State
-            State.
-
-        Returns
-        -------
-        bool :
-            Broken or not.
-
-        """
-
-        return False
-
-    ## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state: State) -> bool:
-        """
-        This method computes the success flag. This method can be redefined.
-
-        Parameters
-        ----------
-        p_state : State
-            State.
-
-        Returns
-        -------
-        bool :
-            Success or not success.
-
-        """
-
-        return False
-
-    ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
-        """
-        This method calculates the reward for C_TYPE_OVERALL reward type.
-
-        Parameters
-        ----------
-        p_state_old : State
-            Previous state.
-        p_state_new : State
-            New state.
-
-        Returns
-        -------
-        reward : Reward
-            Reward values.
-
-        """
-        state = p_state_old.get_values()
-        th1, th1dot,a1, th2, th2dot,a2 = state
-
-        self._state_space.get_dim_ids()
-        id = self._state_space.get_dim_ids()[0]
-        th1_boundaries = self._state_space.get_dim(id).get_boundaries()
-        th1 = self._data_normalization(th1, th1_boundaries)
-
-        self._state_space.get_dim_ids()
-        id = self._state_space.get_dim_ids()[1]
-        th1dot_boundaries = self._state_space.get_dim(id).get_boundaries()
-        th1dot = self._data_normalization(th1dot, th1dot_boundaries)
-
-        self._state_space.get_dim_ids()
-        id = self._state_space.get_dim_ids()[2]
-        a1_boundaries = self._state_space.get_dim(id).get_boundaries()
-        a1 = self._data_normalization(a1, a1_boundaries)
-
-        self._state_space.get_dim_ids()
-        id = self._state_space.get_dim_ids()[3]
-        th2_boundaries = self._state_space.get_dim(id).get_boundaries()
-        th2 = self._data_normalization(th2, th2_boundaries)
-
-        self._state_space.get_dim_ids()
-        id = self._state_space.get_dim_ids()[4]
-        th2dot_boundaries = self._state_space.get_dim(id).get_boundaries()
-        th2dot = self._data_normalization(th2dot, th2dot_boundaries)
-
-        self._state_space.get_dim_ids()
-        id = self._state_space.get_dim_ids()[5]
-        a2_boundaries = self._state_space.get_dim(id).get_boundaries()
-        a2 = self._data_normalization(a2, a2_boundaries)
-
-        reward = Reward(Reward.C_TYPE_OVERALL)
-
-        target = np.array([np.pi, 0.0, np.pi, 0.0])
-        state = p_state_new.get_values()
-        old_state = p_state_old.get_values()
-
-        th1_count = 0
-        for th1 in self.y[::-1, 0]:
-            ang = np.degrees(self._data_normalization(th1, th1_boundaries))
-            if ang > 170 or ang < 190 or \
-                    ang < -170 or ang > -190:
-                th1_count += 1
-            else:
-                break
-        th1_distance = np.pi - abs(self._data_normalization(th1, th1_boundaries))
-        th1_distance_costs = 4 if th1_distance <= 0.1 else 0.3 / th1_distance
-
-        th1_speed_costs = np.pi * abs(state[1]) / self.max_speed
-
-        # max acceleration in one timestep is assumed to be double the max speed
-        th1_acceleration_costs = np.pi * abs(self.y[-1, 1]-self.y[-2, 1]) / (2 * self.max_speed)
-
-        inner_pole_costs = (th1_distance_costs * th1_count / len(self.y)) - th1_speed_costs - (th1_acceleration_costs ** 0.5)
-        inner_pole_weight = (self.l1/2)*self.m1
-
-        th2_count = 0
-        for th2 in self.y[::-1, 2]:
-            ang = np.degrees(self._data_normalization(th2, th2_boundaries))
-            if ang > 170 or ang < 190 or \
-                    ang < -170 or ang > -190:
-                th2_count += 1
-            else:
-                break
-        th2_distance = np.pi - abs(self._data_normalization(th2, th2_boundaries))
-        th2_distance_costs = 4 if th2_distance <= 0.1 else 0.3 / th2_distance
-
-        th2_speed_costs = np.pi * abs(state[3]) / self.max_speed
-
-        th2_acceleration_costs = np.pi * abs(self.y[-1, 3]-self.y[-2, 3]) / (2 * self.max_speed)
-
-        outer_pole_costs = (th2_distance_costs * th2_count / len(self.y)) - th2_speed_costs - (th2_acceleration_costs ** 0.5)
-        outer_pole_weight = 0.5 * (self.l2/2)*self.m2
-
-        change_costs = ((np.linalg.norm(target[::2] - np.array(old_state)[::3])*(inner_pole_weight)) -
-                        (np.linalg.norm(target[::2] - np.array(state)[::3])*(outer_pole_weight)))
-
-        reward.set_overall_reward((inner_pole_costs * inner_pole_weight) + (outer_pole_costs * outer_pole_weight) - (self.alpha * np.pi/2) + (change_costs))
-
-
-        return reward
-
-    ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        """
-        This method initializes the plot figure of each episode. When the environment
-        is reset, the previous figure is closed and reinitialized.
-
-        Parameters
-        ----------
-        p_figure : matplotlib.figure.Figure
-            A Figure object of the matplotlib library.
-        """
-        if hasattr(self, 'fig'):
-            plt.close(self.fig)
-
-        if p_figure is None:
-            self.fig = plt.figure(figsize=(5, 4))
-            self.embedded_fig = False
-        else:
-            self.fig = p_figure
-            self.embedded_fig = True
-
-        self.ax = self.fig.add_subplot(autoscale_on=False,
-                                       xlim=(-self.L * 1.2, self.L * 1.2), ylim=(-self.L * 1.2, self.L * 1.2))
-        self.ax.set_aspect('equal')
-        self.ax.grid()
-
-        self.cw_arc = Arc([0, 0], 0.5 * self.l1, 0.5 * self.l1, angle=0, theta1=0,
-                          theta2=250, color='crimson')
-        endX = (0.5 * self.l1 / 2) * np.cos(np.radians(0))
-        endY = (0.5 * self.l1 / 2) * np.sin(np.radians(0))
-        self.cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self.l1 / 9, np.radians(180),
-                                       color='crimson')
-
-        self.ccw_arc = Arc([0, 0], 0.5 * self.l1, 0.5 * self.l1, angle=70, theta1=0,
-                           theta2=320, color='crimson')
-        endX = (0.5 * self.l1 / 2) * np.cos(np.radians(70 + 320))
-        endY = (0.5 * self.l1 / 2) * np.sin(np.radians(70 + 320))
-        self.ccw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self.l1 / 9, np.radians(70 + 320),
-                                        color='crimson')
-
-        self.ax.add_patch(self.cw_arc)
-        self.ax.add_patch(self.cw_arrow)
-        self.ax.add_patch(self.ccw_arc)
-        self.ax.add_patch(self.ccw_arrow)
-
-        self.cw_arc.set_visible(False)
-        self.cw_arrow.set_visible(False)
-        self.ccw_arc.set_visible(False)
-        self.ccw_arrow.set_visible(False)
-
-        self.line, = self.ax.plot([], [], 'o-', lw=2)
-        self.trace, = self.ax.plot([], [], '.-', lw=1, ms=2)
-
-    ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
-        """
-        This method updates the plot figure of each episode. When the figure is
-        detected to be an embedded figure, this method will only set up the
-        necessary data of the figure.
-
-        """
-        x1 = self.l1 * sin(self.y[:, 0])
-        y1 = -self.l1 * cos(self.y[:, 0])
-
-        x2 = self.l2 * sin(self.y[:, 3]) + x1
-        y2 = -self.l2 * cos(self.y[:, 3]) + y1
-
-        # def animate(i):
-        for i in range(len(self.y)):
-            thisx = [0, x1[i], x2[i]]
-            thisy = [0, y1[i], y2[i]]
-
-            self.history_x.appendleft(thisx[2])
-            self.history_y.appendleft(thisy[2])
-            self.line.set_data(thisx, thisy)
-            self.trace.set_data(self.history_x, self.history_y)
-
-
-
-            if self.action_cw:
-                self.cw_arc.set_visible(True)
-                self.cw_arrow.set_visible(True)
-                self.cw_arc.set_alpha(self.alpha)
-                self.cw_arrow.set_alpha(self.alpha)
-                self.ccw_arc.set_visible(False)
-                self.ccw_arrow.set_visible(False)
-            else:
-                self.cw_arc.set_visible(False)
-                self.cw_arrow.set_visible(False)
-                self.ccw_arc.set_visible(True)
-                self.ccw_arrow.set_visible(True)
-                self.ccw_arc.set_alpha(self.alpha)
-                self.ccw_arrow.set_alpha(self.alpha)
-
-            if not self.embedded_fig and i%30 ==0 :
-                self.fig.canvas.draw()
-                self.fig.canvas.flush_events()
-
+plt.ion()
 
 
 
@@ -643,40 +85,81 @@ class DoublePendulumRoot(Environment):
     C_CYCLE_LIMIT = 0
     C_LATENCY = timedelta(0, 0, 0)
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
+    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_SCIREF_AUTHOR = "John Hunter, Darren Dale, Eric Firing, Michael \
+                                       Droettboom and the Matplotlib development team"
+    C_SCIREF_TITLE = "The Double Pendulum Problem"
+    C_SCIREF_URL = "https://matplotlib.org/stable/gallery/animation/double_pendulum.html"
 
+    C_ANGLES_UP = 'up'
+    C_ANGLES_DOWN = 'down'
+    C_ANGLES_RND = 'random'
 
+    C_VALID_ANGLES = [C_ANGLES_RND, C_ANGLES_DOWN, C_ANGLES_RND]
+
+    C_THRSH_GOAL = 0
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=0,
-                 l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
-                 g=9.8, history_length=5):
-        self.t_step = t_step
-        self.t_act = t_act
+    def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.2, p_t_act=5, p_max_torque=0,
+                 p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles=C_ANGLES_RND,
+                 p_g=9.8, p_history_length=5):
 
-        self.set_latency(timedelta(0, t_act * t_step, 0))
+        """
+           This is the main class of the Double Pendulum environment that inherits
+           Environment class from MLPro.
 
-        self.max_torque = max_torque
+           Parameters
+           ----------
+           p_logging : Log, optional
+               Logging functionalities of MLPro. The default is Log.C_LOG_ALL.
+           p_t_step : float, optional
+               Time for each time step (in seconds). The default is 0.2.
+           p_t_act : int, optional
+               Action frequency (with respect to the time step). The default is 20.
+           p_max_torque : float, optional
+               Maximum torque applied to pendulum 1. The default is 20.
+           p_l1 : float, optional
+               Length of pendulum 1 in m. The default is 0.5
+           p_l2 : float, optional
+               Length of pendulum 2 in m. The default is 0.25
+           p_m1 : float, optional
+               Mass of pendulum 1 in kg. The default is 0.5
+           p_m2 : float, optional
+               Mass of pendulum 2 in kg. The default is 0.25
+           p_init_angles: str, optional
+               'up' starts the pendulum in an upright position
+               'down' starts the pendulum in a downward position
+               'random' starts the pendulum from a random position.
+           p_g : float, optional
+               Gravitational acceleration. The default is 9.8
+           p_history_length : int, optional
+               Historical trajectory points to display. The default is 5.
+        """
+
+        self._t_step = p_t_step
+        self._t_act = p_t_act
+
+        self.set_latency(timedelta(0, p_t_act * p_t_step, 0))
+
+        self.max_torque = p_max_torque
 
 
-        self.l1 = l1
-        self.l2 = l2
-        self.L = l1 + l2
-        self.m1 = m1
-        self.m2 = m2
-        self.M = m1 + m2
-        self.g = g
+        self.l1 = p_l1
+        self.l2 = p_l2
+        self.L = p_l1 + p_l2
+        self.m1 = p_m1
+        self.m2 = p_m2
+        self.M = p_m1 + p_m2
+        self.g = p_g
 
-        self.init_angles = init_angles
+        self.init_angles = p_init_angles
 
-        self.history_x = deque(maxlen=history_length)
-        self.history_y = deque(maxlen=history_length)
+        if self.init_angles not in self.C_VALID_ANGLES: raise ParamError("The initial angles are not valid")
+
+        self.history_x = deque(maxlen=p_history_length)
+        self.history_y = deque(maxlen=p_history_length)
 
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
 
-        self.C_SCIREF_TYPE = self.C_SCIREF_TYPE_ONLINE
-        self.C_SCIREF_AUTHOR = "John Hunter, Darren Dale, Eric Firing, Michael \
-                                   Droettboom and the Matplotlib development team"
-        self.C_SCIREF_TITLE = "The Double Pendulum Problem"
-        self.C_SCIREF_URL = "https://matplotlib.org/stable/gallery/animation/double_pendulum.html"
 
         self._state = State(self._state_space)
         self.target_state = State(self._state_space)
@@ -756,7 +239,7 @@ class DoublePendulumRoot(Environment):
 
 
     ## ------------------------------------------------------------------------------------------------------
-    def derivs(self, state, t, torque):
+    def _derivs(self, p_state, t, p_torque):
         """
         This method is used to calculate the derivatives of the system, given the
         current states.
@@ -764,9 +247,9 @@ class DoublePendulumRoot(Environment):
         Parameters
         ----------
         state : list
-            [theta 1, omega 1, acc 1, theta 2, omega 2, acc 2]
+            list of current state elements [theta 1, omega 1, acc 1, theta 2, omega 2, acc 2]
         t : list
-            Timestep
+            current Timestep
         torque : float
             Applied torque of the motor
 
@@ -776,24 +259,24 @@ class DoublePendulumRoot(Environment):
             The derivatives of the given state
 
         """
-        dydx = np.zeros_like(state)
-        dydx[0] = state[1]
+        dydx = np.zeros_like(p_state)
+        dydx[0] = p_state[1]
 
-        delta = state[2] - state[0]
+        delta = p_state[2] - p_state[0]
         den1 = (self.m1 + self.m2) * self.l1 - self.m2 * self.l1 * cos(delta) * cos(delta)
-        dydx[1] = ((self.m2 * self.l1 * state[1] * state[1] * sin(delta) * cos(delta)
-                    + self.m2 * self.g * sin(state[2]) * cos(delta)
-                    + self.m2 * self.l2 * state[3] * state[3] * sin(delta)
-                    - (self.m1 + self.m2) * self.g * sin(state[0])-torque)
+        dydx[1] = ((self.m2 * self.l1 * p_state[1] * p_state[1] * sin(delta) * cos(delta)
+                    + self.m2 * self.g * sin(p_state[2]) * cos(delta)
+                    + self.m2 * self.l2 * p_state[3] * p_state[3] * sin(delta)
+                    - (self.m1 + self.m2) * self.g * sin(p_state[0])-p_torque)
                    / den1)
 
-        dydx[2] = state[3]
+        dydx[2] = p_state[3]
 
         den2 = (self.l2 / self.l1) * den1
-        dydx[3] = ((- self.m2 * self.l2 * state[3] * state[3] * sin(delta) * cos(delta)
-                    + (self.m1 + self.m2) * self.g * sin(state[0]) * cos(delta)
-                    - (self.m1 + self.m2) * self.l1 * state[1] * state[1] * sin(delta)
-                    - (self.m1 + self.m2) * self.g * sin(state[2]))
+        dydx[3] = ((- self.m2 * self.l2 * p_state[3] * p_state[3] * sin(delta) * cos(delta)
+                    + (self.m1 + self.m2) * self.g * sin(p_state[0]) * cos(delta)
+                    - (self.m1 + self.m2) * self.l1 * p_state[1] * p_state[1] * sin(delta)
+                    - (self.m1 + self.m2) * self.g * sin(p_state[2]))
                    / den2)
 
         return dydx
@@ -807,14 +290,14 @@ class DoublePendulumRoot(Environment):
         Parameters
         ----------
         p_state : State
-            State.
+            current State.
             p_action : Action
-                Action.
+                current Action.
 
         Returns
         -------
             _state : State
-                Current states.
+                Current states after the simulation of latest action on the environment.
 
         """
         state = p_state.get_values()[0:4]
@@ -835,7 +318,7 @@ class DoublePendulumRoot(Environment):
         else:
             self.alpha = 0
 
-        self.y = integrate.odeint(self.derivs, state, np.arange(0, self.t_step / self.t_act, 0.001), args=(torque,))
+        self.y = integrate.odeint(self._derivs, state, np.arange(0, self._t_step / self._t_act, 0.001), args=(torque,))
         state = self.y[-1].copy()
 
 
@@ -862,8 +345,52 @@ class DoublePendulumRoot(Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
-        return Reward()
+    def _compute_reward(self, p_state_old, p_state_new):
+        """
+            This method calculates the reward for C_TYPE_OVERALL reward type. The current reward is based on the
+            worst possible distance between two states and the best possible minimum distance between current and
+            goal state.
+
+            Parameters
+            ----------
+            p_state_old : State
+                Previous state.
+            p_state_new : State
+                New state.
+
+            Returns
+            -------
+            reward : Reward
+                current calculated Reward values.
+        """
+
+        current_reward = Reward()
+        state = p_state_new.get_values().copy()
+        p_state_normalized = self._normalize(state)
+        norm_state = State(self.get_state_space())
+        norm_state.set_values(p_state_normalized)
+        goal_state = self.target_state
+
+        max_values = []
+        min_values = []
+        for i in self._state_space.get_dim_ids():
+            boundaries = self._state_space.get_dim(i).get_boundaries()
+            max_values.append(boundaries[1])
+            min_values.append(boundaries[0])
+
+        max_values = self._normalize(max_values)
+        max_state = State(self.get_state_space())
+        max_state.set_values(max_values)
+        min_values = self._normalize(min_values)
+        min_state = State(self.get_state_space())
+        min_state.set_values(min_values)
+
+        d_max = self.get_state_space().distance(max_state, min_state)
+        d = self.get_state_space().distance(norm_state, goal_state)
+        value = d_max - d
+        current_reward.set_overall_reward(value)
+
+        return current_reward
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -872,8 +399,46 @@ class DoublePendulumRoot(Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state):
+    def _compute_success(self, p_state:State):
+        """
+        Custom method to return the success state of the environment based on the distance between current state,
+        goal state and the goal threshold parameter
+
+        Parameters
+        ----------
+        p_state:State
+            current state of the environment
+
+        Returns
+        -------
+        bool
+            True if the distance between current state and goal state is less than the goal threshold else false
+        """
+        goal_state = self.target_state
+        d = self.get_state_space().distance(p_state, goal_state)
+        if d < self.C_THRSH_GOAL: return True
         return False
+
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _normalize(self, p_state:State):
+        """
+        Custom method to normalize the State values of the DP env based on static boundaries provided by MLPro
+
+        Parameters
+        ----------
+        p_state:State
+            The state to be normalized
+
+        Returns
+        -------
+        state:State
+            Normalized state values
+
+        """
+
+        raise NotImplementedError
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -887,6 +452,7 @@ class DoublePendulumRoot(Environment):
         p_figure : matplotlib.figure.Figure
             A Figure object of the matplotlib library.
         """
+
         if hasattr(self, 'fig'):
             plt.close(self.fig)
 
@@ -937,6 +503,7 @@ class DoublePendulumRoot(Environment):
         detected to be an embedded figure, this method will only set up the
         necessary data of the figure.
         """
+
         x1 = self.l1 * sin(self.y[:, 0])
         y1 = -self.l1 * cos(self.y[:, 0])
 
@@ -980,7 +547,7 @@ class DoublePendulumRoot(Environment):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumClassic(DoublePendulumRoot):
+class DoublePendulumS7(DoublePendulumRoot):
     """
     This is the classic implementation of Double Pendulum with 7 dimensional state space including derived
     accelerations of both the poles and the input torque. The dynamics of the system are inherited from the Double
@@ -993,12 +560,43 @@ class DoublePendulumClassic(DoublePendulumRoot):
     C_NAME = 'DoublePendulumClassic'
 
 ## -----------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=1,
-                 l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
-                 g=9.8, history_length=2):
+    def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.2, p_t_act=5, p_max_torque=1,
+                 p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles='random',
+                 p_g=9.8, p_history_length=2):
 
-        super().__init__(p_logging, t_step, t_act, max_torque, l1, l2, m1, m2, init_angles,
-                         g, history_length)
+        """
+        This is the main class of the Double Pendulum environment that inherits Environment class from MLPro.
+
+        Parameters
+        ----------
+        p_logging : Log, optional
+            Logging functionalities of MLPro. The default is Log.C_LOG_ALL.
+        p_t_step : float, optional
+            Time for each time step (in seconds). The default is 0.2.
+        p_t_act : int, optional
+            Action frequency (with respect to the time step). The default is 20.
+        p_max_torque : float, optional
+            Maximum torque applied to pendulum 1. The default is 20.
+        p_l1 : float, optional
+            Length of pendulum 1 in m. The default is 0.5
+        p_l2 : float, optional
+            Length of pendulum 2 in m. The default is 0.25
+        p_m1 : float, optional
+            Mass of pendulum 1 in kg. The default is 0.5
+        p_m2 : float, optional
+            Mass of pendulum 2 in kg. The default is 0.25
+        p_init_angles: str, optional
+            'up' starts the pendulum in an upright position
+            'down' starts the pendulum in a downward position
+            'random' starts the pendulum from a random position.
+        p_g : float, optional
+            Gravitational acceleration. The default is 9.8
+        p_history_length : int, optional
+            Historical trajectory points to display. The default is 5.
+        """
+
+        super().__init__(p_logging=p_logging, p_t_step=p_t_step, p_t_act=p_t_act, p_max_torque=p_max_torque, p_l1=p_l1,
+            p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g, p_history_length=p_history_length)
 
 
 ## -----------------------------------------------------------------------------------------------------
@@ -1050,14 +648,14 @@ class DoublePendulumClassic(DoublePendulumRoot):
         Parameters
         ----------
             p_state : State
-                State.
+                current State.
             p_action : Action
-                Action.
+                current Action.
 
         Returns
         -------
-            _state : State
-            Current states.
+            current_state
+                Current states after simulating the latest action.
 
         """
 
@@ -1109,21 +707,19 @@ class DoublePendulumClassic(DoublePendulumRoot):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _data_normalization(self, p_state):
+    def _normalize(self, p_state):
         """
-        This method is called to normalize any data in between -1 to 1 by considering their boundaries.
-        If the boundaries are infinity, then the data is not normalized.
+        Custom method to normalize the State values of the DP env based on static boundaries provided by MLPro
 
         Parameters
         ----------
-        p_value : float
-            Input values.
-        p_boundaries : Array
-            The min-max boundaries of the parameter, e.g. [min, max]
+        p_state:State
+            The state to be normalized
 
         Returns
         -------
-        normalized_value: float
+        state:State
+            Normalized state values
 
         """
         state = p_state
@@ -1136,123 +732,100 @@ class DoublePendulumClassic(DoublePendulumRoot):
         return state
 
 
+
+
+
 ## ------------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old, p_state_new):
+## ------------------------------------------------------------------------------------------------------
+class DoublePendulumS4(DoublePendulumRoot):
+
+
+
+    C_TYPE = 'Environment'
+    C_NAME = 'DoublePendulumStatic4'
+
+
+## ------------------------------------------------------------------------------------------------------
+    def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.2, p_t_act=5, p_max_torque=1,
+                 p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles='random',
+                 p_g=9.8, p_history_length=2):
         """
-            This method calculates the reward for C_TYPE_OVERALL reward type. The current reward is based on the
-            worst possible distance between two states and the best possible minimum distance between current and
-            goal state.
+        This is the static 4 dimensional class of the Double Pendulum environment root that inherits Environment class
+        from MLPro.
 
-            Parameters
-            ----------
-            p_state_old : State
-                Previous state.
-            p_state_new : State
-                New state.
-
-            Returns
-            -------
-            reward : Reward
-                Reward values.
+        Parameters
+        ----------
+        p_logging : Log, optional
+            Logging functionalities of MLPro. The default is Log.C_LOG_ALL.
+        p_t_step : float, optional
+            Time for each time step (in seconds). The default is 0.2.
+        p_t_act : int, optional
+            Action frequency (with respect to the time step). The default is 20.
+        p_max_torque : float, optional
+            Maximum torque applied to pendulum 1. The default is 20.
+        p_l1 : float, optional
+            Length of pendulum 1 in m. The default is 0.5
+        p_l2 : float, optional
+            Length of pendulum 2 in m. The default is 0.25
+        p_m1 : float, optional
+            Mass of pendulum 1 in kg. The default is 0.5
+        p_m2 : float, optional
+            Mass of pendulum 2 in kg. The default is 0.25
+        p_init_angles: str, optional
+            'up' starts the pendulum in an upright position
+            'down' starts the pendulum in a downward position
+            'random' starts the pendulum from a random position.
+        p_g : float, optional
+            Gravitational acceleration. The default is 9.8
+        p_history_length : int, optional
+            Historical trajectory points to display. The default is 5.
         """
 
-        current_reward = Reward()
-        state = p_state_new.get_values().copy()
-        p_state_normalized = self._data_normalization(state)
-        norm_state = State(self.get_state_space())
-        norm_state.set_values(p_state_normalized)
-        goal_state = self.target_state
+        super().__init__(p_logging=p_logging, p_t_step=p_t_step, p_t_act=p_t_act, p_max_torque=p_max_torque,p_l1=p_l1,
+                         p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g,
+                         p_history_length=p_history_length)
 
-
-        max_values = []
-        min_values = []
-        for i in self._state_space.get_dim_ids():
-            boundaries = self._state_space.get_dim(i).get_boundaries()
-            max_values.append(boundaries[1])
-            min_values.append(boundaries[0])
-
-
-        max_values = self._data_normalization(max_values)
-        max_state = State(self.get_state_space())
-        max_state.set_values(max_values)
-        min_values = self._data_normalization(min_values)
-        min_state = State(self.get_state_space())
-        min_state.set_values(min_values)
-
-        d_max = ESpace.distance(ESpace, max_state, min_state)
-        d = ESpace.distance(ESpace, norm_state, goal_state)
-        value = d_max - d
-        current_reward.set_overall_reward(value)
-
-        return current_reward
-
-
-
+        self.target_state = State(self._state_space)
+        self.target_state.set_values(np.zeros(4))
 
 ## ------------------------------------------------------------------------------------------------------
-## ------------------------------------------------------------------------------------------------------
-class DoublePendulumStatic(DoublePendulumRoot):
+    def _reset(self, p_seed:int = None ) -> None:
+        """
+        This method is used to reset the environment.
 
+        Parameters
+        ----------
+        p_seed : int, optional
+            Not yet implemented. The default is None.
+        """
 
-
-    C_TYPE = ''
-    C_NAME = ''
-
-
-## ------------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, t_step=0.2, t_act=5, max_torque=1,
-                 l1=1.0, l2=1.0, m1=1.0, m2=1.0, init_angles='down',
-                 g=9.8, history_length=2):
-        super().__init__(p_logging=p_logging, t_step=t_step, t_act=t_act, max_torque=max_torque,                 l1=l1, l2=l2, m1=m1, m2=m2, init_angles=init_angles,
-                 g=g, history_length=history_length)
-
-
-## ------------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed) -> None:
         super()._reset(p_seed)
 
-
-## ------------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace):
-        return p_state_space, p_action_space
 
 
 ## ------------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state:State, p_action:Action):
-        state = p_state.get_values()
-        for i in [0, 2]:
-            if state[i] == 0:
-                state[i] = 180
-            elif state[i] != 0:
-                if state[i] > 0:
-                    sign = 1
-                else:
-                    sign = -1
-                state[i] = sign * (abs(state[i]) - 180)
-        self.th1, self.th1dot, self.a1, self.th2, self.th2dot, self.a2 = state
+        """
+        This method is used to calculate the next states of the system after a set of actions.
 
-        torque = p_action.get_sorted_values()[0]
-        torque = np.clip(torque, -self.max_torque, self.max_torque)
-        torque = tuple(torque.reshape([1]))
+        Parameters
+        ----------
+        p_state : State
+            current State.
+        p_action : Action
+            current Action.
 
-        state = np.radians(state)
+        Returns
+        -------
+        current_state : State
+            Current states after simulating the latest action.
 
-        state = super()._simulate_reaction(state, torque[0])
-        state = np.degrees(state)
-        self.action_cw = True if torque[0] > 0 else False
-        state_ids = self._state.get_dim_ids()
+        """
 
-        for i in [0, 2]:
-            if state[i] % 360 < 180:
-                state[i] = state[i] % 360
-            elif state[i] % 360 > 180:
-                state[i] = state[i] % 360 - 360
-            if state[i] > 0:
-                sign = 1
-            else:
-                sign = -1
-            state[i] = sign * (abs(state[i]) - 180)
+        state = super()._simulate_reaction(p_state, p_action).get_values()
 
+
+        state_ids = self._state_space.get_dim_ids()
         current_state = State(self._state_space)
         for i in range(len(state)):
             current_state.set_value(state_ids[i], state[i])
@@ -1260,6 +833,28 @@ class DoublePendulumStatic(DoublePendulumRoot):
         return current_state
 
 
-## -----------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old:State, p_state_new:State):
-        return super()._compute_reward(p_state_old=p_state_old, p_state_new=p_state_new)
+## ----------------------------------------------------------------------------------------------
+    def _normalize(self, p_state):
+        """
+        Custom method to normalize the State values of the DP env based on static boundaries provided by MLPro
+
+        Parameters
+        ----------
+        p_state:State
+            The state to be normalized
+
+        Returns
+        -------
+        state:State
+            Normalized state values
+
+        """
+
+        state = p_state
+        for i,j in enumerate(self.get_state_space().get_dim_ids()):
+            boundaries = self._state_space.get_dim(j).get_boundaries()
+            state[i] = (2 * ((state[i] - min(boundaries))
+                             / (max(boundaries) - min(boundaries))) - 1)
+
+
+        return state

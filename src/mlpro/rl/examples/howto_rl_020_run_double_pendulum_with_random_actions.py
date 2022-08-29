@@ -25,13 +25,11 @@ from mlpro.rl.models import *
 from mlpro.rl.pool.envs.doublependulum import *
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 from pathlib import Path
-import matplotlib.pyplot as plt
 
 
 
 
-# This command is required for some IDEs to generate the adaptive plot
-plt.ion()
+
 
 # 1 Implement the random RL scenario
 class ScenarioDoublePendulum(RLScenario):
@@ -40,9 +38,8 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulumClassic(p_logging=True, init_angles='up', max_torque=5)
-        # policy_kwargs = dict(activation_fn=torch.nn.Tanh,
-        #              net_arch=[dict(pi=[128, 128], vf=[128, 128])])
+        self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_max_torque=50)
+
 
         # 1.2 Setup random action generator
         policy_random = RandomGenerator(p_observation_space=self._env.get_state_space(), 
