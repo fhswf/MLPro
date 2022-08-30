@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf
-## -- Module  : processing
+## -- Module  : mp
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,7 +12,7 @@
 """
 Ver. 0.1.0 (2022-08-27)
 
-This module provides classes for process management.
+This module provides classes for multiprocessing.
 """
 
 
