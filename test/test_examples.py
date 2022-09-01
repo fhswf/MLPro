@@ -12,10 +12,11 @@
 ## -- 2022-02-28  1.0.3     SY       Howto 06, 07 of basic functions are added
 ## -- 2022-02-28  1.0.4     SY       Howto 07 of basic functions is disabled
 ## -- 2022-05-29  1.1.0     DA       Update howto list after refactoring of all howto files
+## -- 2022-09-02  1.1.1     MRD      Add howto rl 22 and 23
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-05-29)
+Ver. 1.1.1 (2022-09-02)
 
 Unit test for all examples available.
 """
@@ -59,6 +60,8 @@ howto_list = {
     # "rl_018": "mlpro.rl.examples.howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment",
     "rl_019": "mlpro.rl.examples.howto_rl_019_train_and_reload_single_agent",
     "rl_021": "mlpro.rl.examples.howto_rl_021_train_wrapped_sb3_policy_on_doublependulum",
+    "rl_022": "mlpro.rl.examples.howto_rl_022_collect_reward_and_plot_with_callback_function",
+    "rl_023": "mlpro.rl.examples.howto_rl_023_save_agent_every_update",
 
 # Game Theory:
     "gt_001": "mlpro.gt.examples.howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board",
