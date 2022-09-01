@@ -38,6 +38,7 @@
 ## -- 2022-06-06  1.3.8     MRD      Add additional parameter to Training class, p_env_mode for
 ## --                                setting up environment mode
 ## -- 2022-08-22  1.4.0     DA       Class Model: event management added
+## -- 2022-09-01  1.4.1     SY       Renaming maturity to accuracy
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -339,14 +340,14 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_maturity(self):
+    def get_accuracy(self):
         """
-        Computes the maturity of the model.
+        Computes the accuracy of the model.
 
         Returns
         -------
         float
-            Maturity of the model as a scalar value in interval [0,1]
+            Accuracy of the model as a scalar value in interval [0,1]
         """
 
         raise NotImplementedError
