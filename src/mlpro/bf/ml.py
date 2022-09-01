@@ -38,16 +38,17 @@
 ## -- 2022-06-06  1.3.8     MRD      Add additional parameter to Training class, p_env_mode for
 ## --                                setting up environment mode
 ## -- 2022-08-22  1.4.0     DA       Class Model: event management added
+## -- 2022-09-02  1.4.1     MRD      Add Callback Functionality
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-08-22)
+Ver. 1.4.1 (2022-09-02)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
 
 import sys
-from typing import Dict
+from mlpro.bf.callbacks import Callback
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
@@ -446,17 +447,22 @@ class Scenario (Mode, LoadSave, Plottable):
     C_NAME      = '????'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, 
+    def __init__(self,
                  p_mode=Mode.C_MODE_SIM,       
                  p_ada:bool=True,               
                  p_cycle_limit=0,              
-                 p_visualize=True,              
-                 p_logging=Log.C_LOG_ALL ):    
+                 p_visualize=True,
+                 p_callback=None,              
+                 p_logging=Log.C_LOG_ALL):    
 
         # 0 Intro
         self._cycle_max     = sys.maxsize
         self._cycle_id      = 0
         self._visualize     = p_visualize
+        self._callback      = p_callback
+        if self._callback is None:
+            self._callback  = Callback(p_visualize, p_logging)
+
         self.set_cycle_limit(p_cycle_limit)
 
 
@@ -524,6 +530,11 @@ class Scenario (Mode, LoadSave, Plottable):
         """
 
         return self._model
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_callback(self):
+        return self._callback
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1076,7 +1087,13 @@ class Training (Log):
         except:
             env_mode = Mode.C_MODE_SIM
             self._kwargs['p_env_mode'] = env_mode
-
+        
+        # 2.0 Optional Custom Callback Function
+        try:
+            callback_cls = self._kwargs['p_callback_cls']
+        except:
+            callback_cls = None
+            self._kwargs['p_callback_cls'] = None
 
         # 2 Initialization
         super().__init__(p_logging=logging)
@@ -1089,18 +1106,28 @@ class Training (Log):
         self._scenario          = None
         self._mode              = self.C_MODE_TRAIN
 
+        # 3 Setup callback
+        callback                = None
+        if callback_cls is not None:
+            try:
+                callback = callback_cls(p_logging=logging)
+            except:
+                raise ParamError('Par p_callback_cls: class "' + callback_cls.__name__ + '" not compatible')
 
-        # 3 Setup scenario
+        # 4 Setup scenario
         if self._hpt is None:
             try:
                 self._scenario = scenario_cls( p_mode=env_mode, 
                                                p_ada=True,
                                                p_cycle_limit=self._cycle_limit,
                                                p_visualize=visualize,
+                                               p_callback=callback,
                                                p_logging=logging )
+
+                # Initialize callback
+                self._scenario.get_callback().init_callback(self)
             except:
                 raise ParamError('Par p_scenario_cls: class "' + scenario_cls.__name__ + '" not compatible')
-
 
 ## -------------------------------------------------------------------------------------------------
     def get_scenario(self) -> Scenario:
@@ -1255,7 +1282,9 @@ class Training (Log):
 ## -------------------------------------------------------------------------------------------------
     def _run(self) -> TrainingResults:
         self._new_run = True
+        self._callback.training_start()
         while not self.run_cycle(): pass
+        self._callback.training_end()
         return self.get_results()
 
 
