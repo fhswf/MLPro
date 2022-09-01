@@ -38,16 +38,107 @@
 ## --                                  'Score(MA) until Stagnation'
 ## -- 2022-02-27  1.7.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-23  1.7.2     SY       Bug fixing: storing data reward
+## -- 2022-09-02  1.7.3     MRD      Add Callback Functionality
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.2 (2022-05-23)
+Ver. 1.7.3 (2022-09-02)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
 
+from mlpro.bf.callbacks import Callback
 from mlpro.rl.models_env import *
 
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class RLCallback(Callback):
+    """
+    Base Class for RL specific Callback function.
+    """
+
+    C_TYPE = 'Callback'
+    C_NAME = 'RL'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_logging=Log.C_LOG_ALL):
+        super().__init__(p_logging=p_logging)
+
+## -------------------------------------------------------------------------------------------------
+    def _episode_start(self):
+        """
+        For customize function. This will be called when the episode starts.
+        """
+        pass
+
+## -------------------------------------------------------------------------------------------------
+    def episode_start(self):
+        """
+        This function will be called when the episode starts.
+        """
+        self._episode_start()
+
+## -------------------------------------------------------------------------------------------------
+    def _episode_end(self):
+        """
+        For customize function. This will be called when the episode ends.
+        """
+        pass
+
+## -------------------------------------------------------------------------------------------------
+    def episode_end(self):
+        """
+        This function will be called when the episode ends.
+        """
+        self._episode_end()
+
+## -------------------------------------------------------------------------------------------------
+    def _before_process_action(self):
+        """
+        For customize function. This will be called before processing the action to the environment.
+        """
+        pass
+
+## -------------------------------------------------------------------------------------------------
+    def before_process_action(self, p_local):
+        """
+        This function will be called before processing the action to the environment. Here you have
+        access to the local variables.
+        """
+        self.locals = p_local
+        self._before_process_action()
+
+## -------------------------------------------------------------------------------------------------
+    def _after_process_action(self):
+        """
+        For customize function. This will be called after processing the action to the environment.
+        """
+        pass
+
+## -------------------------------------------------------------------------------------------------
+    def after_process_action(self, p_local):
+        """
+        This function will be called after processing the action to the environment. Here you have
+        access to the local variables.
+        """
+        self.locals = p_local
+        self._after_process_action()
+
+## -------------------------------------------------------------------------------------------------
+    def _after_adapt_policy(self):
+        """
+        For customize function. This will be called after the adaptation.
+        """
+        pass
+
+## -------------------------------------------------------------------------------------------------
+    def after_adapt_policy(self, p_local):
+        """
+        This function will be called after the adaptation. Here you have access to the local variables.
+        """
+        self.locals = p_local
+        self._after_adapt_policy()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -268,12 +359,15 @@ class RLScenario(Scenario):
                  p_ada: bool = True,  # Boolean switch for adaptivity of internal model
                  p_cycle_limit=0,  # Maximum number of cycles (0=no limit, -1=get from env)
                  p_visualize=True,  # Boolean switch for env/agent visualisation
+                 p_callback=None,
                  p_logging=Log.C_LOG_ALL):  # Log level (see constants of class Log)
 
         # 1 Setup entire scenario
         self._env = None
+        if p_callback is None:
+            p_callback = RLCallback(p_logging)
         super().__init__(p_mode=p_mode, p_ada=p_ada, p_cycle_limit=p_cycle_limit, p_visualize=p_visualize,
-                         p_logging=p_logging)
+                         p_callback=p_callback, p_logging=p_logging)
         if self._env is None:
             raise ImplementationError('Please bind your RL environment to self._env')
 
@@ -391,6 +485,7 @@ class RLScenario(Scenario):
 
         # 3 Environment: process agent's action
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Env processes action...')
+        self._callback.before_process_action(locals())
         self._env.process_action(action)
         self._timer.add_time(self._env.get_latency())  # in virtual mode only...
         self._env.get_state().set_tstamp(self._timer.get_time())
@@ -408,10 +503,14 @@ class RLScenario(Scenario):
 
                 self._ds_rewards.memorize_row(self._cycle_id, ts, reward_values)
 
+        self._callback.after_process_action(locals())
+
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
         adapted = self._agent.adapt(self._env.get_state(), reward)
 
+        self._callback.after_adapt_policy(locals())
+        
         # 6 Check for terminating events
         success = self._env.get_state().get_success()
         error = self._env.get_state().get_terminal()
@@ -554,7 +653,6 @@ class RLTraining(Training):
 
     ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
-
         # 1 Initialization of elementary training functionalities
         super().__init__(**p_kwargs)
 
@@ -669,6 +767,7 @@ class RLTraining(Training):
 
             self._env = self._scenario.get_env()
             self._agent = self._scenario.get_agent()
+            self._callback = self._scenario.get_callback()
 
             if self._cycles_per_epi_limit == -1:
                 self._cycles_per_epi_limit = self._env.get_cycle_limit()
@@ -719,7 +818,7 @@ class RLTraining(Training):
 
     ## -------------------------------------------------------------------------------------------------
     def _init_episode(self):
-
+        self._callback.episode_start()
         # 1 Evaluation handling  
         if self._eval_frequency > 0:
 
@@ -771,7 +870,7 @@ class RLTraining(Training):
 
     ## -------------------------------------------------------------------------------------------------
     def _close_episode(self):
-
+        self._callback.episode_end()
         if self._eval_frequency > 0:
 
             if self._mode == self.C_MODE_TRAIN:
