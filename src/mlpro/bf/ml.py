@@ -42,7 +42,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-08-22)
+Ver. 1.4.1 (2022-09-01)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
