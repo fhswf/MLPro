@@ -644,6 +644,7 @@ class DoublePendulumS7(DoublePendulumS4):
     C_TYPE = 'Environment'
     C_NAME = 'DoublePendulumClassic'
 
+
 ## -----------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.2, p_t_act=5, p_max_torque=1,
                  p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles='random',
@@ -684,6 +685,7 @@ class DoublePendulumS7(DoublePendulumS4):
 
         self._target_state = State(self._state_space)
         self._target_state.set_values(np.zeros(7))
+
 
 ## -----------------------------------------------------------------------------------------------------
     def setup_spaces(self):
