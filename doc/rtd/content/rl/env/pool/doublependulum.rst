@@ -4,15 +4,14 @@
 
 .. automodule:: mlpro.rl.pool.envs.doublependulum
 
-.. image:: images/doublependulumenv.gif
-    :width: 400px
+.. image:: images/doublependulum_env.gif
+    :width: 800px
 
 .. note::
-    + MLPro provides two implementation of Double Pendulum environment named DoublePendulumS4 and DoublePendulumS7. The DoublePendulumS4 environment is a basic implementation with four dimensional state space including angles and angular acceleration of both the poles.
-    + The static 7 dimensional implementation of Double Pendulum environment in MLPro, is an overarching implementation of the environment inheriting internal dynamics from the root class. The classic implementation is a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and :ref:`Euclidean Distances <Howto BF 003>` of the states.
+ MLPro provides two implementations of Double Pendulum environment named DoublePendulumS4 and DoublePendulumS7. 
+    + The DoublePendulumS4 environment is a basic implementation with four dimensional state space including angles and angular velocities of both the poles.
+    + The static 7 dimensional implementation of Double Pendulum environment in MLPro, is an overarching implementation of the environment inheriting internal dynamics from the root class. This implementation is a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and :ref:`Euclidean Distances <Howto BF 003>` of the states.
 
-.. note::
-    + Further documentation is more specific to the DoublePendulumClassic implementation, however, utilizing the DoublePendulumS4 environment is fairly consistent with MLPro's environments :ref:`API <customEnv>`.
 
 The double pendulum environment can be imported via:
 
@@ -20,11 +19,9 @@ The double pendulum environment can be imported via:
 
     import mlpro.rl.pool.envs.doublependulum
 
-The environment can be initialised with specifying the initial angles of both poles, masses of both poles, lenghts of poles, maximum torque value and scenario related parameters including step size and actuation step size. The initial positions of the poles refer to the position of the poles at the beginning of each RL episode, which can be set to 'up', 'down', 'random'. The default values for length and mass of each pole in the double pendulum are set to 1 and 1 respectively. The environment behaviour can be understood by running How To 20 in MLPro's sample implementation examples. Running :ref:`How to 20 <Howto RL 020>` will produce following logging and visualisation.
+The environment can be initialised with specifying the initial angles of both poles, masses of both poles, lenghts of poles, maximum torque value and scenario related parameters including step size and actuation step size. The initial positions of the poles refer to the position of the poles at the beginning of each RL episode, which can be set to 'up', 'down', 'random'. The default values for length and mass of each pole in the double pendulum are set to 1 and 1 respectively. The environment behaviour can be understood by running How To 20 in MLPro's sample implementation examples.
 
-.. image:: images/doublependulum_run.gif
-	:width: 1000px
-	
+
 .. note::
  + The visualisation of the environment can be turned off by setting the visualize parameter in training/scenario initialisation to false
  + Since it is not an episodical environment, the length of the run can be set by setting the number of cycles parameter
@@ -56,7 +53,7 @@ General Information
 +------------------------------------+-------------------------------------------------------+
 | Action Space Boundaries            | Depends on max_torque                                 |
 +------------------------------------+-------------------------------------------------------+
-| State Space Dimension              | [7,]                                                  |
+| State Space Dimension              | [4,](for DoublePendulumS4)[7,](for DoublePendulumS7)  |
 +------------------------------------+-------------------------------------------------------+
 | State Space Base Set               | Real number                                           |
 +------------------------------------+-------------------------------------------------------+
@@ -80,24 +77,24 @@ State Space
 
 The state space for the double pendulum environment returns state of poles in the system including angles of both poles, velocity of poles, angular acceleration of the poles. The states for double pendulum environment can be understood by the table below.
 
-+------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
-|         State                      |         Description                |               Range              |			Unit				     |
-+====================================+====================================+==================================+=======================================================+
-| Theta 1                            |Angle of the inner pole             | [-180, 180]	                     |	degrees                                              |
-+------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
-| Omega 1                            |Angular velocity of inner pole      | N.A.     	                     |	degrees per second                                   |
-+------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
-| Acc 1                              |Angular Acceleration of outer pole  | N.A.     	                     |	degrees per second squared                           |
-+------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
-| Theta 2                            |Angle of the outer pole             | [-180, 180]	                     |	degrees                                              |
-+------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
-| Omega 2                            |Angular velocity of outer pole      | N.A.                             |	degrees per second                                   |
-+------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
-| Acc 2                              |Angular acceleration of outer pole  | N.A.     	                     |	degrees per second squared                           |
-+------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+|         State                      |         Description                |               Range              |			Unit				     |   DoublePendulumS4           |   DoublePendulumS7      |
++====================================+====================================+==================================+=======================================================+==============================+=========================+
+| Theta 1                            |Angle of the inner pole             | [-180, 180]	                     |	degrees                                              |              X               |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Omega 1                            |Angular velocity of inner pole      | N.A.     	                     |	degrees per second                                   |		    X		    |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Acc 1                              |Angular Acceleration of outer pole  | N.A.     	                     |	degrees per second squared                           |                              |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Theta 2                            |Angle of the outer pole             | [-180, 180]	                     |	degrees                                              |              X               |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Omega 2                            |Angular velocity of outer pole      | N.A.                             |	degrees per second                                   |              X               |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Acc 2                              |Angular acceleration of outer pole  | N.A.     	                     |	degrees per second squared                           |                              |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
 
 .. note:: 
- The boundaries for the velocity and acceleration are highly influenced by the initital position of the arms and the current torque being actuated on the inner pole. These parameters are further dependent on the specific application, scenario or purpose of research.  
+ The boundaries for the velocity and acceleration are highly influenced by the initital position of the arms and the current torque being actuated on the inner pole. These parameters are further dependent on the specific application, scenario or purpose of research.
 
 Current implementation of DP environment in MLPro returns success when the current state of the environment is within a distance lesser than threshold distance from the goal state. 
 
@@ -128,4 +125,4 @@ Change Log
 Cross Reference
 ===============
     + :ref:`API Reference <Double Pendulum>`
-    + How to example files :ref:`How to 20 <Howto RL 020>` and :ref:`How to 21<Howto RL 021>`
+    + How to example files :ref:`How to RL 20: Running the Double Pendulum Environment with a random agent generating random actions. <Howto RL 020>`

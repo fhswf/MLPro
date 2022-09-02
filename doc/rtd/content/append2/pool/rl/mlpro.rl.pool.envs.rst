@@ -48,7 +48,7 @@ UR5 Arm Robot
    :show-inheritance:
 
 
-:ref:`Double Pendulum <DoublePendulum>`
+Double Pendulum
 ---------------------------------------
 
 .. image:: images/MPro-RL-DoublePendulum-class-diagram.drawio.png
