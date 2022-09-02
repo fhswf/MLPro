@@ -16,3 +16,14 @@ One of the main advantages of MLPro is the complete structure of MLPro that is n
 MLPro covers environment, agents, multi-agents, model-based RL, and many more in a sub-framework, including cooperative Game Theoretical approach to solve RL problems.
 
 We are committed to continuously enhancing MLPro, thus it can have more features and be applicable in more ML tasks.
+
+
+
+
+Key Features
+------------
+   - Numerous extensive sub-frameworks for relevant ML areas like reinforcement learning, game theory, online machine learning, etc.
+   - Powerful substructure of overarching basic functionalities for mathematics, data management, training and tuning of ML models, and much more
+   - Numerous wrapper classes to integrate 3rd party packages
+
+
