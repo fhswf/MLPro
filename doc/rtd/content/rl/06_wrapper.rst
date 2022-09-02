@@ -10,15 +10,19 @@ It is also possible to combine an environment and a policy from different packag
 
 At the moment, we have five ready-to-use wrapper classes related to RL from 3rd-party packages to MLPro and two wrapper classes from MLPro to 3rd-party packages, such as:
 
-(1) RL Environment: OpenAI Gym to MLPro
-
-(2) RL Environment: MLPro to OpenAI Gym
-
-(3) RL Environment: PettingZoo to MLPro
-
-(4) RL Environment: MLPro to PettingZoo
-
-(5) RL Policy: StableBaselines3 to MLPro
++------+-------------------+----------------------+--------------------+-----------------------------------------+
+|  No  |   Wrapper Class   |        Origin        |       Target       |          Wrapped RL Components          |
++======+===================+======================+====================+=========================================+
+| 1    | WrEnvGYM2MLPro    | OpenAI Gym           | MLPro              | RL Environments                         |
++------+-------------------+----------------------+--------------------+-----------------------------------------+
+| 2    | WrEnvMLPro2GYM    | MLPro                | OpenAI Gym         | RL Environments                         |
++------+-------------------+----------------------+--------------------+-----------------------------------------+
+| 3    | WrEnvPZOO2MLPro   | PettingZoo           | MLPro              | Multi-Agent RL Environments             |
++------+-------------------+----------------------+--------------------+-----------------------------------------+
+| 4    | WrEnvMLPro2PZoo   | MLPro                | PettingZoo         | Multi-Agent RL Environments             |
++------+-------------------+----------------------+--------------------+-----------------------------------------+
+| 5    | WrPolicySB32MLPro | StableBaselines3     | MLPro              | Off-Policy and On-Policy RL Algorithms  |
++------+-------------------+----------------------+--------------------+-----------------------------------------+
 
 Moreover, wrapper classes for hyperparameter tuning by `Optuna <https://mlpro.readthedocs.io/en/latest/content/append1/bf/howto.bf.008.html>`_ and `Hyperopt <https://mlpro.readthedocs.io/en/latest/content/append1/bf/howto.bf.007.html>`_ can also be incorporated to your RL training.
 
