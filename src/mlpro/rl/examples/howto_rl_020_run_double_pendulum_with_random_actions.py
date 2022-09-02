@@ -49,7 +49,7 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulumS7(p_logging=True, p_init_angles='random', p_max_torque=50)
+        self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_max_torque=10)
 
 
         # 1.2 Setup and return random action agent

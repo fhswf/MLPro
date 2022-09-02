@@ -226,14 +226,14 @@ class DoublePendulumRoot(Environment):
             raise NotImplementedError("init_angles value must be up or down")
 
 
-        self._th1dot = 0
-        self._th2dot = 0
+        self._omega1 = 0
+        self._omega2 = 0
 
         state_ids = self._state.get_dim_ids()
         self._state.set_value(state_ids[0], (self._th1))
-        self._state.set_value(state_ids[1], (self._th1dot))
+        self._state.set_value(state_ids[1], (self._omega1))
         self._state.set_value(state_ids[2], (self._th2))
-        self._state.set_value(state_ids[3], (self._th2dot))
+        self._state.set_value(state_ids[3], (self._omega2))
 
 
         self._history_x.clear()
@@ -597,8 +597,8 @@ class DoublePendulumS4(DoublePendulumRoot):
                          p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g,
                          p_history_length=p_history_length)
 
-        self.target_state = State(self._state_space)
-        self.target_state.set_values(np.zeros(4))
+        self._target_state = State(self._state_space)
+        self._target_state.set_values(np.zeros(4))
 
 ## ------------------------------------------------------------------------------------------------------
     def _normalize(self, p_state:list):
@@ -695,11 +695,11 @@ class DoublePendulumS7(DoublePendulumS4):
         """
         state_space, action_space = super().setup_spaces()
         state_space.add_dim(
-            Dimension(p_name_long='acc 1', p_name_short='a1', p_description='Angular Acceleration of Pendulum 1',
+            Dimension(p_name_long='alpha 1', p_name_short='a1', p_description='Angular Acceleration of Pendulum 1',
                       p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-6732.31, 5870.988]))
 
         state_space.add_dim(
-            Dimension(p_name_long='acc 2', p_name_short='a2', p_description='Angular Acceleration of Pendulum 2',
+            Dimension(p_name_long='alpha 2', p_name_short='a2', p_description='Angular Acceleration of Pendulum 2',
                       p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-9650.26, 6805.587]))
 
         state_space.add_dim(
@@ -722,8 +722,8 @@ class DoublePendulumS7(DoublePendulumS4):
 
         """
         super()._reset()
-        self.a1 = 0
-        self.a2 = 0
+        self._alpha1 = 0
+        self._alpha2 = 0
         for i in self._state_space.get_dim_ids()[-2:-4:-1]:
             self._state.set_value(i, 0)
 

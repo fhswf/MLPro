@@ -4,13 +4,13 @@
 
 .. automodule:: mlpro.rl.pool.envs.doublependulum
 
-.. image:: images/doublependulum_env.gif
+.. image:: images/doublependulum.gif
     :width: 800px
 
 .. note::
  MLPro provides two implementations of Double Pendulum environment named DoublePendulumS4 and DoublePendulumS7. 
     + The DoublePendulumS4 environment is a basic implementation with four dimensional state space including angles and angular velocities of both the poles.
-    + The static 7 dimensional implementation of Double Pendulum environment in MLPro, is an overarching implementation of the environment inheriting internal dynamics from the root class. This implementation is a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and :ref:`Euclidean Distances <Howto BF 003>` of the states.
+    + The static 7 dimensional implementation of Double Pendulum environment in MLProis a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and :ref:`Euclidean Distances <Howto BF 003>` of the states.
 
 
 The double pendulum environment can be imported via:
@@ -34,7 +34,7 @@ Please install below packages to use the MLPro's double pendulum environment
     - `NumPy <https://pypi.org/project/numpy/>`_
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
     - `SciPy <https://pypi.org/project/scipy/>`_
-    - :ref:`MLPro <Installation>`
+
 
 
 General Information
@@ -84,13 +84,15 @@ The state space for the double pendulum environment returns state of poles in th
 +------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
 | Omega 1                            |Angular velocity of inner pole      | N.A.     	                     |	degrees per second                                   |		    X		    |            X            |
 +------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
-| Acc 1                              |Angular Acceleration of outer pole  | N.A.     	                     |	degrees per second squared                           |                              |            X            |
+| Alpha 1                            |Angular Acceleration of outer pole  | N.A.     	                     |	degrees per second squared                           |              -               |            X            |
 +------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
 | Theta 2                            |Angle of the outer pole             | [-180, 180]	                     |	degrees                                              |              X               |            X            |
 +------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
 | Omega 2                            |Angular velocity of outer pole      | N.A.                             |	degrees per second                                   |              X               |            X            |
 +------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
-| Acc 2                              |Angular acceleration of outer pole  | N.A.     	                     |	degrees per second squared                           |                              |            X            |
+| Alpha 2                            |Angular acceleration of outer pole  | N.A.     	                     |	degrees per second squared                           |              -               |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Torque                             |Input torque to the inner pole      | N.A.     	                     |	Newton times meter                                   |              -               |            X            |
 +------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
 
 .. note:: 
