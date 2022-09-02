@@ -6,23 +6,19 @@
 MLPro - Machine Learning Professional
 =====================================
 
-Welcome to MLPro - the integrative middleware framework for standardized machine learning (ML) in Python!
+Welcome to MLPro - the integrative middleware-framework for standardized machine learning in Python!
 
-MLPro provides advanced, scientific-level models and templates for a continuously growing number of sub-areas of ML.
-These are embedded in standard processes for training and real operations. Furthermore, numerous popular 3rd party 
+MLPro provides advanced, scientific-level models and templates for a continuously growing number of sub-areas of machine learning (ML).
+These are embedded in standard processes for training and real operations.
+
+
+Furthermore, numerous popular 3rd party 
 packages can easily be integrated.
 
-MLPro is intended for data scientists, engineers, developers, and students who value
+MLPro is made for scientists, engineers, developers, and students who value
    - powerful and flexible templates for their next ML project
    - standard proceedings for training, hyperparameter tuning, and real operations
    - numerous ready-to-run example codes and benchmark objects for self-study
-
-
-Key Features
-------------
-   - Numerous extensive sub-frameworks for relevant ML areas like reinforcement learning, game theory, online machine learning, etc.
-   - Powerful substructure of overarching basic functionalities for mathematics, data management, training and tuning of ML models, and much more
-   - Numerous wrapper classes to integrate 3rd party packages
 
 
 MLPro is made by scientists to
