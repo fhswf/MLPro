@@ -39,4 +39,3 @@ This activity is to make sure that the EnvModel is accurate enough for policy ad
 Otherwise, the current step is ended without any policy adaptations.
    
 .. image:: agents/images/MLPro-RL-Agents_flowchart_adaptation.png
-
