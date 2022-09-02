@@ -553,8 +553,6 @@ class DoublePendulumRoot(Environment):
 ## ------------------------------------------------------------------------------------------------------
 class DoublePendulumS4(DoublePendulumRoot):
 
-
-
     C_TYPE = 'Environment'
     C_NAME = 'DoublePendulumStatic4'
 
