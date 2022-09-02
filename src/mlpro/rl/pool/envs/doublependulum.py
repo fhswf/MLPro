@@ -102,15 +102,14 @@ class DoublePendulumRoot(Environment):
     C_VALID_ANGLES = [C_ANGLES_RND, C_ANGLES_DOWN, C_ANGLES_RND]
 
     C_THRSH_GOAL = 0
+
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.2, p_t_act=5, p_max_torque=0,
                  p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles=C_ANGLES_RND,
                  p_g=9.8, p_history_length=5):
 
         """
-           This is the root class of the Double Pendulum environment that inherits
-           Environment class from MLPro.
-
            Parameters
            ----------
            p_logging : Log, optional
@@ -243,7 +242,7 @@ class DoublePendulumRoot(Environment):
         self._alpha = 0
 
 
-    ## ------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------
     def _derivs(self, p_state, t, p_torque):
         """
         This method is used to calculate the derivatives of the system, given the
@@ -552,6 +551,10 @@ class DoublePendulumRoot(Environment):
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
 class DoublePendulumS4(DoublePendulumRoot):
+    """
+    This is the Double Pendulum Static 4 dimensional environment that inherits from the double pendulum root
+    class, inheriting the dynamics and default reward strategy.
+    """
 
     C_TYPE = 'Environment'
     C_NAME = 'DoublePendulumStatic4'
@@ -562,9 +565,6 @@ class DoublePendulumS4(DoublePendulumRoot):
                  p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles='random',
                  p_g=9.8, p_history_length=2):
         """
-        This is the static 4 dimensional class of the Double Pendulum environment root that inherits Environment class
-        from MLPro.
-
         Parameters
         ----------
         p_logging : Log, optional
@@ -650,7 +650,6 @@ class DoublePendulumS7(DoublePendulumS4):
                  p_g=9.8, p_history_length=2):
 
         """
-        This is the main class of the Double Pendulum environment that inherits Environment class from MLPro.
 
         Parameters
         ----------
@@ -684,7 +683,7 @@ class DoublePendulumS7(DoublePendulumS4):
             p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g, p_history_length=p_history_length)
 
         self._target_state = State(self._state_space)
-        self._target_state.set_values(np.zeros(4))
+        self._target_state.set_values(np.zeros(7))
 
 ## -----------------------------------------------------------------------------------------------------
     def setup_spaces(self):
