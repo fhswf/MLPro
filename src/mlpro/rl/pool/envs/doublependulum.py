@@ -51,7 +51,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.8 (2022-08-29)
+Ver. 2.4.9 (2022-09-02)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
