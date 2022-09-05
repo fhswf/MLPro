@@ -47,11 +47,12 @@
 ## -- 2022-08-20  1.4.8     LSB      New attribute target state
 ## -- 2022-08-29  2.4.8     LSB      - New varients to be used
 ##                                   - Default reward strategy and success strategy and bug fixes
-## -- 2022-09-02  2.4.9     LSB      - Refactoring, code cleaning
+## -- 2022-09-02  2.4.9     LSB      Refactoring, code cleaning
+## -- 2022-09-05  2.4.10    LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.9 (2022-09-02)
+Ver. 2.4.10 (2022-09-05)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
