@@ -17,7 +17,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2021-12-07)
+Ver. 1.1.3 (2021-12-09)
 
 This module provides model classes for tasks related to cooperative Game Theory.
 """
