@@ -104,8 +104,8 @@ class DoublePendulumRoot(Environment):
 
     C_THRSH_GOAL = 0
 
-
-    C_ANI_STEP = 0.03
+    C_ANI_FRAME = 30
+    C_ANI_STEP = 0.001
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -526,11 +526,11 @@ class DoublePendulumRoot(Environment):
             thisx = [0, x1[i], x2[i]]
             thisy = [0, y1[i], y2[i]]
 
-
-            self._history_x.appendleft(thisx[2])
-            self._history_y.appendleft(thisy[2])
-            self._line.set_data(thisx, thisy)
-            self._trace.set_data(self._history_x, self._history_y)
+            if i % self.C_ANI_FRAME == 0:
+                self._history_x.appendleft(thisx[2])
+                self._history_y.appendleft(thisy[2])
+                self._line.set_data(thisx, thisy)
+                self._trace.set_data(self._history_x, self._history_y)
 
             if self._action_cw:
                 self._cw_arc.set_visible(True)
@@ -547,7 +547,7 @@ class DoublePendulumRoot(Environment):
                 self._ccw_arc.set_alpha(self._alpha)
                 self._ccw_arrow.set_alpha(self._alpha)
 
-            if not self._embedded_fig: #:
+            if not self._embedded_fig and i%self.C_ANI_FRAME == 0: #:
                 self._fig.canvas.draw()
                 self._fig.canvas.flush_events()
 
