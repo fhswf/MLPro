@@ -24,8 +24,7 @@ The environment can be initialised with specifying the initial angles of both po
 
 .. note::
  + The visualisation of the environment can be turned off by setting the visualize parameter in training/scenario initialisation to false
- + Since it is not an episodical environment, the length of the run can be set by setting the number of cycles parameter
- 
+
     
 Prerequisites
 =============

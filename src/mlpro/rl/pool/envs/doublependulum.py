@@ -85,7 +85,7 @@ class DoublePendulumRoot(Environment):
     C_NAME = "DoublePendulumRoot"
 
     C_CYCLE_LIMIT = 0
-    C_LATENCY = timedelta(0, 0, 0)
+    C_LATENCY = timedelta(0, 0.04, 0)
 
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
 
@@ -104,8 +104,11 @@ class DoublePendulumRoot(Environment):
     C_THRSH_GOAL = 0
 
 
+    C_ANI_STEP = 0.03
+
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.2, p_t_act=5, p_max_torque=0,
+    def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.04, p_max_torque=0,
                  p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles=C_ANGLES_RND,
                  p_g=9.8, p_history_length=5):
 
@@ -139,9 +142,9 @@ class DoublePendulumRoot(Environment):
         """
 
         self._t_step = p_t_step
-        self._t_act = p_t_act
 
-        self.set_latency(timedelta(0, p_t_act * p_t_step, 0))
+
+        self.set_latency(timedelta(0, p_t_step, 0))
 
         self._max_torque = p_max_torque
 
@@ -322,7 +325,7 @@ class DoublePendulumRoot(Environment):
         else:
             self._alpha = 0
 
-        self._y = integrate.odeint(self._derivs, state, np.arange(0, self._t_step / self._t_act, 0.001), args=(torque,))
+        self._y = integrate.odeint(self._derivs, state, np.arange(0, self._t_step, self.C_ANI_STEP), args=(torque,))
         state = self._y[-1].copy()
 
 
@@ -399,6 +402,9 @@ class DoublePendulumRoot(Environment):
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
+        """
+        Custom method to compute broken state. In this case always returns false as the environment doesn't break
+        """
         return False
 
 
@@ -519,11 +525,11 @@ class DoublePendulumRoot(Environment):
             thisx = [0, x1[i], x2[i]]
             thisy = [0, y1[i], y2[i]]
 
-            if i % 30 == 0:
-                self._history_x.appendleft(thisx[2])
-                self._history_y.appendleft(thisy[2])
-                self._line.set_data(thisx, thisy)
-                self._trace.set_data(self._history_x, self._history_y)
+
+            self._history_x.appendleft(thisx[2])
+            self._history_y.appendleft(thisy[2])
+            self._line.set_data(thisx, thisy)
+            self._trace.set_data(self._history_x, self._history_y)
 
             if self._action_cw:
                 self._cw_arc.set_visible(True)
@@ -540,7 +546,7 @@ class DoublePendulumRoot(Environment):
                 self._ccw_arc.set_alpha(self._alpha)
                 self._ccw_arrow.set_alpha(self._alpha)
 
-            if not self._embedded_fig and i % 30 == 0:
+            if not self._embedded_fig: #:
                 self._fig.canvas.draw()
                 self._fig.canvas.flush_events()
 
@@ -561,7 +567,7 @@ class DoublePendulumS4(DoublePendulumRoot):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.2, p_t_act=5, p_max_torque=1,
+    def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.04, p_max_torque=1,
                  p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles='random',
                  p_g=9.8, p_history_length=2):
         """
@@ -593,7 +599,7 @@ class DoublePendulumS4(DoublePendulumRoot):
             Historical trajectory points to display. The default is 5.
         """
 
-        super().__init__(p_logging=p_logging, p_t_step=p_t_step, p_t_act=p_t_act, p_max_torque=p_max_torque,p_l1=p_l1,
+        super().__init__(p_logging=p_logging, p_t_step=p_t_step, p_max_torque=p_max_torque,p_l1=p_l1,
                          p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g,
                          p_history_length=p_history_length)
 
@@ -642,11 +648,11 @@ class DoublePendulumS7(DoublePendulumS4):
 
 
     C_TYPE = 'Environment'
-    C_NAME = 'DoublePendulumClassic'
+    C_NAME = 'DoublePendulumStatic7'
 
 
 ## -----------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.2, p_t_act=5, p_max_torque=1,
+    def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.04, p_max_torque=1,
                  p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles='random',
                  p_g=9.8, p_history_length=2):
 
@@ -680,7 +686,7 @@ class DoublePendulumS7(DoublePendulumS4):
             Historical trajectory points to display. The default is 5.
         """
 
-        super().__init__(p_logging=p_logging, p_t_step=p_t_step, p_t_act=p_t_act, p_max_torque=p_max_torque, p_l1=p_l1,
+        super().__init__(p_logging=p_logging, p_t_step=p_t_step, p_max_torque=p_max_torque, p_l1=p_l1,
             p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g, p_history_length=p_history_length)
 
         self._target_state = State(self._state_space)
