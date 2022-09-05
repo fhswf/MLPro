@@ -12,11 +12,12 @@
 ## -- 2022-08-02  1.0.2     LSB      Parameters for internal unit testing
 ## -- 2022-08-05  1.0.3     SY       Refactoring
 ## -- 2022-08-23  1.0.4     DA       Refactoring
+## -- 2022-09-06  1.0.5     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.4 (2022-08-23)
+Ver. 1.0.5 (2022-09-06)
 
 This module shows how to run the double pendulum environment using random actions agent.
 
@@ -45,7 +46,7 @@ from pathlib import Path
 # 1 Implement the random RL scenario
 class ScenarioDoublePendulum(RLScenario):
 
-    C_NAME      = 'Matrix'
+    C_NAME      = 'Double Pendulum with Random Actions'
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
@@ -69,28 +70,18 @@ class ScenarioDoublePendulum(RLScenario):
 
 
 
-# 2 Create scenario and start training
+# 2 Create scenario and run the scenario
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
     cycle_limit         = 200
-    adaptation_limit    = 10000
-    stagnation_limit    = 0
-    eval_frequency      = 5
-    eval_grp_size       = 5
-    logging             = Log.C_LOG_WE
+    logging             = Log.C_LOG_ALL
     visualize           = True
-    path                = str(Path.home())
     plotting            = True
 else:
     # 2.2 Parameters for unittest
     cycle_limit         = 20
-    adaptation_limit    = 10
-    stagnation_limit    = 0
-    eval_frequency      = 5
-    eval_grp_size       = 5
     logging             = Log.C_LOG_NOTHING
     visualize           = False
-    path                = None
     plotting            = False
 
 
@@ -106,7 +97,4 @@ myscenario  = ScenarioDoublePendulum(
 
 myscenario.reset(p_seed=3)
 myscenario.run() 
-
-
-
 

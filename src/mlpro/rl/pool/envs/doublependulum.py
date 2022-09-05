@@ -49,10 +49,11 @@
 ##                                   - Default reward strategy and success strategy and bug fixes
 ## -- 2022-09-02  2.4.9     LSB      Refactoring, code cleaning
 ## -- 2022-09-05  2.4.10    LSB      Refactoring
+## -- 2022-09-06  2.4.11    LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.10 (2022-09-05)
+Ver. 2.4.11 (2022-09-06)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -111,7 +112,7 @@ class DoublePendulumRoot(Environment):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.04, p_max_torque=0,
                  p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles=C_ANGLES_RND,
-                 p_g=9.8, p_history_length=5):
+                 p_g=9.8, p_history_length=5, p_mode = Mode.C_MODE_SIM, p_latency = timedelta(0, 0.04, 0)):
 
         """
            Parameters
@@ -165,7 +166,7 @@ class DoublePendulumRoot(Environment):
         self._history_x = deque(maxlen=p_history_length)
         self._history_y = deque(maxlen=p_history_length)
 
-        super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+        super().__init__(p_mode=p_mode, p_logging=p_logging, p_latency=p_latency)
 
 
         self._state = State(self._state_space)
@@ -214,7 +215,7 @@ class DoublePendulumRoot(Environment):
         Parameters
         ----------
         p_seed : int, optional
-            Not yet implemented. The default is None.
+            The default is None.
 
         """
         if self._init_angles =='up':
@@ -570,7 +571,7 @@ class DoublePendulumS4(DoublePendulumRoot):
 ## ------------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.04, p_max_torque=1,
                  p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles='random',
-                 p_g=9.8, p_history_length=2):
+                 p_g=9.8, p_history_length=2, p_mode = Mode.C_MODE_SIM, p_latency = timedelta(0, 0.04, 0)):
         """
         Parameters
         ----------
@@ -602,7 +603,7 @@ class DoublePendulumS4(DoublePendulumRoot):
 
         super().__init__(p_logging=p_logging, p_t_step=p_t_step, p_max_torque=p_max_torque,p_l1=p_l1,
                          p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g,
-                         p_history_length=p_history_length)
+                         p_history_length=p_history_length, p_mode=p_mode, p_latency=p_latency)
 
         self._target_state = State(self._state_space)
         self._target_state.set_values(np.zeros(4))
@@ -610,7 +611,8 @@ class DoublePendulumS4(DoublePendulumRoot):
 ## ------------------------------------------------------------------------------------------------------
     def _normalize(self, p_state:list):
         """
-        Custom method to normalize the State values of the DP env based on static boundaries provided by MLPro
+        Method for normalizing the State values of the DP env based on MinMax normalisation based on static boundaries
+        provided by MLPro.
 
         Parameters
         ----------
@@ -655,7 +657,7 @@ class DoublePendulumS7(DoublePendulumS4):
 ## -----------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL, p_t_step=0.04, p_max_torque=1,
                  p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles='random',
-                 p_g=9.8, p_history_length=2):
+                 p_g=9.8, p_history_length=2, p_mode = Mode.C_MODE_SIM, p_latency = timedelta(0, 0.04, 0)):
 
         """
 
@@ -688,7 +690,8 @@ class DoublePendulumS7(DoublePendulumS4):
         """
 
         super().__init__(p_logging=p_logging, p_t_step=p_t_step, p_max_torque=p_max_torque, p_l1=p_l1,
-            p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g, p_history_length=p_history_length)
+            p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g, p_history_length=p_history_length,
+            p_latency=p_latency, p_mode=p_mode)
 
         self._target_state = State(self._state_space)
         self._target_state.set_values(np.zeros(7))
@@ -725,7 +728,7 @@ class DoublePendulumS7(DoublePendulumS4):
         Parameters
         ----------
         p_seed : int, optional
-            Not yet implemented. The default is None.
+            The default is None.
 
         """
         super()._reset()

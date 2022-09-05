@@ -51,10 +51,22 @@ UR5 Arm Robot
 Double Pendulum
 ---------------------------------------
 
-.. image:: images/MPro-RL-DoublePendulum-class-diagram.drawio.png
 
 .. automodule:: mlpro.rl.pool.envs.doublependulum
+
+.. image:: images/MPro-RL-DoublePendulum-class-diagram.drawio.png
+
+.. autoclass:: mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot
    :members:
-   :private-members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: mlpro.rl.pool.envs.doublependulum.DoublePendulumS4
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. autoclass:: mlpro.rl.pool.envs.doublependulum.DoublePendulumS7
+   :members:
    :undoc-members:
    :show-inheritance:

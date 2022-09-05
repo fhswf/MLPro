@@ -10,7 +10,7 @@
 .. note::
  MLPro provides two implementations of Double Pendulum environment named DoublePendulumS4 and DoublePendulumS7. 
     + The DoublePendulumS4 environment is a basic implementation with four dimensional state space including angles and angular velocities of both the poles.
-    + The static 7 dimensional implementation of Double Pendulum environment in MLProis a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and :ref:`Euclidean Distances <Howto BF 003>` of the states.
+    + The static 7 dimensional implementation of Double Pendulum environment in MLProis a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and Euclidean Distances of the states.
 
 
 The double pendulum environment can be imported via:
@@ -125,5 +125,5 @@ Change Log
   
 Cross Reference
 ===============
-    + :ref:`API Reference <Double Pendulum>`
     + How to example files :ref:`How to RL 20: Running the Double Pendulum Environment with a random agent generating random actions. <Howto RL 020>`
+    + :ref:`API Reference <Double Pendulum>`
