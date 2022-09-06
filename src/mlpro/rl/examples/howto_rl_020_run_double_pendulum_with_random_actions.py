@@ -12,7 +12,7 @@
 ## -- 2022-08-02  1.0.2     LSB      Parameters for internal unit testing
 ## -- 2022-08-05  1.0.3     SY       Refactoring
 ## -- 2022-08-23  1.0.4     DA       Refactoring
-## -- 2022-09-06  1.0.5     LSB      Refactoring
+## -- 2022-09-06  1.0.5     LSB/DA   Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -50,7 +50,7 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_max_torque=10)
+        self._env   = DoublePendulumS7(p_init_angles='random', p_max_torque=10, p_logging=p_logging)
 
 
         # 1.2 Setup and return random action agent
@@ -58,7 +58,7 @@ class ScenarioDoublePendulum(RLScenario):
                                         p_action_space=self._env.get_action_space(),
                                         p_buffer_size=1,
                                         p_ada=1,
-                                        p_logging=False)
+                                        p_logging=p_logging)
 
         return Agent(
             p_policy=policy_random,  

@@ -49,7 +49,7 @@
 ##                                   - Default reward strategy and success strategy and bug fixes
 ## -- 2022-09-02  2.4.9     LSB      Refactoring, code cleaning
 ## -- 2022-09-05  2.4.10    LSB      Refactoring
-## -- 2022-09-06  2.4.11    LSB      Refactoring
+## -- 2022-09-06  2.4.11    LSB/DA   Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -78,44 +78,44 @@ plt.ion()
 
 ## ---------------------------------------------------------------------------------------------------------------------
 ## ---------------------------------------------------------------------------------------------------------------------
-class DoublePendulumRoot(Environment):
+class DoublePendulumRoot (Environment):
     """
     This is the root double pendulum environment class inherited from Environment class with four dimensional state
     space and underlying implementation of the Double Pendulum dynamics, default reward strategy.
 
-           Parameters
-           ----------
-           p_logging : Log, optional
-               Logging functionalities of MLPro. The default is Log.C_LOG_ALL.
-           p_t_step : float, optional
-               Time for each time step (in seconds). The default is 0.2.
-           p_t_act : int, optional
-               Action frequency (with respect to the time step). The default is 20.
-           p_max_torque : float, optional
-               Maximum torque applied to pendulum 1. The default is 20.
-           p_l1 : float, optional
-               Length of pendulum 1 in m. The default is 0.5
-           p_l2 : float, optional
-               Length of pendulum 2 in m. The default is 0.25
-           p_m1 : float, optional
-               Mass of pendulum 1 in kg. The default is 0.5
-           p_m2 : float, optional
-               Mass of pendulum 2 in kg. The default is 0.25
-           p_init_angles: str, optional
-               'up' starts the pendulum in an upright position
-               'down' starts the pendulum in a downward position
-               'random' starts the pendulum from a random position.
-           p_g : float, optional
-               Gravitational acceleration. The default is 9.8
-           p_history_length : int, optional
-               Historical trajectory points to display. The default is 5.
+    Parameters
+    ----------
+    p_mode 
+        Mode of environment. Possible values are Mode.C_MODE_SIM(default) or Mode.C_MODE_REAL.
+    p_latency : timedelta
+        Optional latency of environment. If not provided, the internal value of constant C_LATENCY is used by default.
+    p_max_torque : float, optional
+        Maximum torque applied to pendulum. The default is 20.
+    p_l1 : float, optional
+        Length of pendulum 1 in m. The default is 0.5
+    p_l2 : float, optional
+        Length of pendulum 2 in m. The default is 0.25
+    p_m1 : float, optional
+        Mass of pendulum 1 in kg. The default is 0.5
+    p_m2 : float, optional
+        Mass of pendulum 2 in kg. The default is 0.25
+    p_init_angles: str, optional
+        C_ANGLES_UP starts the pendulum in an upright position
+        C_ANGLES_DOWN starts the pendulum in a downward position
+        C_ANGLES_RND starts the pendulum from a random position.
+    p_g : float, optional
+        Gravitational acceleration. The default is 9.8
+    p_history_length : int, optional
+        Historical trajectory points to display. The default is 5.
+    p_logging
+        Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
 
     """
 
     C_NAME = "DoublePendulumRoot"
 
     C_CYCLE_LIMIT = 0
-    C_LATENCY = timedelta(0, 0.04, 0)
+    C_LATENCY = timedelta(0, 0, 40000)
 
     C_REWARD_TYPE = Reward.C_TYPE_OVERALL
 
@@ -136,16 +136,21 @@ class DoublePendulumRoot(Environment):
     C_ANI_FRAME = 30
     C_ANI_STEP = 0.001
 
-
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, p_max_torque=0,
-                 p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles=C_ANGLES_RND,
-                 p_g=9.8, p_history_length=5, p_mode = Mode.C_MODE_SIM, p_latency = timedelta(0, 0.04, 0)):
-
-        self.set_latency(timedelta(0, 0.04, 0))
+    def __init__ ( self, 
+                   p_mode = Mode.C_MODE_SIM, 
+                   p_latency = None,
+                   p_max_torque=20,
+                   p_l1=1.0, 
+                   p_l2=1.0, 
+                   p_m1=1.0, 
+                   p_m2=1.0, 
+                   p_init_angles=C_ANGLES_RND,
+                   p_g=9.8, 
+                   p_history_length=5, 
+                   p_logging=Log.C_LOG_ALL ):
 
         self._max_torque = p_max_torque
-
 
         self._l1 = p_l1
         self._l2 = p_l2
@@ -214,13 +219,13 @@ class DoublePendulumRoot(Environment):
             The default is None.
 
         """
-        if self._init_angles =='up':
+        if self._init_angles == self.C_ANGLES_UP:
             self._th1 = 0
             self._th2 = 0
-        elif self._init_angles=='down':
+        elif self._init_angles == self.C_ANGLES_DOWN:
             self._th1 = 180
             self._th2 = 180
-        elif self._init_angles=='random':
+        elif self._init_angles == self.C_ANGLES_RND:
             self._th1 = random.random()*180
             self._th2 = random.random()*180
         else:
@@ -264,6 +269,7 @@ class DoublePendulumRoot(Environment):
             The derivatives of the given state
 
         """
+
         dydx = np.zeros_like(p_state)
         dydx[0] = p_state[1]
 
@@ -305,6 +311,7 @@ class DoublePendulumRoot(Environment):
                 Current states after the simulation of latest action on the environment.
 
         """
+
         state = p_state.get_values()[0:4]
         for i in [0, 2]:
             if state[i] == 0:
@@ -352,21 +359,21 @@ class DoublePendulumRoot(Environment):
 ## ------------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old, p_state_new):
         """
-            This method calculates the reward for C_TYPE_OVERALL reward type. The current reward is based on the
-            worst possible distance between two states and the best possible minimum distance between current and
-            goal state.
+        This method calculates the reward for C_TYPE_OVERALL reward type. The current reward is based on the
+        worst possible distance between two states and the best possible minimum distance between current and
+        goal state.
 
-            Parameters
-            ----------
-            p_state_old : State
-                Previous state.
-            p_state_new : State
-                New state.
+        Parameters
+        ----------
+        p_state_old : State
+            Previous state.
+        p_state_new : State
+            New state.
 
-            Returns
-            -------
-            reward : Reward
-                current calculated Reward values.
+        Returns
+        -------
+        reward : Reward
+            current calculated Reward values.
         """
 
         current_reward = Reward()
@@ -403,6 +410,7 @@ class DoublePendulumRoot(Environment):
         """
         Custom method to compute broken state. In this case always returns false as the environment doesn't break
         """
+
         return False
 
 
@@ -422,11 +430,11 @@ class DoublePendulumRoot(Environment):
         bool
             True if the distance between current state and goal state is less than the goal threshold else false
         """
+
         goal_state = self._target_state
         d = self.get_state_space().distance(p_state, goal_state)
         if d < self.C_THRSH_GOAL: return True
         return False
-
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -554,55 +562,71 @@ class DoublePendulumRoot(Environment):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumS4(DoublePendulumRoot):
+class DoublePendulumS4 (DoublePendulumRoot):
     """
     This is the Double Pendulum Static 4 dimensional environment that inherits from the double pendulum root
     class, inheriting the dynamics and default reward strategy.
 
-        Parameters
-        ----------
-        p_logging : Log, optional
-            Logging functionalities of MLPro. The default is Log.C_LOG_ALL.
-        p_t_step : float, optional
-            Time for each time step (in seconds). The default is 0.2.
-        p_t_act : int, optional
-            Action frequency (with respect to the time step). The default is 20.
-        p_max_torque : float, optional
-            Maximum torque applied to pendulum 1. The default is 20.
-        p_l1 : float, optional
-            Length of pendulum 1 in m. The default is 0.5
-        p_l2 : float, optional
-            Length of pendulum 2 in m. The default is 0.25
-        p_m1 : float, optional
-            Mass of pendulum 1 in kg. The default is 0.5
-        p_m2 : float, optional
-            Mass of pendulum 2 in kg. The default is 0.25
-        p_init_angles: str, optional
-            'up' starts the pendulum in an upright position
-            'down' starts the pendulum in a downward position
-            'random' starts the pendulum from a random position.
-        p_g : float, optional
-            Gravitational acceleration. The default is 9.8
-        p_history_length : int, optional
-            Historical trajectory points to display. The default is 5.
-        """
+    Parameters
+    ----------
+    p_mode 
+        Mode of environment. Possible values are Mode.C_MODE_SIM(default) or Mode.C_MODE_REAL.
+    p_latency : timedelta
+        Optional latency of environment. If not provided, the internal value of constant C_LATENCY is used by default.
+    p_max_torque : float, optional
+        Maximum torque applied to pendulum. The default is 20.
+    p_l1 : float, optional
+        Length of pendulum 1 in m. The default is 0.5
+    p_l2 : float, optional
+        Length of pendulum 2 in m. The default is 0.25
+    p_m1 : float, optional
+        Mass of pendulum 1 in kg. The default is 0.5
+    p_m2 : float, optional
+        Mass of pendulum 2 in kg. The default is 0.25
+    p_init_angles: str, optional
+        C_ANGLES_UP starts the pendulum in an upright position
+        C_ANGLES_DOWN starts the pendulum in a downward position
+        C_ANGLES_RND starts the pendulum from a random position.
+    p_g : float, optional
+        Gravitational acceleration. The default is 9.8
+    p_history_length : int, optional
+        Historical trajectory points to display. The default is 5.
+    p_logging
+        Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
 
-
+    """
 
     C_NAME = 'DoublePendulumStatic4'
 
-
 ## ------------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, p_max_torque=1,
-                 p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles='random',
-                 p_g=9.8, p_history_length=2, p_mode = Mode.C_MODE_SIM, p_latency = timedelta(0, 0.04, 0)):
+    def __init__ ( self, 
+                   p_mode = Mode.C_MODE_SIM, 
+                   p_latency = None,
+                   p_max_torque=20,
+                   p_l1=1.0, 
+                   p_l2=1.0, 
+                   p_m1=1.0, 
+                   p_m2=1.0, 
+                   p_init_angles=DoublePendulumRoot.C_ANGLES_RND,
+                   p_g=9.8, 
+                   p_history_length=5, 
+                   p_logging=Log.C_LOG_ALL ):
 
-        super().__init__(p_logging=p_logging, p_max_torque=p_max_torque,p_l1=p_l1,
-                         p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g,
-                         p_history_length=p_history_length, p_mode=p_mode, p_latency=p_latency)
+        super().__init__( p_mode=p_mode, 
+                          p_latency=p_latency, 
+                          p_max_torque=p_max_torque,
+                          p_l1=p_l1,
+                          p_l2=p_l2, 
+                          p_m1=p_m1, 
+                          p_m2=p_m2, 
+                          p_init_angles=p_init_angles,
+                          p_g=p_g,
+                          p_history_length=p_history_length, 
+                          p_logging=p_logging)
 
         self._target_state = State(self._state_space)
-        self._target_state.set_values(np.zeros(4))
+        self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
+
 
 ## ------------------------------------------------------------------------------------------------------
     def _normalize(self, p_state:list):
@@ -637,57 +661,42 @@ class DoublePendulumS4(DoublePendulumRoot):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumS7(DoublePendulumS4):
+class DoublePendulumS7 (DoublePendulumS4):
     """
     This is the classic implementation of Double Pendulum with 7 dimensional state space including derived
     accelerations of both the poles and the input torque. The dynamics of the system are inherited from the Double
     Pendulum Root class.
 
-        Parameters
-        ----------
-        p_logging : Log, optional
-            Logging functionalities of MLPro. The default is Log.C_LOG_ALL.
-        p_t_step : float, optional
-            Time for each time step (in seconds). The default is 0.2.
-        p_t_act : int, optional
-            Action frequency (with respect to the time step). The default is 20.
-        p_max_torque : float, optional
-            Maximum torque applied to pendulum 1. The default is 20.
-        p_l1 : float, optional
-            Length of pendulum 1 in m. The default is 0.5
-        p_l2 : float, optional
-            Length of pendulum 2 in m. The default is 0.25
-        p_m1 : float, optional
-            Mass of pendulum 1 in kg. The default is 0.5
-        p_m2 : float, optional
-            Mass of pendulum 2 in kg. The default is 0.25
-        p_init_angles: str, optional
-            'up' starts the pendulum in an upright position
-            'down' starts the pendulum in a downward position
-            'random' starts the pendulum from a random position.
-        p_g : float, optional
-            Gravitational acceleration. The default is 9.8
-        p_history_length : int, optional
-            Historical trajectory points to display. The default is 5.
-        """
+    Parameters
+    ----------
+    p_mode 
+        Mode of environment. Possible values are Mode.C_MODE_SIM(default) or Mode.C_MODE_REAL.
+    p_latency : timedelta
+        Optional latency of environment. If not provided, the internal value of constant C_LATENCY is used by default.
+    p_max_torque : float, optional
+        Maximum torque applied to pendulum. The default is 20.
+    p_l1 : float, optional
+        Length of pendulum 1 in m. The default is 0.5
+    p_l2 : float, optional
+        Length of pendulum 2 in m. The default is 0.25
+    p_m1 : float, optional
+        Mass of pendulum 1 in kg. The default is 0.5
+    p_m2 : float, optional
+        Mass of pendulum 2 in kg. The default is 0.25
+    p_init_angles: str, optional
+        C_ANGLES_UP starts the pendulum in an upright position
+        C_ANGLES_DOWN starts the pendulum in a downward position
+        C_ANGLES_RND starts the pendulum from a random position.
+    p_g : float, optional
+        Gravitational acceleration. The default is 9.8
+    p_history_length : int, optional
+        Historical trajectory points to display. The default is 5.
+    p_logging
+        Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
 
+    """
 
     C_NAME = 'DoublePendulumStatic7'
-
-
-## -----------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, p_max_torque=1,
-                 p_l1=1.0, p_l2=1.0, p_m1=1.0, p_m2=1.0, p_init_angles='random',
-                 p_g=9.8, p_history_length=2, p_mode = Mode.C_MODE_SIM, p_latency = timedelta(0, 0.04, 0)):
-
-
-        super().__init__(p_logging=p_logging, p_max_torque=p_max_torque, p_l1=p_l1,
-            p_l2=p_l2, p_m1=p_m1, p_m2=p_m2, p_init_angles=p_init_angles,p_g=p_g, p_history_length=p_history_length,
-            p_latency=p_latency, p_mode=p_mode)
-
-        self._target_state = State(self._state_space)
-        self._target_state.set_values(np.zeros(7))
-
 
 ## -----------------------------------------------------------------------------------------------------
     def setup_spaces(self):
@@ -695,6 +704,7 @@ class DoublePendulumS7(DoublePendulumS4):
         Method to set up the state and action spaces of the classic Double Pendulum Environment. Inheriting from the
         root class, this method adds 3 dimensions for accelerations and torque respectively.
         """
+
         state_space, action_space = super().setup_spaces()
         state_space.add_dim(
             Dimension(p_name_long='alpha 1', p_name_short='a1', p_description='Angular Acceleration of Pendulum 1',
@@ -723,7 +733,7 @@ class DoublePendulumS7(DoublePendulumS4):
             The default is None.
 
         """
-        super()._reset()
+        super()._reset(p_seed=p_seed)
         self._alpha1 = 0
         self._alpha2 = 0
         for i in self._state_space.get_dim_ids()[-2:-4:-1]:
