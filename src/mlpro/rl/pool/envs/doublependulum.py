@@ -146,7 +146,7 @@ class DoublePendulumRoot (Environment):
                    p_m1=1.0, 
                    p_m2=1.0, 
                    p_init_angles=C_ANGLES_RND,
-                   p_g=9.8, 
+                   p_g=9.8,
                    p_history_length=5, 
                    p_logging=Log.C_LOG_ALL ):
 
@@ -171,8 +171,6 @@ class DoublePendulumRoot (Environment):
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
         self._state = State(self._state_space)
-        self._target_state = State(self._state_space)
-        self._target_state.set_values(np.zeros(4))
         self.reset()
 
 
@@ -191,13 +189,13 @@ class DoublePendulumRoot (Environment):
                       p_unit='degrees', p_unit_latex='\textdegrees', p_boundaries=[-180, 180]))
         state_space.add_dim(
             Dimension(p_name_long='omega 1', p_name_short='w1', p_description='Angular Velocity of Pendulum 1',
-                      p_name_latex='', p_unit='degrees/second', p_unit_latex='\textdegrees/s',p_boundaries=[-796.617, 559.5576]))
+                      p_name_latex='', p_unit='degrees/second', p_unit_latex='\textdegrees/s',p_boundaries=[-800, 800]))
         state_space.add_dim(
             Dimension(p_name_long='theta 2', p_name_short='th2', p_description='Angle of pendulum 2', p_name_latex='',
                       p_unit='degrees', p_unit_latex='\textdegrees', p_boundaries=[-180, 180]))
         state_space.add_dim(
             Dimension(p_name_long='omega 2', p_name_short='w2', p_description='Angular Velocity of Pendulum 2',
-                      p_name_latex='', p_unit='degrees/second', p_unit_latex='\textdegrees/s', p_boundaries=[-904.93, 844.5236]))
+                      p_name_latex='', p_unit='degrees/second', p_unit_latex='\textdegrees/s', p_boundaries=[-950, 950]))
         action_space.add_dim(
             Dimension(p_name_long='torque 1', p_name_short='tau1', p_description='Applied Torque of Motor 1',
                       p_name_latex='', p_unit='Nm', p_unit_latex='Nm',p_boundaries=[-self._max_torque,
@@ -249,7 +247,7 @@ class DoublePendulumRoot (Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _derivs(self, p_state, t, p_torque):
+    def _derivs(self, p_state, t,  p_torque):
         """
         This method is used to calculate the derivatives of the system, given the
         current states.
@@ -596,7 +594,7 @@ class DoublePendulumS4 (DoublePendulumRoot):
 
     """
 
-    C_NAME = 'DoublePendulumStatic4'
+    C_NAME = 'DoublePendulumS4'
 
 ## ------------------------------------------------------------------------------------------------------
     def __init__ ( self, 
@@ -612,16 +610,16 @@ class DoublePendulumS4 (DoublePendulumRoot):
                    p_history_length=5, 
                    p_logging=Log.C_LOG_ALL ):
 
-        super().__init__( p_mode=p_mode, 
-                          p_latency=p_latency, 
+        super().__init__( p_mode=p_mode,
+                          p_latency=p_latency,
                           p_max_torque=p_max_torque,
                           p_l1=p_l1,
-                          p_l2=p_l2, 
-                          p_m1=p_m1, 
-                          p_m2=p_m2, 
+                          p_l2=p_l2,
+                          p_m1=p_m1,
+                          p_m2=p_m2,
                           p_init_angles=p_init_angles,
                           p_g=p_g,
-                          p_history_length=p_history_length, 
+                          p_history_length=p_history_length,
                           p_logging=p_logging)
 
         self._target_state = State(self._state_space)
@@ -696,7 +694,7 @@ class DoublePendulumS7 (DoublePendulumS4):
 
     """
 
-    C_NAME = 'DoublePendulumStatic7'
+    C_NAME = 'DoublePendulumS7'
 
 ## -----------------------------------------------------------------------------------------------------
     def setup_spaces(self):
@@ -708,11 +706,11 @@ class DoublePendulumS7 (DoublePendulumS4):
         state_space, action_space = super().setup_spaces()
         state_space.add_dim(
             Dimension(p_name_long='alpha 1', p_name_short='a1', p_description='Angular Acceleration of Pendulum 1',
-                      p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-6732.31, 5870.988]))
+                      p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-6800, 6800]))
 
         state_space.add_dim(
             Dimension(p_name_long='alpha 2', p_name_short='a2', p_description='Angular Acceleration of Pendulum 2',
-                      p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-9650.26, 6805.587]))
+                      p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-9700, 9700]))
 
         state_space.add_dim(
             Dimension(p_name_long='torque', p_name_short='tau', p_description='input torque',
