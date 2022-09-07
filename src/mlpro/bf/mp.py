@@ -6,13 +6,14 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-08-27  0.0.0     DA       Creation 
-## -- 2022-08-27  0.1.0     DA       Implementation of process type C_PROCESS_TYPE_LOCAL
+## -- 2022-09-dd  1.0.0     DA       Initial implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2022-08-27)
+Ver. 1.0.0 (2022-09-dd)
 
-This module provides classes for multiprocessing.
+This module provides classes for multiprocessing with optional interprocess communication (IPC) based
+on shared objects.
 """
 
 
@@ -23,127 +24,81 @@ from mlpro.bf.various import Log
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SharedMemory: 
+class Shared: 
     """
-    Shared memory class to be used by processes to exchange data.
-    """
-
-    pass
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class ProcessBase (Log):
-    """
-    Root class for all classes of MLPro's process management.
-
-    Parameters:
-    -----------
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-
+    Template class for shared objects. It is ready to use and the default class for IPC. It is also
+    possible to inherit and enrich this class for special needs.
     """
 
-    C_PROCESS_TYPE_LOCAL    = 0     # Runs a process locally 
-    C_PROCESS_TYPE_GLOBAL   = 1     # Runs a process by spawning a separate os process
-    C_VALID_PROCESS_TYPES   = [C_PROCESS_TYPE_LOCAL]
+    C_MSG_TYPE_DATA         = 0
+    C_MSG_TYPE_TERM         = 1
 
 ## -------------------------------------------------------------------------------------------------
-    def process(self, p_process_type=C_PROCESS_TYPE_LOCAL, **p_kwargs):
-        raise NotImplementedError
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Process (Log):
-    """
-    Template class for a single process step.
-
-    Parameters:
-    -----------
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-
-    """
-
-    C_TYPE                  = 'Process'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL):
-        self._smem = None
-        super().__init__(p_logging=p_logging)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_pid(self):
-        return self
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_shared_memory(self, p_smem:SharedMemory):
-        self._smem = p_smem
-
-
-## -------------------------------------------------------------------------------------------------
-    def process(self, p_process_type=ProcessBase.C_PROCESS_TYPE_LOCAL, **p_kwargs):
-        self._process(p_kwargs)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _process(self, **p_kwargs):
-        raise NotImplementedError
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Processor (Log):
-    """
-    ...
-
-    Parameters:
-    -----------
-    p_cls_shared_mem
-        Class used for shared memory object.
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-
-    """
-
-    C_TYPE                  = 'Processor'
-    C_NAME                  = ''
-
-    C_PARENT_NONE           = None
-
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_cls_shared_mem=SharedMemory,
-                  p_logging=Log.C_LOG_ALL ):
-        self._processes = {}
-        super().__init__(p_logging=p_logging)
-
-
-## -------------------------------------------------------------------------------------------------
-    def process(self, p_process_type=ProcessBase.C_PROCESS_TYPE_LOCAL, **p_kwargs):
+    def lock(self):
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_process(self, p_process:Process, p_parent_pid=C_PARENT_NONE):
+    def unlock(self):
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _do_recursively(p_parent, p_fct):
+    def checkin_process( p_pid ):
         pass
 
 
+## -------------------------------------------------------------------------------------------------
+    def checkout_process( p_pid ):
+        pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MP (Log):
+    """
+    Property class that enables child classes to run sub-tasks asynchronously. Depending on the
+    given range a task can be executed as a separate thread in the same process or a separate
+    process on the same machine.
+
+    Parameters
+    ----------
+    p_cls_shared
+        Class name for a shared object
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
     
+    """
+
+    # Possible ranges for sub-tasks
+    C_RANGE_THREAD          = 0         # as separate thread inside the same process
+    C_RANGE_PROCESS         = 1         # as separate process inside the same machine     
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self,
+                  p_range=C_RANGE_PROCESS,
+                  p_cls_shared=Shared, 
+                  p_logging=Log.C_LOG_ALL ):
+
+        self._so = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_so(self) -> Shared: 
+        return self._so
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run_async_task( self, 
+                         p_fct,
+                         p_wait:bool=False,
+                         **p_kwargs ):
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _wait_async_tasks(self):
+        pass
