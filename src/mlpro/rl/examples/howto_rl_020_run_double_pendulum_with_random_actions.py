@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
+## -- Package : mlpro.rl.examples
 ## -- Module  : howto_rl_020_run_double_pendulum_with_random_actions.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
