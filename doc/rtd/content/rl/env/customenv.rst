@@ -1,3 +1,4 @@
+.. _customEnv:
 Custom Environments
 -----------------------
 
