@@ -18,6 +18,7 @@ on shared objects.
 
 
 from mlpro.bf.various import Log
+from mlpro.bf.events import EventManager
 
 
 
