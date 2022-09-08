@@ -33,6 +33,12 @@ class Shared:
     C_MSG_TYPE_DATA         = 0
     C_MSG_TYPE_TERM         = 1
 
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self):
+        pass
+
+
 ## -------------------------------------------------------------------------------------------------
     def lock(self):
         pass
@@ -58,7 +64,7 @@ class Shared:
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MP (Log):
+class Async (Log):
     """
     Property class that enables child classes to run sub-tasks asynchronously. Depending on the
     given range a task can be executed as a separate thread in the same process or a separate
@@ -67,7 +73,7 @@ class MP (Log):
     Parameters
     ----------
     p_cls_shared
-        Class name for a shared object
+        Optional class name for a shared object (class Shared or a child class of Shared)
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     
@@ -80,7 +86,7 @@ class MP (Log):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_range=C_RANGE_PROCESS,
-                  p_cls_shared=Shared, 
+                  p_cls_shared=None, 
                   p_logging=Log.C_LOG_ALL ):
 
         self._so = None
@@ -92,13 +98,30 @@ class MP (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_async_task( self, 
-                         p_fct,
-                         p_wait:bool=False,
-                         **p_kwargs ):
+    def _run_async( self, 
+                    p_fct,
+                    p_wait:bool=False,
+                    **p_kwargs ):
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _wait_async_tasks(self):
+    def _wait_async_runs(self):
         pass
+
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Task (Async, EventManager): pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Processor (Task): pass
