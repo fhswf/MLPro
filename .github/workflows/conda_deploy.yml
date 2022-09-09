@@ -28,12 +28,12 @@ jobs:
         conda build --output-folder src/conda src/conda
     - name: Convert Package
       run: |
-        conda convert -p win-64 src/conda/linux-64/*.tar.bz2
-        conda convert -p osx-64 src/conda/linux-64/*.tar.bz2
-        conda convert -p osx-arm64 src/conda/linux-64/*.tar.bz2
-        conda convert -p linux-aarch64 src/conda/linux-64/*.tar.bz2
-        conda convert -p linux-armv7l src/conda/linux-64/*.tar.bz2
-        conda convert -p linux-armv6l src/conda/linux-64/*.tar.bz2
+        conda convert -p win-64 -o src/conda src/conda/linux-64/*.tar.bz2
+        conda convert -p osx-64 -o src/conda src/conda/linux-64/*.tar.bz2
+        conda convert -p osx-arm64 -o src/conda src/conda/linux-64/*.tar.bz2
+        conda convert -p linux-aarch64 -o src/conda src/conda/linux-64/*.tar.bz2
+        conda convert -p linux-armv7l -o src/conda src/conda/linux-64/*.tar.bz2
+        conda convert -p linux-armv6l -o src/conda src/conda/linux-64/*.tar.bz2
     - name: Upload Conda Package
       env: 
         ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
