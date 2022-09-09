@@ -45,15 +45,16 @@
 ## -- 2022-08-05  1.3.7     SY       Minor changing: Boundaries of the pendulums' angle
 ## -- 2022-08-19  1.4.7     LSB      Classic Variant inherited from the root DP
 ## -- 2022-08-20  1.4.8     LSB      New attribute target state
-## -- 2022-08-29  2.4.8     LSB      - New varients to be used
+## -- 2022-08-29  2.0.0     LSB      - New varients to be used
 ##                                   - Default reward strategy and success strategy and bug fixes
-## -- 2022-09-02  2.4.9     LSB      Refactoring, code cleaning
-## -- 2022-09-05  2.4.10    LSB      Refactoring
-## -- 2022-09-06  2.4.11    LSB/DA   Refactoring
+## -- 2022-09-02  2.0.1     LSB      Refactoring, code cleaning
+## -- 2022-09-05  2.0.2     LSB      Refactoring
+## -- 2022-09-06  2.0.3     LSB/DA   Refactoring
+## -- 2022-09-09  2.0.4     SY       Updating reward function and compute success function
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.11 (2022-09-06)
+Ver. 2.0.4 (2022-09-09)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -395,10 +396,15 @@ class DoublePendulumRoot (Environment):
         min_state = State(self.get_state_space())
         min_state.set_values(min_values)
 
-        d_max = self.get_state_space().distance(max_state, min_state)
+        # d_max = self.get_state_space().distance(max_state, min_state)
         d = self.get_state_space().distance(norm_state, goal_state)
-        value = d_max - d
-        current_reward.set_overall_reward(value)
+        # value = d_max - d
+        # current_reward.set_overall_reward(value)
+        
+        if d <= self.C_THRSH_GOAL:
+            current_reward.set_overall_reward(1)
+        else:
+            current_reward.set_overall_reward(-d)
 
         return current_reward
 
@@ -431,7 +437,7 @@ class DoublePendulumRoot (Environment):
 
         goal_state = self._target_state
         d = self.get_state_space().distance(p_state, goal_state)
-        if d < self.C_THRSH_GOAL: return True
+        if d <= self.C_THRSH_GOAL: return True
         return False
 
 
