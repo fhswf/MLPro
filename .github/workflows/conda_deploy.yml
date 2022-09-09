@@ -3,6 +3,8 @@ name: Conda Deploy
 on:
   release:
     types: [published]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build-linux:
