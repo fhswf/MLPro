@@ -28,7 +28,8 @@ from mlpro.bf.events import EventManager
 class Shared: 
     """
     Template class for shared objects. It is ready to use and the default class for IPC. It is also
-    possible to inherit and enrich this class for special needs.
+    possible to inherit and enrich this class for special needs. It provides elementary mechanisms 
+    for access control and messaging.
     """
 
     C_MSG_TYPE_DATA         = 0
@@ -37,7 +38,9 @@ class Shared:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self):
-        pass
+       self._locked = False
+       self._active_processes = 0
+       self._messages = {}
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -51,14 +54,24 @@ class Shared:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def checkin_process( p_pid ):
-        pass
+    def checkin_process(self, p_tid):
+        self._active_processes+=1
 
 
 ## -------------------------------------------------------------------------------------------------
-    def checkout_process( p_pid ):
-        pass
+    def checkout_process(self, p_tid):
+        if self._active_processes > 0:
+            self._active_processes-=1
 
+
+## -------------------------------------------------------------------------------------------------
+    def send_message ( self, p_msg_type, p_tid=None, **p_kwargs):
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def receive_message(self, p_tid):
+        raise NotImplementedError
 
 
 
@@ -91,6 +104,7 @@ class Async (Log):
                   p_logging=Log.C_LOG_ALL ):
 
         self._so = None
+        self._async_tasks = []
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -100,10 +114,16 @@ class Async (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _run_async( self, 
-                    p_fct,
+                    p_method=None,
+                    p_class=None,
                     p_wait:bool=False,
                     **p_kwargs ):
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run_myself_async(self, p_wait:bool=False, **p_kwargs):
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -114,15 +134,83 @@ class Async (Log):
 
 
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Task (Async, EventManager): 
+
+    C_TYPE          = 'Task'
+
+    C_AUTORUN_NONE  = 0
+    C_AUTURUN_RUN   = 1
+    C_AUTORUN_LOOP  = 2
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_range=Async.C_RANGE_PROCESS, 
+                  p_autorun=C_AUTORUN_NONE,
+                  p_cls_shared=None, 
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs ):
+
+        Async.__init__(self, p_range=p_range, p_cls_shared=p_cls_shared, p_logging=p_logging)
+        EventManager.__init__(self, p_logging=p_logging)
+        self._autorun(p_autorun=p_autorun, p_kwargs=p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _autorun(self, p_autorun, **p_kwargs):
+        if p_autorun == self.C_AUTURUN_RUN:
+            self.run(p_kwargs=p_kwargs)
+        elif p_autorun == self.C_AUTORUN_LOOP:
+            self.run_loop(p_kwargs=p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def run(self, **p_kwargs):
+        self._run(p_kwargs=p_kwargs)
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self, **p_kwargs):
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def run_loop(self, **p_kwargs):
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run_myself_async(self, p_wait: bool = False, **p_kwargs):
+        raise NotImplementedError
+
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Task (Async, EventManager): pass
+class Processor (Task): 
+    
+    C_TYPE          = 'Processor'
 
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_range=Async.C_RANGE_PROCESS, 
+                  p_autorun=Task.C_AUTORUN_NONE, 
+                  p_cls_shared=None, 
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
 
-
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _run(self, **p_kwargs):
+        raise NotImplementedError
+
+
 ## -------------------------------------------------------------------------------------------------
-class Processor (Task): pass
+    def add_task(self, p_task:Task, p_parent_task:Task):
+        raise NotImplementedError
+
