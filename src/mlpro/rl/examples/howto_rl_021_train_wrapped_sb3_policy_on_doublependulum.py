@@ -39,13 +39,13 @@ class ScenarioDoublePendulum(RLScenario):
     C_NAME      = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        # 1 Setup environment
+        # 1.1 Setup environment
         self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_max_torque=50)
 
-        # Algorithm : A2C
+        # 1.2 Select an algorithm by uncomment the opted algorithm
+        # On-Policy RL Algorithm: A2C
         policy_kwargs = dict(activation_fn=torch.nn.ReLU,
                      net_arch=[dict(pi=[128, 128], vf=[128, 128])])
-
         policy_sb3 = A2C(
                     policy="MlpPolicy",
                     n_steps=150, 
@@ -54,7 +54,7 @@ class ScenarioDoublePendulum(RLScenario):
                     policy_kwargs=policy_kwargs,
                     seed=1)
         
-        # Algorithm : DDPG
+        # Off-Policy RL Algorithm: DDPG
         # action_space = WrEnvMLPro2GYM.recognize_space(self._env.get_action_space())
         # n_actions = action_space.shape[-1]
         # action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
@@ -69,7 +69,8 @@ class ScenarioDoublePendulum(RLScenario):
         #     env=None,
         #     _init_setup_model=False,
         #     device="cpu")
-
+            
+        # 1.3 Wrapped the SB3 policy to MLPro compatible policy
         policy_wrapped = WrPolicySB32MLPro(
                 p_sb3_policy=policy_sb3,
                 p_cycle_limit=self._cycle_limit, 
@@ -78,7 +79,7 @@ class ScenarioDoublePendulum(RLScenario):
                 p_ada=p_ada,
                 p_logging=p_logging)
 
-        # 2 Setup standard single-agent with own policy
+        # 1.4 Setup standard single-agent with the wrapped policy
         return Agent(
             p_policy=policy_wrapped,  
             p_envmodel=None,
@@ -91,7 +92,7 @@ class ScenarioDoublePendulum(RLScenario):
 # 2 Create scenario and start training
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit         = 150000
+    cycle_limit         = 100000
     adaptation_limit    = 0
     stagnation_limit    = 0
     eval_frequency      = 5
