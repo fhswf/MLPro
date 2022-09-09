@@ -1,19 +1,20 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : howto_rl_021_train_wrapped_sb3_policy_on_doublependulum.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-03-22  0.0.0     WB       Creation
-## -- 2022-08-14  1.0.0     LSB       Training howto released with a lower value of torque
+## -- 2022-08-14  1.0.0     LSB      Training howto released with a lower value of torque
+## -- 2022-09-09  1.0.1     SY       Refactoring and add DDPG algorithm as an option
 ## -------------------------------------------------------------------------------------------------
 
 
 """
 Ver. 1.0.0 (2022-08-14)
 
-This module shows how to use SB3 wrapper to train double pendulum. Currently under construction...
+This module shows how to train double pendulum using on-policy and off-policy RL algorithms from SB3.
 """
 
 
@@ -22,7 +23,10 @@ from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.doublependulum import *
 from stable_baselines3 import A2C
+from stable_baselines3 import DDPG
+from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM
 from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
@@ -38,16 +42,33 @@ class ScenarioDoublePendulum(RLScenario):
         # 1 Setup environment
         self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_max_torque=50)
 
+        # Algorithm : A2C
         policy_kwargs = dict(activation_fn=torch.nn.Tanh,
                      net_arch=[dict(pi=[128, 128], vf=[128, 128])])
 
         policy_sb3 = A2C(
                     policy="MlpPolicy",
-                    n_steps=100, 
+                    n_steps=150, 
                     env=None,
                     _init_setup_model=False,
                     policy_kwargs=policy_kwargs,
                     seed=1)
+        
+        # Algorithm : DDPG
+        # action_space = WrEnvMLPro2GYM.recognize_space(self._env.get_action_space())
+        # n_actions = action_space.shape[-1]
+        # action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
+        # policy_kwargs = dict(net_arch=dict(pi=[128, 128], qf=[128, 128]))
+        # policy_sb3 = DDPG(
+        #     policy="MlpPolicy",
+        #     learning_rate=3e-4,
+        #     buffer_size=10000,
+        #     learning_starts=100,
+        #     action_noise=action_noise,
+        #     policy_kwargs=policy_kwargs,
+        #     env=None,
+        #     _init_setup_model=False,
+        #     device="cpu")
 
         policy_wrapped = WrPolicySB32MLPro(
                 p_sb3_policy=policy_sb3,
@@ -70,17 +91,17 @@ class ScenarioDoublePendulum(RLScenario):
 # 2 Create scenario and start training
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit         = 0
-    adaptation_limit    = 6000
+    cycle_limit         = 10000
+    adaptation_limit    = 0
     stagnation_limit    = 0
     eval_frequency      = 5
     eval_grp_size       = 5
     logging             = Log.C_LOG_WE
     visualize           = True
     path                = str(Path.home())
-    plotting            = True
+    plotting            = False
 else:
-    # 2.2 Parameters for demo mode
+    # 2.2 Parameters for unittest
     cycle_limit         = 0
     adaptation_limit    = 1
     stagnation_limit    = 0
