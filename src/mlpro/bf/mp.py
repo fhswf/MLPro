@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-08-27  0.0.0     DA       Creation 
-## -- 2022-09-dd  1.0.0     DA       Initial implementation
+## -- 2022-09-10  0.0.1     DA       Initial class definition
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-09-dd)
+Ver. 0.0.1 (2022-09-10)
 
 This module provides classes for multiprocessing with optional interprocess communication (IPC) based
 on shared objects.
@@ -45,12 +45,12 @@ class Shared:
 
 ## -------------------------------------------------------------------------------------------------
     def lock(self):
-        pass
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def unlock(self):
-        pass
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -72,6 +72,7 @@ class Shared:
 ## -------------------------------------------------------------------------------------------------
     def receive_message(self, p_tid):
         raise NotImplementedError
+
 
 
 
@@ -118,7 +119,7 @@ class Async (Log):
                     p_class=None,
                     p_wait:bool=False,
                     **p_kwargs ):
-        pass
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -128,7 +129,7 @@ class Async (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _wait_async_runs(self):
-        pass
+        raise NotImplementedError
 
 
 
@@ -185,14 +186,19 @@ class Task (Async, EventManager):
         raise NotImplementedError
 
 
+## -------------------------------------------------------------------------------------------------
+    def terminate(self):
+        raise NotImplementedError
+
+
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Processor (Task): 
+class Workflow (Task): 
     
-    C_TYPE          = 'Processor'
+    C_TYPE          = 'Workflow'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -214,3 +220,7 @@ class Processor (Task):
     def add_task(self, p_task:Task, p_parent_task:Task):
         raise NotImplementedError
 
+
+## -------------------------------------------------------------------------------------------------
+    def terminate(self):
+        raise NotImplemented
