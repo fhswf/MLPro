@@ -38,16 +38,6 @@ Data Plotting
    :show-inheritance:
 
    
-Machine Learning
-----------------
-
-.. image:: images/bf/MLPro-BF-ML_class_diagram.png
-.. automodule:: mlpro.bf.ml
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   
-
 Event Handling
 --------------
 
@@ -67,6 +57,26 @@ Exceptions
    :undoc-members:
    :show-inheritance:
 
+
+Multiprocessing
+---------------
+
+.. image:: images/bf/MLPro-BF-MP_class_diagram.drawio.png
+.. automodule:: mlpro.bf.mp
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Machine Learning
+----------------
+
+.. image:: images/bf/MLPro-BF-ML_class_diagram.png
+.. automodule:: mlpro.bf.ml
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
 
 User Interaction
 ----------------
