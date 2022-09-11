@@ -39,10 +39,11 @@
 ## --                                setting up environment mode
 ## -- 2022-08-22  1.4.0     DA       Class Model: event management added
 ## -- 2022-09-01  1.4.1     SY       Renaming maturity to accuracy
+## -- 2022-09-11  1.5.0     DA       New classes MLTask and MLWorkflow
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-09-01)
+Ver. 1.5.0 (2022-09-11)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
@@ -54,6 +55,7 @@ from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
 from mlpro.bf.plot import *
 from mlpro.bf.events import *
+from mlpro.bf.mp import Task, Workflow
 import random
 
 
@@ -1263,3 +1265,21 @@ class Training (Log):
 ## -------------------------------------------------------------------------------------------------
     def get_results(self) -> TrainingResults:
         return self._results
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MLTask (Task, Model): 
+    pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MLWorkflow (Workflow, Model):
+    pass
