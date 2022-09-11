@@ -1,46 +1,45 @@
 Environments
-==========================
+============
 
 .. _api-ref-bglp:
 Bulk Goods Plant
 ------------------
-
 
 .. automodule:: mlpro.rl.pool.envs.bglp
    :members:
    :undoc-members:
    :show-inheritance:
 
+
 Grid World
 ------------------
-
 
 .. automodule:: mlpro.rl.pool.envs.gridworld
    :members:
    :undoc-members:
    :show-inheritance:
 
+
 Multi Cartpole
 ------------------
-
 
 .. automodule:: mlpro.rl.pool.envs.multicartpole
    :members:
    :undoc-members:
    :show-inheritance:
 
+
 Robot Manipulator
 ------------------
-
 
 .. automodule:: mlpro.rl.pool.envs.robotinhtm
    :members:
    :undoc-members:
    :show-inheritance:
 
+
 UR5 Arm Robot
 ----------------
-
 
 .. automodule:: mlpro.rl.pool.envs.ur5jointcontrol
    :members:
@@ -51,22 +50,9 @@ UR5 Arm Robot
 Double Pendulum
 ---------------------------------------
 
-
-.. automodule:: mlpro.rl.pool.envs.doublependulum
-
 .. image:: images/MPro-RL-DoublePendulum-class-diagram.drawio.png
 
-.. autoclass:: mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: mlpro.rl.pool.envs.doublependulum.DoublePendulumS4
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autoclass:: mlpro.rl.pool.envs.doublependulum.DoublePendulumS7
+.. automodule:: mlpro.rl.pool.envs.doublependulum
    :members:
    :undoc-members:
    :show-inheritance:

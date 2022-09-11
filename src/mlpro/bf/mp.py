@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-08-27  0.0.0     DA       Creation 
-## -- 2022-09-10  0.0.1     DA       Initial class definition
+## -- 2022-09-10  0.1.0     DA       Initial class definition
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.1 (2022-09-10)
+Ver. 0.1.0 (2022-09-11)
 
 This module provides classes for multiprocessing with optional interprocess communication (IPC) based
 on shared objects.
@@ -138,6 +138,13 @@ class Async (Log):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Task (Async, EventManager): 
+    """
+    ...
+
+    Parameters
+    ----------
+    
+    """
 
     C_TYPE          = 'Task'
 
@@ -197,6 +204,13 @@ class Task (Async, EventManager):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Workflow (Task): 
+    """
+    ...
+
+    Parameters
+    ----------
+
+    """
     
     C_TYPE          = 'Workflow'
 
@@ -217,8 +231,25 @@ class Workflow (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task:Task, p_parent_task:Task):
+    def add_task(self, p_task:Task, p_pred_tasks:list=None):
+        """
+        Adds a task to the workflow.
+
+        Parameters
+        ----------
+        p_task : Task
+            Task object to be added.
+        p_pred_tasks : list
+            Optional list of predecessor task objects
+
+        """
+
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def do_recursively(self, p_method, **p_kwargs):
+        raise NotImplementedError        
 
 
 ## -------------------------------------------------------------------------------------------------
