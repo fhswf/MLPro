@@ -11,4 +11,4 @@ OpenML
 
 Cross References
 ----------------
-    + :ref:`Howto OA-001: Accessing Data from OpenML<Howto OA 001>`
+    + :ref:`Howto BF-020: Accessing Data from OpenML<Howto BF 020>`

@@ -4,6 +4,7 @@ Basic Functions
 Various
 ----------------
 
+.. image:: images/bf/MLPro-BF-Various_class_diagram.drawio.png
 .. automodule:: mlpro.bf.various
    :members:
    :undoc-members:
@@ -13,7 +14,7 @@ Various
 Mathematics
 -----------
 
-.. image:: images/bf/MLPro-BF-Math_class_diagram.png
+.. image:: images/bf/MLPro-BF-Math_class_diagram.drawio.png
 .. automodule:: mlpro.bf.math
    :members:
    :undoc-members:
@@ -77,6 +78,18 @@ Machine Learning
    :undoc-members:
    :show-inheritance:
    
+
+Stream Providers and Streams
+----------------------------
+
+.. image:: images/bf/MLPro-BF-Streams_class_diagram.drawio.png
+
+.. automodule:: mlpro.bf.streams
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 
 User Interaction
 ----------------
