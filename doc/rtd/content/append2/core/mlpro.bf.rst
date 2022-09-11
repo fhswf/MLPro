@@ -71,7 +71,7 @@ Multiprocessing
 Machine Learning
 ----------------
 
-.. image:: images/bf/MLPro-BF-ML_class_diagram.png
+.. image:: images/bf/MLPro-BF-ML_class_diagram.drawio.png
 .. automodule:: mlpro.bf.ml
    :members:
    :undoc-members:
