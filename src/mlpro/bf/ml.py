@@ -55,7 +55,7 @@ from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
 from mlpro.bf.plot import *
 from mlpro.bf.events import *
-from mlpro.bf.mp import Task, Workflow
+from mlpro.bf.mp import Async, Task, Workflow
 import random
 
 
@@ -1273,7 +1273,36 @@ class Training (Log):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MLTask (Task, Model): 
-    pass
+    """
+    ...
+
+    Parameters
+    ----------
+
+    """
+
+    C_TYPE          = 'ML-Task'
+    
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_range=Async.C_RANGE_PROCESS, 
+                  p_autorun=Task.C_AUTORUN_NONE, 
+                  p_cls_shared=None, 
+                  p_buffer_size=0,
+                  p_ada=True,
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
+
+        Task.__init__( self,
+                       p_range=p_range,
+                       p_autorun=p_autorun,
+                       p_cls_shared=p_cls_shared,
+                       p_logging=p_logging )
+
+        Model.__init__( self, 
+                        p_buffer_size=p_buffer_size, 
+                        p_ada=p_ada, 
+                        p_logging=p_logging )  
 
 
 
@@ -1282,4 +1311,37 @@ class MLTask (Task, Model):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MLWorkflow (Workflow, Model):
-    pass
+    """
+    ...
+
+    Parameters
+    ----------
+    
+    """
+
+    C_TYPE          = 'ML-Workflow'
+    
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_range=Async.C_RANGE_PROCESS, 
+                  p_autorun=Task.C_AUTORUN_NONE, 
+                  p_cls_shared=None, 
+                  p_ada=True,
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
+       
+        Workflow.__init__( self, 
+                           p_range=p_range, 
+                           p_autorun=p_autorun, 
+                           p_cls_shared=p_cls_shared, 
+                           p_logging=Log.C_LOG_ALL, 
+                           **p_kwargs )
+
+        Model.__init__( self, 
+                        p_ada=p_ada, 
+                        p_logging=p_logging )  
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        raise NotImplementedError
