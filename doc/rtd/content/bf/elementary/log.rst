@@ -1,6 +1,6 @@
 Logging
 ----------------
-This class adds elementary log functionality to inherited classes. The base class of Log can be access by the following:
+This class adds elementary log functionality to inherited classes. The base class of Log can be accessed by the following:
 
 .. code-block:: python
 
