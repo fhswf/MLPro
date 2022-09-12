@@ -7,4 +7,4 @@ assignees: ''
 
 ---
 
-
+You can put here all the checklist that need to be done before releasing.
