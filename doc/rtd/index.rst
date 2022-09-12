@@ -4,23 +4,29 @@
    contain the root `toctree` directive.
 
 MLPro - Machine Learning Professional
-================================================
+=====================================
 
-Welcome to MLPro - the synoptic framework for standardized machine learning tasks in Python!
+Welcome to MLPro - the integrative middleware-framework for standardized machine learning in Python!
 
-MLPro provides complete, standardized and reusable functionalities to support your scientific research, 
-industrial projects or educational tasks in machine learning.
+MLPro is developed by scientists to enable
+   - real world ML projects at a high quality level
+   - comparable and reproducible results in publications
+   - the exchange and reuse of standardized ML code
 
-The documentation is currently under construction, but we are working flat out to complete it. The framework 
-itself is ready for use and we are proud to offer you extensive functionalities, especially in the area of 
-reinforcement learning and game theory. A number of self-study examples are available in Appendix 1 and 
-the API documentation in Appendix 2 is pretty complete. Try it out and get in touch with any questions or problems. 
-Have fun! 
+For this purpose, MLPro provides advanced models and templates at a scientific level for a constantly growing number of sub-areas of machine learning.
+These are embedded in standard processes for training and real operations. But of course we have not reinvented existing wheels. An integral part of MLPro's philosophy is to seamlessly integrate proven functionalities of relevant 3rd party packages instead of developing them again.
+The scope is rounded off by numerous executable example programs that make it easier to get started in the world of MLPro.
+
+MLPro is also present on...
+   - `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
+   - `Python Package Index (PyPI) <https://pypi.org/project/mlpro/>`_
+   - `Anaconda <https://anaconda.org/mlpro/mlpro/>`_
+   - `GitHub <https://github.com/fhswf/MLPro>`_
 
 
 
 Table of Content
-----------------
+================
 
 .. toctree::
    :maxdepth: 1
