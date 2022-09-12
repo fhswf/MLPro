@@ -24,6 +24,14 @@ MLPro is also present on...
    - `GitHub <https://github.com/fhswf/MLPro>`_
 
 
+Notes on the current version:
+   - MLPro already provides two stable sub-frameworks MLPro-RL for reinforcement learning and MLPro-GT for game theory.
+   - The documentation is not quite complete yet, but we are working hard on it and the numerous sample programs in :ref:`Appendix 1 <target_appendix1>` and the API specification in :ref:`Appendix 2 <target_appendix2>` should help in the meantime. 
+   - Next sub-framework in progress: MLPro-OA for online adaptive systems...
+
+
+
+
 
 Table of Content
 ================
@@ -94,6 +102,7 @@ Table of Content
 
 
 
+.. _target_appendix2:
 .. toctree::
    :maxdepth: 6
    :caption: Appendix 2: API Reference
@@ -104,13 +113,13 @@ Table of Content
    content/append2/mlpro.template
 
 
+.. _target_appendix3:
 .. toctree::
    :maxdepth: 2
    :caption: Appendix 3: Project MLPro
    
    content/append3/versions
    content/append3/publications
-   content/append3/citation
    content/append3/cont
    content/append3/disclaimer
    
