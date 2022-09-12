@@ -8,31 +8,20 @@ MLPro - Machine Learning Professional
 
 Welcome to MLPro - the integrative middleware-framework for standardized machine learning in Python!
 
-MLPro provides advanced, scientific-level models and templates for a continuously growing number of sub-areas of machine learning (ML).
-These are embedded in standard processes for training and real operations.
+MLPro is developed by scientists to enable
+   - real world ML projects at a high quality level
+   - comparable and reproducible results in publications
+   - the exchange and reuse of standardized ML code
 
+For this purpose, MLPro provides advanced models and templates at a scientific level for a constantly growing number of sub-areas of machine learning.
+These are embedded in standard processes for training and real operations. But of course we have not reinvented existing wheels. An integral part of MLPro's philosophy is to seamlessly integrate proven functionalities of relevant 3rd party packages instead of developing them again.
+The scope is rounded off by numerous executable example programs that make it easier to get started in the world of MLPro.
 
-Furthermore, numerous popular 3rd party 
-packages can easily be integrated.
-
-MLPro is made for scientists, engineers, developers, and students who value
-   - powerful and flexible templates for their next ML project
-   - standard proceedings for training, hyperparameter tuning, and real operations
-   - numerous ready-to-run example codes and benchmark objects for self-study
-
-
-MLPro is made by scientists to
-   - speed up your next ML project
-   - achieve comparable results for your next publication
-   - enable you to share or reuse standardized ML code
-
-
-Follow us on
-------------
-
-   - `GitHub <https://github.com/fhswf/MLPro>`_
-   - `Python Package Index (PyPI) <https://pypi.org/project/mlpro/>`_
+MLPro is also present on...
    - `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
+   - `Python Package Index (PyPI) <https://pypi.org/project/mlpro/>`_
+   - `Anaconda <https://anaconda.org/mlpro/mlpro/>`_
+   - `GitHub <https://github.com/fhswf/MLPro>`_
 
 
 

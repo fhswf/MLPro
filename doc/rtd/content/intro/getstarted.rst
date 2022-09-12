@@ -7,7 +7,7 @@
    
 
 
-MLPro is listed in the `Python Package Index (PyPI) <https://pypi.org/project/mlpro/>`_ and also in the `Anaconda Package <https://anaconda.org/mlpro/mlpro/>`_ . MLPro can be installed by running
+MLPro is listed in the `Python Package Index (PyPI) <https://pypi.org/project/mlpro/>`_ and also in `Anaconda <https://anaconda.org/mlpro/mlpro/>`_ . MLPro can be installed by running
 
 .. code-block:: bash
 
