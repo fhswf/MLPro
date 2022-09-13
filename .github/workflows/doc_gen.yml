@@ -1,0 +1,54 @@
+name: Autodoc Gen
+on: 
+  pull_request:
+    branches: [ main ]
+jobs:
+  format:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+      - name: Checkout Codes
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 pytest
+          pip install numpy
+          pip install matplotlib
+          pip install dill
+          pip install stable-baselines3
+          pip install PettingZoo
+          pip install gym==0.25.0
+          pip install pyglet
+          pip install pymunk
+          pip install pygame
+          pip install sphinx
+          pip install sphinx-rtd-theme
+          pip install sphinx-copybutton
+          pip install hyperopt
+          pip install optuna
+          pip install transformations
+      - name: Build the Documentation
+        run: |
+          make docu
+      - name: Check for modified files
+        id: git-check
+        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+      - name: Push changes
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          git config --global user.name 'Mochammad Rizky Diprasetya'
+          git config --global user.email 'diprasetya.rizky@protonmail.com'
+          git remote set-url origin https://x-access-token:${{ secrets.PUSH_TOKEN }}@github.com/${{ github.repository }}
+          git commit -am "Autodoc Generation"
+          git push
