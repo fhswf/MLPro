@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.rl.envs
+## -- Package : mlpro.rl.envs.sim-mpps
 ## -- Module  : mpps.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
