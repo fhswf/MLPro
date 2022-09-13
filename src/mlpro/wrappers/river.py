@@ -25,7 +25,7 @@ https://www.riverml.xyz/
 
 from mlpro.bf.various import ScientificObject
 from mlpro.wrappers.models import Wrapper
-from mlpro.oa.models import *
+from mlpro.bf.streams import *
 from mlpro.bf.math import *
 import river
 import numpy
