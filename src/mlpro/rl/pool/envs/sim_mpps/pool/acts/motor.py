@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.rl.envs.sim-mpps.pool.acts
+## -- Package : mlpro.rl.envs.sim_mpps.pool.acts
 ## -- Module  : motor.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

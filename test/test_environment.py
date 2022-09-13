@@ -35,7 +35,7 @@ from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 from mlpro.rl.pool.envs.doublependulum import DoublePendulumS7
 from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4
 # from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
-from mlpro.rl.pool.envs.mpps import Sim_MPPS
+from mlpro.rl.pool.envs.sim_mpps.mpps import Sim_MPPS
 
 
 ## -------------------------------------------------------------------------------------------------
