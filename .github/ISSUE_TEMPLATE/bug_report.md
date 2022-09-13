@@ -23,7 +23,8 @@ A clear and concise description of what you expected to happen.
 **4 Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-** 5 Additional Informations**
+**5 Additional Informations**
+
 5.1 Operating System
    - [ ] Linux
    - [ ] Windows
