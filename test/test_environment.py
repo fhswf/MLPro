@@ -9,12 +9,16 @@
 ## -- 2021-09-11  1.0.0     MRD      Release First Version
 ## -- 2021-09-22  1.0.1     WB       Change Environment Instantiation Method
 ## -- 2021-09-26  1.0.2     MRD      Change the structure to work with GitHub Automated Test
-## -- 2021 09-26  1.0.3     MRD      Change the import module due to the change of the pool
+## -- 2021-09-26  1.0.3     MRD      Change the import module due to the change of the pool
 ## --                                folder structer
+## -- 2021-09-26  1.0.4     MRD      Change the import module due to the change of the pool
+## --                                folder structer
+## -- 2022-09-02  1.0.5     SY       Add DoublePendulumS7 and DoublePendulumS4
+## -- 2022-09-13  1.0.5     SY       Add Sim_MPPS
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2021-09-26)
+Ver. 1.0.5 (2022-09-13)
 
 Unit test classes for environment.
 """
@@ -31,10 +35,12 @@ from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 from mlpro.rl.pool.envs.doublependulum import DoublePendulumS7
 from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4
 # from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
+from mlpro.rl.pool.envs.mpps import Sim_MPPS
 
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld, MultiCartPole, DoublePendulumS7, DoublePendulumS4])
+@pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld, MultiCartPole, DoublePendulumS7, DoublePendulumS4,
+                                     Sim_MPPS])
 def test_environment(env_cls):
     env = env_cls()
     assert isinstance(env, Environment)
