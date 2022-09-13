@@ -41,11 +41,7 @@ jobs:
       - name: Build the Documentation
         run: |
           make docu
-      - name: Check for modified files
-        id: git-check
-        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
       - name: Push changes
-        if: steps.git-check.outputs.modified == 'true'
         run: |
           git config --global user.name 'Mochammad Rizky Diprasetya'
           git config --global user.email 'diprasetya.rizky@protonmail.com'
