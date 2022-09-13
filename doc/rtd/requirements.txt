@@ -2,3 +2,15 @@ sphinx
 sphinx_rtd_theme
 sphinxcontrib-napoleon
 sphinx-copybutton
+numpy
+matplotlib
+dill
+stable-baselines3
+PettingZoo
+gym==0.25.0
+pyglet
+pymunk
+pygame
+hyperopt
+optuna
+transformations
