@@ -41,10 +41,10 @@ jobs:
       - name: Build the Documentation
         run: |
           make docu
-      - name: Push changes
-        run: |
-          git config --global user.name 'Mochammad Rizky Diprasetya'
-          git config --global user.email 'diprasetya.rizky@protonmail.com'
-          git remote set-url origin https://x-access-token:${{ secrets.PUSH_TOKEN }}@github.com/${{ github.repository }}
-          git commit -am "Autodoc Generation"
-          git push
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Autodoc Generation
+          branch: ${{ github.head_ref }}
+          commit_user_name: Mochammad Rizky Diprasetya
+          commit_user_email: diprasetya.rizky@protonmail.com
