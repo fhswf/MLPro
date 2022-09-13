@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Howto RL-010: Train a wrapped Stable Baslines 3 policy on MLPro’s native UR5 environment &mdash; MLPro Documentations 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/clipboard.min.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Howto RL-011: Train a wrapped Stable Baslines 3 policy on MLPro’s native UR5 environment (Paper)" href="howto.rl.011.html" />
+    <link rel="prev" title="Howto RL-009: Wrap native MLPro environment class to PettingZoo environment" href="howto.rl.009.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> MLPro Documentations
+            <img src="../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">1 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/overview.html">1.1 What is MLPro?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/getstarted.html">1.2 Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/architecture.html">1.3 Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">2 MLPro-BF – Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/01_overview.html">2.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/02_elementary.html">2.2 Elementary Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/03_math.html">2.3 Mathematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/04_ml.html">2.4 Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/05_ui.html">2.5 User Interaction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">3 MLPro-SL - Supervised Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sl/01_overview.html">3.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sl/02_adaptive_function.html">3.2 Adaptive Function</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">4 MLPro-RL - Reinforcement Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/01_overview.html">4.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/02_env.html">4.2 Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/03_agents.html">4.3 Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/04_scenario.html">4.4 RL-Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/05_train.html">4.5 Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/06_wrapper.html">4.6 3rd Party Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/07_getstarted.html">4.7 Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">5 MLPro-GT – Game Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gt/01_overview.html">5.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt/02_players.html">5.2 Players</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt/03_gameboard.html">5.3 Game Boards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt/04_getstarted.html">5.4 Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">6 MLPro-OA – Online Adaptivity</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../oa/01_overview.html">6.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../oa/02_getstarted.html">6.2 Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 1: Examples</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../howto.bf.html">Basic Functions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../howto.rl.html">Reinforcement Learning</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.001.html">Howto RL-001: Types of reward</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.002.html">Howto RL-002: Run an agent with an own policy with an OpenAI GYM environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.003.html">Howto RL-003: Train an agent with an own policy on an OpenAI Gym environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.004.html">Howto RL-004: Run a multi-agent with an own policy with an OpenAI Gym environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.005.html">Howto RL-005: Train a multi-agent with an own policy on the Multi-Cartpole environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.006.html">Howto RL-006: Run own multi-agent with Petting Zoo environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.007.html">Howto RL-007: Training of a wrapped Stable Baselines 3 policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.008.html">Howto RL-008: Wrap native MLPro environment class to OpenAI Gym environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.009.html">Howto RL-009: Wrap native MLPro environment class to PettingZoo environment</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Howto RL-010: Train a wrapped Stable Baslines 3 policy on MLPro’s native UR5 environment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#executable-code">Executable code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#results">Results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.011.html">Howto RL-011: Train a wrapped Stable Baslines 3 policy on MLPro’s native UR5 environment (Paper)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.012.html">Howto RL-012: Train a wrapped Stable Baslines 3 policy on MLPro’s native RobotHTM environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.013.html">Howto RL-013: Model Based Reinforcement Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.014.html">Howto RL-014: Advanced training with stagnation detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.015.html">Howto RL-015: Train a wrapped Stable Baselines 3 policy with stagnation detection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.016.html">Howto RL-016: Comparison of native and wrapped Stable Baselines 3 policy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.017.html">Howto RL-017: Comparison of native and wrapped Stable Baselines 3 policy (off-policy)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.018.html">Howto RL-018: Train a wrapped Stable Baselines 3 policy on MLPro’s native MultiGeo environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.019.html">Howto RL-019: Train and reuse a single agent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.020.html">Howto RL-020: Run a native random agent in MLPro’s native DoublePendulum environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="howto.rl.021.html">Howto RL-021: Train a wrapped Stable Baselines 3 policy on MLPro’s native DoublePendulum environment</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../howto.gt.html">Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../howto.oa.html">Online Adaptivity</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 2: API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../append2/mlpro.core.html">Core Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append2/mlpro.wrappers.html">Wrappers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append2/mlpro.pool.html">Pool Objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append2/mlpro.template.html">Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 3: Project MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../append3/versions.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append3/publications.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append3/cont.html">Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append3/disclaimer.html">Disclaimer</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../howto.rl.html">Reinforcement Learning</a> &raquo;</li>
+      <li>Howto RL-010: Train a wrapped Stable Baslines 3 policy on MLPro’s native UR5 environment</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/append1/rl/howto.rl.010.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="howto-rl-010-train-a-wrapped-stable-baslines-3-policy-on-mlpro-s-native-ur5-environment">
+<h1>Howto RL-010: Train a wrapped Stable Baslines 3 policy on MLPro’s native UR5 environment<a class="headerlink" href="#howto-rl-010-train-a-wrapped-stable-baslines-3-policy-on-mlpro-s-native-ur5-environment" title="Permalink to this headline"></a></h1>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline"></a></h2>
+<dl class="simple">
+<dt>Please install the following packages to run this examples properly:</dt><dd><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/stable-baselines3/">Stable-Baselines3</a></p></li>
+<li><p><a class="reference internal" href="../../rl/env/pool/ur5jointcontrol.html#ur5jointcontrol"><span class="std std-ref">RL Environment UR5 Joint Control</span></a></p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/numpy/">NumPy</a></p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/matplotlib/">Matplotlib</a></p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/gym/">OpenAI Gym</a></p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/torch/">Pytorch</a></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="executable-code">
+<h2>Executable code<a class="headerlink" href="#executable-code" title="Permalink to this headline"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## -------------------------------------------------------------------------------------------------</span>
+<span class="c1">## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks</span>
+<span class="c1">## -- Package : mlpro</span>
+<span class="c1">## -- Module  : howto_rl_010_train_ur5_environment_with_wrapped_sb3_policy.py</span>
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+<span class="c1">## -- History :</span>
+<span class="c1">## -- yyyy-mm-dd  Ver.      Auth.    Description</span>
+<span class="c1">## -- 2021-11-18  0.0.0     MRD      Creation</span>
+<span class="c1">## -- 2021-11-18  1.0.0     MRD      Initial Release</span>
+<span class="c1">## -- 2021-12-07  1.0.1     DA       Refactoring</span>
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Ver. 1.0.1 (2021-12-07)</span>
+
+<span class="sd">This module shows how to use SB3 wrapper to train UR5 robot.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">mlpro.rl.models</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">mlpro.rl.pool.envs.ur5jointcontrol</span> <span class="kn">import</span> <span class="n">UR5JointControl</span>
+<span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
+<span class="kn">from</span> <span class="nn">mlpro.wrappers.sb3</span> <span class="kn">import</span> <span class="n">WrPolicySB32MLPro</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+
+<span class="c1"># 1 Make Sure training_env branch of ur_control is sourced:</span>
+<span class="c1"># request access to the ur_control project</span>
+
+<span class="c1"># 2 Implement your own RL scenario</span>
+<span class="k">class</span> <span class="nc">ScenarioUR5A2C</span><span class="p">(</span><span class="n">RLScenario</span><span class="p">):</span>
+    <span class="n">C_NAME</span> <span class="o">=</span> <span class="s1">&#39;Matrix&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_mode</span><span class="p">,</span> <span class="n">p_ada</span><span class="p">,</span> <span class="n">p_logging</span><span class="p">):</span>
+        <span class="c1"># 1 Setup environment</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">UR5JointControl</span><span class="p">(</span><span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span><span class="p">)</span>
+
+        <span class="n">policy_sb3</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span>
+            <span class="n">policy</span><span class="o">=</span><span class="s2">&quot;MlpPolicy&quot;</span><span class="p">,</span>
+            <span class="n">n_steps</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+            <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">_init_setup_model</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">,)</span>
+
+        <span class="n">policy_wrapped</span> <span class="o">=</span> <span class="n">WrPolicySB32MLPro</span><span class="p">(</span>
+            <span class="n">p_sb3_policy</span><span class="o">=</span><span class="n">policy_sb3</span><span class="p">,</span>
+            <span class="n">p_cycle_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cycle_limit</span><span class="p">,</span>
+            <span class="n">p_observation_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="o">.</span><span class="n">get_state_space</span><span class="p">(),</span>
+            <span class="n">p_action_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="o">.</span><span class="n">get_action_space</span><span class="p">(),</span>
+            <span class="n">p_ada</span><span class="o">=</span><span class="n">p_ada</span><span class="p">,</span>
+            <span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span><span class="p">)</span>
+
+        <span class="c1"># 2 Setup standard single-agent with own policy</span>
+        <span class="k">return</span> <span class="n">Agent</span><span class="p">(</span>
+            <span class="n">p_policy</span><span class="o">=</span><span class="n">policy_wrapped</span><span class="p">,</span>
+            <span class="n">p_envmodel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">p_name</span><span class="o">=</span><span class="s1">&#39;Smith&#39;</span><span class="p">,</span>
+            <span class="n">p_ada</span><span class="o">=</span><span class="n">p_ada</span><span class="p">,</span>
+            <span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span>
+        <span class="p">)</span>
+
+
+<span class="c1"># 3 Train agent in scenario</span>
+<span class="n">training</span> <span class="o">=</span> <span class="n">RLTraining</span><span class="p">(</span>
+    <span class="n">p_scenario_cls</span><span class="o">=</span><span class="n">ScenarioUR5A2C</span><span class="p">,</span>
+    <span class="n">p_cycle_limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+    <span class="n">p_cycles_per_epi_limit</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">p_stagnation_limit</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">p_eval_frequency</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+    <span class="n">p_eval_grp_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">p_collect_states</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">p_collect_actions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">p_collect_rewards</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">p_collect_training</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">p_visualize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">p_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()),</span>
+    <span class="n">p_logging</span><span class="o">=</span><span class="n">Log</span><span class="o">.</span><span class="n">C_LOG_ALL</span><span class="p">)</span>
+
+<span class="n">training</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+
+
+<span class="c1"># 4 Create Plotting Class</span>
+<span class="k">class</span> <span class="nc">MyDataPlotting</span><span class="p">(</span><span class="n">DataPlotting</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A function to plot data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+            <span class="n">maxval</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">minval</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">printing</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+                <span class="n">raw</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">label</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="n">which</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">fr_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">frame_id</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
+                    <span class="n">raw</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">fr_id</span><span class="p">)))</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">printing</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="n">maxval</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+                        <span class="n">minval</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">maxval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">printing</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+                        <span class="n">minval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">printing</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+                    <span class="n">label</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">fr_id</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">minval</span> <span class="o">-</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">minval</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">),</span> <span class="n">maxval</span> <span class="o">+</span> <span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">maxval</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">))</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Episode&quot;</span><span class="p">)</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;center left&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">showing</span><span class="p">:</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+
+<span class="c1"># 5 Plotting 1 MLpro</span>
+<span class="n">data_printing</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Cycle&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">False</span><span class="p">],</span>
+                 <span class="s2">&quot;Day&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">False</span><span class="p">],</span>
+                 <span class="s2">&quot;Second&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">False</span><span class="p">],</span>
+                 <span class="s2">&quot;Microsecond&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">False</span><span class="p">],</span>
+                 <span class="s2">&quot;Smith&quot;</span><span class="p">:</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]}</span>
+
+<span class="n">mem</span> <span class="o">=</span> <span class="n">training</span><span class="o">.</span><span class="n">get_results</span><span class="p">()</span><span class="o">.</span><span class="n">ds_rewards</span>
+<span class="n">mem_plot</span> <span class="o">=</span> <span class="n">MyDataPlotting</span><span class="p">(</span><span class="n">mem</span><span class="p">,</span> <span class="n">p_showing</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">p_printing</span><span class="o">=</span><span class="n">data_printing</span><span class="p">)</span>
+<span class="n">mem_plot</span><span class="o">.</span><span class="n">get_plots</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="results">
+<h2>Results<a class="headerlink" href="#results" title="Permalink to this headline"></a></h2>
+<img alt="../../../_images/ur5simulation.gif" src="../../../_images/ur5simulation.gif" />
+<p>The Gazebo GUI should be the first thing that shows up.
+The UR5 robot will move depending on the given action and the training is run.
+When the training is done, the logged rewards will be plotted using the matplotlib library.</p>
+<p>The plotted figure is not reproducible due to the simulator’s nature of simulating real
+world scenario. Although seeds can be set for the random generator, the sampling cannot be
+done at the exact same time during different runs. For a more reproducible results,
+<a class="reference internal" href="howto.rl.012.html#howto-rl-012"><span class="std std-ref">Howto RL-012</span></a> is more appropriate.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="howto.rl.009.html" class="btn btn-neutral float-left" title="Howto RL-009: Wrap native MLPro environment class to PettingZoo environment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="howto.rl.011.html" class="btn btn-neutral float-right" title="Howto RL-011: Train a wrapped Stable Baslines 3 policy on MLPro’s native UR5 environment (Paper)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

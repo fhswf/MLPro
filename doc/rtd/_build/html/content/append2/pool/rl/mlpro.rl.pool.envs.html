@@ -1,0 +1,2221 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Environments &mdash; MLPro Documentations 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../_static/copybutton.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="Scenarios" href="mlpro.rl.pool.scenarios.html" />
+    <link rel="prev" title="Environment Models" href="mlpro.rl.pool.envmodels.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> MLPro Documentations
+            <img src="../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">1 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/overview.html">1.1 What is MLPro?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/getstarted.html">1.2 Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../intro/architecture.html">1.3 Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">2 MLPro-BF – Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../bf/01_overview.html">2.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bf/02_elementary.html">2.2 Elementary Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bf/03_math.html">2.3 Mathematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bf/04_ml.html">2.4 Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../bf/05_ui.html">2.5 User Interaction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">3 MLPro-SL - Supervised Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../sl/01_overview.html">3.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sl/02_adaptive_function.html">3.2 Adaptive Function</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">4 MLPro-RL - Reinforcement Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rl/01_overview.html">4.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rl/02_env.html">4.2 Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rl/03_agents.html">4.3 Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rl/04_scenario.html">4.4 RL-Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rl/05_train.html">4.5 Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rl/06_wrapper.html">4.6 3rd Party Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rl/07_getstarted.html">4.7 Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">5 MLPro-GT – Game Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../gt/01_overview.html">5.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gt/02_players.html">5.2 Players</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gt/03_gameboard.html">5.3 Game Boards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gt/04_getstarted.html">5.4 Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">6 MLPro-OA – Online Adaptivity</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../oa/01_overview.html">6.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../oa/02_getstarted.html">6.2 Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 1: Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../append1/howto.bf.html">Basic Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../append1/howto.rl.html">Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../append1/howto.gt.html">Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../append1/howto.oa.html">Online Adaptivity</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 2: API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro.core.html">Core Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro.wrappers.html">Wrappers</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../mlpro.pool.html">Pool Objects</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../mlpro.pool.html#reinforcement-learning">Reinforcement Learning</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.sarsbuffer.html">State, Action, Reward Buffers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.afunctions.html">Adaptive Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.policies.html">Policies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.actionplanner.html">Action Planners</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.envmodels.html">Environment Models</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Environments</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#module-mlpro.rl.pool.envs.bglp">Bulk Goods Plant</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-mlpro.rl.pool.envs.gridworld">Grid World</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-mlpro.rl.pool.envs.multicartpole">Multi Cartpole</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#robot-manipulator">Robot Manipulator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ur5-arm-robot">UR5 Arm Robot</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#double-pendulum">Double Pendulum</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.pool.scenarios.html">Scenarios</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../mlpro.pool.html#game-theory">Game Theory</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro.template.html">Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 3: Project MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../append3/versions.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../append3/publications.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../append3/cont.html">Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../append3/disclaimer.html">Disclaimer</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../mlpro.pool.html">Pool Objects</a> &raquo;</li>
+      <li>Environments</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/append2/pool/rl/mlpro.rl.pool.envs.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="environments">
+<h1>Environments<a class="headerlink" href="#environments" title="Permalink to this headline"></a></h1>
+<section id="module-mlpro.rl.pool.envs.bglp">
+<span id="bulk-goods-plant"></span><h2>Bulk Goods Plant<a class="headerlink" href="#module-mlpro.rl.pool.envs.bglp" title="Permalink to this headline"></a></h2>
+<p>Ver. 2.2.6 (2022-08-24)</p>
+<p>This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">Actuator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">minpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masscoeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class serves as a parent class of different types of actuators, which provides the main
+attributes of an actuator in the BGLP environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>minpower</strong> (<em>float</em>) – minimum power of an actuator.</p></li>
+<li><p><strong>maxpower</strong> (<em>float</em>) – maximum power of an actuator.</p></li>
+<li><p><strong>minaction</strong> (<em>float</em>) – minimum action of an actuator.</p></li>
+<li><p><strong>maxaction</strong> (<em>float</em>) – maximum action of an actuator.</p></li>
+<li><p><strong>masscoeff</strong> (<em>float</em>) – mass transport coefficient of an actuator.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.reg_a">
+<span class="sig-name descname"><span class="pre">reg_a</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.reg_a" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing actuators in the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.idx_a">
+<span class="sig-name descname"><span class="pre">idx_a</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.idx_a" title="Permalink to this definition"></a></dt>
+<dd><p>length of reg_a.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.power_max">
+<span class="sig-name descname"><span class="pre">power_max</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.power_max" title="Permalink to this definition"></a></dt>
+<dd><p>maximum power of an actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.power_min">
+<span class="sig-name descname"><span class="pre">power_min</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.power_min" title="Permalink to this definition"></a></dt>
+<dd><p>minimum power of an actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.power_coeff">
+<span class="sig-name descname"><span class="pre">power_coeff</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.power_coeff" title="Permalink to this definition"></a></dt>
+<dd><p>power coefficient of an actuator, if necessary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.action_max">
+<span class="sig-name descname"><span class="pre">action_max</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.action_max" title="Permalink to this definition"></a></dt>
+<dd><p>maximum action of an actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.action_min">
+<span class="sig-name descname"><span class="pre">action_min</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.action_min" title="Permalink to this definition"></a></dt>
+<dd><p>minimum action of an actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.mass_coeff">
+<span class="sig-name descname"><span class="pre">mass_coeff</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.mass_coeff" title="Permalink to this definition"></a></dt>
+<dd><p>mass transport coefficient of an actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.t_activated">
+<span class="sig-name descname"><span class="pre">t_activated</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.t_activated" title="Permalink to this definition"></a></dt>
+<dd><p>a time indicator about an actuator is activated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.t_end">
+<span class="sig-name descname"><span class="pre">t_end</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.t_end" title="Permalink to this definition"></a></dt>
+<dd><p>a time indicator about the end of an activation sequence of the actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.status">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.status" title="Permalink to this definition"></a></dt>
+<dd><p>status of an actuator, false means inactive and true means active.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.cur_mass_transport">
+<span class="sig-name descname"><span class="pre">cur_mass_transport</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.cur_mass_transport" title="Permalink to this definition"></a></dt>
+<dd><p>current transported mass of an actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.cur_power">
+<span class="sig-name descname"><span class="pre">cur_power</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.cur_power" title="Permalink to this definition"></a></dt>
+<dd><p>current power consumption of an actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.cur_action">
+<span class="sig-name descname"><span class="pre">cur_action</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.cur_action" title="Permalink to this definition"></a></dt>
+<dd><p>current taken action of an actuator in RL context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.cur_speed">
+<span class="sig-name descname"><span class="pre">cur_speed</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.cur_speed" title="Permalink to this definition"></a></dt>
+<dd><p>current speed of an actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Actuator.type_">
+<span class="sig-name descname"><span class="pre">type_</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Actuator.type_" title="Permalink to this definition"></a></dt>
+<dd><p>a short name for an actuator, usually 3 capital letters (e.g VAC, BLT).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">reg_a</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">power_coeff</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id1" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">t_activated</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">t_end</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id3" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#id4" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">type_</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id5" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">idx_a</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id6" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id7">
+<span class="sig-name descname"><span class="pre">power_max</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id7" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id8">
+<span class="sig-name descname"><span class="pre">power_min</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id8" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id9">
+<span class="sig-name descname"><span class="pre">action_min</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id9" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id10">
+<span class="sig-name descname"><span class="pre">action_max</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id10" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id11">
+<span class="sig-name descname"><span class="pre">mass_coeff</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id11" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id12">
+<span class="sig-name descname"><span class="pre">cur_mass_transport</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id12" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id13">
+<span class="sig-name descname"><span class="pre">cur_power</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id13" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id14">
+<span class="sig-name descname"><span class="pre">cur_action</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id14" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id15">
+<span class="sig-name descname"><span class="pre">cur_speed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id15" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">VacuumPump</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masscoeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.envs.bglp.Actuator" title="mlpro.rl.pool.envs.bglp.Actuator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.envs.bglp.Actuator</span></code></a></p>
+<p>This class inherits Actuator class and serves as a child class of Actuator.
+This class represents a type of actuators in the BGLP environment, namely Vacuum Pump.
+Vacuum Pumps are mostly used to transport material from mini hoppers to silos.
+However, the parameter of each vacuum pump can be dissimilar to each other based on their settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – specific name or id of a vacuum pump (e.g. Vac_A, etc.).</p></li>
+<li><p><strong>minpower</strong> (<em>float</em>) – minimum power of a vacuum pump.</p></li>
+<li><p><strong>maxpower</strong> (<em>float</em>) – maximum power of a vacuum pump.</p></li>
+<li><p><strong>minaction</strong> (<em>float</em>) – minimum action of a vacuum pump.</p></li>
+<li><p><strong>maxaction</strong> (<em>float</em>) – maximum action of a vacuum pump.</p></li>
+<li><p><strong>masscoeff</strong> (<em>float</em>) – mass transport coefficient of a vacuum pump.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.reg_v">
+<span class="sig-name descname"><span class="pre">reg_v</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.reg_v" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing vacuum pumps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.idx_v">
+<span class="sig-name descname"><span class="pre">idx_v</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.idx_v" title="Permalink to this definition"></a></dt>
+<dd><p>length of reg_v.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.name" title="Permalink to this definition"></a></dt>
+<dd><p>specific name or id of a vacuum pump.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.t_end_max">
+<span class="sig-name descname"><span class="pre">t_end_max</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.t_end_max" title="Permalink to this definition"></a></dt>
+<dd><p>maximum end of activation time of a vacuum pump with respect to current time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id16">
+<span class="sig-name descname"><span class="pre">reg_v</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id16" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id17">
+<span class="sig-name descname"><span class="pre">t_end_max</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id17" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id18">
+<span class="sig-name descname"><span class="pre">idx_v</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id18" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id19">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id19" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.start_t">
+<span class="sig-name descname"><span class="pre">start_t</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.start_t" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates the activation time and the end of activation time of the vacuum pump.
+This method is called, if the vacuum pump would like to be activated or updated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>now</strong> (<em>float</em>) – current time of the system.</p></li>
+<li><p><strong>duration</strong> (<em>float</em>) – duration of the vacuum pump being activated or the action by an agent in RL context.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>optional</em>) – To indicate whether the current operation can be overwritten or not.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.calc_mass">
+<span class="sig-name descname"><span class="pre">calc_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.calc_mass" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates the transported mass flow by the vacuum pump for a time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>now</strong> (<em>float</em>) – current time of the system.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>cur_mass_transport</strong> – current transported mass.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.calc_power">
+<span class="sig-name descname"><span class="pre">calc_power</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.calc_power" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates the power consumption of a vacuum pump.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>cur_power</strong> – current power consumption.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.update" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates whether a vacuum pump must be deactived or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>now</strong> (<em>float</em>) – current time of the system.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.VacuumPump.deactivate">
+<span class="sig-name descname"><span class="pre">deactivate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.VacuumPump.deactivate" title="Permalink to this definition"></a></dt>
+<dd><p>This method is used to deactivate a vacuum pump.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">Belt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actiontype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxpower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxaction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">masscoeff</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.envs.bglp.Actuator" title="mlpro.rl.pool.envs.bglp.Actuator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.envs.bglp.Actuator</span></code></a></p>
+<p>This class inherits Actuator class and serves as a child class of Actuator.
+This class represents a type of actuators in the BGLP environment, namely Belt.
+This class can be used for Conveyor Belt, Rotary Feeder, Vibratory Conveyor, or similar type of actuators.
+Belts are mostly used to transport material from silos to hoppers.
+However, the parameter of each actuator can be dissimilar to each other based on their settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – specific name or id of an actuator (e.g. Belt_A, etc.).</p></li>
+<li><p><strong>actiontype</strong> (<em>str</em>) – “C” for continuous action, “B” for binary action.</p></li>
+<li><p><strong>minpower</strong> (<em>float</em>) – minimum power of an actuator.</p></li>
+<li><p><strong>maxpower</strong> (<em>float</em>) – maximum power of an actuator.</p></li>
+<li><p><strong>minaction</strong> (<em>float</em>) – minimum action of an actuator.</p></li>
+<li><p><strong>maxaction</strong> (<em>float</em>) – maximum action of an actuator.</p></li>
+<li><p><strong>masscoeff</strong> (<em>float</em>) – mass transport coefficient of an actuator.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.reg_b">
+<span class="sig-name descname"><span class="pre">reg_b</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.reg_b" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing actuators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.idx_b">
+<span class="sig-name descname"><span class="pre">idx_b</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.idx_b" title="Permalink to this definition"></a></dt>
+<dd><p>length of reg_b.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.name" title="Permalink to this definition"></a></dt>
+<dd><p>specific name or id of an actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.actiontype">
+<span class="sig-name descname"><span class="pre">actiontype</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.actiontype" title="Permalink to this definition"></a></dt>
+<dd><p>“C” for continuous action, “B” for binary action.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.speed">
+<span class="sig-name descname"><span class="pre">speed</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.speed" title="Permalink to this definition"></a></dt>
+<dd><p>speed of an actuator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id20">
+<span class="sig-name descname"><span class="pre">reg_b</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id20" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id21">
+<span class="sig-name descname"><span class="pre">idx_b</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id21" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id22">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id22" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id23">
+<span class="sig-name descname"><span class="pre">actiontype</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id23" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id24">
+<span class="sig-name descname"><span class="pre">speed</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id24" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.start_t">
+<span class="sig-name descname"><span class="pre">start_t</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">duration</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">speed</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.start_t" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates the activation time and the end of activation time of the belt.
+This method is called, if the belt would like to be activated or updated.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>now</strong> (<em>float</em>) – current time of the system.</p></li>
+<li><p><strong>duration</strong> (<em>float</em>) – duration of the belt being activated, which being defined by the time set.</p></li>
+<li><p><strong>speed</strong> (<em>float</em>) – speed of the belt or the action by an agent in RL context.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em><em>, </em><em>optional</em>) – To indicate whether the current operation can be overwritten or not.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.calc_mass">
+<span class="sig-name descname"><span class="pre">calc_mass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.calc_mass" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates the transported mass flow by the belt for a time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>now</strong> (<em>float</em>) – current time of the system.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>cur_mass_transport</strong> – current transported mass.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.calc_power">
+<span class="sig-name descname"><span class="pre">calc_power</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.calc_power" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates the power consumption of a belt.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>cur_power</strong> – current power consumption.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">now</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.update" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates whether a belt must be deactived or not.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>now</strong> (<em>float</em>) – current time of the system.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Belt.deactivate">
+<span class="sig-name descname"><span class="pre">deactivate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Belt.deactivate" title="Permalink to this definition"></a></dt>
+<dd><p>This method is used to deactivate a belt.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">Reservoir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vol_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_init_abs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class serves as a parent class of different types of reservoirs, which provides the main
+attributes of a buffer in the BGLP environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vol_max</strong> (<em>float</em>) – maximum volume of a reservoir.</p></li>
+<li><p><strong>vol_init_abs</strong> (<em>float</em><em>, </em><em>optional</em>) – initial volume of a reservoir. The default is 0.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.reg_r">
+<span class="sig-name descname"><span class="pre">reg_r</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.reg_r" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing reservoirs in the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.idx_r">
+<span class="sig-name descname"><span class="pre">idx_r</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.idx_r" title="Permalink to this definition"></a></dt>
+<dd><p>length of reg_r.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.vol_max">
+<span class="sig-name descname"><span class="pre">vol_max</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.vol_max" title="Permalink to this definition"></a></dt>
+<dd><p>maximum volume of a reservoir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.vol_init_abs">
+<span class="sig-name descname"><span class="pre">vol_init_abs</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.vol_init_abs" title="Permalink to this definition"></a></dt>
+<dd><p>initial volume of a reservoir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.vol_cur_abs">
+<span class="sig-name descname"><span class="pre">vol_cur_abs</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.vol_cur_abs" title="Permalink to this definition"></a></dt>
+<dd><p>current volume of a reservoir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.vol_cur_rel">
+<span class="sig-name descname"><span class="pre">vol_cur_rel</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.vol_cur_rel" title="Permalink to this definition"></a></dt>
+<dd><p>current volume of a reservoir in percentage.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.change">
+<span class="sig-name descname"><span class="pre">change</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.change" title="Permalink to this definition"></a></dt>
+<dd><p>volume change of a reservoir in a time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id25">
+<span class="sig-name descname"><span class="pre">reg_r</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id25" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id26">
+<span class="sig-name descname"><span class="pre">idx_r</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id26" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id27">
+<span class="sig-name descname"><span class="pre">vol_max</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id27" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id28">
+<span class="sig-name descname"><span class="pre">vol_init_abs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id28" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id29">
+<span class="sig-name descname"><span class="pre">vol_cur_abs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id29" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id30">
+<span class="sig-name descname"><span class="pre">vol_cur_rel</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id30" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id31">
+<span class="sig-name descname"><span class="pre">change</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id31" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.set_change">
+<span class="sig-name descname"><span class="pre">set_change</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vol_change</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.set_change" title="Permalink to this definition"></a></dt>
+<dd><p>This method sets up a volume change of a reservoir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>vol_change</strong> (<em>float</em>) – volume change of a reservoir in a time step.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Reservoir.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Reservoir.update" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates the current volume of a reservoir after volume changes are made.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Silo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">Silo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_cur</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'abs'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Silo" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.envs.bglp.Reservoir" title="mlpro.rl.pool.envs.bglp.Reservoir"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.envs.bglp.Reservoir</span></code></a></p>
+<p>This class inherits Reservoir class and serves as a child class of Reservoir.
+This class represents a type of buffers in the BGLP environment, namely Silo.
+Silos are used to temporary stored the transported materials.
+However, the parameter of each silo can be dissimilar to each other based on their settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – specific name or id of a silo (e.g. Silo_A, etc.).</p></li>
+<li><p><strong>vol_max</strong> (<em>float</em>) – maximum capacity of a silo.</p></li>
+<li><p><strong>vol_cur</strong> (<em>float</em>) – current volume of a silo.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – mode of measuring the current volume.
+“abs” means absolute value, “rel” means percentage. The default is “abs”.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Silo.reg_s">
+<span class="sig-name descname"><span class="pre">reg_s</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Silo.reg_s" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing silos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Silo.idx_s">
+<span class="sig-name descname"><span class="pre">idx_s</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Silo.idx_s" title="Permalink to this definition"></a></dt>
+<dd><p>length of reg_s.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Silo.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Silo.name" title="Permalink to this definition"></a></dt>
+<dd><p>specific name or id of a silo.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Silo.type_">
+<span class="sig-name descname"><span class="pre">type_</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Silo.type_" title="Permalink to this definition"></a></dt>
+<dd><p>a short name for a silo, usually 3 capital letters (e.g SIL).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id32">
+<span class="sig-name descname"><span class="pre">reg_s</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id32" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id33">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id33" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id34">
+<span class="sig-name descname"><span class="pre">idx_s</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id34" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id35">
+<span class="sig-name descname"><span class="pre">type_</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id35" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Hopper">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">Hopper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_max</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vol_cur</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'abs'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Hopper" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.envs.bglp.Reservoir" title="mlpro.rl.pool.envs.bglp.Reservoir"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.envs.bglp.Reservoir</span></code></a></p>
+<p>This class inherits Reservoir class and serves as a child class of Reservoir.
+This class represents a type of buffers in the BGLP environment, namely Hopper.
+Hoppers are used to temporary stored the transported materials.
+However, the parameter of each hopper can be dissimilar to each other based on their settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – specific name or id of a hopper (e.g. Hop_A, etc.).</p></li>
+<li><p><strong>vol_max</strong> (<em>float</em>) – maximum capacity of a hopper.</p></li>
+<li><p><strong>vol_cur</strong> (<em>float</em>) – current volume of a hopper.</p></li>
+<li><p><strong>mode</strong> (<em>str</em><em>, </em><em>optional</em>) – mode of measuring the current volume.
+“abs” means absolute value, “rel” means percentage. The default is “abs”.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Hopper.reg_h">
+<span class="sig-name descname"><span class="pre">reg_h</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Hopper.reg_h" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing silos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Hopper.idx_h">
+<span class="sig-name descname"><span class="pre">idx_h</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Hopper.idx_h" title="Permalink to this definition"></a></dt>
+<dd><p>length of reg_h.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Hopper.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Hopper.name" title="Permalink to this definition"></a></dt>
+<dd><p>specific name or id of a hopper.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.Hopper.type_">
+<span class="sig-name descname"><span class="pre">type_</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.Hopper.type_" title="Permalink to this definition"></a></dt>
+<dd><p>a short name for a hopper, usually 3 capital letters (e.g HOP).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id36">
+<span class="sig-name descname"><span class="pre">reg_h</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id36" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id37">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id37" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id38">
+<span class="sig-name descname"><span class="pre">idx_h</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id38" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id39">
+<span class="sig-name descname"><span class="pre">type_</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#id39" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.bglp.</span></span><span class="sig-name descname"><span class="pre">BGLP</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_reward_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t_set</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_margin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_demand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr_power</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">margin_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0.2,</span> <span class="pre">0.8,</span> <span class="pre">4]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prod_target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prod_scenario</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'continuous'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cycle_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<p>This is the main class of BGLP environment that inherits Environment class from MLPro.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_reward_type</strong> (<a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward"><em>Reward</em></a><em>, </em><em>optional</em>) – rewarding type. The default is Reward.C_TYPE_EVERY_AGENT.</p></li>
+<li><p><strong>p_logging</strong> (<a class="reference internal" href="../../core/mlpro.bf.html#mlpro.bf.various.Log" title="mlpro.bf.various.Log"><em>Log</em></a><em>, </em><em>optional</em>) – logging functionalities. The default is Log.C_LOG_ALL.</p></li>
+<li><p><strong>t_step</strong> (<em>float</em><em>, </em><em>optional</em>) – time for each time step (in seconds). The default is 0.5.</p></li>
+<li><p><strong>t_set</strong> (<em>float</em><em>, </em><em>optional</em>) – time set for one horizon (in seconds). The default is 10.0.</p></li>
+<li><p><strong>demand</strong> (<em>float</em><em>, </em><em>optional</em>) – the constant output flow from the system (in L/s). The default is 0.1.</p></li>
+<li><p><strong>lr_margin</strong> (<em>float</em><em>, </em><em>optional</em>) – the learning rate for margin parameter, related to implemented reward function. The default is 1.0.</p></li>
+<li><p><strong>lr_demand</strong> (<em>float</em><em>, </em><em>optional</em>) – the learning rate for production demand, related to implemented reward function. The default is 4.0.</p></li>
+<li><p><strong>lr_power</strong> (<em>float</em><em>, </em><em>optional</em>) – the learning rate for power consumption, related to implemented reward function. The default is 0.0010.</p></li>
+<li><p><strong>margin_p</strong> (<em>list of floats</em><em>, </em><em>optional</em>) – the margin parameter of reservoirs [low, high, multplicator]. The default is [0.2,0.8,4].</p></li>
+<li><p><strong>prod_target</strong> (<em>float</em><em>, </em><em>optional</em>) – the production target for batch operation (in L). The default is 10000.</p></li>
+<li><p><strong>prod_scenario</strong> (<em>str</em><em>, </em><em>optional</em>) – ‘batch’ means batch production scenario and ‘continuous’ means continuous production scenario. The default is ‘continuous’.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.C_NAME" title="Permalink to this definition"></a></dt>
+<dd><p>name of the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.C_LATENCY">
+<span class="sig-name descname"><span class="pre">C_LATENCY</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.C_LATENCY" title="Permalink to this definition"></a></dt>
+<dd><p>latency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>timedelta()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.C_INFINITY">
+<span class="sig-name descname"><span class="pre">C_INFINITY</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.C_INFINITY" title="Permalink to this definition"></a></dt>
+<dd><p>infinity.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.finfo()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.C_REWARD_TYPE">
+<span class="sig-name descname"><span class="pre">C_REWARD_TYPE</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.C_REWARD_TYPE" title="Permalink to this definition"></a></dt>
+<dd><p>rewarding type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.Reward" title="mlpro.rl.models_sar.Reward">Reward</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.sils">
+<span class="sig-name descname"><span class="pre">sils</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.sils" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing silos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.hops">
+<span class="sig-name descname"><span class="pre">hops</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.hops" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing hoppers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.ress">
+<span class="sig-name descname"><span class="pre">ress</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.ress" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing reservoirs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.blts">
+<span class="sig-name descname"><span class="pre">blts</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.blts" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing belts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.acts">
+<span class="sig-name descname"><span class="pre">acts</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.acts" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing actuators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.vacs">
+<span class="sig-name descname"><span class="pre">vacs</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.vacs" title="Permalink to this definition"></a></dt>
+<dd><p>list of existing vacuum pumps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.con_act_to_res">
+<span class="sig-name descname"><span class="pre">con_act_to_res</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.con_act_to_res" title="Permalink to this definition"></a></dt>
+<dd><p>connection between actuators and reservoirs and setup the sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of lists of int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.m_param">
+<span class="sig-name descname"><span class="pre">m_param</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.m_param" title="Permalink to this definition"></a></dt>
+<dd><p>the margin parameter of reservoirs [low, high, multplicator].</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP._demand">
+<span class="sig-name descname"><span class="pre">_demand</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP._demand" title="Permalink to this definition"></a></dt>
+<dd><p>the constant output flow from the system (in L/s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.t">
+<span class="sig-name descname"><span class="pre">t</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.t" title="Permalink to this definition"></a></dt>
+<dd><p>current time of the system (in seconds).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.t_step">
+<span class="sig-name descname"><span class="pre">t_step</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.t_step" title="Permalink to this definition"></a></dt>
+<dd><p>time for each time step (in seconds).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.lr_margin">
+<span class="sig-name descname"><span class="pre">lr_margin</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.lr_margin" title="Permalink to this definition"></a></dt>
+<dd><p>the learning rate for margin parameter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.lr_demand">
+<span class="sig-name descname"><span class="pre">lr_demand</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.lr_demand" title="Permalink to this definition"></a></dt>
+<dd><p>the learning rate for production demand.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.lr_power">
+<span class="sig-name descname"><span class="pre">lr_power</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.lr_power" title="Permalink to this definition"></a></dt>
+<dd><p>the learning rate for power consumption.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.overflow">
+<span class="sig-name descname"><span class="pre">overflow</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.overflow" title="Permalink to this definition"></a></dt>
+<dd><p>current overflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.power">
+<span class="sig-name descname"><span class="pre">power</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.power" title="Permalink to this definition"></a></dt>
+<dd><p>current power consumption.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.transport">
+<span class="sig-name descname"><span class="pre">transport</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.transport" title="Permalink to this definition"></a></dt>
+<dd><p>current transported mass flow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.reward">
+<span class="sig-name descname"><span class="pre">reward</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.reward" title="Permalink to this definition"></a></dt>
+<dd><p>current rewards.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.levels_init">
+<span class="sig-name descname"><span class="pre">levels_init</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.levels_init" title="Permalink to this definition"></a></dt>
+<dd><p>initial level of reservoirs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.overflow_t">
+<span class="sig-name descname"><span class="pre">overflow_t</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.overflow_t" title="Permalink to this definition"></a></dt>
+<dd><p>current overflow for a specific buffer in a specific time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.demand_t">
+<span class="sig-name descname"><span class="pre">demand_t</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.demand_t" title="Permalink to this definition"></a></dt>
+<dd><p>current demand for a specific buffer in a specific time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.power_t">
+<span class="sig-name descname"><span class="pre">power_t</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.power_t" title="Permalink to this definition"></a></dt>
+<dd><p>current power consumption for a specific actuator in a specific time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.transport_t">
+<span class="sig-name descname"><span class="pre">transport_t</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.transport_t" title="Permalink to this definition"></a></dt>
+<dd><p>current transported material by a specific actuaor in a specific time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.margin_t">
+<span class="sig-name descname"><span class="pre">margin_t</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.margin_t" title="Permalink to this definition"></a></dt>
+<dd><p>current margin for a specific buffer in a specific time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.prod_reached">
+<span class="sig-name descname"><span class="pre">prod_reached</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.prod_reached" title="Permalink to this definition"></a></dt>
+<dd><p>current production reached in L for batch operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.prod_target">
+<span class="sig-name descname"><span class="pre">prod_target</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.prod_target" title="Permalink to this definition"></a></dt>
+<dd><p>the production target for batch operation (in L).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.prod_scenario">
+<span class="sig-name descname"><span class="pre">prod_scenario</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.prod_scenario" title="Permalink to this definition"></a></dt>
+<dd><p>‘batch’ means batch production scenario and ‘continuous’ means continuous production scenario.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.cycle_limit">
+<span class="sig-name descname"><span class="pre">cycle_limit</span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.cycle_limit" title="Permalink to this definition"></a></dt>
+<dd><p>the number of cycle limit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id40">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'BGLP'</span></em><a class="headerlink" href="#id40" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id41">
+<span class="sig-name descname"><span class="pre">C_LATENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=1)</span></em><a class="headerlink" href="#id41" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id42">
+<span class="sig-name descname"><span class="pre">C_INFINITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.4028235e+38</span></em><a class="headerlink" href="#id42" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id43">
+<span class="sig-name descname"><span class="pre">C_REWARD_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#id43" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id44">
+<span class="sig-name descname"><span class="pre">con_act_to_res</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id44" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id45">
+<span class="sig-name descname"><span class="pre">m_param</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id45" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id46">
+<span class="sig-name descname"><span class="pre">prod_reached</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id46" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.C_CYCLE_LIMIT">
+<span class="sig-name descname"><span class="pre">C_CYCLE_LIMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.C_CYCLE_LIMIT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id47">
+<span class="sig-name descname"><span class="pre">t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id47" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id48">
+<span class="sig-name descname"><span class="pre">t_step</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id48" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id49">
+<span class="sig-name descname"><span class="pre">lr_margin</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id49" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id50">
+<span class="sig-name descname"><span class="pre">lr_demand</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id50" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id51">
+<span class="sig-name descname"><span class="pre">lr_power</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id51" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id52">
+<span class="sig-name descname"><span class="pre">prod_target</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id52" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id53">
+<span class="sig-name descname"><span class="pre">prod_scenario</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id53" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id54">
+<span class="sig-name descname"><span class="pre">levels_init</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id54" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id55">
+<span class="sig-name descname"><span class="pre">sils</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id55" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id56">
+<span class="sig-name descname"><span class="pre">hops</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id56" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id57">
+<span class="sig-name descname"><span class="pre">ress</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id57" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id58">
+<span class="sig-name descname"><span class="pre">blts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id58" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id59">
+<span class="sig-name descname"><span class="pre">vacs</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id59" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id60">
+<span class="sig-name descname"><span class="pre">acts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id60" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id61">
+<span class="sig-name descname"><span class="pre">overflow</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id61" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.demand">
+<span class="sig-name descname"><span class="pre">demand</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.demand" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id62">
+<span class="sig-name descname"><span class="pre">power</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id62" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id63">
+<span class="sig-name descname"><span class="pre">transport</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id63" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id64">
+<span class="sig-name descname"><span class="pre">overflow_t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id64" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id65">
+<span class="sig-name descname"><span class="pre">demand_t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id65" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id66">
+<span class="sig-name descname"><span class="pre">power_t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id66" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id67">
+<span class="sig-name descname"><span class="pre">transport_t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id67" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id68">
+<span class="sig-name descname"><span class="pre">margin_t</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#id68" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id69">
+<span class="sig-name descname"><span class="pre">reward</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#id69" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.setup_spaces">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.setup_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>This method is used to setup action and state spaces of the system.</p>
+<p>The actions and states are normalized between 0 to 1.
+For the actions, 0 means minimum action and 1 means maximum action.
+Meanwhile, for the states, 0 means minimum capacity (empty) and 1 means maximum capacity (full)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>state_space</strong> (<em>ESpace()</em>) – state space of the system.</p></li>
+<li><p><strong>action_space</strong> (<em>ESpace()</em>) – action space of the system.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.collect_substates">
+<span class="sig-name descname"><span class="pre">collect_substates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.collect_substates" title="Permalink to this definition"></a></dt>
+<dd><p>This method is called during resetting the environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>state</strong> – current states.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State">State</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.calc_mass_flows">
+<span class="sig-name descname"><span class="pre">calc_mass_flows</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.calc_mass_flows" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates the mass flow transported by actuators.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.calc_power">
+<span class="sig-name descname"><span class="pre">calc_power</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.calc_power" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates the power consumptions per actuator.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.calc_margin">
+<span class="sig-name descname"><span class="pre">calc_margin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.calc_margin" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates margin level for every reservoir.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.set_volume_changes">
+<span class="sig-name descname"><span class="pre">set_volume_changes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">demandval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.set_volume_changes" title="Permalink to this definition"></a></dt>
+<dd><p>This method sets up volume changes for every reservoir.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.update_levels">
+<span class="sig-name descname"><span class="pre">update_levels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.update_levels" title="Permalink to this definition"></a></dt>
+<dd><p>This method updates the current level of reservoirs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.reset_levels">
+<span class="sig-name descname"><span class="pre">reset_levels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.reset_levels" title="Permalink to this definition"></a></dt>
+<dd><p>This method resets reservoirs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.reset_actuators">
+<span class="sig-name descname"><span class="pre">reset_actuators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.reset_actuators" title="Permalink to this definition"></a></dt>
+<dd><p>This method resets actuators.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.update_actuators">
+<span class="sig-name descname"><span class="pre">update_actuators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.update_actuators" title="Permalink to this definition"></a></dt>
+<dd><p>This method updates actuators.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">demandval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.update" title="Permalink to this definition"></a></dt>
+<dd><p>This method sets up volume changes, updates reservoirs’ level, and updates actuators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>demandval</strong> (<em>float</em>) – production outflow target in L/s.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.get_status">
+<span class="sig-name descname"><span class="pre">get_status</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">demandval</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.get_status" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates overflow, demand, power, transport, and margin.
+This function will be called every time step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>t</strong> (<em>float</em>) – current time in sec.</p></li>
+<li><p><strong>demandval</strong> (<em>float</em>) – production outflow target in L/s.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>overflow</strong> (<em>list of floats</em>) – overflow levels.</p></li>
+<li><p><strong>demand</strong> (<em>list of floats</em>) – demand fulfilled.</p></li>
+<li><p><strong>power</strong> (<em>list of floats</em>) – power consumptions.</p></li>
+<li><p><strong>transport</strong> (<em>list of floats</em>) – transported materials.</p></li>
+<li><p><strong>margin</strong> (<em>list of floats</em>) – margin levels.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.set_actions">
+<span class="sig-name descname"><span class="pre">set_actions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">actions</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.set_actions" title="Permalink to this definition"></a></dt>
+<dd><p>This method sets up actions for actuators. This function will be called every time set.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.calc_state">
+<span class="sig-name descname"><span class="pre">calc_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.calc_state" title="Permalink to this definition"></a></dt>
+<dd><p>This method obtains current levels of reservoirs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>levels</strong> – level of each reservoir.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.calc_reward">
+<span class="sig-name descname"><span class="pre">calc_reward</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.calc_reward" title="Permalink to this definition"></a></dt>
+<dd><p>This method calculates the reward. This method can be redifined!
+The current reward function is suitable for continuous operation and scalar reward for individual agents.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><strong>reward</strong> – reward for each agent.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of floats</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.init_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.bglp.BGLP.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.bglp.BGLP.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mlpro.rl.pool.envs.gridworld">
+<span id="grid-world"></span><h2>Grid World<a class="headerlink" href="#module-mlpro.rl.pool.envs.gridworld" title="Permalink to this headline"></a></h2>
+<p>Ver. 1.0.9 (2021-02-25)</p>
+<p>This module provides an environment of customizable Gridworld.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.gridworld.</span></span><span class="sig-name descname"><span class="pre">GridWorld</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(8,</span> <span class="pre">8)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_start_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_goal_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<p>Custom environment of an n-D grid world where the agent
+has to go to a random target.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'GridWorld'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.C_LATENCY">
+<span class="sig-name descname"><span class="pre">C_LATENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=1)</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.C_LATENCY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.C_INFINITY">
+<span class="sig-name descname"><span class="pre">C_INFINITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.4028235e+38</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.C_INFINITY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.C_REWARD_TYPE">
+<span class="sig-name descname"><span class="pre">C_REWARD_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.C_REWARD_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.setup_spaces">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.setup_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Static template method to set up and return state and action space of environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>state_space</strong> (<em>MSpace</em>) – State space object</p></li>
+<li><p><strong>action_space</strong> (<em>MSpace</em>) – Action space object</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.get_state">
+<span class="sig-name descname"><span class="pre">get_state</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.get_state" title="Permalink to this definition"></a></dt>
+<dd><p>Returns current state of environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.init_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.gridworld.GridWorld.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.gridworld.GridWorld.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-mlpro.rl.pool.envs.multicartpole">
+<span id="multi-cartpole"></span><h2>Multi Cartpole<a class="headerlink" href="#module-mlpro.rl.pool.envs.multicartpole" title="Permalink to this headline"></a></h2>
+<p>Ver. 1.2.7 (2022-07-20)</p>
+<p>This module provides an environment with multivariate state and action spaces based on the
+OpenAI Gym environment ‘CartPole-v1’.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.multicartpole.</span></span><span class="sig-name descname"><span class="pre">MultiCartPole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_num_envs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_reward_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<p>This environment multivariate space and action spaces by duplicating the
+OpenAI Gym environment ‘CartPole-v1’. The number of internal CartPole
+sub-enironments can be parameterized.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MultiCartPole'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_LATENCY">
+<span class="sig-name descname"><span class="pre">C_LATENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(seconds=1)</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_LATENCY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_INFINITY">
+<span class="sig-name descname"><span class="pre">C_INFINITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3.4028235e+38</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.C_INFINITY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.switch_logging">
+<span class="sig-name descname"><span class="pre">switch_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.switch_logging" title="Permalink to this definition"></a></dt>
+<dd><p>Sets new log level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p_logging</strong> – Log level (constant C_LOG_LEVELS contains valid values)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.setup_spaces">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setup_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.setup_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Static template method to set up and return state and action space of environment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>state_space</strong> (<em>MSpace</em>) – State space object</p></li>
+<li><p><strong>action_space</strong> (<em>MSpace</em>) – Action space object</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.collect_substates">
+<span class="sig-name descname"><span class="pre">collect_substates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.collect_substates" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.get_cycle_limit">
+<span class="sig-name descname"><span class="pre">get_cycle_limit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.get_cycle_limit" title="Permalink to this definition"></a></dt>
+<dd><p>Returns limit of cycles per training episode.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.simulate_reaction">
+<span class="sig-name descname"><span class="pre">simulate_reaction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_action</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><span class="pre">mlpro.rl.models_sar.Action</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.simulate_reaction" title="Permalink to this definition"></a></dt>
+<dd><p>Simulates a state transition based on a state and an action. The simulation step itself is
+carried out either by an internal custom implementation in method _simulate_reaction() or
+by an embedded adaptive function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_state</strong> (<a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><em>State</em></a>) – Current state.</p></li>
+<li><p><strong>p_action</strong> (<a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.Action" title="mlpro.rl.models_sar.Action"><em>Action</em></a>) – Action.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Subsequent state after transition</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State">State</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.compute_success">
+<span class="sig-name descname"><span class="pre">compute_success</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.compute_success" title="Permalink to this definition"></a></dt>
+<dd><p>Assesses the given state whether it is a ‘success’ state. Assessment is carried out either by
+a custom implementation in method _compute_success() or by an embedded adaptive function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p_state</strong> (<a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><em>State</em></a>) – State to be assessed.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True, if the given state is a ‘success’ state. False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.compute_broken">
+<span class="sig-name descname"><span class="pre">compute_broken</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><span class="pre">mlpro.rl.models_sar.State</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.compute_broken" title="Permalink to this definition"></a></dt>
+<dd><p>Assesses the given state whether it is a ‘broken’ state. Assessment is carried out either by
+a custom implementation in method _compute_broken() or by an embedded adaptive function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p_state</strong> (<a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_sar.State" title="mlpro.rl.models_sar.State"><em>State</em></a>) – State to be assessed.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True, if the given state is a ‘broken’ state. False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.init_plot" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.multicartpole.MultiCartPole.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.multicartpole.MultiCartPole.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>Updates the plot.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="robot-manipulator">
+<h2>Robot Manipulator<a class="headerlink" href="#robot-manipulator" title="Permalink to this headline"></a></h2>
+</section>
+<section id="ur5-arm-robot">
+<h2>UR5 Arm Robot<a class="headerlink" href="#ur5-arm-robot" title="Permalink to this headline"></a></h2>
+</section>
+<section id="double-pendulum">
+<h2>Double Pendulum<a class="headerlink" href="#double-pendulum" title="Permalink to this headline"></a></h2>
+<img alt="../../../../_images/MPro-RL-DoublePendulum-class-diagram.drawio.png" src="../../../../_images/MPro-RL-DoublePendulum-class-diagram.drawio.png" />
+<span class="target" id="module-mlpro.rl.pool.envs.doublependulum"></span><p>Ver. 2.4.11 (2022-09-06)</p>
+<p>The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
+dynamics of the system are based on the <a class="reference external" href="https://matplotlib.org/stable/gallery/animation/double_pendulum.html">Double Pendulum</a>  implementation by
+<a class="reference external" href="https://matplotlib.org/">Matplotlib</a>. The double pendulum is a system of two poles, with the inner pole
+connected to a fixed point at one end and to outer pole at other end. The native implementation of Double
+Pendulum consists of an input motor providing the torque in either directions to actuate the system. The figure
+below shows the visualisation of MLPro’s Double Pendulum environment.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.doublependulum.</span></span><span class="sig-name descname"><span class="pre">DoublePendulumRoot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_latency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_max_torque</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_l1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_l2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_init_angles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_g</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_history_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<p>This is the root double pendulum environment class inherited from Environment class with four dimensional state
+space and underlying implementation of the Double Pendulum dynamics, default reward strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_mode</strong> – Mode of environment. Possible values are Mode.C_MODE_SIM(default) or Mode.C_MODE_REAL.</p></li>
+<li><p><strong>p_latency</strong> (<em>timedelta</em>) – Optional latency of environment. If not provided, the internal value of constant C_LATENCY is used by default.</p></li>
+<li><p><strong>p_max_torque</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum torque applied to pendulum. The default is 20.</p></li>
+<li><p><strong>p_l1</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of pendulum 1 in m. The default is 0.5</p></li>
+<li><p><strong>p_l2</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of pendulum 2 in m. The default is 0.25</p></li>
+<li><p><strong>p_m1</strong> (<em>float</em><em>, </em><em>optional</em>) – Mass of pendulum 1 in kg. The default is 0.5</p></li>
+<li><p><strong>p_m2</strong> (<em>float</em><em>, </em><em>optional</em>) – Mass of pendulum 2 in kg. The default is 0.25</p></li>
+<li><p><strong>p_init_angles</strong> (<em>str</em><em>, </em><em>optional</em>) – C_ANGLES_UP starts the pendulum in an upright position
+C_ANGLES_DOWN starts the pendulum in a downward position
+C_ANGLES_RND starts the pendulum from a random position.</p></li>
+<li><p><strong>p_g</strong> (<em>float</em><em>, </em><em>optional</em>) – Gravitational acceleration. The default is 9.8</p></li>
+<li><p><strong>p_history_length</strong> (<em>int</em><em>, </em><em>optional</em>) – Historical trajectory points to display. The default is 5.</p></li>
+<li><p><strong>p_logging</strong> – Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DoublePendulumRoot'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_CYCLE_LIMIT">
+<span class="sig-name descname"><span class="pre">C_CYCLE_LIMIT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_CYCLE_LIMIT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_LATENCY">
+<span class="sig-name descname"><span class="pre">C_LATENCY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">datetime.timedelta(microseconds=40000)</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_LATENCY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_REWARD_TYPE">
+<span class="sig-name descname"><span class="pre">C_REWARD_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_REWARD_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_SCIREF_TYPE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Online'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_SCIREF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_SCIREF_AUTHOR">
+<span class="sig-name descname"><span class="pre">C_SCIREF_AUTHOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'John</span> <span class="pre">Hunter,</span> <span class="pre">Darren</span> <span class="pre">Dale,</span> <span class="pre">Eric</span> <span class="pre">Firing,</span> <span class="pre">Michael</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">Droettboom</span> <span class="pre">and</span> <span class="pre">the</span> <span class="pre">Matplotlib</span> <span class="pre">development</span> <span class="pre">team'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_SCIREF_AUTHOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_SCIREF_TITLE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TITLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'The</span> <span class="pre">Double</span> <span class="pre">Pendulum</span> <span class="pre">Problem'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_SCIREF_TITLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_SCIREF_URL">
+<span class="sig-name descname"><span class="pre">C_SCIREF_URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://matplotlib.org/stable/gallery/animation/double_pendulum.html'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_SCIREF_URL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_ANGLES_UP">
+<span class="sig-name descname"><span class="pre">C_ANGLES_UP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'up'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_ANGLES_UP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_ANGLES_DOWN">
+<span class="sig-name descname"><span class="pre">C_ANGLES_DOWN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'down'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_ANGLES_DOWN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_ANGLES_RND">
+<span class="sig-name descname"><span class="pre">C_ANGLES_RND</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'random'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_ANGLES_RND" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_VALID_ANGLES">
+<span class="sig-name descname"><span class="pre">C_VALID_ANGLES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['random',</span> <span class="pre">'down',</span> <span class="pre">'random']</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_VALID_ANGLES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_THRSH_GOAL">
+<span class="sig-name descname"><span class="pre">C_THRSH_GOAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_THRSH_GOAL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_ANI_FRAME">
+<span class="sig-name descname"><span class="pre">C_ANI_FRAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_ANI_FRAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_ANI_STEP">
+<span class="sig-name descname"><span class="pre">C_ANI_STEP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.001</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.C_ANI_STEP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.setup_spaces">
+<span class="sig-name descname"><span class="pre">setup_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.setup_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Method to setup the spaces for the Double Pendulum root environment. This method sets up four dimensional
+Euclidean space for the root DP environment.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.init_plot">
+<span class="sig-name descname"><span class="pre">init_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_figure</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.init_plot" title="Permalink to this definition"></a></dt>
+<dd><p>This method initializes the plot figure of each episode. When the environment
+is reset, the previous figure is closed and reinitialized.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p_figure</strong> (<em>matplotlib.figure.Figure</em>) – A Figure object of the matplotlib library.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.update_plot">
+<span class="sig-name descname"><span class="pre">update_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot.update_plot" title="Permalink to this definition"></a></dt>
+<dd><p>This method updates the plot figure of each episode. When the figure is
+detected to be an embedded figure, this method will only set up the
+necessary data of the figure.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumS4">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.doublependulum.</span></span><span class="sig-name descname"><span class="pre">DoublePendulumS4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_latency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_max_torque</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_l1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_l2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_init_angles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_g</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_history_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumS4" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot" title="mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.envs.doublependulum.DoublePendulumRoot</span></code></a></p>
+<p>This is the Double Pendulum Static 4 dimensional environment that inherits from the double pendulum root
+class, inheriting the dynamics and default reward strategy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_mode</strong> – Mode of environment. Possible values are Mode.C_MODE_SIM(default) or Mode.C_MODE_REAL.</p></li>
+<li><p><strong>p_latency</strong> (<em>timedelta</em>) – Optional latency of environment. If not provided, the internal value of constant C_LATENCY is used by default.</p></li>
+<li><p><strong>p_max_torque</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum torque applied to pendulum. The default is 20.</p></li>
+<li><p><strong>p_l1</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of pendulum 1 in m. The default is 0.5</p></li>
+<li><p><strong>p_l2</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of pendulum 2 in m. The default is 0.25</p></li>
+<li><p><strong>p_m1</strong> (<em>float</em><em>, </em><em>optional</em>) – Mass of pendulum 1 in kg. The default is 0.5</p></li>
+<li><p><strong>p_m2</strong> (<em>float</em><em>, </em><em>optional</em>) – Mass of pendulum 2 in kg. The default is 0.25</p></li>
+<li><p><strong>p_init_angles</strong> (<em>str</em><em>, </em><em>optional</em>) – C_ANGLES_UP starts the pendulum in an upright position
+C_ANGLES_DOWN starts the pendulum in a downward position
+C_ANGLES_RND starts the pendulum from a random position.</p></li>
+<li><p><strong>p_g</strong> (<em>float</em><em>, </em><em>optional</em>) – Gravitational acceleration. The default is 9.8</p></li>
+<li><p><strong>p_history_length</strong> (<em>int</em><em>, </em><em>optional</em>) – Historical trajectory points to display. The default is 5.</p></li>
+<li><p><strong>p_logging</strong> – Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumS4.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DoublePendulumS4'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumS4.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumS7">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.rl.pool.envs.doublependulum.</span></span><span class="sig-name descname"><span class="pre">DoublePendulumS7</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_latency</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_max_torque</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_l1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_l2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_m2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_init_angles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_g</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9.8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_history_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumS7" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumS4" title="mlpro.rl.pool.envs.doublependulum.DoublePendulumS4"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.envs.doublependulum.DoublePendulumS4</span></code></a></p>
+<p>This is the classic implementation of Double Pendulum with 7 dimensional state space including derived
+accelerations of both the poles and the input torque. The dynamics of the system are inherited from the Double
+Pendulum Root class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_mode</strong> – Mode of environment. Possible values are Mode.C_MODE_SIM(default) or Mode.C_MODE_REAL.</p></li>
+<li><p><strong>p_latency</strong> (<em>timedelta</em>) – Optional latency of environment. If not provided, the internal value of constant C_LATENCY is used by default.</p></li>
+<li><p><strong>p_max_torque</strong> (<em>float</em><em>, </em><em>optional</em>) – Maximum torque applied to pendulum. The default is 20.</p></li>
+<li><p><strong>p_l1</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of pendulum 1 in m. The default is 0.5</p></li>
+<li><p><strong>p_l2</strong> (<em>float</em><em>, </em><em>optional</em>) – Length of pendulum 2 in m. The default is 0.25</p></li>
+<li><p><strong>p_m1</strong> (<em>float</em><em>, </em><em>optional</em>) – Mass of pendulum 1 in kg. The default is 0.5</p></li>
+<li><p><strong>p_m2</strong> (<em>float</em><em>, </em><em>optional</em>) – Mass of pendulum 2 in kg. The default is 0.25</p></li>
+<li><p><strong>p_init_angles</strong> (<em>str</em><em>, </em><em>optional</em>) – C_ANGLES_UP starts the pendulum in an upright position
+C_ANGLES_DOWN starts the pendulum in a downward position
+C_ANGLES_RND starts the pendulum from a random position.</p></li>
+<li><p><strong>p_g</strong> (<em>float</em><em>, </em><em>optional</em>) – Gravitational acceleration. The default is 9.8</p></li>
+<li><p><strong>p_history_length</strong> (<em>int</em><em>, </em><em>optional</em>) – Historical trajectory points to display. The default is 5.</p></li>
+<li><p><strong>p_logging</strong> – Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumS7.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'DoublePendulumS7'</span></em><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumS7.C_NAME" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.rl.pool.envs.doublependulum.DoublePendulumS7.setup_spaces">
+<span class="sig-name descname"><span class="pre">setup_spaces</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.envs.doublependulum.DoublePendulumS7.setup_spaces" title="Permalink to this definition"></a></dt>
+<dd><p>Method to set up the state and action spaces of the classic Double Pendulum Environment. Inheriting from the
+root class, this method adds 3 dimensions for accelerations and torque respectively.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mlpro.rl.pool.envmodels.html" class="btn btn-neutral float-left" title="Environment Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mlpro.rl.pool.scenarios.html" class="btn btn-neutral float-right" title="Scenarios" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

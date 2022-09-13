@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Optuna &mdash; MLPro Documentations 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/clipboard.min.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="PettingZoo" href="pettingzoo.html" />
+    <link rel="prev" title="OpenML" href="openml.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> MLPro Documentations
+            <img src="../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">1 Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/overview.html">1.1 What is MLPro?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/getstarted.html">1.2 Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../intro/architecture.html">1.3 Architecture</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">2 MLPro-BF – Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/01_overview.html">2.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/02_elementary.html">2.2 Elementary Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/03_math.html">2.3 Mathematics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/04_ml.html">2.4 Machine Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../bf/05_ui.html">2.5 User Interaction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">3 MLPro-SL - Supervised Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../sl/01_overview.html">3.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sl/02_adaptive_function.html">3.2 Adaptive Function</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">4 MLPro-RL - Reinforcement Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/01_overview.html">4.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/02_env.html">4.2 Environments</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/03_agents.html">4.3 Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/04_scenario.html">4.4 RL-Scenarios</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/05_train.html">4.5 Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/06_wrapper.html">4.6 3rd Party Support</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../rl/07_getstarted.html">4.7 Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">5 MLPro-GT – Game Theory</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../gt/01_overview.html">5.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt/02_players.html">5.2 Players</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt/03_gameboard.html">5.3 Game Boards</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gt/04_getstarted.html">5.4 Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">6 MLPro-OA – Online Adaptivity</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../oa/01_overview.html">6.1 Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../oa/02_getstarted.html">6.2 Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 1: Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../append1/howto.bf.html">Basic Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append1/howto.rl.html">Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append1/howto.gt.html">Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append1/howto.oa.html">Online Adaptivity</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 2: API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../mlpro.core.html">Core Functions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../mlpro.wrappers.html">Wrappers</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="hyperopt.html">Hyperopt</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openai_gym.html">OpenAI Gym</a></li>
+<li class="toctree-l2"><a class="reference internal" href="openml.html">OpenML</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Optuna</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#cross-references">Cross References</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="pettingzoo.html">PettingZoo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="river.html">River</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sb3.html">Stable Baslines3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sklearn.html">Scikit-learn</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../mlpro.pool.html">Pool Objects</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../mlpro.template.html">Templates</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Appendix 3: Project MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../append3/versions.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append3/publications.html">Publications</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append3/cont.html">Contribution</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../append3/disclaimer.html">Disclaimer</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../mlpro.wrappers.html">Wrappers</a> &raquo;</li>
+      <li>Optuna</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/append2/wrappers/optuna.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-mlpro.wrappers.optuna">
+<span id="optuna"></span><h1>Optuna<a class="headerlink" href="#module-mlpro.wrappers.optuna" title="Permalink to this headline"></a></h1>
+<p>Ver. 1.1.0 (2022-08-14)</p>
+<p>This module provides a wrapper class for hyperparameter tuning by reusing Optuna framework.</p>
+<p>See also: <a class="reference external" href="https://pypi.org/project/optuna/">https://pypi.org/project/optuna/</a></p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mlpro.wrappers.optuna.</span></span><span class="sig-name descname"><span class="pre">WrHPTOptuna</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_logging</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_visualization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.wrappers.models.Wrapper</span></code>, <a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.ml.HyperParamTuner" title="mlpro.bf.ml.HyperParamTuner"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.HyperParamTuner</span></code></a>, <a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.various.ScientificObject" title="mlpro.bf.various.ScientificObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.various.ScientificObject</span></code></a></p>
+<p>This class is a ready to use wrapper class for Optuna framework.
+Objects of this type can be treated as a hyperparameter tuner object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_logging</strong> (<a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.various.Log" title="mlpro.bf.various.Log"><em>Log</em></a>) – Log level (see constants for log levels)</p></li>
+<li><p><strong>p_ids</strong> (<em>list of str</em><em>, </em><em>optional</em>) – List of hyperparameter ids to be tuned, otherwise all hyperparameters, default: None</p></li>
+<li><p><strong>p_visualization</strong> (<em>boolean</em>) – enable visualization at the end of the tuning, default: False</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_NAME">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_NAME" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">C_NAME</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Optuna'</span></em><a class="headerlink" href="#id0" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_WRAPPED_PACKAGE">
+<span class="sig-name descname"><span class="pre">C_WRAPPED_PACKAGE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'optuna'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_WRAPPED_PACKAGE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_TYPE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TYPE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Proceedings'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_TYPE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_AUTHOR">
+<span class="sig-name descname"><span class="pre">C_SCIREF_AUTHOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Akiba,</span> <span class="pre">Takuya</span> <span class="pre">and</span> <span class="pre">Sano,</span> <span class="pre">Shotaro</span> <span class="pre">and</span> <span class="pre">Yanase,</span> <span class="pre">Toshihiko</span> <span class="pre">and</span> <span class="pre">Ohta,</span> <span class="pre">Takeru</span> <span class="pre">and</span> <span class="pre">Koyama,</span> <span class="pre">Masanori'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_AUTHOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_TITLE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_TITLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Optuna:</span> <span class="pre">A</span> <span class="pre">Next-Generation</span> <span class="pre">Hyperparameter</span> <span class="pre">Optimization</span> <span class="pre">Framework'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_TITLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_YEAR">
+<span class="sig-name descname"><span class="pre">C_SCIREF_YEAR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2019'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_YEAR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_ISBN">
+<span class="sig-name descname"><span class="pre">C_SCIREF_ISBN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'9781450362016'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_ISBN" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_PUBLISHER">
+<span class="sig-name descname"><span class="pre">C_SCIREF_PUBLISHER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Association</span> <span class="pre">for</span> <span class="pre">Computing</span> <span class="pre">Machinery'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_PUBLISHER" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_CITY">
+<span class="sig-name descname"><span class="pre">C_SCIREF_CITY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'New</span> <span class="pre">York'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_CITY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_COUNTRY">
+<span class="sig-name descname"><span class="pre">C_SCIREF_COUNTRY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'USA'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_COUNTRY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_URL">
+<span class="sig-name descname"><span class="pre">C_SCIREF_URL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'https://doi.org/10.1145/3292500.3330701'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_URL" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_DOI">
+<span class="sig-name descname"><span class="pre">C_SCIREF_DOI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'10.1145/3292500.3330701'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_DOI" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_PAGES">
+<span class="sig-name descname"><span class="pre">C_SCIREF_PAGES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2623–2631'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_PAGES" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_BOOKTITLE">
+<span class="sig-name descname"><span class="pre">C_SCIREF_BOOKTITLE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'Proceedings</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">25th</span> <span class="pre">ACM</span> <span class="pre">SIGKDD</span> <span class="pre">International</span> <span class="pre">Conference</span> <span class="pre">on</span> <span class="pre">Knowledge</span> <span class="pre">Discovery</span> <span class="pre">&amp;</span> <span class="pre">Data</span> <span class="pre">Mining'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_SCIREF_BOOKTITLE" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.C_LOG_SEPARATOR">
+<span class="sig-name descname"><span class="pre">C_LOG_SEPARATOR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'------------------------------------------------------------------------------'</span></em><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.C_LOG_SEPARATOR" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mlpro.wrappers.optuna.WrHPTOptuna.get_parameters">
+<span class="sig-name descname"><span class="pre">get_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trial</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.wrappers.optuna.WrHPTOptuna.get_parameters" title="Permalink to this definition"></a></dt>
+<dd><p>This method is used to get parameters within boundaries.
+The hyperparameter should be bounded both above and below.
+For different parameter expressions, please redefined this method and check <a class="reference external" href="https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html">https://optuna.readthedocs.io/en/stable/reference/generated/optuna.trial.Trial.html</a>!
+For big data handling, please redifined this method!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>trial</strong> (<em>object</em>) – Suggest hyperparameters using a trial object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>parameters</strong> – List of parameter expressions.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<section id="cross-references">
+<h2>Cross References<a class="headerlink" href="#cross-references" title="Permalink to this headline"></a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../../append1/bf/howto.bf.008.html#howto-bf-008"><span class="std std-ref">Howto BF-008: Hyperparameter Tuning using Optuna</span></a></p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="openml.html" class="btn btn-neutral float-left" title="OpenML" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pettingzoo.html" class="btn btn-neutral float-right" title="PettingZoo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
