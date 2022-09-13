@@ -30,6 +30,7 @@ from mlpro.rl.models import *
 from mlpro.bf.various import *
 import numpy as np
 import random
+import uuid
 
 
 
@@ -37,87 +38,149 @@ import random
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class Actuator:
+class Actuator(TStamp, ScientificObject, Log):
     """
-    This class serves as a parent class of different types of actuators, which provides the main 
-    attributes of an actuator in the BGLP environment.
+    This class serves as a base class of actuators, which provides the main attributes of an actuator.
+    
     Parameters
     ----------
     
         
     Attributes
     ----------
-    reg : list of objects
-        list of existing actuators in the environment.
+    
 
     """
 
-    reg = []
+    C_TYPE = 'Actuator'
+    C_NAME = ''
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
-        self.idx = len(self.reg)
-        self.reg.append(self)
-
+    def __init__(self,
+                 p_name:str,
+                 p_status:bool=False,
+                 p_id:int=None,
+                 p_logging=Log.C_LOG_ALL):
+        
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
+        self.set_id(p_id)
+        self.set_status(p_status)
+        
+        Log.__init__(self, p_logging=p_logging)
+        self._process = None
+        self.setup_process()
+        self.reset()
+        
 
 ## -------------------------------------------------------------------------------------------------
-    def set_id(self):
-        ...
+    def set_id(self, p_id:int=None):
+        if p_id is None:
+            self._id = str(uuid.uuid4())
+        else:
+            self._id = str(p_id)
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_id(self):
-        ...
+        return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_name(self):
-        ...
+    def set_name(self, p_name):
+        self._name = p_name
+        self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_name(self):
-        ...
+        return self._name
         
 
 ## -------------------------------------------------------------------------------------------------
-    def activate(self):
-        ...
+    def activate(self, **p_args) -> bool:
+        if not self.get_status():
+            self.set_status(True)
+            self._actuation_time = 0
+            self.log(self.C_LOG_TYPE_I, 'Actuator ' + self.get_name() + ' is turned on.')
+        else:
+            self.log(self.C_LOG_TYPE_E, 'Actuator ' + self.get_name() + ' is still on.')
+        
+        raise NotImplementedError('Please redfine this function!')
 
 
 ## -------------------------------------------------------------------------------------------------    
-    def deactivate(self):
-        ...
+    def deactivate(self, **p_args) -> bool:
+        if self.get_status():
+            self.set_status(False)
+            self.log(self.C_LOG_TYPE_I, 'Actuator ' + self.get_name() + ' is turned off.')
+        else:
+            self.log(self.C_LOG_TYPE_E, 'Actuator ' + self.get_name() + ' is already off.')
+        
+        raise NotImplementedError('Please redfine this function!')
+  
+    
+## -------------------------------------------------------------------------------------------------      
+    def set_status(self, p_status:bool=False):
+        self.status = p_status
   
     
 ## -------------------------------------------------------------------------------------------------      
     def get_status(self):
-        ... #on/off
+        return self.status
 
 
 ## -------------------------------------------------------------------------------------------------        
     def reset(self):
-        ...
+        if self.status:
+            self.force_stop()
+        self._actuation_time = 0
+        
+        self.log(self.C_LOG_TYPE_I, 'Actuator ' + self.get_name() + ' is succesfully reset.')
+        
+        raise NotImplementedError('Please redfine this function!')
 
 
 ## -------------------------------------------------------------------------------------------------    
     def emergency_stop(self):
-        ...
+        self.deactivate()
+    
+        self.log(self.C_LOG_TYPE_W, 'Actuator ' + self.get_name() + ' is stopped due to emergeny.')
+        
+        raise NotImplementedError('Please redfine this function!')
 
 
 ## -------------------------------------------------------------------------------------------------    
     def force_stop(self):
-        ...
+        self.deactivate()
+    
+        self.log(self.C_LOG_TYPE_I, 'Actuator ' + self.get_name() + ' is forcely stopped.')
+        
+        raise NotImplementedError('Please redfine this function!')
 
 
 ## -------------------------------------------------------------------------------------------------    
     def setup_process(self):
-        ...
+        if self._process() is None:
+            self._process = Process(self.get_name())
+            
+        # self._process.add(p_param_1=.., p_param_2=.., .....)
+        # self._process.add(p_param_1=.., p_param_2=.., .....)
+
+        raise NotImplementedError('Please redfine this function!')
 
 
 ## -------------------------------------------------------------------------------------------------    
-    def run_process(self):
-        ...
+    def run_process(self, p_time:float, **p_args):
+        if not self.get_status():
+            self.activate(p_args)
+        self._process.run(p_time)
+        self._actuation_time += p_time
+
+        raise NotImplementedError('Please redfine this function!')
+        
 
 
 
@@ -386,18 +449,18 @@ class Process:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name, **p_param):
+    def __init__(self, p_name, p_id):
         ...
 
 
 ## -------------------------------------------------------------------------------------------------
     def add(self, **p_args):
         ...
-        # self.all_processes.append(TransferFunction(.....))
+        # self.all_processes.append(TransferFunction(**p_args))
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self):
+    def run(self, p_time):
         ...
 
 
