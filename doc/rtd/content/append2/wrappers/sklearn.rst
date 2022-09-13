@@ -11,4 +11,4 @@ Scikit-learn
 
 Cross References
 ----------------
-    + :ref:`Howto OA-003: Accessing Data from Scikit-learn<Howto OA 003>`
+    + :ref:`Howto BF-022: Accessing Data from Scikit-learn<Howto BF 022>`

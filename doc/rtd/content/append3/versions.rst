@@ -2,16 +2,30 @@ Release Notes
 ================
 
 
+Version 0.9.2 
+---------------------
+
+Release Highlights
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- RL: Refactoring and completion of environment Double Pendulum
+- BF: New modules for event handling and stream data access
+- Anaconda integration
+- Extensions to the documentation
+- Numerous minor corrections and improvements
+
+
+
 Version 0.9.1
 ---------------------
 
 Release Highlights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+- RL: UR5 Environment (Simulation and Real)
+- BF: Wrapper for Scikit-learn, OpenML, River
 - Changes in gym wrapper due to new gym version of 0.25.0
 - Gym wrapper can now use either the new step api or the old step api
-- UR5 Environment (Simulation and Real)
-- Wrapper for Scikit-learn, OpenML, River
 - Extensions to the documentation
 
 

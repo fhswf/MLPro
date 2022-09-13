@@ -1,3 +1,4 @@
+.. _customEnv:
 Custom Environments
 -----------------------
 
@@ -95,9 +96,7 @@ Custom Environments
     
     3. **C_TYPE_EVERY_ACTION** is a scalar for every agent and action.
     
-    To set up state- and action-spaces using our basic functionalities, please refer to our :ref:`how to File 02<target-howto>`
-    or `here <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2002%20-%20(Math)%20Spaces%2C%20subspaces%20and%20elements.py>`_.
-    Dimension class is currently improved and we will provide the explanation afterwards!
+    To set up state- and action-spaces using our basic functionalities, please refer to our `how-to file <https://mlpro.readthedocs.io/en/latest/content/append1/rl/howto.rl.001.html>`_.
 
 - **Environment Creation for Real Hardware Mode**
 
