@@ -1,0 +1,35 @@
+{% set name = "mlpro" %}
+{% set version = "0.9.2" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  path: ..
+
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+requirements:
+  host:
+    - pip
+    - python
+  run:
+    - python
+    - matplotlib
+    - numpy
+    - dill
+
+test:
+  imports:
+    - mlpro
+
+about:
+  home: https://github.com/fhswf/MLPro
+  license: Apache-2.0
+  license_family: Apache
+  summary: MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+  description: MLPro provides complete, standardized, and reusable functionalities to support your scientific research, educational tasks or industrial projects in machine learning.
