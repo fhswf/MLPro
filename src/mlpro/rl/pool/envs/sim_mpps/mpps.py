@@ -84,7 +84,7 @@ class Actuator(TStamp, ScientificObject, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_id(self):
+    def get_id(self) -> str:
         return self._id
 
 
@@ -95,7 +95,7 @@ class Actuator(TStamp, ScientificObject, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_name(self):
+    def get_name(self) -> str:
         return self._name
         
 
@@ -128,7 +128,7 @@ class Actuator(TStamp, ScientificObject, Log):
   
     
 ## -------------------------------------------------------------------------------------------------      
-    def get_status(self):
+    def get_status(self) -> bool:
         return self.status
 
 
@@ -188,63 +188,137 @@ class Actuator(TStamp, ScientificObject, Log):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class Reservoir:
+class Reservoir(TStamp, ScientificObject, Log):
+    """
+    This class serves as a base class of reservoirs, which provides the main attributes of a reservoir.
+    
+    Parameters
+    ----------
+    
+        
+    Attributes
+    ----------
+    
+
+    """
+
+    C_TYPE = 'Reservoir'
+    C_NAME = ''
+    C_RES_TYPE_CONT = 0
+    C_RES_TYPE_2POS = 1
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name, p_max_capacity, p_sensor, **p_param):
-        ... # sensor: continuous values or 2-postion sensors (low,mid,high)
-        ...
+    def __init__(self,
+                 p_name:str,
+                 p_max_capacity:float,
+                 p_sensor:int=self.C_RES_TYPE_CONT,
+                 p_id:int=None,
+                 p_logging=Log.C_LOG_ALL,
+                 p_init:float=None,
+                 p_sensor_low:float=None,
+                 p_sensor_high:float=None):
+        
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
+        self.set_id(p_id)
 
-
-## -------------------------------------------------------------------------------------------------
-    def set_id(self):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_name(self):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_name(self):
-        ...
+        Log.__init__(self, p_logging=p_logging)
+        self.sensor_type = p_sensor
+        if self.sensor_type == self.C_RES_TYPE_2POS:
+            try:
+                self.sensor_low = p_sensor_low
+                self.sensor_high = p_sensor_high
+            except:
+                raise ParamError('sensor_low and sensor_high parameters are missing')
+        self.set_maximum_capacity(p_max_capacity)
+        self.set_initial_level(p_init)
+        self.reset()
+        self.overflow = 0
         
 
 ## -------------------------------------------------------------------------------------------------
-    def update(self, p_in, p_out):
-        ...
+    def set_id(self, p_id:int=None):
+        if p_id is None:
+            self._id = str(uuid.uuid4())
+        else:
+            self._id = str(p_id)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_id(self) -> str:
+        return self._id
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_name(self, p_name):
+        self._name = p_name
+        self.C_NAME = p_name
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_name(self) -> str:
+        return self._name
+        
+
+## -------------------------------------------------------------------------------------------------
+    def update(self, p_in:float, p_out:float):
+        self._volume = self._volume + p_in - p_out
+        self.overflow = 0
+        if self._volume < 0:
+            self._volume = 0
+        elif self._volume > self.max_capacity:
+            self.overflow = self._volume - self.max_capacity
+            self._volume = self.max_capacity
+        self.log(self.C_LOG_TYPE_I, 'Reservoir ' + self.get_name() + ' is updated.')
         
 
 ## -------------------------------------------------------------------------------------------------
     def get_volume(self):
-        ... # according to sensor type
+        if self.sensor_type == self.C_RES_TYPE_CONT:
+            return self._volume
+        elif self.sensor_type == self.C_RES_TYPE_2POS:
+            if self._volume < self.sensor_low:
+                return 'low'
+            elif self._volume > self.sensor_high:
+                return 'high'
+            else:
+                return 'mid'
+
+## -------------------------------------------------------------------------------------------------
+    def set_maximum_capacity(self, p_max_capacity:float):
+        self.max_capacity = p_max_capacity
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_maximum_capacity(self):
-        ...
+    def get_maximum_capacity(self) -> float:
+        return self.max_capacity
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_overflow(self):
-        ...
+    def get_overflow(self) -> float:
+        return self.overflow
         
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self):
-        ...
+        self._volume = self.init_level
+        self.log(self.C_LOG_TYPE_I, 'Reservoir ' + self.get_name() + ' is reset.')
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_initial_level(self):
-        ...
+    def set_initial_level(self, p_init:float=None):
+        if p_init is None:
+            self.init_level = random.uniform(0, self.get_maximum_capacity())
+        else:
+            self.init_level = p_init
+        
+
+## -------------------------------------------------------------------------------------------------
+    def get_initial_level(self) -> float:
+        return self.init_level
 
 
 
@@ -257,7 +331,7 @@ class ManufacturingProcess:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name, p_max_capacity, p_prod_rate, **p_param):
-        ... # sensor: continuous values or 2-postion sensors (low,mid,high)
+        ...
         ...
 
 
