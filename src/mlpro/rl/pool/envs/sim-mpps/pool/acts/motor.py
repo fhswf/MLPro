@@ -1,11 +1,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.rl.envs
+## -- Package : mlpro.rl.envs.sim-mpps.pool.acts
 ## -- Module  : motor.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-08-24  0.0.0     SY/ML    Creation
+## -- 2022-08-24  0.0.0     ML       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
