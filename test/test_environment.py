@@ -39,8 +39,9 @@ from mlpro.rl.pool.envs.mpps import Sim_MPPS
 
 
 ## -------------------------------------------------------------------------------------------------
-@pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld, MultiCartPole, DoublePendulumS7, DoublePendulumS4,
-                                     Sim_MPPS])
+@pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld, MultiCartPole, DoublePendulumS7, DoublePendulumS4])
+# @pytest.mark.parametrize("env_cls", [RobotHTM, BGLP, GridWorld, MultiCartPole, DoublePendulumS7, DoublePendulumS4,
+#                                      Sim_MPPS])
 def test_environment(env_cls):
     env = env_cls()
     assert isinstance(env, Environment)
