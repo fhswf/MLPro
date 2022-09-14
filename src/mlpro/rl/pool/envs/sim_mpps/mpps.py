@@ -206,6 +206,9 @@ class Reservoir(TStamp, ScientificObject, Log):
     C_NAME = ''
     C_RES_TYPE_CONT = 0
     C_RES_TYPE_2POS = 1
+    C_2POS_SENSORS_LEVELS_1 = 'Low'
+    C_2POS_SENSORS_LEVELS_2 = 'Medium'
+    C_2POS_SENSORS_LEVELS_3 = 'High'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -284,11 +287,11 @@ class Reservoir(TStamp, ScientificObject, Log):
             return self._volume
         elif self.sensor_type == self.C_RES_TYPE_2POS:
             if self._volume < self.sensor_low:
-                return 'low'
+                return self.C_2POS_SENSORS_LEVELS_1
             elif self._volume > self.sensor_high:
-                return 'high'
+                return self.C_2POS_SENSORS_LEVELS_3
             else:
-                return 'mid'
+                return self.C_2POS_SENSORS_LEVELS_2
 
 ## -------------------------------------------------------------------------------------------------
     def set_maximum_capacity(self, p_max_capacity:float):
