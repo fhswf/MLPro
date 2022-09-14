@@ -212,7 +212,7 @@ class Reservoir(TStamp, ScientificObject, Log):
     def __init__(self,
                  p_name:str,
                  p_max_capacity:float,
-                 p_sensor:int=self.C_RES_TYPE_CONT,
+                 p_sensor:int=None,
                  p_id:int=None,
                  p_logging=Log.C_LOG_ALL,
                  p_init:float=None,
@@ -226,13 +226,16 @@ class Reservoir(TStamp, ScientificObject, Log):
         self.set_id(p_id)
 
         Log.__init__(self, p_logging=p_logging)
-        self.sensor_type = p_sensor
+        if p_sensor is None:
+            raise ParamError('sensor type is missing.')
+        else:
+            self.sensor_type = p_sensor
         if self.sensor_type == self.C_RES_TYPE_2POS:
             try:
                 self.sensor_low = p_sensor_low
                 self.sensor_high = p_sensor_high
             except:
-                raise ParamError('sensor_low and sensor_high parameters are missing')
+                raise ParamError('sensor_low and sensor_high parameters are missing.')
         self.set_maximum_capacity(p_max_capacity)
         self.set_initial_level(p_init)
         self.reset()
