@@ -1,12 +1,13 @@
 name: Autodoc Gen
-on: 
-  push:
-    branches: [ main ]
+on:
+  pull_request:
+    types:
+      - closed
     tags:        
     - '*'
 jobs:
-  format:
-    if: github.event.pull_request.head.repo.full_name == github.repository
+  build:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     strategy:
       matrix:
