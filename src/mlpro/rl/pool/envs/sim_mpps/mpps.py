@@ -38,7 +38,7 @@ import uuid
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class Actuator(TStamp, ScientificObject, Log):
+class Actuator(ScientificObject, Log):
     """
     This class serves as a base class of actuators, which provides the main attributes of an actuator.
     
@@ -188,7 +188,7 @@ class Actuator(TStamp, ScientificObject, Log):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class Reservoir(TStamp, ScientificObject, Log):
+class Reservoir(ScientificObject, Log):
     """
     This class serves as a base class of reservoirs, which provides the main attributes of a reservoir.
     
