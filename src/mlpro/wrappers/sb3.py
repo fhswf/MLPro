@@ -36,6 +36,7 @@ See also: https://pypi.org/project/stable-baselines3/
 
 import gym
 import torch
+import numpy as np
 from stable_baselines3.common import utils
 from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from mlpro.wrappers.models import Wrapper
@@ -66,6 +67,33 @@ class DummyEnv(gym.Env):
             self.observation_space = p_observation_space
         if p_action_space is not None:
             self.action_space = p_action_space
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class VecExtractDictObs(VecEnvWrapper):
+    """
+    A vectorized wrapper for filtering a specific key from dictionary observations.
+    Similar to Gym's FilterObservation wrapper:
+        https://github.com/openai/gym/blob/master/gym/wrappers/filter_observation.py
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self) -> np.ndarray:
+        obs = self.venv.reset()
+        return obs[self.key]
+
+## -------------------------------------------------------------------------------------------------
+    def step_async(self, actions: np.ndarray) -> None:
+        self.venv.step_async(actions)
+
+## -------------------------------------------------------------------------------------------------
+    def step_wait(self) -> VecEnvStepReturn:
+        obs, reward, done, info = self.venv.step_wait()
+        return obs[self.key], reward, done, info
 
 
 
