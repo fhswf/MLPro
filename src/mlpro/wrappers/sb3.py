@@ -45,6 +45,7 @@ from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3 import HerReplayBuffer
 from collections import OrderedDict
 from mlpro.rl.models import *
+from typing import Any, Dict, Optional, Union
 
 
 
@@ -68,6 +69,10 @@ class DummyEnv(gym.Env):
         if p_action_space is not None:
             self.action_space = p_action_space
 
+## -------------------------------------------------------------------------------------------------
+    def compute_reward(self, achieved_goal: Union[int, np.ndarray], desired_goal: Union[int, np.ndarray], _info: Optional[Dict[str, Any]]) -> np.float32:
+        distance = np.linalg.norm(achieved_goal - desired_goal, axis=-1)
+        return -(distance > 0).astype(np.float32)
 
 
 
@@ -200,7 +205,7 @@ class WrPolicySB32MLPro(Wrapper, Policy):
             self.sb3.env = DummyVecEnv(set_of_envs)
             self.sb3.env = VecExtractDictObs(self.sb3.env, observation_space=self.sb3.env.observation_space, action_space=self.sb3.env.action_space)
             # Setup SB3 Model
-            self.sb3.observation_space = observation_space
+            self.sb3.observation_space = observation_space_vec
             self.sb3.action_space = action_space
             self.sb3.n_envs = p_num_envs
         else:
@@ -274,7 +279,14 @@ class WrPolicySB32MLPro(Wrapper, Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_action_off_policy(self, p_obs: State) -> Action:
-        self.sb3._last_obs = p_obs.get_values()
+        if self.sb3.replay_buffer_class == HerReplayBuffer:
+            data_obs = OrderedDict()
+            data_obs['achieved_goal'] = np.array(p_obs.get_values())
+            data_obs['desired_goal'] = np.array(self.desired_goals)
+            data_obs['observation'] = np.array(p_obs.get_values())
+            self.sb3._last_obs = data_obs
+        else:
+            self.sb3._last_obs = p_obs.get_values()
         action, buffer_action = self.sb3._sample_action(self.sb3.learning_starts)
 
         action = action.flatten()
@@ -377,14 +389,14 @@ class WrPolicySB32MLPro(Wrapper, Policy):
 
         if self.sb3.replay_buffer_class == HerReplayBuffer:
             data_obs = OrderedDict()
-            data_obs['achieved_goal'] = datas["state"].get_values()
-            data_obs['desired_goal'] = self.desired_goals
-            data_obs['observation'] = datas["state"].get_values()
+            data_obs['achieved_goal'] = np.array(datas["state"].get_values())
+            data_obs['desired_goal'] = np.array(self.desired_goals)
+            data_obs['observation'] = np.array(datas["state"].get_values())
 
             data_next_obs = OrderedDict()
-            data_next_obs['achieved_goal'] = datas["state_new"].get_values()
-            data_next_obs['desired_goal'] = self.desired_goals
-            data_next_obs['observation'] = datas["state_new"].get_values()
+            data_next_obs['achieved_goal'] = np.array(datas["state_new"].get_values())
+            data_next_obs['desired_goal'] = np.array(self.desired_goals)
+            data_next_obs['observation'] = np.array(datas["state_new"].get_values())
 
             self.sb3.replay_buffer.add(
                 obs=data_obs,
