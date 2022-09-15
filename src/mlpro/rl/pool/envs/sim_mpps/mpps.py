@@ -476,48 +476,93 @@ class TransferFunction:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name, p_type, **p_param):
-        ...
+    def __init__(self, p_name : str, p_id=None, **p_args) -> None:
+
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
+
+        self.args = p_args
+
+        self.set_id(p_id)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_id(self):
-        ...
+    def set_id(self, p_id:int=None):
+        if p_id is None:
+            self._id = str(uuid.uuid4())
+        else:
+            self._id = str(p_id)
+
+
+    ## -------------------------------------------------------------------------------------------------
+    def get_id(self) -> str:
+        return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        ...
+    def set_name(self, p_name):
+        self._name = p_name
+        self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_name(self):
-        ...
+    def get_name(self) -> str:
+        return self._name
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_name(self):
-        ...
+    def call(self, *p_value):
+
+        function = getattr(self, self._name)
+
+        return function(*p_value)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup_function(self):
-        ...
+    def linear(self, *p_value):
+        
+        return self.args["arg0"] * p_value[0] + self.args["arg1"]
+
+
+    ## -------------------------------------------------------------------------------------------------
+    def cosinus(self, *p_value):
+        return math.cos(self.args["arg0"]) * p_value[0]
+
+
+    ## -------------------------------------------------------------------------------------------------
+    def sinus(self, *p_value):
+        return math.cos(self.args["arg0"]) * p_value[0]
+
+
+    ## -------------------------------------------------------------------------------------------------
+    def my_function(self, *p_value):
+        """
+        This function represents the template to cereate your own function and must be reinitalisied.
+        Hereby are p_value[] changing values and self.args[] fix values.
+
+        For example: 
+        I(t) = I(0) * e^(-(1/(RC)) * t)
+        return self.args["arg0"] * math.exp(-(1/(self.args["arg1"]*self.args["arg2"]))*p_value[0])
+        """
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def function_approximation(self, **p_args):
-        ...
+    def plot(self, p_lim:int):
+    
+        x_value = range(p_lim)
+        y_value = []
 
+        for para in x_value:
+            # function is limited of functions with one input value
+            y_value.append(self.call(para))
 
-## -------------------------------------------------------------------------------------------------
-    def call(self, p_input):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def plot(self, p_window, p_input_min, p_input_max):
-        ...
+        
+        fig, ax = plt.subplots()
+        ax.plot(x_value, y_value, linewidth=2.0)
+        plt.show()
 
 
 
