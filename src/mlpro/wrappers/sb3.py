@@ -39,6 +39,10 @@ import torch
 from stable_baselines3.common import utils
 from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from mlpro.wrappers.models import Wrapper
+from stable_baselines3.common.vec_env.base_vec_env import VecEnv, VecEnvStepReturn, VecEnvWrapper
+from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3 import HerReplayBuffer
+from collections import OrderedDict
 from mlpro.rl.models import *
 
 
@@ -52,11 +56,16 @@ class DummyEnv(gym.Env):
     an Environment. As for now, it only needs the observation space and the action space.
     """
 
+    observation_space = None
+    action_space = None
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_observation_space, p_action_space) -> None:
+    def __init__(self, p_observation_space=None, p_action_space=None) -> None:
         super().__init__()
-        self.observation_space = p_observation_space
-        self.action_space = p_action_space
+        if p_observation_space is not None:
+            self.observation_space = p_observation_space
+        if p_action_space is not None:
+            self.action_space = p_action_space
 
 
 
