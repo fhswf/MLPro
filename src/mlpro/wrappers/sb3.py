@@ -355,6 +355,12 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         """
         Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
         internal buffer from SB3 for off_policy.
+        
+        If you are incorporating HER, please read the following decriptions:
+        The observation space is required to contain at least three elements, namely `observation`,
+        `desired_goal`, and `achieved_goal`. Here, `desired_goal` specifies the goal that the agent
+        should attempt to achieve. `achieved_goal` is the goal that it currently achieved instead.
+        `observation` contains the actual observations of the environment as per usual.
         """
 
         # Add num_collected_steps
