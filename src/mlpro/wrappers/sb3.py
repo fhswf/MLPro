@@ -120,13 +120,19 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         Adaptability. Defaults to True.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
+    p_num_envs : int
+        Number of environments, specifically for vectorized environment.
+    p_desired_goals : list, Optional
+        Desired state goals for Hindsight Experience Replay (HER).
     """
 
     C_TYPE              = 'Wrapper SB3 -> MLPro'
     C_WRAPPED_PACKAGE   = 'stable_baselines3'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace, p_action_space:MSpace, p_ada:bool=True, p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace,
+                 p_action_space:MSpace, p_ada:bool=True, p_logging=Log.C_LOG_ALL,
+                 p_num_envs:int=1, p_desired_goals=None):
         # Set Name
         WrPolicySB32MLPro.C_NAME = "Policy " + type(p_sb3_policy).__name__
         
@@ -182,12 +188,27 @@ class WrPolicySB32MLPro(Wrapper, Policy):
             )
 
         # Create Dummy Env
-        self.sb3.env = DummyEnv(observation_space, action_space)
-
-        # Setup SB3 Model
-        self.sb3.observation_space = observation_space
-        self.sb3.action_space = action_space
-        self.sb3.n_envs = 1
+        if not isinstance(p_sb3_policy, OnPolicyAlgorithm) and self.sb3.replay_buffer_class == HerReplayBuffer:
+            if p_desired_goals is None:
+                raise NotImplementedError('The desired goal is missing!')
+            else:
+                self.desired_goals = p_desired_goals
+            observation_space_vec = gym.spaces.Dict({'observation':observation_space, 'achieved_goal':observation_space, 'desired_goal':observation_space})
+            DummyEnv.observation_space = observation_space_vec
+            DummyEnv.action_space = action_space
+            set_of_envs = [DummyEnv for i in range(p_num_envs)]
+            self.sb3.env = DummyVecEnv(set_of_envs)
+            self.sb3.env = VecExtractDictObs(self.sb3.env, observation_space=self.sb3.env.observation_space, action_space=self.sb3.env.action_space)
+            # Setup SB3 Model
+            self.sb3.observation_space = observation_space
+            self.sb3.action_space = action_space
+            self.sb3.n_envs = p_num_envs
+        else:
+            self.sb3.env = DummyEnv(observation_space, action_space)
+            # Setup SB3 Model
+            self.sb3.observation_space = observation_space
+            self.sb3.action_space = action_space
+            self.sb3.n_envs = 1
 
         if isinstance(p_sb3_policy, OnPolicyAlgorithm):
             self.compute_action = self._compute_action_on_policy
