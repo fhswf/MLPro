@@ -21,10 +21,11 @@
 ## -- 2022-05-31  1.1.8     SY       Enable the possibility to process reward type C_TYPE_EVERY_AGENT
 ## -- 2022-08-15  1.2.0     DA       Introduction of root class Wrapper
 ## -- 2022-08-22  1.2.1     MRD      Set proper name for class variable
+## -- 2022-09-15  1.2.2     SY       Add Hindsight Experience Replay (HER) for off-policy algorithm
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2022-08-22)
+Ver. 1.2.2 (2022-09-15)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
