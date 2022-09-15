@@ -369,13 +369,32 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         if datas["state_new"].get_terminal() and datas["state_new"].get_timeout():
             info["TimeLimit.truncated"] = True
 
-        self.sb3.replay_buffer.add(
-            datas["state"].get_values(),
-            datas["state_new"].get_values(),
-            datas["action"].get_sorted_values(),
-            datas["reward"].get_overall_reward(),
-            datas["state_new"].get_terminal(),
-            [info])
+        if self.sb3.replay_buffer_class == HerReplayBuffer:
+            data_obs = OrderedDict()
+            data_obs['achieved_goal'] = datas["state"].get_values()
+            data_obs['desired_goal'] = self.desired_goals
+            data_obs['observation'] = datas["state"].get_values()
+
+            data_next_obs = OrderedDict()
+            data_next_obs['achieved_goal'] = datas["state_new"].get_values()
+            data_next_obs['desired_goal'] = self.desired_goals
+            data_next_obs['observation'] = datas["state_new"].get_values()
+
+            self.sb3.replay_buffer.add(
+                obs=data_obs,
+                next_obs=data_next_obs,
+                action=datas["action"].get_sorted_values(),
+                reward=datas["reward"].get_overall_reward(),
+                done=datas["state_new"].get_terminal(),
+                infos=[info])
+        else:
+            self.sb3.replay_buffer.add(
+                datas["state"].get_values(),
+                datas["state_new"].get_values(),
+                datas["action"].get_sorted_values(),
+                datas["reward"].get_overall_reward(),
+                datas["state_new"].get_terminal(),
+                [info])
 
         self.sb3._update_current_progress_remaining(self.sb3.num_timesteps, self.sb3._total_timesteps)
         self.sb3._on_step()
