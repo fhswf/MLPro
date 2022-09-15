@@ -285,6 +285,7 @@ class WrPolicySB32MLPro(Wrapper, Policy):
             data_obs['desired_goal'] = np.array(self.desired_goals)
             data_obs['observation'] = np.array(p_obs.get_values())
             self.sb3._last_obs = data_obs
+            
         else:
             self.sb3._last_obs = p_obs.get_values()
         action, buffer_action = self.sb3._sample_action(self.sb3.learning_starts)
