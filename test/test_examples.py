@@ -12,11 +12,11 @@
 ## -- 2022-02-28  1.0.3     SY       Howto 06, 07 of basic functions are added
 ## -- 2022-02-28  1.0.4     SY       Howto 07 of basic functions is disabled
 ## -- 2022-05-29  1.1.0     DA       Update howto list after refactoring of all howto files
-## -- 2022-09-02  1.1.1     MRD      Add howto rl 22 and 23
+## -- 2022-06-21  1.1.1     SY       Update howto 20 and 21 RL
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-09-02)
+Ver. 1.1.1 (2022-06-21)
 
 Unit test for all examples available.
 """

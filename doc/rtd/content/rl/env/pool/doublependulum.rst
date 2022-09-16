@@ -1,29 +1,39 @@
+.. _DoublePendulum:
 `Double Pendulum <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/doublependulum.py>`_
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. image:: images/double_pendulum.gif
-    :width: 600
-    
-By default the lengths and weights of the pendulum are set to be 0.5 meters each and 0.5 kg each.
-The user can customize this parameter and many other parameter to better suit the research
-purpose. The other customizable parameter includes the starting pendulum positions and speeds, 
-maximum torque and speed of the motor, the action frequency, and the time step. In addition, for 
-visualization purpose, the history lengths can also be modified to a higher value to add more 
-of the orange traces as shown on the figrue above. The environment is not episodical, which means
-that the cycle limit should be defined manually to fit some training algorihtms. 
+
+.. automodule:: mlpro.rl.pool.envs.doublependulum
+
+.. image:: images/doublependulum.gif
+    :width: 800px
+
+.. note::
+ MLPro provides two implementations of Double Pendulum environment named DoublePendulumS4 and DoublePendulumS7. 
+    + The DoublePendulumS4 environment is a basic implementation with four dimensional state space including angles and angular velocities of both the poles.
+    + The static 7 dimensional implementation of Double Pendulum environment in MLProis a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and Euclidean Distances of the states.
+
 
 The double pendulum environment can be imported via:
 
 .. code-block:: python
 
     import mlpro.rl.pool.envs.doublependulum
+
+The environment can be initialised with specifying the initial angles of both poles, masses of both poles, lenghts of poles, maximum torque value and scenario related parameters including step size and actuation step size. The initial positions of the poles refer to the position of the poles at the beginning of each RL episode, which can be set to 'up', 'down', 'random'. The default values for length and mass of each pole in the double pendulum are set to 1 and 1 respectively. The environment behaviour can be understood by running How To 20 in MLPro's sample implementation examples.
+
+
+.. note::
+ + The visualisation of the environment can be turned off by setting the visualize parameter in training/scenario initialisation to false
+
     
 Prerequisites
 =============
+Please install below packages to use the MLPro's double pendulum environment
 
     - `NumPy <https://pypi.org/project/numpy/>`_
     - `Matplotlib <https://pypi.org/project/matplotlib/>`_
     - `SciPy <https://pypi.org/project/scipy/>`_
-    - :ref:`MLPro <Installation>`
+
 
 
 General Information
@@ -36,105 +46,63 @@ General Information
 +------------------------------------+-------------------------------------------------------+
 | Native Source                      | MLPro                                                 |
 +------------------------------------+-------------------------------------------------------+
-| Action Space Dimension             | [1,]                                                  |
+| Action Space Dimension             | 1                                                     |
 +------------------------------------+-------------------------------------------------------+
 | Action Space Base Set              | Real number                                           |
 +------------------------------------+-------------------------------------------------------+
-| Action Space Boundaries            | Depends on max_torque                                 |
-+------------------------------------+-------------------------------------------------------+
-| State Space Dimension              | [4,]                                                  |
+| State Space Dimension              | 4   (for DoublePendulumS4), 7  (for DoublePendulumS7) |
 +------------------------------------+-------------------------------------------------------+
 | State Space Base Set               | Real number                                           |
-+------------------------------------+-------------------------------------------------------+
-| State Space Boundaries             | Pi for position and None for speed                    |
 +------------------------------------+-------------------------------------------------------+
 | Reward Structure                   | Overall reward                                        |
 +------------------------------------+-------------------------------------------------------+
  
 Action Space
 ============
+The goal of the environment is to maintain the vertical position of both the poles. The inner pole is actuated by a motor, and thus the action space of Double Pendulum environment is a continuous variable ranging between the negative maximum torque and positive maximum torque, where positive torque refers to clockwise torque and vice versa. The max torque can be passed as a :ref:`parameter <Double Pendulum>` in the initialisation of environment. 
 
-The continuous action is interpreted as a torque applied to the pendulum for a given time step. 
-Depending on the max_speed parameter, this might not affect the system due to the pendulum
-moving faster than the motor can handle.
++------------------------------------+-------------------------------------------------------+
+|         Parameter                  |                         Range                         |
++====================================+=======================================================+
+| Torque                             | [-max_torque, max_torque]                             |
++------------------------------------+-------------------------------------------------------+
 
 State Space
 ===========
 
-The state space of the system is a continuous space in the order of:
-    - Position of Inner Pendulum
-    - Speed of Inner Pendulum
-    - Position of Outer Pendulum
-    - Speed of Outer Pendulum
-    
-The position of the pendulum is guaranteed to be within -pi and pi, however the speed is not 
-limited within a boundary due to the effects of gravitational acceleration.
+The state space for the double pendulum environment returns state of poles in the system including angles of both poles, velocity of poles, angular acceleration of the poles. The states for double pendulum environment can be understood by the table below.
 
-  
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+|         State                      |         Description                |               Range              |			Unit				     |   DoublePendulumS4           |   DoublePendulumS7      |
++====================================+====================================+==================================+=======================================================+==============================+=========================+
+| Theta 1                            |Angle of the inner pole             | [-180, 180]	                     |	degrees                                              |              X               |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Omega 1                            |Angular velocity of inner pole      | [-800, 800]		             |	degrees per second                                   |		    X		    |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Alpha 1                            |Angular Acceleration of outer pole  | [-6800, 6800]	             |	degrees per second squared                           |              \-              |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Theta 2                            |Angle of the outer pole             | [-180, 180]	                     |	degrees                                              |              X               |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Omega 2                            |Angular velocity of outer pole      | [-950, 950]	                     |	degrees per second                                   |              X               |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Alpha 2                            |Angular acceleration of outer pole  | [-9700, 9700]	             |	degrees per second squared                           |              \-              |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+| Torque                             |Input torque to the inner pole      | [-max torque, max torque]        |	Newton times meter                                   |              \-              |            X            |
++------------------------------------+------------------------------------+----------------------------------+-------------------------------------------------------+------------------------------+-------------------------+
+
+.. note:: 
+ The boundaries for the velocity and acceleration are highly influenced by the initital position of the arms and the current torque being actuated on the inner pole. These parameters are further dependent on the specific application, scenario or purpose of research.
+
+Current implementation of DP environment in MLPro returns success when the current state of the environment is within a distance lesser than threshold distance from the goal state. 
+
 Reward Structure
 ================
 
-.. code-block:: python
-    
-    reward = Reward(Reward.C_TYPE_OVERALL)
-        
-    target = np.array([np.pi, 0.0, np.pi, 0.0])
-    state = p_state_new.get_values()
-    old_state = p_state_old.get_values()
-    
-    th1_count = 0
-    for th1 in self.y[::-1, 0]:
-        ang = np.degrees(DoublePendulum.angle_normalize(th1))
-        if ang > 170 or ang < 190 or \
-                ang < -170 or ang > -190:
-            th1_count += 1
-        else:
-            break
-    th1_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[0])))
-    th1_distance_costs = 4 if th1_distance <= 0.1 else 0.3 / th1_distance
-    
-    th1_speed_costs = np.pi * abs(state[1]) / self.max_speed
-    
-    # max acceleration in one timestep is assumed to be double the max speed
-    th1_acceleration_costs = np.pi * abs(self.y[-1, 1]-self.y[-2, 1]) / (2 * self.max_speed)
-    
-    inner_pole_costs = (th1_distance_costs * th1_count / len(self.y)) - th1_speed_costs - (th1_acceleration_costs ** 0.5)
-    inner_pole_weight = (self.l1/2)*self.m1
-    
-    th2_count = 0
-    for th2 in self.y[::-1, 2]:
-        ang = np.degrees(DoublePendulum.angle_normalize(th2))
-        if ang > 170 or ang < 190 or \
-                ang < -170 or ang > -190:
-            th2_count += 1
-        else:
-            break
-    th2_distance = np.pi - abs(DoublePendulum.angle_normalize(np.radians(state[2])))
-    th2_distance_costs = 4 if th2_distance <= 0.1 else 0.3 / th2_distance
-    
-    th2_speed_costs = np.pi * abs(state[3]) / self.max_speed
-    
-    th2_acceleration_costs = np.pi * abs(self.y[-1, 3]-self.y[-2, 3]) / (2 * self.max_speed)
-    
-    outer_pole_costs = (th2_distance_costs * th2_count / len(self.y)) - th2_speed_costs - (th2_acceleration_costs ** 0.5)
-    outer_pole_weight = 0.5 * (self.l2/2)*self.m2
-    
-    change_costs = ((np.linalg.norm(target[::2] - np.array(old_state)[::2])*inner_pole_weight) - 
-                    (np.linalg.norm(target[::2] - np.array(state)[::2])*outer_pole_weight))
-    
-    reward.set_overall_reward((inner_pole_costs * inner_pole_weight) + (outer_pole_costs * outer_pole_weight) 
-                              - (self.alpha * np.pi/2) + (change_costs))
+The current reward structure is a basic reward strategy, with reward value being the difference between the worst possible Euclidean distance between any two states and the actual Euclidean distance between current state and the goal state. The reward calculation takes into consideration the seven dimensional state space including the input torque to the system
 
-    return reward
+.. math::
+	CurrentReward = d_{max} - d
     
-The reward calculation takes into account the position, speed and acceleration both pendulum. 
-The class variable y take notes of the ODE frames of the states. This is formulated with the purpose of giving high reward whenever the pendulum stays upright 
-while also minding the speed and acceleration of each pendulum. The position, speed, and acceleration
-is not taken at face value but instead is treated as a percentage of a defined constant (\pi). Additionally,
-a weighting system is used in the reward calculation to scale the importance of inner and outer pendulum rewards.
-The torque exerted by the motor (alpha) is taken as negative reward and the difference between the old state and new state
-is also taken into account.
-
 
 Change Log
 ==========
@@ -146,7 +114,12 @@ Change Log
 +--------------------+---------------------------------------------+
 | 1.0.2              | Cleaning the code                           |
 +--------------------+---------------------------------------------+
+| 1.3.1              | Current release version                     |
++--------------------+---------------------------------------------+
+| 2.4.11             | Current release with variants S4 and S7     |
++--------------------+---------------------------------------------+
   
 Cross Reference
 ===============
+    + :ref:`Howto RL-020: Run a native random agent in MLPro’s native DoublePendulum environment <Howto RL 020>`
     + :ref:`API Reference <Double Pendulum>`

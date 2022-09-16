@@ -1,0 +1,45 @@
+name: Conda Deploy
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.10'
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: Install dependencies
+      run: |
+        conda install conda-build anaconda-client conda-verify
+    - name: Build Package
+      run: |
+        conda build --output-folder src/conda src/conda
+    - name: Convert Package
+      run: |
+        conda convert -p win-64 -o src/conda src/conda/linux-64/*.tar.bz2
+        conda convert -p osx-64 -o src/conda src/conda/linux-64/*.tar.bz2
+        conda convert -p osx-arm64 -o src/conda src/conda/linux-64/*.tar.bz2
+        conda convert -p linux-aarch64 -o src/conda src/conda/linux-64/*.tar.bz2
+        conda convert -p linux-armv7l -o src/conda src/conda/linux-64/*.tar.bz2
+        conda convert -p linux-armv6l -o src/conda src/conda/linux-64/*.tar.bz2
+    - name: Upload Conda Package
+      env: 
+        ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+      run: |
+        anaconda upload --force --label main src/conda/linux-64/*.tar.bz2
+        anaconda upload --force --label main src/conda/win-64/*.tar.bz2
+        anaconda upload --force --label main src/conda/osx-64/*.tar.bz2
+        anaconda upload --force --label main src/conda/osx-arm64/*.tar.bz2
+        anaconda upload --force --label main src/conda/linux-aarch64/*.tar.bz2
+        anaconda upload --force --label main src/conda/linux-armv7l/*.tar.bz2
+        anaconda upload --force --label main src/conda/linux-armv6l/*.tar.bz2

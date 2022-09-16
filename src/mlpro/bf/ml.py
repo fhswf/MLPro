@@ -38,11 +38,12 @@
 ## -- 2022-06-06  1.3.8     MRD      Add additional parameter to Training class, p_env_mode for
 ## --                                setting up environment mode
 ## -- 2022-08-22  1.4.0     DA       Class Model: event management added
-## -- 2022-09-02  1.4.1     MRD      Add Callback Functionality
+## -- 2022-09-01  1.4.1     SY       Renaming maturity to accuracy
+## -- 2022-09-11  1.5.0     DA       New classes MLTask and MLWorkflow
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-09-02)
+Ver. 1.5.0 (2022-09-11)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
@@ -54,6 +55,7 @@ from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
 from mlpro.bf.plot import *
 from mlpro.bf.events import *
+from mlpro.bf.mp import Async, Task, Workflow
 import random
 
 
@@ -340,14 +342,14 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_maturity(self):
+    def get_accuracy(self):
         """
-        Computes the maturity of the model.
+        Computes the accuracy of the model.
 
         Returns
         -------
         float
-            Maturity of the model as a scalar value in interval [0,1]
+            Accuracy of the model as a scalar value in interval [0,1]
         """
 
         raise NotImplementedError
@@ -1291,3 +1293,83 @@ class Training (Log):
 ## -------------------------------------------------------------------------------------------------
     def get_results(self) -> TrainingResults:
         return self._results
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MLTask (Task, Model): 
+    """
+    ...
+
+    Parameters
+    ----------
+
+    """
+
+    C_TYPE          = 'ML-Task'
+    
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_range=Async.C_RANGE_PROCESS, 
+                  p_autorun=Task.C_AUTORUN_NONE, 
+                  p_cls_shared=None, 
+                  p_buffer_size=0,
+                  p_ada=True,
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
+
+        Task.__init__( self,
+                       p_range=p_range,
+                       p_autorun=p_autorun,
+                       p_cls_shared=p_cls_shared,
+                       p_logging=p_logging )
+
+        Model.__init__( self, 
+                        p_buffer_size=p_buffer_size, 
+                        p_ada=p_ada, 
+                        p_logging=p_logging )  
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MLWorkflow (Workflow, Model):
+    """
+    ...
+
+    Parameters
+    ----------
+    
+    """
+
+    C_TYPE          = 'ML-Workflow'
+    
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_range=Async.C_RANGE_PROCESS, 
+                  p_autorun=Task.C_AUTORUN_NONE, 
+                  p_cls_shared=None, 
+                  p_ada=True,
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
+       
+        Workflow.__init__( self, 
+                           p_range=p_range, 
+                           p_autorun=p_autorun, 
+                           p_cls_shared=p_cls_shared, 
+                           p_logging=Log.C_LOG_ALL, 
+                           **p_kwargs )
+
+        Model.__init__( self, 
+                        p_ada=p_ada, 
+                        p_logging=p_logging )  
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+        raise NotImplementedError

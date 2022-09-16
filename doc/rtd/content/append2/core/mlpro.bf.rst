@@ -4,6 +4,7 @@ Basic Functions
 Various
 ----------------
 
+.. image:: images/bf/MLPro-BF-Various_class_diagram.drawio.png
 .. automodule:: mlpro.bf.various
    :members:
    :undoc-members:
@@ -13,7 +14,7 @@ Various
 Mathematics
 -----------
 
-.. image:: images/bf/MLPro-BF-Math_class_diagram.png
+.. image:: images/bf/MLPro-BF-Math_class_diagram.drawio.png
 .. automodule:: mlpro.bf.math
    :members:
    :undoc-members:
@@ -38,16 +39,6 @@ Data Plotting
    :show-inheritance:
 
    
-Machine Learning
-----------------
-
-.. image:: images/bf/MLPro-BF-ML_class_diagram.png
-.. automodule:: mlpro.bf.ml
-   :members:
-   :undoc-members:
-   :show-inheritance:
-   
-
 Event Handling
 --------------
 
@@ -66,6 +57,38 @@ Exceptions
    :members:
    :undoc-members:
    :show-inheritance:
+
+
+Multiprocessing
+---------------
+
+.. image:: images/bf/MLPro-BF-MP_class_diagram.drawio.png
+.. automodule:: mlpro.bf.mp
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Machine Learning
+----------------
+
+.. image:: images/bf/MLPro-BF-ML_class_diagram.drawio.png
+.. automodule:: mlpro.bf.ml
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   
+
+Stream Providers and Streams
+----------------------------
+
+.. image:: images/bf/MLPro-BF-Streams_class_diagram.drawio.png
+
+.. automodule:: mlpro.bf.streams
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 
 User Interaction
