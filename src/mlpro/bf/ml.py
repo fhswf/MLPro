@@ -1297,12 +1297,14 @@ class MLTask (Task, Model):
                        p_range=p_range,
                        p_autorun=p_autorun,
                        p_cls_shared=p_cls_shared,
-                       p_logging=p_logging )
+                       p_logging=p_logging,
+                       p_kwargs = p_kwargs )
 
         Model.__init__( self, 
                         p_buffer_size=p_buffer_size, 
                         p_ada=p_ada, 
-                        p_logging=p_logging )  
+                        p_logging=p_logging,
+                        p_par = p_kwargs )  
 
 
 
@@ -1334,12 +1336,17 @@ class MLWorkflow (Workflow, Model):
                            p_range=p_range, 
                            p_autorun=p_autorun, 
                            p_cls_shared=p_cls_shared, 
-                           p_logging=Log.C_LOG_ALL, 
+                           p_logging=p_logging, 
                            **p_kwargs )
 
         Model.__init__( self, 
                         p_ada=p_ada, 
                         p_logging=p_logging )  
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_adaptivity(self, p_ada: bool):
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
