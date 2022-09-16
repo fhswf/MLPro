@@ -54,8 +54,8 @@ from typing import Any, Dict, Optional, Union
 ## -------------------------------------------------------------------------------------------------
 class DummyEnv(gym.Env):
     """
-    Dummy class for Environment. This is required due to some of the SB3 Policy Algorithm requires to have
-    an Environment. As for now, it only needs the observation space and the action space.
+    Dummy class for Environment. This is required due to some of the SB3 Policy Algorithm requires
+    to have an Environment. As for now, it only needs the observation space and the action space.
     """
 
     observation_space = None
@@ -70,7 +70,10 @@ class DummyEnv(gym.Env):
             self.action_space = p_action_space
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, achieved_goal: Union[int, np.ndarray], desired_goal: Union[int, np.ndarray], _info: Optional[Dict[str, Any]]) -> np.float32:
+    def compute_reward(self,
+                       achieved_goal: Union[int, np.ndarray],
+                       desired_goal: Union[int, np.ndarray],
+                       _info: Optional[Dict[str, Any]]) -> np.float32:
         distance = np.linalg.norm(achieved_goal - desired_goal, axis=-1)
         return -(distance > 0).astype(np.float32)
 
@@ -199,12 +202,16 @@ class WrPolicySB32MLPro(Wrapper, Policy):
                 raise NotImplementedError('The desired goal is missing!')
             else:
                 self.desired_goals = p_desired_goals
-            observation_space_vec = gym.spaces.Dict({'observation':observation_space, 'achieved_goal':observation_space, 'desired_goal':observation_space})
+            observation_space_vec = gym.spaces.Dict({'observation':observation_space,
+                                                     'achieved_goal':observation_space,
+                                                     'desired_goal':observation_space})
             DummyEnv.observation_space = observation_space_vec
             DummyEnv.action_space = action_space
             set_of_envs = [DummyEnv for i in range(p_num_envs)]
             self.sb3.env = DummyVecEnv(set_of_envs)
-            self.sb3.env = VecExtractDictObs(self.sb3.env, observation_space=self.sb3.env.observation_space, action_space=self.sb3.env.action_space)
+            self.sb3.env = VecExtractDictObs(self.sb3.env,
+                                             observation_space=self.sb3.env.observation_space,
+                                             action_space=self.sb3.env.action_space)
             # Setup SB3 Model
             self.sb3.observation_space = observation_space_vec
             self.sb3.action_space = action_space
