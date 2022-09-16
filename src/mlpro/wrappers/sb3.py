@@ -21,11 +21,11 @@
 ## -- 2022-05-31  1.1.8     SY       Enable the possibility to process reward type C_TYPE_EVERY_AGENT
 ## -- 2022-08-15  1.2.0     DA       Introduction of root class Wrapper
 ## -- 2022-08-22  1.2.1     MRD      Set proper name for class variable
-## -- 2022-09-15  1.2.2     SY       Add Hindsight Experience Replay (HER) for off-policy algorithm
+## -- 2022-09-16  1.2.2     SY       Add Hindsight Experience Replay (HER) for off-policy algorithm
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2022-09-15)
+Ver. 1.2.2 (2022-09-16)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
@@ -82,6 +82,7 @@ class DummyEnv(gym.Env):
 class VecExtractDictObs(VecEnvWrapper):
     """
     A vectorized wrapper for filtering a specific key from dictionary observations.
+    This is used for HER incorporation on off-policy algorithms.
     Similar to Gym's FilterObservation wrapper:
         https://github.com/openai/gym/blob/master/gym/wrappers/filter_observation.py
     """
@@ -285,7 +286,6 @@ class WrPolicySB32MLPro(Wrapper, Policy):
             data_obs['desired_goal'] = np.array(self.desired_goals)
             data_obs['observation'] = np.array(p_obs.get_values())
             self.sb3._last_obs = data_obs
-            
         else:
             self.sb3._last_obs = p_obs.get_values()
         action, buffer_action = self.sb3._sample_action(self.sb3.learning_starts)
