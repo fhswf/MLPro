@@ -100,26 +100,42 @@ class Actuator(ScientificObject, Log):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def activate(self, **p_args) -> bool:
+    def activate(self, p_max_actuation, **p_args) -> bool:
         if not self.get_status():
             self.set_status(True)
             self._actuation_time = 0
+            self._max_actuation_time = p_max_actuation
             self.log(self.C_LOG_TYPE_I, 'Actuator ' + self.get_name() + ' is turned on.')
+            raise NotImplementedError('Turning on procedure is missing, please redefine this function!')
         else:
             self.log(self.C_LOG_TYPE_E, 'Actuator ' + self.get_name() + ' is still on.')
-        
-        raise NotImplementedError('Please redfine this function!')
+            raise NotImplementedError('Please redefine this function! You can either overwrite the current process or continue with the current process')
 
 
 ## -------------------------------------------------------------------------------------------------    
     def deactivate(self, **p_args) -> bool:
+        self._actuation_time = 0
+        try:
+            if p_args['force_stop']:
+                self.set_status(False)
+                raise NotImplementedError('Turning off procedure due to force stop is missing, please redefine this function!')
+        except:
+            pass
+        
+        try:
+            if p_args['emergency_stop']:
+                self.set_status(False)
+                raise NotImplementedError('Turning off procedure due to emergency stop is missing, please redefine this function!')
+        except:
+            pass
+        
         if self.get_status():
             self.set_status(False)
             self.log(self.C_LOG_TYPE_I, 'Actuator ' + self.get_name() + ' is turned off.')
+            raise NotImplementedError('Turning off procedure is missing, please redefine this function!')
         else:
             self.log(self.C_LOG_TYPE_E, 'Actuator ' + self.get_name() + ' is already off.')
-        
-        raise NotImplementedError('Please redfine this function!')
+            return True
   
     
 ## -------------------------------------------------------------------------------------------------      
@@ -134,31 +150,26 @@ class Actuator(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------        
     def reset(self):
-        if self.status:
+        if self.get_status():
             self.force_stop()
-        self._actuation_time = 0
         
         self.log(self.C_LOG_TYPE_I, 'Actuator ' + self.get_name() + ' is succesfully reset.')
         
-        raise NotImplementedError('Please redfine this function!')
+        raise NotImplementedError('Please redefine this function!')
 
 
 ## -------------------------------------------------------------------------------------------------    
     def emergency_stop(self):
-        self.deactivate()
+        self.deactivate(emergency_stop=True)
     
         self.log(self.C_LOG_TYPE_W, 'Actuator ' + self.get_name() + ' is stopped due to emergeny.')
-        
-        raise NotImplementedError('Please redfine this function!')
 
 
 ## -------------------------------------------------------------------------------------------------    
     def force_stop(self):
-        self.deactivate()
+        self.deactivate(force_stop=True)
     
         self.log(self.C_LOG_TYPE_I, 'Actuator ' + self.get_name() + ' is forcely stopped.')
-        
-        raise NotImplementedError('Please redfine this function!')
 
 
 ## -------------------------------------------------------------------------------------------------    
@@ -166,21 +177,36 @@ class Actuator(ScientificObject, Log):
         if self._process() is None:
             self._process = Process(self.get_name())
             
-        # self._process.add(p_param_1=.., p_param_2=.., .....)
-        # self._process.add(p_param_1=.., p_param_2=.., .....)
+        # self._process.add(p_name, p_id, p_type, p_param_1=.., p_param_2=.., .....)
+        # self._process.add(p_name, p_id, p_type, p_param_1=.., p_param_2=.., .....)
 
-        raise NotImplementedError('Please redfine this function!')
+        raise NotImplementedError('Please redefine this function and setup processes!')
 
 
 ## -------------------------------------------------------------------------------------------------    
-    def run_process(self, p_time:float, **p_args):
-        if not self.get_status():
-            self.activate(p_args)
-        self._process.run(p_time)
-        self._actuation_time += p_time
-
-        raise NotImplementedError('Please redfine this function!')
+    def run_process(self,
+                    p_time_step:float,
+                    p_max_actuation:float=None,
+                    p_activate:bool=True,
+                    p_stop:bool=False,
+                    **p_args) -> dict:
+        if p_activate:
+            self.activate(p_max_actuation, p_args)
+            
+        if p_stop:
+            self.deactivate()
+            p_time_step = 0
+            
+        if (self._max_actuation_time is not None) and (self._actuation_time >= self._max_actuation_time):
+            self.deactivate()
+            p_time_step = 0
+            
+        output = self._process.run(self._actuation_time, p_time_step)
         
+        if self.get_status():
+            self._actuation_time += p_time_step
+        
+        return output
 
 
 
@@ -563,6 +589,8 @@ class TransferFunction:
         fig, ax = plt.subplots()
         ax.plot(x_value, y_value, linewidth=2.0)
         plt.show()
+        
+##### def FunctionApproximation? #####
 
 
 
@@ -570,23 +598,80 @@ class TransferFunction:
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class Process:
+class Process(Log):
+    """
+    This class serves as a base class of an actuation process for a specific actuator, which provides
+    the main attributes of an actuation process.
+    
+    Parameters
+    ----------
+    
+        
+    Attributes
+    ----------
+    
+
+    """
+
+    C_TYPE = 'Process'
+    C_NAME = ''
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name, p_id):
-        ...
+    def __init__(self,
+                 p_name:str,
+                 p_id:int=None,
+                 p_logging=Log.C_LOG_ALL):
+        
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
+        self.set_id(p_id)
+        
+        self.output = {}
+        self.all_processes = None
+        
+
+## -------------------------------------------------------------------------------------------------
+    def set_id(self, p_id:int=None):
+        if p_id is None:
+            self._id = str(uuid.uuid4())
+        else:
+            self._id = str(p_id)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add(self, **p_args):
-        ...
-        # self.all_processes.append(TransferFunction(**p_args))
+    def get_id(self) -> str:
+        return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, p_time):
-        ...
+    def set_name(self, p_name):
+        self._name = p_name
+        self.C_NAME = p_name
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_name(self) -> str:
+        return self._name
+
+
+## -------------------------------------------------------------------------------------------------
+    def add(self, p_name, p_id, p_type, **p_args):
+        if self.all_processes is None:
+            self.all_processes = []
+        
+        self.all_processes.append(TransferFunction(p_name, p_id, p_type, **p_args))
+
+
+## -------------------------------------------------------------------------------------------------
+    def run(self, p_time, p_time_step):
+        for proc in range(len(self.all_processes)):
+            proc_name = self.all_processes[proc].get_name()
+            proc_output = self.all_processes[proc].call(p_time+p_time_step)
+            self.output[proc_name] = proc_output
+        return self.output
 
 
 
