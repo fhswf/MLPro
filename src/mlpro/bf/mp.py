@@ -35,15 +35,25 @@ class Shared:
     C_MSG_TYPE_DATA         = 0
     C_MSG_TYPE_TERM         = 1
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self):
        self._locked = False
-       self._active_processes = 0
+       self._active_tasks = 0
        self._messages = {}
 
 
+### -------------------------------------------------------------------------------------------------
+    def checkin(self, p_tid):
+        self._active_tasks +=1
+
+
 ## -------------------------------------------------------------------------------------------------
+    def checkout(self, p_tid):
+        if self._active_tasks > 0:
+            self._active_tasks-=1
+
+
+# -------------------------------------------------------------------------------------------------
     def lock(self):
         raise NotImplementedError
 
@@ -51,17 +61,6 @@ class Shared:
 ## -------------------------------------------------------------------------------------------------
     def unlock(self):
         raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def checkin_process(self, p_tid):
-        self._active_processes+=1
-
-
-## -------------------------------------------------------------------------------------------------
-    def checkout_process(self, p_tid):
-        if self._active_processes > 0:
-            self._active_processes-=1
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -104,8 +103,9 @@ class Async (Log):
                   p_cls_shared=None, 
                   p_logging=Log.C_LOG_ALL ):
 
-        self._so = None
-        self._async_tasks = []
+        self._so            = None
+        self._async_tasks   = []
+        self._range         = p_range
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -222,7 +222,13 @@ class Workflow (Task):
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
+        self._tasks = []
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging):
+        return super().switch_logging(p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -248,7 +254,7 @@ class Workflow (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def do_recursively(self, p_method, **p_kwargs):
+    def _do_recursively(self, p_method, **p_kwargs):
         raise NotImplementedError        
 
 
