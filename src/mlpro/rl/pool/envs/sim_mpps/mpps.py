@@ -268,7 +268,6 @@ class Reservoir(ScientificObject, Log):
         self.set_maximum_capacity(p_max_capacity)
         self.set_initial_level(p_init)
         self.reset()
-        self.overflow = 0
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -337,6 +336,7 @@ class Reservoir(ScientificObject, Log):
 ## -------------------------------------------------------------------------------------------------
     def reset(self):
         self._volume = self.init_level
+        self.overflow = 0
         self.log(self.C_LOG_TYPE_I, 'Reservoir ' + self.get_name() + ' is reset.')
         
 
@@ -358,81 +358,260 @@ class Reservoir(ScientificObject, Log):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class ManufacturingProcess:
+class ManufacturingProcess(ScientificObject, Log):
+    """
+    This class serves as a base class of manufacturing processes, e.g. packaging, weighing, palletizing,
+    etc., which provides the main attributes of a manufacturing process.
+    
+    Parameters
+    ----------
+    
+        
+    Attributes
+    ----------
+    
+    """
+
+    C_TYPE = 'ManufacturingProcess'
+    C_NAME = ''
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name, p_max_capacity, p_prod_rate, **p_param):
-        ...
-        ...
+    def __init__(self,
+                 p_name:str,
+                 p_input_unit:str,
+                 p_output_unit:str,
+                 p_processing_time:float,
+                 p_prod_rate_per_time:float,
+                 p_id:int=None,
+                 p_max_buffer_input:float=None,
+                 p_max_buffer_output:float=None,
+                 p_status:bool=False,
+                 p_init_buffer_input:float=None,
+                 p_init_buffer_output:float=None,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_param):
+        
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
+        self.set_id(p_id)
+        self.set_status(p_status)
+        self.set_unit(p_input_unit, p_output_unit)
+        self.set_buffer_capacity(p_max_buffer_input, p_max_buffer_output)
+        self.set_processing_time(p_processing_time)
+        self.set_prod_rate(p_prod_rate_per_time)
+        
+        Log.__init__(self, p_logging=p_logging)
+        self.reset()
+        
+
+## -------------------------------------------------------------------------------------------------
+    def set_id(self, p_id:int=None):
+        if p_id is None:
+            self._id = str(uuid.uuid4())
+        else:
+            self._id = str(p_id)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_id(self):
-        ...
+    def get_id(self) -> str:
+        return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        ...
+    def set_name(self, p_name):
+        self._name = p_name
+        self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_name(self):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_name(self):
-        ...
+    def get_name(self) -> str:
+        return self._name
         
 
 ## -------------------------------------------------------------------------------------------------
     def start_process(self):
-        ...
+        if not self.get_status():
+            self.set_status(True)
+            self.actual_process_time = 0
+        self.log(self.C_LOG_TYPE_I, 'Process ' + self.get_name() + ' is started.')
+        
+
+## -------------------------------------------------------------------------------------------------
+    def process(self, p_time_step:float):
+        if self.get_status():
+            if self.actual_process_time == 0:
+                proc_in = self.get_prod_rate()
+                proc_out = 0
+                self.in_process_prods = self.get_prod_rate()
+                self.actual_process_time += p_time_step
+            else:
+                self.actual_process_time += p_time_step
+                if self.actual_process_time >= self.get_processing_time():
+                    proc_in = 0
+                    proc_out = self.get_prod_rate()
+                    self.in_process_prods = 0
+                    self.stop_process()
+                else:
+                    proc_in = 0
+                    proc_out = 0
+                    self.in_process_prods = self.get_prod_rate()
+        else:
+            proc_in = 0
+            proc_out = 0
+            self.in_process_prods = 0
+        return proc_in, proc_out
         
 
 ## -------------------------------------------------------------------------------------------------
     def stop_process(self):
-        ...
+        if self.get_status():
+            self.set_status(False)
+        self.log(self.C_LOG_TYPE_I, 'Process ' + self.get_name() + ' is stopeed.')
+  
+    
+## -------------------------------------------------------------------------------------------------      
+    def set_unit(self, p_input_unit:str, p_output_unit:str):
+        self._input_unit = p_input_unit
+        self._output_unit = p_output_unit
+  
+    
+## -------------------------------------------------------------------------------------------------      
+    def get_unit(self):
+        return self._input_unit, self._output_unit
+  
+    
+## -------------------------------------------------------------------------------------------------      
+    def set_buffer_capacity(self, p_max_buffer_input:float=None, p_max_buffer_output:float=None):
+        self._max_buffer_input = p_max_buffer_input
+        self._max_buffer_output = p_max_buffer_output
+  
+    
+## -------------------------------------------------------------------------------------------------      
+    def get_buffer_capacity(self):
+        return self._max_buffer_input, self._max_buffer_output
+  
+    
+## -------------------------------------------------------------------------------------------------      
+    def set_status(self, p_status:bool=False):
+        self.status = p_status
+  
+    
+## -------------------------------------------------------------------------------------------------      
+    def get_status(self) -> bool:
+        return self.status
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_status(self):
-        ...
+    def set_prod_rate(self, p_prod_rate_per_time:float):
+        self._production_rate = p_prod_rate_per_time
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_maximum_capacity(self):
-        ...
+    def get_prod_rate(self) -> float:
+        return self._production_rate
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_prod_rate(self):
-        ...
+    def set_processing_time(self, p_processing_time:float):
+        self._processing_time = p_processing_time
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_waiting_materials(self):
-        ...
+    def get_processing_time(self) -> float:
+        return self._processing_time
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_finished_products(self):
-        ...
+    def update_waiting_materials(self, p_in:float, p_out:float):
+        self._buffer_input = self._buffer_input + p_in - p_out
+        buffer_capacity, _ = self.get_buffer_capacity()
+        self._buffer_input_overflow = 0
+        if self._buffer_input < 0:
+            self._buffer_input = 0
+        if buffer_capacity is not None:
+            if self._buffer_input > buffer_capacity:
+                self._buffer_input_overflow = self._buffer_input - buffer_capacity
+                self._buffer_input = buffer_capacity
+        self.log(self.C_LOG_TYPE_I, 'Waiting Products in Process ' + self.get_name() + ' is calculated.')
+        
+
+## -------------------------------------------------------------------------------------------------
+    def get_waiting_materials(self) -> float:
+        return self._buffer_input
+        
+
+## -------------------------------------------------------------------------------------------------
+    def update_finished_products(self, p_in:float, p_out:float):
+        self._buffer_output = self._buffer_output + p_in - p_out
+        _, buffer_capacity = self.get_buffer_capacity()
+        self._buffer_output_overflow = 0
+        if self._buffer_output < 0:
+            self._buffer_output = 0
+        if buffer_capacity is not None:
+            if self._buffer_output > buffer_capacity:
+                self._buffer_output_overflow = self._buffer_output - buffer_capacity
+                self._buffer_output = buffer_capacity
+        self.log(self.C_LOG_TYPE_I, 'Finished Products in Process ' + self.get_name() + ' is calculated.')
+        
+
+## -------------------------------------------------------------------------------------------------
+    def get_finished_products(self) -> float:
+        return self._buffer_output
+        
+
+## -------------------------------------------------------------------------------------------------
+    def get_processed_products(self) -> float:
+        return self.in_process_prods
+        
+
+## -------------------------------------------------------------------------------------------------
+    def set_initial_level(self, p_init_buffer_input:float=None, p_init_buffer_output:float=None):
+        capacity_input, capacity_output = self.get_buffer_capacity()
+        
+        if (p_init_buffer_input is None) and (capacity_input is None):
+            raise NotImplementedError('Please define either p_init_buffer_input or p_max_buffer_input!')
+        elif (p_init_buffer_input is None) and (capacity_input is not None):
+            self.init_buffer_input = random.uniform(0, capacity_input)
+        else:
+            self.init_buffer_input = p_init_buffer_input
+            
+        if (p_init_buffer_output is None) and (capacity_output is None):
+            raise NotImplementedError('Please define either p_init_buffer_output or p_max_buffer_output!')
+        elif (p_init_buffer_output is None) and (capacity_output is not None):
+            self.init_buffer_output = random.uniform(0, capacity_output)
+        else:
+            self.init_buffer_output = p_init_buffer_output
         
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self):
-        ...
+        if self.get_status():
+            self.stop_process()
+        self.set_initial_level()
+        self._buffer_input = self.init_buffer_input
+        self._buffer_output = self.init_buffer_output
+        self._buffer_input_overflow = 0
+        self._buffer_output_overflow = 0
+        self.in_process_prods = 0
+        self.actual_process_time = 0
+        
+        self.log(self.C_LOG_TYPE_I, 'Process ' + self.get_name() + ' is succesfully reset.')
         
 
 ## -------------------------------------------------------------------------------------------------
-    def update(self):
-        #update waiting materials
-        #update current process
-        #update finished products
-        ...
+    def update(self, p_time_step:float, p_in:float, p_out:float, p_start:bool=True, p_stop:bool=False):
+        if p_start:
+            self.start_process(p_time_step)
+        
+        if p_stop:
+            self.stop_process()
+        
+        proc_in, proc_out = self.process(p_time_step)
+        self.update_waiting_materials(p_in, proc_in)
+        self.update_finished_products(proc_out, p_out)
 
 
 
@@ -629,6 +808,7 @@ class Process(Log):
             self.set_name(self.C_NAME)
         self.set_id(p_id)
         
+        Log.__init__(self, p_logging=p_logging)
         self.output = {}
         self.all_processes = None
         
@@ -669,7 +849,7 @@ class Process(Log):
     def run(self, p_time, p_time_step):
         for proc in range(len(self.all_processes)):
             proc_name = self.all_processes[proc].get_name()
-            proc_output = self.all_processes[proc].call(p_time+p_time_step)
+            proc_output = self.all_processes[proc].call(p_time, p_time_step)
             self.output[proc_name] = proc_output
         return self.output
 
