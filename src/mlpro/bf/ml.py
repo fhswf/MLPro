@@ -1127,7 +1127,7 @@ class Training (Log):
                                                p_logging=logging )
 
                 # Initialize callback
-                self._scenario.get_callback().init_callback(self)
+                self._scenario.get_callback().init_callback(self, self._root_path)
             except:
                 raise ParamError('Par p_scenario_cls: class "' + scenario_cls.__name__ + '" not compatible')
 

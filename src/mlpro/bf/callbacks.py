@@ -32,16 +32,17 @@ class Callback(Log):
 
         self.training = None
         self.scenario = None
+        self.folder_path = None
         self.locals = {}
 
-
 ## -------------------------------------------------------------------------------------------------
-    def init_callback(self, p_training):
+    def init_callback(self, p_training, p_path):
         """
         Initialization callback. Save reference for Training Class and Scenario Class
         """
         self.training = p_training
         self.scenario = p_training.get_scenario()
+        self.folder_path = p_path
         self._init_callback()
 
 
