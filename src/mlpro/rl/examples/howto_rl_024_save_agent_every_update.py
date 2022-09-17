@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : howto_rl_022_collect_reward_and_plot_with_callback_function.py
+## -- Module  : howto_rl_024_save_agent_every_update.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,7 +12,7 @@
 """
 Ver. 0.0.0 (2022-09-02)
 
-This module shows how to collect reward and plot the reward from custom callback.
+This module shows how to save agent every after policy adaptation.
 """
 
 
@@ -22,7 +22,6 @@ from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import gym
 import random
 from pathlib import Path
-import matplotlib.pyplot as plt
 
 
 
@@ -52,7 +51,7 @@ class MyPolicy (Policy):
         self.log(self.C_LOG_TYPE_I, 'Sorry, I am a stupid agent...')
 
         # 2 Only return True if something has been adapted...
-        return False
+        return True
 
     
 
@@ -62,22 +61,14 @@ class MyCallback(RLCallback):
     C_NAME      = "MyCallback"
 
     def _init_callback(self):
-        self.reward_container = []
+        self.update_counter = 0
+        self.folder_path = os.path.join(self.folder_path, "Saved Model After Adaptation")
+        os.mkdir(self.folder_path)
 
-    def _episode_start(self):
-        self.total_reward_episode = 0
-
-    def _after_process_action(self):
-        self.total_reward_episode += self.locals["reward"].get_overall_reward()
-
-    def _episode_end(self):
-        self.reward_container.append(self.total_reward_episode)
-        self.total_reward_episode = 0
-
-    def _training_end(self):
-        plt.plot(self.reward_container)
-        plt.ylabel('Reward')
-        plt.show()
+    def _after_adapt_policy(self):
+        if self.locals["adapted"]:
+            self.update_counter += 1
+            self.scenario.get_model().save(self.folder_path, 'model_after_'+str(self.update_counter)+'_update.pkl')
 
 
 
@@ -113,9 +104,9 @@ class MyScenario (RLScenario):
 
 if __name__ == "__main__":
     # 4.1 Parameters for demo mode
-    cycle_limit = 500
+    cycle_limit = 50
     logging     = Log.C_LOG_WE
-    visualize   = True
+    visualize   = False
     path        = str(Path.home())
  
 else:
@@ -123,7 +114,7 @@ else:
     cycle_limit = 50
     logging     = Log.C_LOG_NOTHING
     visualize   = False
-    path        = None
+    path        = str(Path.home())
 
 
 # 4.3 Create and run training object

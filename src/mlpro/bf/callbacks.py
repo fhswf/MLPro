@@ -14,6 +14,8 @@ Ver. 0.0.0 (2022-09-02)
 This module provides classes for callback function.
 """
 
+import threading
+import time
 from mlpro.bf.various import Log
 
 
@@ -80,3 +82,31 @@ class Callback(Log):
         This function will be called when the training ends.
         """
         self._training_end()
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class CallbackTimer(threading.Thread):
+    """
+    Calling callback based on timer.
+    """
+
+    def __init__(self, period, callback):
+        threading.Thread.__init__(self)
+        self._period   = period
+        self._callback = callback
+        self._shutdown = False
+        self.setDaemon(True)
+        self.start()
+
+    def shutdown(self):
+        """
+        Stop firing callbacks.
+        """
+        self._shutdown = True
+        
+    def run(self):
+        while not self._shutdown:
+            time.sleep(self._period)
+            self._callback()
+
