@@ -63,8 +63,10 @@ class MyCallback(RLCallback):
 
     def _init_callback(self):
         self.update_counter = 0
-        self.folder_path = os.path.join(self.folder_path, "Saved Model After 1 Second")
-        os.mkdir(self.folder_path)
+        # If not unit test
+        if self.folder_path is not None:
+            self.folder_path = os.path.join(self.folder_path, "Saved Model After 1 Second")
+            os.mkdir(self.folder_path)
 
         self.timer_one = CallbackTimer(1, self._timer_callback)
 
@@ -118,7 +120,7 @@ else:
     cycle_limit = 50
     logging     = Log.C_LOG_NOTHING
     visualize   = False
-    path        = str(Path.home())
+    path        = None
 
 
 # 4.3 Create and run training object

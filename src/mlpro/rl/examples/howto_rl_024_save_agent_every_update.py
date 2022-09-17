@@ -62,8 +62,10 @@ class MyCallback(RLCallback):
 
     def _init_callback(self):
         self.update_counter = 0
-        self.folder_path = os.path.join(self.folder_path, "Saved Model After Adaptation")
-        os.mkdir(self.folder_path)
+        # If not unit test
+        if self.folder_path is not None:
+            self.folder_path = os.path.join(self.folder_path, "Saved Model After Adaptation")
+            os.mkdir(self.folder_path)
 
     def _after_adapt_policy(self):
         if self.locals["adapted"]:
@@ -114,7 +116,7 @@ else:
     cycle_limit = 50
     logging     = Log.C_LOG_NOTHING
     visualize   = False
-    path        = str(Path.home())
+    path        = None
 
 
 # 4.3 Create and run training object
