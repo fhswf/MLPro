@@ -21,10 +21,11 @@
 ## -- 2022-05-31  1.1.8     SY       Enable the possibility to process reward type C_TYPE_EVERY_AGENT
 ## -- 2022-08-15  1.2.0     DA       Introduction of root class Wrapper
 ## -- 2022-08-22  1.2.1     MRD      Set proper name for class variable
+## -- 2022-09-16  1.2.2     SY       Add Hindsight Experience Replay (HER) for off-policy algorithm
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2022-08-22)
+Ver. 1.2.2 (2022-09-16)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
@@ -35,10 +36,16 @@ See also: https://pypi.org/project/stable-baselines3/
 
 import gym
 import torch
+import numpy as np
 from stable_baselines3.common import utils
 from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from mlpro.wrappers.models import Wrapper
+from stable_baselines3.common.vec_env.base_vec_env import VecEnv, VecEnvStepReturn, VecEnvWrapper
+from stable_baselines3.common.vec_env import DummyVecEnv
+from stable_baselines3 import HerReplayBuffer
+from collections import OrderedDict
 from mlpro.rl.models import *
+from typing import Any, Dict, Optional, Union
 
 
 
@@ -47,15 +54,55 @@ from mlpro.rl.models import *
 ## -------------------------------------------------------------------------------------------------
 class DummyEnv(gym.Env):
     """
-    Dummy class for Environment. This is required due to some of the SB3 Policy Algorithm requires to have
-    an Environment. As for now, it only needs the observation space and the action space.
+    Dummy class for Environment. This is required due to some of the SB3 Policy Algorithm requires
+    to have an Environment. As for now, it only needs the observation space and the action space.
+    """
+
+    observation_space = None
+    action_space = None
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_observation_space=None, p_action_space=None) -> None:
+        super().__init__()
+        if p_observation_space is not None:
+            self.observation_space = p_observation_space
+        if p_action_space is not None:
+            self.action_space = p_action_space
+
+## -------------------------------------------------------------------------------------------------
+    def compute_reward(self,
+                       achieved_goal: Union[int, np.ndarray],
+                       desired_goal: Union[int, np.ndarray],
+                       _info: Optional[Dict[str, Any]]) -> np.float32:
+        distance = np.linalg.norm(achieved_goal - desired_goal, axis=-1)
+        return -(distance > 0).astype(np.float32)
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class VecExtractDictObs(VecEnvWrapper):
+    """
+    A vectorized wrapper for filtering a specific key from dictionary observations.
+    This is used for HER incorporation on off-policy algorithms.
+    Similar to Gym's FilterObservation wrapper:
+        https://github.com/openai/gym/blob/master/gym/wrappers/filter_observation.py
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_observation_space, p_action_space) -> None:
-        super().__init__()
-        self.observation_space = p_observation_space
-        self.action_space = p_action_space
+    def reset(self) -> np.ndarray:
+        obs = self.venv.reset()
+        return obs[self.key]
+
+## -------------------------------------------------------------------------------------------------
+    def step_async(self, actions: np.ndarray) -> None:
+        self.venv.step_async(actions)
+
+## -------------------------------------------------------------------------------------------------
+    def step_wait(self) -> VecEnvStepReturn:
+        obs, reward, done, info = self.venv.step_wait()
+        return obs[self.key], reward, done, info
 
 
 
@@ -82,13 +129,19 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         Adaptability. Defaults to True.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
+    p_num_envs : int
+        Number of environments, specifically for vectorized environment.
+    p_desired_goals : list, Optional
+        Desired state goals for Hindsight Experience Replay (HER).
     """
 
     C_TYPE              = 'Wrapper SB3 -> MLPro'
     C_WRAPPED_PACKAGE   = 'stable_baselines3'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace, p_action_space:MSpace, p_ada:bool=True, p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace,
+                 p_action_space:MSpace, p_ada:bool=True, p_logging=Log.C_LOG_ALL,
+                 p_num_envs:int=1, p_desired_goals=None):
         # Set Name
         WrPolicySB32MLPro.C_NAME = "Policy " + type(p_sb3_policy).__name__
         
@@ -144,12 +197,31 @@ class WrPolicySB32MLPro(Wrapper, Policy):
             )
 
         # Create Dummy Env
-        self.sb3.env = DummyEnv(observation_space, action_space)
-
-        # Setup SB3 Model
-        self.sb3.observation_space = observation_space
-        self.sb3.action_space = action_space
-        self.sb3.n_envs = 1
+        if not isinstance(p_sb3_policy, OnPolicyAlgorithm) and self.sb3.replay_buffer_class == HerReplayBuffer:
+            if p_desired_goals is None:
+                raise NotImplementedError('The desired goal is missing!')
+            else:
+                self.desired_goals = p_desired_goals
+            observation_space_vec = gym.spaces.Dict({'observation':observation_space,
+                                                     'achieved_goal':observation_space,
+                                                     'desired_goal':observation_space})
+            DummyEnv.observation_space = observation_space_vec
+            DummyEnv.action_space = action_space
+            set_of_envs = [DummyEnv for i in range(p_num_envs)]
+            self.sb3.env = DummyVecEnv(set_of_envs)
+            self.sb3.env = VecExtractDictObs(self.sb3.env,
+                                             observation_space=self.sb3.env.observation_space,
+                                             action_space=self.sb3.env.action_space)
+            # Setup SB3 Model
+            self.sb3.observation_space = observation_space_vec
+            self.sb3.action_space = action_space
+            self.sb3.n_envs = p_num_envs
+        else:
+            self.sb3.env = DummyEnv(observation_space, action_space)
+            # Setup SB3 Model
+            self.sb3.observation_space = observation_space
+            self.sb3.action_space = action_space
+            self.sb3.n_envs = 1
 
         if isinstance(p_sb3_policy, OnPolicyAlgorithm):
             self.compute_action = self._compute_action_on_policy
@@ -215,7 +287,14 @@ class WrPolicySB32MLPro(Wrapper, Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_action_off_policy(self, p_obs: State) -> Action:
-        self.sb3._last_obs = p_obs.get_values()
+        if self.sb3.replay_buffer_class == HerReplayBuffer:
+            data_obs = OrderedDict()
+            data_obs['achieved_goal'] = np.array(p_obs.get_values())
+            data_obs['desired_goal'] = np.array(self.desired_goals)
+            data_obs['observation'] = np.array(p_obs.get_values())
+            self.sb3._last_obs = data_obs
+        else:
+            self.sb3._last_obs = p_obs.get_values()
         action, buffer_action = self.sb3._sample_action(self.sb3.learning_starts)
 
         action = action.flatten()
@@ -296,6 +375,12 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         """
         Redefine add_buffer function. Instead of adding to MLPro SARBuffer, we are using
         internal buffer from SB3 for off_policy.
+        
+        If you are incorporating HER, please read the following decriptions:
+        The observation space is required to contain at least three elements, namely `observation`,
+        `desired_goal`, and `achieved_goal`. Here, `desired_goal` specifies the goal that the agent
+        should attempt to achieve. `achieved_goal` is the goal that it currently achieved instead.
+        `observation` contains the actual observations of the environment as per usual.
         """
 
         # Add num_collected_steps
@@ -310,13 +395,32 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         if datas["state_new"].get_terminal() and datas["state_new"].get_timeout():
             info["TimeLimit.truncated"] = True
 
-        self.sb3.replay_buffer.add(
-            datas["state"].get_values(),
-            datas["state_new"].get_values(),
-            datas["action"].get_sorted_values(),
-            datas["reward"].get_overall_reward(),
-            datas["state_new"].get_terminal(),
-            [info])
+        if self.sb3.replay_buffer_class == HerReplayBuffer:
+            data_obs = OrderedDict()
+            data_obs['achieved_goal'] = np.array(datas["state"].get_values())
+            data_obs['desired_goal'] = np.array(self.desired_goals)
+            data_obs['observation'] = np.array(datas["state"].get_values())
+
+            data_next_obs = OrderedDict()
+            data_next_obs['achieved_goal'] = np.array(datas["state_new"].get_values())
+            data_next_obs['desired_goal'] = np.array(self.desired_goals)
+            data_next_obs['observation'] = np.array(datas["state_new"].get_values())
+
+            self.sb3.replay_buffer.add(
+                obs=data_obs,
+                next_obs=data_next_obs,
+                action=datas["action"].get_sorted_values(),
+                reward=datas["reward"].get_overall_reward(),
+                done=datas["state_new"].get_terminal(),
+                infos=[info])
+        else:
+            self.sb3.replay_buffer.add(
+                datas["state"].get_values(),
+                datas["state_new"].get_values(),
+                datas["action"].get_sorted_values(),
+                datas["reward"].get_overall_reward(),
+                datas["state_new"].get_terminal(),
+                [info])
 
         self.sb3._update_current_progress_remaining(self.sb3.num_timesteps, self.sb3._total_timesteps)
         self.sb3._on_step()
