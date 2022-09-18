@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : howto_rl_023_train_wrapped_sb3_policy_on_ur5_mujoco_environment.py
+## -- Module  : howto_rl_026_train_wrapped_sb3_policy_on_ur5_mujoco_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
