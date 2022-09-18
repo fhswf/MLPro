@@ -6,6 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-13  0.0.0     MRD       Creation
+## -- 2022-09-18  0.0.1     MRD       Change to event
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -18,7 +19,6 @@ This module shows how to save agent every 1 second.
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
-from mlpro.bf.callbacks import CallbackTimer
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import gym
 import random
@@ -56,25 +56,36 @@ class MyPolicy (Policy):
 
     
 
-# 2 Implement Custom Callback
-class MyCallback(RLCallback):
-    
-    C_NAME      = "MyCallback"
+# 2 Implement Custom Event Manager
+class MyEventManager(RLEventManager):
 
-    def _init_callback(self):
+    C_NAME      = "My Event Manager"
+
+    def __init__(self, p_logging=Log.C_LOG_ALL):
+        super().__init__(p_logging)
+
+        # Create Timer Event
+        self.timer_one = EventTimer(1, self._timer_one_callback)
+        self.timer_two = EventTimer(5, self._timer_two_callback, p_once=True)
+
+        # Register function to  avaiable event
+        self.register_event_handler(self.C_EVENT_INITIALIZATION, self._init_callback)
+
+    def _init_callback(self, p_event_id, p_event_object:Event):
         self.update_counter = 0
+        self.folder_path = p_event_object.get_data()["root_path"]
+
         # If not unit test
         if self.folder_path is not None:
             self.folder_path = os.path.join(self.folder_path, "Saved Model After 1 Second")
             os.mkdir(self.folder_path)
 
-        self.timer_one = CallbackTimer(1, self._timer_callback)
-
-    def _timer_callback(self):
+    def _timer_one_callback(self):
         self.update_counter += 1
-        self.scenario.get_model().save(self.folder_path, 'model_after_'+str(self.update_counter)+'_update.pkl')
-        if self.update_counter == 5:
-            self.timer_one.shutdown()
+        self.scenario.get_model().save(self.folder_path, 'model_after_'+str(self.update_counter)+'_seconds.pkl')
+
+    def _timer_two_callback(self):
+        self.timer_one.shutdown()
 
 
 
@@ -126,7 +137,7 @@ else:
 # 4.3 Create and run training object
 training = RLTraining(
         p_scenario_cls=MyScenario,
-        p_callback_cls=MyCallback,
+        p_event_manager_cls=MyEventManager,
         p_cycle_limit=cycle_limit,
         p_path=path,
         p_visualize=visualize,

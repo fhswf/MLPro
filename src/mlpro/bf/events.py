@@ -6,16 +6,19 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-08-21  1.0.0     DA       Creation/release
+## -- 2022-09-18  1.1.0     MRD      Add EventTimer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-08-21)
+Ver. 1.1.0 (2022-09-18)
 
 This module provides classes for event handling. To this regard, the property class Eventmanager is
 provided to add event functionality to child classes by inheritence.
 """
 
 
+import threading
+import time
 from mlpro.bf.various import Log
 from mlpro.bf.exceptions import *
 
@@ -53,7 +56,43 @@ class Event:
         return self._data
 
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class EventTimer(threading.Thread):
+    """
+    Calling callback based on timer.
 
+    Parameters
+    ----------
+    p_period
+        Period time per call.
+    p_callback
+        Callback function to be called
+    p_once
+        Called only once
+    """
+
+    def __init__(self, p_period, p_callback, p_once=False):
+        threading.Thread.__init__(self)
+        self._period   = p_period
+        self._callback = p_callback
+        self._once     = p_once
+        self._shutdown = False
+        self.daemon = True
+        self.start()
+
+    def shutdown(self):
+        """
+        Stop firing callbacks.
+        """
+        self._shutdown = True
+        
+    def run(self):
+        while not self._shutdown:
+            time.sleep(self._period)
+            self._callback()
+            if self._once:
+                break
 
 
 ## -------------------------------------------------------------------------------------------------

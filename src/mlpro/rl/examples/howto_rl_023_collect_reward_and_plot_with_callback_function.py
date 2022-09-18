@@ -6,6 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-02  0.0.0     MRD       Creation
+## -- 2022-09-18  0.0.1     MRD       Change to event
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -56,29 +57,39 @@ class MyPolicy (Policy):
 
     
 
-# 2 Implement Custom Callback
-class MyCallback(RLCallback):
-    
-    C_NAME      = "MyCallback"
+# 2 Implement Custom Event Manager
+class MyEventManager(RLEventManager):
 
-    def _init_callback(self):
+    C_NAME      = "My Event Manager"
+
+    def __init__(self, p_logging=Log.C_LOG_ALL):
+        super().__init__(p_logging)
+
+        # Register all event
+        self.register_event_handler(self.C_EVENT_INITIALIZATION, self._init_callback)
+        self.register_event_handler(self.C_EVENT_EPISODE_START, self._episode_start_callback)
+        self.register_event_handler(self.C_EVENT_EPISODE_END, self._episode_end_callback)
+        self.register_event_handler(self.C_EVENT_AFTER_ACTION, self._after_action_callback)
+        self.register_event_handler(self.C_EVENT_TRAINING_END, self._training_end_callback)
+
+    def _init_callback(self, p_event_id, p_event_object:Event):
         self.reward_container = []
 
-    def _episode_start(self):
+    def _episode_start_callback(self, p_event_id, p_event_object:Event):
         self.total_reward_episode = 0
 
-    def _after_process_action(self):
-        self.total_reward_episode += self.locals["reward"].get_overall_reward()
+    def _after_action_callback(self, p_event_id, p_event_object:Event):
+        local = p_event_object.get_data()["local"]
+        self.total_reward_episode += local["reward"].get_overall_reward()
 
-    def _episode_end(self):
+    def _episode_end_callback(self, p_event_id, p_event_object:Event):
         self.reward_container.append(self.total_reward_episode)
         self.total_reward_episode = 0
 
-    def _training_end(self):
+    def _training_end_callback(self, p_event_id, p_event_object:Event):
         plt.plot(self.reward_container)
         plt.ylabel('Reward')
         plt.show()
-
 
 
 # 3 Implement your own RL scenario
@@ -129,7 +140,7 @@ else:
 # 4.3 Create and run training object
 training = RLTraining(
         p_scenario_cls=MyScenario,
-        p_callback_cls=MyCallback,
+        p_event_manager_cls=MyEventManager,
         p_cycle_limit=cycle_limit,
         p_path=path,
         p_visualize=visualize,

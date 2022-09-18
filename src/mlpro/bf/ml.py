@@ -40,16 +40,16 @@
 ## -- 2022-08-22  1.4.0     DA       Class Model: event management added
 ## -- 2022-09-01  1.4.1     SY       Renaming maturity to accuracy
 ## -- 2022-09-11  1.5.0     DA       New classes MLTask and MLWorkflow
+## -- 2022-09-18  1.6.0     MRD      New classes MLEventManager, and put Event functionality
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-09-11)
+Ver. 1.6.0 (2022-09-18)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
 
 import sys
-from mlpro.bf.callbacks import Callback
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
@@ -440,6 +440,8 @@ class Scenario (Mode, LoadSave, Plottable):
         Maximum number of cycles. Default = 0 (no limit).
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = True.
+    p_event_manager
+        Event Manager
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     
@@ -454,16 +456,16 @@ class Scenario (Mode, LoadSave, Plottable):
                  p_ada:bool=True,               
                  p_cycle_limit=0,              
                  p_visualize=True,
-                 p_callback=None,              
+                 p_event_manager=None,              
                  p_logging=Log.C_LOG_ALL):    
 
         # 0 Intro
         self._cycle_max     = sys.maxsize
         self._cycle_id      = 0
         self._visualize     = p_visualize
-        self._callback      = p_callback
-        if self._callback is None:
-            self._callback  = Callback(p_visualize, p_logging)
+        self._event_manager = p_event_manager
+        if self._event_manager is None:
+            self._event_manager  = EventManager(p_logging)
 
         self.set_cycle_limit(p_cycle_limit)
 
@@ -535,8 +537,8 @@ class Scenario (Mode, LoadSave, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_callback(self):
-        return self._callback
+    def get_event_manager(self):
+        return self._event_manager
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -980,6 +982,47 @@ class HyperParamTuner (Log, Saveable):
         
 
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MLEventManager(EventManager):
+    """
+    Base Class for Basic ML specific Event Manager.
+    """
+
+    C_NAME          = 'Basic ML Event Manager'
+
+    C_EVENT_INITIALIZATION = 0
+    C_EVENT_TRAINING_START = 1
+    C_EVENT_TRAINING_END = 2
+
+    def __init__(self, p_logging=Log.C_LOG_ALL):
+        super().__init__(p_logging)
+
+        self.training = None
+        self.scenario = None
+
+## -------------------------------------------------------------------------------------------------
+    def initialization(self, p_training, root_path):
+        """
+        This function will be called after the initialization.
+        """
+        self.training = p_training
+        self.scenario = p_training.get_scenario()
+        self._raise_event(self.C_EVENT_INITIALIZATION, Event(self, training=self.training, scenario=self.scenario, root_path=root_path))
+
+## -------------------------------------------------------------------------------------------------
+    def training_start(self):
+        """
+        This function will be called when the training starts.
+        """
+        self._raise_event(self.C_EVENT_TRAINING_START, Event(self, training=self.training, scenario=self.scenario))
+
+## -------------------------------------------------------------------------------------------------
+    def training_end(self):
+        """
+        This function will be called when the training ends.
+        """
+        self._raise_event(self.C_EVENT_TRAINING_END, Event(self, training=self.training, scenario=self.scenario))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1004,6 +1047,8 @@ class Training (Log):
         Optional destination path to store training data. Default = None.
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = False
+    p_event_manager_cls
+        Name of Event Manager class
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_WE.
 
@@ -1092,10 +1137,10 @@ class Training (Log):
         
         # 2.0 Optional Custom Callback Function
         try:
-            callback_cls = self._kwargs['p_callback_cls']
+            event_manager_cls = self._kwargs['p_event_manager_cls']
         except:
-            callback_cls = None
-            self._kwargs['p_callback_cls'] = None
+            event_manager_cls = None
+            self._kwargs['p_event_manager_cls'] = None
 
         # 2 Initialization
         super().__init__(p_logging=logging)
@@ -1109,12 +1154,12 @@ class Training (Log):
         self._mode              = self.C_MODE_TRAIN
 
         # 3 Setup callback
-        callback                = None
-        if callback_cls is not None:
+        event_manager                = None
+        if event_manager_cls is not None:
             try:
-                callback = callback_cls(p_logging=logging)
+                event_manager = event_manager_cls(p_logging=logging)
             except:
-                raise ParamError('Par p_callback_cls: class "' + callback_cls.__name__ + '" not compatible')
+                raise ParamError('Par p_event_manager_cls: class "' + event_manager_cls.__name__ + '" not compatible')
 
         # 4 Setup scenario
         if self._hpt is None:
@@ -1123,11 +1168,11 @@ class Training (Log):
                                                p_ada=True,
                                                p_cycle_limit=self._cycle_limit,
                                                p_visualize=visualize,
-                                               p_callback=callback,
+                                               p_event_manager=event_manager,
                                                p_logging=logging )
 
-                # Initialize callback
-                self._scenario.get_callback().init_callback(self, self._root_path)
+                # Initialize event
+                self._scenario.get_event_manager().initialization(self, self._root_path)
             except:
                 raise ParamError('Par p_scenario_cls: class "' + scenario_cls.__name__ + '" not compatible')
 
@@ -1284,9 +1329,9 @@ class Training (Log):
 ## -------------------------------------------------------------------------------------------------
     def _run(self) -> TrainingResults:
         self._new_run = True
-        self._callback.training_start()
+        self._event_manager.training_start()
         while not self.run_cycle(): pass
-        self._callback.training_end()
+        self._event_manager.training_end()
         return self.get_results()
 
 
