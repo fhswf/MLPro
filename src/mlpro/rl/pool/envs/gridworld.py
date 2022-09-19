@@ -17,11 +17,11 @@
 ## -- 2021-12-19  1.0.7     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  1.0.8     DA       Class GridWorld: renamed method reset() to _reset()
 ## -- 2022-02-25  1.0.9     SY       Refactoring due to auto generated ID in class Dimension
-## -- 2022-09-19  1.1.0     SY       Add discrete action as an option and predefined target
+## -- 2022-09-19  2.0.0     SY       Add discrete action as an option and predefined target
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-09-19)
+Ver. 2.0.0 (2022-09-19)
 
 This module provides an environment of customizable Gridworld.
 """
