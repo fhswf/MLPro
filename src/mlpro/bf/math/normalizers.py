@@ -1,4 +1,4 @@
-## -------------------------------------------------------------------------------------------------
+ ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.pool
 ## -- Module  : normalizers.py
@@ -130,6 +130,6 @@ class NormalizerMinMax(Normalizer):
             max_boundary = p_set.get_dim(i).get_boundaries()[1]
             range = max_boundary-min_boundary
             a.append(2/(range))
-            b.append(2*min_boundary+(1/(range)))
+            b.append(2*min_boundary/(range)+1)
 
-        self._param = np.array(a,b)
+        self._param = np.vstack(([a],[b]))
