@@ -41,10 +41,11 @@
 ## -- 2022-07-27  1.4.1     DA       Introduction of root class Wrapper
 ## -- 2022-07-28  1.4.2     SY       Minor improvements: API documentation and logging
 ## -- 2022-08-15  1.4.3     DA       Correction of integration of class Wrapper
+## -- 2022-09-19  1.4.4     SY       Minor improvement: recognize discrete space from Gym
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.3 (2022-08-15)
+Ver. 1.4.4 (2022-09-19)
 
 This module provides wrapper classes for OpenAI Gym environments.
 
@@ -145,7 +146,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
         if isinstance(p_gym_space, gym.spaces.Discrete):
             space.add_dim(
-                Dimension(p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
+                Dimension(p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n-1]))
         elif isinstance(p_gym_space, gym.spaces.Box):
             shape_dim = len(p_gym_space.shape)
             for i in range(shape_dim):
