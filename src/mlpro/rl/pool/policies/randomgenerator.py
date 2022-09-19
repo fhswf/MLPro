@@ -66,7 +66,7 @@ class RandomGenerator(Policy):
                     lower_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[0]
                     upper_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[1]
                 if base_set == 'Z' or base_set == 'N':
-                    my_action_values[d] = random.randint(lower_boundaries, upper_boundaries)
+                    my_action_values[d] = random.randint(lower_boundaries, upper_boundaries-1)
                 elif base_set == 'R' or base_set == 'DO':
                     my_action_values[d] = random.uniform(lower_boundaries, upper_boundaries)
             except:
