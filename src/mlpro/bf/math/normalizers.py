@@ -103,14 +103,14 @@ class NormalizerMinMax(Normalizer):
 ## -------------------------------------------------------------------------------------------------
     def _normalize(self, p_element:Element):
 
-        normalized_element = np.multiply(p_element.get_values(), self._param[0])+self._param[1]
+        normalized_element = np.multiply(p_element.get_values(), self._param[0])-self._param[1]
         return normalized_element
 
 
 ## -------------------------------------------------------------------------------------------------
     def _denormalize(self, p_element:Element):
-
-        pass
+        denormalized_element = np.multiply(p_element.get_values(), (1/self._param[0]))+self._param[2]
+        return denormalized_element
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -125,11 +125,13 @@ class NormalizerMinMax(Normalizer):
         if p_set is None: raise ValueError('Set not provided')
         a = []
         b = []
+        c = []
         for i in p_set.get_dim_ids():
             min_boundary = p_set.get_dim(i).get_boundaries()[0]
             max_boundary = p_set.get_dim(i).get_boundaries()[1]
             range = max_boundary-min_boundary
             a.append(2/(range))
             b.append(2*min_boundary/(range)+1)
+            c.append(min_boundary+range/2)
 
-        self._param = np.vstack(([a],[b]))
+        self._param = np.vstack(([a],[b],[c]))
