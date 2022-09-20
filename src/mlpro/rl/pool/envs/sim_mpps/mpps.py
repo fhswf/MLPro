@@ -1017,16 +1017,38 @@ class Module:
 class TransferFunction(ScientificObject, Log):
     """
     This class serves as a base class of transfer functions, which provides the main attributes of
-    a transfer function. By default, there are three transfer function types available, such as
-    'linear', 'cosinus', and 'sinus'. If none of them suits to your transfer function, then you can
-    also select a 'custom' type of transfer function and design your own function.
+    a transfer function. By default, there are three ready-to-use transfer function types available,
+    such as 'linear', 'cosinus', and 'sinus'. If none of them suits to your transfer function, then
+    you can also select a 'custom' type of transfer function and design your own function. Another
+    possibility is to use a function approximation functionality provided by MLPro.
     
     Parameters
     ----------
-    
+    p_name : str
+        name of the transfer function.
+    p_id : int
+        unique id of the transfer function. Default: None.
+    p_type : int
+        type of the transfer function. Default: None.
+    p_args :
+        extra parameter for each specific transfer function.
         
     Attributes
     ----------
+    C_TYPE : str
+        type of the base class. Default: 'TransferFunction'.
+    C_NAME : str
+        name of the transfer function. Default: ''.
+    C_TRF_FUNC_LINEAR : int
+        linear function. Default: 0.
+    C_TRF_FUNC_COS : int
+        cosine function. Default: 1.
+    C_TRF_FUNC_SIN : int
+        sine function. Default: 2.
+    C_TRF_FUNC_CUSTOM : int
+        custom transfer function. Default: 3.
+    C_TRF_FUNC_APPROX : int
+        function approximation. Default: 4.
     
     """
 
@@ -1121,18 +1143,49 @@ class TransferFunction(ScientificObject, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_type(self, p_type):
+    def set_type(self, p_type:int):
+        """
+        This method provides a functionality to set the type of the transfer function.
+
+        Parameters
+        ----------
+        p_type : int
+            the type of the transfer function.
+
+        """
         self._type = p_type
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_type(self) -> str:
+    def get_type(self) -> int:
+        """
+        This method provides a functionality to get the type of the transfer function.
+
+        Returns
+        -------
+        int
+            the type of the transfer function.
+
+        """
         return self._type
 
 
 ## -------------------------------------------------------------------------------------------------
     def call(self, p_input):
+        """
+        This method provides a functionality to call the transfer function by giving an input value.
 
+        Parameters
+        ----------
+        p_input :
+            input value.
+
+        Returns
+        -------
+        output :
+            output value.
+
+        """
         if self.get_type() == self.C_TRF_FUNC_LINEAR:
             output = self.linear(p_input)
         
@@ -1153,7 +1206,20 @@ class TransferFunction(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def set_function_parameters(self, **p_args) -> bool:
+        """
+        This method provides a functionality to set the parameters of the transfer function.
 
+        Parameters
+        ----------
+        **p_args : 
+            set of parameters of the transfer function.
+
+        Returns
+        -------
+        bool
+            true means no parameters are missing.
+
+        """
         if self.get_type() == self.C_TRF_FUNC_LINEAR:
             try:
                 self.m = p_args['m']
@@ -1190,21 +1256,23 @@ class TransferFunction(ScientificObject, Log):
 ## -------------------------------------------------------------------------------------------------
     def linear(self, p_input):
         """
-        y = mx+b
-        y output
-        m slope
-        x input
-        b y-intercept
+        This method provides a functionality for linear transfer function.
+        
+        Formula --> y = mx+b
+        y = output
+        m = slope
+        x = input
+        b = y-intercept
 
         Parameters
         ----------
-        **p_value : TYPE
-            DESCRIPTION.
+        p_input :
+            input value.
 
         Returns
         -------
-        TYPE
-            DESCRIPTION.
+        float
+            output value.
 
         """
         
@@ -1214,22 +1282,23 @@ class TransferFunction(ScientificObject, Log):
 ## -------------------------------------------------------------------------------------------------
     def cosine(self, p_input):
         """
-        y = A cos(Bx+c) + D
-        default: A=1, B=1, C=0, D=0
-        A amplitude
-        B 2phi/B (period)
-        C/B phase shift
-        D vertical shift
+        This method provides a functionality for cosine transfer function.
+        
+        Formula --> y = A cos(Bx+c) + D, by default: A=1, B=1, C=0, D=0
+        A = amplitude
+        B = 2phi/B (period)
+        C/B = phase shift
+        D = vertical shift
 
         Parameters
         ----------
-        **p_value : TYPE
-            DESCRIPTION.
+        p_input :
+            input value.
 
         Returns
         -------
-        TYPE
-            DESCRIPTION.
+        float
+            output value.
 
         """
         return self.A * math.cos(self.B * p_input + self.C) + self.D
@@ -1238,22 +1307,23 @@ class TransferFunction(ScientificObject, Log):
 ## -------------------------------------------------------------------------------------------------
     def sine(self, p_input):
         """
-        y = A sin(Bx+c) + D
-        default: A=1, B=1, C=0, D=0
-        A amplitude
-        B 2phi/B (period)
-        C/B phase shift
-        D vertical shift
+        This method provides a functionality for sine transfer function.
+        
+        Formula --> y = A sin(Bx+c) + D, by default: A=1, B=1, C=0, D=0
+        A = amplitude
+        B = 2phi/B (period)
+        C/B = phase shift
+        D = vertical shift
 
         Parameters
         ----------
-        **p_value : TYPE
-            DESCRIPTION.
+        p_input :
+            input value.
 
         Returns
         -------
-        TYPE
-            DESCRIPTION.
+        float
+            output value.
 
         """
         return self.A * math.sin(self.B * p_input + self.C) + self.D
@@ -1262,19 +1332,41 @@ class TransferFunction(ScientificObject, Log):
 ## -------------------------------------------------------------------------------------------------
     def custom_function(self, p_input):
         """
-        This function represents the template to cereate your own function and must be reinitalisied.
-        Hereby are p_value[] changing values and self.args[] fix values.
+        This function represents the template to create a custom function and must be redefined.
 
         For example: 
         I(t) = I(0) * e^(-(1/(RC)) * t)
         return self.args["arg0"] * math.exp(-(1/(self.args["arg1"]*self.args["arg2"]))*p_value[0])
+
+        Parameters
+        ----------
+        p_input :
+            input value.
+
+        Returns
+        -------
+        float
+            output value.
+    
         """
         raise NotImplementedError('This custom function is missing.')
 
 
 ## -------------------------------------------------------------------------------------------------
     def plot(self, p_lim:int):
-    
+        """
+        ............................
+
+        Parameters
+        ----------
+        p_lim : int
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
         x_value = range(p_lim)
         y_value = []
 
@@ -1290,6 +1382,20 @@ class TransferFunction(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def function_approximation(self, p_input):
+        """
+        ........................
+
+        Parameters
+        ----------
+        p_input : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        bool
+            DESCRIPTION.
+
+        """
         return False
 
 
