@@ -6,7 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-16  0.0.0     LSB      Creation
-## -- 2022-09-dd  1.0.0     LSB      Release of first version
+## -- 2022-09-20  1.0.0     LSB      Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -16,7 +16,7 @@ This module provides base class for Normalizers.
 
 from mlpro.bf.math import *
 from mlpro.rl.models_sar import *
-import numpy
+import numpy as np
 
 
 
@@ -36,13 +36,13 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_set:Set=None):
+    def __init__(self, **p_kwargs):
 
         self._param = None
-        self._old_param = None
-        self._new_param = None
-        if p_set is not None:
-            self._set_parameters(p_set)
+        self._param_old = None
+        self._param_new = None
+        if p_kwargs is not None:
+            self._set_parameters(p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_parameters(self, p_set:Set):
+    def _set_parameters(self, **p_kwargs):
         """
         custom method to set the normalization parameters
 
@@ -87,14 +87,12 @@ class Normalizer:
         element:Element
             Element to be normalized
         """
-        if self._param is None:
-            self._set_parameters(p_element.get_related_set())
-        element = self._normalize(p_element)
+        element = self._normalize(p_element, p_param = self._param)
         return element
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _normalize(self, p_element:Element):
+    def _normalize(self, p_element:Element, p_param=None):
         """
         Custom method to normalize the element
 
@@ -129,9 +127,7 @@ class Normalizer:
         element:Element
             Returns denormzalized element
         """
-        if self._param is None:
-            self._set_parameters(p_element.get_related_set())
-        element = self._denormalize(p_element, p_param)
+        element = self._denormalize(p_element, p_param=self._param)
         return element
 
 
@@ -173,7 +169,7 @@ class Normalizer:
 
         """
 
-        denormalized_element = self.denormalize(p_element, p_param = self._old_param)
+        denormalized_element = self.denormalize(p_element, p_param = self._param_old)
         renormalized_element = self.normalize(denormalized_element)
         return renormalized_element
 
@@ -212,7 +208,7 @@ class NormalizerMinMax(Normalizer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _normalize(self, p_element:Element):
+    def _normalize(self, p_element:Element, p_param=None):
         """
         Custom method to normalize the element
 
@@ -226,8 +222,10 @@ class NormalizerMinMax(Normalizer):
         element:Element
             Normalized element
         """
-
-        normalized_element = np.multiply(p_element.get_values(), self._param[0])-self._param[1]
+        if self._param is None:
+            self._set_parameters(p_element.get_related_set())
+            p_param = self._param
+        normalized_element = np.multiply(p_element.get_values(), p_param[0])-p_param[1]
         return normalized_element
 
 
@@ -247,10 +245,9 @@ class NormalizerMinMax(Normalizer):
         denormalized_event:Element
             Denormalized event
         """
-
-        if p_param is None:
+        if self._param is None:
+            self._set_parameters(p_element.get_related_set())
             p_param = self._param
-
         denormalized_element = np.multiply(p_element.get_values(), (1/p_param[0]))+p_param[2]
         return denormalized_element
 
@@ -320,7 +317,7 @@ class NormalizerZTrans(Normalizer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _normalize(self, p_element:Element):
+    def _normalize(self, p_data, p_param=None):
         """
         method to normalize element
 
@@ -331,15 +328,18 @@ class NormalizerZTrans(Normalizer):
 
         Returns
         -------
-        element:Element
-            Element to be normalized
+        normalized_data:
+            Normalized data
         """
-
-        raise NotImplementedError
+        if self._param is None:
+            self._set_parameters(p_data)
+            p_param = self._param
+        normalized_data = np.multiply(p_data, p_param[0]) - p_param[1]
+        return normalized_data
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _denormalize(self, p_element:Element, p_param=None):
+    def _denormalize(self, p_data, p_param=None):
         """
         Custom method to denormalize an element
 
@@ -352,11 +352,14 @@ class NormalizerZTrans(Normalizer):
 
         Returns
         -------
-        denormalized_element:Element
-            Denormalized element
+        denormalized_data
+            Denormalized data
         """
-
-        raise NotImplementedError
+        if p_param is None:
+            self._set_parameters(p_data)
+            p_param = self._param
+        denormalized_data = np.multiply(p_data, 1/p_param[0])+(p_param[1]/p_param[0])
+        return denormalized_data
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -374,12 +377,13 @@ class NormalizerZTrans(Normalizer):
         boolean = True
             Returns true after updating
         """
-
-        raise NotImplementedError
+        self._old_param = self._param
+        self._set_parameters(p_data)
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_parameters(self, p_set:Set):
+    def _set_parameters(self, p_data):
         """
         custom method to set the normalization parameters
 
@@ -393,5 +397,12 @@ class NormalizerZTrans(Normalizer):
         boolean:True
             Returns true after setting the parameters
         """
+        std = np.std(p_data, axis=0, dtype=np.float64)
+        mean = np.mean(p_data, axis = 0, dtype=np.float64)
+
+        a = 1/std
+        b = mean/std
+
+        self._param = np.vstack(([a],[b]))
 
         return True
