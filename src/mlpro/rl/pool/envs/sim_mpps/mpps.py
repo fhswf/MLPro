@@ -31,6 +31,7 @@ from mlpro.bf.various import *
 import numpy as np
 import random
 import uuid
+import math
 
 
 
@@ -677,20 +678,50 @@ class Module:
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class TransferFunction:
+class TransferFunction(ScientificObject, Log):
+    """
+    This class serves as a base class of transfer functions, which provides the main attributes of
+    a transfer function. By default, there are three transfer function types available, such as
+    'linear', 'cosinus', and 'sinus'. If none of them suits to your transfer function, then you can
+    also select a 'custom' type of transfer function and design your own function.
+    
+    Parameters
+    ----------
+    
+        
+    Attributes
+    ----------
+    
+    """
+
+    C_TYPE              = 'TransferFunction'
+    C_NAME              = ''
+    C_TRF_FUNC_LINEAR   = 0
+    C_TRF_FUNC_COS      = 1
+    C_TRF_FUNC_SIN      = 2
+    C_TRF_FUNC_CUSTOM   = 3
+    C_TRF_FUNC_APPROX   = 4
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name : str, p_id=None, **p_args) -> None:
+    def __init__(self,
+                 p_name:str,
+                 p_id:int=None,
+                 p_type:int=None,
+                 **p_args) -> None:
 
         if p_name != '':
             self.set_name(p_name)
         else:
             self.set_name(self.C_NAME)
-
-        self.args = p_args
-
+        
         self.set_id(p_id)
+        self.set_type(p_type)
+        
+        if self.get_type() is not None:
+            self.set_function_parameters(p_args)
+        else:
+            raise NotImplementedError('Please define p_type!')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -701,7 +732,7 @@ class TransferFunction:
             self._id = str(p_id)
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def get_id(self) -> str:
         return self._id
 
@@ -718,31 +749,146 @@ class TransferFunction:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def call(self, *p_value):
-
-        function = getattr(self, self._name)
-
-        return function(*p_value)
+    def set_type(self, p_type):
+        self._type = p_type
 
 
 ## -------------------------------------------------------------------------------------------------
-    def linear(self, *p_value):
+    def get_type(self) -> str:
+        return self._type
+
+
+## -------------------------------------------------------------------------------------------------
+    def call(self, p_input):
+
+        if self.get_type() == self.C_TRF_FUNC_LINEAR:
+            output = self.linear(p_input)
         
-        return self.args["arg0"] * p_value[0] + self.args["arg1"]
+        elif self.get_type() == self.C_TRF_FUNC_COS:
+            output = self.cosine(p_input)
+            
+        elif self.get_type() == self.C_TRF_FUNC_SIN:
+            output = self.sine(p_input)
+        
+        elif self.get_type() == self.C_TRF_FUNC_CUSTOM:
+            output = self.custom_function(p_input)
+        
+        elif self.get_type() == self.C_TRF_FUNC_APPROX:
+            output = self.function_approximation(p_input)
+        
+        return output
 
 
-    ## -------------------------------------------------------------------------------------------------
-    def cosinus(self, *p_value):
-        return math.cos(self.args["arg0"]) * p_value[0]
+## -------------------------------------------------------------------------------------------------
+    def set_function_parameters(self, **p_args) -> bool:
+
+        if self.get_type() == self.C_TRF_FUNC_LINEAR:
+            try:
+                self.m = p_args['m']
+            except:
+                raise NotImplementedError('Parameter m for linear function is missing.')
+            try:
+                self.b = p_args['b']
+            except:
+                raise NotImplementedError('Parameter b for linear function is missing.')
+        
+        elif self.get_type() == self.C_TRF_FUNC_COS or self.get_type() == self.C_TRF_FUNC_SIN:
+            try:
+                self.A = p_args['A']
+                self.B = p_args['B']
+                self.C = p_args['C']
+                self.D = p_args['D']
+            except:
+                self.A = 1
+                self.B = 1
+                self.C = 0
+                self.D = 0
+                self.log(self.C_LOG_TYPE_W, 'Function ' + self.get_name() + ' has been supplied with default parameters.')
+        
+        elif self.get_type() == self.C_TRF_FUNC_CUSTOM:
+            for key, val in p_args.items():
+                exec(key + '=val')
+        
+        elif self.get_type() == self.C_TRF_FUNC_APPROX:
+            raise NotImplementedError('Function approximation is not yet available.')
+                
+        return True
 
 
-    ## -------------------------------------------------------------------------------------------------
-    def sinus(self, *p_value):
-        return math.cos(self.args["arg0"]) * p_value[0]
+## -------------------------------------------------------------------------------------------------
+    def linear(self, p_input):
+        """
+        y = mx+b
+        y output
+        m slope
+        x input
+        b y-intercept
+
+        Parameters
+        ----------
+        **p_value : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
+        
+        return self.m * p_input + self.b
 
 
-    ## -------------------------------------------------------------------------------------------------
-    def my_function(self, *p_value):
+## -------------------------------------------------------------------------------------------------
+    def cosine(self, p_input):
+        """
+        y = A cos(Bx+c) + D
+        default: A=1, B=1, C=0, D=0
+        A amplitude
+        B 2phi/B (period)
+        C/B phase shift
+        D vertical shift
+
+        Parameters
+        ----------
+        **p_value : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
+        return self.A * math.cos(self.B * p_input + self.C) + self.D
+
+
+## -------------------------------------------------------------------------------------------------
+    def sine(self, p_input):
+        """
+        y = A sin(Bx+c) + D
+        default: A=1, B=1, C=0, D=0
+        A amplitude
+        B 2phi/B (period)
+        C/B phase shift
+        D vertical shift
+
+        Parameters
+        ----------
+        **p_value : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        TYPE
+            DESCRIPTION.
+
+        """
+        return self.A * math.sin(self.B * p_input + self.C) + self.D
+
+
+## -------------------------------------------------------------------------------------------------
+    def custom_function(self, p_input):
         """
         This function represents the template to cereate your own function and must be reinitalisied.
         Hereby are p_value[] changing values and self.args[] fix values.
@@ -751,7 +897,7 @@ class TransferFunction:
         I(t) = I(0) * e^(-(1/(RC)) * t)
         return self.args["arg0"] * math.exp(-(1/(self.args["arg1"]*self.args["arg2"]))*p_value[0])
         """
-        raise NotImplementedError
+        raise NotImplementedError('This custom function is missing.')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -768,8 +914,11 @@ class TransferFunction:
         fig, ax = plt.subplots()
         ax.plot(x_value, y_value, linewidth=2.0)
         plt.show()
-        
-##### def FunctionApproximation? #####
+
+
+## -------------------------------------------------------------------------------------------------
+    def function_approximation(self, p_input):
+        return False
 
 
 
