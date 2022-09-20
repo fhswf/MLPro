@@ -12,17 +12,17 @@
 """
 Ver. 0.0.0 (2022-08-24)
 
-This module provides a multi-purpose environment of a continuous and batch production systems with
-modular settings and high-flexibility.
+This module provides a multi-purpose environment for continuous and batch production systems with
+modular setting and high-flexibility.
 
 The users are able to develop and simulate their own production systems including setting up own
-actuators, reservoirs, modules/stations, production sequences and many more. We also provide the
-default implementations of actuators, reservoirs, and modules, which can be found in the pool of
-objects.
+actuators, reservoirs, processes, modules/stations, production sequences and many more.
+We also provide the default implementations of actuators, reservoirs, and modules, which can be
+found in the pool of objects.
 
 To be noted, the usage of this simulation is not limited to RL tasks, but it also can be as a
 testing environment for GT tasks, evolutionary algorithms, supervised learning, model predictive
-control, and many more.
+control, domain learning, transfer learning, and many more.
 """
 
 
@@ -42,15 +42,27 @@ import math
 class Actuator(ScientificObject, Log):
     """
     This class serves as a base class of actuators, which provides the main attributes of an actuator.
+    An actuator is a component of a machine that is responsible for moving and controlling a mechanism
+    or system.
     
     Parameters
     ----------
-    
+    p_name : str
+        name of the actuator.
+    p_status : bool
+        status of the actuator, either on or off. Default: False.
+    p_id : int
+        unique id of the actuator. Default: None.
+    p_logging : int
+        logging level. Default: Log.C_LOG_ALL.
         
     Attributes
     ----------
-    
-
+    C_TYPE : str
+        Type of the base class. Default: 'Actuator'.
+    C_NAME : str
+        Name of the actuator. Default:''.
+        
     """
 
     C_TYPE = 'Actuator'
@@ -78,6 +90,15 @@ class Actuator(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def set_id(self, p_id:int=None):
+        """
+        This method provides a functionality to set an unique ID.
+
+        Parameters
+        ----------
+        p_id : int, optional
+            An unique ID. Default: None.
+
+        """
         if p_id is None:
             self._id = str(uuid.uuid4())
         else:
@@ -86,22 +107,66 @@ class Actuator(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_id(self) -> str:
+        """
+        This method provides a functionality to get the defined unique ID.
+
+        Returns
+        -------
+        str
+            The unique ID.
+
+        """
         return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_name(self, p_name):
+    def set_name(self, p_name:str):
+        """
+        This method provides a functionality to set an unique name of the related component.
+
+        Parameters
+        ----------
+        p_name : str
+            An unique name of the related component.
+
+        """
         self._name = p_name
         self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
+        """
+        This method provides a functionality to get the unique name of the related component.
+
+        Returns
+        -------
+        str
+            The unique name of the related component.
+
+        """
         return self._name
         
 
 ## -------------------------------------------------------------------------------------------------
-    def activate(self, p_max_actuation, **p_args) -> bool:
+    def activate(self, p_max_actuation:float=None, **p_args) -> bool:
+        """
+        This method provides a functionality to activate the actuator.
+        This method needs to be redefined because the behavior of each actuator can be different.
+
+        Parameters
+        ----------
+        p_max_actuation : float
+            maximum actuation time. Default: None.
+        **p_args :
+            extra parameters for activation, if required.
+
+        Returns
+        -------
+        bool
+            True means succesfully activated and  False means failed to activate.
+
+        """
         if not self.get_status():
             self.set_status(True)
             self._actuation_time = 0
@@ -115,6 +180,21 @@ class Actuator(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------    
     def deactivate(self, **p_args) -> bool:
+        """
+        This method provides a functionality to deactivate the actuator.
+        This method needs to be redefined because the behavior of each actuator can be different.
+
+        Parameters
+        ----------
+        **p_args :
+            extra parameters for activation, if required.
+
+        Returns
+        -------
+        bool
+            True means succesfully deactivated and  False means failed to deactivate..
+
+        """
         self._actuation_time = 0
         try:
             if p_args['force_stop']:
@@ -141,16 +221,39 @@ class Actuator(ScientificObject, Log):
     
 ## -------------------------------------------------------------------------------------------------      
     def set_status(self, p_status:bool=False):
+        """
+        This method provides a functionality to set the status of the related components.
+
+        Parameters
+        ----------
+        p_status : bool, optional
+            Status is on/off. True means on, false means off. Default: False.
+            
+        """
         self.status = p_status
   
     
 ## -------------------------------------------------------------------------------------------------      
     def get_status(self) -> bool:
+        """
+        This method provides a functionality to get the status of the related components.
+
+        Returns
+        -------
+        bool
+            Status is on/off. True means on, false means off.
+
+        """
         return self.status
 
 
 ## -------------------------------------------------------------------------------------------------        
     def reset(self):
+        """
+        This method provides a functionality to reset the actuator.
+        This method needs to be redefined because the behavior of each actuator can be different.
+
+        """
         if self.get_status():
             self.force_stop()
         
@@ -161,6 +264,10 @@ class Actuator(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------    
     def emergency_stop(self):
+        """
+        This method provides a functionality to stop the actuator in an emergency situation.
+
+        """
         self.deactivate(emergency_stop=True)
     
         self.log(self.C_LOG_TYPE_W, 'Actuator ' + self.get_name() + ' is stopped due to emergeny.')
@@ -168,6 +275,10 @@ class Actuator(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------    
     def force_stop(self):
+        """
+        This method provides a functionality to forcely stop the actuator.
+
+        """
         self.deactivate(force_stop=True)
     
         self.log(self.C_LOG_TYPE_I, 'Actuator ' + self.get_name() + ' is forcely stopped.')
@@ -175,6 +286,11 @@ class Actuator(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------    
     def setup_process(self):
+        """
+        This method provides a functionality to setup the proceses of the actuator.
+        This method needs to be redefined because the behavior of each actuator can be different.
+
+        """
         if self._process() is None:
             self._process = Process(self.get_name())
             
@@ -191,6 +307,28 @@ class Actuator(ScientificObject, Log):
                     p_activate:bool=True,
                     p_stop:bool=False,
                     **p_args) -> dict:
+        """
+        This method provides a functionality to run all the proceseses of the actuator.
+
+        Parameters
+        ----------
+        p_time_step : float
+            time step.
+        p_max_actuation : float, optional
+            maximum actuation time. The default is None.
+        p_activate : bool, optional
+            activating the actuator. The default is True.
+        p_stop : bool, optional
+            stop the actuator. The default is False.
+        **p_args : 
+            extra parameter, if required.
+
+        Returns
+        -------
+        dict
+            a dictionary of the name of all processes and their ouput values.
+
+        """
         if p_activate:
             self.activate(p_max_actuation, p_args)
             
@@ -273,6 +411,15 @@ class Reservoir(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def set_id(self, p_id:int=None):
+        """
+        This method provides a functionality to set an unique ID.
+
+        Parameters
+        ----------
+        p_id : int, optional
+            An unique ID. Default: None.
+
+        """
         if p_id is None:
             self._id = str(uuid.uuid4())
         else:
@@ -281,17 +428,44 @@ class Reservoir(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_id(self) -> str:
+        """
+        This method provides a functionality to get the defined unique ID.
+
+        Returns
+        -------
+        str
+            The unique ID.
+
+        """
         return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_name(self, p_name):
+    def set_name(self, p_name:str):
+        """
+        This method provides a functionality to set an unique name of the related component.
+
+        Parameters
+        ----------
+        p_name : str
+            An unique name of the related component.
+
+        """
         self._name = p_name
         self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
+        """
+        This method provides a functionality to get the unique name of the related component.
+
+        Returns
+        -------
+        str
+            The unique name of the related component.
+
+        """
         return self._name
         
 
@@ -410,6 +584,15 @@ class ManufacturingProcess(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def set_id(self, p_id:int=None):
+        """
+        This method provides a functionality to set an unique ID.
+
+        Parameters
+        ----------
+        p_id : int, optional
+            An unique ID. Default: None.
+
+        """
         if p_id is None:
             self._id = str(uuid.uuid4())
         else:
@@ -418,17 +601,44 @@ class ManufacturingProcess(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_id(self) -> str:
+        """
+        This method provides a functionality to get the defined unique ID.
+
+        Returns
+        -------
+        str
+            The unique ID.
+
+        """
         return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_name(self, p_name):
+    def set_name(self, p_name:str):
+        """
+        This method provides a functionality to set an unique name of the related component.
+
+        Parameters
+        ----------
+        p_name : str
+            An unique name of the related component.
+
+        """
         self._name = p_name
         self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
+        """
+        This method provides a functionality to get the unique name of the related component.
+
+        Returns
+        -------
+        str
+            The unique name of the related component.
+
+        """
         return self._name
         
 
@@ -497,11 +707,29 @@ class ManufacturingProcess(ScientificObject, Log):
     
 ## -------------------------------------------------------------------------------------------------      
     def set_status(self, p_status:bool=False):
+        """
+        This method provides a functionality to set the status of the related components.
+
+        Parameters
+        ----------
+        p_status : bool, optional
+            Status is on/off. True means on, false means off. Default: False.
+            
+        """
         self.status = p_status
   
     
 ## -------------------------------------------------------------------------------------------------      
     def get_status(self) -> bool:
+        """
+        This method provides a functionality to get the status of the related components.
+
+        Returns
+        -------
+        bool
+            Status is on/off. True means on, false means off.
+
+        """
         return self.status
         
 
@@ -722,10 +950,19 @@ class TransferFunction(ScientificObject, Log):
             self.set_function_parameters(p_args)
         else:
             raise NotImplementedError('Please define p_type!')
-
+            
 
 ## -------------------------------------------------------------------------------------------------
     def set_id(self, p_id:int=None):
+        """
+        This method provides a functionality to set an unique ID.
+
+        Parameters
+        ----------
+        p_id : int, optional
+            An unique ID. Default: None.
+
+        """
         if p_id is None:
             self._id = str(uuid.uuid4())
         else:
@@ -734,17 +971,44 @@ class TransferFunction(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_id(self) -> str:
+        """
+        This method provides a functionality to get the defined unique ID.
+
+        Returns
+        -------
+        str
+            The unique ID.
+
+        """
         return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_name(self, p_name):
+    def set_name(self, p_name:str):
+        """
+        This method provides a functionality to set an unique name of the related component.
+
+        Parameters
+        ----------
+        p_name : str
+            An unique name of the related component.
+
+        """
         self._name = p_name
         self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
+        """
+        This method provides a functionality to get the unique name of the related component.
+
+        Returns
+        -------
+        str
+            The unique name of the related component.
+
+        """
         return self._name
 
 
@@ -964,6 +1228,15 @@ class Process(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def set_id(self, p_id:int=None):
+        """
+        This method provides a functionality to set an unique ID.
+
+        Parameters
+        ----------
+        p_id : int, optional
+            An unique ID. Default: None.
+
+        """
         if p_id is None:
             self._id = str(uuid.uuid4())
         else:
@@ -972,17 +1245,44 @@ class Process(Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_id(self) -> str:
+        """
+        This method provides a functionality to get the defined unique ID.
+
+        Returns
+        -------
+        str
+            The unique ID.
+
+        """
         return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_name(self, p_name):
+    def set_name(self, p_name:str):
+        """
+        This method provides a functionality to set an unique name of the related component.
+
+        Parameters
+        ----------
+        p_name : str
+            An unique name of the related component.
+
+        """
         self._name = p_name
         self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
+        """
+        This method provides a functionality to get the unique name of the related component.
+
+        Returns
+        -------
+        str
+            The unique name of the related component.
+
+        """
         return self._name
 
 
