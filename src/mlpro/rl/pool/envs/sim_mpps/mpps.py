@@ -356,15 +356,51 @@ class Actuator(ScientificObject, Log):
 class Reservoir(ScientificObject, Log):
     """
     This class serves as a base class of reservoirs, which provides the main attributes of a reservoir.
+    A reservoir is a storage space to temporary store the materials up to the maximum capacity.
+    
+    There are two possible types of sensors attached to a reservoir,
+    (1) C_RES_TYPE_CONT: A sensor that can detect the continuous value of the fill level of a reservoir.
+    (2) C_RES_TYPE_2POS: A two position sensor that can only detect whether the current fill level
+    has passed the sensors. Thus it can only detect whether the current level is 'low', 'medium', or 'high'.
     
     Parameters
     ----------
-    
+    p_name : str
+        name of a reservoir.
+    p_max_capacity : float
+        the maximum capacity of the reservoir, which can be in any units.
+    p_sensor : int
+        type of the sensor, either C_RES_TYPE_CONT or C_RES_TYPE_2POS. Default: None.
+    p_id : int
+        an unique id. Default: None.
+    p_logging :
+        logging level. Default: Log.C_LOG_ALL.
+    p_init : float
+        the initial level of the reservoir. Default: None.
+    p_sensor_low : float
+        the location of the first (low) sensor. Rhis is specifically for C_RES_TYPE_2POS type
+        of reservoir. Default: None.
+    p_sensor_high : float
+        the location of the second (high) sensor. Rhis is specifically for C_RES_TYPE_2POS type
+        of reservoir. Default: None.
         
     Attributes
     ----------
-    
-
+    C_TYPE : str
+        name of the base class. Default: 'Reservoir'
+    C_NAME : str
+        name of the reservoir. Default: ''
+    C_RES_TYPE_CONT : int
+        first type of the sensor (continuous). Default: 0
+    C_RES_TYPE_2POS : int
+        second type of the sensor (2-position). Default: 1
+    C_2POS_SENSORS_LEVELS_1 : str
+        first output type of 2-position sensor. Default: 'Low'
+    C_2POS_SENSORS_LEVELS_2 : str
+        second output type of 2-position sensor. Default: 'Medium'
+    C_2POS_SENSORS_LEVELS_3 : str
+        third output type of 2-position sensor. Default: 'High'
+        
     """
 
     C_TYPE = 'Reservoir'
@@ -471,6 +507,17 @@ class Reservoir(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def update(self, p_in:float, p_out:float):
+        """
+        This method provides a functionality to update the current fill-level of the reservoir.
+
+        Parameters
+        ----------
+        p_in : float
+            the transported material going in to the reservoir.
+        p_out : float
+            the transported material going out to the reservoir.
+
+        """
         self._volume = self._volume + p_in - p_out
         self.overflow = 0
         if self._volume < 0:
@@ -483,6 +530,17 @@ class Reservoir(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_volume(self):
+        """
+        This method provides a functionality to get the current volume of the reservoir depending on
+        the type of the installed sensor. If C_RES_TYPE_CONT, then the output is the continuous value
+        of the fill-level. If C_RES_TYPE_2POS, then either 'low', 'medium', or 'high'.
+
+        Returns
+        -------
+        float/str
+            the current volume of the reservoir.
+
+        """
         if self.sensor_type == self.C_RES_TYPE_CONT:
             return self._volume
         elif self.sensor_type == self.C_RES_TYPE_2POS:
@@ -495,21 +553,52 @@ class Reservoir(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def set_maximum_capacity(self, p_max_capacity:float):
+        """
+        This method provides a functionality to set the maximum capacity of the reservoir.
+
+        Parameters
+        ----------
+        p_max_capacity : float
+            the maximum capacity of the reservoir.
+
+        """
         self.max_capacity = p_max_capacity
         
 
 ## -------------------------------------------------------------------------------------------------
     def get_maximum_capacity(self) -> float:
+        """
+        This method provides a functionality to get the maximum capacity of the reservoir.
+
+        Returns
+        -------
+        float
+            the maximum capacity of the reservoir.
+
+        """
         return self.max_capacity
         
 
 ## -------------------------------------------------------------------------------------------------
     def get_overflow(self) -> float:
+        """
+        This method provides a functionality to get the overflow level for current itteration.
+
+        Returns
+        -------
+        float
+            overflow level.
+
+        """
         return self.overflow
         
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self):
+        """
+        This method provides a functionality to reset the reservoir.
+
+        """
         self._volume = self.init_level
         self.overflow = 0
         self.log(self.C_LOG_TYPE_I, 'Reservoir ' + self.get_name() + ' is reset.')
@@ -517,6 +606,16 @@ class Reservoir(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def set_initial_level(self, p_init:float=None):
+        """
+        This method provides a functionality to set the initial level of the reservoir, once it is
+        reset.
+
+        Parameters
+        ----------
+        p_init : float, optional
+            the initial level of the reservoir. Default: None.
+
+        """
         if p_init is None:
             self.init_level = random.uniform(0, self.get_maximum_capacity())
         else:
@@ -525,6 +624,15 @@ class Reservoir(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_initial_level(self) -> float:
+        """
+        This method provides a functionality to get the initial level of the reservoir.
+
+        Returns
+        -------
+        float
+            the initial level of the reservoir.
+
+        """
         return self.init_level
 
 
