@@ -1302,14 +1302,24 @@ class Process(Log):
     """
     This class serves as a base class of an actuation process for a specific actuator, which provides
     the main attributes of an actuation process.
+    The process can include, for example, current power consumption, transported material calculation,
+    current temperature of the actuator, etc. 
     
     Parameters
     ----------
-    
+    p_name : str
+        name of the acutation process.
+    p_id : int
+        unique id of the process. Default: None.
+    p_logging : int
+        logging level. Default: Log.C_LOG_ALL.
         
     Attributes
     ----------
-    
+    C_TYPE : str
+        Type of the base class. Default: 'Process'.
+    C_NAME : str
+        Name of the process. Default:''.
 
     """
 
@@ -1395,7 +1405,23 @@ class Process(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add(self, p_name, p_id, p_type, **p_args):
+    def add(self, p_name:str, p_id:int, p_type:int, **p_args):
+        """
+        This method provides a functionality to add a process to the all processes' list.
+
+        Parameters
+        ----------
+        p_name : str
+            name of the process.
+        p_id : int
+            an unique id of the process.
+        p_type : int
+            type of the function, e.g. TransferFunction.C_TRF_FUNC_LINEAR,
+            TransferFunction.C_TRF_FUNC_COS, TransferFunction.C_TRF_FUNC_CUSTOM, etc.
+        **p_args :
+            extra parameters related to the transfer function.
+
+        """
         if self.all_processes is None:
             self.all_processes = []
         
@@ -1403,7 +1429,23 @@ class Process(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, p_time, p_time_step):
+    def run(self, p_time:float, p_time_step:float):
+        """
+        This method provides a functionality to run the processes within a period of time.
+
+        Parameters
+        ----------
+        p_time : float
+            current production time.
+        p_time_step : float
+            a period of time for current time step.
+
+        Returns
+        -------
+        dict
+            the output of the processes in the form of dictionary, e.g. {'name': values, ...}.
+
+        """
         for proc in range(len(self.all_processes)):
             proc_name = self.all_processes[proc].get_name()
             proc_output = self.all_processes[proc].call(p_time, p_time_step)
