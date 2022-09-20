@@ -152,6 +152,7 @@ class Normalizer:
         denormalized_element:Element
             Denormalized element
         """
+
         raise NotImplementedError
 
 
@@ -245,8 +246,8 @@ class NormalizerMinMax(Normalizer):
         -------
         denormalized_event:Element
             Denormalized event
-
         """
+
         if p_param is None:
             p_param = self._param
 
@@ -264,7 +265,10 @@ class NormalizerMinMax(Normalizer):
         p_element:Element
             New element with cahnged boundary data.
 
-
+        Returns
+        -------
+        boolean:True
+            returns True after parameter update
         """
 
         self._old_param = self._param
@@ -309,24 +313,67 @@ class NormalizerMinMax(Normalizer):
 
 ## -------------------------------------------------------------------------------------------------
 class NormalizerZTrans(Normalizer):
-
+    """
+    Class for Normalization based on Z transformation
+    """
     C_NAME = 'Z-Transformation'
 
 
 ## -------------------------------------------------------------------------------------------------
     def _normalize(self, p_element:Element):
+        """
+        method to normalize element
+
+        Parameters
+        ----------
+        p_element:Element
+            Element to be normalized
+
+        Returns
+        -------
+        element:Element
+            Element to be normalized
+        """
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _denormalize(self, p_element:Element, p_param=None):
+        """
+        Custom method to denormalize an element
+
+        Parameters
+        ----------
+        p_element:Element
+            Element to be denormalized
+        p_param  -Optional
+            Parameters for denormalization
+
+        Returns
+        -------
+        denormalized_element:Element
+            Denormalized element
+        """
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def update_param(self, p_data):
+        """
+        Custom method to update normalization parameters.
+
+        Parameters
+        ----------
+        p_data
+            Data to be normalized
+
+        Returns
+        -------
+        boolean = True
+            Returns true after updating
+        """
 
         raise NotImplementedError
 
@@ -346,4 +393,5 @@ class NormalizerZTrans(Normalizer):
         boolean:True
             Returns true after setting the parameters
         """
+
         return True
