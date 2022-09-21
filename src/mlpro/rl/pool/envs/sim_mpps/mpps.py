@@ -648,10 +648,44 @@ class ManufacturingProcess(ScientificObject, Log):
     
     Parameters
     ----------
+    p_name : str
+        name of a manufacturing process.
+    p_input_unit : str
+        the unit of the input material before being processed, e.g. L, Kg, etc.
+    p_output_unit : str
+        the unit of the output material after being processed, e.g. L, Kg, etc.
+    p_processing_time : float
+        the processing time for each cycle.
+    p_prod_rate_per_time : float
+        the production rate per time step.
+    p_id : int
+        an unique id. Default: None.
+    p_max_buffer_input : float, optional
+        the maximum capacity of the buffer that is located before the process.
+        If none means no buffer is applied. Default: None.
+    p_max_buffer_output : float, optional
+        the maximum capacity of the buffer that is located after the process.
+        If none means no buffer is applied. Default: None.
+    p_status : bool
+        to check whether the process is still going on. Default: False.
+    p_init_buffer_input : float, optional
+        the initial capacity of the buffer that is located before the process.
+        If none means the initial capacity is 0. Default: None.
+    p_init_buffer_output : float, optional
+        the initial capacity of the buffer that is located after the process.
+        If none means the initial capacity is 0. Default: None.
+    p_logging :
+        logging level. Default: Log.C_LOG_ALL.
+    **p_param :
+        extra parameters.
     
         
     Attributes
     ----------
+    C_TYPE : str
+        Type of the base class. Default: 'ManufacturingProcess'.
+    C_NAME : str
+        Name of the manufacturing process. Default:''.
     
     """
 
@@ -752,6 +786,10 @@ class ManufacturingProcess(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def start_process(self):
+        """
+        This method provides a functionality to start the process.
+
+        """
         if not self.get_status():
             self.set_status(True)
             self.actual_process_time = 0
@@ -760,6 +798,22 @@ class ManufacturingProcess(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def process(self, p_time_step:float):
+        """
+        This method provides a functionality to execute the process.
+
+        Parameters
+        ----------
+        p_time_step : float
+            time step.
+
+        Returns
+        -------
+        proc_in : float
+            material coming in to the process.
+        proc_out : float
+            produced material by the process.
+
+        """
         if self.get_status():
             if self.actual_process_time == 0:
                 proc_in = self.get_prod_rate()
@@ -786,6 +840,10 @@ class ManufacturingProcess(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def stop_process(self):
+        """
+        This method provides a functionality to stop the process.
+
+        """
         if self.get_status():
             self.set_status(False)
         self.log(self.C_LOG_TYPE_I, 'Process ' + self.get_name() + ' is stopeed.')
@@ -793,23 +851,71 @@ class ManufacturingProcess(ScientificObject, Log):
     
 ## -------------------------------------------------------------------------------------------------      
     def set_unit(self, p_input_unit:str, p_output_unit:str):
+        """
+        This method provides a functionality to set up the input and output materials' units.
+
+        Parameters
+        ----------
+        p_input_unit : str
+            the unit of the input material before being processed, e.g. L, Kg, etc..
+        p_output_unit : str
+            the unit of the output material before being processed, e.g. L, Kg, etc..
+
+        """
         self._input_unit = p_input_unit
         self._output_unit = p_output_unit
   
     
 ## -------------------------------------------------------------------------------------------------      
     def get_unit(self):
+        """
+        This method provides a functionality to get the input and output materials' units.
+
+        Returns
+        -------
+        str
+            the unit of the input material before being processed, e.g. L, Kg, etc.
+        str
+            the unit of the output material before being processed, e.g. L, Kg, etc..
+
+        """
         return self._input_unit, self._output_unit
   
     
 ## -------------------------------------------------------------------------------------------------      
     def set_buffer_capacity(self, p_max_buffer_input:float=None, p_max_buffer_output:float=None):
+        """
+        This method provides a functionality to set up the maximum capacity of the buffers.
+
+        Parameters
+        ----------
+        p_max_buffer_input : float, optional
+            the maximum capacity of the buffer that is located before the process.
+            If none means no buffer is applied. Default: None.
+        p_max_buffer_output : float, optional
+            the maximum capacity of the buffer that is located after the process.
+            If none means no buffer is applied. Default: None.
+
+        """
         self._max_buffer_input = p_max_buffer_input
         self._max_buffer_output = p_max_buffer_output
   
     
 ## -------------------------------------------------------------------------------------------------      
     def get_buffer_capacity(self):
+        """
+        This method provides a functionality to get the maximum capacity of the buffers.
+
+        Returns
+        -------
+        float
+            the maximum capacity of the buffer that is located before the process.
+            If none means no buffer is applied. 
+        float
+            the maximum capacity of the buffer that is located after the process.
+            If none means no buffer is applied. 
+
+        """
         return self._max_buffer_input, self._max_buffer_output
   
     
@@ -843,26 +949,74 @@ class ManufacturingProcess(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def set_prod_rate(self, p_prod_rate_per_time:float):
+        """
+        This method provides a functionality to set up the production rate.
+        
+        Parameters
+        ----------
+        p_prod_rate_per_time : float
+            the production rate per time step.
+
+        """
         self._production_rate = p_prod_rate_per_time
         
 
 ## -------------------------------------------------------------------------------------------------
     def get_prod_rate(self) -> float:
+        """
+        This method provides a functionality to get the production rate.
+
+        Returns
+        -------
+        float
+            the production rate per time step.
+
+        """
         return self._production_rate
         
 
 ## -------------------------------------------------------------------------------------------------
     def set_processing_time(self, p_processing_time:float):
+        """
+        This method provides a functionality to set up the processing time for each cycle.
+
+        Parameters
+        ----------
+        p_processing_time : float
+            the processing time for each cycle.
+
+        """
         self._processing_time = p_processing_time
         
 
 ## -------------------------------------------------------------------------------------------------
     def get_processing_time(self) -> float:
+        """
+        This method provides a functionality to get the processing time for each cycle.
+
+        Returns
+        -------
+        float
+            the processing time for each cycle.
+
+        """
         return self._processing_time
         
 
 ## -------------------------------------------------------------------------------------------------
     def update_waiting_materials(self, p_in:float, p_out:float):
+        """
+        This method provides a functionality to update the number of waiting materials in the
+        input buffer.
+
+        Parameters
+        ----------
+        p_in : float
+            material in to the input buffer.
+        p_out : float
+            material out from the input buffer or to be processed.
+
+        """
         self._buffer_input = self._buffer_input + p_in - p_out
         buffer_capacity, _ = self.get_buffer_capacity()
         self._buffer_input_overflow = 0
@@ -877,11 +1031,33 @@ class ManufacturingProcess(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_waiting_materials(self) -> float:
+        """
+        This method provides a functionality to get the number of waiting materials in the
+        input buffer.
+
+        Returns
+        -------
+        float
+            the number of waiting materials in the input buffer.
+
+        """
         return self._buffer_input
         
 
 ## -------------------------------------------------------------------------------------------------
     def update_finished_products(self, p_in:float, p_out:float):
+        """
+        This method provides a functionality to update the number of finished products in the
+        output buffer.
+
+        Parameters
+        ----------
+        p_in : float
+            finished products after being processed or material in to the output buffer.
+        p_out : float
+            material out from the output buffer.
+
+        """
         self._buffer_output = self._buffer_output + p_in - p_out
         _, buffer_capacity = self.get_buffer_capacity()
         self._buffer_output_overflow = 0
@@ -896,16 +1072,50 @@ class ManufacturingProcess(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def get_finished_products(self) -> float:
+        """
+        This method provides a functionality to get the number of finished products in the
+        output buffer.
+
+        Returns
+        -------
+        float
+            the number of finished products in the output buffer.
+
+        """
         return self._buffer_output
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_processed_products(self) -> float:
+    def get_in_process_products(self) -> float:
+        """
+        This method provides a functionality to get the number of in-processed products in the
+        process.
+
+        Returns
+        -------
+        float
+            the number of in-processed products in the process.
+
+        """
         return self.in_process_prods
         
 
 ## -------------------------------------------------------------------------------------------------
     def set_initial_level(self, p_init_buffer_input:float=None, p_init_buffer_output:float=None):
+        """
+        This method provides a functionality to set up the initial levels of input and output
+        buffers.
+
+        Parameters
+        ----------
+        p_init_buffer_input : float, optional
+            the initial capacity of the buffer that is located before the process.
+            If none means the initial capacity is 0. Default: None.
+        p_init_buffer_output : float, optional
+            the initial capacity of the buffer that is located after the process.
+            If none means the initial capacity is 0. Default: None.
+
+        """
         capacity_input, capacity_output = self.get_buffer_capacity()
         
         if (p_init_buffer_input is None) and (capacity_input is None):
@@ -925,6 +1135,10 @@ class ManufacturingProcess(ScientificObject, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self):
+        """
+        This method provides a functionality to reset the process.
+
+        """
         if self.get_status():
             self.stop_process()
         self.set_initial_level()
@@ -939,7 +1153,29 @@ class ManufacturingProcess(ScientificObject, Log):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def update(self, p_time_step:float, p_in:float, p_out:float, p_start:bool=True, p_stop:bool=False):
+    def update(self,
+               p_time_step:float,
+               p_in:float,
+               p_out:float,
+               p_start:bool=True,
+               p_stop:bool=False):
+        """
+        This method provides a functionality to perform the process.
+
+        Parameters
+        ----------
+        p_time_step : float
+            time step.
+        p_in : float
+            material in to the input buffer.
+        p_out : float
+            material out from the output buffer.
+        p_start : bool, optional
+            start the process. The default is True.
+        p_stop : bool, optional
+            stop the process. The default is False.
+
+        """
         if p_start:
             self.start_process(p_time_step)
         
