@@ -6,11 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-08-27  0.0.0     DA       Creation 
-## -- 2022-09-22  0.2.0     DA       Initial class definition
+## -- 2022-09-10  0.1.0     DA       Initial class definition
+## -- 2022-09-xx  1.0.0     DA       Initial implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2022-09-22)
+Ver. 1.0.0 (2022-09-xx)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects.
