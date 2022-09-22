@@ -1,22 +1,25 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf
-## -- Module  : mp
+## -- Module  : mt
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-08-27  0.0.0     DA       Creation 
-## -- 2022-09-10  0.1.0     DA       Initial class definition
+## -- 2022-09-22  0.2.0     DA       Initial class definition
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2022-09-11)
+Ver. 0.2.0 (2022-09-22)
 
-This module provides classes for multiprocessing with optional interprocess communication (IPC) based
+This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects.
 """
 
 
+import threading as mt
+import multiprocessing as mp
+from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.events import EventManager
 
@@ -25,42 +28,115 @@ from mlpro.bf.events import EventManager
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Shared: 
+class Range:
+    """
+    Property class that adds the range of asynchronicity to a child class.
+
+    Parameters
+    ----------
+    p_range : int
+        Range of asynchonicity 
+    """
+
+    # Possible ranges for child classes
+    C_RANGE_THREAD          = 0         # separate thread inside the same process
+    C_RANGE_PROCESS         = 1         # separate process inside the same machine    
+
+    C_VALID_RANGES          = [ C_RANGE_THREAD, C_RANGE_PROCESS ] 
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_range=C_RANGE_PROCESS):
+        if p_range not in self.C_VALID_RANGES: raise ParamError
+        self._range = p_range
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_range(self):
+        return self._range
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Shared (Range): 
     """
     Template class for shared objects. It is ready to use and the default class for IPC. It is also
     possible to inherit and enrich this class for special needs. It provides elementary mechanisms 
     for access control and messaging.
+
+    Parameters
+    ----------
+    p_range : int
+        Range of asynchonicity 
     """
 
     C_MSG_TYPE_DATA         = 0
     C_MSG_TYPE_TERM         = 1
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
-       self._locked = False
-       self._active_tasks = 0
-       self._messages = {}
+    def __init__(self, p_range=Range.C_RANGE_PROCESS):
 
+        super().__init__(p_range)
 
-### -------------------------------------------------------------------------------------------------
-    def checkin(self, p_tid):
-        self._active_tasks +=1
+        if p_range == self.C_RANGE_THREAD:
+            self._lock_obj  = mt.Lock()
+        elif p_range == self.C_RANGE_PROCESS:
+            self._lock_obj  = mp.Lock()
+        else:
+            raise ParamError
 
-
-## -------------------------------------------------------------------------------------------------
-    def checkout(self, p_tid):
-        if self._active_tasks > 0:
-            self._active_tasks-=1
+        self._locking_task  = None
+        self._messages      = {}
 
 
 # -------------------------------------------------------------------------------------------------
-    def lock(self):
-        raise NotImplementedError
+    def lock(self, p_tid=None, p_timeout:float=None) -> bool: 
+        """
+        Locks the shared object for a specific process.
+
+        Parameters
+        ----------
+        p_tid
+            Unique task id. If None then the internal locking mechanism is disabled.
+        p_timeout : float
+            Optional timeout in seconds. If None, timeout is infinite.
+
+        Returns
+        True, if shared object was locked successfully. False otherwise.
+        """
+
+        if p_tid == self._locking_task: return True
+        if p_timeout is None:
+            return self._lock_obj.acquire()
+        else:
+            return self._lock_obj.acquire(timeout=p_timeout)
 
 
 ## -------------------------------------------------------------------------------------------------
     def unlock(self):
-        raise NotImplementedError
+        """
+        Unlocks the shared object.
+        """
+
+        if self._locking_task is None: return
+        self._locking_task = None
+        self._lock.release()
+
+
+### -------------------------------------------------------------------------------------------------
+    def checkin(self, p_tid):
+        self.lock()
+        self._active_tasks +=1
+        self.unlock()
+
+
+## -------------------------------------------------------------------------------------------------
+    def checkout(self, p_tid):
+        self.lock()
+        if self._active_tasks > 0: self._active_tasks-=1
+        self.unlock()
 
 
 ## -------------------------------------------------------------------------------------------------
