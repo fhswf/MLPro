@@ -407,6 +407,7 @@ class NormalizerZTrans(Normalizer):
         a = 1/std
         b = mean/std
 
+
         self._param = np.vstack(([a],[b]))
 
         return True
