@@ -43,8 +43,6 @@ class Normalizer:
         self._param = None
         self._param_old = None
         self._param_new = None
-        if p_data is not None:
-            self._set_parameters(p_data)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -53,6 +51,10 @@ class Normalizer:
         method to get the normalization parameters
         """
         return self._param
+
+## -------------------------------------------------------------------------------------------------
+    def set_parameters(self, p_data):
+        self._set_parameters(p_data)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -75,7 +77,7 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def normalize(self, p_data:Union[Element, np.ndarray], p_param=None):
+    def normalize(self, p_element:Union[Element, np.ndarray], p_param=None):
         """
         method to normalize element
 
@@ -89,13 +91,15 @@ class Normalizer:
         element:Element
             Element to be normalized
         """
+        if self._param is None:
+            raise AttributeError('normalization parameters not set')
 
-        element = self._normalize(p_data, p_param = self._param)
+        element = self._normalize(p_element, p_param = self._param)
         return element
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _normalize(self, p_data:Union[Element, np.ndarray], p_param=None):
+    def _normalize(self, p_element:Union[Element, np.ndarray], p_param=None):
         """
         Custom method to normalize the element
 
@@ -114,7 +118,7 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def denormalize(self, p_data:Union[Element, np.ndarray], p_param=None):
+    def denormalize(self, p_element:Union[Element, np.ndarray], p_param=None):
         """
         Method to denormalize the normalized elements.
 
@@ -130,12 +134,14 @@ class Normalizer:
         element:Element
             Returns denormzalized element
         """
-        element = self._denormalize(p_data, p_param=self._param)
+        if p_param is None:
+            raise AttributeError('normalization parameters not set')
+        element = self._denormalize(p_element, p_param=self._param)
         return element
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _denormalize(self, p_data:Union[Element, np.ndarray], p_param = None):
+    def _denormalize(self, p_element:Union[Element, np.ndarray], p_param = None):
         """
         Custom method to denormalize an element
 
@@ -173,8 +179,8 @@ class Normalizer:
 
         """
 
-        denormalized_element = self.denormalize(p_data, p_param = self._param_old)
-        renormalized_element = self.normalize(denormalized_element)
+        denormalized_element = self._denormalize(p_data, p_param = self._param_old)
+        renormalized_element = self._normalize(denormalized_element)
         return renormalized_element
 
 
@@ -226,15 +232,12 @@ class NormalizerMinMax(Normalizer):
         element:Element
             Normalized element
         """
-        if self._param is None:
-            self._set_parameters(p_element.get_related_set())
-            p_param = self._param
         normalized_element = np.multiply(p_element.get_values(), p_param[0])-p_param[1]
         return normalized_element
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _denormalize(self, p_element:Element, p_param = None):
+    def _denormalize(self, p_element:Element):
         """
         Method to denormalize data by inverse minmax.
 
@@ -250,9 +253,8 @@ class NormalizerMinMax(Normalizer):
             Denormalized event
         """
         if self._param is None:
-            self._set_parameters(p_element.get_related_set())
-            p_param = self._param
-        denormalized_element = np.multiply(p_element.get_values(), (1/p_param[0]))+p_param[2]
+            raise AttributeError('Normalization parameters are not set. Use set parameters method.')
+        denormalized_element = np.multiply(p_element.get_values(), (1/self._param[0]))+self._param[2]
         return denormalized_element
 
 
