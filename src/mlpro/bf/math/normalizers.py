@@ -7,6 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-16  0.0.0     LSB      Creation
 ## -- 2022-09-20  1.0.0     LSB      Release of first version
+## -- 2022-09-23  1.0.1     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -17,6 +18,7 @@ This module provides base class for Normalizers.
 from mlpro.bf.math import *
 from mlpro.rl.models_sar import *
 import numpy as np
+from typing import Union
 
 
 
@@ -36,13 +38,13 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, **p_kwargs):
+    def __init__(self, p_data:Union[Set, np.ndarray] = None):
 
         self._param = None
         self._param_old = None
         self._param_new = None
-        if p_kwargs is not None:
-            self._set_parameters(p_kwargs)
+        if p_data is not None:
+            self._set_parameters(p_data)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -54,7 +56,7 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_parameters(self, **p_kwargs):
+    def _set_parameters(self, p_data:Union[Set, np.ndarray]):
         """
         custom method to set the normalization parameters
 
@@ -73,7 +75,7 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def normalize(self, p_element:Element):
+    def normalize(self, p_data:Union[Element, np.ndarray], p_param=None):
         """
         method to normalize element
 
@@ -87,12 +89,13 @@ class Normalizer:
         element:Element
             Element to be normalized
         """
-        element = self._normalize(p_element, p_param = self._param)
+
+        element = self._normalize(p_data, p_param = self._param)
         return element
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _normalize(self, p_element:Element, p_param=None):
+    def _normalize(self, p_data:Union[Element, np.ndarray], p_param=None):
         """
         Custom method to normalize the element
 
@@ -111,7 +114,7 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def denormalize(self,p_element:Element, p_param=None):
+    def denormalize(self, p_data:Union[Element, np.ndarray], p_param=None):
         """
         Method to denormalize the normalized elements.
 
@@ -127,12 +130,12 @@ class Normalizer:
         element:Element
             Returns denormzalized element
         """
-        element = self._denormalize(p_element, p_param=self._param)
+        element = self._denormalize(p_data, p_param=self._param)
         return element
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _denormalize(self, p_element:Element, p_param = None):
+    def _denormalize(self, p_data:Union[Element, np.ndarray], p_param = None):
         """
         Custom method to denormalize an element
 
@@ -145,6 +148,7 @@ class Normalizer:
 
         Returns
         -------
+
         denormalized_element:Element
             Denormalized element
         """
@@ -153,7 +157,7 @@ class Normalizer:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def renormalize(self, p_element:Element):
+    def renormalize(self, p_data:Union[Element, np.ndarray]):
         """
         Method to denormalize and renormalize an element based on old and current normalization parameters.
 
@@ -169,14 +173,14 @@ class Normalizer:
 
         """
 
-        denormalized_element = self.denormalize(p_element, p_param = self._param_old)
+        denormalized_element = self.denormalize(p_data, p_param = self._param_old)
         renormalized_element = self.normalize(denormalized_element)
         return renormalized_element
 
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_param(self, **p_kwargs):
+    def _update_param(self, p_data:Union[Set, Element, np.ndarray]):
         """
         Custom method to update normalization parameters.
 
