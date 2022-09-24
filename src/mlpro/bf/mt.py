@@ -20,6 +20,7 @@ on shared objects.
 
 import threading as mt
 import multiprocessing as mp
+from multiprocessing.managers import BaseManager
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.events import EventManager
@@ -73,8 +74,8 @@ class Shared (Range):
         Range of asynchonicity 
     """
 
-    C_MSG_TYPE_DATA         = 0
-    C_MSG_TYPE_TERM         = 1
+#    C_MSG_TYPE_DATA         = 0
+#    C_MSG_TYPE_TERM         = 1
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_range=Range.C_RANGE_PROCESS):
@@ -127,14 +128,14 @@ class Shared (Range):
 
 
 ### -------------------------------------------------------------------------------------------------
-    def checkin(self, p_tid):
+    def checkin(self):
         self.lock()
         self._active_tasks +=1
         self.unlock()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def checkout(self, p_tid):
+    def checkout(self):
         self.lock()
         if self._active_tasks > 0: self._active_tasks-=1
         self.unlock()
@@ -155,7 +156,7 @@ class Shared (Range):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Async (Log):
+class Async (Range, Log):
     """
     Property class that enables child classes to run sub-tasks asynchronously. Depending on the
     given range a task can be executed as a separate thread in the same process or a separate
@@ -163,30 +164,45 @@ class Async (Log):
 
     Parameters
     ----------
-    p_cls_shared
+    p_range : int
+        Range of asynchonicity. See class Range. 
+    p_class_shared
         Optional class name for a shared object (class Shared or a child class of Shared)
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     
     """
 
-    # Possible ranges for sub-tasks
-    C_RANGE_THREAD          = 0         # as separate thread inside the same process
-    C_RANGE_PROCESS         = 1         # as separate process inside the same machine     
-
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_range=C_RANGE_PROCESS,
-                  p_cls_shared=None, 
+                  p_range=Range.C_RANGE_PROCESS,
+                  p_class_shared=None, 
                   p_logging=Log.C_LOG_ALL ):
 
-        self._so            = None
+        Log.__init__(p_logging=p_logging)
+        Range.__init__(self, p_range=p_range)
+
+        if p_class_shared is not None:
+            # Instantiation of shared object
+            if p_range == self.C_RANGE_THREAD:
+                self._so = p_class_shared(p_range)
+            else:
+                BaseManager.register('Shared', p_class_shared)
+                self._mpmanager = BaseManager()
+                self._mpmanager.start()
+                self._so = self._mpmanager.Shared(p_range=p_range)
+        else:
+            self._so = None
+
         self._async_tasks   = []
-        self._range         = p_range
 
 
 ## -------------------------------------------------------------------------------------------------
     def _get_so(self) -> Shared: 
+        """
+        ...
+        """
+
         return self._so
 
 
@@ -196,17 +212,49 @@ class Async (Log):
                     p_class=None,
                     p_wait:bool=False,
                     **p_kwargs ):
-        raise NotImplementedError
+        """
+        ...
+        """
+
+        if p_method is not None:
+            # 1 Runs a single method asynchronously
+            if self._range == self.C_RANGE_THREAD:
+                raise NotImplementedError
+            else:
+                p = mp.Process(target=p_method, kwargs=p_kwargs, group=None)
+                self._async_tasks.append(p)
+                p.start()
+
+        else:
+            # 2 Runs a new object of a given class asynchronously
+            if p_class is not None: 
+                c = p_class
+            else:
+                c = self.__class__
+
+            kwargs = p_kwargs
+            kwargs['p_class'] = c
+
+            if self._range == self.C_RANGE_THREAD:
+                raise NotImplementedError
+            else:
+                p = mp.Process(target=self._run_object_async, kwargs=kwargs, group=None)
+                self._async_tasks.append(p)
+                p.start()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_myself_async(self, p_wait:bool=False, **p_kwargs):
-        raise NotImplementedError
+    def _run_object_async(self, p_class, **p_kwargs):
+        p_class(p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _wait_async_runs(self):
-        raise NotImplementedError
+        if self._range == self.C_RANGE_THREAD:
+            raise NotImplementedError
+        else:
+            for p in self._async_tasks:
+                p.join()
 
 
 
@@ -233,11 +281,11 @@ class Task (Async, EventManager):
     def __init__( self, 
                   p_range=Async.C_RANGE_PROCESS, 
                   p_autorun=C_AUTORUN_NONE,
-                  p_cls_shared=None, 
+                  p_class_shared=None, 
                   p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        Async.__init__(self, p_range=p_range, p_cls_shared=p_cls_shared, p_logging=p_logging)
+        Async.__init__(self, p_range=p_range, p_class_shared=p_class_shared, p_logging=p_logging)
         EventManager.__init__(self, p_logging=p_logging)
         self._autorun(p_autorun=p_autorun, p_kwargs=p_kwargs)
 
@@ -295,7 +343,7 @@ class Workflow (Task):
     def __init__( self, 
                   p_range=Async.C_RANGE_PROCESS, 
                   p_autorun=Task.C_AUTORUN_NONE, 
-                  p_cls_shared=None, 
+                  p_class_shared=None, 
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
