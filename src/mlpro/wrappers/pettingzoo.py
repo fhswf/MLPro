@@ -152,7 +152,7 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
         except:
             self._zoo_env.seed(p_seed)
             self._zoo_env.reset()
-        observation, _, _, _ = self._zoo_env.last()
+        observation, _, _, _, _ = self._zoo_env.last()
         obs     = DataObject(observation)
         
         # 2 Create state object from Zoo observation
@@ -184,11 +184,11 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
             action_zoo = action_sorted_agent.astype(self._zoo_env.action_spaces[k].dtype)
             
         # 2 Process step of Zoo environment that automatically switches control to the next agent.
-            observation, reward_zoo, done, info = self._zoo_env.last()
+            observation, reward_zoo, termination, truncation, info = self._zoo_env.last()
 
             obs     = DataObject(observation)
             
-            if done:
+            if termination or truncation:
                 self._zoo_env.step(None)
                 new_state.set_terminal(True)
 
