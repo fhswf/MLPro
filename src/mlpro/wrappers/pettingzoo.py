@@ -36,10 +36,11 @@
 ## -- 2022-05-30  1.3.7     SY       Replace function env.seed(seed) to env.reset(seed=seed)
 ## -- 2022-07-20  1.3.8     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-08-15  1.4.0     DA       Introduction of root class Wrapper
+## -- 2022-09-26  1.5.0     SY       Update following PettingZoo version 1.21.0 and Gym 0.26
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-08-15)
+Ver. 1.5.0 (2022-09-26)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -152,7 +153,7 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
         except:
             self._zoo_env.seed(p_seed)
             self._zoo_env.reset()
-        observation, _, _, _ = self._zoo_env.last()
+        observation, _, _, _, _ = self._zoo_env.last()
         obs     = DataObject(observation)
         
         # 2 Create state object from Zoo observation
@@ -184,11 +185,11 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
             action_zoo = action_sorted_agent.astype(self._zoo_env.action_spaces[k].dtype)
             
         # 2 Process step of Zoo environment that automatically switches control to the next agent.
-            observation, reward_zoo, done, info = self._zoo_env.last()
+            observation, reward_zoo, termination, truncation, info = self._zoo_env.last()
 
             obs     = DataObject(observation)
             
-            if done:
+            if termination or truncation:
                 self._zoo_env.step(None)
                 new_state.set_terminal(True)
 
@@ -319,8 +320,9 @@ class WrEnvMLPro2PZoo(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
         def step(self, action):
-            if self.dones[self.agent_selection]:
-                return self._was_done_step(action)
+            if (self.terminations[self.agent_selection] or self.truncations[self.agent_selection]):
+                self._was_dead_step(action)
+                return
             
             agent = self.agent_selection
             self._cumulative_rewards[agent] = 0
@@ -348,7 +350,8 @@ class WrEnvMLPro2PZoo(Wrapper):
                         self.rewards[self.possible_agents[i]] = 0
             
                 if self._mlpro_env.get_state().get_terminal():
-                    self.dones = {agent: True for agent in self.agents}
+                    self.truncations = {agent: True for agent in self.agents}
+                    self.terminations = {agent: True for agent in self.agents}
                     
                 for i in self.agents:
                     self.observations[i] = self.state[self.agents[1-int(i)]]
@@ -377,7 +380,8 @@ class WrEnvMLPro2PZoo(Wrapper):
             self.agents = self.possible_agents[:]
             self.rewards = {agent: 0 for agent in self.agents}
             self._cumulative_rewards = {agent: 0 for agent in self.agents}
-            self.dones = {agent: False for agent in self.agents}
+            self.terminations = {agent: False for agent in self.agents}
+            self.truncations = {agent: False for agent in self.agents}
             self.infos = {agent: {} for agent in self.agents}
             self.state = {agent: None for agent in self.agents}
             self.observations = {agent: None for agent in self.agents}
