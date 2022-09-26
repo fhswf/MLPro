@@ -36,10 +36,11 @@
 ## -- 2022-05-30  1.3.7     SY       Replace function env.seed(seed) to env.reset(seed=seed)
 ## -- 2022-07-20  1.3.8     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-08-15  1.4.0     DA       Introduction of root class Wrapper
+## -- 2022-09-26  1.5.0     SY       Update following PettingZoo version 1.21.0 and Gym 0.26
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-08-15)
+Ver. 1.5.0 (2022-09-26)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
