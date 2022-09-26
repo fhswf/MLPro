@@ -44,10 +44,11 @@
 ## -- 2022-08-15  1.5.7     SY       - Renaming maturity to accuracy
 ## --                                - Move MPC implementation to the pool of objects
 ## --                                - Update compute_action in Agent for action planning
+## -- 2022-09-26  1.5.8     SY       Minor Improvement on _extract_observation method (Agent class)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.7 (2022-08-15) 
+Ver. 1.5.8 (2022-09-26) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
