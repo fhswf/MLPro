@@ -588,7 +588,10 @@ class Agent(Policy):
 
         for dim_id in obs_dim_ids:
             p_state_ids = p_state.get_dim_ids()
-            obs_idx = p_state.get_dim_ids().index(dim_id)
+            try:
+                obs_idx = p_state.get_dim_ids().index(dim_id)
+            except:
+                obs_idx = obs_space.get_dim_ids().index(dim_id)
             observation.set_value(dim_id, p_state.get_value(p_state_ids[obs_idx]))
 
         return observation
