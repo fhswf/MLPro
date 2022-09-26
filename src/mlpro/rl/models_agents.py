@@ -44,10 +44,11 @@
 ## -- 2022-08-15  1.5.7     SY       - Renaming maturity to accuracy
 ## --                                - Move MPC implementation to the pool of objects
 ## --                                - Update compute_action in Agent for action planning
+## -- 2022-09-26  1.5.8     SY       Minor Improvement on _extract_observation method (Agent class)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.7 (2022-08-15) 
+Ver. 1.5.8 (2022-09-26) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -587,7 +588,10 @@ class Agent(Policy):
 
         for dim_id in obs_dim_ids:
             p_state_ids = p_state.get_dim_ids()
-            obs_idx = obs_space.get_dim_ids().index(dim_id)
+            try:
+                obs_idx = p_state.get_dim_ids().index(dim_id)
+            except:
+                obs_idx = obs_space.get_dim_ids().index(dim_id)
             observation.set_value(dim_id, p_state.get_value(p_state_ids[obs_idx]))
 
         return observation
