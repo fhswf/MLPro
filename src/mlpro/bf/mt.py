@@ -200,7 +200,12 @@ class Async (Range, Log):
 ## -------------------------------------------------------------------------------------------------
     def _get_so(self) -> Shared: 
         """
-        ...
+        Returns the associated shared object.
+
+        Returns
+        -------
+        so : Shared
+            Shared object of type Shared (or inherited)
         """
 
         return self._so
@@ -210,23 +215,33 @@ class Async (Range, Log):
     def _run_async( self, 
                     p_method=None,
                     p_class=None,
-                    p_wait:bool=False,
                     **p_kwargs ):
         """
-        ...
+        Runs a method or a new instance of a given class asynchronously. If neither a method nor a
+        class is specified, a new instance of the current class is created asynchronously.
+
+        Parameters
+        ----------
+        p_method
+            Optional method to be called asynchronously
+        p_class
+            Optional class to be instantiated asynchronously
+        p_kwargs : dictionary
+            Parameters to be handed over to asynchonous method/instance
         """
 
         if p_method is not None:
-            # 1 Runs a single method asynchronously
+            # 1 Prepares a new task for a single method 
             if self._range == self.C_RANGE_THREAD:
-                raise NotImplementedError
+                # 1.1 ... as a thread
+                task = mt.Thread(target=p_method, kwargs=p_kwargs, group=None)
+
             else:
-                p = mp.Process(target=p_method, kwargs=p_kwargs, group=None)
-                self._async_tasks.append(p)
-                p.start()
+                # 1.2 ... as a process
+                task = mp.Process(target=p_method, kwargs=p_kwargs, group=None)
 
         else:
-            # 2 Runs a new object of a given class asynchronously
+            # 2 Prepares a new task for a new object of a given class
             if p_class is not None: 
                 c = p_class
             else:
@@ -236,11 +251,17 @@ class Async (Range, Log):
             kwargs['p_class'] = c
 
             if self._range == self.C_RANGE_THREAD:
-                raise NotImplementedError
+                # 2.1 ... as a thread
+                task = mt.Thread(target=self._run_object_async, kwargs=kwargs, group=None)
+
             else:
-                p = mp.Process(target=self._run_object_async, kwargs=kwargs, group=None)
-                self._async_tasks.append(p)
-                p.start()
+                # 2.2 ... as a process
+                task = mp.Process(target=self._run_object_async, kwargs=kwargs, group=None)
+
+
+        # 3 Registers and runs the new task
+        self._async_tasks.append(task)
+        task.start()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -249,12 +270,9 @@ class Async (Range, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _wait_async_runs(self):
-        if self._range == self.C_RANGE_THREAD:
-            raise NotImplementedError
-        else:
-            for p in self._async_tasks:
-                p.join()
+    def _wait_async_tasks(self):
+        for task in self._async_tasks: task.join()
+        self._async_tasks.clear()
 
 
 
