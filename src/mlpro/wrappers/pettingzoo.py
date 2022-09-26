@@ -319,8 +319,9 @@ class WrEnvMLPro2PZoo(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
         def step(self, action):
-            if self.dones[self.agent_selection]:
-                return self._was_done_step(action)
+            if (self.terminations[self.agent_selection] or self.truncations[self.agent_selection]):
+                self._was_dead_step(action)
+                return
             
             agent = self.agent_selection
             self._cumulative_rewards[agent] = 0
@@ -348,7 +349,8 @@ class WrEnvMLPro2PZoo(Wrapper):
                         self.rewards[self.possible_agents[i]] = 0
             
                 if self._mlpro_env.get_state().get_terminal():
-                    self.dones = {agent: True for agent in self.agents}
+                    self.truncations = {agent: True for agent in self.agents}
+                    self.terminations = {agent: True for agent in self.agents}
                     
                 for i in self.agents:
                     self.observations[i] = self.state[self.agents[1-int(i)]]
@@ -377,7 +379,8 @@ class WrEnvMLPro2PZoo(Wrapper):
             self.agents = self.possible_agents[:]
             self.rewards = {agent: 0 for agent in self.agents}
             self._cumulative_rewards = {agent: 0 for agent in self.agents}
-            self.dones = {agent: False for agent in self.agents}
+            self.terminations = {agent: False for agent in self.agents}
+            self.truncations = {agent: False for agent in self.agents}
             self.infos = {agent: {} for agent in self.agents}
             self.state = {agent: None for agent in self.agents}
             self.observations = {agent: None for agent in self.agents}
