@@ -11,11 +11,11 @@ if "%1" == "" (goto :end) else (goto :end)
 python -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/ --ignore=src/mlpro/rl/pool/envs/multigeorobot/src/
 goto end
 
-:doc
+:docu
 cd doc/rtd && make html
 goto end
 
-:doc-autobuild
+:docu-autobuild
 cd doc/rtd && make autobuild
 
 :end

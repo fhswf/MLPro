@@ -1,5 +1,7 @@
 [![CI](https://github.com/fhswf/MLPro/actions/workflows/ci.yml/badge.svg)](https://github.com/fhswf/MLPro/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/mlpro/badge/?version=latest)](https://mlpro.readthedocs.io/en/latest/?badge=latest)
+[![PyPI version](https://badge.fury.io/py/mlpro.svg)](https://badge.fury.io/py/mlpro)
+[![Anaconda-Version Badge](https://anaconda.org/mlpro/mlpro/badges/version.svg)](https://anaconda.org/mlpro/mlpro)
 
 <img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png?raw=True" align="right" width="40%"/>
 
