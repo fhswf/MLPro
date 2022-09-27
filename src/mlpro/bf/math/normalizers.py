@@ -99,7 +99,6 @@ class Normalizer:
 
         if self._param is None:
             raise ImplementationError('normalization parameters not set')
-        # element = self._normalize(p_element, p_param = self._param)
         p_param = self._param
         if isinstance(p_element, Element):
             normalized_element = Element(p_element.get_related_set())
