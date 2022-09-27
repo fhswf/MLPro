@@ -18,6 +18,7 @@ on shared objects.
 """
 
 
+import uuid
 import threading as mt
 import multiprocessing as mp
 from multiprocessing.managers import BaseManager
@@ -74,8 +75,8 @@ class Shared (Range):
         Range of asynchonicity 
     """
 
-#    C_MSG_TYPE_DATA         = 0
-#    C_MSG_TYPE_TERM         = 1
+    C_MSG_TYPE_DATA         = 0
+    C_MSG_TYPE_TERM         = 1
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_range=Range.C_RANGE_PROCESS):
@@ -90,6 +91,7 @@ class Shared (Range):
             raise ParamError
 
         self._locking_task  = None
+        self._active_tasks  = []
         self._messages      = {}
 
 
@@ -128,16 +130,34 @@ class Shared (Range):
 
 
 ### -------------------------------------------------------------------------------------------------
-    def checkin(self):
+    def checkin(self, p_tid):
+        """
+        Registers a task.
+
+        Parameters
+        ----------
+        p_tid
+            Task id.
+        """
+
         self.lock()
-        self._active_tasks +=1
+        self._active_tasks.append(p_tid)
         self.unlock()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def checkout(self):
+    def checkout(self, p_tid):
+        """
+        Unregisters a task.
+
+        Parameters
+        ----------
+        p_tid
+            Task id.
+        """
+
         self.lock()
-        if self._active_tasks > 0: self._active_tasks-=1
+        self._active_tasks.remove(p_tid)
         self.unlock()
 
 
@@ -147,7 +167,7 @@ class Shared (Range):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def receive_message(self, p_tid):
+    def receive_message(self, p_tid, p_msg_type=None):
         raise NotImplementedError
 
 
@@ -316,9 +336,21 @@ class Task (Async, EventManager):
                   p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
 
+        self._tid = uuid.uuid4()
         Async.__init__(self, p_range=p_range, p_class_shared=p_class_shared, p_logging=p_logging)
         EventManager.__init__(self, p_logging=p_logging)
+
+        if self._so is not None: self._so.checkin(p_tid=self._tid)
         self._autorun(p_autorun=p_autorun, p_kwargs=p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_tid(self):
+        """
+        Returns unique task id.
+        """
+
+        return self._tid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -376,12 +408,45 @@ class Task (Async, EventManager):
 
 ## -------------------------------------------------------------------------------------------------
     def run_loop(self, **p_kwargs):
-        raise NotImplementedError
+        """
+        Executes method run() in a loop, until a message of type Shared.C_MSG_TYPE_TERM is sent to
+        the task.
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Parameters for method run()
+        """
+        
+        while True:
+            self.run(p_kwargs=p_kwargs)
+
+            if self._so is not None:
+                msg_type, = self._so.receive_message( p_tid=self.get_tid(), p_msg_type=Shared.C_MSG_TYPE_TERM )
+                if msg_type is not None: break
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run_on_event(self, **p_kwargs):
-        self.run(p_kwargs=p_kwargs)
+    def run_on_event(self, p_event_id, p_event_object:Event):
+        """
+        Can be used as event handler - in particular for other tasks in combination with event 
+        C_EVENT_FINISHED.
+
+        Parameters
+        ----------
+        p_event_id 
+            Event id.
+        p_event_object : Event
+            Event object with further context informations.
+        """
+
+        self.run(p_kwargs=p_event_object.get_data())
+
+
+## -------------------------------------------------------------------------------------------------
+    def __del__(self):
+        if self._so is not None: self._so.checkout(self.get_tid())
+
 
 
 
@@ -435,7 +500,10 @@ class Workflow (Task):
 
         """
 
-        raise NotImplementedError
+        self._tasks.append(p_task)
+
+        if p_pred_tasks is not None:
+            for t_pred in p_pred_tasks: t_pred.register_event_handler(p_event_id=self.C_EVENT_FINISHED, p_event_handler=p_task.run_on_event)
 
 
 ## -------------------------------------------------------------------------------------------------
