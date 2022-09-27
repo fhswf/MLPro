@@ -23,7 +23,7 @@ import multiprocessing as mp
 from multiprocessing.managers import BaseManager
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
-from mlpro.bf.events import EventManager
+from mlpro.bf.events import EventManager, Event
 
 
 
@@ -165,12 +165,11 @@ class Async (Range, Log):
     Parameters
     ----------
     p_range : int
-        Range of asynchonicity. See class Range. 
+        Range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
     p_class_shared
         Optional class name for a shared object (class Shared or a child class of Shared)
     p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL   
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -282,18 +281,32 @@ class Async (Range, Log):
 ## -------------------------------------------------------------------------------------------------
 class Task (Async, EventManager): 
     """
-    ...
+    Template class for a task, that can run things - and even itself - asynchronously in a thread
+    or process. Tasks can run standalone or as part of a workflow (see class Workflow). The integrated
+    event manager allows callbacks on specific events inside the same process(!).
 
     Parameters
     ----------
-    
+    p_range : int
+        Range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_autorun : int
+        On value C_AUTORUN_RUN method run() is called imediately during instantiation.
+        On vaule C_AUTORUN_LOOP method run_loop() is called.
+        Value C_AUTORUN_NONE (default) causes an object instantiation without starting further
+        actions.    
+    p_class_shared
+        Optional class name for a shared object (class Shared or a child class of Shared)
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
     """
 
-    C_TYPE          = 'Task'
+    C_TYPE              = 'Task'
 
-    C_AUTORUN_NONE  = 0
-    C_AUTURUN_RUN   = 1
-    C_AUTORUN_LOOP  = 2
+    C_AUTORUN_NONE      = 0
+    C_AUTURUN_RUN       = 1
+    C_AUTORUN_LOOP      = 2
+
+    C_EVENT_FINISHED    = 0
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -310,6 +323,20 @@ class Task (Async, EventManager):
 
 ## -------------------------------------------------------------------------------------------------
     def _autorun(self, p_autorun, **p_kwargs):
+        """
+        Internal method to automate a single or looped run.
+
+        Parameters
+        ----------
+        p_autorun : int
+            On value C_AUTORUN_RUN method run() is called imediately during instantiation.
+            On vaule C_AUTORUN_LOOP method run_loop() is called.
+            Value C_AUTORUN_NONE (default) causes an object instantiation without starting further
+            actions.    
+        p_kwargs : dict
+            Further parameters handed over to method run().
+        """
+
         if p_autorun == self.C_AUTURUN_RUN:
             self.run(p_kwargs=p_kwargs)
         elif p_autorun == self.C_AUTORUN_LOOP:
@@ -318,11 +345,32 @@ class Task (Async, EventManager):
 
 ## -------------------------------------------------------------------------------------------------
     def run(self, **p_kwargs):
+        """
+        Executes the task specific actions implemented in custom method _run(). At the end event
+        C_EVENT_FINISHED is raised to start subsequent actions.
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Further parameters handed over to custom method _run().
+        """
+
         self._run(p_kwargs=p_kwargs)
+
+        self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self, p_kwargs=p_kwargs))
         
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, **p_kwargs):
+        """
+        Custom method that is called by method run(). 
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Further parameters handed over to custom method _run().
+        """
+
         raise NotImplementedError
 
 
@@ -332,14 +380,8 @@ class Task (Async, EventManager):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_myself_async(self, p_wait: bool = False, **p_kwargs):
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def terminate(self):
-        raise NotImplementedError
-
+    def run_on_event(self, **p_kwargs):
+        self.run(p_kwargs=p_kwargs)
 
 
 
