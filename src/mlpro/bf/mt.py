@@ -336,12 +336,14 @@ class Task (Async, EventManager):
                   p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        self._tid = uuid.uuid4()
+        self._tid       = uuid.uuid4()
+        self._kwargs    = p_kwargs.copy()
+
         Async.__init__(self, p_range=p_range, p_class_shared=p_class_shared, p_logging=p_logging)
         EventManager.__init__(self, p_logging=p_logging)
 
         if self._so is not None: self._so.checkin(p_tid=self._tid)
-        self._autorun(p_autorun=p_autorun, p_kwargs=p_kwargs)
+        self._autorun(p_autorun=p_autorun, p_kwargs=self._kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -455,11 +457,17 @@ class Task (Async, EventManager):
 ## -------------------------------------------------------------------------------------------------
 class Workflow (Task): 
     """
-    ...
+    Ready-to-use container class for task groups. Objects of type Task (or inherited) can be added and
+    chained to sequences or hierarchies of tasks. 
 
     Parameters
     ----------
-
+    p_range : int
+        Range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_class_shared
+        Optional class name for a shared object (class Shared or a child class of Shared)
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
     """
     
     C_TYPE          = 'Workflow'
@@ -467,23 +475,38 @@ class Workflow (Task):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_range=Async.C_RANGE_PROCESS, 
-                  p_autorun=Task.C_AUTORUN_NONE, 
                   p_class_shared=None, 
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        self._tasks = []
-        raise NotImplementedError
+        self._tasks         = []
+        self._entry_tasks   = []
+
+        super().__init__( p_range=p_range,
+                          p_autorun=self.C_AUTORUN_NONE,
+                          p_class_shared=p_class_shared,
+                          p_logging=p_logging,
+                          p_kwargs=p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
-        return super().switch_logging(p_logging)
+        """
+        Sets log level for the workflow and all tasks inside.
+
+        Parameters
+        ----------
+        p_logging
+            Log level (see constants of class Log).
+        """
+
+        super().switch_logging(p_logging)
+        for task in self._tasks: task.switch_logging(p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, **p_kwargs):
-        raise NotImplementedError
+        for task in self._entry_tasks: task.run(p_kwargs=p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -497,20 +520,14 @@ class Workflow (Task):
             Task object to be added.
         p_pred_tasks : list
             Optional list of predecessor task objects
-
         """
 
+        p_task.switch_logging(p_logging=self._level)
         self._tasks.append(p_task)
 
-        if p_pred_tasks is not None:
-            for t_pred in p_pred_tasks: t_pred.register_event_handler(p_event_id=self.C_EVENT_FINISHED, p_event_handler=p_task.run_on_event)
+        if ( p_pred_tasks is None ) or ( len(p_pred_tasks == 0 )):
+            self._entry_tasks.append(p_task)
 
-
-## -------------------------------------------------------------------------------------------------
-    def _do_recursively(self, p_method, **p_kwargs):
-        raise NotImplementedError        
-
-
-## -------------------------------------------------------------------------------------------------
-    def terminate(self):
-        raise NotImplemented
+        else:
+            for t_pred in p_pred_tasks: 
+                t_pred.register_event_handler(p_event_id=self.C_EVENT_FINISHED, p_event_handler=p_task.run_on_event)
