@@ -33,7 +33,7 @@ from mlpro.bf.events import EventManager, Event
 ## -------------------------------------------------------------------------------------------------
 class Range:
     """
-    Property class that adds the range of asynchronicity to a child class.
+    Property class that defines the possible ranges of asynchronous execution supported by MLPro.
 
     Parameters
     ----------
@@ -41,20 +41,21 @@ class Range:
         Range of asynchonicity 
     """
 
-    # Possible ranges for child classes
-    C_RANGE_THREAD          = 0         # separate thread inside the same process
-    C_RANGE_PROCESS         = 1         # separate process inside the same machine    
+    # Possible ranges
+    C_RANGE_NONE        = 0  # synchronous execution only
+    C_RANGE_THREAD      = 1  # asynchronous execution as separate thread within the current process
+    C_RANGE_PROCESS     = 2  # asynchronous execution as separate process within the current machine    
 
-    C_VALID_RANGES          = [ C_RANGE_THREAD, C_RANGE_PROCESS ] 
+    C_VALID_RANGES      = [ C_RANGE_NONE, C_RANGE_THREAD, C_RANGE_PROCESS ] 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_range=C_RANGE_PROCESS):
+    def __init__(self, p_range:int=C_RANGE_PROCESS):
         if p_range not in self.C_VALID_RANGES: raise ParamError
-        self._range = p_range
+        self._range:int = p_range
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_range(self):
+    def get_range(self) -> int:
         return self._range
 
 
@@ -75,18 +76,20 @@ class Shared (Range):
         Range of asynchonicity 
     """
 
-    C_MSG_TYPE_DATA         = 0
-    C_MSG_TYPE_TERM         = 1
+    C_MSG_TYPE_DATA     = 0
+    C_MSG_TYPE_TERM     = 1
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_range=Range.C_RANGE_PROCESS):
+    def __init__(self, p_range:int=Range.C_RANGE_PROCESS):
 
-        super().__init__(p_range)
+        super().__init__(p_range=p_range)
 
-        if p_range == self.C_RANGE_THREAD:
+        if p_range in [ self.C_RANGE_NONE, self.C_RANGE_THREAD ]:
             self._lock_obj  = mt.Lock()
+
         elif p_range == self.C_RANGE_PROCESS:
             self._lock_obj  = mp.Lock()
+
         else:
             raise ParamError
 
@@ -184,8 +187,8 @@ class Async (Range, Log):
 
     Parameters
     ----------
-    p_range : int
-        Range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
     p_class_shared
         Optional class name for a shared object (class Shared or a child class of Shared)
     p_logging
@@ -194,30 +197,36 @@ class Async (Range, Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_range=Range.C_RANGE_PROCESS,
+                  p_range_max:int=Range.C_RANGE_PROCESS,
                   p_class_shared=None, 
                   p_logging=Log.C_LOG_ALL ):
 
         Log.__init__(p_logging=p_logging)
-        Range.__init__(self, p_range=p_range)
+        Range.__init__(self, p_range=p_range_max)
+
+        self._async_tasks = []
 
         if p_class_shared is not None:
+
             # Instantiation of shared object
-            if p_range == self.C_RANGE_THREAD:
-                self._so = p_class_shared(p_range)
-            else:
+            if p_range_max in [ self.C_RANGE_NONE, self.C_RANGE_THREAD ]:
+                self._so : Shared = p_class_shared(p_range_max)
+
+            elif p_range_max == self.C_RANGE_PROCESS:
                 BaseManager.register('Shared', p_class_shared)
                 self._mpmanager = BaseManager()
                 self._mpmanager.start()
-                self._so = self._mpmanager.Shared(p_range=p_range)
-        else:
-            self._so = None
+                self._so : Shared = self._mpmanager.Shared(p_range=p_range_max)
 
-        self._async_tasks   = []
+            else:
+                raise NotImplementedError
+
+        else:
+            self._so : Shared = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_so(self) -> Shared: 
+    def get_so(self) -> Shared: 
         """
         Returns the associated shared object.
 
@@ -231,65 +240,86 @@ class Async (Range, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def assign_so(self, p_so:Shared):
+        """
+        Assigns an existing shared object to the task. The task takes over the range of asynchronicity
+        of the shared object if it is less than the current one of the task.
+
+        Parameters
+        ----------
+        p_so : Shared
+            Shared object.
+        """
+
+        self._so    = p_so
+        self._range = min( self._range, self._so.get_range() )
+
+
+## -------------------------------------------------------------------------------------------------
     def _run_async( self, 
-                    p_method=None,
-                    p_class=None,
-                    **p_kwargs ):
+                    p_target,
+                    p_range:int=None,
+                    **p_kwargs ) -> int:
         """
         Runs a method or a new instance of a given class asynchronously. If neither a method nor a
         class is specified, a new instance of the current class is created asynchronously.
 
         Parameters
         ----------
-        p_method
-            Optional method to be called asynchronously
-        p_class
-            Optional class to be instantiated asynchronously
+        p_target
+            A class, method or function to be executed (a)synchronously depending on the actual range
+        p_range : int
+            Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
+            range defined during instantiation is taken. Oterwise the minimum range of both is taken.
         p_kwargs : dictionary
             Parameters to be handed over to asynchonous method/instance
+
+        Returns
+        -------
+        range : int
+            Actual range of asynchronicity
         """
 
-        if p_method is not None:
-            # 1 Prepares a new task for a single method 
-            if self._range == self.C_RANGE_THREAD:
-                # 1.1 ... as a thread
-                task = mt.Thread(target=p_method, kwargs=p_kwargs, group=None)
+        # 1 Determination of range of asynchronity
+        if p_range is None:
+            range = self._range
+        else:
+            range = min( self._range, p_range )
+
+
+        # 2 Execution depending on range of asynchronity
+        if range == self.C_RANGE_NONE: 
+            # 2.1 Synchronous execution
+            p_target(p_kwargs)
+
+        elif ( range == self.C_RANGE_THREAD ) or ( range == self.C_RANGE_PROCESS ):
+            # 2.2 Asynchronous execution as separate thread or process
+            if range == self.C_RANGE_THREAD:
+                # 2.2.1 Preparation of a new thread
+                task = mt.Thread(target=p_target, kwargs=p_kwargs, group=None)
 
             else:
-                # 1.2 ... as a process
-                task = mp.Process(target=p_method, kwargs=p_kwargs, group=None)
+                # 2.2.2 Preparation of a new process
+                task = mp.Process(target=p_target, kwargs=p_kwargs, group=None)
+
+            # 2.2.3 Registration and start of new thread/process
+            self._async_tasks.append(task)
+            task.start()
 
         else:
-            # 2 Prepares a new task for a new object of a given class
-            if p_class is not None: 
-                c = p_class
-            else:
-                c = self.__class__
-
-            kwargs = p_kwargs
-            kwargs['p_class'] = c
-
-            if self._range == self.C_RANGE_THREAD:
-                # 2.1 ... as a thread
-                task = mt.Thread(target=self._run_object_async, kwargs=kwargs, group=None)
-
-            else:
-                # 2.2 ... as a process
-                task = mp.Process(target=self._run_object_async, kwargs=kwargs, group=None)
+            raise NotImplementedError   
 
 
-        # 3 Registers and runs the new task
-        self._async_tasks.append(task)
-        task.start()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _run_object_async(self, p_class, **p_kwargs):
-        p_class(p_kwargs)
+        # 3 Returns actual range of asynchonicity
+        return range         
 
 
 ## -------------------------------------------------------------------------------------------------
     def _wait_async_tasks(self):
+        """"
+        Waits until all internal asynchonous tasks are finished.
+        """
+
         for task in self._async_tasks: task.join()
         self._async_tasks.clear()
 
@@ -307,8 +337,8 @@ class Task (Async, EventManager):
 
     Parameters
     ----------
-    p_range : int
-        Range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
     p_autorun : int
         On value C_AUTORUN_RUN method run() is called imediately during instantiation.
         On vaule C_AUTORUN_LOOP method run_loop() is called.
@@ -330,16 +360,16 @@ class Task (Async, EventManager):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_range=Async.C_RANGE_PROCESS, 
+                  p_range_max:int=Async.C_RANGE_PROCESS, 
                   p_autorun=C_AUTORUN_NONE,
                   p_class_shared=None, 
                   p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        self._tid       = uuid.uuid4()
-        self._kwargs    = p_kwargs.copy()
+        self._tid    = uuid.uuid4()
+        self._kwargs = p_kwargs.copy()
 
-        Async.__init__(self, p_range=p_range, p_class_shared=p_class_shared, p_logging=p_logging)
+        Async.__init__(self, p_range_max=p_range_max, p_class_shared=p_class_shared, p_logging=p_logging)
         EventManager.__init__(self, p_logging=p_logging)
 
         if self._so is not None: self._so.checkin(p_tid=self._tid)
@@ -378,20 +408,24 @@ class Task (Async, EventManager):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, **p_kwargs):
+    def run(self, p_range:int=None, p_wait:bool=False, **p_kwargs):
         """
         Executes the task specific actions implemented in custom method _run(). At the end event
-        C_EVENT_FINISHED is raised to start subsequent actions.
+        C_EVENT_FINISHED is raised to start subsequent actions (p_wait=True).
 
         Parameters
         ----------
+        p_range : int
+            Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
+            range defined during instantiation is taken. Oterwise the minimum range of both is taken.
+        p_wait : bool
+            If True, the method waits until all (a)synchronous tasks are finished.
         p_kwargs : dict
             Further parameters handed over to custom method _run().
         """
 
-        self._run(p_kwargs=p_kwargs)
-
-        self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self, p_kwargs=p_kwargs))
+        self._run_async( p_target=self._run, p_range=p_range, p_kwargs=p_kwargs )
+        if p_wait: self.wait_until_finished()
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -443,6 +477,17 @@ class Task (Async, EventManager):
         """
 
         self.run(p_kwargs=p_event_object.get_data())
+
+
+## -------------------------------------------------------------------------------------------------
+    def wait_until_finished(self):
+        """"
+        Waits until all internal (a)synchonous tasks are finished and raises event C_EVENT_FINISHED
+        after that.
+        """
+
+        self._wait_async_tasks()
+        self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self) )
 
 
 ## -------------------------------------------------------------------------------------------------
