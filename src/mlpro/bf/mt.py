@@ -7,11 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-08-27  0.0.0     DA       Creation 
 ## -- 2022-09-10  0.1.0     DA       Initial class definition
-## -- 2022-09-xx  1.0.0     DA       Initial implementation
+## -- 2022-09-30  0.5.0     DA       Implementation of classes Range, Shared, Async
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-09-xx)
+Ver. 0.5.0 (2022-09-30)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects.
@@ -66,9 +66,12 @@ class Range:
 ## -------------------------------------------------------------------------------------------------
 class Shared (Range): 
     """
-    Template class for shared objects. It is ready to use and the default class for IPC. It is also
-    possible to inherit and enrich this class for special needs. It provides elementary mechanisms 
-    for access control and messaging.
+    Template class for shared objects. It is ready to use and the default class for IPC. It provides 
+    elementary mechanisms for access control and messaging.
+
+    It is also possible to inherit and enrich a child class for special needs but please beware that
+    at least in multiprocessing mode (p_range=Range.C_RANGE_PROCESS) a direct access to attributes
+    is not possible. Child classes should generally provide suitable methods for access to attribues.
 
     Parameters
     ----------
@@ -201,7 +204,7 @@ class Async (Range, Log):
                   p_class_shared=None, 
                   p_logging=Log.C_LOG_ALL ):
 
-        Log.__init__(p_logging=p_logging)
+        Log.__init__(self, p_logging=p_logging)
         Range.__init__(self, p_range=p_range_max)
 
         self._async_tasks = []
@@ -210,19 +213,19 @@ class Async (Range, Log):
 
             # Instantiation of shared object
             if p_range_max in [ self.C_RANGE_NONE, self.C_RANGE_THREAD ]:
-                self._so : Shared = p_class_shared(p_range_max)
+                self._so = p_class_shared(p_range_max)
 
             elif p_range_max == self.C_RANGE_PROCESS:
                 BaseManager.register('Shared', p_class_shared)
                 self._mpmanager = BaseManager()
                 self._mpmanager.start()
-                self._so : Shared = self._mpmanager.Shared(p_range=p_range_max)
+                self._so = self._mpmanager.Shared(p_range=p_range_max)
 
             else:
                 raise NotImplementedError
 
         else:
-            self._so : Shared = None
+            self._so = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -322,6 +325,14 @@ class Async (Range, Log):
 
         for task in self._async_tasks: task.join()
         self._async_tasks.clear()
+
+
+## -------------------------------------------------------------------------------------------------
+    def __del__(self):
+        try:
+            self._mpmanager.shutdown()       
+        except:
+            pass 
 
 
 
@@ -493,6 +504,7 @@ class Task (Async, EventManager):
 ## -------------------------------------------------------------------------------------------------
     def __del__(self):
         if self._so is not None: self._so.checkout(self.get_tid())
+        super().__del__()
 
 
 
