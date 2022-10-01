@@ -9,6 +9,7 @@
 ## -- 2022-09-20  1.0.0     LSB      Release of first version
 ## -- 2022-09-23  1.0.1     LSB      Refactoring
 ## -- 2022-09-26  1.0.2     LSB      Refatoring and reduced custom normalize and denormalize methods
+## -- 2022-10-01  1.0.3     LSB      Refactoring and redefining the update parameter method
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -31,7 +32,6 @@ class Normalizer:
     Base template class for normalizer objects
     """
     C_TYPE = 'Normalizer'
-    C_NAME = ''
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -39,31 +39,11 @@ class Normalizer:
 
         self._param = None
         self._param_old = None
+        self._param_new = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_parameters(self):
-        """
-        method to get the normalization parameters
-        """
-        return self._param
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_parameters(self, p_data):
-        """
-        method to set the normalization parameters
-
-        Parameters
-        ----------
-        p_data
-            Data for setting the normalization parameters
-        """
-        self._set_parameters(p_data)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_parameters(self, p_data:Union[Set, np.ndarray]):
+    def _set_parameters(self, p_param):
         """
         custom method to set the normalization parameters
 
@@ -77,66 +57,59 @@ class Normalizer:
         boolean:True
             Returns true after setting the parameters
         """
-
-        raise NotImplementedError
-
+        self._param = p_param
 
 ## -------------------------------------------------------------------------------------------------
-    def normalize(self, p_element:Union[Element, np.ndarray], p_param=None):
+    def normalize(self, p_data:Union[Element, np.ndarray]):
         """
-        method to normalize element
+        Method to normalize a data (Element/ndarray) element based on MinMax or Z-transformation
 
         Parameters
         ----------
-        p_element:Element or a numpy array
-            Element to be normalized
+        p_data:Element or a numpy array
+            Data element to be normalized
 
         Returns
         -------
         element:Element or numpy array
-            Normalized element
+            Normalized Data
         """
 
         if self._param is None:
             raise ImplementationError('normalization parameters not set')
-        p_param = self._param
-        if isinstance(p_element, Element):
-            normalized_element = Element(p_element.get_related_set())
-            normalized_element.set_values(np.multiply(p_element.get_values(), p_param[0]) - p_param[1])
-        elif isinstance(p_element, np.ndarray):
-            normalized_element = np.multiply(p_element, p_param[0]) - p_param[1]
+        if isinstance(p_data, Element):
+            normalized_element = Element(p_data.get_related_set())
+            normalized_element.set_values(np.multiply(p_data.get_values(), self._param[0]) - self._param[1])
+        elif isinstance(p_data, np.ndarray):
+            normalized_element = np.multiply(p_data, self._param[0]) - self._param[1]
         else: raise ParamError('wrong data type provided for normalization')
         return normalized_element
 
 
 ## -------------------------------------------------------------------------------------------------
-    def denormalize(self, p_element:Union[Element, np.ndarray], p_param=None):
+    def denormalize(self, p_data:Union[Element, np.ndarray]):
         """
-        Method to denormalize the normalized elements.
+        Method to denormalize a data (Element/ndarray) element based on MinMax or Z-transformation
 
         Parameters
         ----------
-        p_element:Element or a numpy array
-            Element to be denormalized
-        p_param  -Optional
-            Parameters to be normalized
+        p_data:Element or a numpy array
+            Data element to be denormalized
 
         Returns
         -------
         element:Element or numpy array
-            Denormalized element
+            Denormalized Data
         """
         if self._param is None:
             raise ImplementationError('normalization parameters not set')
-        if p_param is None:
-            p_param = self._param
-        if isinstance(p_element, Element):
-            denormalized_element = Element(p_element.get_related_set())
-            denormalized_element.set_values(np.multiply(p_element.get_values(), 1 / p_param[0]) + (
-                        p_param[1] / p_param[0]))
-        elif isinstance(p_element, np.ndarray):
-            denormalized_element = np.multiply(p_element, 1 / p_param[0]) + \
-                                   (p_param[1] / p_param[0])
+        if isinstance(p_data, Element):
+            denormalized_element = Element(p_data.get_related_set())
+            denormalized_element.set_values(np.multiply(p_data.get_values(), 1 / self._param[0]) + (
+                        self._param[1] / self._param[0]))
+        elif isinstance(p_data, np.ndarray):
+            denormalized_element = np.multiply(p_data, 1 / self._param[0]) + \
+                                   (self._param[1] / self._param[0])
         else:
             raise ParamError('wrong datatype provided for denormalization')
         return denormalized_element
@@ -149,30 +122,31 @@ class Normalizer:
 
         Parameters
         ----------
-        p_element:Element or numpy array
+        p_data:Element or numpy array
             Element to be renormalized.
 
         Returns
         -------
-        renormalized_elemet:Element or numpy array
-            Renormalized element
+        renormalized_element:Element or numpy array
+            Renormalized Data
 
         """
-
-        denormalized_element = self.denormalize(p_data, p_param = self._param_old)
+        self._set_parameters(self._param_old)
+        denormalized_element = self.denormalize(p_data)
+        self._set_parameters(self._param_new)
         renormalized_element = self.normalize(denormalized_element)
         return renormalized_element
 
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_param(self, p_data:Union[Set, Element, np.ndarray]):
+    def update_parameters(self, p_data:Union[Set, Element, np.ndarray]):
         """
         Custom method to update normalization parameters.
 
         Parameters
         ----------
-        p_kwargs
+        p_data
             arguments specific to normalization parameters. Check the normalizer objects for specific parameters
 
         Returns
@@ -198,30 +172,9 @@ class NormalizerMinMax(Normalizer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_param(self, p_element:Element):
+    def update_parameters(self, p_set:Set=None, p_boundaries=None):
         """
-        Custom method to update the parameters
-
-        Parameters
-        ----------
-        p_element:Element
-            New element with changed boundary data.
-
-        Returns
-        -------
-        boolean:True
-            returns True after parameter update
-        """
-
-        self._old_param = self._param
-        self._set_parameters(p_element.get_related_set())
-        return True
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_parameters(self, p_set:Set=None, p_boundaries=None):
-        """
-        custom method to set the normalization parameters
+        custom method to update the normalization parameters
 
         Parameters
         ----------
@@ -256,8 +209,9 @@ class NormalizerMinMax(Normalizer):
                 b.append(2*min_boundary/(range)+1)
                 np.array([a]).reshape(p_boundaries.shape[0:-1])
                 np.array([b]).reshape(p_boundaries.shape[0:-1])
-        self._param = np.vstack(([a],[b]))
-
+        self._param_old = self._param_new
+        self._param_new = np.vstack(([a],[b]))
+        self._param = self._param_new
         return True
 
 
@@ -272,29 +226,9 @@ class NormalizerZTrans(Normalizer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_param(self, p_dataset):
+    def update_parameters(self, p_dataset):
         """
-        Custom method to update normalization parameters.
-
-        Parameters
-        ----------
-        p_dataset: numpy array
-            Data to be normalized
-
-        Returns
-        -------
-        boolean = True
-            Returns true after updating
-        """
-        self._old_param = self._param
-        self._set_parameters(p_dataset)
-        return True
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_parameters(self, p_dataset):
-        """
-        custom method to set the normalization parameters
+        custom method to update the normalization parameters
 
         Parameters
         ----------
@@ -312,7 +246,8 @@ class NormalizerZTrans(Normalizer):
         a = 1/std
         b = mean/std
 
-
-        self._param = np.vstack(([a],[b]))
+        self._param_old = self._param_new
+        self._param_new = np.vstack(([a], [b]))
+        self._param = self._param_new
 
         return True
