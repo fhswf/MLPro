@@ -5,26 +5,33 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-09-30  1.0.0     DA       Creation/release
+## -- 2022-10-01  1.0.0     DA       Creation/release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-09-30)
+Ver. 1.0.0 (2022-10-01)
 
 This module demonstrates the use of classes ASync and Shared as part of MLPro's multitasking concept.
+The demo class starts in three runs a number of sub-tasks synchronously, as threads and as processes.
+Depending on the number of cores per cpu and further factors multiprocessing outperforms multithreading
+more ore less drastically. Method MyParallelAlgoritm.execute() determines and logs the speed factor
+of multithreading and multiprocessing in comparison to serial/synchronous computation. Open the perfmeter
+of your system and play with number of tasks and their duration to observe the behavior.
+
+All sub-tasks store dummy results in a shared object. It is not a surprise that the order of result
+entries in multithreading and multiprocessing mode are random.
 
 You will learn:
 
 1) The meaning and basic properties of the classes Async and Shared.
 
-2) How to set up an own class with parallel running sub-functions inside.
+2) How to set up an own class with parallel running sub-tasks inside.
 
-2) How to collect results of the parallel sub-functions in a shared object.
+3) How to collect results of the parallel sub-functions in a shared object.
 
 """
 
 
-from signal import pause
 from time import sleep
 from mlpro.bf.various import Log
 import mlpro.bf.mt as mt
@@ -93,6 +100,7 @@ class MyParallelAlgorithm (mt.Async):
 
 ## -------------------------------------------------------------------------------------------------
     def execute(self, p_pause:int):
+        # Log at the beginning of a run
         if self._range == self.C_RANGE_NONE:
             self.log(Log.C_LOG_TYPE_S, 'Execution of', self._num_tasks, 'synchronous tasks started')
         elif self._range == self.C_RANGE_THREAD:
@@ -100,6 +108,7 @@ class MyParallelAlgorithm (mt.Async):
         else:
             self.log(Log.C_LOG_TYPE_S, 'Execution of', self._num_tasks, 'asynchronous tasks as processes started')
 
+        # Start number of tasks (a)synchronously
         time_start = datetime.now()
         for t in range(self._num_tasks):
             self._run_async( p_target=self._async_subtask, p_tid=t)
@@ -112,7 +121,13 @@ class MyParallelAlgorithm (mt.Async):
         duration_real_sec   = duration_real.seconds + duration_real.microseconds / 1000000
         speed_factor        = round( self._num_tasks * self._duration_sec / duration_real_sec, 2)
 
-        self.log(Log.C_LOG_TYPE_S, 'Execution ended (speed factor =', speed_factor, ')')
+        # Log of speed factor 
+        if self._range == self.C_RANGE_NONE:
+            self.log(Log.C_LOG_TYPE_S, 'Execution of', self._num_tasks, 'synchronous tasks ended (speed factor =', speed_factor, ')')
+        elif self._range == self.C_RANGE_THREAD:
+            self.log(Log.C_LOG_TYPE_S, 'Execution of', self._num_tasks, 'asynchronous tasks as threads ended (speed factor =', speed_factor, ')')
+        else:
+            self.log(Log.C_LOG_TYPE_S, 'Execution of', self._num_tasks, 'asynchronous tasks as processes ended (speed factor =', speed_factor, ')')
 
         # Log of results collected in the shared object
         self.log(Log.C_LOG_TYPE_I, 'Results in shared object are:')
@@ -162,8 +177,8 @@ class MyParallelAlgorithm (mt.Async):
 # 1 Preparation of execution
 if __name__ == "__main__":
     # 1.1 Preparation for demo mode
-    num_tasks   = 8
-    duration    = timedelta(0,3,0)
+    num_tasks   = 50
+    duration    = timedelta(0,0,500000)
     pause_sec   = 5
     logging     = Log.C_LOG_ALL
 
