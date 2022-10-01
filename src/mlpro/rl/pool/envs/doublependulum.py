@@ -51,6 +51,7 @@
 ## -- 2022-09-05  2.0.2     LSB      Refactoring
 ## -- 2022-09-06  2.0.3     LSB/DA   Refactoring
 ## -- 2022-09-09  2.0.4     SY       Updating reward function and compute success function
+## -- 2022-09-09  2.0.5     LSB       Updating the boundaries
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -190,13 +191,15 @@ class DoublePendulumRoot (Environment):
                       p_unit='degrees', p_unit_latex='\textdegrees', p_boundaries=[-180, 180]))
         state_space.add_dim(
             Dimension(p_name_long='omega 1', p_name_short='w1', p_description='Angular Velocity of Pendulum 1',
-                      p_name_latex='', p_unit='degrees/second', p_unit_latex='\textdegrees/s',p_boundaries=[-800, 800]))
+                      p_name_latex='', p_unit='degrees/second', p_unit_latex='\textdegrees/s',p_boundaries=[-36000,
+                                                                                                            36000]))
         state_space.add_dim(
             Dimension(p_name_long='theta 2', p_name_short='th2', p_description='Angle of pendulum 2', p_name_latex='',
                       p_unit='degrees', p_unit_latex='\textdegrees', p_boundaries=[-180, 180]))
         state_space.add_dim(
             Dimension(p_name_long='omega 2', p_name_short='w2', p_description='Angular Velocity of Pendulum 2',
-                      p_name_latex='', p_unit='degrees/second', p_unit_latex='\textdegrees/s', p_boundaries=[-950, 950]))
+                      p_name_latex='', p_unit='degrees/second', p_unit_latex='\textdegrees/s', p_boundaries=[-40000,
+                                                                                                             40000]))
         action_space.add_dim(
             Dimension(p_name_long='torque 1', p_name_short='tau1', p_description='Applied Torque of Motor 1',
                       p_name_latex='', p_unit='Nm', p_unit_latex='Nm',p_boundaries=[-self._max_torque,
@@ -712,11 +715,13 @@ class DoublePendulumS7 (DoublePendulumS4):
         state_space, action_space = super().setup_spaces()
         state_space.add_dim(
             Dimension(p_name_long='alpha 1', p_name_short='a1', p_description='Angular Acceleration of Pendulum 1',
-                      p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-6800, 6800]))
+                      p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-8500000,
+                                                                                                         8500000]))
 
         state_space.add_dim(
             Dimension(p_name_long='alpha 2', p_name_short='a2', p_description='Angular Acceleration of Pendulum 2',
-                      p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-9700, 9700]))
+                      p_name_latex='',p_unit='degrees/second^2', p_unit_latex='\text/s^2', p_boundaries=[-13000000,
+                                                                                                         13000000]))
 
         state_space.add_dim(
             Dimension(p_name_long='torque', p_name_short='tau', p_description='input torque',
