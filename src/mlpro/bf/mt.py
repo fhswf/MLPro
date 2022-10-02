@@ -8,11 +8,11 @@
 ## -- 2022-08-27  0.0.0     DA       Creation 
 ## -- 2022-09-10  0.1.0     DA       Initial class definition
 ## -- 2022-09-30  0.5.0     DA       Implementation of classes Range, Shared, Async
-## -- 2022-10-01  1.0.0     DA       Implementation of classes Task, Workflow
+## -- 2022-10-02  1.0.0     DA       Implementation of classes Task, Workflow
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-01)
+Ver. 1.0.0 (2022-10-02)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects.
@@ -119,10 +119,14 @@ class Shared (Range):
         """
 
         if p_tid == self._locking_task: return True
+
         if p_timeout is None:
-            return self._lock_obj.acquire()
+            if not self._lock_obj.acquire(): return False
         else:
-            return self._lock_obj.acquire(timeout=p_timeout)
+            if not self._lock_obj.acquire(timeout=p_timeout): return False
+
+        self._locking_task = p_tid
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -133,7 +137,7 @@ class Shared (Range):
 
         if self._locking_task is None: return
         self._locking_task = None
-        self._lock.release()
+        self._lock_obj.release()
 
 
 ### -------------------------------------------------------------------------------------------------
@@ -164,7 +168,10 @@ class Shared (Range):
         """
 
         self.lock(p_tid=p_tid)
-        self._active_tasks.remove(p_tid)
+
+        if p_tid in self._active_tasks:
+            self._active_tasks.remove(p_tid)
+
         self.unlock()
 
 
@@ -373,6 +380,8 @@ class Task (Async, EventManager):
 
     Parameters
     ----------
+    p_name : str
+        Optional name of the task. Default is None.
     p_range_max : int
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
     p_autorun : int
@@ -398,6 +407,7 @@ class Task (Async, EventManager):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
+                  p_name:str=None,
                   p_range_max:int=Async.C_RANGE_PROCESS, 
                   p_autorun=C_AUTORUN_NONE,
                   p_class_shared=None, 
@@ -407,6 +417,13 @@ class Task (Async, EventManager):
         self._tid    = uuid.uuid4()
         self._kwargs = p_kwargs.copy()
         self.set_num_predecessors(0)
+
+        name = self.get_name()
+        if name != '': name = name + ' '
+        if p_name is not None:
+            self.set_name(name + p_name)
+        else:
+            self.set_name(name + str(self._tid))
 
         Async.__init__(self, p_range_max=p_range_max, p_class_shared=p_class_shared, p_logging=p_logging)
         EventManager.__init__(self, p_logging=p_logging)
@@ -462,7 +479,17 @@ class Task (Async, EventManager):
             Further parameters handed over to custom method _run().
         """
 
-        if self._so is not None: self._so.checkin(p_tid=self._tid)
+        if p_range == self.C_RANGE_NONE:
+            self.log(Log.C_LOG_TYPE_I, 'Started synchronously')
+        elif p_range == self.C_RANGE_THREAD:
+            self.log(Log.C_LOG_TYPE_I, 'Started as new thread')
+        else:
+            self.log(Log.C_LOG_TYPE_I, 'Started as new process')
+
+        if self._so is not None: 
+            self._so.checkin(p_tid=self._tid)
+            self.log(Log.C_LOG_TYPE_I, 'Checked in to shared object')
+
         self._run_async( p_target=self._run, p_range=p_range, p_kwargs=p_kwargs )
         if p_wait: self.wait_until_finished()
         
@@ -552,14 +579,13 @@ class Task (Async, EventManager):
         """
 
         self._wait_async_tasks()
-        if self._so is not None: self._so.checkout(self.get_tid())
+
+        if self._so is not None: 
+            self._so.checkout(p_tid=self.get_tid())
+            self.log(Log.C_LOG_TYPE_I, 'Checked out from shared object')
+
+        self.log(Log.C_LOG_TYPE_I, 'Stopped')
         self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self) )
-
-
-## -------------------------------------------------------------------------------------------------
-    def __del__(self):
-        if self._so is not None: self._so.checkout(self.get_tid())
-        super().__del__()
 
 
 
@@ -574,6 +600,8 @@ class Workflow (Task):
 
     Parameters
     ----------
+    p_name : str
+        Optional name of the task. Default is None.
     p_range : int
         Range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
     p_class_shared
@@ -585,9 +613,11 @@ class Workflow (Task):
     """
     
     C_TYPE          = 'Workflow'
+    C_NAME          = ''
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
+                  p_name:str=None,
                   p_range_max=Async.C_RANGE_PROCESS, 
                   p_class_shared=None, 
                   p_logging=Log.C_LOG_ALL, 
@@ -596,7 +626,8 @@ class Workflow (Task):
         self._tasks         = []
         self._entry_tasks   = []
 
-        super().__init__( p_range_max=p_range_max,
+        super().__init__( p_name=p_name,
+                          p_range_max=p_range_max,
                           p_autorun=self.C_AUTORUN_NONE,
                           p_class_shared=p_class_shared,
                           p_logging=p_logging,
@@ -631,6 +662,8 @@ class Workflow (Task):
             Optional list of predecessor task objects
         """
 
+        self.log(Log.C_LOG_TYPE_I, 'Task "' + p_task.get_name() + '" added')
+
         # Multiple use of the same task is not allowed
         if p_task in self._tasks:
             self.log(Log.C_LOG_TYPE_E, 'Please do not add the same task more than once')
@@ -639,13 +672,16 @@ class Workflow (Task):
         # New task is prepared for workflow operation
         p_task.switch_logging(self._level)
         p_task.assign_so(self._so)
-        p_task.set_num_predecessors(len(p_pred_tasks))
+
         self._tasks.append(p_task)
 
         if ( p_pred_tasks is None ) or ( len(p_pred_tasks) == 0 ):
+            p_task.set_num_predecessors(0)
             self._entry_tasks.append(p_task)
 
         else:
+            p_task.set_num_predecessors(len(p_pred_tasks))
+
             if self._range > self.C_RANGE_THREAD:
                 self.log(Log.C_LOG_TYPE_W, 'Predecessor relations are event-based and not yet supported beyond multithreading. Range is reduced')
                 self._range = self.C_RANGE_THREAD

@@ -79,17 +79,19 @@ class MyTask (mt.Task):
     """
 
     # needed for proper logging (see class mlpro.bf.various.Log)
-    C_NAME      = 'My fancy task'
+    C_NAME      = 'My task'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_duration:timedelta,
+                  p_name:str=None,
                   p_range_max: int = mt.Task.C_RANGE_PROCESS, 
                   p_autorun=mt.Task.C_AUTORUN_NONE,
                   p_class_shared=None, 
                   p_logging=Log.C_LOG_ALL ):
 
-        super().__init__( p_range_max=p_range_max, 
+        super().__init__( p_name=p_name,
+                          p_range_max=p_range_max, 
                           p_autorun=p_autorun,
                           p_class_shared=p_class_shared, 
                           p_logging=p_logging )
@@ -102,8 +104,6 @@ class MyTask (mt.Task):
 
         tid = self.get_tid()
         
-        self.log(Log.C_LOG_TYPE_I, 'Task', tid, 'started')
-
         # 1 Dummy implementation to simulate a busy sub-task
         time_start = datetime.now()
         result     = 0
@@ -121,8 +121,6 @@ class MyTask (mt.Task):
         self._so.lock()
         self._so.add_result( [tid, result] )
         self._so.unlock()
-
-        self.log(Log.C_LOG_TYPE_I, 'Task', tid, 'stopped')
 
 
 
@@ -143,57 +141,65 @@ else:
 
 
 
-# 2 Create and run a single task
-t   = MyTask( p_duration=duration, p_range_max=mt.Task.C_RANGE_PROCESS, p_class_shared=MyShared, p_logging=logging )
-t.run(p_range=mt.Task.C_RANGE_NONE, p_wait=True)
+# 2 Create and run a single task as process
+t   = MyTask( p_duration=duration, 
+              p_range_max=mt.Task.C_RANGE_PROCESS, 
+              p_class_shared=MyShared, 
+              p_logging=logging )
 
-exit()
+t.run(p_range=mt.Task.C_RANGE_PROCESS, p_wait=True)
 
-
-# 3 Create a couple of tasks
-t1a = MyTask( p_duration=duration, p_logging=logging )
-t1b = MyTask( p_duration=duration, p_logging=logging )
-t1c = MyTask( p_duration=duration, p_logging=logging )
-
-t2a = MyTask( p_duration=duration, p_logging=logging )
-t2b = MyTask( p_duration=duration, p_logging=logging )
-t2c = MyTask( p_duration=duration, p_logging=logging )
-
-t3a = MyTask( p_duration=duration, p_logging=logging )
-t3b = MyTask( p_duration=duration, p_logging=logging )
-t3c = MyTask( p_duration=duration, p_logging=logging )
+print('Result in shared object:\n', t.get_so().get_results())
 
 
 
-# 4 Create a workflow and add the tasks
-wf = mt.Workflow( p_range=mt.Workflow.C_RANGE_PROCESS, p_class_shared=MyShared, p_logging=logging )
+# 3 Create and run a workflow
 
-# 4.1 At first we add three tasks that build the starting points of our workflow
+# 3.1 Create a couple of tasks
+t1a = MyTask( p_duration=duration, p_name='t1a', p_logging=logging )
+t1b = MyTask( p_duration=duration, p_name='t1b', p_logging=logging )
+t1c = MyTask( p_duration=duration, p_name='t1b', p_logging=logging )
+
+t2a = MyTask( p_duration=duration, p_name='t2a', p_logging=logging )
+t2b = MyTask( p_duration=duration, p_name='t2b', p_logging=logging )
+t2c = MyTask( p_duration=duration, p_name='t2c', p_logging=logging )
+
+t3a = MyTask( p_duration=duration, p_name='t3a', p_logging=logging )
+t3b = MyTask( p_duration=duration, p_name='t3b', p_logging=logging )
+t3c = MyTask( p_duration=duration, p_name='t3c', p_logging=logging )
+
+
+# 3.2 Create a workflow and add the tasks
+wf = mt.Workflow( p_name='wf1', p_range=mt.Workflow.C_RANGE_PROCESS, p_class_shared=MyShared, p_logging=logging )
+
+# 3.1 At first we add three tasks that build the starting points of our workflow
 wf.add_task( p_task=t1a )
 wf.add_task( p_task=t1b )
 wf.add_task( p_task=t1c )
 
-# 4.2 Then, we add three further tasks that shall start when their predecessor tasks have finished
+# 3.2 Then, we add three further tasks that shall start when their predecessor tasks have finished
 wf.add_task( p_task=t2a, p_pred_tasks=[t1a] )
 wf.add_task( p_task=t2b, p_pred_tasks=[t1b] )
 wf.add_task( p_task=t2c, p_pred_tasks=[t1c] )
 
-# 4.3 Finally, we add three further tasks that build the end of our task chains
+# 3.3 Finally, we add three further tasks that build the end of our task chains
 wf.add_task( p_task=t3a, p_pred_tasks=[t2a] )
 wf.add_task( p_task=t3b, p_pred_tasks=[t2b] )
 wf.add_task( p_task=t3c, p_pred_tasks=[t2c] )
 
+exit()
 
+# 3.4 Run the workflow
 
-# 5 Run the workflow
-
-# 5.1 Synchronous
+# 3.4.1 Synchronous
 wf.run( p_range=mt.Workflow.C_RANGE_NONE, p_wait=True )
 
-# 5.2 Multithreading
+
+
+# 3.4.2 Multithreading
 wf.run( p_range=mt.Workflow.C_RANGE_THREAD, p_wait=True )
 
-# 5.3 Multiprocessing (This will fail. See log output.)
+# 3.4.3 Multiprocessing (This will fail. See log output.)
 try:
     wf.run( p_range=mt.Workflow.C_RANGE_THREAD, p_wait=True )
 except:
