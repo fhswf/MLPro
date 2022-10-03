@@ -190,7 +190,7 @@ else:
     num_tasks   = 2
     duration    = timedelta(0,0,10000)
     pause_sec   = 0
-    logging     = Log.C_LOG_NOTHING
+    logging     = Log.C_LOG_ALL
 
 
 
