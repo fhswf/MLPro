@@ -5,11 +5,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-10-01  1.0.0     DA       Creation/release
+## -- 2022-10-03  1.0.0     DA       Creation/release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-01)
+Ver. 1.0.0 (2022-10-03)
 
 This module demonstrates the use of classes ASync and Shared as part of MLPro's multitasking concept.
 Both classes are used to implement a simple parallel algorithm class MyParallelAlgorithm with a
@@ -102,7 +102,7 @@ class MyParallelAlgorithm (mt.Async):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def execute(self, p_pause:int):
+    def execute(self):
         # Log at the beginning of a run
         if self._range == self.C_RANGE_NONE:
             self.log(Log.C_LOG_TYPE_S, 'Execution of', self._num_tasks, 'synchronous tasks started')
@@ -114,9 +114,9 @@ class MyParallelAlgorithm (mt.Async):
         # Start number of tasks (a)synchronously
         time_start = datetime.now()
         for t in range(self._num_tasks):
-            self._run_async( p_target=self._async_subtask, p_tid=t)
+            self._start_async( p_target=self._async_subtask, p_tid=t)
 
-        self._wait_async_tasks()
+        self.wait_async_tasks()
         time_end   = datetime.now()
 
         # Determination of speed factor (no parallelism = 1)
@@ -135,11 +135,6 @@ class MyParallelAlgorithm (mt.Async):
         # Log of results collected in the shared object
         self.log(Log.C_LOG_TYPE_I, 'Results in shared object are:')
         for r in self._so.get_results(): self.log(Log.C_LOG_TYPE_I, r)
-
-        # Short break for better observation of the CPU load in the perfmeter
-        if p_pause > 0:
-            self.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
-            sleep(p_pause)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -190,28 +185,40 @@ else:
     num_tasks   = 2
     duration    = timedelta(0,0,10000)
     pause_sec   = 0
-    logging     = Log.C_LOG_ALL
+    logging     = Log.C_LOG_NOTHING
 
 
 
 # 2 Execution of demo class (synchronous)
-MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                     p_duration = duration, 
-                     p_range_max = mt.Async.C_RANGE_NONE, 
-                     p_logging = logging ).execute(p_pause=pause_sec)                     
+a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
+                         p_duration = duration, 
+                         p_range_max = mt.Async.C_RANGE_NONE, 
+                         p_logging = logging )
+                         
+a.execute()                     
+
+a.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
+sleep(pause_sec)
 
 
 
 # 3 Execution of demo class (asynchonous, multi-threading)
-MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                     p_duration = duration, 
-                     p_range_max = mt.Async.C_RANGE_THREAD, 
-                     p_logging = logging ).execute(p_pause=pause_sec)                     
+a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
+                         p_duration = duration, 
+                         p_range_max = mt.Async.C_RANGE_THREAD, 
+                         p_logging = logging )
+
+a.execute()
+
+a.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
+sleep(pause_sec)
 
 
 
 # 4 Execution of demo class (asynchronous, multi-processing)
-MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                     p_duration = duration, 
-                     p_range_max = mt.Async.C_RANGE_PROCESS, 
-                     p_logging = logging ).execute(p_pause=0)                     
+a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
+                         p_duration = duration, 
+                         p_range_max = mt.Async.C_RANGE_PROCESS, 
+                         p_logging = logging )
+                        
+a.execute()                     

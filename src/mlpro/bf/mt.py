@@ -8,17 +8,18 @@
 ## -- 2022-08-27  0.0.0     DA       Creation 
 ## -- 2022-09-10  0.1.0     DA       Initial class definition
 ## -- 2022-09-30  0.5.0     DA       Implementation of classes Range, Shared, Async
-## -- 2022-10-02  1.0.0     DA       Implementation of classes Task, Workflow
+## -- 2022-10-03  1.0.0     DA       Implementation of classes Task, Workflow
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-02)
+Ver. 1.0.0 (2022-10-03)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects.
 """
 
 
+from time import sleep
 import uuid
 import threading as mt
 import multiprocessing as mp
@@ -215,10 +216,11 @@ class Async (Range, Log):
         Log.__init__(self, p_logging=p_logging)
         Range.__init__(self, p_range=p_range_max)
 
-        self._async_tasks  = []
-        self._mpmanager    = None
-        self._class_shared = p_class_shared
-        self._so : Shared  = self._create_so(p_range=p_range_max, p_class_shared=p_class_shared)
+        self._range_current = p_range_max
+        self._async_tasks   = []
+        self._mpmanager     = None
+        self._class_shared  = p_class_shared
+        self._so : Shared   = self._create_so(p_range=p_range_max, p_class_shared=p_class_shared)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -291,12 +293,12 @@ class Async (Range, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_async( self, 
-                    p_target,
-                    p_range:int=None,
-                    **p_kwargs ) -> int:
+    def _start_async( self, 
+                      p_target,
+                      p_range:int=None,
+                      **p_kwargs ) -> int:
         """
-        Runs a method or a new instance of a given class asynchronously. If neither a method nor a
+        Starts a method or a new instance of a given class asynchronously. If neither a method nor a
         class is specified, a new instance of the current class is created asynchronously.
 
         Parameters
@@ -317,19 +319,19 @@ class Async (Range, Log):
 
         # 1 Determination of range of asynchronity
         if p_range is None:
-            range = self._range
+            self._range_current = self._range
         else:
-            range = min( self._range, p_range )
+            self._range_current = min( self._range, p_range )
 
 
         # 2 Execution depending on range of asynchronity
-        if range == self.C_RANGE_NONE: 
+        if self._range_current == self.C_RANGE_NONE: 
             # 2.1 Synchronous execution
             p_target(**p_kwargs)
 
-        elif ( range == self.C_RANGE_THREAD ) or ( range == self.C_RANGE_PROCESS ):
+        elif self._range_current in [ self.C_RANGE_THREAD, self.C_RANGE_PROCESS ]:
             # 2.2 Asynchronous execution as separate thread or process
-            if range == self.C_RANGE_THREAD:
+            if self._range_current == self.C_RANGE_THREAD:
                 # 2.2.1 Preparation of a new thread
                 task = mt.Thread(target=p_target, kwargs=p_kwargs, group=None)
 
@@ -346,12 +348,12 @@ class Async (Range, Log):
 
 
         # 3 Returns actual range of asynchonicity
-        return range         
+        return self._range_current         
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _wait_async_tasks(self):
-        """"
+    def wait_async_tasks(self):
+        """
         Waits until all internal asynchonous tasks are finished.
         """
 
@@ -480,19 +482,42 @@ class Task (Async, EventManager):
         """
 
         if p_range == self.C_RANGE_NONE:
-            self.log(Log.C_LOG_TYPE_I, 'Started synchronously')
+            self.log(Log.C_LOG_TYPE_S, 'Started synchronously')
         elif p_range == self.C_RANGE_THREAD:
-            self.log(Log.C_LOG_TYPE_I, 'Started as new thread')
+            self.log(Log.C_LOG_TYPE_S, 'Started as new thread')
         else:
-            self.log(Log.C_LOG_TYPE_I, 'Started as new process')
+            self.log(Log.C_LOG_TYPE_S, 'Started as new process')
+
+        self._start_async( p_target=self._run_async, p_range=p_range, p_kwargs=p_kwargs )
+
+        if p_wait: self.wait_async_tasks()
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _run_async(self, **p_kwargs):
+        """
+        Internally used by method run(). It runs the custom method _run() and raises event C_EVENT_FINISHED.
+
+        Parameters
+        ----------
+        p_kwargs : dict
+            Custom parameters.
+        """
 
         if self._so is not None: 
             self._so.checkin(p_tid=self._tid)
             self.log(Log.C_LOG_TYPE_I, 'Checked in to shared object')
 
-        self._run_async( p_target=self._run, p_range=p_range, p_kwargs=p_kwargs )
-        if p_wait: self.wait_until_finished()
-        
+        self._run(p_kwargs=p_kwargs)
+
+        if self._so is not None: 
+            self._so.checkout(p_tid=self.get_tid())
+            self.log(Log.C_LOG_TYPE_I, 'Checked out from shared object')
+
+        self.log(Log.C_LOG_TYPE_S, 'Stopped')
+
+        self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self, p_range=self._range_current, p_wait=False) )
+
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, **p_kwargs):
@@ -559,7 +584,7 @@ class Task (Async, EventManager):
         """
 
         if p_event_id == self.C_EVENT_FINISHED:
-            if self._ctr_predecessors > 0: 
+            if self._ctr_predecessors > 1: 
                 # Execution of method run() is delayed until the last predecessor task in a workflow
                 # has finished
                 self._ctr_predecessors -= 1
@@ -568,24 +593,7 @@ class Task (Async, EventManager):
             else:
                 self._ctr_predecessors = self._num_predecessors
 
-        self.run(p_kwargs=p_event_object.get_data())
-
-
-## -------------------------------------------------------------------------------------------------
-    def wait_until_finished(self):
-        """"
-        Waits until all internal (a)synchonous tasks are finished and raises event C_EVENT_FINISHED
-        after that.
-        """
-
-        self._wait_async_tasks()
-
-        if self._so is not None: 
-            self._so.checkout(p_tid=self.get_tid())
-            self.log(Log.C_LOG_TYPE_I, 'Checked out from shared object')
-
-        self.log(Log.C_LOG_TYPE_I, 'Stopped')
-        self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self) )
+        self.run(**p_event_object.get_data())
 
 
 
@@ -625,6 +633,9 @@ class Workflow (Task):
 
         self._tasks         = []
         self._entry_tasks   = []
+        self._final_tasks   = []
+        self._first_run     = True
+        self._finished      = True
 
         super().__init__( p_name=p_name,
                           p_range_max=p_range_max,
@@ -662,18 +673,31 @@ class Workflow (Task):
             Optional list of predecessor task objects
         """
 
-        self.log(Log.C_LOG_TYPE_I, 'Task "' + p_task.get_name() + '" added')
+        # 1 Info log
+        self.log(Log.C_LOG_TYPE_I, 'Adding task "' + p_task.get_name() + '"')
 
-        # Multiple use of the same task is not allowed
+
+        # 2 Plausibility checks
+
+        # 2.1 Check: task already added?
         if p_task in self._tasks:
             self.log(Log.C_LOG_TYPE_E, 'Please do not add the same task more than once')
             raise ParamError
 
-        # New task is prepared for workflow operation
+        # 2.2 Check: is the task added after the first run?
+        if not self._first_run:
+            self.log(Log.C_LOG_TYPE_E, 'Please do not add further tasks after the first run')
+            raise ParamError
+
+
+        # 3 New task is prepared for workflow operation
         p_task.switch_logging(self._level)
         p_task.assign_so(self._so)
 
+
+        # 4 Register task and its event handler to all predecessor tasks
         self._tasks.append(p_task)
+        self._final_tasks.append(p_task)
 
         if ( p_pred_tasks is None ) or ( len(p_pred_tasks) == 0 ):
             p_task.set_num_predecessors(0)
@@ -688,8 +712,75 @@ class Workflow (Task):
                 
             for t_pred in p_pred_tasks: 
                 t_pred.register_event_handler(p_event_id=self.C_EVENT_FINISHED, p_event_handler=p_task.run_on_event)
+                self._final_tasks.remove(t_pred)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, **p_kwargs):
-        for task in self._entry_tasks: task.run(p_kwargs=p_kwargs)
+    def run(self, p_range:int=None, p_wait:bool=False, **p_kwargs):
+        """
+        Executes all tasks of the workflow. At the end event C_EVENT_FINISHED is raised to start 
+        subsequent actions (p_wait=True).
+
+        Parameters
+        ----------
+        p_range : int
+            Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
+            range defined during instantiation is taken. Oterwise the minimum range of both is taken.
+        p_wait : bool
+            If True, the method waits until all (a)synchronous tasks are finished.
+        p_kwargs : dict
+            Further parameters handed over to custom method _run().
+        """
+
+        self._finished = False
+
+        if p_range == self.C_RANGE_NONE:
+            self.log(Log.C_LOG_TYPE_S, 'Started synchronously')
+        elif p_range == self.C_RANGE_THREAD:
+            self.log(Log.C_LOG_TYPE_S, 'Started as new thread')
+        else:
+            self.log(Log.C_LOG_TYPE_S, 'Started as new process')
+
+        if self._first_run:
+            for t_final in self._final_tasks:
+                t_final.register_event_handler(p_event_id=self.C_EVENT_FINISHED, p_event_handler=self.event_forwarder)
+
+            self._first_run = False
+
+        self._ctr_final_tasks = len(self._final_tasks)
+
+        for task in self._entry_tasks: 
+            task.run( p_range=p_range, p_kwargs=p_kwargs)
+
+        if p_wait: self.wait_async_tasks()
+
+
+## -------------------------------------------------------------------------------------------------
+    def event_forwarder(self, p_event_id, p_event_object:Event):
+        """
+        Internally used to raise event C_EVENT_FINISHED on workflow level if all final tasks have
+        been finished.
+
+        Parameters
+        ----------
+        p_event_id 
+            Event id.
+        p_event_object : Event
+            Event object with further context informations.
+        """
+
+        if self._ctr_final_tasks > 1:
+            self._ctr_final_tasks -= 1
+        else:
+            self.log(Log.C_LOG_TYPE_S, 'Stopped')
+            self._finished = True
+            self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self) )
+
+
+## -------------------------------------------------------------------------------------------------
+    def wait_async_tasks(self):
+        """
+        Waits until all internal asynchonous tasks are finished.
+        """
+
+        while self._finished == False: sleep(0.00001)

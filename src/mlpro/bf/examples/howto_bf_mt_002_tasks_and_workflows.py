@@ -5,11 +5,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-10-01  1.0.0     DA       Creation/release
+## -- 2022-10-03  1.0.0     DA       Creation/release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-01)
+Ver. 1.0.0 (2022-10-03)
 
 This module demonstrates the use of tasks and workflows as part of MLPro's multiprocessing concept.
 To this regard, we implement an own task class, instantiate 9 task objects based on it, and add
@@ -68,6 +68,11 @@ class MyShared (mt.Shared):
         return self._results
 
 
+## -------------------------------------------------------------------------------------------------
+    def clear_results(self):
+        self._results.clear()
+
+
 
 
 
@@ -119,7 +124,7 @@ class MyTask (mt.Task):
 
         # 3 Sub-task can optionally store resuls in the shared object.
         self._so.lock()
-        self._so.add_result( [tid, result] )
+        self._so.add_result( [self.get_name(), result] )
         self._so.unlock()
 
 
@@ -129,7 +134,7 @@ class MyTask (mt.Task):
 # 1 Preparation of execution
 if __name__ == "__main__":
     # 1.1 Preparation for demo mode
-    duration    = timedelta(0,0,500000)
+    duration    = timedelta(0,1,0)
     pause_sec   = 5
     logging     = Log.C_LOG_ALL
 
@@ -142,14 +147,14 @@ else:
 
 
 # 2 Create and run a single task as process
-t   = MyTask( p_duration=duration, 
-              p_range_max=mt.Task.C_RANGE_PROCESS, 
-              p_class_shared=MyShared, 
-              p_logging=logging )
+task = MyTask( p_duration=duration, 
+               p_range_max=mt.Task.C_RANGE_PROCESS, 
+               p_class_shared=MyShared, 
+               p_logging=logging )
 
-t.run(p_range=mt.Task.C_RANGE_PROCESS, p_wait=True)
+task.run(p_range=mt.Task.C_RANGE_PROCESS, p_wait=True)
 
-print('Result in shared object:\n', t.get_so().get_results())
+task.log(Log.C_LOG_TYPE_I, 'Result in shared object:\n', task.get_so().get_results())
 
 
 
@@ -158,7 +163,7 @@ print('Result in shared object:\n', t.get_so().get_results())
 # 3.1 Create a couple of tasks
 t1a = MyTask( p_duration=duration, p_name='t1a', p_logging=logging )
 t1b = MyTask( p_duration=duration, p_name='t1b', p_logging=logging )
-t1c = MyTask( p_duration=duration, p_name='t1b', p_logging=logging )
+t1c = MyTask( p_duration=duration, p_name='t1c', p_logging=logging )
 
 t2a = MyTask( p_duration=duration, p_name='t2a', p_logging=logging )
 t2b = MyTask( p_duration=duration, p_name='t2b', p_logging=logging )
@@ -170,37 +175,38 @@ t3c = MyTask( p_duration=duration, p_name='t3c', p_logging=logging )
 
 
 # 3.2 Create a workflow and add the tasks
-wf = mt.Workflow( p_name='wf1', p_range=mt.Workflow.C_RANGE_PROCESS, p_class_shared=MyShared, p_logging=logging )
+wf = mt.Workflow( p_name='wf1', 
+                  p_range_max=mt.Workflow.C_RANGE_THREAD, 
+                  p_class_shared=MyShared, 
+                  p_logging=logging )
 
-# 3.1 At first we add three tasks that build the starting points of our workflow
+# 3.2.1 At first we add three tasks that build the starting points of our workflow
 wf.add_task( p_task=t1a )
 wf.add_task( p_task=t1b )
 wf.add_task( p_task=t1c )
 
-# 3.2 Then, we add three further tasks that shall start when their predecessor tasks have finished
+# 3.2.2 Then, we add three further tasks that shall start when their predecessor tasks have finished
 wf.add_task( p_task=t2a, p_pred_tasks=[t1a] )
 wf.add_task( p_task=t2b, p_pred_tasks=[t1b] )
 wf.add_task( p_task=t2c, p_pred_tasks=[t1c] )
 
-# 3.3 Finally, we add three further tasks that build the end of our task chains
+# 3.2.3 Finally, we add three further tasks that build the end of our task chains
 wf.add_task( p_task=t3a, p_pred_tasks=[t2a] )
 wf.add_task( p_task=t3b, p_pred_tasks=[t2b] )
 wf.add_task( p_task=t3c, p_pred_tasks=[t2c] )
 
-exit()
 
-# 3.4 Run the workflow
+# 3.3 Run the workflow
 
-# 3.4.1 Synchronous
+# 3.3.1 Synchronous run
 wf.run( p_range=mt.Workflow.C_RANGE_NONE, p_wait=True )
+wf.log(Log.C_LOG_TYPE_I, 'Result in shared object:\n', wf.get_so().get_results())
 
+# 3.3.2 Clear result list in shared object and wait for next run
+wf.get_so().clear_results()
+wf.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
+sleep(pause_sec)
 
-
-# 3.4.2 Multithreading
-wf.run( p_range=mt.Workflow.C_RANGE_THREAD, p_wait=True )
-
-# 3.4.3 Multiprocessing (This will fail. See log output.)
-try:
-    wf.run( p_range=mt.Workflow.C_RANGE_THREAD, p_wait=True )
-except:
-    pass
+# 3.3.3 Multithreading run
+wf.run( p_range=mt.Workflow.C_RANGE_THREAD, p_wait=True)
+wf.log(Log.C_LOG_TYPE_I, 'Result in shared object:\n', wf.get_so().get_results())
