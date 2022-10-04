@@ -8,11 +8,11 @@
 ## -- 2022-08-27  0.0.0     DA       Creation 
 ## -- 2022-09-10  0.1.0     DA       Initial class definition
 ## -- 2022-09-30  0.5.0     DA       Implementation of classes Range, Shared, Async
-## -- 2022-10-03  1.0.0     DA       Implementation of classes Task, Workflow
+## -- 2022-10-04  1.0.0     DA       Implementation of classes Task, Workflow
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-03)
+Ver. 1.0.0 (2022-10-04)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects.
@@ -610,8 +610,8 @@ class Workflow (Task):
     ----------
     p_name : str
         Optional name of the task. Default is None.
-    p_range : int
-        Range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_range_max : int
+        Range of asynchonicity. See class Range. Default is Range.C_RANGE_THREAD.
     p_class_shared
         Optional class for a shared object (class Shared or a child class of Shared)
     p_logging
@@ -626,7 +626,7 @@ class Workflow (Task):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name:str=None,
-                  p_range_max=Async.C_RANGE_PROCESS, 
+                  p_range_max=Async.C_RANGE_THREAD, 
                   p_class_shared=None, 
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -635,7 +635,9 @@ class Workflow (Task):
         self._entry_tasks   = []
         self._final_tasks   = []
         self._first_run     = True
-        self._finished      = True
+
+        self._finished      = mt.Event()
+        self._finished.clear()
 
         super().__init__( p_name=p_name,
                           p_range_max=p_range_max,
@@ -712,7 +714,7 @@ class Workflow (Task):
                 
             for t_pred in p_pred_tasks: 
                 t_pred.register_event_handler(p_event_id=self.C_EVENT_FINISHED, p_event_handler=p_task.run_on_event)
-                self._final_tasks.remove(t_pred)
+                if t_pred in self._final_tasks: self._final_tasks.remove(t_pred)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -732,7 +734,7 @@ class Workflow (Task):
             Further parameters handed over to custom method _run().
         """
 
-        self._finished = False
+        self._finished.clear()
 
         if p_range == self.C_RANGE_NONE:
             self.log(Log.C_LOG_TYPE_S, 'Started synchronously')
@@ -773,14 +775,14 @@ class Workflow (Task):
             self._ctr_final_tasks -= 1
         else:
             self.log(Log.C_LOG_TYPE_S, 'Stopped')
-            self._finished = True
+            self._finished.set()
             self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self) )
 
 
 ## -------------------------------------------------------------------------------------------------
     def wait_async_tasks(self):
         """
-        Waits until all internal asynchonous tasks are finished.
+        Waits until all tasks are finished.
         """
 
-        while self._finished == False: sleep(0.00001)
+        self._finished.wait()
