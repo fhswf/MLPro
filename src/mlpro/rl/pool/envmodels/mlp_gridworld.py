@@ -129,7 +129,8 @@ class GridWorldAFct(TorchAFct):
         
 ## -------------------------------------------------------------------------------------------------
     def _setup_model(self):
-        self.net_model = GridWorldMLPModel(self._input_space, self._output_space)
+        self.net_model = GridWorldMLPModel(self._input_space.get_num_dim(),
+                                           self._output_space.get_num_dim())
         self.optimizer = torch.optim.Adam(self.net_model.parameters(), lr=3e-4)
         self.criterion = torch.nn.MSELoss()
         self.train_model = True
@@ -206,8 +207,7 @@ class MLPEnvModel(GridWorld, EnvModel):
         
         # Setup Adaptive Function
         afct_strans = AFctSTrans(
-            GridWorldAFct(int(self._state_space.get_num_dim()+self._action_space.get_num_dim()),
-                          int(self._state_space.get_num_dim()+1)),
+            GridWorldAFct,
             p_state_space=self._state_space,
             p_action_space=self._action_space,
             p_threshold=1.8,
@@ -220,7 +220,7 @@ class MLPEnvModel(GridWorld, EnvModel):
             self,
             p_observation_space=self._state_space,
             p_action_space=self._action_space,
-            p_latency=timedelta(seconds=self.dt),
+            p_latency=timedelta(seconds=0.1),
             p_afct_strans=afct_strans,
             p_afct_reward=None,
             p_afct_success=None,

@@ -78,30 +78,32 @@ class ScenarioGridWorld(RLScenario):
 
 
 
-# 2 Create scenario and run the scenario
+# 2 Train agent in scenario
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit         = 200
-    logging             = Log.C_LOG_ALL
-    visualize           = True
-    plotting            = True
+    cycle_limit = 300000
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    path        = str(Path.home())
+    plotting    = True
 else:
-    # 2.2 Parameters for unittest
-    cycle_limit         = 20
-    logging             = Log.C_LOG_NOTHING
-    visualize           = False
-    plotting            = False
+    # 2.2 Parameters for internal unit test
+    cycle_limit = 100
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    path        = None
+    plotting    = False
 
-
-
-# 3 Create your scenario and run some cycles 
-myscenario  = ScenarioGridWorld(
-    p_mode=Mode.C_MODE_SIM,
-    p_ada=True,
+training = RLTraining(
+    p_scenario_cls=ScenarioGridWorld,
     p_cycle_limit=cycle_limit,
-    p_visualize=visualize,
-    p_logging=logging
+    p_cycles_per_epi_limit=100,
+    p_collect_states=True,
+    p_collect_actions=True,
+    p_collect_rewards=True,
+    p_collect_training=True,
+    p_path=path,
+    p_logging=logging,
 )
 
-myscenario.reset(p_seed=3)
-myscenario.run() 
+training.run()
