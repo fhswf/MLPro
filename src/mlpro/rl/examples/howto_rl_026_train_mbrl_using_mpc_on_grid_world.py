@@ -29,7 +29,8 @@ from mlpro.rl.models import *
 from mlpro.rl.pool.envs.gridworld import *
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 from pathlib import Path
-
+from mlpro.rl.pool.actionplanner.mpc import MPC
+from mlpro.rl.pool.envmodels.mlp_gridworld import MLPEnvModel
 
 
 
@@ -53,12 +54,26 @@ class ScenarioGridWorld(RLScenario):
                                         p_ada=1,
                                         p_logging=p_logging)
 
+        mb_training_param = dict(p_cycle_limit=100,
+                                 p_cycles_per_epi_limit=100,
+                                 p_max_stagnations=0,
+                                 p_collect_states=False,
+                                 p_collect_actions=False,
+                                 p_collect_rewards=False,
+                                 p_collect_training=False)
+
         return Agent(
             p_policy=policy_random,  
-            p_envmodel=None,
+            p_envmodel=MLPEnvModel(),
+            p_em_acc_thsld=0.5,
+            p_action_planner=MPC(),
+            p_predicting_horizon=5,
+            p_controlling_horizon=2,
+            p_planning_width=5,
             p_name='Smith',
             p_ada=p_ada,
-            p_logging=p_logging
+            p_logging=p_logging,
+            **mb_training_param
         )
 
 
