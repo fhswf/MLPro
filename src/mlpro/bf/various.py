@@ -31,10 +31,13 @@
 ## -- 2021-12-31  1.7.4     DA       Class Log: udpated docstrings
 ## -- 2022-07-27  1.7.5     DA       A little refactoring
 ## -- 2022-08-21  1.7.6     DA       A little refactoring
+## -- 2022-10-02  1.8.0     DA       Class Log:
+## --                                - new methods Log.get_name(), Log.set_name()
+## --                                - method log(): C_NAME in quotation marks
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.6 (2022-08-21)
+Ver. 1.8.0 (2022-10-02)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer...
@@ -200,6 +203,16 @@ class Log:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_name(self) -> str:
+        return self.C_NAME
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_name(self, p_name:str):
+        self.C_NAME = p_name
+
+
+## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         """
         Sets new log level. 
@@ -249,7 +262,7 @@ class Log:
 
         print(col + '%04d-%02d-%02d  %02d:%02d:%02d.%06d ' % (
         now.year, now.month, now.day, now.hour, now.minute, now.second, now.microsecond),
-              p_type + '  ' + self.C_TYPE + ' ' + self.C_NAME + ':', *p_args, self.C_COL_RESET)
+              p_type + '  ' + self.C_TYPE + ' "' + self.C_NAME + '":', *p_args, self.C_COL_RESET)
 
 
 
