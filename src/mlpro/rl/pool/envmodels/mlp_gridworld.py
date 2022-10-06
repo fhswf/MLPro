@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-05  0.0.0     SY       Creation
-## -- 2022-??-??  1.0.0     SY       Released first version
+## -- 2022-10-06  1.0.0     SY       Released first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-??-??)
+Ver. 1.0.0 (2022-10-06)
 
 This module provides Environment Model based on MLP Neural Network for grid world environment.
 """
@@ -55,13 +55,13 @@ class GridWorldMLPModel(torch.nn.Module):
 
         self.model = torch.nn.Sequential(
             init_(torch.nn.Linear(self.n_input,self.hidden)),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             init_(torch.nn.Linear(self.hidden,self.hidden)),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             init_(torch.nn.Linear(self.hidden,self.hidden)),
-            torch.nn.Tanh(),
+            torch.nn.ReLU(),
             init_(torch.nn.Linear(self.hidden,self.n_output)),
-            torch.nn.Tanh()
+            torch.nn.ReLU()
             )
             
             
@@ -69,8 +69,8 @@ class GridWorldMLPModel(torch.nn.Module):
     def forward(self, p_input):
         BatchSize = p_input.shape[0]
         out = self.model(p_input)   
-        out = out2.reshape(BatchSize,self.n_output)
-        return out
+        out = out.reshape(BatchSize, self.n_output)
+        return torch.round(out)
               
 
             
@@ -137,10 +137,9 @@ class GridWorldAFct(TorchAFct):
         
         
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
-        # pre process inputs and outputs
+    def _adapt(self, p_input, p_output) -> bool:
 
-        self._add_buffer(IOElement(model_input, model_output))
+        self._add_buffer(IOElement(p_input.get_values(), p_output.get_values()))
 
         if self._buffer.get_internal_counter() % 100 != 0:
             return False
@@ -162,8 +161,8 @@ class GridWorldAFct(TorchAFct):
             self.net_model.train()
 
             for i, (In, Label) in enumerate(trainer):
-                outputs = self.net_model(In)
-                loss = self.loss_dyn(outputs, Label)
+                outputs = self.net_model(In.type(torch.FloatTensor))
+                loss = self.criterion(outputs, Label)
                 self.optimizer.zero_grad()
                 loss.backward()
                 self.optimizer.step()
@@ -172,8 +171,8 @@ class GridWorldAFct(TorchAFct):
 
             self.net_model.eval()
             for i, (In, Label) in enumerate(tester):
-                outputs = self.net_model(In)
-                loss = self.loss_dyn(outputs, Label)
+                outputs = self.net_model(In.type(torch.FloatTensor))
+                loss = self.criterion(outputs, Label)
                 test_loss += loss.item()
 
             if test_loss/len(tester) < 5e-9:
@@ -192,7 +191,7 @@ class GridWorldAFct(TorchAFct):
                 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MLPEnvModel(GridWorld, EnvModel):
+class MLPEnvModel(EnvModel):
     C_NAME = "MLP Env Model for Grid World"
     
     
@@ -203,13 +202,14 @@ class MLPEnvModel(GridWorld, EnvModel):
         p_logging=False,
     ):
 
-        GridWorld.__init__(self, p_logging=p_logging, p_action_type=GridWorld.C_ACTION_TYPE_DISC_2D)
+        self.grid_world = GridWorld(p_logging=p_logging,
+                                    p_action_type=GridWorld.C_ACTION_TYPE_DISC_2D)
         
         # Setup Adaptive Function
         afct_strans = AFctSTrans(
             GridWorldAFct,
-            p_state_space=self._state_space,
-            p_action_space=self._action_space,
+            p_state_space=self.grid_world._state_space,
+            p_action_space=self.grid_world._action_space,
             p_threshold=1.8,
             p_buffer_size=20000,
             p_ada=p_ada,
@@ -218,8 +218,8 @@ class MLPEnvModel(GridWorld, EnvModel):
 
         EnvModel.__init__(
             self,
-            p_observation_space=self._state_space,
-            p_action_space=self._action_space,
+            p_observation_space=self.grid_world._state_space,
+            p_action_space=self.grid_world._action_space,
             p_latency=timedelta(seconds=0.1),
             p_afct_strans=afct_strans,
             p_afct_reward=None,
@@ -230,4 +230,21 @@ class MLPEnvModel(GridWorld, EnvModel):
         )
 
         self.reset()
+        
+        
+## -------------------------------------------------------------------------------------------------
+    def get_state(self) -> State:
+        return self.grid_world._state
 
+## -------------------------------------------------------------------------------------------------
+    def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
+        return self.grid_world._compute_reward(p_state_old, p_state_new)
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_success(self, p_state:State) -> bool:
+        return self.grid_world._compute_success(p_state)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_broken(self, p_state:State) -> bool:
+        return self.grid_world._compute_broken(p_state)

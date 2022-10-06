@@ -1,17 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
 ## -- Package : mlpro
-## -- Module  : howto_rl_026_train_mbrl_using_mpc_on_grid_world.py
+## -- Module  : howto_rl_023_train_mbrl_using_mpc_on_grid_world.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-19  0.0.0     SY       Creation
-## -- 2022-??-??  1.0.0     SY       Release first version
+## -- 2022-10-06  1.0.0     SY       Release first version
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 0.0.0 (2022-09-19)
+Ver. 1.0.0 (2022-10-06)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem.
 
@@ -65,7 +65,7 @@ class ScenarioGridWorld(RLScenario):
         return Agent(
             p_policy=policy_random,  
             p_envmodel=MLPEnvModel(),
-            p_em_acc_thsld=0.5,
+            p_em_acc_thsld=0.2,
             p_action_planner=MPC(),
             p_predicting_horizon=5,
             p_controlling_horizon=2,
@@ -81,7 +81,7 @@ class ScenarioGridWorld(RLScenario):
 # 2 Train agent in scenario
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit = 300000
+    cycle_limit = 10000
     logging     = Log.C_LOG_ALL
     visualize   = True
     path        = str(Path.home())
