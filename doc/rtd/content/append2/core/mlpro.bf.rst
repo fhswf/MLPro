@@ -69,11 +69,11 @@ Exceptions
    :show-inheritance:
 
 
-Multiprocessing
----------------
+Multitasking
+------------
 
-.. image:: images/bf/MLPro-BF-MP_class_diagram.drawio.png
-.. automodule:: mlpro.bf.mp
+.. image:: images/bf/MLPro-BF-MT_class_diagram.drawio.png
+.. automodule:: mlpro.bf.mt
    :members:
    :undoc-members:
    :show-inheritance:
