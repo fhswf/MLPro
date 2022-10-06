@@ -8,6 +8,7 @@
 ## -- 2022-09-16  0.0.0     LSB      Creation
 ## -- 2022-09-25  1.0.0     LSB      Release of first version
 ## -- 2022-10-01  1.0.1     LSB      Renormalization
+## -- 2022-10-06  1.0.1     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -31,10 +32,12 @@ from mlpro.bf.math.normalizers import *
 from mlpro.bf.various import Log
 
 # checking for internal unit tests
+p_logging = False
+
 if __name__ == '__main__':
-    p_logging = Log.C_LOG_ALL
-else:
-    p_logging = Log.C_LOG_NOTHING
+    p_printing = True
+
+
 
 
 # Creating Numpy dummy Dataset
@@ -54,105 +57,68 @@ my_state = Element(my_set)
 my_state.set_values([19,8])
 
 
+# Creating Normalizer object
+my_normalizer_minmax = NormalizerMinMax()
+my_normalizer_ztrans = NormalizerZTrans()
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class NormalizerDemo(Log):
-
-    C_NAME = 'Normalizer'
-    C_TYPE = 'Demo Class'
+# 1. Setting parameters for NormalizationZTrans
+my_normalizer_ztrans.update_parameters(my_dataset)
+if p_printing:
+    print('Parameters Updated for the Z transformer\n\n')
 
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_normalizer_minmax:NormalizerMinMax, p_normalizer_Ztransform:NormalizerZTrans, p_logging=Log.C_LOG_ALL):
+# 2. Normalizing a numpy array/ a dataset (as an array) in Z transformation
+normalized_data = my_normalizer_ztrans.normalize(p_data=my_dataset)
+if p_printing:
+    print('Normalized Value:\n', normalized_data,'\n\n')
 
 
-        self.normalizer_minmax = p_normalizer_minmax
-        self.normalizer_ztransform = p_normalizer_Ztransform
-        super().__init__(p_logging=p_logging)
+# 3. De-normalizing a numpy array/ a dataset (as an array) in Z transformation
+denormalized_data = my_normalizer_ztrans.denormalize(p_data=normalized_data)
+if p_printing:
+    print('Deormalized Value:\n', denormalized_data,'\n\n')
 
 
-## -------------------------------------------------------------------------------------------------
-    def normalize_minmax(self, p_data: Union[Element, np.ndarray]):
-        normalized_value = self.normalizer_minmax.normalize(p_data=p_data)
-        self.log(self.C_LOG_TYPE_I, "Normalized Value:\n", normalized_value.get_values())
-        return normalized_value
+# 4. Setting parameters for Normalization
+my_normalizer_minmax.update_parameters(my_set)
+if p_printing:
+    print('Parameters Updated for the MinMax Normalizer\n\n')
 
 
-## -------------------------------------------------------------------------------------------------
-    def denormalize_minmax(self, p_data:Union[Element, np.ndarray]):
-        denormalized_value = self.normalizer_minmax.denormalize(p_data=p_data)
-        self.log(self.C_LOG_TYPE_I,"Denormalized Value:\n", denormalized_value.get_values())
-        return denormalized_value
+# 5. Normalizing using MinMax
+normalized_state = my_normalizer_minmax.normalize(my_state)
+if p_printing:
+    print('Normalized Value:\n', normalized_state.get_values(),'\n\n')
 
 
-## -------------------------------------------------------------------------------------------------
-    def renormalize_minmax(self, p_data:Union[Element, np.ndarray]):
-        re_normalized = self.normalizer_minmax.renormalize(p_data)
-        self.log(self.C_LOG_TYPE_I, 'Renoramalized Value:\n', re_normalized.get_values())
+# 6. De-normalizing using MinMAx
+denormalized_state = my_normalizer_minmax.denormalize(normalized_state)
+if p_printing:
+    print('Deormalized Value:\n', denormalized_state.get_values(),'\n\n')
 
 
-## -------------------------------------------------------------------------------------------------
-    def normalize_ztrans(self, p_data: Union[Element, np.ndarray]):
-        normalized_value = self.normalizer_ztransform.normalize(p_data=p_data)
-        self.log(self.C_LOG_TYPE_I, "Normalized Value:\n", normalized_value)
-        return normalized_value
-
-
-## -------------------------------------------------------------------------------------------------
-    def denormalize_ztrans(self, p_data:Union[Element, np.ndarray]):
-        denormalized_value = self.normalizer_ztransform.denormalize(p_data=p_data)
-        self.log(self.C_LOG_TYPE_I,"Denormalized Value:\n", denormalized_value)
-        return denormalized_value
-
-
-
-
-
-
-
-# 1. Creating Normalizer Object
-my_normalizer = NormalizerDemo(p_normalizer_minmax=NormalizerMinMax(),p_normalizer_Ztransform=NormalizerZTrans())
-
-
-# 2. Setting parameters for NormalizationZTrans
-my_normalizer.normalizer_ztransform.update_parameters(my_dataset)
-
-
-# 3. Normalizing a numpy array/ a dataset (as an array) in Z transformation
-normalized_data = my_normalizer.normalize_ztrans(p_data=my_dataset)
-
-
-# 4. De-normalizing a numpy array/ a dataset (as an array) in Z transformation
-denormalized_data = my_normalizer.denormalize_ztrans(p_data=normalized_data)
-
-
-# 6. Setting parameters for Normalization
-my_normalizer.normalizer_minmax.update_parameters(my_set)
-
-
-# 7. Normalizing using MinMax
-normalized_state = my_normalizer.normalize_minmax(my_state)
-
-
-# 8. De-normalizing using MinMAx
-denormalized_state = my_normalizer.denormalize_minmax(normalized_state)
-
-
-# 9. Updating the boundaries of the dimension
+# 7. Updating the boundaries of the dimension
 my_set.get_dim(p_id=my_set.get_dim_ids()[0]).set_boundaries([-10,51])
 my_set.get_dim(p_id=my_set.get_dim_ids()[1]).set_boundaries([-5,10])
+if p_printing:
+    print('Boundareis Updated\n\n')
 
 
-# 10. updating tbe normalization parameters for the new set
-my_normalizer.normalizer_minmax.update_parameters(my_set)
+# 8. updating tbe normalization parameters for the new set
+my_normalizer_minmax.update_parameters(my_set)
+if p_printing:
+    print('Parameters updated for minmax normalizer\n\n')
 
 
-# 11. renormalizing the previously normalized data with the new parameters
-re_normalized_state = my_normalizer.renormalize_minmax(normalized_state)
+# 9. renormalizing the previously normalized data with the new parameters
+re_normalized_state = my_normalizer_minmax.renormalize(normalized_state)
+if p_printing:
+    print('Reormalized Value:\n', re_normalized_state.get_values(),'\n\n')
 
 
-# 12. Validating the renormalization
-normalized_state = my_normalizer.normalize_minmax(my_state)
+# 10. Validating the renormalization
+normalized_state = my_normalizer_minmax.normalize(my_state)
+if p_printing:
+    print('Normalized Value:\n', normalized_state.get_values(),'\n\n')
