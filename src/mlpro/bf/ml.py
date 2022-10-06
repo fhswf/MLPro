@@ -39,18 +39,18 @@
 ## --                                setting up environment mode
 ## -- 2022-08-22  1.4.0     DA       Class Model: event management added
 ## -- 2022-09-01  1.4.1     SY       Renaming maturity to accuracy
-## -- 2022-09-11  1.5.0     DA       New classes MLTask and MLWorkflow
-## -- 2022-09-22  1.5.1     DA       Renaming of module bf.mp to bf.mt
+## -- 2022-10-06  1.5.0     DA       New classes MLTask and MLWorkflow
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.1 (2022-09-22)
+Ver. 1.5.0 (2022-10-06)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
 
 import sys
 from typing import Dict
+from xmlrpc.client import FastMarshaller
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
@@ -187,7 +187,7 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
     C_TYPE              = 'Model'
     C_NAME              = '????'
 
-    C_EVENT_ADAPTED     = 0
+    C_EVENT_ADAPTED     = 'ADAPTED'
 
     C_BUFFER_CLS        = Buffer       
 
@@ -1275,29 +1275,51 @@ class Training (Log):
 ## -------------------------------------------------------------------------------------------------
 class MLTask (Task, Model): 
     """
-    ...
+    Special ML model template that can be used as task standalone or in a workflow. See classes
+    Task and Workflow of module mlpro.bf.mt or the online documentation for more informations about
+    multitasking in MLPro.
 
     Parameters
     ----------
-
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_autorun : int
+        On value C_AUTORUN_RUN method run() is called imediately during instantiation.
+        On vaule C_AUTORUN_LOOP method run_loop() is called.
+        Value C_AUTORUN_NONE (default) causes an object instantiation without starting further
+        actions.    
+    p_class_shared
+        Optional class for a shared object (class Shared or a child class of Shared)
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
     """
 
     C_TYPE          = 'ML-Task'
     
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_range=Async.C_RANGE_PROCESS, 
+                  p_name:str=None,
+                  p_range_max=Async.C_RANGE_PROCESS, 
                   p_autorun=Task.C_AUTORUN_NONE, 
-                  p_cls_shared=None, 
+                  p_class_shared=None, 
                   p_buffer_size=0,
                   p_ada=True,
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
         Task.__init__( self,
-                       p_range=p_range,
+                       p_name=p_name,
+                       p_range_max=p_range_max,
                        p_autorun=p_autorun,
-                       p_cls_shared=p_cls_shared,
+                       p_class_shared=p_class_shared,
                        p_logging=p_logging,
                        p_kwargs = p_kwargs )
 
@@ -1315,28 +1337,41 @@ class MLTask (Task, Model):
 ## -------------------------------------------------------------------------------------------------
 class MLWorkflow (Workflow, Model):
     """
-    ...
+    Special ML model template that can be used as a workflow. See classes Task and Workflow of 
+    module mlpro.bf.mt or the online documentation for more informations about multitasking in MLPro.
 
     Parameters
     ----------
-    
-    """
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_class_shared
+        Optional class for a shared object (class Shared or a child class of Shared)
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
+   """
 
     C_TYPE          = 'ML-Workflow'
+    C_NAME          = ''
     
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_range=Async.C_RANGE_PROCESS, 
-                  p_autorun=Task.C_AUTORUN_NONE, 
-                  p_cls_shared=None, 
+                  p_name:str=None,
+                  p_range_max=Async.C_RANGE_PROCESS, 
+                  p_class_shared=None, 
                   p_ada=True,
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
        
         Workflow.__init__( self, 
-                           p_range=p_range, 
-                           p_autorun=p_autorun, 
-                           p_cls_shared=p_cls_shared, 
+                           p_name=p_name,
+                           p_range_max=p_range_max, 
+                           p_class_shared=p_class_shared, 
                            p_logging=p_logging, 
                            **p_kwargs )
 
@@ -1346,10 +1381,96 @@ class MLWorkflow (Workflow, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def add_task(self, p_task: Task, p_pred_tasks: list = None):
+        super().add_task(p_task, p_pred_tasks)
+
+        try:
+            # Set adaptivity of new task
+            p_task.switch_adaptivity(self._adaptivity)
+
+            # Hyperparameter space of workflow is extended by dimensions of hyperparameter space of
+            # the new task
+            task_hp_set = p_task.get_hyperparam().get_related_set()
+
+            for dim_id in task_hp_set.get_dim_ids():
+                self._hyperparam_space.add_dim(p_dim=task_hp_set.get_dim(p_id=dim_id)) 
+
+            # Hyperparameter tuple of workflow is extended by the hyperparameter tuple of the new task
+            if self._hyperparam_tuple is None: 
+                self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+
+            task_hp_tuple = p_task.get_hyperparam()
+            if task_hp_tuple is not None:
+                self._hyperparam_tuple.add_hp_tuple(p_hpt=p_task.get_hyperparam())
+
+        except:
+            pass
+
+
+## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada: bool):
-        raise NotImplementedError
+        for t in self._tasks:
+            try:
+                t.switch_adaptivity(p_ada=p_ada)
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        for t in self._tasks:
+            try:
+                t.set_random_seed(p_seed=p_seed)
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_adapted(self) -> bool:
+        adapted = False
+
+        for t in self._tasks:
+            try:
+                adapted = adapted or t.get_adapted()
+            except:
+                pass
+
+        return adapted
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, *p_args) -> bool:
-        raise NotImplementedError
+        adapted = False
+
+        for t in self._tasks:
+            try:
+                adapted = adapted or t.adapt(p_args=p_args)
+            except:
+                pass
+
+        return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_buffer(self):
+        for t in self._tasks:
+            try:
+                t.clear_buffer()
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_accuracy(self):
+        accuracy       = 0
+        adaptive_tasks = 0
+
+        for t in self._tasks:
+            try:
+                accuracy       += t.get_accuracy()
+                adaptive_tasks += 1
+            except:
+                pass
+
+        if adaptive_tasks > 0: return accuracy / adaptive_tasks
+        else: return 1

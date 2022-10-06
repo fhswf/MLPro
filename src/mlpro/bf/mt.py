@@ -9,10 +9,11 @@
 ## -- 2022-09-10  0.1.0     DA       Initial class definition
 ## -- 2022-09-30  0.5.0     DA       Implementation of classes Range, Shared, Async
 ## -- 2022-10-04  1.0.0     DA       Implementation of classes Task, Workflow
+## -- 2022-10-06  1.0.1     DA       Class Task: event definition as string
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-04)
+Ver. 1.0.1 (2022-10-06)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects.
@@ -405,7 +406,7 @@ class Task (Async, EventManager):
     C_AUTURUN_RUN       = 1
     C_AUTORUN_LOOP      = 2
 
-    C_EVENT_FINISHED    = 0
+    C_EVENT_FINISHED    = 'FINISHED'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
