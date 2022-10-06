@@ -21,10 +21,11 @@
 ## -- 2022-09-11  1.5.0     DA       - Class Dimension: new method set_boundaries (event)
 ## --                                - Class TrendAnalyzer removed
 ## --                                - Code reformatting
+## -- 2022-10-06  1.5.1     DA       Class Dimension: event C_EVENT_BOUNDARIES converted to string
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-09-11)
+Ver. 1.5.1 (2022-10-06)
 
 This module provides basic mathematical classes.
 """
@@ -68,12 +69,12 @@ class Dimension (EventManager):
 
     """
 
-    C_BASE_SET_R        = 'R'   # real numbers
-    C_BASE_SET_N        = 'N'   # natural numbers
-    C_BASE_SET_Z        = 'Z'   # integer numbers
-    C_BASE_SET_DO       = 'DO'  # (big) data objects (like images, point clouds, ...)
+    C_BASE_SET_R        = 'R'           # real numbers
+    C_BASE_SET_N        = 'N'           # natural numbers
+    C_BASE_SET_Z        = 'Z'           # integer numbers
+    C_BASE_SET_DO       = 'DO'          # (big) data objects (like images, point clouds, ...)
 
-    C_EVENT_BOUNDARIES  = 0     # raised by method set_boundaries()
+    C_EVENT_BOUNDARIES  = 'BOUNDARIES'  # raised by method set_boundaries()
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
