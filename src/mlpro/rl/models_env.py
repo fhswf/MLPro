@@ -31,7 +31,8 @@
 ## -- 2022-02-28  1.4.2     SY       - Class EnvModel : redefine method _init_hyperparam()
 ## --                                - Refactoring due to auto generated ID in class Dimension
 ## -- 2022-08-15  1.4.3     SY       Renaming maturity to accuracy
-## -- 2022-10-06  1.4.4     SY       Handling numpy array on _adapt method of AFctSTrans class
+## -- 2022-10-06  1.4.4     SY       - Handling numpy array on _adapt method of AFctSTrans class
+## --                                - Same issue on simulate_reaction method of AFctSTrans class
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -253,7 +254,10 @@ class AFctSTrans(AFctBase):
     def simulate_reaction(self, p_state: State, p_action: Action) -> State:
         # 1 Create input vector from given state and action
         input_values = p_state.get_values().copy()
-        input_values.extend(p_action.get_sorted_values())
+        if isinstance(input_values, np.ndarray):
+            input_values = np.append(input_values, p_action.get_sorted_values())
+        else:
+            input_values.extend(p_action.get_sorted_values())
         input = Element(self._input_space)
         input.set_values(input_values)
 
