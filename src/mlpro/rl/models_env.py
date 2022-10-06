@@ -31,10 +31,11 @@
 ## -- 2022-02-28  1.4.2     SY       - Class EnvModel : redefine method _init_hyperparam()
 ## --                                - Refactoring due to auto generated ID in class Dimension
 ## -- 2022-08-15  1.4.3     SY       Renaming maturity to accuracy
+## -- 2022-10-06  1.4.4     SY       Handling numpy array on _adapt method of AFctSTrans class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.3 (2022-08-15)
+Ver. 1.4.4 (2022-10-06)
 
 This module provides model classes for environments and environment models.
 """
@@ -280,7 +281,10 @@ class AFctSTrans(AFctBase):
         """
 
         input_values = p_state.get_values().copy()
-        input_values.extend(p_action.get_sorted_values())
+        if isinstance(input_values, np.ndarray):
+            input_values = np.append(input_values, p_action.get_sorted_values())
+        else:
+            input_values.extend(p_action.get_sorted_values())
         input = Element(self._input_space)
         input.set_values(input_values)
 
