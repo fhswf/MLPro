@@ -15,5 +15,6 @@ Both the normalizations provide following operations:
  * Renormalizing : Following the update of the normalization parameters, the previously normalized data can be renormalized based on the current parameters
 
 
-.. note::
-Please refer to :ref:`Howto BF 23 <Howto BF 023>` to know more about normalizers in MLPro
+
+* Please refer to :ref:`Howto BF 23 <Howto BF 023>` to know more about normalizers in MLPro
+* Please refer to the class diagram at :ref:`Normalizers <Normalizers>`
