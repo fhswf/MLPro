@@ -13,7 +13,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-09-25)
+Ver. 1.0.3 (2022-10-01)
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and 
 normalization by Z transformation.
 """
@@ -25,14 +25,13 @@ from typing import Union
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Normalizer:
     """
-    Base template class for normalizer objects
+    Base template class for normalizer objects.
     """
-    C_TYPE = 'Normalizer'
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self):
@@ -58,6 +57,7 @@ class Normalizer:
             Returns true after setting the parameters
         """
         self._param = p_param
+
 
 ## -------------------------------------------------------------------------------------------------
     def normalize(self, p_data:Union[Element, np.ndarray]):
@@ -101,8 +101,9 @@ class Normalizer:
         element:Element or numpy array
             Denormalized Data
         """
+
         if self._param is None:
-            raise ImplementationError('normalization parameters not set')
+            raise ImplementationError('Normalization parameters not set')
         if isinstance(p_data, Element):
             denormalized_element = Element(p_data.get_related_set())
             denormalized_element.set_values(np.multiply(p_data.get_values(), 1 / self._param[0]) + (
@@ -111,7 +112,8 @@ class Normalizer:
             denormalized_element = np.multiply(p_data, 1 / self._param[0]) + \
                                    (self._param[1] / self._param[0])
         else:
-            raise ParamError('wrong datatype provided for denormalization')
+            raise ParamError('Wrong datatype provided for denormalization')
+
         return denormalized_element
 
 
@@ -131,12 +133,12 @@ class Normalizer:
             Renormalized Data
 
         """
+        
         self._set_parameters(self._param_old)
         denormalized_element = self.denormalize(p_data)
         self._set_parameters(self._param_new)
         renormalized_element = self.normalize(denormalized_element)
         return renormalized_element
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -163,13 +165,10 @@ class Normalizer:
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerMinMax(Normalizer):
+class NormalizerMinMax (Normalizer):
     """
-    Class to normalize elements based on MinMax normalization
+    Class to normalize elements based on MinMax normalization.
     """
-
-    C_NAME = 'MinMax'
-
 
 ## -------------------------------------------------------------------------------------------------
     def update_parameters(self, p_set:Set=None, p_boundaries=None):
@@ -185,7 +184,7 @@ class NormalizerMinMax(Normalizer):
 
         Returns
         -------
-        boolean:True
+        boolean
             Returns true after setting the parameters
         """
 
@@ -217,18 +216,17 @@ class NormalizerMinMax(Normalizer):
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 class NormalizerZTrans(Normalizer):
     """
-    Class for Normalization based on Z transformation
+    Class for Normalization based on Z transformation.
     """
-    C_NAME = 'Z-Transformation'
-
 
 ## -------------------------------------------------------------------------------------------------
     def update_parameters(self, p_dataset):
         """
-        custom method to update the normalization parameters
+        Custom method to update the normalization parameters
 
         Parameters
         ----------
@@ -240,6 +238,7 @@ class NormalizerZTrans(Normalizer):
         boolean:True
             Returns true after setting the parameters
         """
+
         std = np.std(p_dataset, axis=0, dtype=np.float64)
         mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
 

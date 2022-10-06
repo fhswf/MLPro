@@ -12,7 +12,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-09-25)
+Ver. 1.0.1 (2022-10-06)
 Example file for demonstrating the use of MLPro's normalizer for normalizing and de-normalizing data.
 
 
@@ -29,11 +29,10 @@ You will learn:
 
 
 from mlpro.bf.math.normalizers import *
-from mlpro.bf.various import Log
+
+
 
 # checking for internal unit tests
-p_logging = False
-
 if __name__ == '__main__':
     p_printing = True
 
@@ -66,44 +65,44 @@ my_normalizer_ztrans = NormalizerZTrans()
 # 1. Setting parameters for NormalizationZTrans
 my_normalizer_ztrans.update_parameters(my_dataset)
 if p_printing:
-    print('Parameters Updated for the Z transformer\n\n')
+    print('Parameters updated for the Z transformer\n\n')
 
 
 # 2. Normalizing a numpy array/ a dataset (as an array) in Z transformation
 normalized_data = my_normalizer_ztrans.normalize(p_data=my_dataset)
 if p_printing:
-    print('Normalized Value:\n', normalized_data,'\n\n')
+    print('Normalized value:\n', normalized_data,'\n\n')
 
 
 # 3. De-normalizing a numpy array/ a dataset (as an array) in Z transformation
 denormalized_data = my_normalizer_ztrans.denormalize(p_data=normalized_data)
 if p_printing:
-    print('Deormalized Value:\n', denormalized_data,'\n\n')
+    print('Deormalized value:\n', denormalized_data,'\n\n')
 
 
 # 4. Setting parameters for Normalization
 my_normalizer_minmax.update_parameters(my_set)
 if p_printing:
-    print('Parameters Updated for the MinMax Normalizer\n\n')
+    print('Parameters updated for the MinMax Normalizer\n\n')
 
 
 # 5. Normalizing using MinMax
 normalized_state = my_normalizer_minmax.normalize(my_state)
 if p_printing:
-    print('Normalized Value:\n', normalized_state.get_values(),'\n\n')
+    print('Normalized value:\n', normalized_state.get_values(),'\n\n')
 
 
 # 6. De-normalizing using MinMAx
 denormalized_state = my_normalizer_minmax.denormalize(normalized_state)
 if p_printing:
-    print('Deormalized Value:\n', denormalized_state.get_values(),'\n\n')
+    print('Denormalized value:\n', denormalized_state.get_values(),'\n\n')
 
 
 # 7. Updating the boundaries of the dimension
 my_set.get_dim(p_id=my_set.get_dim_ids()[0]).set_boundaries([-10,51])
 my_set.get_dim(p_id=my_set.get_dim_ids()[1]).set_boundaries([-5,10])
 if p_printing:
-    print('Boundareis Updated\n\n')
+    print('Boundaries updated\n\n')
 
 
 # 8. updating tbe normalization parameters for the new set
@@ -115,10 +114,10 @@ if p_printing:
 # 9. renormalizing the previously normalized data with the new parameters
 re_normalized_state = my_normalizer_minmax.renormalize(normalized_state)
 if p_printing:
-    print('Reormalized Value:\n', re_normalized_state.get_values(),'\n\n')
+    print('Renormalized value:\n', re_normalized_state.get_values(),'\n\n')
 
 
 # 10. Validating the renormalization
 normalized_state = my_normalizer_minmax.normalize(my_state)
 if p_printing:
-    print('Normalized Value:\n', normalized_state.get_values(),'\n\n')
+    print('Normalized value:\n', normalized_state.get_values(),'\n\n')
