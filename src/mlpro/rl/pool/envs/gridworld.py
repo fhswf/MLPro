@@ -18,7 +18,7 @@
 ## -- 2021-12-21  1.0.8     DA       Class GridWorld: renamed method reset() to _reset()
 ## -- 2022-02-25  1.0.9     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-09-19  2.0.0     SY       Add discrete action as an option and predefined target
-## -- 2022-10-07  2.0.1     SY       Boundaries updates
+## -- 2022-10-07  2.0.1     SY       Boundaries updates and reward function updates
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -157,11 +157,11 @@ class GridWorld(Environment):
                 raise NotImplementedError('Please define p_goal_position or set p_random_goal_position to True!')
                 
         self.num_step = 0
-        self._state = self.get_state()
+        self._state = self.get_all_states()
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_state(self):
+    def get_all_states(self):
         obs = np.zeros(self.grid_size, dtype=np.float32)
         if np.allclose(self.agent_pos, self.goal_pos):
             obs[tuple(self.agent_pos)] = 3
@@ -191,19 +191,19 @@ class GridWorld(Environment):
             self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
                 
         self.num_step += 1
-        self._state = self.get_state()
+        
+        self._state = self.get_all_states()
         return self._state
         
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
-        rew = 1
         euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos).item()
-        if euclidean_distance != 0:
-            rew = 1/euclidean_distance
-        if self.num_step >= self.max_step:
-            rew -= self.max_step
+        if euclidean_distance > 0:
+            rew = -euclidean_distance
+        else:
+            rew = 1
         
         reward.set_overall_reward(rew)
         return reward
@@ -240,4 +240,3 @@ class GridWorld(Environment):
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         pass
-    
