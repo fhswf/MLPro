@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-05  0.0.0     SY       Creation
 ## -- 2022-10-06  1.0.0     SY       Released first version
+## -- 2022-10-07  1.0.1     SY       Redefine _process_action in MLPEnvModel class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-06)
+Ver. 1.0.1 (2022-10-07)
 
 This module provides Environment Model based on MLP Neural Network for grid world environment.
 """
@@ -211,7 +212,7 @@ class MLPEnvModel(EnvModel):
             p_state_space=self.grid_world._state_space,
             p_action_space=self.grid_world._action_space,
             p_threshold=1.8,
-            p_buffer_size=20000,
+            p_buffer_size=5000,
             p_ada=p_ada,
             p_logging=p_logging,
         )
@@ -248,3 +249,16 @@ class MLPEnvModel(EnvModel):
 ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state:State) -> bool:
         return self.grid_world._compute_broken(p_state)
+
+## -------------------------------------------------------------------------------------------------
+    def _process_action(self, p_action: Action) -> bool:
+    
+        self._set_state(self.simulate_reaction(self.get_state(), p_action))
+    
+        state = self.get_state()
+        state.set_success(self.compute_success(state))
+        state.set_broken(self.compute_broken(state))
+        if state.get_broken() or state.get_success():
+            state.set_terminal(True)
+    
+        return True
