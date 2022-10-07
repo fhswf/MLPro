@@ -68,8 +68,8 @@ class ScenarioGridWorld(RLScenario):
             p_em_acc_thsld=0.2,
             p_action_planner=MPC(),
             p_predicting_horizon=5,
-            p_controlling_horizon=2,
-            p_planning_width=5,
+            p_controlling_horizon=1,
+            p_planning_width=50,
             p_name='Smith',
             p_ada=p_ada,
             p_logging=p_logging,
@@ -81,7 +81,7 @@ class ScenarioGridWorld(RLScenario):
 # 2 Train agent in scenario
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit = 10000
+    cycle_limit = 50000
     logging     = Log.C_LOG_ALL
     visualize   = True
     path        = str(Path.home())
