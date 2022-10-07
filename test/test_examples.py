@@ -13,10 +13,12 @@
 ## -- 2022-02-28  1.0.4     SY       Howto 07 of basic functions is disabled
 ## -- 2022-05-29  1.1.0     DA       Update howto list after refactoring of all howto files
 ## -- 2022-06-21  1.1.1     SY       Update howto 20 and 21 RL
+## -- 2022-09-13  1.1.2     SY       Add howto 22 RL and 03 GT
+## -- 2022-10-06  1.1.3     SY       Add howto 23
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-06-21)
+Ver. 1.1.3 (2022-10-06)
 
 Unit test for all examples available.
 """
@@ -61,10 +63,13 @@ howto_list = {
     "rl_019": "mlpro.rl.examples.howto_rl_019_train_and_reload_single_agent",
     "rl_020": "mlpro.rl.examples.howto_rl_020_run_double_pendulum_with_random_actions",
     # "rl_021": "mlpro.rl.examples.howto_rl_021_train_wrapped_sb3_policy_on_doublependulum",
+    # "rl_022": "mlpro.rl.examples.howto_rl_022_setup_and_run_sim-mpps_with_random_actions",
+    "rl_023": "mlpro.rl.examples.howto_rl_023_train_mbrl_using_mpc_on_grid_world",
 
 # Game Theory:
     "gt_001": "mlpro.gt.examples.howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board",
-    "gt_002": "mlpro.gt.examples.howto_gt_002_train_own_multi_player_with_multicartpole_game_board"
+    "gt_002": "mlpro.gt.examples.howto_gt_002_train_own_multi_player_with_multicartpole_game_board",
+    # "gt_003": "mlpro.gt.examples.howto_gt_003_setup_and_run_sim-mpps_with_random_actions",
 }
 
 
