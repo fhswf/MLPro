@@ -15,7 +15,17 @@ Mathematics
 -----------
 
 .. image:: images/bf/MLPro-BF-Math_class_diagram.drawio.png
-.. automodule:: mlpro.bf.math
+.. automodule:: mlpro.bf.math.basics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Normalizers
+-----------
+
+.. image:: images/bf/MLPro-BF-Math-Normalizers_class_diagram.drawio.png
+.. automodule:: mlpro.bf.math.normalizers
    :members:
    :undoc-members:
    :show-inheritance:
