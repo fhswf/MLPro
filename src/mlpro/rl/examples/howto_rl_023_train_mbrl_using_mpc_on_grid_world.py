@@ -7,11 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-19  0.0.0     SY       Creation
 ## -- 2022-10-06  1.0.0     SY       Release first version
+## -- 2022-10-07  1.0.1     SY       Add plotting
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.0 (2022-10-06)
+Ver. 1.0.1 (2022-10-07)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem.
 
@@ -82,7 +83,7 @@ class ScenarioGridWorld(RLScenario):
 # 2 Train agent in scenario
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit = 50000
+    cycle_limit = 10000
     logging     = Log.C_LOG_ALL
     visualize   = True
     path        = str(Path.home())
@@ -108,3 +109,52 @@ training = RLTraining(
 )
 
 training.run()
+
+
+# 3 Plotting with MLpro
+class MyDataPlotting(DataPlotting):
+    def get_plots(self):
+        """
+        A function to plot data
+        """
+        for name in self.data.names:
+            maxval = 0
+            minval = 0
+            if self.printing[name][0]:
+                fig = plt.figure(figsize=(7, 7))
+                raw = []
+                label = []
+                ax = fig.subplots(1, 1)
+                ax.set_title(name)
+                ax.grid(True, which="both", axis="both")
+                for fr_id in self.data.frame_id[name]:
+                    raw.extend(self.data.get_values(name, fr_id))
+                    if self.printing[name][1] == -1:
+                        maxval = max(raw)
+                        minval = min(raw)
+                    else:
+                        maxval = self.printing[name][2]
+                        minval = self.printing[name][1]
+
+                    label.append("%s" % fr_id)
+                ax.plot(raw)
+                ax.set_ylim(minval - (abs(minval) * 0.1), maxval + (abs(maxval) * 0.1))
+                plt.xlabel("continuous cycles")
+                self.plots[0].append(name)
+                self.plots[1].append(ax)
+                if self.showing:
+                    plt.show()
+                else:
+                    plt.close(fig)
+
+data_printing = {
+    "Cycle": [False],
+    "Day": [False],
+    "Second": [False],
+    "Microsecond": [False],
+    "Smith": [True, -1],
+}
+
+mem = training.get_results().ds_rewards
+mem_plot = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
+mem_plot.get_plots()
