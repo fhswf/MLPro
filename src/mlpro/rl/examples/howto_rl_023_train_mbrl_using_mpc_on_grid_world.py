@@ -44,7 +44,8 @@ class ScenarioGridWorld(RLScenario):
     def _setup(self, p_mode, p_ada, p_logging):
         # 1.1 Setup environment
         self._env   = GridWorld(p_logging=p_logging,
-                                p_action_type=GridWorld.C_ACTION_TYPE_DISC_2D)
+                                p_action_type=GridWorld.C_ACTION_TYPE_DISC_2D,
+                                p_max_step=100)
 
 
         # 1.2 Setup and return random action agent
