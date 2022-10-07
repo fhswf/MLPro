@@ -22,6 +22,11 @@ data plotting functionalities.
 
     from mlpro.bf.various import * 
 
+The MLPro mathematics module also includes normalizer classes of MLPro including MinMax Normalizer and Z-Transform
 
-Add text here!
+.. toctree::
+   :maxdepth: 1
+
+   normalizers/normalizers
+
 
