@@ -166,7 +166,7 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         elif base_set == 'Z' or base_set == 'N':
             low_limit = self.get_action_space().get_dim(id_dim).get_boundaries()[0]
             up_limit = self.get_action_space().get_dim(id_dim).get_boundaries()[1]
-            num_discrete = int(up_limit-low_limit)
+            num_discrete = int(up_limit-low_limit+1)
             action_space = gym.spaces.Discrete(num_discrete)
         else:
             self.lows = []
@@ -192,7 +192,7 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         elif base_set == 'Z' or base_set == 'N':
             low_limit = self.get_observation_space().get_dim(id_dim).get_boundaries()[0]
             up_limit = self.get_observation_space().get_dim(id_dim).get_boundaries()[1]
-            num_discrete = int(up_limit-low_limit)
+            num_discrete = int(up_limit-low_limit+1)
             action_space = gym.spaces.Discrete(num_discrete)
         else:
             lows = []

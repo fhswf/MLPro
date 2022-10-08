@@ -9,10 +9,11 @@
 ## -- 2022-05-19  1.0.0     SY       Release of first version
 ## -- 2022-05-20  1.0.1     SY       Remove constructor and raise error for undefined boundaries
 ## -- 2022-09-19  1.0.2     SY       Minor improvements: False operation for integers
+## -- 2022-10-08  1.0.3     SY       Bug fixing
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-09-19)
+Ver. 1.0.3 (2022-10-08)
 
 This module providew random genarator for multi purposes, e.g. testing environment, etc..
 """
@@ -66,7 +67,7 @@ class RandomGenerator(Policy):
                     lower_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[0]
                     upper_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[1]
                 if base_set == 'Z' or base_set == 'N':
-                    my_action_values[d] = random.randint(lower_boundaries, upper_boundaries-1)
+                    my_action_values[d] = random.randint(lower_boundaries, upper_boundaries)
                 elif base_set == 'R' or base_set == 'DO':
                     my_action_values[d] = random.uniform(lower_boundaries, upper_boundaries)
             except:

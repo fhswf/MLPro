@@ -466,7 +466,7 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
         elif base_set == Dimension.C_BASE_SET_Z or base_set == Dimension.C_BASE_SET_N:
             low_limit = p_mlpro_space.get_dim(id_dim).get_boundaries()[0]
             up_limit = p_mlpro_space.get_dim(id_dim).get_boundaries()[1]
-            num_discrete = int(up_limit-low_limit)
+            num_discrete = int(up_limit-low_limit+1)
             space = gym.spaces.Discrete(num_discrete)
         else:
             lows = []
