@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_bf_009_sciui_reuse_of_interactive_2d_3d_input_space.py
+## -- Package : mlpro.bf.ui
+## -- Module  : howto_bf_ui_001_reuse_of_interactive_2d_3d_input_space.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
