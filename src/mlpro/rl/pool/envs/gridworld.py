@@ -170,7 +170,7 @@ class GridWorld(Environment):
             obs[tuple(self.agent_pos)] = 1
             obs[tuple(self.goal_pos)] = 2
         state = State(self._state_space)
-        state.set_values(obs.flatten())
+        state.set_values(obs.flatten().astype(int))
         return state
         
 

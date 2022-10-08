@@ -41,11 +41,11 @@
 ## -- 2022-07-27  1.4.1     DA       Introduction of root class Wrapper
 ## -- 2022-07-28  1.4.2     SY       Minor improvements: API documentation and logging
 ## -- 2022-08-15  1.4.3     DA       Correction of integration of class Wrapper
-## -- 2022-10-08  1.4.4     SY       Bug fixing
+## -- 2022-10-08  1.4.4     SY       Bug fixing and minor improvements: return of the reset function
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.443 (2022-10-08)
+Ver. 1.4.4 (2022-10-08)
 
 This module provides wrapper classes for OpenAI Gym environments.
 
@@ -462,12 +462,7 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
         id_dim = p_mlpro_space.get_dim_ids()[0]
         base_set = p_mlpro_space.get_dim(id_dim).get_base_set()
         if len(p_mlpro_space.get_dim(id_dim).get_boundaries()) == 1:
-            space = gym.spaces.Discrete(p_mlpro_space.get_dim(id_dim).get_boundaries()[0])
-        elif base_set == Dimension.C_BASE_SET_Z or base_set == Dimension.C_BASE_SET_N:
-            low_limit = p_mlpro_space.get_dim(id_dim).get_boundaries()[0]
-            up_limit = p_mlpro_space.get_dim(id_dim).get_boundaries()[1]
-            num_discrete = int(up_limit-low_limit+1)
-            space = gym.spaces.Discrete(num_discrete)
+            space = gym.spaces.Discrete(p_mlpro_space.get_dim(id_dim).get_boundaries()[0]+1)
         else:
             lows = []
             highs = []
@@ -602,11 +597,8 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
         else:
             obs = np.array(self._mlpro_env.get_state().get_values())
         
-        if return_info:
-            info = {}
-            return obs, info
-        else:
-            return obs
+        info = {}
+        return obs, info
 
     
 ## -------------------------------------------------------------------------------------------------

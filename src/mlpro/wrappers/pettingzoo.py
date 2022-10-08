@@ -125,7 +125,7 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
             for k in p_zoo_space:
                 if isinstance(p_zoo_space[k], gymnasium.spaces.Discrete):
                     space.add_dim(Dimension(p_name_short=k, p_base_set=Dimension.C_BASE_SET_Z,
-                                            p_boundaries=[0, p_zoo_space[k].n]))
+                                            p_boundaries=[0, int(p_zoo_space[k].n-1)]))
                 else:
                     try:
                         shape_dim = len(p_zoo_space[k].shape)
@@ -320,7 +320,7 @@ class WrEnvMLPro2PZoo(Wrapper):
             id_dim = p_mlpro_space.get_dim_ids()[0]
             base_set = p_mlpro_space.get_dim(id_dim).get_base_set()
             if len(p_mlpro_space.get_dim(id_dim).get_boundaries()) == 1:
-                space = gymnasium.spaces.Discrete(p_mlpro_space.get_dim(id_dim).get_boundaries()[0])
+                space = gymnasium.spaces.Discrete(p_mlpro_space.get_dim(id_dim).get_boundaries()[0]+1)
             elif base_set == Dimension.C_BASE_SET_Z or base_set == Dimension.C_BASE_SET_N:
                 low_limit = p_mlpro_space.get_dim(id_dim).get_boundaries()[0]
                 up_limit = p_mlpro_space.get_dim(id_dim).get_boundaries()[1]
