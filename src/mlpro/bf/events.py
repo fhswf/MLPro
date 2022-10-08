@@ -6,10 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-08-21  1.0.0     DA       Creation/release
+## -- 2022-10-06  1.1.0     DA       Specification of event id as string (for better observation and
+## --                                to avoid collisions)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-08-21)
+Ver. 1.1.0 (2022-10-06)
 
 This module provides classes for event handling. To this regard, the property class Eventmanager is
 provided to add event functionality to child classes by inheritence.
@@ -79,13 +81,13 @@ class EventManager (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def register_event_handler(self, p_event_id, p_event_handler):
+    def register_event_handler(self, p_event_id:str, p_event_handler):
         """
         Registers an event handler. 
 
         Parameters 
         ----------
-        p_event_id 
+        p_event_id : str
             Unique event id
         p_event_handler
             Reference to an event handler method with parameters p_event_id and p_event_object:Event
@@ -98,7 +100,7 @@ class EventManager (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def remove_event_handler(self, p_event_id, p_event_handler):
+    def remove_event_handler(self, p_event_id:str, p_event_handler):
         """
         Removes an already registered event handler.
 
@@ -117,20 +119,20 @@ class EventManager (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _raise_event(self, p_event_id, p_event_object:Event):
+    def _raise_event(self, p_event_id:str, p_event_object:Event):
         """
         Raises an event and calls all registered handlers. To be used inside an event manager class.
 
         Parameters
         ----------
-        p_event_id 
+        p_event_id : str
             Unique event id
         p_event_object : Event
             Event object with further context informations
         """
 
         # 0 Intro
-        self.log(Log.C_LOG_TYPE_I, 'Event', str(p_event_id), 'fired')
+        self.log(Log.C_LOG_TYPE_I, 'Event "' + p_event_id + '" fired')
 
         # 1 Get list of registered handlers for given event id
         try:
@@ -139,7 +141,7 @@ class EventManager (Log):
             handlers = []
 
         if len(handlers) == 0:
-            self.log(Log.C_LOG_TYPE_I, 'No handlers registered for event', str(p_event_id))
+            self.log(Log.C_LOG_TYPE_I, 'No handlers registered for event "' + p_event_id + '"')
             return
 
         # 2 Call all registered handlers

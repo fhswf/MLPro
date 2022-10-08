@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
-## -- Module  : howto_bf_010_sciui_reinforcement_learning_cockpit.py
+## -- Package : mlpro.bf.ui
+## -- Module  : howto_bf_ui_002_reinforcement_learning_cockpit.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

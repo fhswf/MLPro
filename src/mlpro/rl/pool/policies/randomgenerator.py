@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.pool.policies
 ## -- Module  : randomgenerator
 ## -------------------------------------------------------------------------------------------------
@@ -8,10 +8,12 @@
 ## -- 2022-05-19  0.0.0     SY       Creation
 ## -- 2022-05-19  1.0.0     SY       Release of first version
 ## -- 2022-05-20  1.0.1     SY       Remove constructor and raise error for undefined boundaries
+## -- 2022-09-19  1.0.2     SY       Minor improvements: False operation for integers
+## -- 2022-10-08  1.0.3     SY       Bug fixing
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-05-20)
+Ver. 1.0.3 (2022-10-08)
 
 This module providew random genarator for multi purposes, e.g. testing environment, etc..
 """
@@ -64,7 +66,7 @@ class RandomGenerator(Policy):
                 else:
                     lower_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[0]
                     upper_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[1]
-                if base_set == 'Z' and base_set == 'N':
+                if base_set == 'Z' or base_set == 'N':
                     my_action_values[d] = random.randint(lower_boundaries, upper_boundaries)
                 elif base_set == 'R' or base_set == 'DO':
                     my_action_values[d] = random.uniform(lower_boundaries, upper_boundaries)

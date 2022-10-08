@@ -20,10 +20,11 @@
 ## -- 2022-05-19  1.1.8     SY       Utilize RandomGenerator
 ## -- 2022-05-30  1.1.9     DA       Cleaned up/rearranged a bit
 ## -- 2022-05-30  1.1.8     SY       Update pistonball_v5 to pistonball_v6
+## -- 2022-10-08  1.2.0     SY       Turn off render: causing error due to pzoo ver 1.22.0 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.9 (2022-05-30)
+Ver. 1.2.0 (2022-10-08)
 
 This module shows how to run an own policy inside the MLPro standard agent model with a wrapped Petting Zoo environment.
 """
@@ -119,7 +120,7 @@ class C4Scenario (RLScenario):
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
-    visualize   = True
+    visualize   = False
   
 else:
     # 3.2 Parameters for internal unit test
