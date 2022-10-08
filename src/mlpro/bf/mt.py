@@ -10,10 +10,12 @@
 ## -- 2022-09-30  0.5.0     DA       Implementation of classes Range, Shared, Async
 ## -- 2022-10-04  1.0.0     DA       Implementation of classes Task, Workflow
 ## -- 2022-10-06  1.0.1     DA       Class Task: event definition as string
+## -- 2022-10-08  1.0.2     DA       Fixed the Windows freeze problem by running freeze_support() on
+## --                                import
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-10-06)
+Ver. 1.0.2 (2022-10-08)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects.
@@ -29,6 +31,10 @@ from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.events import EventManager, Event
 
+
+
+# https://docs.python.org/3/library/multiprocessing.html?highlight=freeze_support#multiprocessing.freeze_support
+mp.freeze_support()
 
 
 
