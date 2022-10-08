@@ -27,7 +27,6 @@ from mlpro.rl.pool.envs.gridworld import GridWorld
 from gym.utils.env_checker import check_env
 
 
-
 mlpro_env   = GridWorld(p_logging=Log.C_LOG_ALL)
 env         = WrEnvMLPro2GYM(mlpro_env, p_state_space=None, p_action_space=None, p_new_step_api=True)
 check_env(env)
