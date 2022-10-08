@@ -125,15 +125,16 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
             for k in p_zoo_space:
                 if isinstance(p_zoo_space[k], gym.spaces.Discrete):
                     space.add_dim(Dimension(p_name_short=k, p_base_set=Dimension.C_BASE_SET_Z,
-                                            p_boundaries=[0, int(p_zoo_space[k].n-1)]))
-                elif isinstance(p_zoo_space[k], gym.spaces.Box):
-                    shape_dim = len(p_zoo_space[k].shape)
-                    for i in range(shape_dim):
-                        for d in range(p_zoo_space[k].shape[i]):
-                            space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
-                                                    p_boundaries=[p_zoo_space[k].low[d], p_zoo_space[k].high[d]]))
+                                            p_boundaries=[0, p_zoo_space[k].n]))
                 else:
-                    space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
+                    try:
+                        shape_dim = len(p_zoo_space[k].shape)
+                        for i in range(shape_dim):
+                            for d in range(p_zoo_space[k].shape[i]):
+                                space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
+                                                        p_boundaries=[p_zoo_space[k].low[d], p_zoo_space[k].high[d]]))
+                    except:
+                        space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
                 
         return space
 
