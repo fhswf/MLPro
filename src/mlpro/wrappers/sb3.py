@@ -162,7 +162,7 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         id_dim = self.get_action_space().get_dim_ids()[0]
         base_set = self.get_action_space().get_dim(id_dim).get_base_set()
         if len(self.get_action_space().get_dim(id_dim).get_boundaries()) == 1:
-            action_space = gym.spaces.Discrete(self.get_action_space().get_dim(id_dim).get_boundaries()[0]+1)
+            action_space = gym.spaces.Discrete(self.get_action_space().get_dim(id_dim).get_boundaries()[0])
         elif base_set == 'Z' or base_set == 'N':
             low_limit = self.get_action_space().get_dim(id_dim).get_boundaries()[0]
             up_limit = self.get_action_space().get_dim(id_dim).get_boundaries()[1]
@@ -188,7 +188,7 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         id_dim = self.get_observation_space().get_dim_ids()[0]
         base_set = self.get_observation_space().get_dim(id_dim).get_base_set()
         if len(self.get_observation_space().get_dim(id_dim).get_boundaries()) == 1:
-            observation_space = gym.spaces.Discrete(self.get_observation_space().get_dim(id_dim).get_boundaries()[0]+1)
+            observation_space = gym.spaces.Discrete(self.get_observation_space().get_dim(id_dim).get_boundaries()[0])
         elif base_set == 'Z' or base_set == 'N':
             low_limit = self.get_observation_space().get_dim(id_dim).get_boundaries()[0]
             up_limit = self.get_observation_space().get_dim(id_dim).get_boundaries()[1]
