@@ -7,10 +7,10 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-08-15  0.0.0     SY       Creation
 ## -- 2022-08-15  1.0.0     SY       Release of first version
+## -- 2022-10-08  1.0.1     SY       Bug fixing
 ## -------------------------------------------------------------------------------------------------
-
 """
-Ver. 1.0.0 (2022-08-15)
+Ver. 1.0.1 (2022-10-08)
 
 This module provides a default implementation of model predictive control (MPC).
 """
@@ -92,7 +92,7 @@ class MPC (ActionPlanner, ScientificObject):
                         else:
                             lower_boundaries = self._envmodel._action_space.get_dim(ids[d]).get_boundaries()[0]
                             upper_boundaries = self._envmodel._action_space.get_dim(ids[d]).get_boundaries()[1]
-                        if base_set == 'Z' and base_set == 'N':
+                        if base_set == 'Z' or base_set == 'N':
                             action_values[d] = random.randint(lower_boundaries, upper_boundaries)
                         else:
                             action_values[d] = random.uniform(lower_boundaries, upper_boundaries)

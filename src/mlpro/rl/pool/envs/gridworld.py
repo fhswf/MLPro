@@ -19,10 +19,11 @@
 ## -- 2022-02-25  1.0.9     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-09-19  2.0.0     SY       Add discrete action as an option and predefined target
 ## -- 2022-10-07  2.0.1     SY       Boundaries updates and reward function updates
+## -- 2022-10-08  2.0.2     SY       Bug fixing
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2022-10-07)
+Ver. 2.0.2 (2022-10-08)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -124,7 +125,7 @@ class GridWorld(Environment):
         elif self.action_type == self.C_ACTION_TYPE_DISC_2D:
             action_space.add_dim(Dimension(p_name_short=str(i),
                                            p_base_set=Dimension.C_BASE_SET_Z,
-                                           p_boundaries=[0, 4]))
+                                           p_boundaries=[0, 3]))
 
         return state_space, action_space
 

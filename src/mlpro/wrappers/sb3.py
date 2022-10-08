@@ -22,10 +22,11 @@
 ## -- 2022-08-15  1.2.0     DA       Introduction of root class Wrapper
 ## -- 2022-08-22  1.2.1     MRD      Set proper name for class variable
 ## -- 2022-09-16  1.2.2     SY       Add Hindsight Experience Replay (HER) for off-policy algorithm
+## -- 2022-10-08  1.2.3     SY       Bug fixing
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2022-09-16)
+Ver. 1.2.3 (2022-10-08)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
@@ -159,8 +160,14 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         # Check if action is Discrete or Box
         action_dim = self.get_action_space().get_num_dim()
         id_dim = self.get_action_space().get_dim_ids()[0]
+        base_set = self.get_action_space().get_dim(id_dim).get_base_set()
         if len(self.get_action_space().get_dim(id_dim).get_boundaries()) == 1:
             action_space = gym.spaces.Discrete(self.get_action_space().get_dim(id_dim).get_boundaries()[0])
+        elif base_set == 'Z' or base_set == 'N':
+            low_limit = self.get_action_space().get_dim(id_dim).get_boundaries()[0]
+            up_limit = self.get_action_space().get_dim(id_dim).get_boundaries()[1]
+            num_discrete = int(up_limit-low_limit)
+            action_space = gym.spaces.Discrete(num_discrete)
         else:
             self.lows = []
             self.highs = []
@@ -179,8 +186,14 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         # Check if state is Discrete or Box
         observation_dim = self.get_observation_space().get_num_dim()
         id_dim = self.get_observation_space().get_dim_ids()[0]
+        base_set = self.get_observation_space().get_dim(id_dim).get_base_set()
         if len(self.get_observation_space().get_dim(id_dim).get_boundaries()) == 1:
             observation_space = gym.spaces.Discrete(self.get_observation_space().get_dim(id_dim).get_boundaries()[0])
+        elif base_set == 'Z' or base_set == 'N':
+            low_limit = self.get_observation_space().get_dim(id_dim).get_boundaries()[0]
+            up_limit = self.get_observation_space().get_dim(id_dim).get_boundaries()[1]
+            num_discrete = int(up_limit-low_limit)
+            action_space = gym.spaces.Discrete(num_discrete)
         else:
             lows = []
             highs = []
