@@ -10,10 +10,11 @@
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
 ## -- 2022-01-06  1.0.1     DA       Corrections
 ## -- 2022-03-21  1.0.2     SY       Refactoring following class Dimensions update 
+## -- 2022-10-08  1.0.3     DA       Refactoring following class Dimensions update 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-03-21)
+Ver. 1.0.3 (2022-10-08)
 
 Demo scenarios for SciUI framework that shows the reuse of the interactive 2D/3D input space class.
 Can be executed directly...
@@ -78,22 +79,19 @@ class DemoIIS3D(SciUIScenario):
 
         # 1 Add scenario-specific variables to shared db
         InteractiveInputSpace.enrich_shared_db(self.shared_db)
-        self.shared_db.iis_ispace.add_dim( Dimension( p_id=0, 
-                                                      p_name_short='x1', 
+        self.shared_db.iis_ispace.add_dim( Dimension( p_name_short='x1', 
                                                       p_description='', 
                                                       p_name_latex='x_1', 
                                                       p_unit='m', 
                                                       p_unit_latex='m', 
                                                       p_boundaries=[-5,5]) )
-        self.shared_db.iis_ispace.add_dim( Dimension( p_id=1, 
-                                                      p_name_short='x2', 
+        self.shared_db.iis_ispace.add_dim( Dimension( p_name_short='x2', 
                                                       p_description='', 
                                                       p_name_latex='x_2', 
                                                       p_unit='m/s', 
                                                       p_unit_latex='\\frac{m}{s}', 
                                                       p_boundaries=[-25,25]) )
-        self.shared_db.iis_ispace.add_dim( Dimension( p_id=2, 
-                                                      p_name_short='x3', 
+        self.shared_db.iis_ispace.add_dim( Dimension( p_name_short='x3', 
                                                       p_description='', 
                                                       p_name_latex='x_3', 
                                                       p_unit='m/s^2', 

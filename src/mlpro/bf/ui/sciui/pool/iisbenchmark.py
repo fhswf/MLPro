@@ -8,10 +8,11 @@
 ## -- 2021-06-27  0.0.0     DA       Creation
 ## -- 2021-mm-dd  1.0.0     DA       Released first version
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
+## -- 2022-10-08  1.0.1     DA       Refactoring following class Dimensions update 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-mm-dd)
+Ver. 1.0.1 (2022-10-08)
 
 This module provides benchmark test implementations for use within the Interactive Input Space (IIS).
 """
@@ -110,10 +111,10 @@ class IISBMRandom(IISBenchmark):
         self.x_min      = np.zeros(self.num_dim)
         self.x_factor   = np.zeros(self.num_dim)
 
-        for d in range(self.num_dim):
-            boundaries          = self.ispace.get_dim(d).get_boundaries()
-            self.x_min[d]       = boundaries[0]
-            self.x_factor[d]    = (boundaries[1] - boundaries[0])
+        for i, dim_id in enumerate(self.ispace.get_dim_ids()):
+            boundaries          = self.ispace.get_dim(dim_id).get_boundaries()
+            self.x_min[i]       = boundaries[0]
+            self.x_factor[i]    = (boundaries[1] - boundaries[0])
 
         self.inputs     = np.random.RandomState(seed=0).rand(self.num_inputs, self.num_dim) * self.x_factor + self.x_min
 
@@ -193,8 +194,10 @@ class IISBMSpiral721(IISBenchmark, IISBenchmark2D):
     def run(self):
         super().run()
 
-        x1_boundaries   = self.ispace.get_dim(0).get_boundaries()
-        x2_boundaries   = self.ispace.get_dim(1).get_boundaries()
+        dims            = self.ispace.get_dims()
+
+        x1_boundaries   = dims[0].get_boundaries()
+        x2_boundaries   = dims[1].get_boundaries()
 
         center_x1       = ( (x1_boundaries[1] - x1_boundaries[0]) / 2 ) + x1_boundaries[0]
         center_x2       = ( (x2_boundaries[1] - x2_boundaries[0]) / 2 ) + x2_boundaries[0]
@@ -240,18 +243,20 @@ class IISBM4Hotspots(IISBenchmark, IISBenchmark2D):
         # 1 Create 4 fixed hotspots
         hotspots      = []
 
-        x1_boundaries = self.ispace.get_dim(0).get_boundaries()
-        x2_boundaries = self.ispace.get_dim(1).get_boundaries()
+        dims            = self.ispace.get_dims()
+
+        x1_boundaries   = dims[0].get_boundaries()
+        x2_boundaries   = dims[1].get_boundaries()
         
-        dx1           = ( x1_boundaries[1] - x1_boundaries[0] ) / 4
-        x1_1          = x1_boundaries[0] + dx1
-        x1_2          = x1_boundaries[1] - dx1
+        dx1             = ( x1_boundaries[1] - x1_boundaries[0] ) / 4
+        x1_1            = x1_boundaries[0] + dx1
+        x1_2            = x1_boundaries[1] - dx1
         
-        dx2           = ( x2_boundaries[1] - x2_boundaries[0] ) / 4
-        x2_1          = x2_boundaries[0] + dx2
-        x2_2          = x2_boundaries[1] - dx2
+        dx2             = ( x2_boundaries[1] - x2_boundaries[0] ) / 4
+        x2_1            = x2_boundaries[0] + dx2
+        x2_2            = x2_boundaries[1] - dx2
         
-        hotspots      = [ [ x1_1, x2_1 ], [ x1_2, x2_1 ], [ x1_1, x2_2 ], [ x1_2, x2_2 ] ]
+        hotspots        = [ [ x1_1, x2_1 ], [ x1_2, x2_1 ], [ x1_1, x2_2 ], [ x1_2, x2_2 ] ]
        
         
         # 2 Create 250 noisy inputs around each of the 4 fixed hotspots
@@ -288,18 +293,20 @@ class IISBM4Hotspots2(IISBenchmark, IISBenchmark2D):
         # 1 Create 4 fixed hotspots
         hotspots      = []
 
-        x1_boundaries = self.ispace.get_dim(0).get_boundaries()
-        x2_boundaries = self.ispace.get_dim(1).get_boundaries()
+        dims            = self.ispace.get_dims()
+
+        x1_boundaries   = dims[0].get_boundaries()
+        x2_boundaries   = dims[1].get_boundaries()
         
-        dx1           = ( x1_boundaries[1] - x1_boundaries[0] ) / 4
-        x1_1          = x1_boundaries[0] + dx1
-        x1_2          = x1_boundaries[1] - dx1
+        dx1             = ( x1_boundaries[1] - x1_boundaries[0] ) / 4
+        x1_1            = x1_boundaries[0] + dx1
+        x1_2            = x1_boundaries[1] - dx1
         
-        dx2           = ( x2_boundaries[1] - x2_boundaries[0] ) / 4
-        x2_1          = x2_boundaries[0] + dx2
-        x2_2          = x2_boundaries[1] - dx2
+        dx2             = ( x2_boundaries[1] - x2_boundaries[0] ) / 4
+        x2_1            = x2_boundaries[0] + dx2
+        x2_2            = x2_boundaries[1] - dx2
         
-        hotspots      = [ [ x1_1, x2_1 ], [ x1_2, x2_1 ], [ x1_1, x2_2 ], [ x1_2, x2_2 ] ]
+        hotspots        = [ [ x1_1, x2_1 ], [ x1_2, x2_1 ], [ x1_1, x2_2 ], [ x1_2, x2_2 ] ]
 
         a = np.random.RandomState(seed=2).rand(self.C_INPUTS, 2)**3
         s = np.round(np.random.RandomState(seed=3).rand(self.C_INPUTS, 2))
@@ -333,23 +340,25 @@ class IISBM4Hotspots3D(IISBenchmark, IISBenchmark3D):
         # 1 Create 4 fixed hotspots
         hotspots      = []
 
-        x1_boundaries = self.ispace.get_dim(0).get_boundaries()
-        x2_boundaries = self.ispace.get_dim(1).get_boundaries()
-        x3_boundaries = self.ispace.get_dim(2).get_boundaries()
+        dims            = self.ispace.get_dims()
+
+        x1_boundaries   = dims[0].get_boundaries()
+        x2_boundaries   = dims[1].get_boundaries()
+        x3_boundaries   = dims[2].get_boundaries()
         
-        dx1           = ( x1_boundaries[1] - x1_boundaries[0] ) / 4
-        x1_1          = x1_boundaries[0] + dx1
-        x1_2          = x1_boundaries[1] - dx1
+        dx1             = ( x1_boundaries[1] - x1_boundaries[0] ) / 4
+        x1_1            = x1_boundaries[0] + dx1
+        x1_2            = x1_boundaries[1] - dx1
         
-        dx2           = ( x2_boundaries[1] - x2_boundaries[0] ) / 4
-        x2_1          = x2_boundaries[0] + dx2
-        x2_2          = x2_boundaries[1] - dx2
+        dx2             = ( x2_boundaries[1] - x2_boundaries[0] ) / 4
+        x2_1            = x2_boundaries[0] + dx2
+        x2_2            = x2_boundaries[1] - dx2
  
-        dx3           = ( x3_boundaries[1] - x3_boundaries[0] ) / 4
-        x3_1          = x3_boundaries[0] + dx3
-        x3_2          = x3_boundaries[1] - dx3
+        dx3             = ( x3_boundaries[1] - x3_boundaries[0] ) / 4
+        x3_1            = x3_boundaries[0] + dx3
+        x3_2            = x3_boundaries[1] - dx3
         
-        hotspots      = [ [ x1_1, x2_1, x3_1 ], [ x1_2, x2_1, x3_1 ], [ x1_1, x2_2, x3_1 ], [ x1_2, x2_2, x3_1 ], [ x1_1, x2_1, x3_2 ], [ x1_2, x2_1, x3_2 ], [ x1_1, x2_2, x3_2 ], [ x1_2, x2_2, x3_2 ] ]
+        hotspots        = [ [ x1_1, x2_1, x3_1 ], [ x1_2, x2_1, x3_1 ], [ x1_1, x2_2, x3_1 ], [ x1_2, x2_2, x3_1 ], [ x1_1, x2_1, x3_2 ], [ x1_2, x2_1, x3_2 ], [ x1_1, x2_2, x3_2 ], [ x1_2, x2_2, x3_2 ] ]
 
         a = np.random.RandomState(seed=2).rand(self.C_INPUTS, 3)**3
         s = np.round(np.random.RandomState(seed=3).rand(self.C_INPUTS, 3))
