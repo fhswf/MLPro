@@ -17,10 +17,13 @@
 ## -- 2021-12-19  1.0.7     DA       Replaced 'done' by 'success'
 ## -- 2021-12-21  1.0.8     DA       Class GridWorld: renamed method reset() to _reset()
 ## -- 2022-02-25  1.0.9     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-09-19  2.0.0     SY       Add discrete action as an option and predefined target
+## -- 2022-10-07  2.0.1     SY       Boundaries updates and reward function updates
+## -- 2022-10-08  2.0.2     SY       Bug fixing
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.9 (2021-02-25)
+Ver. 2.0.2 (2022-10-08)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -28,52 +31,68 @@ This module provides an environment of customizable Gridworld.
 from mlpro.rl.models import *
 from mlpro.gt.models import *
 import numpy as np
-         
+      
+
+    
         
         
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GridWorld (Environment):
+class GridWorld(Environment):
     """
-    Custom environment of an n-D grid world where the agent 
-    has to go to a random target.
+    Custom environment of an n-D grid world where the agent has to go to a random or defined target.
+    
+    Parameters
+    ----------
+    p_logging : bool     
+        Subspace of an environment that is observed by the policy. Default = Log.C_LOG_ALL.
+    p_grid_size : dimension
+        Dimension of the grid world (n-D grid world), e.g. (8,8) for 2-D or (8,8,8) for 3-D.
+        Default = (8,8)
+    p_random_start_position : bool           
+        Randomize start position. Default = True.
+    p_random_goal_position : bool               
+        Randomize goal position. Default = True.
+    p_max_step : int
+        Maximum step per episode. Default = 50.
+    p_action_type : int
+        Type of actions, which is either continuous action or discrete action.
+        To be noted, discrete action is now limited to 2-d grid world. Default = C_ACTION_TYPE_C.
+    p_start_position : dimension           
+        To define the starting position, if p_random_start_position is False, e.g. (3,2).
+        Default = None.
+    p_goal_position : dimension               
+        To define the goal positoin, if p_random_goal_position is False, e.g. (5,5).
+        Default = None.
     """
-    C_NAME          = 'GridWorld'
-    C_LATENCY       = timedelta(0,1,0)
-    C_INFINITY      = np.finfo(np.float32).max  
-    C_REWARD_TYPE   = Reward.C_TYPE_OVERALL
+    C_NAME                  = 'Grid World'
+    C_LATENCY               = timedelta(0,1,0)
+    C_INFINITY              = np.finfo(np.float32).max  
+    C_REWARD_TYPE           = Reward.C_TYPE_OVERALL
+    C_ACTION_TYPE_CONT      = 0
+    C_ACTION_TYPE_DISC_2D   = 1
+    
     
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=True, grid_size=(8,8),
-                random_start_position=True,
-                random_goal_position=True, max_step=10):
-        """
-        Parameters:
-            p_logging               Boolean switch for logging
-            grid_size               Dimension of the grid world
-            random_start_position   Randomize start position
-            random_goal_position    Randomize goal position
-            max_step                Maximum step per episode
-        """
+    def __init__(self,
+                 p_logging:bool=Log.C_LOG_ALL,
+                 p_grid_size=(8,8),
+                 p_random_start_position:bool=True,
+                 p_random_goal_position:bool=True,
+                 p_max_step:int=50,
+                 p_action_type:int=C_ACTION_TYPE_CONT,
+                 p_start_position=None,
+                 p_goal_position=None):
         
-                
-        self.grid_size = np.array(grid_size)
-        self.random_start_position = random_start_position
-        self.random_goal_position = random_goal_position
-
-        self.agent_pos = np.array([np.random.randint(0,border-1) 
-                            if self.random_start_position 
-                            else 0 for border in self.grid_size])
-
-        self.goal_pos = np.array([np.random.randint(0,border-1) 
-                            if self.random_goal_position 
-                            else border-1 for border in self.grid_size])
-        self.max_step = max_step
-        self.num_step = 0
+        self.grid_size = np.array(p_grid_size)
+        self.random_start_position = p_random_start_position
+        self.random_goal_position = p_random_goal_position
+            
+        self.max_step = p_max_step
+        self.action_type = p_action_type
         
         super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
         self._state_space, self._action_space = self._setup_spaces()
-
         self.reset()
 
 
@@ -94,10 +113,19 @@ class GridWorld (Environment):
             data *= size
             
         for i in range(data):
-            state_space.add_dim(Dimension( p_name_short=str(i), p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[0,3]))
+            state_space.add_dim(Dimension(p_name_short=str(i),
+                                          p_base_set=Dimension.C_BASE_SET_Z,
+                                          p_boundaries=[0, 3]))
         
-        for i in range(len(self.grid_size)):
-            action_space.add_dim(Dimension( p_name_short=str(i), p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[-self.grid_size[i], self.grid_size[i]]))
+        if self.action_type == self.C_ACTION_TYPE_CONT:
+            for i in range(len(self.grid_size)):
+                action_space.add_dim(Dimension(p_name_short=str(i),
+                                               p_base_set=Dimension.C_BASE_SET_R,
+                                               p_boundaries=[-self.grid_size[i], self.grid_size[i]]))
+        elif self.action_type == self.C_ACTION_TYPE_DISC_2D:
+            action_space.add_dim(Dimension(p_name_short=str(i),
+                                           p_base_set=Dimension.C_BASE_SET_Z,
+                                           p_boundaries=[0, 3]))
 
         return state_space, action_space
 
@@ -108,19 +136,33 @@ class GridWorld (Environment):
         To reset environment
         """
         random.seed(p_seed)
-        self.agent_pos = np.array([np.random.randint(0,border-1) 
-                            if self.random_start_position 
-                            else 0 for border in self.grid_size])
+        
+        if self.random_start_position:
+            self.agent_pos = np.array([np.random.randint(0,border-1) 
+                                if self.random_start_position 
+                                else 0 for border in self.grid_size])
+        else:
+            if p_start_position is not None:
+                self.agent_pos = np.array(p_start_position)
+            else:
+                raise NotImplementedError('Please define p_start_position or set p_random_start_position to True!')
 
-        self.goal_pos = np.array([np.random.randint(0,border) 
-                            if self.random_goal_position 
-                            else border-1 for border in self.grid_size])
+        if self.random_goal_position:
+            self.goal_pos = np.array([np.random.randint(0,border-1) 
+                                if self.random_goal_position 
+                                else border-1 for border in self.grid_size])
+        else:
+            if p_goal_position is not None:
+                self.goal_pos = np.array(p_goal_position)
+            else:
+                raise NotImplementedError('Please define p_goal_position or set p_random_goal_position to True!')
+                
         self.num_step = 0
-        self._state = self.get_state()
+        self._state = self.get_all_states()
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_state(self):
+    def get_all_states(self):
         obs = np.zeros(self.grid_size, dtype=np.float32)
         if np.allclose(self.agent_pos, self.goal_pos):
             obs[tuple(self.agent_pos)] = 3
@@ -134,28 +176,35 @@ class GridWorld (Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state:State, p_action:Action) -> State:
-        self.agent_pos += np.array(p_action.get_sorted_values()).astype(int)
-        self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
-        
+        if self.action_type == self.C_ACTION_TYPE_CONT:
+            self.agent_pos += np.array(p_action.get_sorted_values()).astype(int)
+            self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
+        elif self.action_type == self.C_ACTION_TYPE_DISC_2D:
+            action = np.array(p_action.get_sorted_values()).astype(int)
+            if action == 0:
+                self.agent_pos += np.array((-1,0))
+            elif action == 1:
+                self.agent_pos += np.array((0,1))
+            elif action == 2:
+                self.agent_pos += np.array((1,0))
+            elif action == 3:
+                self.agent_pos += np.array((0,-1))
+            self.agent_pos = np.clip(self.agent_pos, 0, self.grid_size-1)
+                
         self.num_step += 1
-        euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos)
-        if euclidean_distance == 0:
-            self._state.set_success(True)
-        else:
-            self._state.set_success(False)
-        self._state = self.get_state()
+        
+        self._state = self.get_all_states()
         return self._state
         
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old:State, p_state_new:State) -> Reward:
         reward = Reward(self.C_REWARD_TYPE)
-        rew = 1
         euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos).item()
-        if euclidean_distance !=0:
-            rew = 1/euclidean_distance
-        if self.num_step >= self.max_step:
-            rew -= self.max_step
+        if euclidean_distance > 0:
+            rew = -euclidean_distance
+        else:
+            rew = 1
         
         reward.set_overall_reward(rew)
         return reward
@@ -163,17 +212,25 @@ class GridWorld (Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_success(self, p_state:State) -> bool:
-        if self.num_step >= self.max_step:
+        euclidean_distance = np.linalg.norm(self.goal_pos-self.agent_pos)
+        if euclidean_distance <= 0:
+            self._state.set_success(True)
+            self._state.set_terminal(True)
             return True
-        elif self.get_success() == True:
-            return True
-
-        return False
+        else:
+            self._state.set_success(False)
+            return False
 
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state:State) -> bool:
-        return False
+        if self.num_step >= self.max_step:
+            self._state.set_broken(True)
+            self._state.set_terminal(True)
+            return True
+        else:
+            self._state.set_broken(False)
+            return False
         
 
 ## -------------------------------------------------------------------------------------------------
