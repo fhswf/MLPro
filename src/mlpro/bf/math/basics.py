@@ -22,10 +22,11 @@
 ## --                                - Class TrendAnalyzer removed
 ## --                                - Code reformatting
 ## -- 2022-10-06  1.5.1     DA       Class Dimension: event C_EVENT_BOUNDARIES converted to string
+## -- 2022-10-08  1.6.0     DA       New method Set.get_dims()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.1 (2022-10-06)
+Ver. 1.6.0 (2022-10-08)
 
 This module provides basic mathematical classes.
 """
@@ -201,6 +202,15 @@ class Set:
         """
 
         return self._dim_list[self._dim_ids.index(p_id)]
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_dims(self) -> list:
+        """"
+        Returns all dimensions.
+        """
+
+        return self._dim_list
 
 
 ## -------------------------------------------------------------------------------------------------

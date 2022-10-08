@@ -10,10 +10,11 @@
 ## -- 2021-07-07  1.0.1     DA       Minor corrections related to window size and update rate
 ## -- 2021-09-11  1.0.1     MRD      Change Header information to match our new library name
 ## -- 2022-03-21  1.0.2     SY       Refactoring following class Dimensions update 
+## -- 2022-10-08  1.0.3     DA       Refactoring following class Dimensions update 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-03-21)
+Ver. 1.0.3 (2022-10-08)
 
 This module provides the reusable SciUI component 'Interactive Input Space'. It represents a 2D or 3D 
 input space based on a mathematical space and allows manual (2D) and automated (2D,3D) input creation.
@@ -177,9 +178,9 @@ class IISMain2D(SciUISubplot2D):
     def refresh_axes(self):
         if not self.shared_db.redraw: return
         
-        ids     = self.shared_db.iis_ispace.get_dim_ids()
-        dim0    = self.shared_db.iis_ispace.get_dim(ids[0]) 
-        dim1    = self.shared_db.iis_ispace.get_dim(ids[1]) 
+        dims    = self.shared_db.iis_ispace.get_dims()
+        dim0    = dims[0] 
+        dim1    = dims[1]
         
         self.ax.set_xlabel('Input Variable ' + dim0.get_name_short())
         self.ax.set_ylabel('Input Variable ' + dim1.get_name_short())
@@ -233,9 +234,11 @@ class IISMain3D(SciUISubplot3D):
     def refresh_axes(self):
         if not self.shared_db.refresh_full: return 
 
-        dim0    = self.shared_db.iis_ispace.get_dim(0) 
-        dim1    = self.shared_db.iis_ispace.get_dim(1) 
-        dim2    = self.shared_db.iis_ispace.get_dim(2) 
+        dims    = self.shared_db.iis_ispace.get_dims()
+
+        dim0    = dims[0] 
+        dim1    = dims[1] 
+        dim2    = dims[2] 
         
         self.ax.set_xlabel('Input Variable ' + dim0.get_name_short())
         self.ax.set_ylabel('Input Variable ' + dim1.get_name_short())
