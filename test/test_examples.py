@@ -13,21 +13,13 @@
 ## -- 2022-02-28  1.0.4     SY       Howto 07 of basic functions is disabled
 ## -- 2022-05-29  1.1.0     DA       Update howto list after refactoring of all howto files
 ## -- 2022-06-21  1.1.1     SY       Update howto 20 and 21 RL
-<<<<<<< HEAD
-## -- 2022-09-09  1.1.2     SY       Activate howto 21 RL
-## -------------------------------------------------------------------------------------------------
-
-"""
-Ver. 1.1.2 (2022-09-09)
-=======
 ## -- 2022-09-13  1.1.2     SY       Add howto 22 RL and 03 GT
 ## -- 2022-10-06  1.1.3     SY       Add howto 23
 ## -- 2022-10-08  1.1.4     SY       Howto bf 009 and 010 are switched to bf uui 01 and bf uui 02
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4(2022-10-088)
->>>>>>> e8c3700b743e4d0d7af121738efc443cd94c164a
+Ver. 1.1.4(2022-10-08)
 
 Unit test for all examples available.
 """
