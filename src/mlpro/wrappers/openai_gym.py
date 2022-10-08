@@ -598,7 +598,10 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
             obs = np.array(self._mlpro_env.get_state().get_values())
         
         info = {}
-        return obs, info
+        if return_info:
+            return obs, info
+        else:
+            return obs
 
     
 ## -------------------------------------------------------------------------------------------------
