@@ -1,8 +1,8 @@
-.. _Howto BF 010:
-Howto BF-010: SciUI - Reinforcement Learning Cockpit
-====================================================
+.. _Howto BF UI 002:
+Howto BF-UI-002: SciUI - Reinforcement Learning Cockpit
+=======================================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_010_sciui_reinforcement_learning_cockpit
+.. automodule:: mlpro.bf.examples.howto_bf_ui_002_reinforcement_learning_cockpit
 
 
 Prerequisites
@@ -17,7 +17,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/bf/examples/howto_bf_010_sciui_reinforcement_learning_cockpit.py
+.. literalinclude:: ../../../../../src/mlpro/bf/examples/howto_bf_ui_002_reinforcement_learning_cockpit.py
 	:language: python
 
 
@@ -27,4 +27,4 @@ Results
 
 This UI is not ready-to-use and still under development. The current cockpit is shown as follow,
 
-.. image:: images/howto.bf.010/sciui_rl.png
+.. image:: images/howto.bf.ui.002/sciui_rl.png
