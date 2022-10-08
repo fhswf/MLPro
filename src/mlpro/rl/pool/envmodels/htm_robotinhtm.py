@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.envmodels
-## -- Module  : mlp_robotinhtm
+## -- Module  : htm_robotinhtm
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -10,10 +10,11 @@
 ## -- 2022-05-30  1.0.1     MRD      Cleaning up HTMEnvModel, now inherit directly from the
 ## --                                actual environment
 ## -- 2022-08-22  1.1.0     MRD      Re-structure HTMEnvModel to fix its MRO for EventManager class
+## -- 2022-09-20  1.1.1     SY       Code cleaning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-08-22)
+Ver. 1.1.1 (2022-09-20)
 
 This module provides Environment Model based on Homogeneous Transformations Matrix 
 Neural Network for robotinhtm environment.
@@ -30,13 +31,23 @@ from mlpro.sl.pool.afct.afct_pytorch import TorchAFct
 from torch.utils.data.sampler import SubsetRandomSampler
 from collections import deque
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class DHLayer(torch.nn.Module):
     """
     This class represents a layer architecture based on DH Parameter as the learnable parameter
     and use them to construct the transformation matrix
-    :param p_in: Number of Joints
+
+    Parameters
+    ----------
+    p_in : int
+        Number of Joints
     """
 
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_in):
         super(DHLayer, self).__init__()
         self._in = p_in
@@ -47,6 +58,7 @@ class DHLayer(torch.nn.Module):
         self.register_parameter("b", torch.nn.Parameter((torch.rand(self._in, 1) - 0.5) * 1))
         self.register_parameter("d", torch.nn.Parameter((torch.rand(self._in, 1) - 0.5) * 1))
 
+## -------------------------------------------------------------------------------------------------
     def forward(self, p_in):
         batch_size = p_in.shape[0]
 
@@ -75,13 +87,24 @@ class DHLayer(torch.nn.Module):
 
         return dh_mat
 
+## -------------------------------------------------------------------------------------------------
     def construct_transformation(self, p_unit, p_angle, p_transl):
         """
         Construct Transformation Matrix
-        :param p_unit: Rotation and Translation Unit Vector
-        :param p_angle: Rotation Angle
-        :param p_transl: Translation
-        :return: trans_mat: Transformations Matrix
+
+        Parameters
+        ----------
+        p_unit :
+            Rotation and Translation Unit Vector
+        p_angle :
+            Rotation Angle
+        p_transl :
+            Translation
+
+        Returns
+        -------
+        trans_mat :
+            Transformations Matrix
         """
 
         # Create Rotation Matrix
@@ -95,12 +118,22 @@ class DHLayer(torch.nn.Module):
 
         return trans_mat
 
+## -------------------------------------------------------------------------------------------------
     def trans_rot_to_transformations_mat(self, p_trans, p_rot):
         """
         Combine Translation Vector and Rotation Matrix into Transformation Matrix
-        :param p_trans: Translation Vector
-        :param p_rot: Rotation Matrix
-        :return: trans_mat: Transformation Matrix
+
+        Parameters
+        ----------
+        p_trans :
+            Translation Vector
+        p_rot :
+            Rotation Matrix
+
+        Returns
+        -------
+        trans_mat :
+            Transformation Matrix
         """
         batch_size = p_trans.shape[0]
         fixed_vec = torch.Tensor([[0.0, 0.0, 0.0, 1.0]], device=p_trans.device)
@@ -108,15 +141,26 @@ class DHLayer(torch.nn.Module):
         trans_mat = torch.cat([trans_mat, fixed_vec.repeat(batch_size, self._in, 1, 1)], dim=2)
         return trans_mat
 
+## -------------------------------------------------------------------------------------------------
     def create_trans_vec(self):
         pass
 
+## -------------------------------------------------------------------------------------------------
     def create_rot_mat(self, p_unit, p_angle):
         """
         Create Rotation Matrix
-        :param p_unit: Rotation Unit Vector
-        :param p_angle: Rotation Angle
-        :return: rot_mat: Rotation Matrix
+
+        Parameters
+        ----------
+        p_unit :
+            Rotation Unit Vector
+        p_angle :
+            Rotation Angle
+
+        Returns
+        -------
+        rot_mat :
+            Rotation Matrix
         """
         batch_size = p_angle.shape[0]
         masking_indices = torch.tensor([[3, 2, 1], [2, 3, 0], [1, 0, 3]], device=p_angle.device)
@@ -141,12 +185,20 @@ class DHLayer(torch.nn.Module):
 
         return rot_mat
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class N3(torch.nn.Module):
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, n_in):
         super(N3, self).__init__()
         self.n_in = n_in
         self.added = 0
 
+## -------------------------------------------------------------------------------------------------
     def forward(self, I):
         BatchSize = I.shape[0]
 
@@ -167,12 +219,18 @@ class N3(torch.nn.Module):
 
         return output
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class RobotHTMModel(torch.nn.Module):
     """
     Provide Forward Kinematic based on Neural Network with DH Layer.
     Predicts the end-effector position with given joint angles.
     """
 
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_in, p_t):
         super(RobotHTMModel, self).__init__()
         self._in = p_in
@@ -181,6 +239,7 @@ class RobotHTMModel(torch.nn.Module):
         self.dh_layer = DHLayer(self._in)
         self.eef_layer = N3(self._in)
 
+## -------------------------------------------------------------------------------------------------
     def forward(self, p_in):
         batch_size=p_in.shape[0]
         new_i = p_in.reshape(batch_size,2,self._in) * torch.cat([torch.Tensor([self._t]).repeat(1,self._in), torch.ones(1,self._in)])
@@ -191,32 +250,54 @@ class RobotHTMModel(torch.nn.Module):
         
         return output
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class IOElement(BufferElement):
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_input: torch.Tensor, p_output: torch.Tensor):
 
         super().__init__({"input": p_input, "output": p_output})
 
 
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 # Buffer
 class MyOwnBuffer(Buffer, torch.utils.data.Dataset):
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_size=1):
         Buffer.__init__(self, p_size=p_size)
         self._internal_counter = 0
 
+## -------------------------------------------------------------------------------------------------
     def add_element(self, p_elem: BufferElement):
         Buffer.add_element(self, p_elem)
         self._internal_counter += 1
 
+## -------------------------------------------------------------------------------------------------
     def get_internal_counter(self):
         return self._internal_counter
 
+## -------------------------------------------------------------------------------------------------
     def __getitem__(self,idx):
         return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class RobothtmAFct(TorchAFct):
     C_NAME = "Robothtm Adaptive Function"
     C_BUFFER_CLS = MyOwnBuffer
 
+## -------------------------------------------------------------------------------------------------
     def _setup_model(self):
         self.joint_num = self._output_space.get_num_dim() - 6
         self.net_model = RobotHTMModel(self.joint_num, 0.01)
@@ -264,6 +345,7 @@ class RobothtmAFct(TorchAFct):
 
         self.sim_env.update_joint_coords()
 
+## -------------------------------------------------------------------------------------------------
     def _input_preproc(self, p_input: torch.Tensor) -> torch.Tensor:
         input = torch.cat([p_input[0][6+self.joint_num:], p_input[0][6:6+self.joint_num]])
         input = input.reshape(1,self.joint_num*2)
@@ -271,6 +353,7 @@ class RobothtmAFct(TorchAFct):
         
         return input
 
+## -------------------------------------------------------------------------------------------------
     def _output_postproc(self, p_output: torch.Tensor) -> torch.Tensor:
         angles = torch.Tensor([])
         thets = torch.zeros(3)
@@ -283,7 +366,8 @@ class RobothtmAFct(TorchAFct):
         output = torch.cat([output, angles], dim=1)
 
         return output
-    
+
+## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_input: Element, p_output: Element) -> bool:
         model_input = deque(p_input.get_values()[6:])
         model_input.rotate(self.joint_num)
@@ -337,12 +421,19 @@ class RobothtmAFct(TorchAFct):
 
         return True
 
+## -------------------------------------------------------------------------------------------------
     def _add_buffer(self, p_buffer_element: IOElement):
         self._buffer.add_element(p_buffer_element)
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class HTMEnvModel(EnvModel):
     C_NAME = "HTM Env Model"
 
+## -------------------------------------------------------------------------------------------------
     def __init__(
         self,
         p_num_joints=4,
