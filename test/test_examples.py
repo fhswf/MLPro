@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : test_example
+## -- Module  : test_example.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -15,10 +15,11 @@
 ## -- 2022-06-21  1.1.1     SY       Update howto 20 and 21 RL
 ## -- 2022-09-13  1.1.2     SY       Add howto 22 RL and 03 GT
 ## -- 2022-10-06  1.1.3     SY       Add howto 23
+## -- 2022-10-08  1.1.4     SY       Howto bf 009 and 010 are switched to bf uui 01 and bf uui 02
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2022-10-06)
+Ver. 1.1.4(2022-10-088)
 
 Unit test for all examples available.
 """
@@ -38,8 +39,8 @@ howto_list = {
     "bf_006": "mlpro.bf.examples.howto_bf_006_buffers",
     "bf_007": "mlpro.bf.examples.howto_bf_007_hyperparameter_tuning_using_hyperopt",
     "bf_008": "mlpro.bf.examples.howto_bf_008_hyperparameter_tuning_using_optuna",
-    "bf_009": "mlpro.bf.examples.howto_bf_009_sciui_reuse_of_interactive_2d_3d_input_space",
-    "bf_010": "mlpro.bf.examples.howto_bf_010_sciui_reinforcement_learning_cockpit",
+    "bf_009": "mlpro.bf.examples.howto_bf_ui_001_reuse_of_interactive_2d_3d_input_space",
+    "bf_010": "mlpro.bf.examples.howto_bf_ui_002_reinforcement_learning_cockpit",
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_types_of_reward",
