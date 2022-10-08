@@ -47,6 +47,7 @@ class ActionGenerator(Policy):
 
 ## -----------------------------------------------------------------------------------------------
     def compute_action(self, p_state:State):
+
         if p_input:
             my_action_values = np.array([p_torque])
         else:
@@ -65,7 +66,7 @@ class ActionGenerator(Policy):
 # 1 Implement the random RL scenario
 ## -----------------------------------------------------------------------------------------------
 ## -----------------------------------------------------------------------------------------------
-class ScenarioDoublePendulum(RLScenario):
+class ScenarioDoublePendulumValidation(RLScenario):
 
     C_NAME      = 'Double Pendulum with Random Actions'
 
@@ -91,6 +92,16 @@ class ScenarioDoublePendulum(RLScenario):
             p_logging=p_logging
         )
 
+
+## -----------------------------------------------------------------------------------------------
+    def _run_cycle(self):
+
+        input_cycle_id =
+
+        success, error, adapted = super()._run_cycle()
+
+        return success, error, adapted
+        pass
 
 
 # 2 Create scenario and run the scenario
