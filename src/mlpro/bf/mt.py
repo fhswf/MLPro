@@ -10,12 +10,11 @@
 ## -- 2022-09-30  0.5.0     DA       Implementation of classes Range, Shared, Async
 ## -- 2022-10-04  1.0.0     DA       Implementation of classes Task, Workflow
 ## -- 2022-10-06  1.0.1     DA       Class Task: event definition as string
-## -- 2022-10-08  1.0.2     DA       Fixed the Windows freeze problem by running freeze_support() on
-## --                                import
+## -- 2022-10-09  1.1.0     DA       Class Shared: systematics for results
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-10-08)
+Ver. 1.1.0 (2022-10-09)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects.
@@ -32,9 +31,6 @@ from mlpro.bf.various import Log
 from mlpro.bf.events import EventManager, Event
 
 
-
-# https://docs.python.org/3/library/multiprocessing.html?highlight=freeze_support#multiprocessing.freeze_support
-mp.freeze_support()
 
 
 
@@ -107,7 +103,7 @@ class Shared (Range):
 
         self._locking_task  = None
         self._active_tasks  = []
-        self._messages      = {}
+        self._results       = {}
 
 
 # -------------------------------------------------------------------------------------------------
@@ -184,13 +180,63 @@ class Shared (Range):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def send_message ( self, p_msg_type, p_tid=None, **p_kwargs):
-        raise NotImplementedError
+    def add_result(self, p_tid, p_result):
+        """
+        Adds a result for a task.
+ 
+        Parameters
+        ----------
+        p_tid
+            Task id.
+        p_result
+            Any kind of result data.
+        """
+
+        self.lock(p_tid=p_tid)
+        self._results[p_tid] = p_result
+        self.unlock()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def receive_message(self, p_tid, p_msg_type=None):
-        raise NotImplementedError
+    def get_result(self, p_tid):
+        """
+        Returns the result data of a task.
+
+        Parameters
+        ----------
+        p_tid
+            Task id.
+
+        Returns
+        -------
+        task_results
+            Result data of a task.
+        """
+
+        return self._results.get(p_tid)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_results(self):
+        """
+        Returns reference to internal dictionary of results
+
+        Returns
+        -------
+        results : dict
+            Dictionary of results
+        """
+
+        return self._results
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_results(self):
+        """
+        Clears internal dictionary of results
+        """
+
+        self._results.clear()
 
 
 

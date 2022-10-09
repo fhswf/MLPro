@@ -6,10 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-03  1.0.0     DA       Creation/release
+## -- 2022-10-09  1.0.1     DA       Fixed the Windows freeze problem
+## -- 2022-10-09  1.1.0     DA       Simplification
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-03)
+Ver. 1.1.0 (2022-10-09)
 
 This module demonstrates the use of classes ASync and Shared as part of MLPro's multitasking concept.
 Both classes are used to implement a simple parallel algorithm class MyParallelAlgorithm with a
@@ -37,38 +39,12 @@ You will learn:
 
 from time import sleep
 from mlpro.bf.various import Log
+import multiprocessing as mp
 import mlpro.bf.mt as mt
 from datetime import datetime, timedelta
 
 from cmath import pi, sin, cos, tan
 import random
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MyShared (mt.Shared):
-    """
-    This class is used for own shared objects with specific attributes and related methods for 
-    access...
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_range: int = mt.Async.C_RANGE_PROCESS):
-        super().__init__(p_range=p_range)
-        self._results : list = []
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_result(self, p_result):
-        self._results.append(p_result)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_results(self) -> list:
-        return self._results
-
 
 
 
@@ -89,7 +65,7 @@ class MyParallelAlgorithm (mt.Async):
                   p_num_tasks:int,
                   p_duration:timedelta,
                   p_range_max=mt.Async.C_RANGE_PROCESS, 
-                  p_class_shared=MyShared,
+                  p_class_shared=mt.Shared,
                   p_logging=Log.C_LOG_ALL ):
 
         super().__init__( p_range_max=p_range_max, 
@@ -133,8 +109,7 @@ class MyParallelAlgorithm (mt.Async):
             self.log(Log.C_LOG_TYPE_S, 'Execution of', self._num_tasks, 'asynchronous tasks as processes ended (speed factor =', speed_factor, ')')
 
         # Log of results collected in the shared object
-        self.log(Log.C_LOG_TYPE_I, 'Results in shared object are:')
-        for r in self._so.get_results(): self.log(Log.C_LOG_TYPE_I, r)
+        self.log(Log.C_LOG_TYPE_I, 'Results in shared object are:\n',self._so.get_results())
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -159,9 +134,7 @@ class MyParallelAlgorithm (mt.Async):
             if time_diff >= self._duration: break
 
         # 3 Sub-task can optionally store resuls in the shared object.
-        self._so.lock()
-        self._so.add_result( [p_tid, result] )
-        self._so.unlock()
+        self._so.add_result(p_tid=p_tid, p_result=result)
 
         # 4 Sub-task needs to check out from shared object
         self._so.checkout( p_tid=p_tid )
@@ -174,6 +147,9 @@ class MyParallelAlgorithm (mt.Async):
 
 # 1 Preparation of execution
 if __name__ == "__main__":
+    # https://docs.python.org/3/library/multiprocessing.html?highlight=freeze_support#multiprocessing.freeze_support
+    mp.freeze_support()
+
     # 1.1 Preparation for demo mode
     num_tasks   = 50
     duration    = timedelta(0,0,500000)

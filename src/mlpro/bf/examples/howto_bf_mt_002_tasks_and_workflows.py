@@ -6,10 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-04  1.0.0     DA       Creation/release
+## -- 2022-10-09  1.0.1     DA       Fixed the Windows freeze problem
+## -- 2022-10-09  1.1.0     DA       Simplification
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-04)
+Ver. 1.1.0 (2022-10-09)
 
 This module demonstrates the use of tasks and workflows as part of MLPro's multitasking concept.
 To this regard, a demo custom task class is implemented. In the first experiment a single task 
@@ -35,45 +37,13 @@ You will learn:
 
 
 from time import sleep
+import multiprocessing as mp
 from mlpro.bf.various import Log
 import mlpro.bf.mt as mt
 from datetime import datetime, timedelta
 
 from cmath import pi, sin, cos, tan
 import random
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MyShared (mt.Shared):
-    """
-    This class is used for own shared objects with specific attributes and related methods for 
-    access...
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_range: int = mt.Async.C_RANGE_PROCESS):
-        super().__init__(p_range=p_range)
-        self._results : list = []
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_result(self, p_result):
-        self._results.append(p_result)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_results(self) -> list:
-        return self._results
-
-
-## -------------------------------------------------------------------------------------------------
-    def clear_results(self):
-        self._results.clear()
-
-
 
 
 
@@ -124,9 +94,7 @@ class MyTask (mt.Task):
             if time_diff >= self._duration: break
 
         # 3 Sub-task can optionally store resuls in the shared object.
-        self._so.lock()
-        self._so.add_result( [self.get_name(), result] )
-        self._so.unlock()
+        self._so.add_result(p_tid=self.get_name(), p_result=result)
 
 
 
@@ -134,6 +102,9 @@ class MyTask (mt.Task):
 
 # 1 Preparation of execution
 if __name__ == "__main__":
+    # https://docs.python.org/3/library/multiprocessing.html?highlight=freeze_support#multiprocessing.freeze_support
+    mp.freeze_support()
+
     # 1.1 Preparation for demo mode
     duration    = timedelta(0,1,0)
     pause_sec   = 5
@@ -150,7 +121,7 @@ else:
 # 2 Create and run a single task as process
 task = MyTask( p_duration=duration, 
                p_range_max=mt.Task.C_RANGE_PROCESS, 
-               p_class_shared=MyShared, 
+               p_class_shared=mt.Shared, 
                p_logging=logging )
 
 task.run(p_range=mt.Task.C_RANGE_PROCESS, p_wait=True)
@@ -181,7 +152,7 @@ t3c = MyTask( p_duration=duration, p_name='t3c', p_logging=logging )
 # 3.2 Create a workflow and add the tasks
 wf = mt.Workflow( p_name='wf1', 
                   p_range_max=mt.Workflow.C_RANGE_THREAD, 
-                  p_class_shared=MyShared, 
+                  p_class_shared=mt.Shared, 
                   p_logging=logging )
 
 # 3.2.1 At first we add three tasks that build the starting points of our workflow
