@@ -1,41 +1,47 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_022_validating_dp_env.py
+## -- Module  : howto_rl_020_run_double_pendulum_with_random_actions.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-10-08  0.0.0     LSB      Creation
-## -- 2022-10-08  1.0.0     LSB      Relsease of First Version
+## -- 2022-04-23  0.0.0     YI       Creation
 ## -------------------------------------------------------------------------------------------------
 
-
 """
-Ver. 0.0.0 (2022-10-08)
+Ver. 1.0.0 (2022-10-10)
 
-This module is to be used to validate the Double Pendulum Environment
+This module is used to validate the dp environment
 """
 
-
-
+import torch
+from mlpro.bf.math import *
+from mlpro.rl.models import *
 from mlpro.rl.pool.envs.doublependulum import *
+from stable_baselines3 import A2C
+from stable_baselines3 import DDPG
+from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
+from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM
+from pathlib import Path
+import matplotlib.pyplot as plt
 import numpy as np
 
 
-# Checking for the internal unit test
+
+
 if __name__ == '__main__':
     p_input = True
 else:
     p_input = False
-
-# Taking input from user
-if p_input:
-    p_torque = float(input('Enter the amount of torque in Nm:'))
-    p_cycles = float(input('Enter the amount of cycles to be executed:'))
-
-else:
-    p_torque = 0
-    p_cycles = 0
+#
+# if p_input:
+#     p_torque = int(input('Enter the amount of torque in Nm:'))
+#     p_cycles = int(input('Enter the amount of cycles to be executed:'))
+#
+# else:
+#     p_torque = 0
+#     p_cycles = 0
 
 
 
@@ -44,17 +50,16 @@ else:
 class ActionGenerator(Policy):
     '''Action Generation based on user input'''
 
-
-## -----------------------------------------------------------------------------------------------
-    def compute_action(self, p_state:State):
+    def set_user_action(self, p_action):
         if p_input:
-            my_action_values = np.array([p_torque])
+            self.user_action = np.asarray([p_action])
         else:
-            my_action_values = np.zeros(1)
-        return Action(self._id, self._action_space, my_action_values)
+           self.user_action = np.zeros(1)
 
+    def compute_action(self, p_state:State):
 
-## -----------------------------------------------------------------------------------------------
+        return Action(self._id, self._action_space, self.user_action)
+
     def _adapt(self, *p_args) -> bool:
         self.log(self.C_LOG_TYPE_W, 'Sorry I am not adapting anything')
         return False
@@ -63,28 +68,28 @@ class ActionGenerator(Policy):
 
 
 # 1 Implement the random RL scenario
-## -----------------------------------------------------------------------------------------------
-## -----------------------------------------------------------------------------------------------
 class ScenarioDoublePendulum(RLScenario):
 
     C_NAME      = 'Double Pendulum with Random Actions'
 
-
-## -----------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada, p_logging):
+        self.user_action_cycles = 0
+
         # 1.1 Setup environment
-        self._env   = DoublePendulumS7(p_init_angles='down', p_max_torque=10, p_logging=p_logging)
+        self._env   = DoublePendulumS7(p_init_angles='up', p_max_torque=10, p_logging=p_logging)
 
 
         # 1.2 Setup and return random action agent
-        policy_random = ActionGenerator(p_observation_space=self._env.get_state_space(),
+        policy_user = ActionGenerator(p_observation_space=self._env.get_state_space(),
                                         p_action_space=self._env.get_action_space(),
                                         p_buffer_size=1,
                                         p_ada=1,
                                         p_logging=p_logging)
 
+        self.user_action_cycles = 0
+
         return Agent(
-            p_policy=policy_random,
+            p_policy=policy_user,
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
@@ -92,11 +97,28 @@ class ScenarioDoublePendulum(RLScenario):
         )
 
 
+    def _run_cycle(self):
+
+        if p_input and self.get_cycle_id() == self.user_action_cycles:
+            p_torque = int(input('Enter the amount of torque in Nm:'))
+            self.get_agent()._policy.set_user_action(p_torque)
+            p_cycles = int(input('Enter the amount of cycles to be executed:'))
+
+        elif not p_input:
+            self.get_agent()._policy.set_user_action(0)
+            p_cycles = 0
+
+        else:
+            p_cycles = 0
+
+        self.user_action_cycles += p_cycles
+        success, error, adapted = super()._run_cycle()
+        return success, error, adapted
 
 # 2 Create scenario and run the scenario
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit         = p_cycles
+    cycle_limit         = 20000
     logging             = Log.C_LOG_ALL
     visualize           = True
     plotting            = True
@@ -118,6 +140,6 @@ myscenario  = ScenarioDoublePendulum(
     p_logging=logging
 )
 
-
 myscenario.reset(p_seed=3)
 myscenario.run()
+
