@@ -9,61 +9,88 @@
 ## -- 2022-??-??  1.0.0     SY/ML    Release of first version
 ## -------------------------------------------------------------------------------------------------
 
+"""
+Ver. 0.0.0 (2022-10-12)
+
+This module provides an example of using the transfer function method in MLPro for both default and
+custom implementation.
 
 """
-Ver. 0.0.0 (2022-09-15)
 
-This module provides different math functions and his applcation
-
-"""
 
 from mlpro.bf.math import *
-from mpps import TransferFunction
-
+from mlpro.rl.envs.sim_mpps.mpps import TransferFunction
 import math
 
+
+
+
+if __name__ == "__main__":
+    
+    # 1. Initialize a given default transfer function
+    myTF_linear = TransferFunction(p_name='Linear_TF',
+                                   p_type=TransferFunction.C_TRF_FUNC_LINEAR,
+                                   p_dt=0.01,
+                                   m=5,
+                                   b=2)
+    
+    
+    # 2. Call the defined transfer function
+    p_input = 10
+    output = myTF_linear.call(p_input)
+    print(output)
+    
+    p_range = 5
+    output = myTF_linear.call(p_input, p_range)
+    print(output)
+    
+    # 3. Plot the graph
+    myTF_linear.plot(p_input, p_range)
+    
+    
+
 # create the function space
-math_function = MSpace()
+# math_function = MSpace()
 
-# initalisation of the math function
-# each function depens on the name, id and fix parameters
-# Function has as basic math function linear, sinus and cosinus
-math_function.add_dim(TransferFunction(p_name='linear', p_id=None, arg0=5, arg1=3))
-math_function.add_dim(TransferFunction(p_name="cosinus",  p_id=None, arg0=0.8))
+# # initalisation of the math function
+# # each function depens on the name, id and fix parameters
+# # Function has as basic math function linear, sinus and cosinus
+# math_function.add_dim(TransferFunction(p_name='linear', p_id=None, arg0=5, arg1=3))
+# math_function.add_dim(TransferFunction(p_name="cosinus",  p_id=None, arg0=0.8))
 
-# the math function space listed all functions with ids
-math_ids = math_function.get_dim_ids()
+# # the math function space listed all functions with ids
+# math_ids = math_function.get_dim_ids()
 
-# ids can be assign
-LINEAR = math_ids[0]
-COSINE = math_ids[1]
+# # ids can be assign
+# LINEAR = math_ids[0]
+# COSINE = math_ids[1]
 
-# functions can be called for calculation
-linear_volume = math_function.get_dim(LINEAR).call(5)
-
-
-# Function can be extends by own math function
-class TransferFunction(TransferFunction):
-    """
-    Extends class Function by own DGL
-    """
-    def DGL_solution(self, *p_value):
-        # y(t) = A cos(w * t - phi)
-        return self.args["arg0"] * math.cos(self.args["arg1"] * p_value[0] - self.args["arg2"])
+# # functions can be called for calculation
+# linear_volume = math_function.get_dim(LINEAR).call(5)
 
 
-# now the function can be add to the math space (Note: Function name must be simular)
-A = 3.5         # Current
-w = 314.15      # angular velocity
-phi = -120      # angle offset
+# # Function can be extends by own math function
+# class TransferFunction(TransferFunction):
+#     """
+#     Extends class Function by own DGL
+#     """
+#     def DGL_solution(self, *p_value):
+#         # y(t) = A cos(w * t - phi)
+#         return self.args["arg0"] * math.cos(self.args["arg1"] * p_value[0] - self.args["arg2"])
 
-math_function.add_dim(TransferFunction(p_name="DGL_solution",  p_id=None, arg0=A, arg1=w, arg2=phi))
 
-# ids must be called again
-math_ids = math_function.get_dim_ids()
+# # now the function can be add to the math space (Note: Function name must be simular)
+# A = 3.5         # Current
+# w = 314.15      # angular velocity
+# phi = -120      # angle offset
 
-# get math_id
-my_DGL_solution = math_ids[2]
+# math_function.add_dim(TransferFunction(p_name="DGL_solution",  p_id=None, arg0=A, arg1=w, arg2=phi))
 
-# compute current after 15 secents
-current = math_function.get_dim(my_DGL_solution).call(15)
+# # ids must be called again
+# math_ids = math_function.get_dim_ids()
+
+# # get math_id
+# my_DGL_solution = math_ids[2]
+
+# # compute current after 15 secents
+# current = math_function.get_dim(my_DGL_solution).call(15)

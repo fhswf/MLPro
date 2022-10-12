@@ -32,6 +32,7 @@ import numpy as np
 import random
 import uuid
 import math
+import matplotlib.pyplot as plt
 
 
 
@@ -1633,30 +1634,30 @@ class TransferFunction(ScientificObject, Log):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def plot(self, p_lim:int):
+    def plot(self, p_x_init, p_x_end):
         """
-        ............................
+        This methods provides functionality to plot the defined function within a range.
 
         Parameters
         ----------
-        p_lim : int
-            DESCRIPTION.
-
-        Returns
-        -------
-        None.
+        p_x_init : float
+            The initial value of the input (x-axis).
+        p_x_end : float
+            The initial value of the input (y-axis).
 
         """
-        x_value = range(p_lim)
-        y_value = []
+        x_value = []
+        output = []
+        p_range = p_x_end-p_x_init
+        points = int(p_range/self.dt)
 
-        for para in x_value:
-            # function is limited of functions with one input value
-            y_value.append(self.call(para))
-
+        for x in range(points+1):
+            current_input = p_x_init + x * self.dt
+            x_value.append(current_input)
+            output.append(self.call(current_input, p_range=None))
         
         fig, ax = plt.subplots()
-        ax.plot(x_value, y_value, linewidth=2.0)
+        ax.plot(x_value, output, linewidth=2.0)
         plt.show()
 
 
