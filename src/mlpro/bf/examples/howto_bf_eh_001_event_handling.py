@@ -1,15 +1,16 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf
-## -- Module  : howto_bf_011_event_handling.py
+## -- Package : mlpro.bf.examples
+## -- Module  : howto_bf_eh_001_event_handling.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-08-21  1.0.0     DA       Creation/release
+## -- 2022-10-12  1.0.1     DA       Refactoring/Renaming
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-08-21)
+Ver. 1.0.1 (2022-10-12)
 
 This module demonstrates the use of MLPro's event handling as a property in own classes. To this
 regard, a demo class MyMainClass is set up that inherits event functionalities from MLPro's class 
@@ -40,7 +41,7 @@ class MyMainClass (EventManager):
 
     C_NAME          = 'My main class'
 
-    C_EVENT_OWN     = 0
+    C_EVENT_OWN     = 'MYEVENT'
 
     def __init__(self, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)

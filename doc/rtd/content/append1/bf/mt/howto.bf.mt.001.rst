@@ -8,7 +8,7 @@ Howto BF-MT-001: Multitasking - Parallel Algorithms
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/bf/examples/howto_bf_mt_001_parallel_algorithms.py
+.. literalinclude:: ../../../../../../src/mlpro/bf/examples/howto_bf_mt_001_parallel_algorithms.py
 	:language: python
 
 

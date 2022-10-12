@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_bf_005_hyperparameters.py
+## -- Package : mlpro.bf.examples
+## -- Module  : howto_bf_ml_001_hyperparameters.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -10,10 +10,11 @@
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
 ## -- 2021-12-10  1.0.1     DA       Refactoring, little beautifying
 ## -- 2022-02-25  1.0.2     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-10-12  1.0.3     DA       Renaming/refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-02-25)
+Ver. 1.0.3 (2022-10-12)
 
 This module demonstrates how to set-up hyperparameters using available HyperParamTuple, 
 HyperParamSpace, and HyperParam classes.
@@ -61,16 +62,23 @@ class MyHyperparameter:
 
 
 if __name__ == "__main__":
+    printing = True
+else:
+    printing = False
 
-    # 2 Get value from the hyperparameter tuple 
-    myParameter         = MyHyperparameter()
-    for idx in myParameter.get_hyperparam().get_dim_ids():
-        print('Variable with ID %s = %.2f'%(idx, myParameter.get_hyperparam().get_value(idx)))
+
+# 2 Get value from the hyperparameter tuple 
+myParameter         = MyHyperparameter()
+for idx in myParameter.get_hyperparam().get_dim_ids():
+    par_name = myParameter.get_hyperparam().get_related_set().get_dim(idx).get_name_short()
+    par_val  = myParameter.get_hyperparam().get_value(idx)
+    if printing: print('Variable with ID %s = %.2f'%(par_name, par_val))
         
 
+# 3 Overwrite current value with new desired value
+ids_ = myParameter.get_hyperparam().get_dim_ids()
+myParameter.get_hyperparam().set_value(ids_[0], 50)
 
-    # 3 Overwrite current value with new desired value
-    ids_ = myParameter.get_hyperparam().get_dim_ids()
-    myParameter.get_hyperparam().set_value(ids_[0], 50)
+if printing:
     print('\nA new value for variable ID ids_[0]')
     print('Variable with ID ids_[0] = %.2f'%(myParameter.get_hyperparam().get_value(ids_[0])))

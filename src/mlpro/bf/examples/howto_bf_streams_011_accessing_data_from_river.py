@@ -1,17 +1,18 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_bf_021_accessing_data_from_river.py
+## -- Package : mlpro.bf.examples
+## -- Module  : howto_bf_streams_011_accessing_data_from_river.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-06-14  0.0.0     LSB      Creation
 ## -- 2022-06-14  1.0.0     LSB      Release of first version
 ## -- 2022-06-25  1.0.1     LSB      Refactoring for new label and instance class
+## -- 2022-10-12  1.0.2     DA       Renaming
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-06-25)
+Ver. 1.0.2 (2022-10-12)
 
 This module shows how to wrap MLPro's Stream and StreamProvider class to River, including how to fetch the list of
 streams and downloading a stream from the list of streams available with the stream provider, getting the feature
@@ -27,10 +28,10 @@ from mlpro.bf.various import Log
 
 
 # Checking for unit test
-if not __name__ == '__main__':
-    p_logging = Log.C_LOG_NOTHING
-else:
+if __name__ == '__main__':
     p_logging = Log.C_LOG_ALL
+else:
+    p_logging = Log.C_LOG_NOTHING
 
 
 # 1. Create a Wrapper for OpenML stream provider

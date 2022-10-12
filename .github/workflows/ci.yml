@@ -51,6 +51,9 @@ jobs:
         pip install hyperopt
         pip install optuna
         pip install transformations
+        pip install sklearn
+        pip install river
+        pip install openml
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
