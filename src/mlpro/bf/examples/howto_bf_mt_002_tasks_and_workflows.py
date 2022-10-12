@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf.mt
+## -- Package : mlpro.bf.examples
 ## -- Module  : howto_bf_mt_002_tasks_and_workflows.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf.ui
+## -- Package : mlpro.bf.examples
 ## -- Module  : howto_bf_ui_001_reuse_of_interactive_2d_3d_input_space.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
