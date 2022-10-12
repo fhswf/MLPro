@@ -16,10 +16,11 @@
 ## -- 2022-09-13  1.1.2     SY       Add howto 22 RL and 03 GT
 ## -- 2022-10-06  1.1.3     SY       Add howto 23
 ## -- 2022-10-08  1.1.4     SY       Howto bf 009 and 010 are switched to bf uui 01 and bf uui 02
+## -- 2022-10-12  1.2.0     DA       Incorporation of refactored bf howto files
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4(2022-10-08)
+Ver. 1.2.0(2022-10-12)
 
 Unit test for all examples available.
 """
@@ -33,14 +34,17 @@ howto_list = {
 # Basic Functions:
     "bf_001": "mlpro.bf.examples.howto_bf_001_logging",
     "bf_002": "mlpro.bf.examples.howto_bf_002_timer",
-    "bf_003": "mlpro.bf.examples.howto_bf_003_spaces_and_elements",
-    "bf_004": "mlpro.bf.examples.howto_bf_004_store_plot_and_save_variables",
-    "bf_005": "mlpro.bf.examples.howto_bf_005_hyperparameters",
-    "bf_006": "mlpro.bf.examples.howto_bf_006_buffers",
-    "bf_007": "mlpro.bf.examples.howto_bf_007_hyperparameter_tuning_using_hyperopt",
-    "bf_008": "mlpro.bf.examples.howto_bf_008_hyperparameter_tuning_using_optuna",
-    "bf_009": "mlpro.bf.examples.howto_bf_ui_001_reuse_of_interactive_2d_3d_input_space",
-    "bf_010": "mlpro.bf.examples.howto_bf_ui_002_reinforcement_learning_cockpit",
+    "bf_003": "mlpro.bf.examples.howto_bf_003_store_plot_and_save_variables",
+    "bf_004": "mlpro.bf.examples.howto_bf_004_buffers",
+    "bf_eh_001": "mlpro.bf.examples.howto_bf_eh_001_event_handling",
+    "bf_mt_001": "mlpro.bf.examples.howto_bf_mt_001_parallel_algorithms",
+    "bf_mt_002": "mlpro.bf.examples.howto_bf_mt_002_tasks_and_workflows",
+    "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
+    "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
+    "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
+    "bf_streams_010": "mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml",
+#    "bf_streams_011": "mlpro.bf.examples.howto_bf_streams_011_accessing_data_from_river",
+    "bf_streams_012": "mlpro.bf.examples.howto_bf_streams_012_accessing_data_from_scikitlearn",
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_types_of_reward",

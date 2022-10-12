@@ -1,16 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro.bf.ui
-## -- Module  : howto_bf_ui_002_reinforcement_learning_cockpit.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_ui_001_reinforcement_learning_cockpit.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-07-27  0.0.0     SY       Creation
-## -- 2021-10-07  1.0.0     SY       Release of first draft
+## -- 2021-10-07  0.1.0     SY       Release of first draft
+## -- 2022-10-12  0.1.1     DA       Renaming and shift to sub-framework mlpro-rl
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-10-07)
+Ver. 0.1.1 (2022-10-12)
 
 SciUI template for a Reinforcement Learning simulation.
 """
