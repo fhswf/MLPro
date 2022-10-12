@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
+## -- Package : mlpro.bf.examples
 ## -- Module  : howto_bf_002_timer.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

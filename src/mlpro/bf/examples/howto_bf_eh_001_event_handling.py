@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf
+## -- Package : mlpro.bf.examples
 ## -- Module  : howto_bf_eh_001_event_handling.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

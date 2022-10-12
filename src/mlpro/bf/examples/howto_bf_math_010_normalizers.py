@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_023_normalizers.py
+## -- Module  : howto_bf_math_010_normalizers.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -9,10 +9,11 @@
 ## -- 2022-09-25  1.0.0     LSB      Release of first version
 ## -- 2022-10-01  1.0.1     LSB      Renormalization
 ## -- 2022-10-06  1.0.1     LSB      Refactoring
+## -- 2022-10-12  1.0.2     DA       Renaming
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-10-06)
+Ver. 1.0.2 (2022-10-12)
 Example file for demonstrating the use of MLPro's normalizer for normalizing and de-normalizing data.
 
 
@@ -35,6 +36,8 @@ from mlpro.bf.math.normalizers import *
 # checking for internal unit tests
 if __name__ == '__main__':
     p_printing = True
+else:
+    p_printing = False
 
 
 
