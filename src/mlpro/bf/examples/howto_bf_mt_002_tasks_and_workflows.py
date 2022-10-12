@@ -6,12 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-04  1.0.0     DA       Creation/release
-## -- 2022-10-09  1.0.1     DA       Fixed the Windows freeze problem
 ## -- 2022-10-09  1.1.0     DA       Simplification
+## -- 2022-10-12  1.2.0     DA       Restructuring of demo steps
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-10-09)
+Ver. 1.2.0 (2022-10-12)
 
 This module demonstrates the use of tasks and workflows as part of MLPro's multitasking concept.
 To this regard, a demo custom task class is implemented. In the first experiment a single task 
@@ -37,11 +37,9 @@ You will learn:
 
 
 from time import sleep
-import multiprocessing as mp
 from mlpro.bf.various import Log
 import mlpro.bf.mt as mt
 from datetime import datetime, timedelta
-
 from cmath import pi, sin, cos, tan
 import random
 
@@ -101,10 +99,7 @@ class MyTask (mt.Task):
 
 
 # 1 Preparation of execution
-if __name__ == "__main__":
-    # https://docs.python.org/3/library/multiprocessing.html?highlight=freeze_support#multiprocessing.freeze_support
-    mp.freeze_support()
-
+if __name__ == '__main__':  
     # 1.1 Preparation for demo mode
     duration    = timedelta(0,1,0)
     pause_sec   = 5
@@ -112,6 +107,7 @@ if __name__ == "__main__":
 
 else:
     # 1.2 Preparation for unit test mode
+    num_tasks   = 2
     duration    = timedelta(0,0,10000)
     pause_sec   = 0
     logging     = Log.C_LOG_NOTHING
@@ -119,17 +115,18 @@ else:
 
 
 # 2 Create and run a single task as process
-task = MyTask( p_duration=duration, 
-               p_range_max=mt.Task.C_RANGE_PROCESS, 
-               p_class_shared=mt.Shared, 
-               p_logging=logging )
+if __name__ == '__main__':
+    task = MyTask( p_duration=duration, 
+                   p_range_max=mt.Task.C_RANGE_PROCESS, 
+                   p_class_shared=mt.Shared, 
+                   p_logging=logging )
 
-task.run(p_range=mt.Task.C_RANGE_PROCESS, p_wait=True)
-task.log(Log.C_LOG_TYPE_I, 'Result in shared object:\n', task.get_so().get_results())
+    task.run(p_range=mt.Task.C_RANGE_PROCESS, p_wait=True)
+    task.log(Log.C_LOG_TYPE_I, 'Result in shared object:\n', task.get_so().get_results())
 
-# 2.1 Wait for next run
-task.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
-sleep(pause_sec)
+    # 2.1 Wait for next run
+    task.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
+    sleep(pause_sec)
 
 
 

@@ -6,12 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-03  1.0.0     DA       Creation/release
-## -- 2022-10-09  1.0.1     DA       Fixed the Windows freeze problem
 ## -- 2022-10-09  1.1.0     DA       Simplification
+## -- 2022-10-12  1.2.0     DA       Restructuring of demo steps
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-10-09)
+Ver. 1.2.0 (2022-10-12)
 
 This module demonstrates the use of classes ASync and Shared as part of MLPro's multitasking concept.
 Both classes are used to implement a simple parallel algorithm class MyParallelAlgorithm with a
@@ -39,10 +39,8 @@ You will learn:
 
 from time import sleep
 from mlpro.bf.various import Log
-import multiprocess as mp
 import mlpro.bf.mt as mt
 from datetime import datetime, timedelta
-
 from cmath import pi, sin, cos, tan
 import random
 
@@ -147,51 +145,49 @@ class MyParallelAlgorithm (mt.Async):
 
 # 1 Preparation of execution
 if __name__ == "__main__":
-    # https://docs.python.org/3/library/multiprocessing.html?highlight=freeze_support#multiprocessing.freeze_support
-    #mp.freeze_support()
-
     # 1.1 Preparation for demo mode
     num_tasks   = 50
     duration    = timedelta(0,0,500000)
     pause_sec   = 5
     logging     = Log.C_LOG_ALL
 
-# else:
-#     # 1.2 Preparation for unit test mode
-#     num_tasks   = 2
-#     duration    = timedelta(0,0,10000)
-#     pause_sec   = 0
-#     logging     = Log.C_LOG_NOTHING
+else:
+    # 1.2 Preparation for unit test mode
+    num_tasks   = 2
+    duration    = timedelta(0,0,10000)
+    pause_sec   = 0
+    logging     = Log.C_LOG_NOTHING
 
 
 
-    # 2 Execution of demo class (synchronous)
-    a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                            p_duration = duration, 
-                            p_range_max = mt.Async.C_RANGE_NONE, 
-                            p_logging = logging )
+# 2 Execution of demo class (synchronous)
+a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
+                         p_duration = duration, 
+                         p_range_max = mt.Async.C_RANGE_NONE, 
+                         p_logging = logging )
                             
-    a.execute()                     
+a.execute()                     
 
+
+
+# 3 Execution of demo class (asynchonous, multithreading)
+a.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
+sleep(pause_sec)
+
+a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
+                         p_duration = duration, 
+                         p_range_max = mt.Async.C_RANGE_THREAD, 
+                         p_logging = logging )
+
+a.execute()
+
+
+
+# 4 Execution of demo class (asynchronous, multiprocessing)
+if __name__ == '__main__':
     a.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
     sleep(pause_sec)
 
-
-
-    # 3 Execution of demo class (asynchonous, multi-threading)
-    a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                            p_duration = duration, 
-                            p_range_max = mt.Async.C_RANGE_THREAD, 
-                            p_logging = logging )
-
-    a.execute()
-
-    a.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
-    sleep(pause_sec)
-
-
-
-    # 4 Execution of demo class (asynchronous, multi-processing)
     a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
                             p_duration = duration, 
                             p_range_max = mt.Async.C_RANGE_PROCESS, 

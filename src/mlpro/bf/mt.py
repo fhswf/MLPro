@@ -11,21 +11,27 @@
 ## -- 2022-10-04  1.0.0     DA       Implementation of classes Task, Workflow
 ## -- 2022-10-06  1.0.1     DA       Class Task: event definition as string
 ## -- 2022-10-09  1.1.0     DA       Class Shared: systematics for results
+## -- 2022-10-12  1.1.1     DA       Replaced package multiprocessing (pickle) by multiprocess (dill)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-10-09)
+Ver. 1.1.1 (2022-10-12)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
-on shared objects.
+on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
+parallel programming.
+
+Annotation to multitasking: Standard Python package multiprocessing uses pickle for serialization.
+This leads to problems with more complex objects. That was the reason to opt for the more flexible 
+package multiprocess, which is a fork of multiprocessing and uses dill for serialization.
+
+See also: https://stackoverflow.com/questions/40234771/replace-pickle-in-python-multiprocessing-lib
 """
 
 
 from time import sleep
 import uuid
 import threading as mt
-# import multiprocessing as mp
-# from multiprocessing.managers import BaseManager
 import multiprocess as mp
 from multiprocess.managers import BaseManager
 from mlpro.bf.exceptions import *
