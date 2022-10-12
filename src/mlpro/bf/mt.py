@@ -24,8 +24,10 @@ on shared objects.
 from time import sleep
 import uuid
 import threading as mt
-import multiprocessing as mp
-from multiprocessing.managers import BaseManager
+# import multiprocessing as mp
+# from multiprocessing.managers import BaseManager
+import multiprocess as mp
+from multiprocess.managers import BaseManager
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.events import EventManager, Event

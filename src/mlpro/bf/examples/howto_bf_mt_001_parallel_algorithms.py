@@ -39,7 +39,7 @@ You will learn:
 
 from time import sleep
 from mlpro.bf.various import Log
-import multiprocessing as mp
+import multiprocess as mp
 import mlpro.bf.mt as mt
 from datetime import datetime, timedelta
 
@@ -148,7 +148,7 @@ class MyParallelAlgorithm (mt.Async):
 # 1 Preparation of execution
 if __name__ == "__main__":
     # https://docs.python.org/3/library/multiprocessing.html?highlight=freeze_support#multiprocessing.freeze_support
-    mp.freeze_support()
+    #mp.freeze_support()
 
     # 1.1 Preparation for demo mode
     num_tasks   = 50
@@ -156,45 +156,45 @@ if __name__ == "__main__":
     pause_sec   = 5
     logging     = Log.C_LOG_ALL
 
-else:
-    # 1.2 Preparation for unit test mode
-    num_tasks   = 2
-    duration    = timedelta(0,0,10000)
-    pause_sec   = 0
-    logging     = Log.C_LOG_NOTHING
+# else:
+#     # 1.2 Preparation for unit test mode
+#     num_tasks   = 2
+#     duration    = timedelta(0,0,10000)
+#     pause_sec   = 0
+#     logging     = Log.C_LOG_NOTHING
 
 
 
-# 2 Execution of demo class (synchronous)
-a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                         p_duration = duration, 
-                         p_range_max = mt.Async.C_RANGE_NONE, 
-                         p_logging = logging )
-                         
-a.execute()                     
+    # 2 Execution of demo class (synchronous)
+    a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
+                            p_duration = duration, 
+                            p_range_max = mt.Async.C_RANGE_NONE, 
+                            p_logging = logging )
+                            
+    a.execute()                     
 
-a.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
-sleep(pause_sec)
-
-
-
-# 3 Execution of demo class (asynchonous, multi-threading)
-a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                         p_duration = duration, 
-                         p_range_max = mt.Async.C_RANGE_THREAD, 
-                         p_logging = logging )
-
-a.execute()
-
-a.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
-sleep(pause_sec)
+    a.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
+    sleep(pause_sec)
 
 
 
-# 4 Execution of demo class (asynchronous, multi-processing)
-a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                         p_duration = duration, 
-                         p_range_max = mt.Async.C_RANGE_PROCESS, 
-                         p_logging = logging )
-                        
-a.execute()                     
+    # 3 Execution of demo class (asynchonous, multi-threading)
+    a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
+                            p_duration = duration, 
+                            p_range_max = mt.Async.C_RANGE_THREAD, 
+                            p_logging = logging )
+
+    a.execute()
+
+    a.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')
+    sleep(pause_sec)
+
+
+
+    # 4 Execution of demo class (asynchronous, multi-processing)
+    a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
+                            p_duration = duration, 
+                            p_range_max = mt.Async.C_RANGE_PROCESS, 
+                            p_logging = logging )
+                            
+    a.execute()                     
