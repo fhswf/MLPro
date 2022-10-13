@@ -1,18 +1,19 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
-## -- Module  : howto_rl_023_train_mbrl_using_mpc_on_grid_world.py
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_mb_002_grid_world_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-19  0.0.0     SY       Creation
 ## -- 2022-10-06  1.0.0     SY       Release first version
 ## -- 2022-10-07  1.0.1     SY       Add plotting
+## -- 2022-10-13  1.0.2     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.1 (2022-10-07)
+Ver. 1.0.2 (2022-10-13)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem.
 
@@ -23,6 +24,7 @@ You will learn:
 2) How to set up model-based RL (MBRL) training
     
 3) How to incorporate MPC into MBRL training
+    
 """
 
 from mlpro.bf.math import *
@@ -147,14 +149,15 @@ class MyDataPlotting(DataPlotting):
                 else:
                     plt.close(fig)
 
-data_printing = {
-    "Cycle": [False],
-    "Day": [False],
-    "Second": [False],
-    "Microsecond": [False],
-    "Smith": [True, -1],
-}
-
-mem = training.get_results().ds_rewards
-mem_plot = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
-mem_plot.get_plots()
+if __name__ == "__main__":
+    data_printing = {
+        "Cycle": [False],
+        "Day": [False],
+        "Second": [False],
+        "Microsecond": [False],
+        "Smith": [True, -1],
+    }
+    
+    mem = training.get_results().ds_rewards
+    mem_plot = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
+    mem_plot.get_plots()

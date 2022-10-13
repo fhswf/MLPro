@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_013_model_based_reinforcement_learning.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_mb_001_robothtm_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,12 +12,24 @@
 ## -- 2022-08-09  1.0.3     SY        Update due to introduction of ActionPlanner
 ## -- 2022-08-15  1.0.4     SY        - Renaming maturity to accuracy
 ## --                                 - Utilize MPC from pool of objects
+## -- 2022-10-13  1.0.5     SY        Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-08-15)
+Ver. 1.0.5 (2022-10-13)
 
 This module demonstrates model-based reinforcement learning (MBRL) with action planner using MPC.
+
+You will learn:
+    
+1) How to set up an model-based agent with action planner
+
+2) How to set up scenario for Robothtm and also with SB3 wrapper
+
+3) How to run the scenario and train the agent
+    
+4) How to plot from the generated results
+    
 """
 
 
@@ -39,12 +51,12 @@ class ActualTraining(RLTraining):
 
 
 
-# Implement RL Scenario for the actual environment to train the environment model
+# 1 Implement RL Scenario for the actual environment to train the environment model
 class ScenarioRobotHTMActual(RLScenario):
     C_NAME = "Matrix1"
 
     def _setup(self, p_mode, p_ada, p_logging):
-        # 1 Setup environment
+        # 1.1 Setup environment
         self._env = RobotHTM(p_logging=True)
 
         policy_kwargs = dict(activation_fn=torch.nn.Tanh,
@@ -76,7 +88,7 @@ class ScenarioRobotHTMActual(RLScenario):
                                  p_collect_rewards=False,
                                  p_collect_training=False)
 
-        # 2 Setup standard single-agent with own policy
+        # 1.2 Setup standard single-agent with own policy
         return Agent(
             p_policy=policy_wrapped,
             p_envmodel=HTMEnvModel(),
@@ -92,16 +104,16 @@ class ScenarioRobotHTMActual(RLScenario):
         )
 
 
-# 3 Train agent in scenario
+# 2 Train agent in scenario
 if __name__ == "__main__":
-    # 3.1 Parameters for demo mode
+    # 2.1 Parameters for demo mode
     cycle_limit = 300000
     logging     = Log.C_LOG_ALL
     visualize   = True
     path        = str(Path.home())
     plotting    = True
 else:
-    # 3.2 Parameters for internal unit test
+    # 2.2 Parameters for internal unit test
     cycle_limit = 100
     logging     = Log.C_LOG_NOTHING
     visualize   = False
@@ -123,7 +135,7 @@ training = ActualTraining(
 training.run()
 
 
-# 4 Create Plotting Class
+# 3 Create Plotting Class
 class MyDataPlotting(DataPlotting):
     def get_plots(self):
         """
@@ -161,15 +173,16 @@ class MyDataPlotting(DataPlotting):
                     plt.close(fig)
 
 
-# 5 Plotting 1 MLpro
-data_printing = {
-    "Cycle": [False],
-    "Day": [False],
-    "Second": [False],
-    "Microsecond": [False],
-    "Smith1": [True, -1],
-}
-
-mem = training.get_results().ds_rewards
-mem_plot = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
-mem_plot.get_plots()
+# 4 Plotting using MLpro
+if __name__ == "__main__":
+    data_printing = {
+        "Cycle": [False],
+        "Day": [False],
+        "Second": [False],
+        "Microsecond": [False],
+        "Smith1": [True, -1],
+    }
+    
+    mem = training.get_results().ds_rewards
+    mem_plot = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
+    mem_plot.get_plots()
