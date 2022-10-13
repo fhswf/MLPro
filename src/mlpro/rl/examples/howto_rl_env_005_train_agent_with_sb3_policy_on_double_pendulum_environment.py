@@ -1,17 +1,18 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
-## -- Module  : howto_rl_021_train_wrapped_sb3_policy_on_doublependulum.py
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_env_005_train_agent_with_sb3_policy_on_double_pendulum_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-03-22  0.0.0     WB       Creation
 ## -- 2022-08-14  1.0.0     LSB       Training howto released with a lower value of torque
+## -- 2022-10-13  1.0.1     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.0 (2022-08-14)
+Ver. 1.0.1 (2022-10-13)
 
 This module shows how to use SB3 wrapper to train double pendulum. Currently under construction...
 """

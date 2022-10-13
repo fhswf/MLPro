@@ -1,19 +1,29 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_env_003_train_agent_with_sb3_policy_on_multigeo_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-19  0.0.0     MRD      Creation
 ## -- 2021-12-19  1.0.0     MRD      Initial Release
 ## -- 2021-12-23  1.0.1     DA       Minor fix 
+## -- 2022-10-13  1.0.2     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-12-23)
+Ver. 1.0.2 (2022-10-13)
 
 This module shows how to use SB3 wrapper to train Multi Geometry Robot.
+
+You will learn:
+    
+1) How to set up a scenario for Multi Geometry Robot and also with SB3 wrapper
+
+2) How to run the scenario and train the agent
+    
+3) How to plot from the generated results
+    
 """
 
 from mlpro.bf.math import *
@@ -29,7 +39,7 @@ class ScenarioMultiGeoPPO(RLScenario):
     C_NAME = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        # 1 Setup environment
+        # 1.1 Setup environment
         self._env = MultiGeo(p_logging=p_logging)
 
         policy_sb3 = PPO(
@@ -48,7 +58,7 @@ class ScenarioMultiGeoPPO(RLScenario):
             p_ada=p_ada,
             p_logging=p_logging)
 
-        # 2 Setup standard single-agent with own policy
+        # 1.2 Setup standard single-agent with own policy
         return Agent(
             p_policy=policy_wrapped,
             p_envmodel=None,
@@ -58,25 +68,39 @@ class ScenarioMultiGeoPPO(RLScenario):
         )
 
 
-# 3 Train agent in scenario
-now = datetime.now()
+# 2 Train agent in scenario
+if __name__ == "__main__":
+    # 2.1 Parameters for demo mode
+    cycle_limit = 1000
+    logging = Log.C_LOG_WE
+    visualize = True
+    path = str(Path.home())
+    plotting = True
+
+else:
+    # 2.2 Parameters for internal unit test
+    cycle_limit = 50
+    logging = Log.C_LOG_NOTHING
+    visualize = False
+    path = None
+    plotting = False
 
 training = RLTraining(
     p_scenario_cls=ScenarioMultiGeoPPO,
-    p_cycle_limit=1000,
+    p_cycle_limit=cycle_limit,
     p_cycles_per_epi_limit=-1,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_visualize=False,
-    p_path=str(Path.home()),
-    p_logging=Log.C_LOG_ALL)
+    p_visualize=visualize,
+    p_path=path,
+    p_logging=plotting)
 
 training.run()
 
 
-# 4 Create Plotting Class
+# 3 Create Plotting Class
 class MyDataPlotting(DataPlotting):
     def get_plots(self):
         """
@@ -114,13 +138,14 @@ class MyDataPlotting(DataPlotting):
                     plt.close(fig)
 
 
-# 5 Plotting 1 MLpro
-data_printing = {"Cycle": [False],
-                 "Day": [False],
-                 "Second": [False],
-                 "Microsecond": [False],
-                 "Smith": [True, -1]}
-
-mem = training.get_results().ds_rewards
-mem_plot = MyDataPlotting(mem, p_showing=True, p_printing=data_printing)
-mem_plot.get_plots()
+# 4 Plotting MLpro
+if __name__ == "__main__": 
+    data_printing = {"Cycle": [False],
+                     "Day": [False],
+                     "Second": [False],
+                     "Microsecond": [False],
+                     "Smith": [True, -1]}
+    
+    mem = training.get_results().ds_rewards
+    mem_plot = MyDataPlotting(mem, p_showing=True, p_printing=data_printing)
+    mem_plot.get_plots()

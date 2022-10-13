@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
-## -- Module  : howto_rl_012_train_wrapped_SB3_policy_on_robothtm_environment.py
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_env_002_train_agent_with_SB3_policy_on_robothtm_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -10,12 +10,22 @@
 ## -- 2021-12-07  1.0.1     DA       Refactoring
 ## -- 2021-12-08  1.0.2     MRD      Add parameter to change the hidden layer of the policy
 ## -- 2022-05.30  1.0.3     DA       Refactoring
+## -- 2022-10-13  1.0.4     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-05-30)
+Ver. 1.0.4 (2022-10-13)
 
-This module shows how to train a wrapped Stable Baselines 3 policy on MLPro's native Robothtm environment.
+This module shows how to train a wrapped SB3 policy on MLPro's native Robothtm environment.
+
+You will learn:
+    
+1) How to set up a scenario for Robothtm and also with SB3 wrapper
+
+2) How to run the scenario and train the agent
+    
+3) How to plot from the generated results
+    
 """
 
 
@@ -33,7 +43,7 @@ class ScenarioRobotHTM(RLScenario):
     C_NAME = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        # 1 Setup environment
+        # 1.1 Setup environment
         self._env = RobotHTM(p_target_mode="fix", p_logging=True)
 
         policy_kwargs = dict(activation_fn=torch.nn.Tanh,
@@ -56,7 +66,7 @@ class ScenarioRobotHTM(RLScenario):
             p_ada=p_ada,
             p_logging=p_logging)
 
-        # 2 Setup standard single-agent with own policy
+        # 1.2 Setup standard single-agent with own policy
         return Agent(
             p_policy=policy_wrapped,
             p_envmodel=None,
@@ -149,13 +159,14 @@ class MyDataPlotting(DataPlotting):
                     plt.close(fig)
 
 
-# 5 Plotting 1 MLpro    
-data_printing = {"Cycle": [False],
-                 "Day": [False],
-                 "Second": [False],
-                 "Microsecond": [False],
-                 "Smith": [True, -1]}
-
-mem = training.get_results().ds_rewards
-mem_plot = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
-mem_plot.get_plots()
+# 5 Plotting with MLpro  
+if __name__ == "__main__":  
+    data_printing = {"Cycle": [False],
+                     "Day": [False],
+                     "Second": [False],
+                     "Microsecond": [False],
+                     "Smith": [True, -1]}
+    
+    mem = training.get_results().ds_rewards
+    mem_plot = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
+    mem_plot.get_plots()

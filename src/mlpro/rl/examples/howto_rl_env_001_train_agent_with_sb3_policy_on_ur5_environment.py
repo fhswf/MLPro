@@ -1,19 +1,29 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_010_train_ur5_environment_with_wrapped_sb3_policy.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_env_001_train_agent_with_sb3_policy_on_ur5_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-11-18  0.0.0     MRD      Creation
 ## -- 2021-11-18  1.0.0     MRD      Initial Release
 ## -- 2021-12-07  1.0.1     DA       Refactoring
+## -- 2022-10-13  1.0.2     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-12-07)
+Ver. 1.0.2 (2022-10-13)
 
 This module shows how to use SB3 wrapper to train UR5 robot.
+
+You will learn:
+    
+1) How to set up a scenario for UR5 robot and also with SB3 wrapper
+
+2) How to run the scenario and train the agent
+    
+3) How to plot from the generated results
+    
 """
 
 from mlpro.rl.models import *
@@ -31,7 +41,7 @@ class ScenarioUR5A2C(RLScenario):
     C_NAME = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        # 1 Setup environment
+        # 2.1 Setup environment
         self._env = UR5JointControl(p_logging=p_logging)
 
         policy_sb3 = PPO(
@@ -49,7 +59,7 @@ class ScenarioUR5A2C(RLScenario):
             p_ada=p_ada,
             p_logging=p_logging)
 
-        # 2 Setup standard single-agent with own policy
+        # 2.2 Setup standard single-agent with own policy
         return Agent(
             p_policy=policy_wrapped,
             p_envmodel=None,
@@ -60,20 +70,42 @@ class ScenarioUR5A2C(RLScenario):
 
 
 # 3 Train agent in scenario
+if __name__ == "__main__":
+    # Parameters for demo mode
+    cycle_limit = 1000
+    stagnation_limit = 5
+    eval_frequency = 10
+    eval_grp_size = 5
+    logging = Log.C_LOG_WE
+    visualize = True
+    path = str(Path.home())
+
+else:
+    # Parameters for internal unit test
+    cycle_limit = 50
+    adaptation_limit = 5
+    stagnation_limit = 5
+    eval_frequency = 2
+    eval_grp_size = 1
+    logging = Log.C_LOG_NOTHING
+    visualize = False
+    path = str(Path.home())
+
+
 training = RLTraining(
     p_scenario_cls=ScenarioUR5A2C,
-    p_cycle_limit=1000,
+    p_cycle_limit=cycle_limit,
     p_cycles_per_epi_limit=-1,
-    p_stagnation_limit=5,
-    p_eval_frequency=10,
-    p_eval_grp_size=5,
+    p_stagnation_limit=stagnation_limit,
+    p_eval_frequency=eval_frequency,
+    p_eval_grp_size=eval_grp_size,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,
     p_collect_training=True,
-    p_visualize=False,
-    p_path=str(Path.home()),
-    p_logging=Log.C_LOG_ALL)
+    p_visualize=visualize,
+    p_path=path,
+    p_logging=logging)
 
 training.run()
 
@@ -115,14 +147,14 @@ class MyDataPlotting(DataPlotting):
                 else:
                     plt.close(fig)
 
-
-# 5 Plotting 1 MLpro
-data_printing = {"Cycle": [False],
-                 "Day": [False],
-                 "Second": [False],
-                 "Microsecond": [False],
-                 "Smith": [True, -1]}
-
-mem = training.get_results().ds_rewards
-mem_plot = MyDataPlotting(mem, p_showing=True, p_printing=data_printing)
-mem_plot.get_plots()
+if __name__ == "__main__":
+    # 5 Plotting 1 MLpro
+    data_printing = {"Cycle": [False],
+                     "Day": [False],
+                     "Second": [False],
+                     "Microsecond": [False],
+                     "Smith": [True, -1]}
+    
+    mem = training.get_results().ds_rewards
+    mem_plot = MyDataPlotting(mem, p_showing=True, p_printing=data_printing)
+    mem_plot.get_plots()

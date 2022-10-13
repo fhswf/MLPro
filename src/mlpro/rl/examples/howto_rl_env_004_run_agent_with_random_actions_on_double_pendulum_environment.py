@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_020_run_double_pendulum_with_random_actions.py
+## -- Module  : howto_rl_env_004_run_agent_with_random_actions_on_double_pendulum_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -13,11 +13,12 @@
 ## -- 2022-08-05  1.0.3     SY       Refactoring
 ## -- 2022-08-23  1.0.4     DA       Refactoring
 ## -- 2022-09-06  1.0.5     LSB/DA   Refactoring
+## -- 2022-10-13  1.0.6     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.5 (2022-09-06)
+Ver. 1.0.6 (2022-10-13)
 
 This module shows how to run the double pendulum environment using random actions agent.
 
