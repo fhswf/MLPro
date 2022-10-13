@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.gt.dp
+## -- Package : mlpro.gt.examples
 ## -- Module  : howto_gt_dp_002_train_own_multi_player_on_multicartpole_game_board.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

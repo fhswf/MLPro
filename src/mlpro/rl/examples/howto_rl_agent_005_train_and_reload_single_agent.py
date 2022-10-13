@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_019_train_and_reload_single_agent.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_agent_005_train_and_reload_single_agent.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -11,12 +11,13 @@
 ## --                                Remove commenting and numbering
 ## -- 2022-05-19  1.0.2     MRD      Re-add the commneting and reformat the numbering in comment
 ## -- 2022-07-20  1.0.3     SY       Update due to the latest introduction of Gym 0.25
+## -- 2022-10-13  1.0.4     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-07-20)
+Ver. 1.0.4 (2022-10-13)
 
-This module shows how to train a single agent and load it again to do some extra cycles
+This module shows how to train a single agent and load it again to do some extra cycles.
 """
 
 import gym

@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.rl
+## -- Package : mlpro.rl.examples
 ## -- Module  : howto_rl_003_train_wrapped_sb3_policy_with_stagnation_detection.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

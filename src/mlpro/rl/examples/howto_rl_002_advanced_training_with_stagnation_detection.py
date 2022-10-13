@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.rl
+## -- Package : mlpro.rl.examples
 ## -- Module  : howto_rl_002_advanced_training_with_stagnation_detection.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

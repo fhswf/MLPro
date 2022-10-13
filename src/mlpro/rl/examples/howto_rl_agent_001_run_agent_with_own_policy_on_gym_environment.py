@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.rl
-## -- Module  : howto_rl_002_run_agent_with_own_policy_with_gym_environment.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -16,13 +16,27 @@
 ## -- 2021-11-16  1.2.1     DA       Added explicit scenario reset with constant seeding 
 ## -- 2021-12-03  1.2.2     DA       Refactoring 
 ## -- 2022-07-20  1.2.3     SY       Update due to the latest introduction of Gym 0.25
+## -- 2022-10-13  1.2.4     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2022-07-20)
+Ver. 1.2.4 (2022-10-13)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
-the fhswf_at_ml framework.
+MLPro framework.
+
+You will learn:
+    
+1) How to set up a native policy for an agent
+    
+2) How to set up an agent
+    
+3) How to set up a scenario
+    
+4) How to wrap Gym environment to MLPro environment
+
+5) How to run the scenario
+    
 """
 
 
@@ -45,22 +59,22 @@ class MyPolicy (Policy):
 
 
     def compute_action(self, p_state: State) -> Action:
-        # 1 Create a numpy array for your action values 
+        # 1.1 Create a numpy array for your action values 
         my_action_values = np.zeros(self._action_space.get_num_dim())
 
-        # 2 Computing action values is up to you...
+        # 1.2 Computing action values is up to you...
         for d in range(self._action_space.get_num_dim()):
             my_action_values[d] = random.random() 
 
-        # 3 Return an action object with your values
+        # 1.3 Return an action object with your values
         return Action(self._id, self._action_space, my_action_values)
 
 
     def _adapt(self, *p_args) -> bool:
-        # 1 Adapting the internal policy is up to you...
+        # 1.4 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 
-        # 2 Only return True if something has been adapted...
+        # 1.5 Only return True if something has been adapted...
         return False
 
 
@@ -72,11 +86,11 @@ class MyScenario (RLScenario):
     C_NAME      = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        # 1 Setup environment
+        # 2.1 Setup environment
         gym_env     = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
         self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
 
-        # 2 Setup standard single-agent with own policy
+        # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),
                                          p_action_space=self._env.get_action_space(),
                                          p_buffer_size=1,
