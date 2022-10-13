@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_015_train_wrapped_sb3_policy_with_stagnation_detection.py
+## -- Package : mlpro.rl
+## -- Module  : howto_rl_003_train_wrapped_sb3_policy_with_stagnation_detection.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -9,12 +9,20 @@
 ## -- 2022-01-20  1.0.0     MRD      Released first version
 ## -- 2022-05-17  1.0.1     DA       Just a litte comment maintenance
 ## -- 2022-07-20  1.0.2     SY       Update due to the latest introduction of Gym 0.25
+## -- 2022-10-13  1.0.3     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-07-20)
+Ver. 1.0.3 (2022-10-13)
 
 This module shows how to train with SB3 Wrapper and stagnation detection
+
+You will learn:
+    
+1) How to incorporate stagnation detection into your training with sb3 policy
+    
+2) The effect of each parameter related to the stagnation detection
+    
 """
 
 import gym

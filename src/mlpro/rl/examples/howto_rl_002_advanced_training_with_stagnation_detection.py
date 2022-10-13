@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_014_advanced_training_with_stagnation_detection.py
+## -- Package : mlpro.rl
+## -- Module  : howto_rl_002_advanced_training_with_stagnation_detection.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -11,12 +11,20 @@
 ## -- 2022-02-10  1.2.0     DA       Introduction of parameter p_end_at_stagnation
 ## -- 2022-02-27  1.2.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-19  1.2.2     SY       Utilize RandomGenerator
+## -- 2022-10-13  1.2.3     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2022-05-19)
+Ver. 1.2.3 (2022-10-13)
 
 This module demonstrates advanced training with evaluation and stagnation detection.
+
+You will learn:
+    
+1) How to incorporate stagnation detection into your training
+    
+2) The effect of each parameter related to the stagnation detection
+    
 """
 
 
