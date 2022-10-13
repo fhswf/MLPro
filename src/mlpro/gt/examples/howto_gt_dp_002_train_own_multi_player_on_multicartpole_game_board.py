@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_gt_002_train_own_multi_player_with_multicartpole_game_board.py
+## -- Package : mlpro.gt.dp
+## -- Module  : howto_gt_dp_002_train_own_multi_player_on_multicartpole_game_board.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -16,13 +16,23 @@
 ## -- 2021-11-16  1.2.0     DA       Refactoring 
 ## -- 2021-12-07  1.2.1     DA       Refactoring 
 ## -- 2022-02-25  1.2.2     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-10-13  1.2.3     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2021-02-25)
+Ver. 1.2.3 (2022-10-13)
  
 This module shows how to train an own multi-player with the enhanced multi-action
 game board MultiCartPole based on the OpenAI Gym CartPole environment.
+
+You will learn:
+    
+1) How to set up your own players' policies
+
+2) How to set up your own game in dynamic programming, including players and game board interaction
+    
+3) How to run the GT training and train your own players
+    
 """
 
 
@@ -39,7 +49,7 @@ from datetime import datetime
 
 
 
-# 1 Implement your own agent policy
+# 1 Implement your own player policy
 class MyPolicy(Policy):
 
     C_NAME      = 'MyPolicy'
