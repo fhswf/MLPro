@@ -162,9 +162,9 @@ if __name__ == "__main__":
 
     # 2 Execution of demo class (synchronously)
     a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                            p_duration = duration, 
-                            p_range_max = mt.Async.C_RANGE_NONE, 
-                            p_logging = logging )
+                             p_duration = duration, 
+                             p_range_max = mt.Async.C_RANGE_NONE, 
+                             p_logging = logging )
                                 
     a.execute()                     
 
@@ -175,9 +175,9 @@ if __name__ == "__main__":
     sleep(pause_sec)
 
     a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                            p_duration = duration, 
-                            p_range_max = mt.Async.C_RANGE_THREAD, 
-                            p_logging = logging )
+                             p_duration = duration, 
+                             p_range_max = mt.Async.C_RANGE_THREAD, 
+                             p_logging = logging )
 
     a.execute()
 
@@ -188,8 +188,8 @@ if __name__ == "__main__":
     sleep(pause_sec)
 
     a = MyParallelAlgorithm( p_num_tasks = num_tasks, 
-                            p_duration = duration, 
-                            p_range_max = mt.Async.C_RANGE_PROCESS, 
-                            p_logging = logging )
+                             p_duration = duration, 
+                             p_range_max = mt.Async.C_RANGE_PROCESS, 
+                             p_logging = logging )
                             
     a.execute()                     
