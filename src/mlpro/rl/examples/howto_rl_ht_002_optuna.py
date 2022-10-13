@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_ml_003_hyperparameter_tuning_using_optuna.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_ht_002_optuna.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -9,12 +9,22 @@
 ## -- 2022-03-24  1.0.0     SY       Release of first version
 ## -- 2022-04-05  1.0.1     SY       Add tuning recap visualization
 ## -- 2022-10-12  1.0.2     DA       Renaming and minor fixes
+## -- 2022-10-13  1.0.3     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-10-12)
+Ver. 1.0.3 (2022-10-13)
 
 This module demonstrates how to utilize wrapper class for Optuna in RL context.
+
+You will learn:
+
+1) How to set up a policy and its parameters
+
+2) How to use optuna wrapper.
+
+3) How to tune the parameters using optuna.
+    
 """
 
 

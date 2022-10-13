@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_ml_002_hyperparameter_tuning_using_hyperopt.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_ht_001_hyperopt.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -11,12 +11,22 @@
 ## -- 2022-01-27  1.0.2     SY       Class WrHPTHyperopt enhancement
 ## -- 2022-02-25  1.0.3     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-10-12  1.0.4     DA       Renaming and minor fixes
+## -- 2022-10-13  1.0.5     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-10-12)
+Ver. 1.0.5 (2022-10-13)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
+
+You will learn:
+
+1) How to set up a policy and its parameters
+
+2) How to use Hyperopt wrapper.
+
+3) How to tune the parameters using Hyperopt.
+    
 """
 
 
