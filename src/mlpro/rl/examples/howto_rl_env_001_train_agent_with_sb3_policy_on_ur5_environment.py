@@ -89,7 +89,7 @@ else:
     eval_grp_size = 1
     logging = Log.C_LOG_NOTHING
     visualize = False
-    path = str(Path.home())
+    path = None
 
 
 training = RLTraining(
