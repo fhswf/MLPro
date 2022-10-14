@@ -1,16 +1,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_011a_load_and_run_ur5_environment.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_pp_002_load_and_run_ur5_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-06-14  0.0.0     MRD      Creation
 ## -- 2022-06-14  1.0.0     MRD      Initial Release
+## -- 2022-10-14  1.0.1     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-06-14)
+Ver. 1.0.1 (2022-10-14)
 
 This module shows how to load trained policy for UR5 robot (derivate for paper).
 """
@@ -40,7 +41,7 @@ class ScenarioUR5A2C(RLScenario):
         return self.load("/home/at-lab/MLPRO/MLPro/src/mlpro/rl/examples", "trained_policy.pkl")
 
 
-# 6 Instatiate new scenario
+# 2 Instatiate new scenario
 scenario = ScenarioUR5A2C(p_mode=Mode.C_MODE_REAL, 
                         p_ada=False,
                         p_cycle_limit=10,
@@ -48,9 +49,9 @@ scenario = ScenarioUR5A2C(p_mode=Mode.C_MODE_REAL,
                         p_logging=Log.C_LOG_WE)
 
 
-# 7 Reset Scenario
+# 3 Reset Scenario
 scenario.reset()  
 
 
-# 8 Run Scenario
+# 4 Run Scenario
 scenario.run()

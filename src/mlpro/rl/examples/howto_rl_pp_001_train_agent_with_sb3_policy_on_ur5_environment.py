@@ -1,7 +1,7 @@
     ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_011_train_ur5_environment_with_wrapped_sb3_policy.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_pp_001_train_agent_with_sb3_policy_on_ur5_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -13,12 +13,18 @@
 ## -- 2022-06-06  1.2.1     MRD      Add real connection option
 ## -- 2022-06-13  1.2.2     MRD      Update possibility to run separate simulator and training
 ## --                                setting separate ROS Server IP
+## -- 2022-10-14  1.2.3     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2022-06-13)
+Ver. 1.2.3 (2022-06-14)
 
 This module shows how to use SB3 wrapper to train UR5 robot (derivate for paper).
+
+You will learn:
+    
+1) How to produce the training results of MLPro 1.0 paper
+    
 """
 
 from mlpro.rl.models import *
