@@ -17,7 +17,8 @@
 ## -- 2022-10-06  1.1.3     SY       Add howto 23
 ## -- 2022-10-08  1.1.4     SY       Howto bf 009 and 010 are switched to bf uui 01 and bf uui 02
 ## -- 2022-10-12  1.2.0     DA       Incorporation of refactored bf howto files
-## -- 2022-10-14  1.3.0     DA       Incorporation of refactored bf howto files (RL/GT)
+## -- 2022-10-13  1.2.1     DA       Removed howto bf mt 001 due of it's multiprocessing parts
+## -- 2022-10-14  1.3.0     SY       Incorporation of refactored bf howto files (RL/GT)
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -38,7 +39,7 @@ howto_list = {
     "bf_003": "mlpro.bf.examples.howto_bf_003_store_plot_and_save_variables",
     "bf_004": "mlpro.bf.examples.howto_bf_004_buffers",
     "bf_eh_001": "mlpro.bf.examples.howto_bf_eh_001_event_handling",
-    "bf_mt_001": "mlpro.bf.examples.howto_bf_mt_001_parallel_algorithms",
+    # "bf_mt_001": "mlpro.bf.examples.howto_bf_mt_001_parallel_algorithms",
     "bf_mt_002": "mlpro.bf.examples.howto_bf_mt_002_tasks_and_workflows",
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",

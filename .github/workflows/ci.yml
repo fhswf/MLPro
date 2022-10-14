@@ -39,6 +39,7 @@ jobs:
         pip install numpy
         pip install matplotlib
         pip install dill
+        pip install multiprocess
         pip install stable-baselines3
         pip install PettingZoo
         pip install gym==0.25.0
