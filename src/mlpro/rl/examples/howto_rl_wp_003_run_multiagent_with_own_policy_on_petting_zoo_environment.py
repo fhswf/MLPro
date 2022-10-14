@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_006_run_own_agents_with_petting_zoo_environment.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -21,12 +21,21 @@
 ## -- 2022-05-30  1.1.9     DA       Cleaned up/rearranged a bit
 ## -- 2022-05-30  1.1.8     SY       Update pistonball_v5 to pistonball_v6
 ## -- 2022-10-08  1.2.0     SY       Turn off render: causing error due to pzoo ver 1.22.0 
+## -- 2022-10-14  1.2.1     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-10-08)
+Ver. 1.2.1 (2022-10-14)
 
-This module shows how to run an own policy inside the MLPro standard agent model with a wrapped Petting Zoo environment.
+This module shows how to run an own policy inside the MLPro standard agent model with a wrapped
+Petting Zoo environment.
+
+You will learn:
+    
+1) How to set up a scenario for a Petting Zoo environment in MLPro
+
+2) How to run the scenario
+    
 """
 
 

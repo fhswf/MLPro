@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_009_wrap_mlpro_environment_to_pettingzoo_environment.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -10,10 +10,11 @@
 ## -- 2021-10-04  1.0.1     DA       Minor fix
 ## -- 2021-11-15  1.0.2     DA       Refactoring
 ## -- 2021-12-03  1.0.3     DA       Refactoring
+## -- 2022-10-14  1.0.4     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2021-12-03)
+Ver. 1.0.4 (2022-10-14)
 
 This module shows how to wrap mlpro's Environment class to petting zoo compatible.
 """

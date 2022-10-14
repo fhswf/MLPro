@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
-## -- Package : mlpro
-## -- Module  : howto_rl_017_comparison_native_vs_wrapped_sb3_policy_off_policy.py
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_wp_006_validation_wrapped_sb3_off_policy.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -9,10 +9,11 @@
 ## -- 2022-01-18  1.0.0     MRD      Released first version
 ## -- 2022-02-27  1.0.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-07-20  1.0.2     SY       Update due to the latest introduction of Gym 0.25
+## -- 2022-10-14  1.0.3     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-07-20)
+Ver. 1.0.3 (2022-10-14)
 
 This module shows comparison between native and wrapped SB3 policy (Off-policy).
 """

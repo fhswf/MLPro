@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.rl
-## -- Module  : howto_rl_008_wrap_mlpro_environment_to_gym_environment.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_wp_001_mlpro_environment_to_gym_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,10 +12,11 @@
 ## -- 2022-03-21  1.0.3     MRD      Use Gym Env Checker
 ## -- 2022-05-30  1.0.4     DA       Little refactoring
 ## -- 2022-07-28  1.0.5     SY       Update due to the latest introduction of Gym 0.25
+## -- 2022-10-14  1.0.6     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-07-28)
+Ver. 1.0.6 (2022-10-14)
 
 This module shows how to wrap a native MLPro environment class to OpenAI Gym environment.
 """

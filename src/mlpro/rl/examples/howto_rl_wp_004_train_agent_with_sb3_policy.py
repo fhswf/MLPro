@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_007_train_wrapped_SB3_policy.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_wp_004_train_agent_with_sb3_policy.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -15,12 +15,20 @@
 ## -- 2021-12-07  1.0.6     DA       Refactoring
 ## -- 2022-02-25  1.0.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-07-20  1.0.8     SY       Update due to the latest introduction of Gym 0.25
+## -- 2022-10-14  1.0.9     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.8 (2022-07-20)
+Ver. 1.0.9 (2022-10-14)
 
-This module shows how to train with SB3 Wrapper for On-Policy Algorithm
+This module shows how to train agent with SB3 Wrapper for On- and Off-Policy Algorithms
+
+You will learn:
+    
+1) How to set up a scenario with SB3 policy
+
+2) How to run the scenario
+    
 """
 
 import gym
@@ -108,19 +116,21 @@ class MyScenario(RLScenario):
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
     logging = Log.C_LOG_ALL
+    cycle_limit = 1000
     visualize = True
     path = str(Path.home())
 
 else:
     # 2.2 Parameters for internal unit test
     logging = Log.C_LOG_NOTHING
+    cycle_limit = 50
     visualize = False
     path = None
 
 # 2.3 Create and run training object
 training = RLTraining(
     p_scenario_cls=MyScenario,
-    p_cycle_limit=1000,
+    p_cycle_limit=cycle_limit,
     p_max_adaptations=0,
     p_max_stagnations=0,
     p_path=path,
