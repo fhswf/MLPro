@@ -17,10 +17,11 @@
 ## -- 2022-10-06  1.1.3     SY       Add howto 23
 ## -- 2022-10-08  1.1.4     SY       Howto bf 009 and 010 are switched to bf uui 01 and bf uui 02
 ## -- 2022-10-12  1.2.0     DA       Incorporation of refactored bf howto files
+## -- 2022-10-14  1.3.0     DA       Incorporation of refactored bf howto files (RL/GT)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0(2022-10-12)
+Ver. 1.3.0 (2022-10-14)
 
 Unit test for all examples available.
 """
@@ -47,34 +48,36 @@ howto_list = {
     "bf_streams_012": "mlpro.bf.examples.howto_bf_streams_012_accessing_data_from_scikitlearn",
 
 # Reinforcement Learning:
-    "rl_001": "mlpro.rl.examples.howto_rl_001_types_of_reward",
-    "rl_002": "mlpro.rl.examples.howto_rl_002_run_agent_with_own_policy_with_gym_environment",
-    "rl_003": "mlpro.rl.examples.howto_rl_003_train_agent_with_own_policy_on_gym_environment",
-    "rl_004": "mlpro.rl.examples.howto_rl_004_run_multi_agent_with_own_policy_in_multicartpole_environment",
-    "rl_005": "mlpro.rl.examples.howto_rl_005_train_multi_agent_with_own_policy_on_multicartpole_nvironment",
-    "rl_006": "mlpro.rl.examples.howto_rl_006_run_own_agents_with_petting_zoo_environment",
-    "rl_007": "mlpro.rl.examples.howto_rl_007_train_wrapped_SB3_policy",
-    "rl_008": "mlpro.rl.examples.howto_rl_008_wrap_mlpro_environment_to_gym_environment",
-    "rl_009": "mlpro.rl.examples.howto_rl_009_wrap_mlpro_environment_to_pettingzoo_environment",
-    # "rl_010": "mlpro.rl.examples.howto_rl_010_train_ur5_environment_with_wrapped_sb3_policy",
-    # "rl_011": "mlpro.rl.examples.howto_rl_011_train_ur5_environment_with_wrapped_sb3_policy",
-    "rl_012": "mlpro.rl.examples.howto_rl_012_train_wrapped_SB3_policy_on_robothtm_environment",
-    "rl_013": "mlpro.rl.examples.howto_rl_013_model_based_reinforcement_learning",
-    "rl_014": "mlpro.rl.examples.howto_rl_014_advanced_training_with_stagnation_detection",
-    "rl_015": "mlpro.rl.examples.howto_rl_015_train_wrapped_sb3_policy_with_stagnation_detection",
-    "rl_016": "mlpro.rl.examples.howto_rl_016_comparison_native_vs_wrapped_sb3_policy",
-    "rl_017": "mlpro.rl.examples.howto_rl_017_comparison_native_vs_wrapped_sb3_policy_off_policy",
-    # "rl_018": "mlpro.rl.examples.howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment",
-    "rl_019": "mlpro.rl.examples.howto_rl_019_train_and_reload_single_agent",
-    "rl_020": "mlpro.rl.examples.howto_rl_020_run_double_pendulum_with_random_actions",
-    # "rl_021": "mlpro.rl.examples.howto_rl_021_train_wrapped_sb3_policy_on_doublependulum",
-    # "rl_022": "mlpro.rl.examples.howto_rl_022_setup_and_run_sim-mpps_with_random_actions",
-    "rl_023": "mlpro.rl.examples.howto_rl_023_train_mbrl_using_mpc_on_grid_world",
+    "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
+    "rl_002": "mlpro.rl.examples.howto_rl_002_advanced_training_with_stagnation_detection",
+    "rl_003": "mlpro.rl.examples.howto_rl_003_train_wrapped_sb3_policy_with_stagnation_detection",
+    "rl_agent_001": "mlpro.rl.examples.howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment",
+    "rl_agent_002": "mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment",
+    "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",
+    "rl_agent_004": "mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment",
+    "rl_agent_005": "mlpro.rl.examples.howto_rl_agent_005_train_and_reload_single_agent",
+    # "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_sb3_policy_on_ur5_environment",
+    "rl_env_002": "mlpro.rl.examples.howto_rl_env_002_train_agent_with_SB3_policy_on_robothtm_environment",
+    # "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_train_agent_with_sb3_policy_on_multigeo_environment",
+    "rl_env_004": "mlpro.rl.examples.howto_rl_env_004_run_agent_with_random_actions_on_double_pendulum_environment",
+    # "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_train_agent_with_sb3_policy_on_double_pendulum_environment",
+    "rl_ht_001": "mlpro.rl.examples.howto_rl_ht_001_hyperopt",
+    "rl_ht_002": "mlpro.rl.examples.howto_rl_ht_002_optuna",
+    "rl_mb_001": "mlpro.rl.examples.howto_rl_mb_001_robothtm_environment",
+    "rl_mb_002": "mlpro.rl.examples.howto_rl_mb_002_grid_world_environment",
+    # "rl_pp_001": "mlpro.rl.examples.howto_rl_pp_001_train_agent_with_sb3_policy_on_ur5_environment",
+    # "rl_pp_002": "mlpro.rl.examples.howto_rl_pp_002_load_and_run_ur5_environment",
+    "rl_ui_001": "mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit",
+    "rl_wp_001": "mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment",
+    "rl_wp_002": "mlpro.rl.examples.howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment",
+    "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
+    "rl_wp_004": "mlpro.rl.examples.howto_rl_wp_004_train_agent_with_sb3_policy",
+    "rl_wp_005": "mlpro.rl.examples.howto_rl_wp_005_validation_wrapped_sb3_on_policy",
+    "rl_wp_006": "mlpro.rl.examples.howto_rl_wp_006_validation_wrapped_sb3_off_policy",
 
 # Game Theory:
-    "gt_001": "mlpro.gt.examples.howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board",
-    "gt_002": "mlpro.gt.examples.howto_gt_002_train_own_multi_player_with_multicartpole_game_board",
-    # "gt_003": "mlpro.gt.examples.howto_gt_003_setup_and_run_sim-mpps_with_random_actions",
+    "gt_dp_001": "mlpro.gt.examples.howto_gt_dp_001_run_multi_player_with_own_policy_on_multicartpole_game_board",
+    "gt_dp_002": "mlpro.gt.examples.howto_gt_dp_002_train_own_multi_player_on_multicartpole_game_board",
 }
 
 
