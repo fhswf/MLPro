@@ -16,7 +16,7 @@ Executable code
 Results
 -------
 
-The howto example logs details of the three runs (single task, workflow synchronously/multithreading). A short break
+The howto example logs details of the two runs (workflow synchronously/multithreading). A short break
 between the workflow runs allows a better observation of CPU load in the system monitor.
 
 .. image:: images/howto.bf.mt.002/howto_bf_mt_002_tasks_and_workflows.png
