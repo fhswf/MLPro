@@ -11,10 +11,11 @@
 ## -- 2022-09-26  1.0.2     LSB      Refatoring and reduced custom normalize and denormalize methods
 ## -- 2022-10-01  1.0.3     LSB      Refactoring and redefining the update parameter method
 ## -- 2022-10-16  1.0.4     LSB      Updating z-transform parameters based on a new data/element(np.ndarray)
+## -- 2022-10-16  1.0.5     LSB      Refactoring following the review
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-10-16)
+Ver. 1.0.5 (2022-10-16)
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and 
 normalization by Z transformation.
 
@@ -175,7 +176,7 @@ class NormalizerMinMax (Normalizer):
 ## -------------------------------------------------------------------------------------------------
     def update_parameters(self, p_set:Set=None, p_boundaries=None):
         """
-        custom method to update the normalization parameters
+        Method to update the normalization parameters of MinMax normalizer.
 
         Parameters
         ----------
@@ -190,47 +191,60 @@ class NormalizerMinMax (Normalizer):
             Returns true after setting the parameters
         """
 
-        if p_set is None and p_boundaries is None: raise ParamError('Set/boundaries not provided')
-        a = []
-        b = []
+        try:
+            a = np.zeros(len(p_set.get_dim_ids()))
+
+            b = np.zeros(len(p_set.get_dim_ids()))
+        except:
+            try:
+                a = np.zeros(len(p_boundaries))
+                b = np.zeros(len(p_boundaries))
+            except:
+                raise ParamError("Wrong parameters provided for update. Please provide a set as p_set or boundaries as "
+                                 "p_boundaries")
+
         if p_set is not None and p_boundaries is None:
             for i in p_set.get_dim_ids():
                 min_boundary = p_set.get_dim(i).get_boundaries()[0]
                 max_boundary = p_set.get_dim(i).get_boundaries()[1]
-                range = max_boundary-min_boundary
-                a.append(2/(range))
-                b.append(2*min_boundary/(range)+1)
+                value_range = max_boundary-min_boundary
+                a[p_set.get_dim_ids().index(i)] = (2/(value_range))
+                b[p_set.get_dim_ids().index(i)] = (2*min_boundary/(value_range)+1)
+
         elif p_set is None and p_boundaries is not None:
-            for i in p_boundaries:
+            for i in range(len(p_boundaries)):
                 p_boundaries.reshape(-1,2)
                 min_boundary = p_boundaries[i][0]
                 max_boundary = p_boundaries[i][1]
-                range = max_boundary-min_boundary
-                a.append(2/(range))
-                b.append(2*min_boundary/(range)+1)
+                value_range = max_boundary-min_boundary
+                a[i] = 2/(value_range)
+                b[i] = 2*min_boundary/(value_range)+1
                 np.array([a]).reshape(p_boundaries.shape[0:-1])
                 np.array([b]).reshape(p_boundaries.shape[0:-1])
+
         else: raise ParamError('Wrong parameters for update. Please either provide a set as p_set or boundaries as '
                                'p_boundaries')
+
         self._param_old = self._param_new
         self._param_new = np.vstack(([a],[b]))
         self._param = self._param_new
-        return True
 
 
 
 
 
+## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class NormalizerZTrans(Normalizer):
     """
     Class for Normalization based on Z transformation.
     """
 
+
 ## -------------------------------------------------------------------------------------------------
     def update_parameters(self, p_dataset = None, p_data = None):
         """
-        Custom method to update the normalization parameters
+        Method to update the normalization parameters for Z transformer
 
         Parameters
         ----------
@@ -269,4 +283,3 @@ class NormalizerZTrans(Normalizer):
         self._param_new = np.vstack(([a], [b]))
         self._param = self._param_new
 
-        return True
