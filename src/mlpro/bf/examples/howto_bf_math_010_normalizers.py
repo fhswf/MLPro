@@ -106,7 +106,7 @@ if p_printing:
     print('\n06. Normalized Data (validation z_transoform): ', normalized_val, '\n\n')
 
 # 7. Setting parameters for Normalization
-my_normalizer_minmax.update_parameters(my_set)
+my_normalizer_minmax.update_parameters(p_set = my_set)
 if p_printing:
     print('07. Parameters updated for the MinMax Normalizer\n\n')
 

@@ -193,37 +193,24 @@ class NormalizerMinMax (Normalizer):
 
         try:
             a = np.zeros(len(p_set.get_dim_ids()))
-
             b = np.zeros(len(p_set.get_dim_ids()))
+            boundaries = [p_set.get_dim(i).get_boundaries() for i in p_set.get_dim_ids()]
         except:
             try:
                 a = np.zeros(len(p_boundaries))
                 b = np.zeros(len(p_boundaries))
+                boundaries = p_boundaries.reshape(-1,2)
             except:
                 raise ParamError("Wrong parameters provided for update. Please provide a set as p_set or boundaries as "
                                  "p_boundaries")
 
-        if p_set is not None and p_boundaries is None:
-            for i in p_set.get_dim_ids():
-                min_boundary = p_set.get_dim(i).get_boundaries()[0]
-                max_boundary = p_set.get_dim(i).get_boundaries()[1]
-                value_range = max_boundary-min_boundary
-                a[p_set.get_dim_ids().index(i)] = (2/(value_range))
-                b[p_set.get_dim_ids().index(i)] = (2*min_boundary/(value_range)+1)
+        for i in range(len(boundaries)):
+            min_boundary = boundaries[i][0]
+            max_boundary = boundaries[i][1]
+            value_range = max_boundary - min_boundary
+            a[i] = (2 / (value_range))
+            b[i] = (2 * min_boundary / (value_range) + 1)
 
-        elif p_set is None and p_boundaries is not None:
-            for i in range(len(p_boundaries)):
-                p_boundaries.reshape(-1,2)
-                min_boundary = p_boundaries[i][0]
-                max_boundary = p_boundaries[i][1]
-                value_range = max_boundary-min_boundary
-                a[i] = 2/(value_range)
-                b[i] = 2*min_boundary/(value_range)+1
-                np.array([a]).reshape(p_boundaries.shape[0:-1])
-                np.array([b]).reshape(p_boundaries.shape[0:-1])
-
-        else: raise ParamError('Wrong parameters for update. Please either provide a set as p_set or boundaries as '
-                               'p_boundaries')
 
         self._param_old = self._param_new
         self._param_new = np.vstack(([a],[b]))
