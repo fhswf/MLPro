@@ -10,12 +10,14 @@
 ## -- 2022-09-23  1.0.1     LSB      Refactoring
 ## -- 2022-09-26  1.0.2     LSB      Refatoring and reduced custom normalize and denormalize methods
 ## -- 2022-10-01  1.0.3     LSB      Refactoring and redefining the update parameter method
+## -- 2022-10-16  1.0.4     LSB      Updating z-transform parameters based on a new data/element(np.ndarray)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-10-01)
+Ver. 1.0.4 (2022-10-16)
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and 
 normalization by Z transformation.
+
 """
 
 from mlpro.bf.math import *
@@ -224,7 +226,7 @@ class NormalizerZTrans(Normalizer):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def update_parameters(self, p_dataset):
+    def update_parameters(self, p_dataset = None, p_data = None):
         """
         Custom method to update the normalization parameters
 
@@ -232,21 +234,43 @@ class NormalizerZTrans(Normalizer):
         ----------
         p_dataset:numpy array
             Dataset related to the elements to be normalized
+        p_data:numpy array
+            New element to update the normalization parameters
 
         Returns
         -------
         boolean:True
             Returns true after setting the parameters
         """
+        if p_data is None and isinstance(p_dataset, np.ndarray):
+            std = np.std(p_dataset, axis=0, dtype=np.float64)
+            mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
 
-        std = np.std(p_dataset, axis=0, dtype=np.float64)
-        mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
+            self._n = len(p_dataset)
 
-        a = 1/std
-        b = mean/std
+            a = 1/std
+            b = mean/std
 
-        self._param_old = self._param_new
-        self._param_new = np.vstack(([a], [b]))
-        self._param = self._param_new
+            self._param_old = self._param_new
+            self._param_new = np.vstack(([a], [b]))
+            self._param = self._param_new
 
+        elif isinstance(p_data, np.ndarray) and p_dataset is None:
+            old_std = 1/self._param_new[0]
+            old_mean = self._param_new[1]*old_std
+
+            self._param_old = self._param_new
+            self._n += 1
+
+            new_mean = (old_mean*(self._n-1)+p_data)/(self._n)
+            new_std  = np.sqrt((np.square(old_std) * (self._n-1)
+                               + (p_data - new_mean) * (p_data - old_mean)) / (self._n))
+
+            a = 1 / new_std
+            b = new_mean / new_std
+            self._param_new = np.vstack(([a], [b]))
+            self._param = self._param_new
+
+        else: raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
+                               "or a new data element as p_data ")
         return True
