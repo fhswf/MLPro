@@ -8,12 +8,12 @@
 ## -- 2022-09-16  0.0.0     LSB      Creation
 ## -- 2022-09-25  1.0.0     LSB      Release of first version
 ## -- 2022-10-01  1.0.1     LSB      Renormalization
-## -- 2022-10-06  1.0.1     LSB      Refactoring
-## -- 2022-10-16  1.0.2     LSB      Updating z-transform parameters based on a new data/element(np.ndarray)
+## -- 2022-10-06  1.0.2     LSB      Refactoring
+## -- 2022-10-16  1.0.3     LSB      Updating z-transform parameters based on a new data/element(np.ndarray)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-10-16)
+Ver. 1.0.3 (2022-10-16)
 Example file for demonstrating the use of MLPro's normalizer for normalizing and de-normalizing data.
 
 
@@ -23,11 +23,11 @@ You will learn:
 
 2. How to update parameters based on single element/data
 
-3. How to normalize a data element (ndarray/mlpro eleement) by MinMax or ZTransofrm
+3. How to normalize a data element (ndarray/mlpro element) by MinMax or ZTransofrm
 
-4. How to denormalize a data element (ndarray/mlpro eleement) by MinMax or ZTransofrm
+4. How to denormalize a data element (ndarray/mlpro element) by MinMax or ZTransofrm
 
-5. How to renormalize the data element (ndarray/mlpro eleement) with respect to the changed paramaters
+5. How to renormalize the data element (ndarray/mlpro element) with respect to the changed parameters
 """
 
 
