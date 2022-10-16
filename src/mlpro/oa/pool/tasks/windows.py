@@ -14,7 +14,7 @@ This module provides pool of window objects further used in the context of onlin
 """
 
 import numpy as np
-from mlpro.oa import *
+from mlpro.oa.models import *
 
 
 
