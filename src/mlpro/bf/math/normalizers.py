@@ -193,14 +193,14 @@ class NormalizerMinMax (Normalizer):
         if p_set is None and p_boundaries is None: raise ParamError('Set/boundaries not provided')
         a = []
         b = []
-        if p_boundaries is None:
+        if p_set is not None and p_boundaries is None:
             for i in p_set.get_dim_ids():
                 min_boundary = p_set.get_dim(i).get_boundaries()[0]
                 max_boundary = p_set.get_dim(i).get_boundaries()[1]
                 range = max_boundary-min_boundary
                 a.append(2/(range))
                 b.append(2*min_boundary/(range)+1)
-        if p_set is None:
+        elif p_set is None and p_boundaries is not None:
             for i in p_boundaries:
                 p_boundaries.reshape(-1,2)
                 min_boundary = p_boundaries[i][0]
@@ -210,6 +210,8 @@ class NormalizerMinMax (Normalizer):
                 b.append(2*min_boundary/(range)+1)
                 np.array([a]).reshape(p_boundaries.shape[0:-1])
                 np.array([b]).reshape(p_boundaries.shape[0:-1])
+        else: raise ParamError('Wrong parameters for update. Please either provide a set as p_set or boundaries as '
+                               'p_boundaries')
         self._param_old = self._param_new
         self._param_new = np.vstack(([a],[b]))
         self._param = self._param_new
@@ -266,5 +268,5 @@ class NormalizerZTrans(Normalizer):
         self._param_old = self._param_new
         self._param_new = np.vstack(([a], [b]))
         self._param = self._param_new
-        
+
         return True
