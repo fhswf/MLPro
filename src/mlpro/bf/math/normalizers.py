@@ -243,34 +243,28 @@ class NormalizerZTrans(Normalizer):
             Returns true after setting the parameters
         """
         if p_data is None and isinstance(p_dataset, np.ndarray):
-            std = np.std(p_dataset, axis=0, dtype=np.float64)
-            mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
+            self._std = np.std(p_dataset, axis=0, dtype=np.float64)
+            self._mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
 
             self._n = len(p_dataset)
 
-            a = 1/std
-            b = mean/std
-
-            self._param_old = self._param_new
-            self._param_new = np.vstack(([a], [b]))
-            self._param = self._param_new
-
         elif isinstance(p_data, np.ndarray) and p_dataset is None:
-            old_std = 1/self._param_new[0]
-            old_mean = self._param_new[1]*old_std
-
-            self._param_old = self._param_new
+            old_mean = self._mean
             self._n += 1
 
-            new_mean = (old_mean*(self._n-1)+p_data)/(self._n)
-            new_std  = np.sqrt((np.square(old_std) * (self._n-1)
-                               + (p_data - new_mean) * (p_data - old_mean)) / (self._n))
+            self._mean = (old_mean*(self._n-1)+p_data)/(self._n)
+            self._std  = np.sqrt((np.square(self._std) * (self._n-1)
+                               + (p_data - self._mean) * (p_data - old_mean)) / (self._n))
 
-            a = 1 / new_std
-            b = new_mean / new_std
-            self._param_new = np.vstack(([a], [b]))
-            self._param = self._param_new
+
 
         else: raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
                                "or a new data element as p_data ")
+        a = 1 / self._std
+        b = self._mean / self._std
+
+        self._param_old = self._param_new
+        self._param_new = np.vstack(([a], [b]))
+        self._param = self._param_new
+        
         return True
