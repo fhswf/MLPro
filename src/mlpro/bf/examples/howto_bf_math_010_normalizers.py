@@ -84,16 +84,19 @@ denormalized_data = my_normalizer_ztrans.denormalize(p_data=normalized_data)
 if p_printing:
     print('03. Deormalized value(z_transoform):\n', denormalized_data,'\n\n')
 
+
 # 4. Updating the parameters using a new element to the dataset
 new_data = np.asarray([12,-71,74,-12]).reshape(1,4)
 my_normalizer_ztrans.update_parameters(p_data = new_data)
 if p_printing:
     print('04. Parameters updated for the Z transformer\n\n')
 
+
 # 5. Normalizing the new element with new parameters
 normalize_new = my_normalizer_ztrans.normalize(new_data)
 if p_printing:
     print('\n05. Normalized Data(z_transoform):', normalize_new,'\n\n')
+
 
 # 6. Validating the changed parameters
 #    6.1 Adding the new element in the dataset
@@ -104,6 +107,7 @@ my_normalizer_ztrans.update_parameters(p_dataset=my_dataset)
 normalized_val = my_normalizer_ztrans.normalize(new_data)
 if p_printing:
     print('\n06. Normalized Data (validation z_transoform): ', normalized_val, '\n\n')
+
 
 # 7. Setting parameters for Normalization
 my_normalizer_minmax.update_parameters(p_set = my_set)
@@ -130,13 +134,13 @@ if p_printing:
     print('10. Boundaries updated(Minmax Normalizer)\n\n')
 
 
-# 11. updating tbe normalization parameters for the new set
+# 11. Updating tbe normalization parameters for the new set
 my_normalizer_minmax.update_parameters(my_set)
 if p_printing:
     print('11. Parameters updated for minmax normalizer(Minmax Normalizer)\n\n')
 
 
-# 12. renormalizing the previously normalized data with the new parameters
+# 12. Renormalizing the previously normalized data with the new parameters
 re_normalized_state = my_normalizer_minmax.renormalize(normalized_state)
 if p_printing:
     print('12. Renormalized value(Minmax Normalizer):\n', re_normalized_state.get_values(),'\n\n')

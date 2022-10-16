@@ -259,8 +259,6 @@ class NormalizerZTrans(Normalizer):
             self._std  = np.sqrt((np.square(self._std) * (self._n-1)
                                + (p_data - self._mean) * (p_data - old_mean)) / (self._n))
 
-
-
         else: raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
                                "or a new data element as p_data ")
         a = 1 / self._std
