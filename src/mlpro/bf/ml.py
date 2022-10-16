@@ -40,10 +40,11 @@
 ## -- 2022-08-22  1.4.0     DA       Class Model: event management added
 ## -- 2022-09-01  1.4.1     SY       Renaming maturity to accuracy
 ## -- 2022-10-06  1.5.0     DA       New classes MLTask and MLWorkflow
+## -- 2022-10-10  1.6.0     DA       Class MLTask: new methods adapt_on_event() and _adapt_on_event()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-10-06)
+Ver. 1.60 (2022-10-10)
 This module provides fundamental machine learning templates, functionalities and properties.
 """
 
@@ -1328,6 +1329,44 @@ class MLTask (Task, Model):
                         p_ada=p_ada, 
                         p_logging=p_logging,
                         p_par = p_kwargs )  
+
+
+## -------------------------------------------------------------------------------------------------
+    def adapt_on_event(self, p_event_id:str, p_event_obj:Event):
+        """
+        Method to be used as event handler for event-based adaptations. Calls custom method 
+        _adapt_on_event() and updates the internal adaptation state.
+
+        Parameters
+        ----------
+        p_event_id : str
+            Event id.
+        p_event_obj : Event
+            Object with further context informations about the event.
+        """
+
+        self._set_adapted(p_adapted=self._adapt_on_event(p_event_id=p_event_id, p_event_obj=p_event_obj))        
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_on_event(self, p_event_id:str, p_event_obj:Event) -> bool:
+        """
+        Custom method to be used for event-based adaptation. See method adapt_on_event().
+
+        Parameters
+        ----------
+        p_event_id : str
+            Event id.
+        p_event_obj : Event
+            Object with further context informations about the event.
+
+        Returns
+        -------
+        adapted : bool
+            True, if something was adapted. False otherwise.
+        """
+
+        raise NotImplementedError
 
 
 

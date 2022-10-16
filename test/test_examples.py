@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : test_example
+## -- Module  : test_example.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -13,10 +13,15 @@
 ## -- 2022-02-28  1.0.4     SY       Howto 07 of basic functions is disabled
 ## -- 2022-05-29  1.1.0     DA       Update howto list after refactoring of all howto files
 ## -- 2022-06-21  1.1.1     SY       Update howto 20 and 21 RL
+## -- 2022-09-13  1.1.2     SY       Add howto 22 RL and 03 GT
+## -- 2022-10-06  1.1.3     SY       Add howto 23
+## -- 2022-10-08  1.1.4     SY       Howto bf 009 and 010 are switched to bf uui 01 and bf uui 02
+## -- 2022-10-12  1.2.0     DA       Incorporation of refactored bf howto files
+## -- 2022-10-13  1.2.1     DA       Removed howto bf mt 001 due of it's multiprocessing parts
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-06-21)
+Ver. 1.2.1 (2022-10-13)
 
 Unit test for all examples available.
 """
@@ -30,14 +35,17 @@ howto_list = {
 # Basic Functions:
     "bf_001": "mlpro.bf.examples.howto_bf_001_logging",
     "bf_002": "mlpro.bf.examples.howto_bf_002_timer",
-    "bf_003": "mlpro.bf.examples.howto_bf_003_spaces_and_elements",
-    "bf_004": "mlpro.bf.examples.howto_bf_004_store_plot_and_save_variables",
-    "bf_005": "mlpro.bf.examples.howto_bf_005_hyperparameters",
-    "bf_006": "mlpro.bf.examples.howto_bf_006_buffers",
-    "bf_007": "mlpro.bf.examples.howto_bf_007_hyperparameter_tuning_using_hyperopt",
-    "bf_008": "mlpro.bf.examples.howto_bf_008_hyperparameter_tuning_using_optuna",
-    "bf_009": "mlpro.bf.examples.howto_bf_009_sciui_reuse_of_interactive_2d_3d_input_space",
-    "bf_010": "mlpro.bf.examples.howto_bf_010_sciui_reinforcement_learning_cockpit",
+    "bf_003": "mlpro.bf.examples.howto_bf_003_store_plot_and_save_variables",
+    "bf_004": "mlpro.bf.examples.howto_bf_004_buffers",
+    "bf_eh_001": "mlpro.bf.examples.howto_bf_eh_001_event_handling",
+    # "bf_mt_001": "mlpro.bf.examples.howto_bf_mt_001_parallel_algorithms",
+    "bf_mt_002": "mlpro.bf.examples.howto_bf_mt_002_tasks_and_workflows",
+    "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
+    "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
+    "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
+    "bf_streams_010": "mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml",
+#    "bf_streams_011": "mlpro.bf.examples.howto_bf_streams_011_accessing_data_from_river",
+    "bf_streams_012": "mlpro.bf.examples.howto_bf_streams_012_accessing_data_from_scikitlearn",
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_types_of_reward",
@@ -61,10 +69,13 @@ howto_list = {
     "rl_019": "mlpro.rl.examples.howto_rl_019_train_and_reload_single_agent",
     "rl_020": "mlpro.rl.examples.howto_rl_020_run_double_pendulum_with_random_actions",
     # "rl_021": "mlpro.rl.examples.howto_rl_021_train_wrapped_sb3_policy_on_doublependulum",
+    # "rl_022": "mlpro.rl.examples.howto_rl_022_setup_and_run_sim-mpps_with_random_actions",
+    "rl_023": "mlpro.rl.examples.howto_rl_023_train_mbrl_using_mpc_on_grid_world",
 
 # Game Theory:
     "gt_001": "mlpro.gt.examples.howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board",
-    "gt_002": "mlpro.gt.examples.howto_gt_002_train_own_multi_player_with_multicartpole_game_board"
+    "gt_002": "mlpro.gt.examples.howto_gt_002_train_own_multi_player_with_multicartpole_game_board",
+    # "gt_003": "mlpro.gt.examples.howto_gt_003_setup_and_run_sim-mpps_with_random_actions",
 }
 
 

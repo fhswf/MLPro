@@ -37,10 +37,11 @@
 ## -- 2022-07-20  1.3.8     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-08-15  1.4.0     DA       Introduction of root class Wrapper
 ## -- 2022-09-26  1.5.0     SY       Update following PettingZoo version 1.21.0 and Gym 0.26
+## -- 2022-10-06  2.0.0     SY       Major update following PettingZoo version 1.22.0
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-09-26)
+Ver. 2.0.0 (2022-10-06)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -49,11 +50,10 @@ See also: https://pypi.org/project/PettingZoo/
 """
 
 
-import gym
+import gymnasium
 import numpy as np
 from mlpro.wrappers.models import Wrapper
 from mlpro.rl.models import *
-from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector
 from pettingzoo.utils import wrappers
@@ -123,17 +123,18 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
             space.add_dim(Dimension(p_name_short='0', p_base_set='DO'))
         elif dict_name == "action":
             for k in p_zoo_space:
-                if isinstance(p_zoo_space[k], gym.spaces.Discrete):
+                if isinstance(p_zoo_space[k], gymnasium.spaces.Discrete):
                     space.add_dim(Dimension(p_name_short=k, p_base_set=Dimension.C_BASE_SET_Z,
-                                            p_boundaries=[0, p_zoo_space[k].n]))
-                elif isinstance(p_zoo_space[k], gym.spaces.Box):
-                    shape_dim = len(p_zoo_space[k].shape)
-                    for i in range(shape_dim):
-                        for d in range(p_zoo_space[k].shape[i]):
-                            space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
-                                                    p_boundaries=[p_zoo_space[k].low[d], p_zoo_space[k].high[d]]))
+                                            p_boundaries=[0, int(p_zoo_space[k].n-1)]))
                 else:
-                    space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
+                    try:
+                        shape_dim = len(p_zoo_space[k].shape)
+                        for i in range(shape_dim):
+                            for d in range(p_zoo_space[k].shape[i]):
+                                space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
+                                                        p_boundaries=[p_zoo_space[k].low[d], p_zoo_space[k].high[d]]))
+                    except:
+                        space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
                 
         return space
 
@@ -283,7 +284,8 @@ class WrEnvMLPro2PZoo(Wrapper):
         self.C_NAME = 'Env "' + p_mlpro_env.C_NAME + '"'
         Wrapper.__init__(self, p_logging=p_logging)
         self.pzoo_env   = self.raw_env(p_mlpro_env, p_num_agents, p_state_space, p_action_space)
-        self.pzoo_env   = wrappers.CaptureStdoutWrapper(self.pzoo_env)
+        if self.pzoo_env.render_mode == 'ansi':
+            self.pzoo_env   = wrappers.CaptureStdoutWrapper(self.pzoo_env)
         self.pzoo_env   = wrappers.OrderEnforcingWrapper(self.pzoo_env)
 
 
@@ -292,10 +294,11 @@ class WrEnvMLPro2PZoo(Wrapper):
         metadata = {'render_modes': ['human', 'ansi'], "name": "pzoo_custom"}
 
 ## -------------------------------------------------------------------------------------------------
-        def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
+        def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None, p_render_mode='human'):
             self._mlpro_env             = p_mlpro_env
             self.possible_agents        = [str(r) for r in range(p_num_agents)]
             self.agent_name_mapping     = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
+            self.render_mode            = p_render_mode
             
             if p_state_space is not None: 
                 self.observation_spaces = p_state_space
@@ -312,7 +315,32 @@ class WrEnvMLPro2PZoo(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
         def _recognize_space(self, p_mlpro_space):
-            space           = WrEnvMLPro2GYM.recognize_space(p_mlpro_space)
+            space = None
+            action_dim = p_mlpro_space.get_num_dim()
+            id_dim = p_mlpro_space.get_dim_ids()[0]
+            base_set = p_mlpro_space.get_dim(id_dim).get_base_set()
+            if len(p_mlpro_space.get_dim(id_dim).get_boundaries()) == 1:
+                space = gymnasium.spaces.Discrete(p_mlpro_space.get_dim(id_dim).get_boundaries()[0]+1)
+            elif base_set == Dimension.C_BASE_SET_Z or base_set == Dimension.C_BASE_SET_N:
+                low_limit = p_mlpro_space.get_dim(id_dim).get_boundaries()[0]
+                up_limit = p_mlpro_space.get_dim(id_dim).get_boundaries()[1]
+                num_discrete = int(up_limit-low_limit+1)
+                space = gymnasium.spaces.Discrete(num_discrete)
+            else:
+                lows = []
+                highs = []
+                for dimension in range(action_dim):
+                    id_dim = p_mlpro_space.get_dim_ids()[dimension]
+                    lows.append(p_mlpro_space.get_dim(id_dim).get_boundaries()[0])
+                    highs.append(p_mlpro_space.get_dim(id_dim).get_boundaries()[1])
+    
+                space = gymnasium.spaces.Box(
+                    low=np.array(lows, dtype=np.float32),
+                    high=np.array(highs, dtype=np.float32),
+                    shape=(action_dim,),
+                    dtype=np.float32
+                )
+                
             setup_space     = {agent: space for agent in self.possible_agents}
                 
             return setup_space
@@ -333,7 +361,7 @@ class WrEnvMLPro2PZoo(Wrapper):
             if agent == self.possible_agents[-1]:
                 _action     = Action()
                 idx         = self._mlpro_env.get_action_space().get_num_dim()
-                if isinstance(self.observation_spaces, gym.spaces.Discrete):
+                if isinstance(self.observation_spaces, gymnasium.spaces.Discrete):
                     action = np.array([action])
                 for i in range(idx):
                     _act_set    = Set()
