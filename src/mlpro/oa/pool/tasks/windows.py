@@ -50,13 +50,19 @@ class Window(OATask):
     def __init__(self,
                  p_buffer_size:int,
                  p_delay:bool = False,
-                 p_name:str = None,
-                 p_range_max = OATask.C_RANGE_THREAD,
-                 p_ada:bool = True,
-                 p_logging = Log.C_LOG_ALL,
+                 p_name:str   = None,
+                 p_range_max  = OATask.C_RANGE_THREAD,
+                 p_ada:bool   = True,
+                 p_logging    = Log.C_LOG_ALL,
                  **p_kwargs):
 
         self._kwargs = p_kwargs.copy()
+        self.buffer_size = p_buffer_size
+        self._delay = p_delay
+        self._name = p_name
+        self._range_max = p_range_max
+        self._ada = p_ada
+        self.switch_logging(p_logging = p_logging)
 
         super().__init__(p_name = p_name,
                          p_range_max=p_range_max,
@@ -80,7 +86,12 @@ class Window(OATask):
             p_inst_del:list
                 Instance/s to be deleted from the window
         """
-        pass
+        for i in p_inst_new:
+            self._buffer[self._buffer_pos] = i
+            self._buffer_pos = (self._buffer_pos+1)%self.buffer_size
+        if len(self._buffer) == self.buffer_size:
+            self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -95,7 +106,7 @@ class Window(OATask):
             buffer_pos:int
                 the latest buffer position
         """
-        pass
+        return self._buffer, self._buffer_pos
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -108,7 +119,8 @@ class Window(OATask):
             boundaries:np.ndarray
                 Returns the current window boundaries in the form of a Numpy array.
         """
-        pass
+        boundaries = [min(self._buffer.values()), max(self._buffer.values())]
+        return boundaries
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -121,7 +133,7 @@ class Window(OATask):
             mean:np.ndarray
                 Returns the mean of the current data in the window in the form of a Numpy array.
         """
-        pass
+        return np.mean(self._buffer.values(), axis=0, dtype=np.float64)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -134,7 +146,7 @@ class Window(OATask):
             variance:np.ndarray
                 Returns the variance of the current data in the window as a numpy array.
         """
-        pass
+        return np.variance(self._buffer.values(), axis=0, dtype=np.float64)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -147,7 +159,7 @@ class Window(OATask):
             std:np.ndarray
                 Returns the standard deviation of the data in the window as a numpy array.
         """
-        pass
+        return np.std(self._buffer.values(), axis=0, dtype=np.float64)
 
 
 
@@ -180,11 +192,11 @@ class WindowR(Window):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_buffer_size:int,
-                 p_delay:bool = False,
-                 p_name:str = None,
-                 p_range_max = OATask.C_RANGE_THREAD,
-                 p_ada:bool = True,
-                 p_logging = Log.C_LOG_ALL,
+                 p_delay:bool  = False,
+                 p_name:str    = None,
+                 p_range_max   = OATask.C_RANGE_THREAD,
+                 p_ada:bool    = True,
+                 p_logging     = Log.C_LOG_ALL,
                  **p_kwargs):
 
         self._kwargs = p_kwargs.copy()
@@ -196,7 +208,7 @@ class WindowR(Window):
                          p_ada=p_ada,
                          p_logging=p_logging
                          **p_kwargs)
-
+        self._buffer = None
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new:list, p_inst_old:list):
@@ -210,6 +222,10 @@ class WindowR(Window):
             p_inst_del:list
                 Instance/s to be deleted from the window
         """
+        if self._buffer is None:
+            self._buffer = np.asarray(p_inst_new)
+        else:
+            self._buffer = np.append(self._buffer, p_inst_new)
         pass
 
 
