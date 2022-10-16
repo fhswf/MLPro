@@ -56,19 +56,18 @@ class Window(OATask):
                  p_logging    = Log.C_LOG_ALL,
                  **p_kwargs):
 
-        self._kwargs = p_kwargs.copy()
+        self._kwargs     = p_kwargs.copy()
         self.buffer_size = p_buffer_size
-        self._delay = p_delay
-        self._name = p_name
-        self._range_max = p_range_max
-        self._ada = p_ada
+        self._delay      = p_delay
+        self._name       = p_name
+        self._range_max  = p_range_max
+        self._ada        = p_ada
         self.switch_logging(p_logging = p_logging)
 
-        super().__init__(p_name = p_name,
-                         p_range_max=p_range_max,
-                         p_ada=p_ada,
-                         p_logging=p_logging
-                         **p_kwargs)
+        super().__init__(p_name      = p_name,
+                         p_range_max = p_range_max,
+                         p_ada       = p_ada,
+                         p_logging   = p_logging)
 
         self._buffer = {}
         self._buffer_pos = 0
@@ -150,7 +149,7 @@ class Window(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_std_deviation(self, p_mean):
+    def get_std_deviation(self):
         """
         Method to get the standard deviation of the data in the window.
 
@@ -189,7 +188,7 @@ class WindowR(Window):
     C_NAME = 'Window (Real)'
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_buffer_size:int,
                  p_delay:bool  = False,
@@ -202,15 +201,14 @@ class WindowR(Window):
         self._kwargs = p_kwargs.copy()
 
         super().__init__(p_buffer_size=p_buffer_size,
-                         p_delay = p_delay,
-                         p_name = p_name,
-                         p_range_max=p_range_max,
-                         p_ada=p_ada,
-                         p_logging=p_logging
-                         **p_kwargs)
+                         p_delay     = p_delay,
+                         p_name      = p_name,
+                         p_range_max = p_range_max,
+                         p_ada       = p_ada,
+                         p_logging   = p_logging)
         self._buffer = None
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new:list, p_inst_old:list):
         """
         Method to run the window including adding and deleting of elements
@@ -226,10 +224,11 @@ class WindowR(Window):
             self._buffer = np.asarray(p_inst_new)
         else:
             self._buffer = np.append(self._buffer, p_inst_new)
-        pass
+        if len(self._buffer) == self.buffer_size:
+            self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_boundaries(self):
         """
         Method to get the current boundaries of the Window
@@ -239,10 +238,10 @@ class WindowR(Window):
             boundaries:np.ndarray
                 Returns the current window boundaries in the form of a Numpy array.
         """
-        pass
+        return [np.min(self._buffer), np.max(self._buffer)]
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_mean(self):
         """
         Method to get the mean of the data in the Window.
@@ -252,10 +251,10 @@ class WindowR(Window):
             mean:np.ndarray
                 Returns the mean of the current data in the window in the form of a Numpy array.
         """
-        pass
+        return np.mean(self._buffer)
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_variance(self):
         """
         Method to get the variance of the data in the Window.
@@ -265,10 +264,10 @@ class WindowR(Window):
             variance:np.ndarray
                 Returns the variance of the current data in the window as a numpy array.
         """
-        pass
+        return np.variance(self._buffer)
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def get_std_deviation(self):
         """
         Method to get the standard deviation of the data in the window.
@@ -278,4 +277,4 @@ class WindowR(Window):
                 std:np.ndarray
                     Returns the standard deviation of the data in the window as a numpy array.
         """
-        pass
+        return np.std(self._buffer)

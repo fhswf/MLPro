@@ -132,7 +132,7 @@ class EventManager (Log):
         """
 
         # 0 Intro
-        self.log(Log.C_LOG_TYPE_I, 'Event "' + p_event_id + '" fired')
+        self.log(Log.C_LOG_TYPE_I, 'Event "' , p_event_id , '" fired')
 
         # 1 Get list of registered handlers for given event id
         try:
@@ -141,7 +141,7 @@ class EventManager (Log):
             handlers = []
 
         if len(handlers) == 0:
-            self.log(Log.C_LOG_TYPE_I, 'No handlers registered for event "' + p_event_id + '"')
+            self.log(Log.C_LOG_TYPE_I, 'No handlers registered for event "' , p_event_id , '"')
             return
 
         # 2 Call all registered handlers
