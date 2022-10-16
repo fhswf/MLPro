@@ -38,6 +38,8 @@ from mlpro.bf.math.normalizers import *
 # checking for internal unit tests
 if __name__ == '__main__':
     p_printing = True
+else:
+    p_printing = False
 
 
 
