@@ -75,6 +75,12 @@ class BoundaryDetector(OATask):
     def _adapt_on_event(self, p_event_id, p_event_obj:Event):
         """
         Event handler for Boundary Detector that adapts if the related event is raised
+        Parameters
+        ----------
+            p_event_id
+                The event id related to the adaptation.
+            p_event_obj
+                The event object related to the raised event.
         """
         data = p_event_obj.get_data()
         p_inst_new = data['p_inst_new']
