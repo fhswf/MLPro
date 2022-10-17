@@ -11,11 +11,11 @@
 ## -- 2022-01-27  1.0.2     SY       Class WrHPTHyperopt enhancement
 ## -- 2022-02-25  1.0.3     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-10-12  1.0.4     DA       Renaming and minor fixes
-## -- 2022-10-13  1.0.5     SY       Refactoring 
+## -- 2022-10-17  1.0.5     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-10-13)
+Ver. 1.0.5 (2022-10-17)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 
@@ -238,7 +238,7 @@ else:
     # Parameters for internal unit test
     logging         = Log.C_LOG_NOTHING
     visualize       = False
-    dest_path       = str(Path.home())
+    dest_path       = None
     cycle_limit     = 3
     cycle_per_ep    = 1
     eval_freq       = 2

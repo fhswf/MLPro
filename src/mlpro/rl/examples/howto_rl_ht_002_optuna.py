@@ -9,11 +9,11 @@
 ## -- 2022-03-24  1.0.0     SY       Release of first version
 ## -- 2022-04-05  1.0.1     SY       Add tuning recap visualization
 ## -- 2022-10-12  1.0.2     DA       Renaming and minor fixes
-## -- 2022-10-13  1.0.3     SY       Refactoring 
+## -- 2022-10-17  1.0.3     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-10-13)
+Ver. 1.0.3 (2022-10-17)
 
 This module demonstrates how to utilize wrapper class for Optuna in RL context.
 
@@ -236,7 +236,7 @@ else:
     # Parameters for internal unit test
     logging         = Log.C_LOG_NOTHING
     visualize       = False
-    dest_path       = str(Path.home())
+    dest_path       = None
     cycle_limit     = 3
     cycle_per_ep    = 1
     eval_freq       = 2
