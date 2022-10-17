@@ -12,10 +12,11 @@
 ## -- 2022-05-19  1.0.2     MRD      Re-add the commneting and reformat the numbering in comment
 ## -- 2022-07-20  1.0.3     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-13  1.0.4     SY       Refactoring 
+## -- 2022-10-17  1.0.5     SY       Debugging 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-10-13)
+Ver. 1.0.5 (2022-10-17)
 
 This module shows how to train a single agent and load it again to do some extra cycles.
 """
@@ -87,7 +88,7 @@ else:
     eval_grp_size = 1
     logging = Log.C_LOG_NOTHING
     visualize = False
-    path = None
+    path = str(Path.home())
 
 
 # 2 Create scenario and start training
