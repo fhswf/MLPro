@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
 ## -- Module  : howto_rl_ui_001_reinforcement_learning_cockpit.py
 ## -------------------------------------------------------------------------------------------------
@@ -8,10 +8,11 @@
 ## -- 2021-07-27  0.0.0     SY       Creation
 ## -- 2021-10-07  0.1.0     SY       Release of first draft
 ## -- 2022-10-12  0.1.1     DA       Renaming and shift to sub-framework mlpro-rl
+## -- 2022-10-14  0.1.2     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2022-10-12)
+Ver. 0.1.2 (2022-10-14)
 
 SciUI template for a Reinforcement Learning simulation.
 """
