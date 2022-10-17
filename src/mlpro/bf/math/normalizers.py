@@ -108,10 +108,12 @@ class Normalizer:
 
         if self._param is None:
             raise ImplementationError('Normalization parameters not set')
+
         if isinstance(p_data, Element):
             denormalized_element = Element(p_data.get_related_set())
             denormalized_element.set_values(np.multiply(p_data.get_values(), 1 / self._param[0]) + (
                         self._param[1] / self._param[0]))
+
         elif isinstance(p_data, np.ndarray):
             denormalized_element = np.multiply(p_data, 1 / self._param[0]) + \
                                    (self._param[1] / self._param[0])
@@ -183,29 +185,25 @@ class NormalizerMinMax (Normalizer):
             array consisting of boundaries related to the dimension of the array
 
         """
+        if self._param_new is not None: self._param_old = self._param_new.copy()
 
         try:
-            a = np.zeros(len(p_set.get_dim_ids()))
-            b = np.zeros(len(p_set.get_dim_ids()))
+            if self._param_new is None: self._param_new = np.zeros([(len(p_set.get_dim_ids())),(len(p_set.get_dim_ids()))])
             boundaries = [p_set.get_dim(i).get_boundaries() for i in p_set.get_dim_ids()]
+
         except:
             try:
-                a = np.zeros(len(p_boundaries))
-                b = np.zeros(len(p_boundaries))
+                if self._param_new is None: self._param_new = np.zeros([(len(p_boundaries)),(len(p_boundaries))])
                 boundaries = p_boundaries.reshape(-1,2)
+
             except:
                 raise ParamError("Wrong parameters provided for update. Please provide a set as p_set or boundaries as "
                                  "p_boundaries")
 
         for i in range(len(boundaries)):
-            min_boundary = boundaries[i][0]
-            max_boundary = boundaries[i][1]
-            value_range = max_boundary - min_boundary
-            a[i] = (2 / (value_range))
-            b[i] = (2 * min_boundary / (value_range) + 1)
+            self._param_new[0][i] = (2 / (boundaries[i][1] - boundaries[i][0]))
+            self._param_new[1][i] = (2 * boundaries[i][0] / (boundaries[i][1] - boundaries[i][0]) + 1)
 
-        self._param_old = self._param_new
-        self._param_new = np.vstack(([a],[b]))
         self._param = self._param_new
 
 
@@ -221,7 +219,7 @@ class NormalizerZTrans(Normalizer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_parameters(self, p_dataset = None, p_data = None):
+    def update_parameters(self, p_dataset:np.ndarray = None, p_data:Union[State, np.ndarray] = None):
         """
         Method to update the normalization parameters for Z transformer
 
@@ -230,43 +228,43 @@ class NormalizerZTrans(Normalizer):
         p_dataset:numpy array
             Dataset related to the elements to be normalized. Using this parameter will reset the normalization
             parameters based on the dataset provided.
-        p_data:numpy array
+        p_data:State or numpy array
             New element to update the normalization parameters. Using this parameter will set/update the
             normalization parameters based on the data provided.
 
         """
-        try: p_data = p_data.get_values()
-        except: pass
+        try: data = p_data.get_values()
+        except: data = p_data
+        if self._param_new is not None: self._param_old = self._param_new.copy()
 
-        if p_data is None and isinstance(p_dataset, np.ndarray):
+        if data is None and isinstance(p_dataset, np.ndarray):
             self._std = np.std(p_dataset, axis=0, dtype=np.float64)
             self._mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
-
             self._n = len(p_dataset)
+            if self._param_new is None: self._param_new = np.zeros([self._mean.shape[-1], self._std.shape[-1]])
 
-        elif isinstance(p_data, np.ndarray) and p_dataset is None:
+        elif isinstance(data, np.ndarray) and p_dataset is None:
             # this try/except block checks if the parameters are previously set with a dataset, otherwise sets the
             # parameters based on a single element
             try:
                 old_mean = self._mean
                 self._n += 1
-                self._mean = (old_mean * (self._n - 1) + p_data) / (self._n)
+                self._mean = (old_mean * (self._n - 1) + data) / (self._n)
                 self._std = np.sqrt((np.square(self._std) * (self._n - 1)
-                                     + (p_data - self._mean) * (p_data - old_mean)) / (self._n))
+                                     + (data - self._mean) * (data - old_mean)) / (self._n))
+
             except:
                 self._n = 1
-                self._mean = p_data.copy()
-                self._std = np.zeros(shape=p_data.shape)
+                self._mean = data.copy()
+                self._std = np.zeros(shape=data.shape)
 
-
+            if self._param_new is None: self._param_new = np.zeros([data.shape[-1], data.shape[-1]])
 
         else: raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
                                "or a new data element as p_data ")
 
-        a = 1 / self._std
-        b = self._mean / self._std
+        self._param_new[0] = 1 / self._std
+        self._param_new[1] = self._mean / self._std
 
-        self._param_old = self._param_new
-        self._param_new = np.vstack(([a], [b]))
-        self._param = self._param_new
+        self._param = self._param_new.copy()
 

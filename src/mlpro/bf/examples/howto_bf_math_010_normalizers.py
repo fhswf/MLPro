@@ -66,7 +66,6 @@ my_normalizer_minmax = NormalizerMinMax()
 my_normalizer_ztrans = NormalizerZTrans()
 
 
-
 # 1. Setting parameters for NormalizationZTrans
 my_normalizer_ztrans.update_parameters(p_dataset = my_dataset)
 if p_printing:
@@ -76,13 +75,13 @@ if p_printing:
 # 2. Normalizing a numpy array/ a dataset (as an array) in Z transformation
 normalized_data = my_normalizer_ztrans.normalize(p_data=my_dataset)
 if p_printing:
-    print('02. Normalized value(Z transoformer):\n', normalized_data,'\n\n')
+    print('02. Normalized value(Z transformer):\n', normalized_data,'\n\n')
 
 
 # 3. De-normalizing a numpy array/ a dataset (as an array) in Z transformation
 denormalized_data = my_normalizer_ztrans.denormalize(p_data=normalized_data)
 if p_printing:
-    print('03. Deormalized value(Z transoformer):\n', denormalized_data,'\n\n')
+    print('03. Denormalized value(Z transformer):\n', denormalized_data,'\n\n')
 
 
 # 4. Updating the parameters using a new element to the dataset
@@ -95,7 +94,7 @@ if p_printing:
 # 5. Normalizing the new element with new parameters
 normalize_new = my_normalizer_ztrans.normalize(new_data)
 if p_printing:
-    print('\n05. Normalized Data (Z transoformer):', normalize_new,'\n\n')
+    print('\n05. Normalized Data (Z transformer):', normalize_new,'\n\n')
 
 
 # 6. Validating the changed parameters
@@ -106,7 +105,7 @@ my_normalizer_ztrans.update_parameters(p_dataset=my_dataset)
 #    6.3 Normalizing the element for validation
 normalized_val = my_normalizer_ztrans.normalize(new_data)
 if p_printing:
-    print('\n06. Normalized Data (validation Z transoformer): ', normalized_val, '\n\n')
+    print('\n06. Normalized Data (validation Z transformer): ', normalized_val, '\n\n')
 
 
 # 7. Setting parameters for Normalization
@@ -118,35 +117,35 @@ if p_printing:
 # 8. Normalizing using MinMax
 normalized_state = my_normalizer_minmax.normalize(my_state)
 if p_printing:
-    print('08. Normalized value(Minmax Normalizer):\n', normalized_state.get_values(),'\n\n')
+    print('08. Normalized value(MinMax Normalizer):\n', normalized_state.get_values(),'\n\n')
 
 
 # 9. De-normalizing using MinMAx
 denormalized_state = my_normalizer_minmax.denormalize(normalized_state)
 if p_printing:
-    print('09. Denormalized value(Minmax Normalizer):\n', denormalized_state.get_values(),'\n\n')
+    print('09. Denormalized value(MinMax Normalizer):\n', denormalized_state.get_values(),'\n\n')
 
 
 # 10. Updating the boundaries of the dimension
 my_set.get_dim(p_id=my_set.get_dim_ids()[0]).set_boundaries([-10,51])
 my_set.get_dim(p_id=my_set.get_dim_ids()[1]).set_boundaries([-5,10])
 if p_printing:
-    print('10. Boundaries updated(Minmax Normalizer)\n\n')
+    print('10. Boundaries updated (MinMax Normalizer)\n\n')
 
 
 # 11. Updating tbe normalization parameters for the new set
 my_normalizer_minmax.update_parameters(my_set)
 if p_printing:
-    print('11. Parameters updated for minmax normalizer(Minmax Normalizer)\n\n')
+    print('11. Parameters updated for minmax normalizer (MinMax Normalizer)\n\n')
 
 
 # 12. Renormalizing the previously normalized data with the new parameters
 re_normalized_state = my_normalizer_minmax.renormalize(normalized_state)
 if p_printing:
-    print('12. Renormalized value(Minmax Normalizer):\n', re_normalized_state.get_values(),'\n\n')
+    print('12. Renormalized value (MinMax Normalizer):\n', re_normalized_state.get_values(),'\n\n')
 
 
 # 13. Validating the renormalization
 normalized_state = my_normalizer_minmax.normalize(my_state)
 if p_printing:
-    print('13. Normalized value(Validation renormalization):\n', normalized_state.get_values(),'\n\n')
+    print('13. Normalized value (Validation renormalization):\n', normalized_state.get_values(),'\n\n')
