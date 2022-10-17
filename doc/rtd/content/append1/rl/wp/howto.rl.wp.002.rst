@@ -1,8 +1,8 @@
-.. _Howto RL 009:
-Howto RL-009: Wrap native MLPro environment class to PettingZoo environment
+.. _Howto WP RL 002:
+Howto RL-WP-002: MLPro to PettingZoo
 ===========================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_009_wrap_mlpro_environment_to_pettingzoo_environment
+.. automodule:: mlpro.rl.examples.howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment
 
 
 
@@ -16,7 +16,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_009_wrap_mlpro_environment_to_pettingzoo_environment.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment.py
 	:language: python
 
 

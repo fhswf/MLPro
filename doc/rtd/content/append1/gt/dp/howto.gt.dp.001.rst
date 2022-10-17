@@ -1,8 +1,8 @@
 .. _Howto GT 001:
-Howto GT-001: Run multi-player with own policy in multi-cartpole game board
+Howto GT-001: Run Multi-Player with Own Policy
 ===========================================================================
 
-.. automodule:: mlpro.gt.examples.howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board
+.. automodule:: mlpro.gt.examples.howto_gt_dp_001_run_multi_player_with_own_policy_on_multicartpole_game_board
 
 
 Prerequisites
@@ -16,7 +16,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/gt/examples/howto_gt_001_run_multi_player_with_own_policy_in_multicartpole_game_board.py
+.. literalinclude:: ../../../../../../src/mlpro/gt/examples/howto_gt_dp_001_run_multi_player_with_own_policy_on_multicartpole_game_board.py
 	:language: python
 
 

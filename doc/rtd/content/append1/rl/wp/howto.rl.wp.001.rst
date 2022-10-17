@@ -1,8 +1,8 @@
-.. _Howto RL 008:
-Howto RL-008: Wrap native MLPro environment class to OpenAI Gym environment
+.. _Howto WP RL 001:
+Howto RL-WP-001: MLPro to OpenAI Gym
 ===========================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_008_wrap_mlpro_environment_to_gym_environment
+.. automodule:: mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment
 
 
 
@@ -16,7 +16,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_008_wrap_mlpro_environment_to_gym_environment.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_wp_001_mlpro_environment_to_gym_environment.py
 	:language: python
 
 

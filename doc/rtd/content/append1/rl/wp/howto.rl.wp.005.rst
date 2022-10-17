@@ -1,9 +1,9 @@
-.. _Howto RL 017:
-Howto RL-017: Comparison of native and wrapped Stable Baselines 3 policy (off-policy)
-===================================================================================
+.. _Howto WP RL 005:
+Howto RL-WP-005: Validation SB3 Wrapper (On-Policy) 
+=======================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_017_comparison_native_vs_wrapped_sb3_policy_off_policy
-  
+.. automodule:: mlpro.rl.examples.howto_rl_wp_005_validation_wrapped_sb3_on_policy
+
 
 
 Prerequisites
@@ -19,7 +19,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_017_comparison_native_vs_wrapped_sb3_policy_off_policy.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_wp_005_validation_wrapped_sb3_on_policy.py
 	:language: python
 
 
@@ -29,4 +29,4 @@ Results
 
 The result plot shows that MLPro's wrapper for Stable Baselines 3 behaves neutrally.
 
-.. image:: images/howto017.png
+.. image:: images/howto016.png

@@ -1,8 +1,8 @@
-.. _Howto RL 019:
-Howto RL-019: Train and reuse a single agent
-============================================
+.. _Howto Agent RL 005:
+Howto RL-AGENT-005: Train and Reload Single Agent
+==========================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_019_train_and_reload_single_agent
+.. automodule:: mlpro.rl.examples.howto_rl_agent_005_train_and_reload_single_agent
 
 
 
@@ -17,7 +17,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_019_train_and_reload_single_agent.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_agent_005_train_and_reload_single_agent.py
 	:language: python
 
 

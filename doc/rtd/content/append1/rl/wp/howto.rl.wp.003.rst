@@ -1,8 +1,8 @@
-.. _Howto RL 006:
-Howto RL-006: Run own multi-agent with Petting Zoo environment
+.. _Howto WP RL 003:
+Howto RL-WP-003: Run Multi-Agent on PettingZoo Environment
 ==============================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_006_run_own_agents_with_petting_zoo_environment
+.. automodule:: mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment
 
 
 
@@ -16,7 +16,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_006_run_own_agents_with_petting_zoo_environment.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment.py
 	:language: python
 
 We use the Petting Zoo environment `Pistonball <https://www.pettingzoo.ml/butterfly/pistonball>`_ as default testing environment in this example.

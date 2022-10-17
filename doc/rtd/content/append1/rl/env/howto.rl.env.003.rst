@@ -1,8 +1,8 @@
-.. _Howto RL 018:
-Howto RL-018: Train a wrapped Stable Baselines 3 policy on MLPro's native MultiGeo environment
+.. _Howto Env RL 003:
+Howto RL-ENV-003: SB3 Policy on MultiGeo Environment
 ====================================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment
+.. automodule:: mlpro.rl.examples.howto_rl_env_003_train_agent_with_sb3_policy_on_multigeo_environment
 
 
 
@@ -21,7 +21,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_env_003_train_agent_with_sb3_policy_on_multigeo_environment.py
 	:language: python
 
 

@@ -1,8 +1,8 @@
-.. _Howto RL 021:
-Howto RL-021: Train a wrapped Stable Baselines 3 policy on MLPro's native DoublePendulum environment
+.. _Howto Env RL 005:
+Howto RL-ENV-005: SB3 Policy on Double Pendulum Environment
 ====================================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_021_train_wrapped_sb3_policy_on_doublependulum
+.. automodule:: mlpro.rl.examples.howto_rl_env_005_train_agent_with_sb3_policy_on_double_pendulum_environment
 
 
 
@@ -19,7 +19,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_021_train_wrapped_sb3_policy_on_doublependulum.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_env_005_train_agent_with_sb3_policy_on_double_pendulum_environment.py
 	:language: python
 
 

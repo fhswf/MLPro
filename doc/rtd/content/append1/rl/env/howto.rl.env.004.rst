@@ -1,8 +1,8 @@
-.. _Howto RL 020:
-Howto RL-020: Run a native random agent in MLPro's native DoublePendulum environment
+.. _Howto Env RL 004:
+Howto RL-ENV-004: A Random Agent on Double Pendulum Environment
 ====================================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_020_run_double_pendulum_with_random_actions
+.. automodule:: mlpro.rl.examples.howto_rl_env_004_run_agent_with_random_actions_on_double_pendulum_environment
 
 Prerequisites
 -------------
@@ -15,6 +15,6 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_020_run_double_pendulum_with_random_actions.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_env_004_run_agent_with_random_actions_on_double_pendulum_environment.py
 	:language: python
 

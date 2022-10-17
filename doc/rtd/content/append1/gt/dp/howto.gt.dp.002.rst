@@ -1,8 +1,8 @@
 .. _Howto GT 002:
-Howto GT-002: Train an own multi-player with multi-cartpole game board
+Howto GT-002: Train Multi-Player
 ===========================================================================
 
-.. automodule:: mlpro.gt.examples.howto_gt_002_train_own_multi_player_with_multicartpole_game_board
+.. automodule:: mlpro.gt.examples.howto_gt_dp_002_train_own_multi_player_on_multicartpole_game_board
 
 
 Prerequisites
@@ -16,7 +16,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/gt/examples/howto_gt_002_train_own_multi_player_with_multicartpole_game_board.py
+.. literalinclude:: ../../../../../../src/mlpro/gt/examples/howto_gt_dp_002_train_own_multi_player_on_multicartpole_game_board.py
 	:language: python
 
 

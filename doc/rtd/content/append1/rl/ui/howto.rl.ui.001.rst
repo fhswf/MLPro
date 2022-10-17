@@ -1,8 +1,8 @@
-.. _Howto RL UI 001:
+.. _Howto UI RL 001:
 Howto RL-UI-001: SciUI - Reinforcement Learning Cockpit
-=======================================================
+==========================================================
 
-.. automodule:: mlpro.rl.examples.howto_bf_rl_001_reinforcement_learning_cockpit
+.. automodule:: mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit
 
 
 Prerequisites
@@ -17,7 +17,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_ui_001_reinforcement_learning_cockpit.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_ui_001_reinforcement_learning_cockpit.py
 	:language: python
 
 

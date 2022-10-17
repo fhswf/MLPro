@@ -1,8 +1,8 @@
-.. _Howto RL 011:
-Howto RL-011: Train a wrapped Stable Baslines 3 policy on MLPro's native UR5 environment (Paper)
-================================================================================================
+.. _Howto Env RL 001:
+Howto RL-ENV-001: SB3 Policy on UR5 Environment
+========================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_011_train_ur5_environment_with_wrapped_sb3_policy
+.. automodule:: mlpro.rl.examples.howto_rl_env_001_train_agent_with_sb3_policy_on_ur5_environment
 
 
 
@@ -21,7 +21,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_011_train_ur5_environment_with_wrapped_sb3_policy.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_env_001_train_agent_with_sb3_policy_on_ur5_environment.py
 	:language: python
 
 
@@ -38,4 +38,4 @@ When the training is done, the logged rewards will be plotted using the matplotl
 The plotted figure is not reproducible due to the simulator's nature of simulating real
 world scenario. Although seeds can be set for the random generator, the sampling cannot be 
 done at the exact same time during different runs. For a more reproducible results, 
-:ref:`Howto RL-012 <Howto RL 012>` is more appropriate.
+:ref:`Howto RL-ENV-002 <Howto Env RL 002>` is more appropriate.

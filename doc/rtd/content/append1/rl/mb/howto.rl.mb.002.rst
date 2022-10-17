@@ -1,8 +1,8 @@
-.. _Howto RL 023:
-Howto RL-023: Train MBRL Agent using MPC on Grid World Environment
+.. _Howto MB RL 002:
+Howto RL-MB-002: MBRL with MPC on Grid World Environment
 ====================================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_023_train_mbrl_using_mpc_on_grid_world
+.. automodule:: mlpro.rl.examples.howto_rl_mb_002_grid_world_environment
 
 
 
@@ -17,7 +17,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_023_train_mbrl_using_mpc_on_grid_world.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_mb_002_grid_world_environment.py
 	:language: python
 
 

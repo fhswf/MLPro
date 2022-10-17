@@ -1,8 +1,8 @@
-.. _Howto RL 013:
-Howto RL-013: Model Based Reinforcement Learning
-================================================
+.. _Howto MB RL 001:
+Howto RL-MB-001: MBRL on RobotHTM Environment
+=======================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_013_model_based_reinforcement_learning
+.. automodule:: mlpro.rl.examples.howto_rl_mb_001_robothtm_environment
   
 
 
@@ -17,7 +17,7 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_013_model_based_reinforcement_learning.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_mb_001_robothtm_environment.py
 	:language: python
 
 
