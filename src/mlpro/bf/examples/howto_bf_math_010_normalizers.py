@@ -81,7 +81,7 @@ if p_printing:
 # 3. De-normalizing a numpy array/ a dataset (as an array) in Z transformation
 denormalized_data = my_normalizer_ztrans.denormalize(p_data=normalized_data)
 if p_printing:
-    print('03. Denormalized value(Z transformer):\n', denormalized_data,'\n\n')
+    print('03. Denormalized value (Z transformer):\n', denormalized_data,'\n\n')
 
 
 # 4. Updating the parameters using a new element to the dataset
@@ -117,13 +117,13 @@ if p_printing:
 # 8. Normalizing using MinMax
 normalized_state = my_normalizer_minmax.normalize(my_state)
 if p_printing:
-    print('08. Normalized value(MinMax Normalizer):\n', normalized_state.get_values(),'\n\n')
+    print('08. Normalized value (MinMax Normalizer):\n', normalized_state.get_values(),'\n\n')
 
 
 # 9. De-normalizing using MinMAx
 denormalized_state = my_normalizer_minmax.denormalize(normalized_state)
 if p_printing:
-    print('09. Denormalized value(MinMax Normalizer):\n', denormalized_state.get_values(),'\n\n')
+    print('09. Denormalized value (MinMax Normalizer):\n', denormalized_state.get_values(),'\n\n')
 
 
 # 10. Updating the boundaries of the dimension
@@ -136,7 +136,7 @@ if p_printing:
 # 11. Updating tbe normalization parameters for the new set
 my_normalizer_minmax.update_parameters(my_set)
 if p_printing:
-    print('11. Parameters updated for minmax normalizer (MinMax Normalizer)\n\n')
+    print('11. Parameters updated for MinMax normalizer\n\n')
 
 
 # 12. Renormalizing the previously normalized data with the new parameters
