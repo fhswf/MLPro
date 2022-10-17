@@ -76,13 +76,13 @@ if p_printing:
 # 2. Normalizing a numpy array/ a dataset (as an array) in Z transformation
 normalized_data = my_normalizer_ztrans.normalize(p_data=my_dataset)
 if p_printing:
-    print('02. Normalized value(z_transoform):\n', normalized_data,'\n\n')
+    print('02. Normalized value(Z transoformer):\n', normalized_data,'\n\n')
 
 
 # 3. De-normalizing a numpy array/ a dataset (as an array) in Z transformation
 denormalized_data = my_normalizer_ztrans.denormalize(p_data=normalized_data)
 if p_printing:
-    print('03. Deormalized value(z_transoform):\n', denormalized_data,'\n\n')
+    print('03. Deormalized value(Z transoformer):\n', denormalized_data,'\n\n')
 
 
 # 4. Updating the parameters using a new element to the dataset
@@ -95,7 +95,7 @@ if p_printing:
 # 5. Normalizing the new element with new parameters
 normalize_new = my_normalizer_ztrans.normalize(new_data)
 if p_printing:
-    print('\n05. Normalized Data(z_transoform):', normalize_new,'\n\n')
+    print('\n05. Normalized Data (Z transoformer):', normalize_new,'\n\n')
 
 
 # 6. Validating the changed parameters
@@ -106,7 +106,7 @@ my_normalizer_ztrans.update_parameters(p_dataset=my_dataset)
 #    6.3 Normalizing the element for validation
 normalized_val = my_normalizer_ztrans.normalize(new_data)
 if p_printing:
-    print('\n06. Normalized Data (validation z_transoform): ', normalized_val, '\n\n')
+    print('\n06. Normalized Data (validation Z transoformer): ', normalized_val, '\n\n')
 
 
 # 7. Setting parameters for Normalization

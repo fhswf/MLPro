@@ -11,11 +11,11 @@
 ## -- 2022-09-26  1.0.2     LSB      Refatoring and reduced custom normalize and denormalize methods
 ## -- 2022-10-01  1.0.3     LSB      Refactoring and redefining the update parameter method
 ## -- 2022-10-16  1.0.4     LSB      Updating z-transform parameters based on a new data/element(np.ndarray)
-## -- 2022-10-16  1.0.5     LSB      Refactoring following the review
+## -- 2022-10-17  1.0.5     LSB      Refactoring following the review
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-10-16)
+Ver. 1.0.5 (2022-10-17)
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and 
 normalization by Z transformation.
 
@@ -25,6 +25,7 @@ from mlpro.bf.math import *
 from mlpro.rl.models_sar import *
 import numpy as np
 from typing import Union
+
 
 
 
@@ -79,13 +80,13 @@ class Normalizer:
         """
 
         if self._param is None:
-            raise ImplementationError('normalization parameters not set')
+            raise ImplementationError('Normalization parameters not set')
         if isinstance(p_data, Element):
             normalized_element = Element(p_data.get_related_set())
             normalized_element.set_values(np.multiply(p_data.get_values(), self._param[0]) - self._param[1])
         elif isinstance(p_data, np.ndarray):
             normalized_element = np.multiply(p_data, self._param[0]) - self._param[1]
-        else: raise ParamError('wrong data type provided for normalization')
+        else: raise ParamError('Wrong data type provided for normalization')
         return normalized_element
 
 
@@ -154,10 +155,6 @@ class Normalizer:
         p_data
             arguments specific to normalization parameters. Check the normalizer objects for specific parameters
 
-        Returns
-        -------
-        boolean = True
-            Returns true after updating
         """
 
         raise NotImplementedError
@@ -185,10 +182,6 @@ class NormalizerMinMax (Normalizer):
         p_boundaries:ndarray
             array consisting of boundaries related to the dimension of the array
 
-        Returns
-        -------
-        boolean
-            Returns true after setting the parameters
         """
 
         try:
@@ -210,7 +203,6 @@ class NormalizerMinMax (Normalizer):
             value_range = max_boundary - min_boundary
             a[i] = (2 / (value_range))
             b[i] = (2 * min_boundary / (value_range) + 1)
-
 
         self._param_old = self._param_new
         self._param_new = np.vstack(([a],[b]))
@@ -236,15 +228,16 @@ class NormalizerZTrans(Normalizer):
         Parameters
         ----------
         p_dataset:numpy array
-            Dataset related to the elements to be normalized
+            Dataset related to the elements to be normalized. Using this parameter will reset the normalization
+            parameters based on the dataset provided.
         p_data:numpy array
-            New element to update the normalization parameters
+            New element to update the normalization parameters. Using this parameter will set/update the
+            normalization parameters based on the data provided.
 
-        Returns
-        -------
-        boolean:True
-            Returns true after setting the parameters
         """
+        try: p_data = p_data.get_values()
+        except: pass
+
         if p_data is None and isinstance(p_dataset, np.ndarray):
             self._std = np.std(p_dataset, axis=0, dtype=np.float64)
             self._mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
@@ -252,15 +245,24 @@ class NormalizerZTrans(Normalizer):
             self._n = len(p_dataset)
 
         elif isinstance(p_data, np.ndarray) and p_dataset is None:
-            old_mean = self._mean
-            self._n += 1
+            # this try/except block checks if the parameters are previously set with a dataset, otherwise sets the
+            # parameters based on a single element
+            try:
+                old_mean = self._mean
+                self._n += 1
+                self._mean = (old_mean * (self._n - 1) + p_data) / (self._n)
+                self._std = np.sqrt((np.square(self._std) * (self._n - 1)
+                                     + (p_data - self._mean) * (p_data - old_mean)) / (self._n))
+            except:
+                self._n = 1
+                self._mean = p_data.copy()
+                self._std = np.zeros(shape=p_data.shape)
 
-            self._mean = (old_mean*(self._n-1)+p_data)/(self._n)
-            self._std  = np.sqrt((np.square(self._std) * (self._n-1)
-                               + (p_data - self._mean) * (p_data - old_mean)) / (self._n))
+
 
         else: raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
                                "or a new data element as p_data ")
+
         a = 1 / self._std
         b = self._mean / self._std
 
