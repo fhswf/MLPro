@@ -26,24 +26,57 @@ class BoundaryDetector(OATask):
     This is the base class for Boundary Detector object. It raises event when a change in the current boundaries is
     detected based on the new data instances
     """
-    pass
 
     C_NAME = 'Boundary Detector'
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_inst_new:list):
-        # if p_inst_new >
-        pass
+        """
+        Method to check if the new instances exceed the current boundaries of the Set.
+
+        Parameters
+        ----------
+            p_inst_new:list
+                List of new instance/s added to the workflow
+
+        Returns
+        -------
+            bool
+                Returns true if there is a change of boundaries, false otherwise.
+        """
+        boundaries = []
+        current_set = p_inst_new[0].get_related_set()
+        for i in current_set.get_dim_ids():
+            boundaries.append(current_set.get_dim(i).get_boundaries())
+        for inst in p_inst_new:
+           for i,value in enumerate(inst.get_values()):
+               if value < boundaries[i][0] or value > boundaries[i][1]:
+                    return True
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new:list, p_inst_del:list):
+        """
+        Method to run the boundary detector task
 
+        Parameters
+        ----------
+            p_inst_new:list
+                List of new instance/s added to the workflow
+            p_inst_del:list
+                List of old obsolete instance/s removed from the workflow
+        """
         self.adapt(p_inst_new, p_inst_del)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt_on_event(self, p_event_id, p_event_obj:Event):
-
-        pass
+        """
+        Event handler for Boundary Detector that adapts if the related event is raised
+        """
+        data = p_event_obj.get_data()
+        p_inst_new = data['p_inst_new']
+        p_inst_del = data['p_inst_del']
+        self._adapt(p_inst_new, p_inst_del)
