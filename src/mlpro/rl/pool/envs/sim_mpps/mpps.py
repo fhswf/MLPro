@@ -1448,13 +1448,13 @@ class TransferFunction(ScientificObject, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_function_parameters(self, **p_args) -> bool:
+    def set_function_parameters(self, p_args) -> bool:
         """
         This method provides a functionality to set the parameters of the transfer function.
 
         Parameters
         ----------
-        **p_args : 
+        p_args : dict
             set of parameters of the transfer function.
 
         Returns
@@ -1600,7 +1600,7 @@ class TransferFunction(ScientificObject, Log):
             output = 0
             for x in range(points+1):
                 current_input = p_input + x * self.dt
-                output += self.A * math.sin(self.B * p_input + self.C) + self.D
+                output += self.A * math.sin(self.B * current_input + self.C) + self.D
             return output
         
 
