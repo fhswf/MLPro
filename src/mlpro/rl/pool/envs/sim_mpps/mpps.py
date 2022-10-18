@@ -32,6 +32,7 @@ import numpy as np
 import random
 import uuid
 import math
+import matplotlib.pyplot as plt
 
 
 
@@ -1266,6 +1267,8 @@ class TransferFunction(ScientificObject, Log):
         unique id of the transfer function. Default: None.
     p_type : int
         type of the transfer function. Default: None.
+    p_dt : float
+        delta time. Default: 0.01.
     p_args :
         extra parameter for each specific transfer function.
         
@@ -1302,6 +1305,7 @@ class TransferFunction(ScientificObject, Log):
                  p_name:str,
                  p_id:int=None,
                  p_type:int=None,
+                 p_dt:float=0.01,
                  **p_args) -> None:
 
         if p_name != '':
@@ -1311,6 +1315,7 @@ class TransferFunction(ScientificObject, Log):
         
         self.set_id(p_id)
         self.set_type(p_type)
+        self.dt = p_dt
         
         if self.get_type() is not None:
             self.set_function_parameters(p_args)
@@ -1407,7 +1412,7 @@ class TransferFunction(ScientificObject, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def call(self, p_input):
+    def call(self, p_input, p_range=None):
         """
         This method provides a functionality to call the transfer function by giving an input value.
 
@@ -1415,6 +1420,8 @@ class TransferFunction(ScientificObject, Log):
         ----------
         p_input :
             input value.
+        p_range :
+            range of the calculation. None means 0. Default: None.
 
         Returns
         -------
@@ -1423,19 +1430,19 @@ class TransferFunction(ScientificObject, Log):
 
         """
         if self.get_type() == self.C_TRF_FUNC_LINEAR:
-            output = self.linear(p_input)
+            output = self.linear(p_input, p_range)
         
         elif self.get_type() == self.C_TRF_FUNC_COS:
-            output = self.cosine(p_input)
+            output = self.cosine(p_input, p_range)
             
         elif self.get_type() == self.C_TRF_FUNC_SIN:
-            output = self.sine(p_input)
+            output = self.sine(p_input, p_range)
         
         elif self.get_type() == self.C_TRF_FUNC_CUSTOM:
-            output = self.custom_function(p_input)
+            output = self.custom_function(p_input, p_range)
         
         elif self.get_type() == self.C_TRF_FUNC_APPROX:
-            output = self.function_approximation(p_input)
+            output = self.function_approximation(p_input, p_range)
         
         return output
 
@@ -1490,7 +1497,7 @@ class TransferFunction(ScientificObject, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def linear(self, p_input):
+    def linear(self, p_input, p_range=None):
         """
         This method provides a functionality for linear transfer function.
         
@@ -1504,6 +1511,8 @@ class TransferFunction(ScientificObject, Log):
         ----------
         p_input :
             input value.
+        p_range :
+            range of the calculation. None means 0. Default: None.
 
         Returns
         -------
@@ -1512,11 +1521,19 @@ class TransferFunction(ScientificObject, Log):
 
         """
         
-        return self.m * p_input + self.b
+        if p_range is None:
+            return self.m * p_input + self.b
+        else:
+            points = int(p_range/self.dt)
+            output = 0
+            for x in range(points+1):
+                current_input = p_input + x * self.dt
+                output += self.m * current_input + self.b
+            return output
 
 
 ## -------------------------------------------------------------------------------------------------
-    def cosine(self, p_input):
+    def cosine(self, p_input, p_range=None):
         """
         This method provides a functionality for cosine transfer function.
         
@@ -1530,6 +1547,8 @@ class TransferFunction(ScientificObject, Log):
         ----------
         p_input :
             input value.
+        p_range :
+            range of the calculation. None means 0. Default: None.
 
         Returns
         -------
@@ -1537,11 +1556,20 @@ class TransferFunction(ScientificObject, Log):
             output value.
 
         """
-        return self.A * math.cos(self.B * p_input + self.C) + self.D
+        
+        if p_range is None:
+            return self.A * math.cos(self.B * p_input + self.C) + self.D
+        else:
+            points = int(p_range/self.dt)
+            output = 0
+            for x in range(points+1):
+                current_input = p_input + x * self.dt
+                output += self.A * math.cos(self.B * current_input + self.C) + self.D
+            return output
 
 
 ## -------------------------------------------------------------------------------------------------
-    def sine(self, p_input):
+    def sine(self, p_input, p_range=None):
         """
         This method provides a functionality for sine transfer function.
         
@@ -1555,6 +1583,8 @@ class TransferFunction(ScientificObject, Log):
         ----------
         p_input :
             input value.
+        p_range :
+            range of the calculation. None means 0. Default: None.
 
         Returns
         -------
@@ -1562,11 +1592,20 @@ class TransferFunction(ScientificObject, Log):
             output value.
 
         """
-        return self.A * math.sin(self.B * p_input + self.C) + self.D
-
+        
+        if p_range is None:
+            return self.A * math.sin(self.B * p_input + self.C) + self.D
+        else:
+            points = int(p_range/self.dt)
+            output = 0
+            for x in range(points+1):
+                current_input = p_input + x * self.dt
+                output += self.A * math.sin(self.B * p_input + self.C) + self.D
+            return output
+        
 
 ## -------------------------------------------------------------------------------------------------
-    def custom_function(self, p_input):
+    def custom_function(self, p_input, p_range=None):
         """
         This function represents the template to create a custom function and must be redefined.
 
@@ -1578,6 +1617,8 @@ class TransferFunction(ScientificObject, Log):
         ----------
         p_input :
             input value.
+        p_range :
+            range of the calculation. None means 0. Default: None.
 
         Returns
         -------
@@ -1585,39 +1626,43 @@ class TransferFunction(ScientificObject, Log):
             output value.
     
         """
-        raise NotImplementedError('This custom function is missing.')
-
+        
+        if p_range is None:
+            raise NotImplementedError('This custom function is missing.')
+        else:
+            raise NotImplementedError('This custom function is missing.')
+        
 
 ## -------------------------------------------------------------------------------------------------
-    def plot(self, p_lim:int):
+    def plot(self, p_x_init, p_x_end):
         """
-        ............................
+        This methods provides functionality to plot the defined function within a range.
 
         Parameters
         ----------
-        p_lim : int
-            DESCRIPTION.
-
-        Returns
-        -------
-        None.
+        p_x_init : float
+            The initial value of the input (x-axis).
+        p_x_end : float
+            The initial value of the input (y-axis).
 
         """
-        x_value = range(p_lim)
-        y_value = []
+        x_value = []
+        output = []
+        p_range = p_x_end-p_x_init
+        points = int(p_range/self.dt)
 
-        for para in x_value:
-            # function is limited of functions with one input value
-            y_value.append(self.call(para))
-
+        for x in range(points+1):
+            current_input = p_x_init + x * self.dt
+            x_value.append(current_input)
+            output.append(self.call(current_input, p_range=None))
         
         fig, ax = plt.subplots()
-        ax.plot(x_value, y_value, linewidth=2.0)
+        ax.plot(x_value, output, linewidth=2.0)
         plt.show()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def function_approximation(self, p_input):
+    def function_approximation(self, p_input, p_range=None):
         """
         ........................
 
@@ -1632,7 +1677,7 @@ class TransferFunction(ScientificObject, Log):
             DESCRIPTION.
 
         """
-        return False
+        raise NotImplementedError('Function approximation is not yet available in this version.')
 
 
 
