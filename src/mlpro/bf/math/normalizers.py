@@ -22,7 +22,6 @@ normalization by Z transformation.
 """
 
 from mlpro.bf.math import *
-from mlpro.rl.models_sar import *
 import numpy as np
 from typing import Union
 
@@ -219,7 +218,7 @@ class NormalizerZTrans(Normalizer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_parameters(self, p_dataset:np.ndarray = None, p_data:Union[State, np.ndarray] = None):
+    def update_parameters(self, p_dataset:np.ndarray = None, p_data:Union[Element, np.ndarray] = None):
         """
         Method to update the normalization parameters for Z transformer
 
@@ -228,7 +227,7 @@ class NormalizerZTrans(Normalizer):
         p_dataset:numpy array
             Dataset related to the elements to be normalized. Using this parameter will reset the normalization
             parameters based on the dataset provided.
-        p_data:State or numpy array
+        p_data:Element or numpy array
             New element to update the normalization parameters. Using this parameter will set/update the
             normalization parameters based on the data provided.
 
