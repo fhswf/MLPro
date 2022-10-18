@@ -51,7 +51,8 @@
 ## -- 2022-09-05  2.0.2     LSB      Refactoring
 ## -- 2022-09-06  2.0.3     LSB/DA   Refactoring
 ## -- 2022-09-09  2.0.4     SY       Updating reward function and compute success function
-## -- 2022-09-09  2.0.5     LSB       Updating the boundaries
+## -- 2022-09-09  2.0.5     LSB      Updating the boundaries
+## -- 2022-10-08  2.0.6     LSB      Bug fix
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -131,7 +132,7 @@ class DoublePendulumRoot (Environment):
     C_ANGLES_DOWN = 'down'
     C_ANGLES_RND = 'random'
 
-    C_VALID_ANGLES = [C_ANGLES_RND, C_ANGLES_DOWN, C_ANGLES_RND]
+    C_VALID_ANGLES = [C_ANGLES_UP, C_ANGLES_DOWN, C_ANGLES_RND]
 
     C_THRSH_GOAL = 0
 
