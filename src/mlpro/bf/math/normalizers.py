@@ -11,11 +11,11 @@
 ## -- 2022-09-26  1.0.2     LSB      Refatoring and reduced custom normalize and denormalize methods
 ## -- 2022-10-01  1.0.3     LSB      Refactoring and redefining the update parameter method
 ## -- 2022-10-16  1.0.4     LSB      Updating z-transform parameters based on a new data/element(np.ndarray)
-## -- 2022-10-17  1.0.5     LSB      Refactoring following the review
+## -- 2022-10-18  1.0.5     LSB      Refactoring following the review
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-10-17)
+Ver. 1.0.5 (2022-10-18)
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and 
 normalization by Z transformation.
 
@@ -188,7 +188,7 @@ class NormalizerMinMax (Normalizer):
         if self._param_new is not None: self._param_old = self._param_new.copy()
 
         try:
-            if self._param_new is None: self._param_new = np.zeros([(len(p_set.get_dim_ids())),(len(p_set.get_dim_ids()))])
+            if self._param_new is None: self._param_new = np.zeros([2,len(p_set.get_dim_ids())])
             boundaries = [p_set.get_dim(i).get_boundaries() for i in p_set.get_dim_ids()]
 
         except:
@@ -241,7 +241,7 @@ class NormalizerZTrans(Normalizer):
             self._std = np.std(p_dataset, axis=0, dtype=np.float64)
             self._mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
             self._n = len(p_dataset)
-            if self._param_new is None: self._param_new = np.zeros([self._mean.shape[-1], self._std.shape[-1]])
+            if self._param_new is None: self._param_new = np.zeros([2, self._std.shape[-1]])
 
         elif isinstance(data, np.ndarray) and p_dataset is None:
             # this try/except block checks if the parameters are previously set with a dataset, otherwise sets the
@@ -258,7 +258,7 @@ class NormalizerZTrans(Normalizer):
                 self._mean = data.copy()
                 self._std = np.zeros(shape=data.shape)
 
-            if self._param_new is None: self._param_new = np.zeros([data.shape[-1], data.shape[-1]])
+            if self._param_new is None: self._param_new = np.zeros([2, data.shape[-1]])
 
         else: raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
                                "or a new data element as p_data ")
