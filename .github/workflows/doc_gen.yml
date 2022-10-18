@@ -28,12 +28,17 @@ jobs:
           pip install numpy
           pip install matplotlib
           pip install dill
+          pip install multiprocess
           pip install stable-baselines3
           pip install PettingZoo
           pip install gym==0.25.0
           pip install pyglet
           pip install pymunk
           pip install pygame
+          pip install sklearn
+          pip install river
+          pip install gymnasium
+          pip install openml
           pip install sphinx
           pip install sphinx-rtd-theme
           pip install sphinx-copybutton
