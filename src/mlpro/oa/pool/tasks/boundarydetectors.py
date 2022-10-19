@@ -14,6 +14,7 @@ This module provides pool of boundary detector object further used in the contex
 """
 
 from mlpro.oa.pool.tasks.windows import *
+from mlpro.oa import *
 
 
 
@@ -31,7 +32,7 @@ class BoundaryDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:list):
+    def _adapt(self, p_inst_new:list, p_inst_del:list):
         """
         Method to check if the new instances exceed the current boundaries of the Set.
 
@@ -72,7 +73,7 @@ class BoundaryDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_on_event(self, p_event_id, p_event_obj:Event):
+    def _adapt_on_event(self, p_event_id:str, p_event_obj:Event):
         """
         Event handler for Boundary Detector that adapts if the related event is raised
         Parameters
@@ -82,7 +83,8 @@ class BoundaryDetector(OATask):
             p_event_obj
                 The event object related to the raised event.
         """
+        self.log(self.C_LOG_TYPE_I, 'Event"'+p_event_id+'"raised by', p_event_obj)
         data = p_event_obj.get_data()
         p_inst_new = data['p_inst_new']
         p_inst_del = data['p_inst_del']
-        self._adapt(p_inst_new, p_inst_del)
+        return self._adapt(p_inst_new, p_inst_del)

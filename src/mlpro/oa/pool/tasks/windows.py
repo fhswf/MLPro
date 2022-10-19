@@ -188,7 +188,7 @@ class WindowR(Window):
     C_NAME = 'Window (Real)'
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_buffer_size:int,
                  p_delay:bool  = False,
@@ -206,9 +206,11 @@ class WindowR(Window):
                          p_range_max = p_range_max,
                          p_ada       = p_ada,
                          p_logging   = p_logging)
-        self._buffer = None
 
-    ## -------------------------------------------------------------------------------------------------
+        self._buffer = np.zeroes([p_buffer_size])
+
+
+## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new:list, p_inst_old:list):
         """
         Method to run the window including adding and deleting of elements
@@ -220,15 +222,17 @@ class WindowR(Window):
             p_inst_del:list
                 Instance/s to be deleted from the window
         """
-        if self._buffer is None:
-            self._buffer = np.asarray(p_inst_new)
-        else:
-            self._buffer = np.append(self._buffer, p_inst_new)
+        for i in p_inst_new:
+            self._buffer[self._buffer_pos] = i.copy()
+            self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
+
         if len(self._buffer) == self.buffer_size:
             self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
 
 
-    ## -------------------------------------------------------------------------------------------------
+
+
+## -------------------------------------------------------------------------------------------------
     def get_boundaries(self):
         """
         Method to get the current boundaries of the Window
@@ -241,7 +245,7 @@ class WindowR(Window):
         return [np.min(self._buffer), np.max(self._buffer)]
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def get_mean(self):
         """
         Method to get the mean of the data in the Window.
@@ -254,7 +258,7 @@ class WindowR(Window):
         return np.mean(self._buffer)
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def get_variance(self):
         """
         Method to get the variance of the data in the Window.
@@ -267,7 +271,7 @@ class WindowR(Window):
         return np.variance(self._buffer)
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def get_std_deviation(self):
         """
         Method to get the standard deviation of the data in the window.
