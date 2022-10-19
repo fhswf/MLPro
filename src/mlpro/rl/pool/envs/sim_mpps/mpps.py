@@ -712,8 +712,7 @@ class ManufacturingProcess(ScientificObject, Log):
                  p_status:bool=False,
                  p_init_buffer_input:float=None,
                  p_init_buffer_output:float=None,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_param):
+                 p_logging=Log.C_LOG_ALL):
         
         if p_name != '':
             self.set_name(p_name)
@@ -725,7 +724,8 @@ class ManufacturingProcess(ScientificObject, Log):
         self.set_buffer_capacity(p_max_buffer_input, p_max_buffer_output)
         self.set_processing_time(p_processing_time)
         self.set_prod_rate(p_prod_rate_per_time)
-        
+        self.set_initial_level(p_init_buffer_input, p_init_buffer_output)
+
         Log.__init__(self, p_logging=p_logging)
         self.reset()
         
@@ -1147,7 +1147,6 @@ class ManufacturingProcess(ScientificObject, Log):
         """
         if self.get_status():
             self.stop_process()
-        self.set_initial_level()
         self._buffer_input = self.init_buffer_input
         self._buffer_output = self.init_buffer_output
         self._buffer_input_overflow = 0
@@ -1238,7 +1237,7 @@ class Module(ScientificObject, Log):
         self.set_id(p_id)
         
         self._components = []
-        self.setup_sequence()
+        self.setup_components()
         
         Log.__init__(self, p_logging=p_logging)
         self.reset()
@@ -1350,7 +1349,7 @@ class Module(ScientificObject, Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def check(self, p_prev_component:str=None, p_last_module:bool=False):
+    def check(self, p_prev_component:str=None, p_last_module:bool=False) -> bool:
         """
         This method provides a functionality to check whether the module is correct.
         We check whether the components are installed in a correct sequence to assure that the
