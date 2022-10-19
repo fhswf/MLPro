@@ -11,18 +11,6 @@ Submodules
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_002_advanced_training_with_stagnation_detection
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-.. automodule:: mlpro.rl.examples.howto_rl_003_train_wrapped_sb3_policy_with_stagnation_detection
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 .. automodule:: mlpro.rl.examples.howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment
    :members:
    :undoc-members:
@@ -48,6 +36,18 @@ Submodules
 
 
 .. automodule:: mlpro.rl.examples.howto_rl_agent_005_train_and_reload_single_agent
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: mlpro.rl.examples.howto_rl_att_001_advanced_training_with_stagnation_detection
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: mlpro.rl.examples.howto_rl_att_002_train_wrapped_sb3_policy_with_stagnation_detection
    :members:
    :undoc-members:
    :show-inheritance:
