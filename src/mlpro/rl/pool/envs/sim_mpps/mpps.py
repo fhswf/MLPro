@@ -26,7 +26,6 @@ control, domain learning, transfer learning, and many more.
 """
 
 
-from __future__ import print_function
 from mlpro.rl.models import *
 from mlpro.bf.various import *
 import numpy as np
@@ -297,11 +296,12 @@ class Actuator(ScientificObject, Log):
             self._process = Process(self.get_name())
 
         # define Function
-        #p_function = TransferFunction(p_name=str,p_id=None,p_type=None,)
+        # p_function_1 = TransferFunction(p_name, p_id, p_type, p_param_1=.., p_param_2=.., .....)
+        # p_function_2 = TransferFunction(p_name, p_id, p_type, p_param_1=.., p_param_2=.., .....)
         
         # add Function
-        # self._process.add(p_function)
-        # self._process.add(p_function)
+        # self._process.add(p_function_1)
+        # self._process.add(p_function_2)
 
         raise NotImplementedError('Please redefine this function and setup processes!')
 
@@ -1198,57 +1198,222 @@ class ManufacturingProcess(ScientificObject, Log):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class Module:
+class Module(ScientificObject, Log):
+    """
+    This class serves as a base class of modules or stations, which provides the main attributes of
+    a module or station.
+    
+    Parameters
+    ----------
+    p_name : str
+        name of a module.
+    p_id : int
+        an unique id. Default: None.
+    p_logging :
+        logging level. Default: Log.C_LOG_ALL.
+    
+        
+    Attributes
+    ----------
+    C_TYPE : str
+        Type of the base class. Default: 'Module'.
+    C_NAME : str
+        Name of the module. Default:''.
+    
+    """
+
+    C_TYPE = 'Module'
+    C_NAME = ''
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name, **p_param):
-        ...
+    def __init__(self,
+                 p_name:str,
+                 p_id:int=None,
+                 p_logging=Log.C_LOG_ALL):
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
+        self.set_id(p_id)
+        
+        self._components = []
+        self.setup_sequence()
+        
+        Log.__init__(self, p_logging=p_logging)
+        self.reset()
+        
+
+## -------------------------------------------------------------------------------------------------
+    def set_id(self, p_id:int=None):
+        """
+        This method provides a functionality to set an unique ID.
+
+        Parameters
+        ----------
+        p_id : int, optional
+            An unique ID. Default: None.
+
+        """
+        if p_id is None:
+            self._id = str(uuid.uuid4())
+        else:
+            self._id = str(p_id)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_id(self):
-        ...
+    def get_id(self) -> str:
+        """
+        This method provides a functionality to get the defined unique ID.
+
+        Returns
+        -------
+        str
+            The unique ID.
+
+        """
+        return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        ...
+    def set_name(self, p_name:str):
+        """
+        This method provides a functionality to set an unique name of the related component.
+
+        Parameters
+        ----------
+        p_name : str
+            An unique name of the related component.
+
+        """
+        self._name = p_name
+        self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_name(self):
-        ...
+    def get_name(self) -> str:
+        """
+        This method provides a functionality to get the unique name of the related component.
+
+        Returns
+        -------
+        str
+            The unique name of the related component.
+
+        """
+        return self._name
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_name(self):
-        ...
+    def add_component(self, p_component):
+        """
+        This method provides a functionality to add a component to the module.
+
+        Parameters
+        ----------
+        p_component :
+            a component, which is build based on Actuator / ManufacturingProcess / Reservoir.
+
+        """
+        self._components.append(p_component)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_actuator(self, p_pos):
-        ...
+    def setup_components(self):
+        """
+        This method provides a functionality to setup components to the module.
+        
+        There are some requirements to be satisfied:
+        1) The components are installed in a serial process manner. If a parallel process is required,
+        then it can be set up in different module.
+        2) An actuator can not be connected to other actuators. Thus, it must be connected to either
+        a reservoir or a manufacturing process.
+        3) A manufacturing process or a reservoir can be connected with each other. Without any actuators,
+        it is not possible to transfer material within reservoirs and/or manufacturing processes.
+        4) If this is the first module of the production system, then it should always start with a
+        reservoir or manufacturing process.
+        5) If this is the last module of the production system, then it should always end with an
+        actuator. Otherwise no material flow from the system can be executed.
+
+        Parameters
+        ----------
+        p_component :
+            a component, which is build based on Actuator / ManufacturingProcess / Reservoir.
+
+        """
+        
+        # self.add_component(VacuumPump(...))
+        # self.add_component(Silo(....))
+        # self.add_component(ConveyorBelt(....))
+        
+        raise NotImplementedError('Please add components to your module')
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_reservoir(self, p_pos):
-        ...
+    def check(self, p_prev_component:str=None, p_last_module:bool=False):
+        """
+        This method provides a functionality to check whether the module is correct.
+        We check whether the components are installed in a correct sequence to assure that the
+        production can be performed and material can flow from the first station to the last station.
+
+        Parameters
+        ----------
+        p_prev_component : str, optional
+            The last component of the previous module. If none, this is the first module.
+            Default: None.
+        p_last_module : bool, optional
+            True means this is the last module. Default: False.
+
+        Returns
+        -------
+        bool
+            True means the module could pass the check.
+
+        """
+        
+        prev_component = p_prev_component
+        
+        for com in self._components:
+            if isinstance(com, Actuator):
+                if prev_component == None:
+                    raise ValueError('This is the first module. The first module should start with a reservoir or manufacturing process.')
+                elif prev_component == 'Actuator':
+                    raise ValueError('Actuator can not be connected with other actuators. Hint: you can merge both actuator in one class.')
+            elif isinstance(com, ManufacturingProcess) or isinstance(com, Reservoir):
+                if prev_component == 'ManufacturingProcess' or prev_component == 'Reservoir':
+                    raise ValueError('ManufacturingProcess/Reservoir can not be connected with each other and can only be with Actuator.')
+            prev_component = type(com).__name__
+        
+        if p_last_module:
+            if prev_component == 'ManufacturingProcess' or prev_component == 'Reservoir':
+                raise ValueError('The module has to be ended with Actuator to transfer the material out.')
+    
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup_sequence(self):
-        ...
+    def get_components(self):
+        """
+        This method provides a functionality to get all the components in the module.
 
+        Returns
+        -------
+        list
+            list of components.
 
-## -------------------------------------------------------------------------------------------------
-    def get_information(self):
-        ... # information regarding the actuators, reservoirs, and sequences
+        """
+        return self._components
 
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self):
-        ...
+        """
+        This method provides a functionality to reset all the components in the module.
+
+        """
+        for com in self._components:
+            com.reset()
+        self.log(self.C_LOG_TYPE_I, 'Module ' + self.get_name() + ' is succesfully reset.')
 
 
 
@@ -1803,15 +1968,8 @@ class Process(Log):
 
         Parameters
         ----------
-        p_name : str
-            name of the process.
-        p_id : int
-            an unique id of the process.
-        p_type : int
-            type of the function, e.g. TransferFunction.C_TRF_FUNC_LINEAR,
-            TransferFunction.C_TRF_FUNC_COS, TransferFunction.C_TRF_FUNC_CUSTOM, etc.
-        **p_args :
-            extra parameters related to the transfer function.
+        p_function : TransferFunction
+            the transfer function.
 
         """
         if self.all_processes is None:

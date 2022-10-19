@@ -5,133 +5,157 @@ Submodules
 ----------
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_001_types_of_reward
+.. automodule:: mlpro.rl.examples.howto_rl_001_reward
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_002_run_agent_with_own_policy_with_gym_environment
+.. automodule:: mlpro.rl.examples.howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_003_train_agent_with_own_policy_on_gym_environment
+.. automodule:: mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_004_run_multi_agent_with_own_policy_in_multicartpole_environment
+.. automodule:: mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_005_train_multi_agent_with_own_policy_on_multicartpole_nvironment
+.. automodule:: mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_006_run_own_agents_with_petting_zoo_environment
+.. automodule:: mlpro.rl.examples.howto_rl_agent_005_train_and_reload_single_agent
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_007_train_wrapped_SB3_policy
+.. automodule:: mlpro.rl.examples.howto_rl_att_001_advanced_training_with_stagnation_detection
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_008_wrap_mlpro_environment_to_gym_environment
+.. automodule:: mlpro.rl.examples.howto_rl_att_002_train_wrapped_sb3_policy_with_stagnation_detection
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_009_wrap_mlpro_environment_to_pettingzoo_environment
+.. automodule:: mlpro.rl.examples.howto_rl_env_001_train_agent_with_sb3_policy_on_ur5_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_010_train_ur5_environment_with_wrapped_sb3_policy
+.. automodule:: mlpro.rl.examples.howto_rl_env_002_train_agent_with_SB3_policy_on_robothtm_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_011_train_ur5_environment_with_wrapped_sb3_policy
+.. automodule:: mlpro.rl.examples.howto_rl_env_003_train_agent_with_sb3_policy_on_multigeo_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_011a_load_and_run_ur5_environment
+.. automodule:: mlpro.rl.examples.howto_rl_env_004_run_agent_with_random_actions_on_double_pendulum_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_012_train_wrapped_SB3_policy_on_robothtm_environment
+.. automodule:: mlpro.rl.examples.howto_rl_env_005_train_agent_with_sb3_policy_on_double_pendulum_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_013_model_based_reinforcement_learning
+.. automodule:: mlpro.rl.examples.howto_rl_ht_001_hyperopt
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_014_advanced_training_with_stagnation_detection
+.. automodule:: mlpro.rl.examples.howto_rl_ht_002_optuna
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_015_train_wrapped_sb3_policy_with_stagnation_detection
+.. automodule:: mlpro.rl.examples.howto_rl_mb_001_robothtm_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_016_comparison_native_vs_wrapped_sb3_policy
+.. automodule:: mlpro.rl.examples.howto_rl_mb_002_grid_world_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_017_comparison_native_vs_wrapped_sb3_policy_off_policy
+.. automodule:: mlpro.rl.examples.howto_rl_pp_001_train_agent_with_sb3_policy_on_ur5_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_018_train_wrapped_sb3_policy_on_multigeo_environment
+.. automodule:: mlpro.rl.examples.howto_rl_pp_002_load_and_run_ur5_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_019_train_and_reload_single_agent
+.. automodule:: mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_020_run_double_pendulum_with_random_actions
+.. automodule:: mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.rl.examples.howto_rl_021_train_wrapped_sb3_policy_on_doublependulum
+.. automodule:: mlpro.rl.examples.howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: mlpro.rl.examples.howto_rl_wp_004_train_agent_with_sb3_policy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: mlpro.rl.examples.howto_rl_wp_005_validation_wrapped_sb3_on_policy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: mlpro.rl.examples.howto_rl_wp_006_validation_wrapped_sb3_off_policy
    :members:
    :undoc-members:
    :show-inheritance:
