@@ -26,6 +26,7 @@ control, domain learning, transfer learning, and many more.
 """
 
 
+from __future__ import print_function
 from mlpro.rl.models import *
 from mlpro.bf.various import *
 import numpy as np
@@ -294,9 +295,13 @@ class Actuator(ScientificObject, Log):
         """
         if self._process() is None:
             self._process = Process(self.get_name())
-            
-        # self._process.add(p_name, p_id, p_type, p_param_1=.., p_param_2=.., .....)
-        # self._process.add(p_name, p_id, p_type, p_param_1=.., p_param_2=.., .....)
+
+        # define Function
+        #p_function = TransferFunction(p_name=str,p_id=None,p_type=None,)
+        
+        # add Function
+        # self._process.add(p_function)
+        # self._process.add(p_function)
 
         raise NotImplementedError('Please redefine this function and setup processes!')
 
@@ -1792,7 +1797,7 @@ class Process(Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add(self, p_name:str, p_id:int, p_type:int, **p_args):
+    def add(self, p_function:TransferFunction):
         """
         This method provides a functionality to add a process to the all processes' list.
 
@@ -1812,7 +1817,7 @@ class Process(Log):
         if self.all_processes is None:
             self.all_processes = []
         
-        self.all_processes.append(TransferFunction(p_name, p_id, p_type, **p_args))
+        self.all_processes.append(p_function)
 
 
 ## -------------------------------------------------------------------------------------------------
