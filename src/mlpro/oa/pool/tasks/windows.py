@@ -85,11 +85,14 @@ class Window(OATask):
             p_inst_del:list
                 Instance/s to be deleted from the window
         """
-        for i in p_inst_new:
-            self._buffer[self._buffer_pos] = i
-            self._buffer_pos = (self._buffer_pos+1)%self.buffer_size
-        if len(self._buffer) == self.buffer_size:
-            self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
+        if p_inst_new:
+            for i in p_inst_new:
+                if len(self._buffer) == self.buffer_size:
+                    self._raise_event(self.C_EVENT_DATA_REMOVED, Event(self))
+                self._buffer[self._buffer_pos] = i
+                self._buffer_pos = (self._buffer_pos+1)%self.buffer_size
+                if len(self._buffer) == self.buffer_size:
+                    self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
 
 
 
@@ -222,12 +225,14 @@ class WindowR(Window):
             p_inst_del:list
                 Instance/s to be deleted from the window
         """
-        for i in p_inst_new:
-            self._buffer[self._buffer_pos] = i.copy()
-            self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
-
-        if len(self._buffer) == self.buffer_size:
-            self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
+        if p_inst_new:
+            for i in p_inst_new:
+                if len(self._buffer) == self.buffer_size:
+                    self._raise_event(self.C_EVENT_DATA_REMOVED, Event(self))
+                self._buffer[self._buffer_pos] = i.copy()
+                self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
+                if len(self._buffer) == self.buffer_size:
+                    self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
 
 
 
