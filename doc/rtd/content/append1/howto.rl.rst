@@ -59,6 +59,17 @@ Model-based Reinforcement Learning
 
 
 
+Advanced Training Techniques
+----------------------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   rl/att/howto*
+
+
+
 Wrappers
 -------------------------------
 
