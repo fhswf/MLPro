@@ -1,13 +1,11 @@
 name: Autodoc Gen
 on:
-  pull_request:
-    types:
-      - closed
+  push:
+    branches: [ main ]
     tags:        
-    - '*'
+      - '*'
 jobs:
   build:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -17,6 +15,7 @@ jobs:
       - name: Checkout Codes
         uses: actions/checkout@v2
         with:
+          token: ${{ secrets.PAT }}
           ref: ${{ github.head_ref }}
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -29,12 +28,17 @@ jobs:
           pip install numpy
           pip install matplotlib
           pip install dill
+          pip install multiprocess
           pip install stable-baselines3
           pip install PettingZoo
           pip install gym==0.25.0
           pip install pyglet
           pip install pymunk
           pip install pygame
+          pip install sklearn
+          pip install river
+          pip install gymnasium
+          pip install openml
           pip install sphinx
           pip install sphinx-rtd-theme
           pip install sphinx-copybutton

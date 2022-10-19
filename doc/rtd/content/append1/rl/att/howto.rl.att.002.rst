@@ -1,8 +1,8 @@
-.. _Howto RL 002:
-Howto RL-002: Stagnation Detection
-=========================================================
+.. _Howto RL ATT 002:
+Howto RL-ATT-002: SB3 Policy with Stagnation Detection
+======================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_002_advanced_training_with_stagnation_detection
+.. automodule:: mlpro.rl.examples.howto_rl_att_002_train_wrapped_sb3_policy_with_stagnation_detection
 
 
 
@@ -11,12 +11,14 @@ Prerequisites
 
 Please install the following packages to run this examples properly:
     - `Pytorch <https://pypi.org/project/torch/>`_
+    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
 
 
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/rl/examples/howto_rl_002_advanced_training_with_stagnation_detection.py
+.. literalinclude:: ../../../../../../src/mlpro/rl/examples/howto_rl_att_002_train_wrapped_sb3_policy_with_stagnation_detection.py
 	:language: python
 
 
@@ -24,9 +26,10 @@ Executable code
 Results
 -------
 
-After the multiple environments are initialised, the training will run for the specified amount of limits.
-When stagnation is detected, the training will be stopped. 
+.. image:: images/Cartpole.png
 
+After the environment is initialised, the training will run for the specified amount of limits. 
+When stagnation is detected, the training will be stopped.
 
 .. code-block:: bash
 
@@ -57,5 +60,4 @@ After termination the local result folder contains the training result files:
     - env_states.csv
     - evaluation.csv
     - summary.csv
-    - Agent 0 Smith-1(0).pkl
-    - Agent 1 Smith-2(1).pkl
+    - trained model.pkl
