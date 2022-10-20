@@ -88,8 +88,11 @@ class BoundaryDetector(OATask):
             p_event_obj
                 The event object related to the raised event.
         """
+        adapted = False
         boundaries = p_event_obj.get_raising_object().get_boundaries()
         dims = p_event_obj.get_data()["p_set"].get_dim_ids()
         for i,dim in enumerate(dims):
             if any(dim.get_boundaries() != boundaries[i]):
                 p_event_obj.get_data()["p_set"].set_boundaries([boundaries[i]])
+                adapted = True or adapted
+        return adapted
