@@ -46,15 +46,20 @@ class BoundaryDetector(OATask):
             bool
                 Returns true if there is a change of boundaries, false otherwise.
         """
-        boundaries = []
-        current_set = p_inst_new[0].get_related_set()
-        for i in current_set.get_dim_ids():
-            boundaries.append(current_set.get_dim(i).get_boundaries())
+        dim = []
+        for id in p_inst_new[0].get_related_set().get_dim_ids():
+            dim.append(p_inst_new[0].get_related_set().get_dim(id))
         for inst in p_inst_new:
-           for i,value in enumerate(inst.get_values()):
-               if value < boundaries[i][0] or value > boundaries[i][1]:
+            for i,value in enumerate(inst.get_values()):
+                boundary = dim[i].get_boundaries()[0]
+                if value < boundary[0]:
+                    dim[i].set_boundaries([value, boundary[1]])
                     return True
-        return False
+                elif value > boundary[1]:
+                    dim[i].set_boundaries([boundary[0],value])
+                    return True
+                else:
+                    return False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -83,8 +88,8 @@ class BoundaryDetector(OATask):
             p_event_obj
                 The event object related to the raised event.
         """
-        self.log(self.C_LOG_TYPE_I, 'Event"'+p_event_id+'"raised by', p_event_obj)
-        data = p_event_obj.get_data()
-        p_inst_new = data['p_inst_new']
-        p_inst_del = data['p_inst_del']
-        return self._adapt(p_inst_new, p_inst_del)
+        boundaries = p_event_obj.get_raising_object().get_boundaries()
+        dims = p_event_obj.get_data()["p_set"].get_dim_ids()
+        for i,dim in enumerate(dims):
+            if any(dim.get_boundaries() != boundaries[i]):
+                p_event_obj.get_data()["p_set"].set_boundaries([boundaries[i]])

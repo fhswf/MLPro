@@ -87,10 +87,12 @@ class Window(OATask):
         """
         if p_inst_new:
             for i in p_inst_new:
+                self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
                 if len(self._buffer) == self.buffer_size:
-                    self._raise_event(self.C_EVENT_DATA_REMOVED, Event(self))
-                self._buffer[self._buffer_pos] = i
-                self._buffer_pos = (self._buffer_pos+1)%self.buffer_size
+                    self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
+                                                                       p_related_set=i.get_related_set()))
+                    p_inst_del.append(self._buffer[self._buffer_pos])
+                self._buffer[self._buffer_pos] = i.copy()
                 if len(self._buffer) == self.buffer_size:
                     self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
 
@@ -121,7 +123,8 @@ class Window(OATask):
             boundaries:np.ndarray
                 Returns the current window boundaries in the form of a Numpy array.
         """
-        boundaries = [min(self._buffer.values()), max(self._buffer.values())]
+        boundaries = np.stack(([np.min([self._buffer[i].get_values() for i in self._buffer.keys()], axis=0),
+                      np.max([self._buffer[i].get_values() for i in self._buffer.keys()], axis=0)]), axis=1)
         return boundaries
 
 
@@ -191,7 +194,7 @@ class WindowR(Window):
     C_NAME = 'Window (Real)'
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_buffer_size:int,
                  p_delay:bool  = False,
@@ -204,17 +207,17 @@ class WindowR(Window):
         self._kwargs = p_kwargs.copy()
 
         super().__init__(p_buffer_size=p_buffer_size,
-                         p_delay     = p_delay,
-                         p_name      = p_name,
-                         p_range_max = p_range_max,
-                         p_ada       = p_ada,
-                         p_logging   = p_logging)
+            p_delay     = p_delay,
+            p_name      = p_name,
+            p_range_max = p_range_max,
+            p_ada       = p_ada,
+            p_logging   = p_logging)
 
         self._buffer = np.zeroes([p_buffer_size])
 
 
-## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:list, p_inst_old:list):
+    ## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst_new:list, p_inst_del:list):
         """
         Method to run the window including adding and deleting of elements
 
@@ -227,12 +230,15 @@ class WindowR(Window):
         """
         if p_inst_new:
             for i in p_inst_new:
-                if len(self._buffer) == self.buffer_size:
-                    self._raise_event(self.C_EVENT_DATA_REMOVED, Event(self))
-                self._buffer[self._buffer_pos] = i.copy()
                 self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
                 if len(self._buffer) == self.buffer_size:
+                    self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
+                                                                       p_related_set=i.get_related_set()))
+                    p_inst_del.append(self._buffer[self._buffer_pos])
+                self._buffer[self._buffer_pos] = i.get_values().copy()
+                if len(self._buffer) == self.buffer_size:
                     self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
+
 
 
 
@@ -247,7 +253,8 @@ class WindowR(Window):
             boundaries:np.ndarray
                 Returns the current window boundaries in the form of a Numpy array.
         """
-        return [np.min(self._buffer), np.max(self._buffer)]
+
+        return np.stack((np.min(self._buffer), np.max(self._buffer)),axis=1)
 
 
 ## -------------------------------------------------------------------------------------------------
