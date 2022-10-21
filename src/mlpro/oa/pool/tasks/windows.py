@@ -92,6 +92,8 @@ class Window(OATask):
                     self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
                                                                        p_related_set=i.get_related_set()))
                     p_inst_del.append(self._buffer[self._buffer_pos])
+                    self._buffer[self._buffer_pos] = i.get_values().copy()
+                    continue
                 self._buffer[self._buffer_pos] = i.copy()
                 if len(self._buffer) == self.buffer_size:
                     self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
@@ -235,6 +237,8 @@ class WindowR(Window):
                     self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
                                                                        p_related_set=i.get_related_set()))
                     p_inst_del.append(self._buffer[self._buffer_pos])
+                    self._buffer[self._buffer_pos] = i.get_values().copy()
+                    continue
                 self._buffer[self._buffer_pos] = i.get_values().copy()
                 if len(self._buffer) == self.buffer_size:
                     self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
