@@ -40,9 +40,10 @@ Data Management
    :show-inheritance:
 
    
-Data Plotting
--------------
+Plotting and Visualization
+--------------------------
 
+.. image:: images/bf/MLPro-BF-Plot_class_diagram.drawio.png
 .. automodule:: mlpro.bf.plot
    :members:
    :undoc-members:
