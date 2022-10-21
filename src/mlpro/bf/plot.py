@@ -10,46 +10,162 @@
 ## -- 2021-10-25  1.0.1     SY       Improve get_plots() functionality, enable episodic plots
 ## -- 2021-12-10  1.0.2     SY       Add errors and exceptions, if p_printing is None.
 ## --                                Clean code assurance.
+## -- 2022-10-21  1.1.0     DA       New class SubPlotSettings and extension on class Plottable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2021-12-10)
+Ver. 1.1.0 (2022-10-21)
 
 This module provides various classes related to data plotting.
 """
 
+
 import numpy as np
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import os
+from mlpro.bf.exceptions import ParamError
 from mlpro.bf.various import LoadSave
+from mlpro.bf.math import Set
 from mlpro.bf.data import DataStoring
 import statistics
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SubPlotSettings:
+    """
+    Class to specify the context of a subplot.
+
+    Parameters
+    ----------
+    p_view : str
+        ID of the view (see constants C_VIEW_*)
+    p_subplot = None
+        Optional Matplotlib subplot object as destination for plot outputs
+    p_pos_x : int = 0
+        Optional x position of a subplot within a Matplotlib figure
+    p_pos_y : int = 0
+        Optional y position of a subplot within a Matplotlib figure
+    p_kwargs : dict
+        Further optional named parameters
+    """
+
+    C_VIEW_2D   = '2D'
+    C_VIEW_3D   = '3D'
+    C_VIEW_ND   = 'ND'
+
+    C_VALID_VIEWS   = [ C_VIEW_2D, C_VIEW_3D, C_VIEW_ND ]
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, p_view:str, p_subplot=None, p_pos_x:int=0, p_pos_y:int=0, **p_kwargs ):
+
+        if p_view not in self.C_VALID_VIEWS:
+            raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
+
+        self._view      = p_view
+        self._subplot   = p_subplot
+        self._pos_x     = p_pos_x
+        self._pos_y     = p_pos_y
+        self._kwargs    = p_kwargs.copy()
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Plottable:
     """
-    Property class that inherits the ability to be plottable.
-    The constructor initializes the plot. Optionally the plot itself will be embedded in a matplotlib figure.
+    Property class that inherits the ability to be plottable. 
 
     Parameters
     ----------
-    p_figure : TYPE, optional
+    p_figure : Matplotlib.figure.Figure, optional
         Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
+    p_subplot_settings : list
+        Optional list of objects of class SubPlotSettings. All subplots that are addresses in the list
+        are plotted in parallel. If the list is empty the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
+    p_set : Set : None
+        Optional set with informations about the underlying dimensions.
+    p_plot_depth : int = 0
+        Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
+        depth is unlimited.
+    p_detail_level : int = 0
+        Optional detail level.
+    p_step_rate : int = 1
+        Decides after how many calls of the update_plot() method the custom methods 
+        _update_plot() make an output.
+    **p_kwargs : dict
+        Further optional plot parameters.    
+
+    Attributes
+    -----------
+    C_PLOT_STANDALONE : bool = True
+        Custom attribute to be set to True, if the plot needs a separate subplot or False if the 
+        plot can be added to an existing subplot.
+    C_PLOT_VALID_VIEWS : list = []
+        Custom list of views that are supported/implemented (see class SubPlotSettings)
+    C_PLOT_DEFAULT_VIEW : str = ''
+        Custom attribute for the default view. See class SubPlotSettings for more details.
     """
 
-    ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        pass
+    C_PLOT_STANDALONE : bool    = True
+    C_PLOT_VALID_VIEWS : list   = []
+    C_PLOT_DEFAULT_VIEW : str   = ''
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+    def init_plot( self, 
+                   p_figure:Figure=None,
+                   p_subplot_settings:list=[],
+                   p_set:Set=None,
+                   p_plot_depth:int=0,
+                   p_detail_level:int=0,
+                   p_step_rate:int=1,
+                   **p_kwargs):
+
+        # 1 Store plot parameters internally
+        self._subplot_settings  = p_subplot_settings
+        self._plot_set          = p_set
+        self._plot_depth        = p_plot_depth
+
+
+        # 2 Setup the Matplotlib host figure if no one is provided as parameter
+        if p_figure is None:
+            figure = self._init_figure()
+        else:
+            figure = p_figure
+
+
+        # 3 Initialize all subplots
+        # ...
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_figure(self) -> Figure:
+        """
+        Custom method to initialize a suitable standalone Matplotlib figure.
+
+        Returns
+        -------
+        figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s)
+        """
+
+        raise NotImplementedError            
+
+
+## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         """
         Updates the plot.
         """
 
         pass
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -96,7 +212,7 @@ class DataPlotting(LoadSave):
     C_PLOT_TYPE_EP = 'Episodic'
     C_PLOT_TYPE_EP_M = 'Episodic Mean'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_data: DataStoring, p_type=C_PLOT_TYPE_EP, p_window=100,
                  p_showing=True, p_printing=None, p_figsize=(7, 7), p_color="darkblue"):
         self.data = p_data
@@ -108,7 +224,8 @@ class DataPlotting(LoadSave):
         self.figsize = p_figsize
         self.color = p_color
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_plots(self):
         """
         A function to plot data.
@@ -121,7 +238,8 @@ class DataPlotting(LoadSave):
         elif self.type == 'Episodic Mean':
             self.plots_type_ep_mean()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def plots_type_cy(self):
         """
         A function to plot data per cycle.
@@ -157,7 +275,8 @@ class DataPlotting(LoadSave):
             except:
                 pass
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def plots_type_ep(self):
         """
         A function to plot data per frame by extending the cyclic plots in one plot.
@@ -191,7 +310,8 @@ class DataPlotting(LoadSave):
             except:
                 pass
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def plots_type_ep_mean(self):
         """
         A function to plot data per frame according to its mean value.
@@ -225,7 +345,8 @@ class DataPlotting(LoadSave):
             except:
                 pass
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def moving_mean(self, p_inputs, p_window):
         """
         This method creates a series of averages of different subsets of the full data set.
@@ -253,7 +374,8 @@ class DataPlotting(LoadSave):
                 outputs[:, col] = np.convolve(inputs[:, col], np.ones((p_window,)) / p_window, mode='same')
         return outputs
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def save_plots(self, p_path, p_format, p_dpi_mul=1):
         """
         This method is used to save generated plots.
