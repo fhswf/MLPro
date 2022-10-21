@@ -19,7 +19,7 @@
 ## -- 2022-10-12  1.2.0     DA       Incorporation of refactored bf howto files
 ## -- 2022-10-13  1.2.1     DA       Removed howto bf mt 001 due of it's multiprocessing parts
 ## -- 2022-10-14  1.3.0     SY       Incorporation of refactored bf howto files (RL/GT)
-## -- 2022-10-19  1.3.1     SY       Renamed howtos rl_att_001, rl_att_002
+## -- 2022-10-19  1.3.1     DA       Renamed howtos rl_att_001, rl_att_002
 ## -------------------------------------------------------------------------------------------------
 
 """
