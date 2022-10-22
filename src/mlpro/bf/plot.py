@@ -10,11 +10,11 @@
 ## -- 2021-10-25  1.0.1     SY       Improve get_plots() functionality, enable episodic plots
 ## -- 2021-12-10  1.0.2     SY       Add errors and exceptions, if p_printing is None.
 ## --                                Clean code assurance.
-## -- 2022-10-21  1.1.0     DA       New class SubPlotSettings and extension on class Plottable
+## -- 2022-10-22  1.1.0     DA       New class PlotSettings and extensions on class Plottable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-10-21)
+Ver. 1.1.0 (2022-10-22)
 
 This module provides various classes related to data plotting.
 """
@@ -34,7 +34,7 @@ import statistics
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SubPlotSettings:
+class PlotSettings:
     """
     Class to specify the context of a subplot.
 
@@ -64,11 +64,11 @@ class SubPlotSettings:
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
-        self._view      = p_view
-        self._subplot   = p_subplot
-        self._pos_x     = p_pos_x
-        self._pos_y     = p_pos_y
-        self._kwargs    = p_kwargs.copy()
+        self.view      = p_view
+        self.subplot   = p_subplot
+        self.pos_x     = p_pos_x
+        self.pos_y     = p_pos_y
+        self.kwargs    = p_kwargs.copy()
 
 
 
@@ -78,14 +78,21 @@ class SubPlotSettings:
 ## -------------------------------------------------------------------------------------------------
 class Plottable:
     """
-    Property class that inherits the ability to be plottable. 
+    Property class that inherits the ability to be plottable. The class is prepared for plotting with
+    MatPlotLib but not restricted to it. Three different views are supported:
+    
+    2D: 2-dimensional plot
+    3D: 3-dimensional plot
+    ND: Multidimensional plot
+
+    See class Plotsettings for further detais.
 
     Parameters
     ----------
     p_figure : Matplotlib.figure.Figure, optional
         Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
-    p_subplot_settings : list
-        Optional list of objects of class SubPlotSettings. All subplots that are addresses in the list
+    p_plot_settings : list
+        Optional list of objects of class PlotSettings. All subplots that are addresses in the list
         are plotted in parallel. If the list is empty the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
     p_set : Set : None
         Optional set with informations about the underlying dimensions.
@@ -101,14 +108,14 @@ class Plottable:
         Further optional plot parameters.    
 
     Attributes
-    -----------
+    ----------
     C_PLOT_STANDALONE : bool = True
         Custom attribute to be set to True, if the plot needs a separate subplot or False if the 
         plot can be added to an existing subplot.
     C_PLOT_VALID_VIEWS : list = []
-        Custom list of views that are supported/implemented (see class SubPlotSettings)
+        Custom list of views that are supported/implemented (see class PlotSettings)
     C_PLOT_DEFAULT_VIEW : str = ''
-        Custom attribute for the default view. See class SubPlotSettings for more details.
+        Custom attribute for the default view. See class PlotSettings for more details.
     """
 
     C_PLOT_STANDALONE : bool    = True
@@ -118,7 +125,7 @@ class Plottable:
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure:Figure=None,
-                   p_subplot_settings:list=[],
+                   p_plot_settings:list=[],
                    p_set:Set=None,
                    p_plot_depth:int=0,
                    p_detail_level:int=0,
@@ -126,7 +133,6 @@ class Plottable:
                    **p_kwargs):
 
         # 1 Store plot parameters internally
-        self._subplot_settings  = p_subplot_settings
         self._plot_set          = p_set
         self._plot_depth        = p_plot_depth
 
@@ -138,8 +144,41 @@ class Plottable:
             figure = p_figure
 
 
-        # 3 Initialize all subplots
-        # ...
+        # 3 Initialize required plot views
+        self._plot_methods = { PlotSettings.C_VIEW_2D : [ self._init_plot_2d, self._update_plot_2d ], 
+                               PlotSettings.C_VIEW_3D : [ self._init_plot_3d, self._update_plot_3d ], 
+                               PlotSettings.C_VIEW_ND : [ self._init_plot_nd, self._update_plot_nd ] }
+
+        self._plot_views = {}
+        if len(p_plot_settings)!=0:
+            for ps in p_plot_settings:
+                self._plot_views[ps.view] = ps
+        else:
+            try:
+                self._plot_views[self.C_PLOT_DEFAULT_VIEW] = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
+            except:
+                raise ParamError('Please set customn attribute C_PLOT_DEFAULT_VIEW')
+
+        if p_set is not None:
+            num_dim = p_set.get_num_dim()
+
+            if num_dim != 3: 
+                try:
+                    del self._plot_views[PlotSettings.C_VIEW_3D]
+                except:
+                    pass
+
+            if num_dim != 2: 
+                try:
+                    del self._plot_views[PlotSettings.C_VIEW_2D]
+                except:
+                    pass
+
+        for view in self._plot_views:
+            try:
+                self._plot_methods[view][0](p_figure=figure, p_settings=self._plot_views[view])
+            except:
+                raise ParamError('Parameter p_plot_settings: wrong view "' + str(view) + '"')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -153,7 +192,61 @@ class Plottable:
             Matplotlib figure object to host the subplot(s)
         """
 
-        raise NotImplementedError            
+        return Figure()            
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure:Figure, p_settings:PlotSettings=None):
+        """
+        Custom method to initialize a 2D plot. If parameter p_settings is provided and the subplot
+        within is not None the initialization shall be done there. Otherwise a new subplot shall be 
+        created in the given figure.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings = None
+            Optional object with further settings.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure:Figure, p_settings:PlotSettings=None):
+        """
+        Custom method to initialize a 3D plot. If parameter p_settings is provided and the subplot
+        within is not None the initialization shall be done there. Otherwise a new subplot shall be 
+        created in the given figure.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings = None
+            Optional object with further settings.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure:Figure, p_settings:PlotSettings=None):
+        """
+        Custom method to initialize a nD plot. If parameter p_settings is provided and the subplot
+        within is not None the initialization shall be done there. Otherwise a new subplot shall be 
+        created in the given figure.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings = None
+            Optional object with further settings.
+        """
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
