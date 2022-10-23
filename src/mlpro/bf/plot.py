@@ -143,21 +143,9 @@ class Plottable:
         self.set_plot_detail_level(p_detail_level=p_detail_level)
 
 
-        # 2 Setup the Matplotlib host figure if no one is provided as parameter
-        if p_figure is None:
-            figure = self._init_figure()
-        else:
-            figure = p_figure
+        # 2 Prepare internal dictionaries
 
-
-        # 3 Initialize required plot views
-
-        # 3.1 Dictionary with methods for initialization and update of a plot per view 
-        self._plot_methods = { PlotSettings.C_VIEW_2D : [ self._init_plot_2d, self._update_plot_2d ], 
-                               PlotSettings.C_VIEW_3D : [ self._init_plot_3d, self._update_plot_3d ], 
-                               PlotSettings.C_VIEW_ND : [ self._init_plot_nd, self._update_plot_nd ] }
-
-        # 3.2 Dictionary with plot settings per view
+        # 2.1 Dictionary with plot settings per view
         self._plot_settings = {}
         if len(p_plot_settings)!=0:
             for ps in p_plot_settings:
@@ -166,7 +154,8 @@ class Plottable:
             try:
                 self._plot_settings[self.C_PLOT_DEFAULT_VIEW] = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
             except:
-                raise ParamError('Please set customn attribute C_PLOT_DEFAULT_VIEW')
+                # Plot functionality not implemented
+                return
 
         if p_set is not None:
             num_dim = p_set.get_num_dim()
@@ -183,7 +172,20 @@ class Plottable:
                 except:
                     pass
 
-        # 3.3 Call of all initialization methods of the required views
+        # 2.2 Dictionary with methods for initialization and update of a plot per view 
+        self._plot_methods = { PlotSettings.C_VIEW_2D : [ self._init_plot_2d, self._update_plot_2d ], 
+                               PlotSettings.C_VIEW_3D : [ self._init_plot_3d, self._update_plot_3d ], 
+                               PlotSettings.C_VIEW_ND : [ self._init_plot_nd, self._update_plot_nd ] }
+
+
+        # 3 Setup the Matplotlib host figure if no one is provided as parameter
+        if p_figure is None:
+            figure = self._init_figure()
+        else:
+            figure = p_figure
+
+
+        # 4 Call of all initialization methods of the required views
         for view in self._plot_settings:
             try:
                 self._plot_methods[view][0](p_figure=figure, p_settings=self._plot_settings[view])
