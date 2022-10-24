@@ -10,11 +10,11 @@
 ## -- 2021-10-25  1.0.1     SY       Improve get_plots() functionality, enable episodic plots
 ## -- 2021-12-10  1.0.2     SY       Add errors and exceptions, if p_printing is None.
 ## --                                Clean code assurance.
-## -- 2022-10-23  2.0.0     DA       New class PlotSettings and extensions on class Plottable
+## -- 2022-10-24  2.0.0     DA       New class PlotSettings and extensions on class Plottable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2022-10-23)
+Ver. 2.0.0 (2022-10-24)
 
 This module provides various classes related to data plotting.
 """
@@ -111,6 +111,8 @@ class Plottable:
 
     Attributes
     ----------
+    C_PLOT_ACTIVE : bool
+        Custom attribute to turn on or off the plot functionality. Must be turned on explicitely.
     C_PLOT_STANDALONE : bool = True
         Custom attribute to be set to True, if the plot needs a separate subplot or False if the 
         plot can be added to an existing subplot.
@@ -120,6 +122,7 @@ class Plottable:
         Custom attribute for the default view. See class PlotSettings for more details.
     """
 
+    C_PLOT_ACTIVE : bool        = False
     C_PLOT_STANDALONE : bool    = True
     C_PLOT_VALID_VIEWS : list   = []
     C_PLOT_DEFAULT_VIEW : str   = ''
@@ -133,6 +136,10 @@ class Plottable:
                    p_detail_level:int=0,
                    p_step_rate:int=1,
                    **p_kwargs):
+
+        # 0 Plot functionality turned on?
+        if not self.C_PLOT_ACTIVE: return
+
 
         # 1 Initialize internal plot attributes
         self._plot_set          = p_set
@@ -154,8 +161,8 @@ class Plottable:
             try:
                 self._plot_settings[self.C_PLOT_DEFAULT_VIEW] = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
             except:
-                # Plot functionality not implemented
-                return
+                # Plot functionality turned on but not implemented
+                raise ImplementationError('Please set attribute C_PLOT_DEFAULT_VIEW')               
 
         if p_set is not None:
             num_dim = p_set.get_num_dim()
@@ -275,12 +282,17 @@ class Plottable:
             Implementation-specific plot data and/or parameters.
         """
 
+        # 0 Plot functionality turned on?
+        if not self.C_PLOT_ACTIVE: return
+
+        # 1 Plot output is turned on every self._plot_step_rate time 
         self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_step_rate)
         if self._plot_step_counter==0:
             output = True
         else:
             output = False
 
+        # 2 Call of all required plot methods
         for view in self._plot_settings:
             self._plot_methods[view][1](p_output=output, p_settings=self._plot_settings[view], p_kwargs=p_kwargs)
 
