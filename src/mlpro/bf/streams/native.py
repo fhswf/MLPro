@@ -16,7 +16,7 @@ This module provides native stream classes.
 """
 
 from mlpro.bf.various import ScientificObject
-from mlpro.oa.models import StreamProvider, Stream
+from mlpro.bf.streams import StreamProvider, Stream
 
 
 
