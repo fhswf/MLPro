@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf
-## -- Module  : models_streams.py
+## -- Package : mlpro.bf.streams
+## -- Module  : models.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -15,10 +15,11 @@
 ## -- 2022-06-19  0.1.5     DA       - Class Stream: internal use of self.C_NAME instead of self._name
 ## --                                - Check/completion of doc strings
 ## -- 2022-06-25  0.2.5     LSB      New Label class with modified instance class
+## -- 2022-10-24  0.3.0     DA       Class Instance: new method copy()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.5 (2022-06-25)
+Ver. 0.3.0 (2022-10-24)
 
 Model classes for stream providers and streams. 
 """
@@ -94,6 +95,14 @@ class Instance:
         return self._kwargs
 
 
+## -------------------------------------------------------------------------------------------------
+    def copy(self):
+        duplicate = self.__class__( p_feature_data=self._feature_data.copy(),
+                                    p_label_data=self._label_data,
+                                    p_kwargs=self._kwargs )
+        duplicate._time_stamp = self._time_stamp
+        return duplicate
+
 
 
 
@@ -124,7 +133,7 @@ class Stream (Mode, LoadSave, ScientificObject):
 
     C_TYPE          = 'Stream'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_id=0,
                   p_name:str='',
