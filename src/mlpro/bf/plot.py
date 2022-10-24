@@ -232,7 +232,7 @@ class Plottable:
             Object with further plot settings.
         """
 
-        raise NotImplementedError
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -250,7 +250,7 @@ class Plottable:
             Object with further plot settings.
         """
 
-        raise NotImplementedError
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -268,7 +268,7 @@ class Plottable:
             Object with further plot settings.
         """
 
-        raise NotImplementedError
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -313,7 +313,7 @@ class Plottable:
             Implementation-specific data and parameters.             
         """
 
-        raise NotImplementedError
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -332,7 +332,7 @@ class Plottable:
             Implementation-specific data and parameters.             
         """
 
-        raise NotImplementedError
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -351,7 +351,7 @@ class Plottable:
             Implementation-specific data and parameters.             
         """
 
-        raise NotImplementedError
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
