@@ -9,7 +9,7 @@ Subpackages
 
    mlpro.bf.examples
    mlpro.bf.math
-   mlpro.bf.pool
+   mlpro.bf.streams
    mlpro.bf.ui
 
 Submodules
@@ -47,12 +47,6 @@ Submodules
 
 
 .. automodule:: mlpro.bf.plot
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-.. automodule:: mlpro.bf.streams
    :members:
    :undoc-members:
    :show-inheritance:
