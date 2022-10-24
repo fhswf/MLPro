@@ -24,13 +24,15 @@
 ## -- 2022-10-06  1.5.1     DA       Class Dimension: event C_EVENT_BOUNDARIES converted to string
 ## -- 2022-10-08  1.6.0     DA       New method Set.get_dims()
 ## -- 2022-10-21  1.7.0     DA       Class Dimension: extension by optional property symmetry
+## -- 2022-10-24  1.8.0     DA       Class Element: new method copy()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2022-10-21)
+Ver. 1.8.0 (2022-10-24)
 
 This module provides basic mathematical classes.
 """
+
 
 import numpy as np
 from itertools import repeat
@@ -338,10 +340,15 @@ class DataObject:
 class Element:
     """
     Element of a (multivariate) set.
+
+    Parameters
+    ----------
+    p_set : Set
+        Underlying set.
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_set: Set) -> None:
+    def __init__(self, p_set: Set):
         self._set = p_set
         self._values = list(repeat(0, self._set.get_num_dim()))
 
@@ -381,6 +388,13 @@ class Element:
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
         self._values[self._set.get_dim_ids().index(p_dim_id)] = p_value
+
+
+## -------------------------------------------------------------------------------------------------
+    def copy(self):
+        duplicate = self.__class__(p_set=self._set)
+        duplicate.set_values(p_values=self._values.copy())
+        return duplicate
 
 
 

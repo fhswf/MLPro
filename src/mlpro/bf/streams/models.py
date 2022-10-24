@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.streams
-## -- Module  : streams.py
+## -- Module  : models.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -97,7 +97,7 @@ class Instance:
 
 ## -------------------------------------------------------------------------------------------------
     def copy(self):
-        duplicate = self.__class__( p_feature_data=self._feature_data,
+        duplicate = self.__class__( p_feature_data=self._feature_data.copy(),
                                     p_label_data=self._label_data,
                                     p_kwargs=self._kwargs )
         duplicate._time_stamp = self._time_stamp
@@ -133,7 +133,7 @@ class Stream (Mode, LoadSave, ScientificObject):
 
     C_TYPE          = 'Stream'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_id=0,
                   p_name:str='',
