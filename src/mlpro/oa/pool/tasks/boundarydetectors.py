@@ -6,15 +6,17 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-17  0.0.0     LSB      Creation
+## -- 2022-10-21  1.0.0     LSB      Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-10-17)
+Ver. 1.0.0 (2022-10-21)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 
 from mlpro.oa.pool.tasks.windows import *
 from mlpro.oa import *
+from typing import Union, Iterable
 
 
 
@@ -29,6 +31,13 @@ class BoundaryDetector(OATask):
     """
 
     C_NAME = 'Boundary Detector'
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_scaler:Union[float, Iterable], p_logging = Log.C_LOG_ALL):
+
+        self._scaler = p_scaler
+        super().__init__(p_logging = p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -74,7 +83,8 @@ class BoundaryDetector(OATask):
             p_inst_del:list
                 List of old obsolete instance/s removed from the workflow
         """
-        self.adapt(p_inst_new, p_inst_del)
+        if p_inst_new and not p_inst_del:
+            self.adapt(p_inst_new, p_inst_del)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -85,14 +95,21 @@ class BoundaryDetector(OATask):
         ----------
             p_event_id
                 The event id related to the adaptation.
-            p_event_obj
+            p_event_obj:Event
                 The event object related to the raised event.
+
+        Returns
+        -------
+            bool
+                Returns true if adapted, false otherwise.
         """
         adapted = False
-        boundaries = p_event_obj.get_raising_object().get_boundaries()
-        dims = p_event_obj.get_data()["p_set"].get_dim_ids()
-        for i,dim in enumerate(dims):
-            if any(dim.get_boundaries() != boundaries[i]):
-                p_event_obj.get_data()["p_set"].set_boundaries([boundaries[i]])
-                adapted = True or adapted
+        try:
+            boundaries = self._scaler*p_event_obj.get_raising_object().get_boundaries()
+            dims = [p_event_obj.get_data()["p_set"].get_dim(i) for i in p_event_obj.get_data()["p_set"].get_dim_ids()]
+            for i,dim in enumerate(dims):
+                if any(dim.get_boundaries() != boundaries[i]):
+                    dim.set_boundaries([boundaries[i]])
+                    adapted = True
+        except: raise ImplementationError("Event not raised by a window")
         return adapted
