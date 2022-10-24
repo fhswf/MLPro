@@ -12,7 +12,7 @@
 """
 Ver. 0.1.0 (2022-10-09)
 
-Template classes for online machine learning.
+Core classes for online machine learning.
 """
 
 
@@ -42,16 +42,38 @@ class OAShared (mt.Shared):
 ## -------------------------------------------------------------------------------------------------
 class OATask (ml.MLTask):
     """
-    ...
+    Template class for online adaptive ML tasks.
+
+    Parameters
+    ----------
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_duplicate_data : bool     
+        If True the incoming data are copied before processing. Otherwise the origin incoming data
+        are modified.        
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
     """
 
-    C_TYPE      = 'OA-Task'
+    C_TYPE              = 'OA-Task'
+
+    C_PLOT_ACTIVE       = True
+    C_PLOT_STANDALONE   = True
+    C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name: str = None, 
                   p_range_max=ml.MLTask.C_RANGE_THREAD, 
                   p_ada=True, 
+                  p_duplicate_data:bool=False,
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
@@ -63,6 +85,8 @@ class OATask (ml.MLTask):
                           p_ada=p_ada, 
                           p_logging=p_logging, 
                           **p_kwargs )
+
+        self._duplicate_data = p_duplicate_data
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -86,7 +110,14 @@ class OATask (ml.MLTask):
             Further parameters handed over to custom method _run().
         """
 
-        super().run(p_range=p_range, p_wait=p_wait, p_inst_new=p_inst_new, p_inst_del=p_inst_del)
+        if self._duplicate_data:
+            inst_new = [ inst.copy() for inst in p_inst_new ] 
+            inst_del = [ inst.copy() for inst in p_inst_del ]
+        else:
+            inst_new = p_inst_new
+            inst_del = p_inst_del
+
+        super().run(p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
 
 
 ## -------------------------------------------------------------------------------------------------
