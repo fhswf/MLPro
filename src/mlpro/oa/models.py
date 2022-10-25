@@ -136,6 +136,123 @@ class OATask (ml.MLTask):
         raise NotImplementedError
 
 
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
+
+        Parameters
+        ----------
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        return super().update_plot(p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_output: bool, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_output : bool
+            If True, the plot output shall be carried out.  
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_output: bool, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_output : bool
+            If True, the plot output shall be carried out.  
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_output: bool, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_output : bool
+            If True, the plot output shall be carried out.  
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
 
 
 
@@ -181,7 +298,6 @@ class OAFunction (sl.AdaptiveFunction):
     """
 
     C_TYPE      = 'OA-Function'
-
 
 
 
