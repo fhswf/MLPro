@@ -16,18 +16,21 @@
 ## --                                - Check/completion of doc strings
 ## -- 2022-06-25  0.2.5     LSB      New Label class with modified instance class
 ## -- 2022-10-24  0.3.0     DA       Class Instance: new method copy()
+## -- 2022-10-25  0.4.0     DA       New classes StreamTask, StreamWorkfllow, StreamScenario
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2022-10-24)
+Ver. 0.4.0 (2022-10-25)
 
-Model classes for stream providers and streams. 
+Model classes for stream providers, streams, stream-based tasks/workflows/scenarios.
 """
 
 
 from mlpro.bf.various import *
-from mlpro.bf.ml import *
+from mlpro.bf.plot import Plottable
 from mlpro.bf.math import *
+from mlpro.bf.ml import *
+from mlpro.bf.mt import Task, Workflow, Shared
 from datetime import datetime
 
 
@@ -348,3 +351,261 @@ class StreamProvider (Log, ScientificObject):
         """
 
         raise NotImplementedError 
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamTask (Task, Plottable):
+    """
+    Template class for stream-based tasks.
+
+    Parameters
+    ----------
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_duplicate_data : bool     
+        If True the incoming data are copied before processing. Otherwise the origin incoming data
+        are modified.        
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
+    """
+
+    C_TYPE              = 'Stream-Task'
+
+    C_PLOT_ACTIVE       = True
+    C_PLOT_STANDALONE   = True
+    C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_name: str = None, 
+                  p_range_max=Task.C_RANGE_THREAD, 
+                  p_duplicate_data:bool=False,
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
+
+        super().__init__( p_name=p_name, 
+                          p_range_max=p_range_max, 
+                          p_autorun=Task.C_AUTORUN_NONE, 
+                          p_class_shared=None, 
+                          p_logging=p_logging, 
+                          **p_kwargs )
+
+        self._duplicate_data = p_duplicate_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def run(self, p_inst_new:list, p_inst_del:list, p_range:int = None, p_wait: bool = False):
+        """
+        Executes the task specific actions implemented in custom method _run(). At the end event
+        C_EVENT_FINISHED is raised to start subsequent actions (p_wait=True).
+
+        Parameters
+        ----------
+        p_inst_new : list
+            List of new stream instances to be processed.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_range : int
+            Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
+            range defined during instantiation is taken. Oterwise the minimum range of both is taken.
+        p_wait : bool
+            If True, the method waits until all (a)synchronous tasks are finished.
+        p_kwargs : dict
+            Further parameters handed over to custom method _run().
+        """
+
+        if self._duplicate_data:
+            inst_new = [ inst.copy() for inst in p_inst_new ] 
+            inst_del = [ inst.copy() for inst in p_inst_del ]
+        else:
+            inst_new = p_inst_new
+            inst_del = p_inst_del
+
+        super().run(p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst_new:list, p_inst_del:list):
+        """
+        Custom method that is called by method run(). 
+
+        Parameters
+        ----------
+        p_inst_new : list
+            List of new stream instances to be processed.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
+
+        Parameters
+        ----------
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        return super().update_plot(p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_output: bool, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_output : bool
+            If True, the plot output shall be carried out.  
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_output: bool, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_output : bool
+            If True, the plot output shall be carried out.  
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_output: bool, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_output : bool
+            If True, the plot output shall be carried out.  
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamWorkflow (Workflow, Plottable):
+    """
+    ...
+    """
+
+    C_TYPE      = 'Stream-Workflow'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_name: str = None, 
+                  p_range_max=Workflow.C_RANGE_THREAD, 
+                  p_class_shared=Shared, 
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
+
+        super().__init__( p_name=p_name, 
+                          p_range_max=p_range_max, 
+                          p_class_shared=p_class_shared, 
+                          p_logging=p_logging, 
+                          **p_kwargs )
+
+
+## -------------------------------------------------------------------------------------------------
+    def run( self, p_inst:Instance, p_range: int = None, p_wait: bool = False ):
+        super().run(p_range=p_range, p_wait=p_wait, p_inst=p_inst)                          
+
+
+
+
+
+# -------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+class StreamScenario (Scenario): 
+    """
+    ...
+    """
+    
+    C_TYPE      = 'Stream-Scenario'
