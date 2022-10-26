@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-06-04  0.0.0     DA       Creation
 ## -- 2022-10-09  0.1.0     DA       Initial class definitions
+## -- 2022-10-26  0.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2022-10-09)
+Ver. 0.2.0 (2022-10-26)
 
 Core classes for online machine learning.
 """
@@ -18,8 +19,8 @@ Core classes for online machine learning.
 
 from mlpro.bf.various import Log
 from mlpro.bf.streams import *
-import mlpro.bf.mt as mt
-import mlpro.bf.ml as ml
+from mlpro.bf.mt import Shared
+from mlpro.bf.ml import Model, Scenario, Training, TrainingResults
 import mlpro.sl.models as sl
 
 
@@ -27,7 +28,7 @@ import mlpro.sl.models as sl
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAShared (mt.Shared):
+class OAShared (Shared):
     """
     Template class for a shared memory. 
     """ 
@@ -40,7 +41,7 @@ class OAShared (mt.Shared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OATask (ml.MLTask):
+class OATask (StreamTask, Model):
     """
     Template class for online adaptive ML tasks.
 
@@ -71,20 +72,27 @@ class OATask (ml.MLTask):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name: str = None, 
-                  p_range_max=ml.MLTask.C_RANGE_THREAD, 
+                  p_range_max=StreamTask.C_RANGE_THREAD, 
                   p_ada=True, 
                   p_duplicate_data:bool=False,
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        super().__init__( p_name=p_name, 
-                          p_range_max=p_range_max, 
-                          p_autorun=ml.MLTask.C_AUTORUN_NONE, 
-                          p_class_shared=None, 
-                          p_buffer_size=0, 
-                          p_ada=p_ada, 
-                          p_logging=p_logging, 
-                          **p_kwargs )
+        StreamTask.__init__( self,
+                             p_name=p_name, 
+                             p_range_max=p_range_max, 
+                             p_autorun=StreamTask.C_AUTORUN_NONE, 
+                             p_class_shared=None, 
+                             p_buffer_size=0, 
+                             p_ada=p_ada, 
+                             p_logging=p_logging, 
+                             **p_kwargs )
+
+        Model.__init__( self, 
+                        p_buffer_size=0, 
+                        p_ada=p_ada, 
+                        p_logging=p_logging,
+                        **p_kwargs )  
 
         self._duplicate_data = p_duplicate_data
 
@@ -123,7 +131,8 @@ class OATask (ml.MLTask):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new:list, p_inst_del:list):
         """
-        Custom method that is called by method run(). 
+        Custom method that is called by method run(). If the task adapts during regular operation 
+        please call method adapt() here and implement custom method _adapt().
 
         Parameters
         ----------
@@ -137,120 +146,62 @@ class OATask (ml.MLTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+    def _adapt(self, p_inst_new:list, p_inst_del:list) -> bool:
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
-        details.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
-        """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
-        details.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
-        """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
-        details.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst_new:list, p_inst_del:list, **p_kwargs):
-        """
-        Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
+        Custom method for adaptations during regular operation. See method _run() for further informmation.
 
         Parameters
         ----------
         p_inst_new : list
-            List of new stream instances to be plotted.
+            List of new stream instances to be processed.
         p_inst_del : list
             List of obsolete stream instances to be removed.
-        p_kwargs : dict
-            Further optional plot parameters.
+
+        Returns
+        -------
+        adapted : bool
+            True, if something has been adapted. False otherwise.
         """
 
-        return super().update_plot(p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_output: bool, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def adapt_on_event(self, p_event_id:str, p_event_obj:Event):
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
-        details.
+        Method to be used as event handler for event-based adaptations. Calls custom method 
+        _adapt_on_event() and updates the internal adaptation state.
 
         Parameters
         ----------
-        p_output : bool
-            If True, the plot output shall be carried out.  
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
-        p_kwargs : dict
-            Further optional plot parameters.
+        p_event_id : str
+            Event id.
+        p_event_obj : Event
+            Object with further context informations about the event.
         """
 
-        pass
+        self._set_adapted(p_adapted=self._adapt_on_event(p_event_id=p_event_id, p_event_obj=p_event_obj))        
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_output: bool, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def _adapt_on_event(self, p_event_id:str, p_event_obj:Event) -> bool:
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
-        details.
+        Custom method to be used for event-based adaptation. See method adapt_on_event().
 
         Parameters
         ----------
-        p_output : bool
-            If True, the plot output shall be carried out.  
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
-        p_kwargs : dict
-            Further optional plot parameters.
+        p_event_id : str
+            Event id.
+        p_event_obj : Event
+            Object with further context informations about the event.
+
+        Returns
+        -------
+        adapted : bool
+            True, if something was adapted. False otherwise.
         """
 
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_output: bool, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
-        """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
-        details.
-
-        Parameters
-        ----------
-        p_output : bool
-            If True, the plot output shall be carried out.  
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
-        p_kwargs : dict
-            Further optional plot parameters.
-        """
-
-        pass
+        raise NotImplementedError
 
 
 
@@ -258,7 +209,7 @@ class OATask (ml.MLTask):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAWorkflow (ml.MLWorkflow):
+class OAWorkflow (StreamWorkflow, Model):
     """
     ...
     """
@@ -268,7 +219,7 @@ class OAWorkflow (ml.MLWorkflow):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name: str = None, 
-                  p_range_max=ml.MLWorkflow.C_RANGE_THREAD, 
+                  p_range_max=StreamWorkflow.C_RANGE_THREAD, 
                   p_class_shared=OAShared, 
                   p_ada=True, 
                   p_logging=Log.C_LOG_ALL, 
@@ -305,7 +256,7 @@ class OAFunction (sl.AdaptiveFunction):
 
 # -------------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------
-class OAScenario (ml.Scenario): 
+class OAScenario (Scenario): 
     """
     ...
     """
@@ -318,7 +269,7 @@ class OAScenario (ml.Scenario):
 
 # -------------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------
-class OATrainingResults (ml.TrainingResults): 
+class OATrainingResults (TrainingResults): 
     """
     ...
     """
@@ -331,7 +282,7 @@ class OATrainingResults (ml.TrainingResults):
 
 # -------------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------
-class OATraining (ml.Training): 
+class OATraining (Training): 
     """
     ...
     """
