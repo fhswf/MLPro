@@ -1,11 +1,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_020_run_double_pendulum_with_random_actions.py
+## -- Module  : howto_rl_003_validate_dp.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-04-23  0.0.0     YI       Creation
+## -- 2022-10-10  1.0.0     LSB       Creation/Release
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -34,21 +34,16 @@ if __name__ == '__main__':
     p_input = True
 else:
     p_input = False
-#
-# if p_input:
-#     p_torque = int(input('Enter the amount of torque in Nm:'))
-#     p_cycles = int(input('Enter the amount of cycles to be executed:'))
-#
-# else:
-#     p_torque = 0
-#     p_cycles = 0
+
 
 
 
 ## -----------------------------------------------------------------------------------------------
 ## -----------------------------------------------------------------------------------------------
 class ActionGenerator(Policy):
-    '''Action Generation based on user input'''
+    """
+    Action Generation based on user input
+    """
 
     def set_user_action(self, p_action):
         if p_input:
@@ -63,7 +58,6 @@ class ActionGenerator(Policy):
     def _adapt(self, *p_args) -> bool:
         self.log(self.C_LOG_TYPE_W, 'Sorry I am not adapting anything')
         return False
-
 
 
 
@@ -114,6 +108,7 @@ class ScenarioDoublePendulum(RLScenario):
         self.user_action_cycles += p_cycles
         success, error, adapted = super()._run_cycle()
         return success, error, adapted
+
 
 # 2 Create scenario and run the scenario
 if __name__ == "__main__":
