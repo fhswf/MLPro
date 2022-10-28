@@ -14,7 +14,6 @@ Ver. 1.0.0 (2022-10-21)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 
-from mlpro.oa.pool.tasks.windows import *
 from mlpro.oa import *
 from typing import Union, Iterable
 

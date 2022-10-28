@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.oa.pool.tasks.windows
+## -- Package : mlpro.bf.streams.tasks.windows
 ## -- Module  : windows.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -14,7 +14,7 @@ This module provides pool of window objects further used in the context of onlin
 """
 
 import numpy as np
-from mlpro.oa.models import *
+from mlpro.bf.streams.models import *
 
 
 
@@ -22,7 +22,7 @@ from mlpro.oa.models import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Window(OATask):
+class Window(StreamTask):
     """
     This is the base class for window implementations
 
@@ -51,8 +51,8 @@ class Window(OATask):
                  p_buffer_size:int,
                  p_delay:bool = False,
                  p_name:str   = None,
-                 p_range_max  = OATask.C_RANGE_THREAD,
-                 p_ada:bool   = True,
+                 p_range_max  = StreamTask.C_RANGE_THREAD,
+                 p_duplicate_data:bool = False,
                  p_logging    = Log.C_LOG_ALL,
                  **p_kwargs):
 
@@ -61,12 +61,11 @@ class Window(OATask):
         self._delay      = p_delay
         self._name       = p_name
         self._range_max  = p_range_max
-        self._ada        = p_ada
         self.switch_logging(p_logging = p_logging)
 
         super().__init__(p_name      = p_name,
                          p_range_max = p_range_max,
-                         p_ada       = p_ada,
+                         p_duplicate_data = p_duplicate_data,
                          p_logging   = p_logging)
 
         self._buffer = {}
@@ -201,8 +200,8 @@ class WindowR(Window):
                  p_buffer_size:int,
                  p_delay:bool  = False,
                  p_name:str    = None,
-                 p_range_max   = OATask.C_RANGE_THREAD,
-                 p_ada:bool    = True,
+                 p_range_max   = StreamTask.C_RANGE_THREAD,
+                 p_duplicate_data:bool = False,
                  p_logging     = Log.C_LOG_ALL,
                  **p_kwargs):
 
@@ -212,7 +211,7 @@ class WindowR(Window):
             p_delay     = p_delay,
             p_name      = p_name,
             p_range_max = p_range_max,
-            p_ada       = p_ada,
+            p_duplicate_data=p_duplicate_data,
             p_logging   = p_logging)
 
         self._buffer = np.zeroes([p_buffer_size])
