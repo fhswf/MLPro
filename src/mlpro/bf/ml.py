@@ -41,11 +41,13 @@
 ## -- 2022-09-01  1.4.1     SY       Renaming maturity to accuracy
 ## -- 2022-10-06  1.5.0     DA       New classes MLTask and MLWorkflow
 ## -- 2022-10-10  1.6.0     DA       Class MLTask: new methods adapt_on_event() and _adapt_on_event()
+## -- 2022-10-28  1.7.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.60 (2022-10-10)
-This module provides fundamental machine learning templates, functionalities and properties.
+Ver. 1.7.0 (2022-10-28)
+
+This module provides the fundamental templates and processes for machine learning in MLPro.
 """
 
 
@@ -58,6 +60,7 @@ from mlpro.bf.data import Buffer
 from mlpro.bf.plot import *
 from mlpro.bf.events import *
 from mlpro.bf.mt import Async, Task, Workflow
+import mlpro.bf.ops as ops
 import random
 
 
@@ -359,68 +362,9 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Mode (Log):
-    """
-    Property class that adds a mode and related methods to a child class.
-
-    Parameters
-    ----------
-    p_mode
-        Operation mode. Valid values are stored in constant C_VALID_MODES.
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-
-    """
-
-    C_MODE_INITIAL  = -1
-    C_MODE_SIM      = 0
-    C_MODE_REAL     = 1
-
-    C_VALID_MODES   = [ C_MODE_SIM, C_MODE_REAL ]
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging)
-        self._mode = self.C_MODE_INITIAL
-        self.set_mode(p_mode)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_mode(self):
-        """
-        Returns current mode.
-        """
-
-        return self._mode
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_mode(self, p_mode):
-        """
-        Sets new mode.
-
-        Parameters
-        ----------
-        p_mode
-            Operation mode. Valid values are stored in constant C_VALID_MODES.
-
-        """
-
-        if not p_mode in self.C_VALID_MODES: raise ParamError('Invalid mode')
-        if self._mode == p_mode: return
-        self._mode = p_mode
-        self.log(self.C_LOG_TYPE_I, 'Operation mode set to', self._mode)
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Scenario (Mode, LoadSave, Plottable):
+class Scenario (ops.Scenario):
     """
     Template class for a common ML scenario with an adaptive model inside. To be inherited and 
     specialized in higher ML subtopic layers.
@@ -447,12 +391,12 @@ class Scenario (Mode, LoadSave, Plottable):
     
     """
 
-    C_TYPE      = 'Scenario'
+    C_TYPE      = 'ML-Scenario'
     C_NAME      = '????'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_mode=Mode.C_MODE_SIM,       
+                 p_mode=ops.Mode.C_MODE_SIM,       
                  p_ada:bool=True,               
                  p_cycle_limit=0,              
                  p_visualize=True,              
@@ -617,7 +561,6 @@ class Scenario (Mode, LoadSave, Plottable):
             True, if cycle limit has reached. False otherwise.
         adapted : bool
             True, if ml model adapted something in this cycle. False otherwise.
-
         """
 
         # 1 Run a single custom cycle
