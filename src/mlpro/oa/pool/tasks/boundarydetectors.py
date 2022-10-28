@@ -108,7 +108,7 @@ class BoundaryDetector(OATask):
             boundaries = self._scaler*p_event_obj.get_raising_object().get_boundaries()
             dims = [p_event_obj.get_data()["p_set"].get_dim(i) for i in p_event_obj.get_data()["p_set"].get_dim_ids()]
             for i,dim in enumerate(dims):
-                if any(dim.get_boundaries() != boundaries[i]):
+                if dim.get_boundaries()[0] != boundaries[i][0] or dim.get_boundaries()[1] != boundaries[i][1]:
                     dim.set_boundaries([boundaries[i]])
                     adapted = True
         except: raise ImplementationError("Event not raised by a window")
