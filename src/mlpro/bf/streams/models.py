@@ -16,16 +16,18 @@
 ## --                                - Check/completion of doc strings
 ## -- 2022-06-25  0.2.5     LSB      New Label class with modified instance class
 ## -- 2022-10-24  0.3.0     DA       Class Instance: new method copy()
+## -- 2022-10-28  0.3.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2022-10-24)
+Ver. 0.3.1 (2022-10-28)
 
 Model classes for stream providers and streams. 
 """
 
 
 from mlpro.bf.various import *
+from mlpro.bf.ops import Mode
 from mlpro.bf.ml import *
 from mlpro.bf.math import *
 from datetime import datetime
