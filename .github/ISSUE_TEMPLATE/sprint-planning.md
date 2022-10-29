@@ -19,4 +19,4 @@ assignees: detlefarend, rizkydiprasetya, steveyuwono
   - [ ] New sprint planning issue
 - [ ] **Special topic #1:...**
 - [ ] **Special topic #2:...**
-- [ ] **Check: decisions documented?
+- [ ] **Check: decisions documented?**
