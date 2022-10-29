@@ -2,8 +2,8 @@
 name: Bug report
 about: Bug report
 title: 'Bug: ...'
-labels: bug
-assignees: ''
+labels: admin, bug, quality
+assignees: rizkydiprasetya, detlefarend, steveyuwono
 
 ---
 
