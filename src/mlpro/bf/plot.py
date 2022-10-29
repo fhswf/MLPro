@@ -11,10 +11,11 @@
 ## -- 2021-12-10  1.0.2     SY       Add errors and exceptions, if p_printing is None.
 ## --                                Clean code assurance.
 ## -- 2022-10-24  2.0.0     DA       New class PlotSettings and extensions on class Plottable
+## -- 2022-10-28  2.0.1     DA       Corrections of class documentations
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2022-10-24)
+Ver. 2.0.1 (2022-10-28)
 
 This module provides various classes related to data plotting.
 """
@@ -89,26 +90,6 @@ class Plottable:
 
     See class Plotsettings for further detais.
 
-    Parameters
-    ----------
-    p_figure : Matplotlib.figure.Figure, optional
-        Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
-    p_plot_settings : list
-        Optional list of objects of class PlotSettings. All subplots that are addresses in the list
-        are plotted in parallel. If the list is empty the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
-    p_set : Set : None
-        Optional set with informations about the underlying dimensions.
-    p_plot_depth : int = 0
-        Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
-        depth is unlimited.
-    p_detail_level : int = 0
-        Optional detail level.
-    p_step_rate : int = 1
-        Decides after how many calls of the update_plot() method the custom methods 
-        _update_plot() make an output.
-    **p_kwargs : dict
-        Further optional plot parameters.    
-
     Attributes
     ----------
     C_PLOT_ACTIVE : bool
@@ -136,6 +117,29 @@ class Plottable:
                    p_detail_level:int=0,
                    p_step_rate:int=1,
                    **p_kwargs):
+        """
+        Initializes the plot functionalities of the class.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure, optional
+            Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
+        p_plot_settings : list
+            Optional list of objects of class PlotSettings. All subplots that are addresses in the list
+            are plotted in parallel. If the list is empty the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
+        p_set : Set : None
+            Optional set with informations about the underlying dimensions.
+        p_plot_depth : int = 0
+            Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
+            depth is unlimited.
+        p_detail_level : int = 0
+            Optional detail level.
+        p_step_rate : int = 1
+            Decides after how many calls of the update_plot() method the custom methods 
+            _update_plot() make an output.
+        **p_kwargs : dict
+            Further optional plot parameters.    
+        """
 
         # 0 Plot functionality turned on?
         if not self.C_PLOT_ACTIVE: return

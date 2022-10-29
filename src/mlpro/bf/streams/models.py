@@ -17,6 +17,7 @@
 ## -- 2022-06-25  0.2.5     LSB      New Label class with modified instance class
 ## -- 2022-10-24  0.3.0     DA       Class Instance: new method copy()
 ## -- 2022-10-25  0.4.0     DA       New classes StreamTask, StreamWorkfllow, StreamScenario
+## -- 2022-10-28  0.3.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -27,6 +28,7 @@ Model classes for stream providers, streams, stream-based tasks/workflows/scenar
 
 
 from mlpro.bf.various import *
+from mlpro.bf.ops import Mode
 from mlpro.bf.plot import Plottable
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
