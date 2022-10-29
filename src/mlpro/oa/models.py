@@ -8,10 +8,11 @@
 ## -- 2022-06-04  0.0.0     DA       Creation
 ## -- 2022-10-09  0.1.0     DA       Initial class definitions
 ## -- 2022-10-26  0.2.0     DA       Refactoring
+## -- 2022-10-29  0.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2022-10-26)
+Ver. 0.3.0 (2022-10-29)
 
 Core classes for online machine learning.
 """
@@ -20,7 +21,7 @@ Core classes for online machine learning.
 from mlpro.bf.various import Log
 from mlpro.bf.streams import *
 from mlpro.bf.mt import Shared
-from mlpro.bf.ml import Model, Scenario, Training, TrainingResults
+from mlpro.bf.ml import *
 import mlpro.sl.models as sl
 
 
@@ -79,70 +80,17 @@ class OATask (StreamTask, Model):
                   **p_kwargs ):
 
         StreamTask.__init__( self,
-                             p_name=p_name, 
-                             p_range_max=p_range_max, 
-                             p_autorun=StreamTask.C_AUTORUN_NONE, 
-                             p_class_shared=None, 
-                             p_buffer_size=0, 
-                             p_ada=p_ada, 
-                             p_logging=p_logging, 
-                             **p_kwargs )
+                             p_name=p_name,
+                             p_range_max=p_range_max,
+                             p_duplicate_data=p_duplicate_data,
+                             p_logging=p_logging,
+                             **p_kwargs )                             
 
         Model.__init__( self, 
                         p_buffer_size=0, 
                         p_ada=p_ada, 
                         p_logging=p_logging,
                         **p_kwargs )  
-
-        self._duplicate_data = p_duplicate_data
-
-
-## -------------------------------------------------------------------------------------------------
-    def run(self, p_inst_new:list, p_inst_del:list, p_range:int = None, p_wait: bool = False):
-        """
-        Executes the task specific actions implemented in custom method _run(). At the end event
-        C_EVENT_FINISHED is raised to start subsequent actions (p_wait=True).
-
-        Parameters
-        ----------
-        p_inst_new : list
-            List of new stream instances to be processed.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
-        p_range : int
-            Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
-            range defined during instantiation is taken. Oterwise the minimum range of both is taken.
-        p_wait : bool
-            If True, the method waits until all (a)synchronous tasks are finished.
-        p_kwargs : dict
-            Further parameters handed over to custom method _run().
-        """
-
-        if self._duplicate_data:
-            inst_new = [ inst.copy() for inst in p_inst_new ] 
-            inst_del = [ inst.copy() for inst in p_inst_del ]
-        else:
-            inst_new = p_inst_new
-            inst_del = p_inst_del
-
-        super().run(p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:list, p_inst_del:list):
-        """
-        Custom method that is called by method run(). If the task adapts during regular operation 
-        please call method adapt() here and implement custom method _adapt().
-
-        Parameters
-        ----------
-        p_inst_new : list
-            List of new stream instances to be processed.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
-        """
-
-        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -211,8 +159,26 @@ class OATask (StreamTask, Model):
 ## -------------------------------------------------------------------------------------------------
 class OAWorkflow (StreamWorkflow, Model):
     """
-    ...
-    """
+    Online adaptive workflow based on a stream-workflow and an ml model.
+
+    Parameters
+    ----------
+    p_name : str
+        Optional name of the workflow. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_class_shared
+        Optional class for a shared object (class OAShared or a child class of Shared)
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_duplicate_data : bool     
+        If True the incoming data are copied before processing. Otherwise the origin incoming data
+        are modified.        
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
+     """
 
     C_TYPE      = 'OA-Workflow'
 
@@ -220,22 +186,115 @@ class OAWorkflow (StreamWorkflow, Model):
     def __init__( self, 
                   p_name: str = None, 
                   p_range_max=StreamWorkflow.C_RANGE_THREAD, 
-                  p_class_shared=OAShared, 
+                  p_class_shared=None, 
                   p_ada=True, 
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        super().__init__( p_name=p_name, 
-                          p_range_max=p_range_max, 
-                          p_class_shared=p_class_shared, 
-                          p_ada=p_ada, 
-                          p_logging=p_logging, 
-                          **p_kwargs )
+        StreamWorkflow.__init__( self, 
+                                 p_name=p_name,
+                                 p_range_max=p_range_max,
+                                 p_class_shared=p_class_shared,
+                                 p_logging=p_logging,
+                                 **p_kwargs )
+
+        Model.__init__( self,
+                        p_buffer_size=0,
+                        p_ada=p_ada,
+                        p_logging=p_logging,
+                        **p_kwargs )                            
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run( self, p_inst:Instance, p_range: int = None, p_wait: bool = False ):
-        super().run(p_range=p_range, p_wait=p_wait, p_inst=p_inst)                          
+    def add_task(self, p_task: StreamTask, p_pred_tasks: list = None):
+        super().add_task(p_task=p_task, p_pred_tasks=p_pred_tasks)
+
+        try:
+            # Set adaptivity of new task
+            p_task.switch_adaptivity(self._adaptivity)
+
+            # Hyperparameter space of workflow is extended by dimensions of hyperparameter space of
+            # the new task
+            task_hp_set = p_task.get_hyperparam().get_related_set()
+
+            for dim_id in task_hp_set.get_dim_ids():
+                self._hyperparam_space.add_dim(p_dim=task_hp_set.get_dim(p_id=dim_id)) 
+
+            # Hyperparameter tuple of workflow is extended by the hyperparameter tuple of the new task
+            if self._hyperparam_tuple is None: 
+                self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+
+            task_hp_tuple = p_task.get_hyperparam()
+            if task_hp_tuple is not None:
+                self._hyperparam_tuple.add_hp_tuple(p_hpt=p_task.get_hyperparam())
+
+        except:
+            pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_adaptivity(self, p_ada: bool):
+        for t in self._tasks:
+            try:
+                t.switch_adaptivity(p_ada=p_ada)
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        for t in self._tasks:
+            try:
+                t.set_random_seed(p_seed=p_seed)
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_adapted(self) -> bool:
+        adapted = False
+
+        for t in self._tasks:
+            try:
+                adapted = adapted or t.get_adapted()
+            except:
+                pass
+
+        return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, **p_kwargs) -> bool:
+        """
+        Explicit adaptation is disabled for OA-Workflows.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_buffer(self):
+        for t in self._tasks:
+            try:
+                t.clear_buffer()
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_accuracy(self):
+        accuracy       = 0
+        adaptive_tasks = 0
+
+        for t in self._tasks:
+            try:
+                accuracy       += t.get_accuracy()
+                adaptive_tasks += 1
+            except:
+                pass
+
+        if adaptive_tasks > 0: return accuracy / adaptive_tasks
+        else: return 1
 
 
 
