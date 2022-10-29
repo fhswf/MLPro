@@ -12,10 +12,11 @@
 ## --                                Clean code assurance.
 ## -- 2022-10-24  2.0.0     DA       New class PlotSettings and extensions on class Plottable
 ## -- 2022-10-28  2.0.1     DA       Corrections of class documentations
+## -- 2022-10-29  2.0.2     DA       Refactoring of class Plottable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2022-10-28)
+Ver. 2.0.2 (2022-10-29)
 
 This module provides various classes related to data plotting.
 """
@@ -191,9 +192,11 @@ class Plottable:
 
         # 3 Setup the Matplotlib host figure if no one is provided as parameter
         if p_figure is None:
-            figure = self._init_figure()
+            figure : Figure         = self._init_figure()
+            self._plot_own_figure   = True
         else:
-            figure = p_figure
+            figure : Figure         = p_figure
+            self._plot_own_figure   = False
 
 
         # 4 Call of all initialization methods of the required views
@@ -289,28 +292,25 @@ class Plottable:
         # 0 Plot functionality turned on?
         if not self.C_PLOT_ACTIVE: return
 
-        # 1 Plot output is turned on every self._plot_step_rate time 
-        self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_step_rate)
-        if self._plot_step_counter==0:
-            output = True
-        else:
-            output = False
-
-        # 2 Call of all required plot methods
+        # 1 Call of all required plot methods
         for view in self._plot_settings:
-            self._plot_methods[view][1](p_output=output, p_settings=self._plot_settings[view], p_kwargs=p_kwargs)
+            self._plot_methods[view][1](p_settings=self._plot_settings[view], p_kwargs=p_kwargs)
+
+        # 2 Update content of own(!) figure after self._plot_step_rate calls
+        if self._plot_own_figure:
+            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_step_rate)
+            if self._plot_step_counter==0: 
+                self._figure.canvas.draw()
+                self._figure.canvas.flush_events()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_output:bool, p_settings:PlotSettings, **p_kwargs):
+    def _update_plot_2d(self, p_settings:PlotSettings, **p_kwargs):
         """
         Custom method to update the 2d plot. The related MatPlotLib Axes object is stored in p_settings.
-        The plot output shall be done only if parameter p_output is True. 
 
         Parameters
         ----------
-        p_output : bool
-            If True, the plot output shall be carried out.  
         p_settings : PlotSettings
             Object with further plot settings.
         **p_kwargs 
@@ -321,15 +321,12 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_output:bool, p_settings:PlotSettings, **p_kwargs):
+    def _update_plot_3d(self, p_settings:PlotSettings, **p_kwargs):
         """
         Custom method to update the 3d plot. The related MatPlotLib Axes object is stored in p_settings.
-        The plot output shall be done only if parameter p_output is True. 
 
         Parameters
         ----------
-        p_output : bool
-            If True, the plot output shall be carried out.  
         p_settings : PlotSettings
             Object with further plot settings.
         **p_kwargs 
@@ -340,15 +337,12 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_output:bool, p_settings:PlotSettings, **p_kwargs):
+    def _update_plot_nd(self, p_settings:PlotSettings, **p_kwargs):
         """
         Custom method to update the nd plot. The related MatPlotLib Axes object is stored in p_settings.
-        The plot output shall be done only if parameter p_output is True. 
 
         Parameters
         ----------
-        p_output : bool
-            If True, the plot output shall be carried out.  
         p_settings : PlotSettings
             Object with further plot settings.
         **p_kwargs 
