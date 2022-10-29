@@ -19,10 +19,11 @@
 ## -- 2022-10-12  1.2.0     DA       Incorporation of refactored bf howto files
 ## -- 2022-10-13  1.2.1     DA       Removed howto bf mt 001 due of it's multiprocessing parts
 ## -- 2022-10-14  1.3.0     SY       Incorporation of refactored bf howto files (RL/GT)
+## -- 2022-10-19  1.3.1     DA       Renamed howtos rl_att_001, rl_att_002
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2022-10-14)
+Ver. 1.3.1 (2022-10-19)
 
 Unit test for all examples available.
 """
@@ -50,8 +51,8 @@ howto_list = {
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
-    "rl_002": "mlpro.rl.examples.howto_rl_002_advanced_training_with_stagnation_detection",
-    "rl_003": "mlpro.rl.examples.howto_rl_003_train_wrapped_sb3_policy_with_stagnation_detection",
+    "rl_att_001": "mlpro.rl.examples.howto_rl_att_001_advanced_training_with_stagnation_detection",
+    "rl_att_002": "mlpro.rl.examples.howto_rl_att_002_train_wrapped_sb3_policy_with_stagnation_detection",
     "rl_agent_001": "mlpro.rl.examples.howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment",
     "rl_agent_002": "mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment",
     "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",

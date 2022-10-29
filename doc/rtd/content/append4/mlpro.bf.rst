@@ -8,7 +8,8 @@ Subpackages
    :maxdepth: 4
 
    mlpro.bf.examples
-   mlpro.bf.pool
+   mlpro.bf.math
+   mlpro.bf.streams
    mlpro.bf.ui
 
 Submodules
@@ -33,31 +34,19 @@ Submodules
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.math
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 .. automodule:: mlpro.bf.ml
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.mp
+.. automodule:: mlpro.bf.mt
    :members:
    :undoc-members:
    :show-inheritance:
 
 
 .. automodule:: mlpro.bf.plot
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-.. automodule:: mlpro.bf.streams
    :members:
    :undoc-members:
    :show-inheritance:
