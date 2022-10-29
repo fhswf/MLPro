@@ -46,6 +46,12 @@ Submodules
    :show-inheritance:
 
 
+.. automodule:: mlpro.bf.ops
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 .. automodule:: mlpro.bf.plot
    :members:
    :undoc-members:
