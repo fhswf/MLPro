@@ -37,6 +37,14 @@ class Mode (Log):
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
 
+    Attributes
+    ----------
+    C_MODE_SIM = 0
+        Simulation mode.
+    C_MODE_REAL = 1
+        Real operation mode.
+    C_VALID_MODES : list
+        List of valid modes.
     """
 
     C_MODE_INITIAL  = -1
@@ -70,7 +78,6 @@ class Mode (Log):
         ----------
         p_mode
             Operation mode. Valid values are stored in constant C_VALID_MODES.
-
         """
 
         if not p_mode in self.C_VALID_MODES: raise ParamError('Invalid mode')
@@ -105,8 +112,7 @@ class Scenario (Mode, LoadSave, Plottable):
     p_visualize 
         Boolean switch for env/agent visualisation. Default = True.
     p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
-    
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
     """
 
     C_TYPE      = 'Scenario'
@@ -141,6 +147,15 @@ class Scenario (Mode, LoadSave, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def set_mode(self, p_mode):
+        """
+        Sets operation mode of the scenario. Custom method _set_mode() is called.
+
+        Parameter
+        ---------
+        p_mode
+            Operation mode. See class bf.ops.Mode for further details.
+        """
+
         super().set_mode(p_mode)
         self._set_mode(p_mode)
 
@@ -148,7 +163,13 @@ class Scenario (Mode, LoadSave, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def _set_mode(self, p_mode):
         """
-        Redefine this method to switch the scenario between simulation or real operation mode.
+        Custom method to set the operation mode of components of the scenario. See method set_mode()
+        for further details.
+
+        Parameter
+        ---------
+        p_mode
+            Operation mode. See class bf.ops.Mode for further details.
         """
 
         raise NotImplementedError
@@ -165,6 +186,15 @@ class Scenario (Mode, LoadSave, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def set_cycle_limit(self, p_limit):
+        """
+        Sets the maximum number of cycles to run.
+
+        Parameters
+        ----------
+        p_cycle_limit : int
+            Maximum number of cycles. Default = 0 (no limit).
+        """
+
         self._cycle_limit = p_limit
 
 
@@ -271,7 +301,6 @@ class Scenario (Mode, LoadSave, Plottable):
             True on error. False otherwise.
         adapted : bool
             True, if something within the scenario has adapted something in this cycle. False otherwise.
-
         """
 
         raise NotImplementedError
@@ -317,7 +346,6 @@ class Scenario (Mode, LoadSave, Plottable):
             True, if ml model adapted something. False otherwise.
         num_cycles: int
             Number of cycles.
-
         """
 
         self._cycle_id  = 0

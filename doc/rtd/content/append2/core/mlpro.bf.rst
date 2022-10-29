@@ -101,7 +101,6 @@ Stream Providers and Streams
    :show-inheritance:
 
 
-
 User Interaction
 ----------------
 
