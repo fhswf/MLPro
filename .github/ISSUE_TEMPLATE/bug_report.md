@@ -3,7 +3,7 @@ name: Bug report
 about: Bug report
 title: 'Bug: ...'
 labels: admin, bug, quality
-assignees: rizkydiprasetya, detlefarend, steveyuwono
+assignees: detlefarend, rizkydiprasetya, steveyuwono
 
 ---
 
