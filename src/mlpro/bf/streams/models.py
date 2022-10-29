@@ -14,26 +14,26 @@
 ## -- 2022-06-18  0.1.4     LSB      Logging of stream list based on p_display_list parameter
 ## -- 2022-06-19  0.1.5     DA       - Class Stream: internal use of self.C_NAME instead of self._name
 ## --                                - Check/completion of doc strings
-## -- 2022-06-25  0.2.5     LSB      New Label class with modified instance class
+## -- 2022-06-25  0.2.0     LSB      New Label class with modified instance class
 ## -- 2022-10-24  0.3.0     DA       Class Instance: new method copy()
 ## -- 2022-10-25  0.4.0     DA       New classes StreamTask, StreamWorkfllow, StreamScenario
-## -- 2022-10-28  0.3.1     DA       Refactoring
+## -- 2022-10-28  0.4.1     DA       Refactoring after introduction of module bf.ops
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2022-10-25)
+Ver. 0.4.1 (2022-10-28)
 
 Model classes for stream providers, streams, stream-based tasks/workflows/scenarios.
 """
 
 
 from mlpro.bf.various import *
-from mlpro.bf.ops import Mode
-from mlpro.bf.plot import Plottable
+from mlpro.bf.ops import Mode, ScenarioBase
+from mlpro.bf.plot import Plottable, PlotSettings
 from mlpro.bf.math import *
-from mlpro.bf.ml import *
 from mlpro.bf.mt import Task, Workflow, Shared
 from datetime import datetime
+from matplotlib.figure import Figure
 
 
 
@@ -606,7 +606,7 @@ class StreamWorkflow (Workflow, Plottable):
 
 # -------------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------
-class StreamScenario (Scenario): 
+class StreamScenario (ScenarioBase): 
     """
     ...
     """
