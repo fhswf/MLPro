@@ -41,11 +41,11 @@
 ## -- 2022-09-01  1.4.1     SY       Renaming maturity to accuracy
 ## -- 2022-10-06  1.5.0     DA       New classes MLTask and MLWorkflow
 ## -- 2022-10-10  1.6.0     DA       Class MLTask: new methods adapt_on_event() and _adapt_on_event()
-## -- 2022-10-28  1.7.0     DA       Refactoring
+## -- 2022-10-29  1.7.0     DA       Refactoring after introduction of module bf.ops
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2022-10-28)
+Ver. 1.7.0 (2022-10-29)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 """
@@ -60,7 +60,7 @@ from mlpro.bf.data import Buffer
 from mlpro.bf.plot import *
 from mlpro.bf.events import *
 from mlpro.bf.mt import Async, Task, Workflow
-import mlpro.bf.ops as ops
+from mlpro.bf.ops import Mode, ScenarioBase
 import random
 
 
@@ -362,12 +362,14 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Scenario (ops.Scenario):
+class Scenario (ScenarioBase):
     """
     Template class for a common ML scenario with an adaptive model inside. To be inherited and 
-    specialized in higher ML subtopic layers.
+    specialized in higher ML subtopic layers. See class bf.ops.ScenarioBase for further details and
+    custom methods.
     
     The following key features are included:
       - Operation mode
@@ -388,7 +390,6 @@ class Scenario (ops.Scenario):
         Boolean switch for env/agent visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
-    
     """
 
     C_TYPE      = 'ML-Scenario'
@@ -396,41 +397,32 @@ class Scenario (ops.Scenario):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
-                 p_mode=ops.Mode.C_MODE_SIM,       
+                 p_mode=Mode.C_MODE_SIM,       
                  p_ada:bool=True,               
                  p_cycle_limit=0,              
                  p_visualize=True,              
-                 p_logging=Log.C_LOG_ALL ):    
+                 p_logging=Log.C_LOG_ALL ):  
 
-        # 0 Intro
-        self._cycle_max     = sys.maxsize
-        self._cycle_id      = 0
-        self._visualize     = p_visualize
-        self.set_cycle_limit(p_cycle_limit)
+        self._ada = p_ada
 
+        super().__init__( p_mode=p_mode,
+                          p_cycle_limit=p_cycle_limit,
+                          p_auto_setup=True,
+                          p_visualize=p_visualize,
+                          p_logging=p_logging )  
 
-        # 1 Setup entire scenario
-        self._model = self._setup(p_mode=p_mode, p_ada=p_ada, p_logging=p_logging)
-        if self._model is None: 
-            raise ImplementationError('Please return your ML model in method self._setup()')
-
-        super().__init__(p_mode, p_logging)
-
-
-        # 2 Init timer
-        if self.get_mode() == Mode.C_MODE_SIM:
-            t_mode = Timer.C_MODE_VIRTUAL
-        else:
-            t_mode = Timer.C_MODE_REAL
-
-        self._cycle_len = self.get_latency()
-        self._timer     = Timer(t_mode, self._cycle_len, self._cycle_limit)
-
-
+     
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         super().switch_logging(p_logging)
         self._model.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def setup(self, p_mode, p_logging=Log.C_LOG_ALL):
+        self._model = self._setup(p_mode=p_mode, p_ada=self._ada, p_logging=p_logging)
+        if self._model is None: 
+            raise ImplementationError('Please return your ML model in custom method self._setup()')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -476,35 +468,6 @@ class Scenario (ops.Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_mode(self, p_mode):
-        super().set_mode(p_mode)
-        self._set_mode(p_mode)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_mode(self, p_mode):
-        """
-        Redefine this method to switch the scenario between simulation or real operation mode.
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_latency(self) -> timedelta:
-        """
-        Returns the latency of the scenario. To be implemented in child class.
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_cycle_limit(self, p_limit):
-        self._cycle_limit = p_limit
-
-
-## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=1):
         """
         Resets the scenario and especially the ML model inside. Internal random generators are seed 
@@ -517,160 +480,13 @@ class Scenario (ops.Scenario):
 
         """
 
-        # 0 Intro
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Scenario reset with seed', str(p_seed))
+        # 1 Standard reset procedure including custom reset
+        super().reset(p_seed=p_seed)
 
-        # 1 Internal ML model reset
+
+        # 2 Reset of internal ML model
         self._model.set_random_seed(p_seed)
         if self._visualize: self._model.init_plot()
-
-        # 2 Custom reset of further scenario-specific components
-        self._reset(p_seed)
-
-        # 3 Timer reset
-        self._timer.reset()
-
-        # 4 Cycle counter reset
-        self._cycle_id = 0
-
-
-## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed):
-        """
-        Custom method to reset further components of the scenario (not the ML model itself) and to 
-        set the given random seed value. See method reset() for further details.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def run_cycle(self):
-        """
-        Runs a single process cycle.
-
-        Returns
-        -------
-        success : bool
-            True on success. False otherwise.
-        error : bool
-            True on error. False otherwise.
-        timeout : bool
-            True on timeout. False otherwise.
-        cycle_limit : bool
-            True, if cycle limit has reached. False otherwise.
-        adapted : bool
-            True, if ml model adapted something in this cycle. False otherwise.
-        """
-
-        # 1 Run a single custom cycle
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Start of cycle', str(self._cycle_id))
-        success, error, adapted = self._run_cycle()
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': End of cycle', str(self._cycle_id), '\n')
-
-
-        # 2 Update visualization
-        if self._visualize:
-            self.update_plot()
-
-
-        # 3 Update cycle id and check for optional limit
-        if ( self._cycle_limit > 0 ) and ( self._cycle_id >= ( self._cycle_limit -1 ) ): 
-            limit = True
-        else:
-            self._cycle_id = ( self._cycle_id + 1 ) & self._cycle_max
-            limit = False
-
-
-        # 4 Wait for next cycle (real mode only)
-        if ( self._timer.finish_lap() == False ) and ( self._cycle_len is not None ):
-            self.log(self.C_LOG_TYPE_W, 'Process time', self._timer.get_time(), ': Process timed out !!!')
-            timeout = True
-        else:
-            timeout = False
-
-
-        # 5 Return result of custom cycle execution
-        return success, error, timeout, limit, adapted
-
-
-## -------------------------------------------------------------------------------------------------
-    def _run_cycle(self):
-        """
-        Custom implementation of a single process cycle. To be redefined.
-
-        Returns
-        -------
-        success : bool
-            True on success. False otherwise.
-        error : bool
-            True on error. False otherwise.
-        adapted : bool
-            True, if ml model adapted something in this cycle. False otherwise.
-
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_cycle_id(self):
-        """
-        Returns current cycle id.
-        """
-
-        return self._cycle_id
-
-
-## -------------------------------------------------------------------------------------------------
-    def run(self, 
-            p_term_on_success:bool=True,        
-            p_term_on_error:bool=True,          
-            p_term_on_timeout:bool=False ):    
-        """
-        Runs the scenario as a sequence of single process steps until a terminating event occures.
-
-        Parameters
-        ----------
-        p_term_on_success : bool
-            If True, the run terminates on success. Default = True.
-        p_term_on_error : bool
-            If True, the run terminates on error. Default = True.
-        p_term_on_timeout : bool
-            If True, the run terminates on timeout. Default = False.
-
-        Returns
-        -------
-        success : bool
-            True on success. False otherwise.
-        error : bool
-            True on error. False otherwise.
-        timeout : bool
-            True on timeout. False otherwise.
-        cycle_limit : bool
-            True, if cycle limit has reached. False otherwise.
-        adapted : bool
-            True, if ml model adapted something. False otherwise.
-        num_cycles: int
-            Number of cycles.
-
-        """
-
-        self._cycle_id  = 0
-        adapted         = False
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'Start of processing')
-
-        while True:
-            success, error, timeout, limit, adapted_cycle = self.run_cycle()
-            adapted = adapted or adapted_cycle
-            if p_term_on_success and success: break
-            if p_term_on_error and error: break
-            if p_term_on_timeout and timeout: break
-            if limit: break
-
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'End of processing')
-
-        return success, error, timeout, limit, adapted, self._cycle_id
 
 
 

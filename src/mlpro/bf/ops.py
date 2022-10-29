@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-28  0.0.0     DA       Creation 
+## -- 2022-10-29  1.0.0     DA       Implementation of classes Mode, ScenarioBase 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-10-28)
+Ver. 1.0.0 (2022-10-29)
 
 This module provides classes for operation.
 """
@@ -21,6 +22,7 @@ from matplotlib.figure import Figure
 from mlpro.bf.various import Log, LoadSave, Timer
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import *
+
 
 
 
@@ -56,8 +58,8 @@ class Mode (Log):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_mode, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)
-        self._mode = self.C_MODE_INITIAL
-        self.set_mode(p_mode)
+        if not p_mode in self.C_VALID_MODES: raise ParamError('Invalid mode')
+        self._mode = p_mode
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -91,9 +93,9 @@ class Mode (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Scenario (Mode, LoadSave, Plottable):
+class ScenarioBase (Mode, LoadSave, Plottable):
     """
-    Root class for scenarios that can be executed. To be inherited and specialized in higher layers.
+    Base class for executable scenarios in MLPro. To be inherited and specialized in higher layers.
     
     The following key features are included:
       - Operation mode
@@ -105,44 +107,63 @@ class Scenario (Mode, LoadSave, Plottable):
     ----------
     p_mode
         Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
-    p_cycle_len : timedelta
-        Cycle length. 
     p_cycle_limit : int
         Maximum number of cycles. Default = 0 (no limit).
+    p_auto_setup : bool
+        If True custom method setup() is called after initialization.
     p_visualize 
         Boolean switch for env/agent visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
     """
 
-    C_TYPE      = 'Scenario'
+    C_TYPE      = 'Scenario Base'
     C_NAME      = '????'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
                  p_mode,       
-                 p_cycle_len:timedelta,            
                  p_cycle_limit=0,  
-                 p_visualize=True,              
+                 p_auto_setup:bool = True,
+                 p_visualize:bool=True,              
                  p_logging=Log.C_LOG_ALL ):    
 
-        # 1 Intro
+        # 1 Initialization
+        Mode.__init__(self, p_mode, p_logging)
         self._cycle_max     = sys.maxsize
         self._cycle_id      = 0
-        self._cycle_len     = p_cycle_len
         self._visualize     = p_visualize
-        self.set_cycle_limit(p_cycle_limit)
+        self._cycle_limit   = p_cycle_limit
+        self._timer         = None
+
+        # 2 Optional automatic custom setup
+        if p_auto_setup: self.setup(p_mode=p_mode, p_logging=p_logging)
         
-        Mode.__init__(self, p_mode, p_logging)
 
-
-        # 2 Init timer
+## -------------------------------------------------------------------------------------------------
+    def _init_timer(self):
         if self.get_mode() == Mode.C_MODE_SIM:
             t_mode = Timer.C_MODE_VIRTUAL
         else:
             t_mode = Timer.C_MODE_REAL
 
-        self._timer     = Timer(t_mode, self._cycle_len, self._cycle_limit)
+        self._timer     = Timer(t_mode, self.get_latency(), self._cycle_limit)
+
+
+## -------------------------------------------------------------------------------------------------
+    def setup(self, p_mode, p_logging=Log.C_LOG_ALL):
+        """
+        Custom method to set up all components of the scenario.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+         """
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -158,6 +179,7 @@ class Scenario (Mode, LoadSave, Plottable):
 
         super().set_mode(p_mode)
         self._set_mode(p_mode)
+        self._timer = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -211,6 +233,7 @@ class Scenario (Mode, LoadSave, Plottable):
         """
 
         # 1 Intro
+        if self._timer is None: self._init_timer()
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Scenario reset with seed', str(p_seed))
 
         # 2 Custom reset of further scenario-specific components
@@ -256,6 +279,10 @@ class Scenario (Mode, LoadSave, Plottable):
         adapted : bool
             True, if something within the scenario has adapted something in this cycle. False otherwise.
         """
+
+        # 0 Check timer
+        if self._timer is None: self._init_timer()
+
 
         # 1 Run a single custom cycle
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Start of cycle', str(self._cycle_id))
@@ -350,6 +377,7 @@ class Scenario (Mode, LoadSave, Plottable):
 
         self._cycle_id  = 0
         adapted         = False
+        if self._timer is None: self._init_timer()
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'Start of processing')
 
         while True:
