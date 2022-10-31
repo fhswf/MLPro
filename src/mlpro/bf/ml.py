@@ -43,10 +43,11 @@
 ## -- 2022-10-10  1.6.0     DA       Class MLTask: new methods adapt_on_event() and _adapt_on_event()
 ## -- 2022-10-29  1.7.0     DA       Refactoring after introduction of module bf.ops
 ## -- 2022-10-29  1.7.1     DA       Classes MLTask, MLWorkflow removed
+## -- 2022-10-31  1.7.2     DA       Class Model: new parameter p_visualize
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.1 (2022-10-29)
+Ver. 1.7.2 (2022-10-31)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 """
@@ -195,9 +196,15 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_NONE     
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL, **p_par):  
+    def __init__( self, 
+                  p_buffer_size=0, 
+                  p_ada=True, 
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_par ):  
 
         EventManager.__init__(self, p_logging=p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
         self._adapted           = False
         self.switch_adaptivity(p_ada)
         self._hyperparam_space  = HyperParamSpace()
