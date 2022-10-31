@@ -23,7 +23,6 @@ This module provides various classes related to data plotting.
 """
 
 
-from multiprocessing.reduction import duplicate
 from operator import mod
 import numpy as np
 from matplotlib.figure import Figure
@@ -34,6 +33,7 @@ import statistics
 from mlpro.bf.exceptions import ImplementationError, ParamError
 from mlpro.bf.various import LoadSave
 from mlpro.bf.data import DataStoring
+
 
 
 
