@@ -11,10 +11,11 @@
 ## -- 2021-12-08  1.0.2     MRD      Add parameter to change the hidden layer of the policy
 ## -- 2022-05.30  1.0.3     DA       Refactoring
 ## -- 2022-10-13  1.0.4     SY       Refactoring 
+## -- 2022-11-01  1.0.5     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-10-13)
+Ver. 1.0.5 (2022-11-01)
 
 This module shows how to train a wrapped SB3 policy on MLPro's native Robothtm environment.
 
@@ -30,7 +31,7 @@ You will learn:
 
 
 import torch
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro

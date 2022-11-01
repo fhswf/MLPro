@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-28  0.0.0     DA       Creation 
 ## -- 2022-10-29  1.0.0     DA       Implementation of classes Mode, ScenarioBase 
+## -- 2022-10-31  1.1.0     DA       Class ScenarioBase: plot functionality added 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-29)
+Ver. 1.1.0 (2022-10-31)
 
 This module provides classes for operation.
 """
@@ -111,7 +112,7 @@ class ScenarioBase (Mode, LoadSave, Plottable):
         Maximum number of cycles. Default = 0 (no limit).
     p_auto_setup : bool
         If True custom method setup() is called after initialization.
-    p_visualize 
+    p_visualize : bool
         Boolean switch for env/agent visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
@@ -130,6 +131,7 @@ class ScenarioBase (Mode, LoadSave, Plottable):
 
         # 1 Initialization
         Mode.__init__(self, p_mode, p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
         self._cycle_max     = sys.maxsize
         self._cycle_id      = 0
         self._visualize     = p_visualize

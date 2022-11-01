@@ -18,10 +18,11 @@
 ## -- 2021-12-07  1.3.1     DA       Refactoring 
 ## -- 2022-02-25  1.3.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-10-13  1.3.3     SY       Refactoring 
+## -- 2022-11-01  1.3.4     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2022-10-13)
+Ver. 1.3.4 (2022-11-01)
 
 This module shows how to train an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -40,7 +41,7 @@ You will learn:
 
 
 
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 import random
 from pathlib import Path
