@@ -11,26 +11,6 @@ Various
    :show-inheritance:
 
    
-Mathematics
------------
-
-.. image:: images/bf/MLPro-BF-Math_class_diagram.drawio.png
-.. automodule:: mlpro.bf.math.basics
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-Normalizers
------------
-
-.. image:: images/bf/MLPro-BF-Math-Normalizers_class_diagram.drawio.png
-.. automodule:: mlpro.bf.math.normalizers
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-   
 Data Management
 ---------------
 
@@ -80,6 +60,47 @@ Multitasking
    :show-inheritance:
 
 
+Operation
+------------
+
+.. image:: images/bf/MLPro-BF-OPS_class_diagram.drawio.png
+.. automodule:: mlpro.bf.ops
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Mathematics
+-----------
+
+.. image:: images/bf/MLPro-BF-Math_class_diagram.drawio.png
+.. automodule:: mlpro.bf.math.basics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Normalizers
+-----------
+
+.. image:: images/bf/MLPro-BF-Math-Normalizers_class_diagram.drawio.png
+.. automodule:: mlpro.bf.math.normalizers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+   
+Stream Providers and Streams
+----------------------------
+
+.. image:: images/bf/MLPro-BF-Streams_class_diagram.drawio.png
+
+.. automodule:: mlpro.bf.streams.models
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 Machine Learning
 ----------------
 
@@ -89,18 +110,6 @@ Machine Learning
    :undoc-members:
    :show-inheritance:
    
-
-Stream Providers and Streams
-----------------------------
-
-.. image:: images/bf/MLPro-BF-Streams_class_diagram.drawio.png
-
-.. automodule:: mlpro.bf.streams
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 
 User Interaction
 ----------------

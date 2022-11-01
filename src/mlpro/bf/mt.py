@@ -12,10 +12,11 @@
 ## -- 2022-10-06  1.0.1     DA       Class Task: event definition as string
 ## -- 2022-10-09  1.1.0     DA       Class Shared: systematics for results
 ## -- 2022-10-12  1.1.1     DA       Replaced package multiprocessing (pickle) by multiprocess (dill)
+## -- 2022-10-31  1.2.0     DA       Class Task, Workflow: plot functionality added
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-10-12)
+Ver. 1.2.0 (2022-10-31)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -33,11 +34,12 @@ from time import sleep
 import uuid
 import threading as mt
 import multiprocess as mp
+from matplotlib.figure import Figure
 from multiprocess.managers import BaseManager
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.events import EventManager, Event
-
+from mlpro.bf.plot import PlotSettings, Plottable
 
 
 
@@ -435,7 +437,7 @@ class Async (Range, Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Task (Async, EventManager): 
+class Task (Async, EventManager, Plottable): 
     """
     Template class for a task, that can run things - and even itself - asynchronously in a thread
     or process. Tasks can run standalone or as part of a workflow (see class Workflow). The integrated
@@ -454,6 +456,8 @@ class Task (Async, EventManager):
         actions.    
     p_class_shared
         Optional class for a shared object (class Shared or a child class of Shared)
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : dict
@@ -474,6 +478,7 @@ class Task (Async, EventManager):
                   p_range_max:int=Async.C_RANGE_PROCESS, 
                   p_autorun=C_AUTORUN_NONE,
                   p_class_shared=None, 
+                  p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
 
@@ -490,6 +495,7 @@ class Task (Async, EventManager):
 
         Async.__init__(self, p_range_max=p_range_max, p_class_shared=p_class_shared, p_logging=p_logging)
         EventManager.__init__(self, p_logging=p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
 
         self._autorun(p_autorun=p_autorun, p_kwargs=self._kwargs)
 
@@ -574,6 +580,8 @@ class Task (Async, EventManager):
         if self._so is not None: 
             self._so.checkout(p_tid=self.get_tid())
             self.log(Log.C_LOG_TYPE_I, 'Checked out from shared object')
+
+        self.update_plot(p_kwargs=p_kwargs)
 
         self.log(Log.C_LOG_TYPE_S, 'Stopped')
 
@@ -675,6 +683,8 @@ class Workflow (Task):
         Range of asynchonicity. See class Range. Default is Range.C_RANGE_THREAD.
     p_class_shared
         Optional class for a shared object (class Shared or a child class of Shared)
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : dict
@@ -684,11 +694,14 @@ class Workflow (Task):
     C_TYPE          = 'Workflow'
     C_NAME          = ''
 
+    C_PLOT_ACTIVE   = True
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name:str=None,
                   p_range_max=Async.C_RANGE_THREAD, 
                   p_class_shared=None, 
+                  p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
@@ -704,6 +717,7 @@ class Workflow (Task):
                           p_range_max=p_range_max,
                           p_autorun=self.C_AUTORUN_NONE,
                           p_class_shared=p_class_shared,
+                          p_visualize=p_visualize,
                           p_logging=p_logging,
                           p_kwargs=p_kwargs )
 
@@ -779,6 +793,75 @@ class Workflow (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def init_plot( self, 
+                   p_figure:Figure=None, 
+                   p_plot_settings:list=[], 
+                   p_plot_depth:int=0, 
+                   p_detail_level:int=0, 
+                   p_step_rate:int=1, 
+                   **p_kwargs):
+        """
+        Initializes the plot of a workflow. The method creates a host figure for all tasks if no 
+        external host figure is parameterized. The sub-plots of the tasks are autmatically arranged
+        within the host figure.
+
+        See method init_plot() of class mlpro.bf.plot.Plottable for further details.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure, optional
+            Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
+        p_plot_settings : list
+            Optional list of objects of class PlotSettings. All subplots that are addresses in the list
+            are plotted in parallel. If the list is empty the default view is plotted (see attribute 
+            C_PLOT_DEFAULT_VIEW).
+        p_plot_depth : int = 0
+            Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
+            depth is unlimited.
+        p_detail_level : int = 0
+            Optional detail level.
+        p_step_rate : int = 1
+            Decides after how many calls of the update_plot() method the custom methods 
+            _update_plot() make an output.
+        **p_kwargs : dict
+            Further optional plot parameters.    
+        """
+
+        super().init_plot( p_figure=p_figure, 
+                           p_plot_settings=p_plot_settings, 
+                           p_plot_depth=p_plot_depth, 
+                           p_detail_level=p_detail_level, 
+                           p_step_rate=p_step_rate, 
+                           p_kwargs=p_kwargs )
+
+        task:Task
+        task_pos_x  = 0
+        task_pos_y  = 0
+
+        for task in self._tasks:
+            task_plot_settings = []
+            for ps in self._plot_settings:
+                if task.C_PLOT_STANDALONE:
+                    task_axes   = None
+                    task_pos_x  += 1
+                else:
+                    task_axes   = ps.axes
+
+                task_plot_settings.append( PlotSettings( p_view=ps.view,
+                                                         p_axes=task_axes,
+                                                         p_pos_x=task_pos_x,
+                                                         p_pos_y=task_pos_y,
+                                                         p_kwargs=p_kwargs ) )
+                
+            task.init_plot( p_figure=self._figure,
+                            p_plot_settings=task_plot_settings,
+                            p_plot_depth=p_plot_depth,
+                            p_detail_level=p_detail_level,
+                            p_step_rate=p_step_rate,
+                            p_kwargs=p_kwargs )
+                           
+
+    ## -------------------------------------------------------------------------------------------------
     def run(self, p_range:int=None, p_wait:bool=False, **p_kwargs):
         """
         Executes all tasks of the workflow. At the end event C_EVENT_FINISHED is raised to start 
@@ -787,8 +870,9 @@ class Workflow (Task):
         Parameters
         ----------
         p_range : int
-            Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
-            range defined during instantiation is taken. Oterwise the minimum range of both is taken.
+            Optional deviating range of asynchonicity. See class Range. Default is None what means that 
+            the maximum range defined during instantiation is taken. Oterwise the minimum range of both 
+            is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
         p_kwargs : dict
