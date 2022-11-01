@@ -19,7 +19,7 @@ This module shows how to create and interprete reward objects in own projects.
 
 
 from mlpro.bf.various import Log
-from mlpro.rl.models import Reward
+from mlpro.rl import Reward
 
 
 

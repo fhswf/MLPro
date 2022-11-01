@@ -13,10 +13,11 @@
 ## -- 2022-05-19  1.2.2     SY       Utilize RandomGenerator
 ## -- 2022-10-13  1.2.3     SY       Refactoring 
 ## -- 2022-10-19  1.2.4     DA       Renamed 
+## -- 2022-11-01  1.2.5     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2022-10-19)
+Ver. 1.2.5 (2022-11-01)
 
 This module demonstrates advanced training with evaluation and stagnation detection.
 
@@ -29,9 +30,8 @@ You will learn:
 """
 
 
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.rl.pool.envs.multicartpole import MultiCartPole
-import random
 from pathlib import Path
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 

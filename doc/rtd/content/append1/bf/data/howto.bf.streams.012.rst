@@ -9,7 +9,7 @@ Prerequisites
 -------------
 
 Please install the following packages to run this examples properly:
-    - `river <https://pypi.org/project/sklearn/>`_
+    - `Scikit-Learn <https://pypi.org/project/sklearn/>`_
     - `Numpy <https://pypi.org/project/numpy/>`_
 
 Executable code
