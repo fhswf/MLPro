@@ -13,17 +13,19 @@
 ## -- 2022-07-20  1.0.3     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-13  1.0.4     SY       Refactoring 
 ## -- 2022-10-17  1.0.5     SY       Debugging 
+## -- 2022-11-01  1.0.6     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-10-17)
+Ver. 1.0.6 (2022-11-01)
 
 This module shows how to train a single agent and load it again to do some extra cycles.
 """
 
+
 import gym
 from stable_baselines3 import PPO
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path

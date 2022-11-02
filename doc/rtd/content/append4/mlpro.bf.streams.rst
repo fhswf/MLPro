@@ -1,6 +1,14 @@
 mlpro.bf.streams package
 ========================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   mlpro.bf.streams.tasks
+
 Submodules
 ----------
 

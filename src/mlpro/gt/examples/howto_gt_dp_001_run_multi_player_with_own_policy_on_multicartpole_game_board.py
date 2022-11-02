@@ -13,10 +13,12 @@
 ## -- 2021-11-15  1.1.0     DA       Refactoring 
 ## -- 2022-02-25  1.1.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-10-13  1.1.2     SY       Refactoring 
+## -- 2022-11-01  1.1.3     DA       Refactoring 
+## -- 2022-11-02  1.1.4     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2022-10-13)
+Ver. 1.1.4 (2022-11-02)
 
 This module shows how to run an own multi-player with the enhanced multi-action game board 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -32,8 +34,8 @@ You will learn:
 """
 
 
-from mlpro.rl.models import *
-from mlpro.gt.models import *
+from mlpro.rl import *
+from mlpro.gt import *
 from mlpro.gt.pool.boards.multicartpole import MultiCartPolePGT
 import random
 import numpy as np
@@ -63,7 +65,7 @@ class MyPolicy (Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem:SARSElement) -> bool:
         # 1.4 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 

@@ -7,7 +7,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   mlpro.oa.pool.steps
+   mlpro.oa.pool.tasks
 
 Module contents
 ---------------

@@ -13,25 +13,28 @@
 ## -- 2022-01-18  2.0.0     MRD      Add Off Policy Algorithm into the test
 ## -- 2022-01-21  2.0.1     MRD      Include RobotHTM as the continues action envrionment
 ## -- 2022-07-21  2.0.2     SY       Update due to the latest introduction of Gym 0.25
+## -- 2022-11-02  2.0.3     DA       Refactoring: methods adapt(), _adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.2 (2022-07-21)
+Ver. 2.0.3 (2022-11-02)
 
 Unit test classes for environment.
 """
+
 
 from numpy import empty
 import pytest
 import gym
 import torch
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro, WrEnvMLPro2GYM
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
 from stable_baselines3.common.on_policy_algorithm import OnPolicyAlgorithm
 from stable_baselines3.common.callbacks import BaseCallback
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -106,8 +109,8 @@ def test_sb3_policy_wrapper(env_cls):
                                      p_logging=p_logging)
                     self.loss_cnt = []
 
-                def _adapt_off_policy(self, *p_args) -> bool:
-                    if super()._adapt_off_policy(*p_args):
+                def _adapt_off_policy(self, p_sars_elem:SARSElement) -> bool:
+                    if super()._adapt_off_policy(p_sars_elem=p_sars_elem):
                         if isinstance(self.sb3, DQN):
                             self.loss_cnt.append(self.sb3.logger.name_to_value["train/loss"])
                         elif isinstance(self.sb3, DDPG):
@@ -117,8 +120,8 @@ def test_sb3_policy_wrapper(env_cls):
                         return True
                     return False
 
-                def _adapt_on_policy(self, *p_args) -> bool:
-                    if super()._adapt_on_policy(*p_args):
+                def _adapt_on_policy(self, p_sars_elem:SARSElement) -> bool:
+                    if super()._adapt_on_policy(p_sars_elem=p_sars_elem):
                         # Log the Loss
                         if isinstance(self.sb3, PPO):
                             self.loss_cnt.append(self.sb3.logger.name_to_value["train/policy_gradient_loss"])

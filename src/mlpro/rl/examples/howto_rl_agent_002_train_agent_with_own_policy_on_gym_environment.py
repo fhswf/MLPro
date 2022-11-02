@@ -20,10 +20,12 @@
 ## -- 2021-12-07  1.3.2     DA       Refactoring 
 ## -- 2022-07-20  1.3.3     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-13  1.3.4     SY       Refactoring 
+## -- 2022-11-01  1.3.5     DA       Refactoring 
+## -- 2022-11-02  1.3.6     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2022-10-13)
+Ver. 1.3.6 (2022-11-02)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using
 MLPro framework.
@@ -45,7 +47,7 @@ You will learn:
 
 from sys import path
 from mlpro.bf.math import *
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import gym
 import random
@@ -75,7 +77,7 @@ class MyPolicy (Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem:SARSElement) -> bool:
         # 1.4 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_I, 'Sorry, I am a stupid agent...')
 

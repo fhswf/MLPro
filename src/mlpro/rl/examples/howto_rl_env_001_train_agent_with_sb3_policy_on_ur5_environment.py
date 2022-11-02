@@ -9,10 +9,11 @@
 ## -- 2021-11-18  1.0.0     MRD      Initial Release
 ## -- 2021-12-07  1.0.1     DA       Refactoring
 ## -- 2022-10-13  1.0.2     SY       Refactoring 
+## -- 2022-11-01  1.0.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-10-13)
+Ver. 1.0.3 (2022-11-01)
 
 This module shows how to use SB3 wrapper to train UR5 robot.
 
@@ -26,7 +27,8 @@ You will learn:
     
 """
 
-from mlpro.rl.models import *
+
+from mlpro.rl import *
 from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
 from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro

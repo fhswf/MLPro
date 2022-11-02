@@ -11,10 +11,11 @@
 ## -- 2022-07-20  1.0.2     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-13  1.0.3     SY       Refactoring 
 ## -- 2022-10-19  1.0.4     DA       Renamed 
-### -------------------------------------------------------------------------------------------------
+## -- 2022-11-01  1.0.5     DA       Refactoring 
+## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-10-19)
+Ver. 1.0.5 (2022-11-01)
 
 This module shows how to train with SB3 Wrapper and stagnation detection
 
@@ -26,9 +27,10 @@ You will learn:
     
 """
 
+
 import gym
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path

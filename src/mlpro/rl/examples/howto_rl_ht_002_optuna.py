@@ -10,10 +10,11 @@
 ## -- 2022-04-05  1.0.1     SY       Add tuning recap visualization
 ## -- 2022-10-12  1.0.2     DA       Renaming and minor fixes
 ## -- 2022-10-17  1.0.3     SY       Refactoring 
+## -- 2022-11-02  1.0.4     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-10-17)
+Ver. 1.0.4 (2022-11-02)
 
 This module demonstrates how to utilize wrapper class for Optuna in RL context.
 
@@ -30,7 +31,7 @@ You will learn:
 
 from mlpro.wrappers.optuna import *
 from mlpro.rl.pool.envs.bglp import BGLP
-from mlpro.rl.models import *
+from mlpro.rl import *
 import random
 from pathlib import Path
 
@@ -96,7 +97,7 @@ class myPolicy (Policy):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem:SARSElement) -> bool:
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
         return False
 

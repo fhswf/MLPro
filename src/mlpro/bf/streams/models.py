@@ -14,21 +14,27 @@
 ## -- 2022-06-18  0.1.4     LSB      Logging of stream list based on p_display_list parameter
 ## -- 2022-06-19  0.1.5     DA       - Class Stream: internal use of self.C_NAME instead of self._name
 ## --                                - Check/completion of doc strings
-## -- 2022-06-25  0.2.5     LSB      New Label class with modified instance class
+## -- 2022-06-25  0.2.0     LSB      New Label class with modified instance class
 ## -- 2022-10-24  0.3.0     DA       Class Instance: new method copy()
+## -- 2022-10-25  0.4.0     DA       New classes StreamTask, StreamWorkfllow, StreamScenario
+## -- 2022-10-29  0.4.1     DA       Refactoring after introduction of module bf.ops
+## -- 2022-10-31  0.4.2     DA       Refactoring after changes on bf.mt
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2022-10-24)
+Ver. 0.4.2 (2022-10-31)
 
-Model classes for stream providers and streams. 
+This module provides classes for standardized stream processing. 
 """
 
 
 from mlpro.bf.various import *
-from mlpro.bf.ml import *
-from mlpro.bf.math import *
+from mlpro.bf.ops import Mode, ScenarioBase
+from mlpro.bf.plot import PlotSettings
+from mlpro.bf.math import Dimension, Element
+from mlpro.bf.mt import Task, Workflow, Shared
 from datetime import datetime
+from matplotlib.figure import Figure
 
 
 
@@ -102,6 +108,7 @@ class Instance:
                                     p_kwargs=self._kwargs )
         duplicate._time_stamp = self._time_stamp
         return duplicate
+
 
 
 
@@ -348,3 +355,618 @@ class StreamProvider (Log, ScientificObject):
         """
 
         raise NotImplementedError 
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamTask (Task):
+    """
+    Template class for stream-based tasks.
+
+    Parameters
+    ----------
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_duplicate_data : bool     
+        If True the incoming data are copied before processing. Otherwise the origin incoming data
+        are modified.        
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
+    """
+
+    C_TYPE              = 'Stream-Task'
+
+    C_PLOT_ACTIVE       = True
+    C_PLOT_STANDALONE   = True
+    C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_name: str = None, 
+                  p_range_max=Task.C_RANGE_THREAD, 
+                  p_duplicate_data:bool=False,
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
+
+        super().__init__( p_name=p_name, 
+                          p_range_max=p_range_max, 
+                          p_autorun=Task.C_AUTORUN_NONE, 
+                          p_class_shared=None, 
+                          p_visualize=p_visualize,
+                          p_logging=p_logging, 
+                          **p_kwargs )
+
+        self._duplicate_data = p_duplicate_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def run(self, p_inst_new:list, p_inst_del:list, p_range:int = None, p_wait: bool = False):
+        """
+        Executes the task specific actions implemented in custom method _run(). At the end event
+        C_EVENT_FINISHED is raised to start subsequent actions (p_wait=True).
+
+        Parameters
+        ----------
+        p_inst_new : list
+            List of new stream instances to be processed.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_range : int
+            Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
+            range defined during instantiation is taken. Oterwise the minimum range of both is taken.
+        p_wait : bool
+            If True, the method waits until all (a)synchronous tasks are finished.
+        p_kwargs : dict
+            Further parameters handed over to custom method _run().
+        """
+
+        if self._duplicate_data:
+            inst_new = [ inst.copy() for inst in p_inst_new ] 
+            inst_del = [ inst.copy() for inst in p_inst_del ]
+        else:
+            inst_new = p_inst_new
+            inst_del = p_inst_del
+
+        super().run(p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst_new:list, p_inst_del:list):
+        """
+        Custom method that is called by method run(). 
+
+        Parameters
+        ----------
+        p_inst_new : list
+            List of new stream instances to be processed.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
+
+        Parameters
+        ----------
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        return super().update_plot(p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamWorkflow (Workflow):
+    """
+    Workflow for stream processing. See class bf.mt.Workflow for further details.
+
+    Parameters
+    ----------
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Range of asynchonicity. See class Range. Default is Range.C_RANGE_THREAD.
+    p_class_shared
+        Optional class for a shared object (class Shared or a child class of Shared)
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters handed over to every task within.
+    """
+
+    C_TYPE              = 'Stream-Workflow'
+    C_PLOT_ACTIVE       = True
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_name: str = None, 
+                  p_range_max=Workflow.C_RANGE_THREAD, 
+                  p_class_shared=Shared, 
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_kwargs ):
+
+        super.__init__( p_name=p_name, 
+                           p_range_max=p_range_max, 
+                           p_class_shared=p_class_shared, 
+                           p_visualize=p_visualize,
+                           p_logging=p_logging, 
+                           **p_kwargs )
+
+
+## -------------------------------------------------------------------------------------------------
+    def run( self, p_inst:Instance, p_range: int = None, p_wait: bool = False ):
+        """
+        Runs all stream tasks according to their predecessor relations.
+
+        Parameters
+        ----------
+        p_inst : Instance
+            Single stream instance to process.
+        p_range : int
+            Optional deviating range of asynchonicity. See class Range. Default is None what means that 
+            the maximum range defined during instantiation is taken. Oterwise the minimum range of both 
+            is taken.
+        p_wait : bool
+            If True, the method waits until all (a)synchronous tasks are finished.
+        """
+
+        super().run(p_range=p_range, p_wait=p_wait, p_inst=p_inst)                          
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
+
+        Parameters
+        ----------
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        return super().update_plot(p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
+        """
+
+        pass
+
+
+
+
+
+# -------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------------------
+class StreamScenario (ScenarioBase): 
+    """
+    Template class for stream based scenarios.
+
+    Parameters
+    ----------
+    p_mode
+        Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+    p_cycle_limit : int
+        Maximum number of cycles. Default = 0 (no limit).
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+    """
+    
+    C_TYPE              = 'Stream-Scenario'
+
+    C_PLOT_ACTIVE       = True
+
+# -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_mode, 
+                  p_cycle_limit=0, 
+                  p_visualize:bool=False, 
+                  p_logging=Log.C_LOG_ALL ):
+
+        self._stream : Stream           = None
+        self._workflow : StreamWorkflow = None
+
+        super().__init__( p_mode, 
+                          p_cycle_limit=p_cycle_limit, 
+                          p_auto_setup=True, 
+                          p_visualize=p_visualize, 
+                          p_logging=p_logging )
+
+
+# -------------------------------------------------------------------------------------------------
+    def setup(self, p_mode, p_logging=Log.C_LOG_ALL):
+        """
+        Specialized method to set up a stream scenario. It is automatically called by the constructor
+        and calls in turn the custom method _setup().
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+        """
+
+        self._stream, self._workflow = self._setup(p_mode=p_mode, p_logging=Log.C_LOG_ALL)
+
+
+# -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_logging):
+        """
+        Custom method to set up a stream scenario consisting of a stream and a processing stream
+        worflow.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+
+        Returns
+        -------
+        stream : Stream
+            A stream object.
+        workflow : StreamWorkflow
+            A stream workflow object.
+        """
+
+        raise NotImplementedError
+
+
+# -------------------------------------------------------------------------------------------------
+    def _set_mode(self, p_mode):
+        self._stream.set_mode(p_mode=p_mode)
+
+
+# -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed):
+        self._stream.reset(p_seed=p_seed)
+
+
+# -------------------------------------------------------------------------------------------------
+    def _run_cycle(self):
+        """
+        Gets next instance from the stream and lets process it by the stream workflow.
+
+        Returns
+        -------
+        success : bool
+            True on success. False otherwise.
+        error : bool
+            True on error. False otherwise.
+        adapted : bool
+            True, if something within the scenario has adapted something in this cycle. False otherwise.
+        """
+
+        self._workflow.run( p_inst=self._stream.get_next() )
+        return True, False, False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_figure(self) -> Figure:
+        """
+        Custom method to initialize a suitable standalone Matplotlib figure.
+
+        Returns
+        -------
+        figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s)
+        """
+
+        return Figure()            
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure:Figure, p_settings:PlotSettings):
+        """
+        Custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
+        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
+        created in the given figure and stored in p_settings.axes.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings
+            Object with further plot settings.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure:Figure, p_settings:PlotSettings):
+        """
+        Custom method to initialize a 3D plot. If attribute p_settings.axes is not None the 
+        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
+        created in the given figure and stored in p_settings.axes.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings
+            Object with further plot settings.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure:Figure, p_settings:PlotSettings):
+        """
+        Custom method to initialize a nD plot. If attribute p_settings.axes is not None the 
+        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
+        created in the given figure and stored in p_settings.axes.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings
+            Object with further plot settings.
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings:PlotSettings, **p_kwargs):
+        """
+        Custom method to update the 2d plot. The related MatPlotLib Axes object is stored in p_settings.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        **p_kwargs 
+            Implementation-specific data and parameters.             
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings:PlotSettings, **p_kwargs):
+        """
+        Custom method to update the 3d plot. The related MatPlotLib Axes object is stored in p_settings.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        **p_kwargs 
+            Implementation-specific data and parameters.             
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings:PlotSettings, **p_kwargs):
+        """
+        Custom method to update the nd plot. The related MatPlotLib Axes object is stored in p_settings.
+
+        Parameters
+        ----------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        **p_kwargs 
+            Implementation-specific data and parameters.             
+        """
+
+        pass
