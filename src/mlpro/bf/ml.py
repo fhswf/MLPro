@@ -46,6 +46,8 @@
 ## -- 2022-10-31  1.7.2     DA       Class Model: new parameter p_visualize
 ## -- 2022-11-02  1.8.0     DA       - Class Model: changed parameters of method adapt() from tuple
 ## --                                  to dictionary
+## --                                - Classes HyperParam, HyperParamTuple: replaced callback mechanism
+## --                                  by event handling
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -73,17 +75,7 @@ class HyperParam (Dimension):
     Hyperparameter definition class. See class Dimension for further descriptions.
     """
 
-## -------------------------------------------------------------------------------------------------
-    def register_callback(self, p_cb):
-        self._cb = p_cb
-
-
-## -------------------------------------------------------------------------------------------------
-    def callback_on_change(self, p_value):
-        try:
-            self._cb(p_value)
-        except:
-            pass
+    C_EVENT_VALUE_CHANGED   = 'VALUE_CHANGED'
 
 
 
@@ -112,7 +104,11 @@ class HyperParamTuple (Element):
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
         super().set_value(p_dim_id, p_value)
-        self._set.get_dim(p_dim_id).callback_on_change(p_value)
+
+        # Event C_EVENT_VALUE_CHANGED of the related dimensionis raised for the related
+        dim_obj   = self._set.get_dim(p_dim_id)
+        event_obj = Event( p_raising_object=dim_obj, p_value=p_value)
+        dim_obj._raise_event(p_event_id=HyperParam.C_EVENT_VALUE_CHANGED, p_event_object=event_obj)
 
 
 
