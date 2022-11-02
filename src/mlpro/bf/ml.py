@@ -168,7 +168,7 @@ class HyperParamDispatcher (HyperParamTuple):
 ## -------------------------------------------------------------------------------------------------
 class Model (EventManager, LoadSave, Plottable, ScientificObject):
     """
-    Fundamental template class for adaptive ML models. Supports especially
+    Fundamental template class for adaptive ML models. Supports in particular
       - Adaptivity
       - Data buffering
       - Hyperparameter management
@@ -181,11 +181,12 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         Initial size of internal data buffer. Defaut = 0 (no buffering).
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_par : Dict
-        Futher model specific parameters (to be defined in chhild class).
-
+        Further model specific hyperparameters (to be defined in chhild class).
     """
 
     C_TYPE              = 'Model'
@@ -199,8 +200,8 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_buffer_size=0, 
-                  p_ada=True, 
+                  p_buffer_size:int=0, 
+                  p_ada:bool=True, 
                   p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL, 
                   **p_par ):  
@@ -231,8 +232,7 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         Parameters
         ----------
         p_par : Dict
-            Futher model specific parameters, that are passed through constructor.
-
+            Further model specific hyperparameters, that are passed through constructor.
         """
 
         pass
@@ -314,7 +314,7 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_I, 'Adaptation started')
-        adapted = self._adapt(*p_args)
+        adapted = self._adapt(**p_kwargs)
         self._set_adapted(adapted)
         return adapted
         
@@ -329,7 +329,8 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         Parameters
         ----------
         p_kwargs : dict
-            All parameters that are needed for the adaption. Depends on the specific higher context.
+            All parameters that are needed for the adaption. Please replace by concrete parameter
+            definitions that meet the needs of your algorithm.
 
         Returns
         -------

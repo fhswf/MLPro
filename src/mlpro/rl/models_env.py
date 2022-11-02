@@ -35,15 +35,16 @@
 ## --                                - Same issue on simulate_reaction method of AFctSTrans class
 ## -- 2022-11-01  1.5.0     DA       - Classes EnvBase, Environment, EnvModel: new param p_visualize
 ## --                                - Cleaned the code a bit
+## -- 2022-11-02  1.6.0     DA       Refactoring: methods adapt(), _adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-11-01)
+Ver. 1.6.0 (2022-11-02)
 
 This module provides model classes for environments and environment models.
 """
 
-from mlpro.sl.models import AdaptiveFunction
+from mlpro.sl import AdaptiveFunction
 from mlpro.rl.models_sar import *
 
 
@@ -51,7 +52,7 @@ from mlpro.rl.models_sar import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctBase(Model):
+class AFctBase (Model):
     """
     Base class for all special adaptive functions (state transition, reward, success, broken). 
 
@@ -80,7 +81,7 @@ class AFctBase(Model):
         Boolean switch for adaptivity. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_par : Dict
+    p_kwargs : Dict
         Further model specific parameters (to be specified in child class).
 
     Attributes
@@ -103,8 +104,8 @@ class AFctBase(Model):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_afct_cls,
-                 p_state_space: MSpace,
-                 p_action_space: MSpace,
+                 p_state_space:MSpace,
+                 p_action_space:MSpace,
                  p_input_space_cls=ESpace,
                  p_output_space_cls=ESpace,
                  p_output_elem_cls=Element,
@@ -112,7 +113,7 @@ class AFctBase(Model):
                  p_buffer_size=0,
                  p_ada=True,
                  p_logging=Log.C_LOG_ALL,
-                 **p_par):
+                 **p_kwargs):
 
         self._state_space = p_state_space
         self._action_space = p_action_space
@@ -129,7 +130,7 @@ class AFctBase(Model):
                                     p_buffer_size=p_buffer_size,
                                     p_ada=p_ada,
                                     p_logging=p_logging,
-                                    **p_par)
+                                    **p_kwargs)
         except:
             raise ParamError('Class ' + str(p_afct_cls) + ' is not compatible to class AdaptiveFunction')
 
@@ -233,7 +234,7 @@ class AFctBase(Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctSTrans(AFctBase):
+class AFctSTrans (AFctBase):
 
     C_TYPE = 'AFct STrans'
 
@@ -291,7 +292,7 @@ class AFctSTrans(AFctBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state: State, p_action: Action, p_state_new: State) -> bool:
+    def _adapt(self, p_state:State, p_action:Action, p_state_new:State) -> bool:
         """
         Triggers adaptation of the embedded adaptive function.
 
@@ -318,7 +319,7 @@ class AFctSTrans(AFctBase):
         input = Element(self._input_space)
         input.set_values(input_values)
 
-        return self._afct.adapt(input, p_state_new)
+        return self._afct.adapt(p_input=input, p_output=p_state_new)
 
 
 
@@ -361,7 +362,7 @@ class AFctReward(AFctBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state: State, p_state_new: State, p_reward: Reward) -> bool:
+    def _adapt(self, p_state:State, p_state_new:State, p_reward:Reward) -> bool:
         """
         Triggers adaptation of the embedded adaptive function.
 
@@ -376,7 +377,7 @@ class AFctReward(AFctBase):
 
         Returns
         -------
-        bool
+        adapted: bool
             True, if something was adapted. False otherwise.
         """
 
@@ -392,7 +393,7 @@ class AFctReward(AFctBase):
         output.set_value(ids_[0], p_reward.get_overall_reward())
 
         # 3 Trigger adaptation of embedded adaptive function
-        return self._afct.adapt(input, output)
+        return self._afct.adapt(p_input=input, p_output=output)
 
 
 
@@ -400,7 +401,7 @@ class AFctReward(AFctBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctSuccess(AFctBase):
+class AFctSuccess (AFctBase):
 
     C_TYPE = 'AFct Success'
 
@@ -427,7 +428,7 @@ class AFctSuccess(AFctBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state: State) -> bool:
+    def _adapt(self, p_state:State) -> bool:
         output = Element(self._output_space)
         ids_ = output.get_dim_ids()
         if p_state.get_success():
@@ -435,7 +436,7 @@ class AFctSuccess(AFctBase):
         else:
             output.set_value(ids_[0], 0)
 
-        return self._afct.adapt(p_state, output)
+        return self._afct.adapt(p_input=p_state, p_output=output)
 
 
 
@@ -448,8 +449,11 @@ class AFctBroken(AFctBase):
     C_TYPE = 'AFct Broken'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
-                      p_output_space: MSpace):
+    def _setup_spaces( self, 
+                       p_state_space:MSpace, 
+                       p_action_space:MSpace, 
+                       p_input_space:MSpace,
+                       p_output_space: MSpace ):
 
         # 1 Setup input space
         p_input_space.append(p_state_space)
@@ -461,7 +465,7 @@ class AFctBroken(AFctBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: State) -> bool:
+    def compute_broken(self, p_state:State) -> bool:
         output = self._afct.map(p_state)
 
         if output.get_values()[0] >= 0.5:
@@ -470,7 +474,7 @@ class AFctBroken(AFctBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state: State) -> bool:
+    def _adapt(self, p_state:State) -> bool:
         output = Element(self._output_space)
         ids_ = output.get_dim_ids()
         if p_state.get_success():
@@ -478,7 +482,7 @@ class AFctBroken(AFctBase):
         else:
             output.set_value(ids_[0], 0)
 
-        return self._afct.adapt(p_state, output)
+        return self._afct.adapt(p_input=p_state, p_output=output)
 
 
 
@@ -486,7 +490,7 @@ class AFctBroken(AFctBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, ScientificObject):
+class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, ScientificObject):
     """
     Base class for all environment classes. It defines the interface and elementary properties for
     an environment in the context of reinforcement learning.
@@ -542,14 +546,14 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
     C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_NONE
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_latency:timedelta = None,
-                 p_afct_strans:AFctSTrans = None,
-                 p_afct_reward:AFctReward = None,
-                 p_afct_success:AFctSuccess = None,
-                 p_afct_broken:AFctBroken = None,
-                 p_visualize:bool=False,
-                 p_logging=Log.C_LOG_ALL):
+    def __init__( self,
+                  p_latency:timedelta = None,
+                  p_afct_strans:AFctSTrans = None,
+                  p_afct_reward:AFctReward = None,
+                  p_afct_success:AFctSuccess = None,
+                  p_afct_broken:AFctBroken = None,
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL):
 
         self._afct_strans = p_afct_strans
         self._afct_reward = p_afct_reward
@@ -578,7 +582,7 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+    def adapt(self, **p_kwargs) -> bool:
         """
         Adaptivity is switched off here. If called, then something went wrong. 
         """
@@ -1371,25 +1375,27 @@ class EnvModel(EnvBase, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+    def adapt(self, **p_kwargs) -> bool:
         """
         Reactivated adaptation mechanism. See method Model.adapt() for further details.
         """
 
-        return Model.adapt(self, *p_args)
+        return Model.adapt(self, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem:SARSElement) -> bool:
         """
         Adapts the environment model based on State-Action-Reward-State (SARS) data.
 
-        Parameters:
-            p_args[0]           Object of type SARSElement
+        Parameters
+        ----------
+        p_sars_elem : SARSElement
+            Object of type SARSElement.
         """
 
         try:
-            sars_dict = p_args[0].get_data()
+            sars_dict = p_sars_elem.get_data()
             state = sars_dict['state']
             action = sars_dict['action']
             reward = sars_dict['reward']
@@ -1397,16 +1403,16 @@ class EnvModel(EnvBase, Model):
         except:
             raise ParamError('Parameter must be of type SARSElement')
 
-        adapted = self._afct_strans.adapt(state, action, state_new)
+        adapted = self._afct_strans.adapt(p_state=state, p_action=action, p_state_new=state_new)
 
         if self._afct_reward is not None:
-            adapted = adapted or self._afct_reward.adapt(state, state_new, reward)
+            adapted = adapted or self._afct_reward.adapt(p_state=state, p_state_new=state_new, p_reward=reward)
 
         if self._afct_success is not None:
-            adapted = adapted or self._afct_success.adapt(state_new)
+            adapted = adapted or self._afct_success.adapt(p_state=state_new)
 
         if self._afct_broken is not None:
-            adapted = adapted or self._afct_broken.adapt(state_new)
+            adapted = adapted or self._afct_broken.adapt(p_state=state_new)
 
         if (self._cycle_limit == 0) and state_new.get_timeout():
             # First timeout state defines the cycle limit

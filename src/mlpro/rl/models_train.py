@@ -39,10 +39,11 @@
 ## -- 2022-02-27  1.7.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-23  1.7.2     SY       Bug fixing: storing data reward
 ## -- 2022-11-01  1.7.3     DA       Refactoring and code cleaning
+## -- 2022-11-02  1.8.0     DA       Refactoring: methods adapt(), _adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.3 (2022-11-01)
+Ver. 1.8.0 (2022-11-02)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -439,7 +440,7 @@ class RLScenario(Scenario):
 
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
-        adapted = self._agent.adapt(self._env.get_state(), reward)
+        adapted = self._agent.adapt(p_state=self._env.get_state(), p_reward=reward)
 
         # 6 Check for terminating events
         success = self._env.get_state().get_success()

@@ -45,10 +45,11 @@
 ## --                                - Move MPC implementation to the pool of objects
 ## --                                - Update compute_action in Agent for action planning
 ## -- 2022-09-26  1.5.8     SY       Minor Improvement on _extract_observation method (Agent class)
+## -- 2022-11-02  1.6.0     DA       Refactoring: methods adapt(), _adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.8 (2022-09-26) 
+Ver. 1.6.0 (2022-11-02) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -60,7 +61,7 @@ from mlpro.rl.models_train import RLScenario, RLTraining
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Policy(Model):
+class Policy (Model):
     """
     This class represents the policy of a single-agent. It is adaptive and can be trained with
     State-Action-Reward (SAR) data that will be expected as a SAR buffer object. 
@@ -93,7 +94,6 @@ class Policy(Model):
         Boolean switch for adaptivity. Default = True.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
-
     """
 
     C_TYPE = 'Policy'
@@ -154,13 +154,13 @@ class Policy(Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem:SARSElement) -> bool:
         """
         Adapts the policy based on State-Action-Reward-State (SARS) data.
 
         Parameters
         ----------
-        p_arg[0] : SARSElement
+        p_sars_elem : SARSElement
             Object of type SARSElement.
 
         Returns
@@ -643,15 +643,15 @@ class Agent(Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_state:State, p_reward:Reward) -> bool:
         """
         Default adaptation implementation of a single agent.
 
         Parameters
         ----------
-        p_args[0] : State       
+        p_state : State       
             State object.
-        p_args[1] : Reward     
+        p_reward : Reward     
             Reward object.
  
         Returns
@@ -667,21 +667,19 @@ class Agent(Policy):
             return False
 
         # 2 Extract agent specific observation data from state
-        state = p_args[0]
-        reward = p_args[1]
-        observation = self._extract_observation(state)
+        observation = self._extract_observation(p_state)
         adapted = False
 
         # 3 Adaptation
         if self._envmodel is None:
             # 3.1 Model-free adaptation
             adapted = self._policy.adapt(
-                SARSElement(self._previous_observation, self._previous_action, reward, observation))
+                SARSElement(self._previous_observation, self._previous_action, p_reward, observation))
 
         else:
             # 3.2 Model-based adaptation
             adapted = self._envmodel.adapt(
-                SARSElement(self._previous_observation, self._previous_action, reward, observation))
+                SARSElement(self._previous_observation, self._previous_action, p_reward, observation))
 
             if self._envmodel.get_accuracy() >= self._em_acc_thsld:
                 adapted = adapted or self._adapt_policy_by_model()
@@ -909,19 +907,16 @@ class MultiAgent(Agent):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
-        state = p_args[0]
-        reward = p_args[1]
-
+    def _adapt(self, p_state:State, p_reward:Reward) -> bool:
         self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')
 
         adapted = False
         for agent_entry in self._agents:
             agent = agent_entry[0]
-            if (reward.get_type() != Reward.C_TYPE_OVERALL) and not reward.is_rewarded(agent.get_id()):
+            if (p_reward.get_type() != Reward.C_TYPE_OVERALL) and not p_reward.is_rewarded(agent.get_id()):
                 continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-            adapted = agent.adapt(state, reward) or adapted
+            adapted = agent.adapt(p_state=p_state, p_reward=p_reward) or adapted
 
         self.log(self.C_LOG_TYPE_I, 'End of adaptation for all agents...')
 
