@@ -17,79 +17,79 @@ Submodules
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_003_spaces_and_elements
+.. automodule:: mlpro.bf.examples.howto_bf_003_store_plot_and_save_variables
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_004_store_plot_and_save_variables
+.. automodule:: mlpro.bf.examples.howto_bf_004_buffers
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_005_hyperparameters
+.. automodule:: mlpro.bf.examples.howto_bf_eh_001_event_handling
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_006_buffers
+.. automodule:: mlpro.bf.examples.howto_bf_math_001_spaces_and_elements
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_007_hyperparameter_tuning_using_hyperopt
+.. automodule:: mlpro.bf.examples.howto_bf_math_010_normalizers
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_008_hyperparameter_tuning_using_optuna
+.. automodule:: mlpro.bf.examples.howto_bf_ml_001_hyperparameters
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_009_sciui_reuse_of_interactive_2d_3d_input_space
+.. automodule:: mlpro.bf.examples.howto_bf_mt_001_parallel_algorithms
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_010_sciui_reinforcement_learning_cockpit
+.. automodule:: mlpro.bf.examples.howto_bf_mt_002_tasks_and_workflows
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_011_event_handling
+.. automodule:: mlpro.bf.examples.howto_bf_streams_001_tasks_workflows_and_stream_scenarios
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_012_processing
+.. automodule:: mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_020_accessing_data_from_openml
+.. automodule:: mlpro.bf.examples.howto_bf_streams_011_accessing_data_from_river
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_021_accessing_data_from_river
+.. automodule:: mlpro.bf.examples.howto_bf_streams_012_accessing_data_from_scikitlearn
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_022_accessing_data_from_scikitlearn
+.. automodule:: mlpro.bf.examples.howto_bf_ui_001_reuse_of_interactive_2d_3d_input_space
    :members:
    :undoc-members:
    :show-inheritance:

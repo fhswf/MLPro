@@ -1,6 +1,6 @@
 .. _Howto BF 002:
 Howto BF-002: Timer
-=====================
+===================
 
 .. automodule:: mlpro.bf.examples.howto_bf_002_timer
 

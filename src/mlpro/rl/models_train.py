@@ -38,15 +38,20 @@
 ## --                                  'Score(MA) until Stagnation'
 ## -- 2022-02-27  1.7.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-23  1.7.2     SY       Bug fixing: storing data reward
+## -- 2022-11-01  1.7.3     DA       Refactoring and code cleaning
+## -- 2022-11-02  1.8.0     DA       Refactoring: methods adapt(), _adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.2 (2022-05-23)
+Ver. 1.8.0 (2022-11-02)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
 
-from mlpro.rl.models_env import *
+from mlpro.bf.data import DataStoring
+from mlpro.bf.math import *
+from mlpro.bf.ml import *
+from mlpro.rl.models_sar import *
 
 
 
@@ -67,7 +72,7 @@ class RLDataStoring(DataStoring):
     C_VAR_SEC = 'Second'
     C_VAR_MICROSEC = 'Microsecond'
 
-    ## -------------------------------------------------------------------------------------------------
+ ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_space: Set = None):
         """
         Parameters:
@@ -89,20 +94,24 @@ class RLDataStoring(DataStoring):
 
         super().__init__(self.variables)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_variables(self):
         return self.variables
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_space(self):
         return self.space
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def add_episode(self, p_episode_id):
         self.add_frame(p_episode_id)
         self.current_episode = p_episode_id
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def memorize_row(self, p_cycle_id, p_tstamp: timedelta, p_data):
         """
         Memorizes an episodic data row.
@@ -120,6 +129,9 @@ class RLDataStoring(DataStoring):
 
         for i, var in enumerate(self.var_space):
             self.memorize(var, self.current_episode, p_data[i])
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -151,7 +163,7 @@ class RLDataStoringEval(DataStoring):
     C_VAR_NUM_LIMIT             = 'Timeouts'                    # Number of timeouts (cycles per episode reached)
     C_VAR_NUM_ADAPT             = 'Adaptations'                 # Number of adaptations in the last training period
 
-    ## -------------------------------------------------------------------------------------------------
+ ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_space: Set):
 
         self.space = p_space
@@ -176,20 +188,24 @@ class RLDataStoringEval(DataStoring):
 
         super().__init__(self.variables)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_variables(self):
         return self.variables
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_space(self):
         return self.space
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def add_evaluation(self, p_evaluation_id):
         self.add_frame(p_evaluation_id)
         self.current_evaluation = p_evaluation_id
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def memorize_row(self, 
                      p_score, 
                      p_score_ma, 
@@ -252,6 +268,9 @@ class RLDataStoringEval(DataStoring):
             self.memorize(var, self.current_evaluation, p_reward[i])
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class RLScenario(Scenario):
@@ -262,12 +281,12 @@ class RLScenario(Scenario):
     C_TYPE = 'RL-Scenario'
     C_NAME = '????'
 
-    ## -------------------------------------------------------------------------------------------------
+ ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_mode=Mode.C_MODE_SIM,  # Operation mode (see class Mode)
-                 p_ada: bool = True,  # Boolean switch for adaptivity of internal model
+                 p_ada:bool=True,  # Boolean switch for adaptivity of internal model
                  p_cycle_limit=0,  # Maximum number of cycles (0=no limit, -1=get from env)
-                 p_visualize=True,  # Boolean switch for env/agent visualisation
+                 p_visualize:bool=True,  # Boolean switch for env/agent visualisation
                  p_logging=Log.C_LOG_ALL):  # Log level (see constants of class Log)
 
         # 1 Setup entire scenario
@@ -286,12 +305,14 @@ class RLScenario(Scenario):
         # 3 Init data logging
         self.connect_data_logger()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         super().switch_logging(p_logging)
         self._env.switch_logging(p_logging)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
         """
         Set up the ML scenario by redefinition. Please bind your environment to self._env and return
@@ -308,26 +329,31 @@ class RLScenario(Scenario):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         super().init_plot(p_figure=p_figure)
         self._env.init_plot(p_figure=p_figure)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         super().update_plot()
         self._env.update_plot()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _set_mode(self, p_mode):
         if isinstance(self._env, Mode):
             self._env.set_mode(p_mode)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_latency(self) -> timedelta:
         return self._env.get_latency()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
         """
         Environment and timer are reset. The random generators for environment and agent will
@@ -343,22 +369,26 @@ class RLScenario(Scenario):
         if self._visualize:
             self._env.init_plot()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_agent(self):
         return self._agent
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_env(self):
         return self._env
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def connect_data_logger(self, p_ds_states: RLDataStoring = None, p_ds_actions: RLDataStoring = None,
                             p_ds_rewards: RLDataStoring = None):
         self._ds_states = p_ds_states
         self._ds_actions = p_ds_actions
         self._ds_rewards = p_ds_rewards
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
         """
         Processes a single cycle.
@@ -410,7 +440,7 @@ class RLScenario(Scenario):
 
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
-        adapted = self._agent.adapt(self._env.get_state(), reward)
+        adapted = self._agent.adapt(p_state=self._env.get_state(), p_reward=reward)
 
         # 6 Check for terminating events
         success = self._env.get_state().get_success()
@@ -423,6 +453,9 @@ class RLScenario(Scenario):
             self.log(self.C_LOG_TYPE_E, 'Process time', self._timer.get_time(), ': Environment terminated')
 
         return success, error, adapted
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -456,7 +489,7 @@ class RLTrainingResults(TrainingResults):
     C_CPAR_NUM_EPI = 'Training Episodes'
     C_CPAR_NUM_EVAL = 'Evaluations'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_scenario: RLScenario, p_run, p_cycle_id, p_path=None, p_logging=Log.C_LOG_WE):
         super().__init__(p_scenario, p_run, p_cycle_id, p_path=p_path, p_logging=p_logging)
 
@@ -467,20 +500,23 @@ class RLTrainingResults(TrainingResults):
         self.ds_rewards = None
         self.ds_eval = None
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def close(self):
         super().close()
 
         self.add_custom_result(self.C_CPAR_NUM_EPI, self.num_episodes)
         self.add_custom_result(self.C_CPAR_NUM_EVAL, self.num_evaluations)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _log_results(self):
         super()._log_results()
         self.log(self.C_LOG_TYPE_W, '-- Training Episodes :', self.num_episodes)
         self.log(self.C_LOG_TYPE_W, '-- Evaluations       :', self.num_evaluations)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def save(self, p_path, p_filename='summary.csv') -> bool:
         if not super().save(p_path, p_filename=p_filename):
             return False
@@ -495,9 +531,12 @@ class RLTrainingResults(TrainingResults):
             self.ds_eval.save_data(p_path, self.C_FNAME_EVAL)
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RLTraining(Training):
+class RLTraining (Training):
     """
     This class performs an episodic training on a (multi-)agent in a given environment. Both are
     expected as parts of a reinforcement learning scenario (see class RLScenario for more details).
@@ -552,7 +591,7 @@ class RLTraining(Training):
 
     C_CLS_RESULTS = RLTrainingResults
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
 
         # 1 Initialization of elementary training functionalities
@@ -683,7 +722,8 @@ class RLTraining(Training):
                 self._counter_epi_eval = 0
                 self._mode = self.C_MODE_EVAL
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _init_results(self) -> TrainingResults:
         results = super()._init_results()
 
@@ -717,7 +757,8 @@ class RLTraining(Training):
 
         return results
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _init_episode(self):
 
         # 1 Evaluation handling  
@@ -769,7 +810,8 @@ class RLTraining(Training):
         if (self._results.ds_rewards and self._scenario._ds_rewards) is not None:
             self._results.ds_rewards.add_episode(self._results.num_episodes)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _close_episode(self):
 
         if self._eval_frequency > 0:
@@ -820,7 +862,8 @@ class RLTraining(Training):
 
         self._cycles_episode = 0
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _init_evaluation(self):
         """
         Initializes the next evaluation.
@@ -838,7 +881,8 @@ class RLTraining(Training):
         self._eval_num_broken = 0
         self._eval_sum_reward = None
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _update_evaluation(self, p_success: bool, p_error: bool, p_cycle_limit: bool):
         """
         Updates evaluation statistics.
@@ -890,7 +934,8 @@ class RLTraining(Training):
         else:
             raise Error('Reward type ' + str(reward_type) + ' not yet supported')
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _close_evaluation(self) -> np.ndarray:
         """
         Closes the current evaluation and computes a related score.
@@ -957,7 +1002,8 @@ class RLTraining(Training):
         # 6 Outro
         return score
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _run_cycle(self) -> bool:
         """
         Runs single training cycle.

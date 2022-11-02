@@ -1,11 +1,11 @@
 .. _Howto BF 004:
-Howto BF-004: Store and plot data
-=================================
+Howto BF-004: Buffers
+=====================
 
-.. automodule:: mlpro.bf.examples.howto_bf_004_store_plot_and_save_variables
+.. automodule:: mlpro.bf.examples.howto_bf_004_buffers
 
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../src/mlpro/bf/examples/howto_bf_004_store_plot_and_save_variables.py
+.. literalinclude:: ../../../../../src/mlpro/bf/examples/howto_bf_004_buffers.py
 	:language: python

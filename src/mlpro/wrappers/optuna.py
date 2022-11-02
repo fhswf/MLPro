@@ -10,10 +10,11 @@
 ## -- 2022-03-25  1.0.1     SY       Change methods names: _ofct_optuna and get_parameters
 ## -- 2022-04-05  1.0.2     SY       Add tuning recap visualization: class _plot_results
 ## -- 2022-08-14  1.1.0     DA       Introduction of root class Wrapper
+## -- 2022-10-17  1.1.1     SY       Refactoring due to unit test
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-08-14)
+Ver. 1.1.1 (2022-10-17)
 
 This module provides a wrapper class for hyperparameter tuning by reusing Optuna framework.
 
@@ -106,17 +107,17 @@ class WrHPTOptuna(Wrapper, HyperParamTuner, ScientificObject):
         if self._num_trials <= 0:
             raise ParamError('Parameter self._num_trials must be greater than 0')
         
-        if self._root_path is None:
-            raise ParamError('Mandatory parameter self._root_path is not supplied')
-        
         if self._training_param is None:
             raise ParamError('Mandatory parameter self._training_param is not supplied')
         
         # change root path in training param
-        self._training_param['p_training_param']['p_path'] = self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Base (Preparation)'
-        if not os.path.exists(self._training_param['p_training_param']['p_path']):
-            os.mkdir(self._root_path+os.sep+'HyperparameterTuning')
-            os.mkdir(self._training_param['p_training_param']['p_path'])
+        if self._root_path is None:
+            self._training_param['p_training_param']['p_path'] = None
+        else:
+            self._training_param['p_training_param']['p_path'] = self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Base (Preparation)'
+            if not os.path.exists(self._training_param['p_training_param']['p_path']):
+                os.mkdir(self._root_path+os.sep+'HyperparameterTuning')
+                os.mkdir(self._training_param['p_training_param']['p_path'])
         
         # ignore collecting data during tuning to save tuning time and memory
         self._training_param['p_training_param']['p_collect_states'] = False
@@ -143,7 +144,8 @@ class WrHPTOptuna(Wrapper, HyperParamTuner, ScientificObject):
         best_trial = study.best_trial
         best_result = best_trial.value
         best_param = study.best_params
-        self.save(best_param, best_result, 'best_parameters.csv')
+        if self._root_path is not None:
+            self.save(best_param, best_result, 'best_parameters.csv')
         
         if self.visualize:
             self._plot_results(study)
@@ -171,9 +173,12 @@ class WrHPTOptuna(Wrapper, HyperParamTuner, ScientificObject):
         self.log(self.C_LOG_TYPE_I, self.C_LOG_SEPARATOR, '\n')
 
         # change root path in training param
-        self._training_param['p_training_param']['p_path'] =  self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Trial_'+str(self.num_trials)
-        if not os.path.exists(self._training_param['p_training_param']['p_path']):
-            os.mkdir(self._training_param['p_training_param']['p_path'])
+        if self._root_path is None:
+            self._training_param['p_training_param']['p_path'] = None
+        else:
+            self._training_param['p_training_param']['p_path'] =  self._root_path+os.sep+'HyperparameterTuning'+os.sep+'Trial_'+str(self.num_trials)
+            if not os.path.exists(self._training_param['p_training_param']['p_path']):
+                os.mkdir(self._training_param['p_training_param']['p_path'])
 
         # instantiate a scenario class
         training_cls = self._training_cls(**self._training_param['p_training_param'])

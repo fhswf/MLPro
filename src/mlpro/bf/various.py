@@ -34,10 +34,11 @@
 ## -- 2022-10-02  1.8.0     DA       Class Log:
 ## --                                - new methods Log.get_name(), Log.set_name()
 ## --                                - method log(): C_NAME in quotation marks
+## -- 2022-10-29  1.8.1     DA       Class Log: removed call of switch_logging() from __init__()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2022-10-02)
+Ver. 1.8.1 (2022-10-29)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer...
@@ -196,7 +197,10 @@ class Log:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=C_LOG_ALL):
-        self.switch_logging(p_logging)
+        if p_logging not in self.C_LOG_LEVELS: 
+            raise ParamError('Wrong log level. See class Log for valid log levels')
+        self._level = p_logging
+
         if self.C_INST_MSG:
             self.log(self.C_LOG_TYPE_I, 'Instantiated')
             self.C_INST_MSG = False
