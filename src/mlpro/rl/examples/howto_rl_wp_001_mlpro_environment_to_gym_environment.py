@@ -32,17 +32,17 @@ from gym.utils.env_checker import check_env
 if __name__ == "__main__":
     logging = Log.C_LOG_ALL
 else:
-    logging   = Log.C_LOG_NOTHING
+    logging = Log.C_LOG_NOTHING
     
 # 1. Set up MLPro native environment
-mlpro_env   = GridWorld(p_logging=logging)
+mlpro_env = GridWorld(p_logging=logging)
 
 # 2. Wrap the MLPro environment to gym compatible environment
-env         = WrEnvMLPro2GYM(mlpro_env,
-                             p_state_space=None,
-                             p_action_space=None,
-                             p_new_step_api=True,
-                             p_logging=logging)
+env = WrEnvMLPro2GYM(mlpro_env,
+                     p_state_space=None,
+                     p_action_space=None,
+                     p_new_step_api=True,
+                     p_logging=logging)
 
-# 3. Checke whether the environment is valid
+# 3. Check whether the environment is valid
 check_env(env)
