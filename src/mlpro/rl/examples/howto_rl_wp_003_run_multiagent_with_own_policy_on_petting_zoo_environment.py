@@ -22,10 +22,12 @@
 ## -- 2022-05-30  1.1.8     SY       Update pistonball_v5 to pistonball_v6
 ## -- 2022-10-08  1.2.0     SY       Turn off render: causing error due to pzoo ver 1.22.0 
 ## -- 2022-10-14  1.2.1     SY       Refactoring 
+## -- 2022-11-01  1.2.2     DA       Refactoring 
+## -- 2022-11-02  1.2.3     SY       Unable logging in unit test model and bug fixing
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2022-10-14)
+Ver. 1.2.3 (2022-11-02)
 
 This module shows how to run an own policy inside the MLPro standard agent model with a wrapped
 Petting Zoo environment.
@@ -42,9 +44,8 @@ You will learn:
 from pettingzoo.butterfly import pistonball_v6
 from pettingzoo.classic import connect_four_v3
 from mlpro.bf.math import *
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.wrappers.pettingzoo import WrEnvPZOO2MLPro
-import random
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
 
@@ -58,10 +59,13 @@ class PBScenario (RLScenario):
     C_NAME      = 'Pistonball V6'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        zoo_env             = pistonball_v6.env()
-        self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=p_logging)
+        if self._visualize:
+            zoo_env         = pistonball_v6.env(render_mode="human")
+        else:
+            zoo_env         = pistonball_v6.env(render_mode="ansi")
+        self._env           = WrEnvPZOO2MLPro(zoo_env, p_visualize=self._visualize, p_logging=p_logging)
         
-        multi_agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_logging=True)
+        multi_agent         = MultiAgent(p_name='Pistonball_agents', p_ada=1, p_logging=p_logging)
         agent_idx           = 0
         for k in self._env._zoo_env.action_spaces:
             agent_name      = "Agent_"+str(agent_idx)
@@ -96,10 +100,13 @@ class C4Scenario (RLScenario):
     C_NAME      = 'Connect Four V3'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        zoo_env             = connect_four_v3.env()
-        self._env           = WrEnvPZOO2MLPro(zoo_env, p_logging=True)
+        if self._visualize:
+            zoo_env         = connect_four_v3.env(render_mode="ansi")
+        else:
+            zoo_env         = connect_four_v3.env(render_mode="human")
+        self._env           = WrEnvPZOO2MLPro(zoo_env, p_visualize=self._visualize, p_logging=p_logging)
         
-        multi_agent         = MultiAgent(p_name='Connect4_Agents', p_ada=1, p_logging=True)
+        multi_agent         = MultiAgent(p_name='Connect4_Agents', p_ada=1, p_logging=p_logging)
         agent_idx           = 0
         for k in self._env._zoo_env.action_spaces:
             agent_name      = "Agent_"+str(agent_idx)
@@ -129,7 +136,7 @@ class C4Scenario (RLScenario):
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
-    visualize   = False
+    visualize   = True 
   
 else:
     # 3.2 Parameters for internal unit test

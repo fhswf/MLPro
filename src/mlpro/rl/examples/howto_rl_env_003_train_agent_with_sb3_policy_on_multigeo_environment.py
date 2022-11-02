@@ -9,10 +9,11 @@
 ## -- 2021-12-19  1.0.0     MRD      Initial Release
 ## -- 2021-12-23  1.0.1     DA       Minor fix 
 ## -- 2022-10-13  1.0.2     SY       Refactoring 
+## -- 2022-11-01  1.0.3     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-10-13)
+Ver. 1.0.3 (2022-11-01)
 
 This module shows how to use SB3 wrapper to train Multi Geometry Robot.
 
@@ -26,12 +27,14 @@ You will learn:
     
 """
 
+
 from mlpro.bf.math import *
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.rl.pool.envs.multigeorobot import MultiGeo
 from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
+
 
 
 # 1 Implement your own RL scenario

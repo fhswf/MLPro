@@ -42,24 +42,26 @@
 ## -- 2022-10-06  1.5.0     DA       New classes MLTask and MLWorkflow
 ## -- 2022-10-10  1.6.0     DA       Class MLTask: new methods adapt_on_event() and _adapt_on_event()
 ## -- 2022-10-29  1.7.0     DA       Refactoring after introduction of module bf.ops
+## -- 2022-10-29  1.7.1     DA       Classes MLTask, MLWorkflow removed
+## -- 2022-10-31  1.7.2     DA       Class Model: new parameter p_visualize
+## -- 2022-11-02  1.8.0     DA       - Class Model: changed parameters of method adapt() from tuple
+## --                                  to dictionary
+## --                                - Classes HyperParam, HyperParamTuple: replaced callback mechanism
+## --                                  by event handling
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2022-10-29)
+Ver. 1.8.0 (2022-11-02)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 """
 
 
-import sys
-from typing import Dict
-from xmlrpc.client import FastMarshaller
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
 from mlpro.bf.plot import *
 from mlpro.bf.events import *
-from mlpro.bf.mt import Async, Task, Workflow
 from mlpro.bf.ops import Mode, ScenarioBase
 import random
 
@@ -73,17 +75,7 @@ class HyperParam (Dimension):
     Hyperparameter definition class. See class Dimension for further descriptions.
     """
 
-## -------------------------------------------------------------------------------------------------
-    def register_callback(self, p_cb):
-        self._cb = p_cb
-
-
-## -------------------------------------------------------------------------------------------------
-    def callback_on_change(self, p_value):
-        try:
-            self._cb(p_value)
-        except:
-            pass
+    C_EVENT_VALUE_CHANGED   = 'VALUE_CHANGED'
 
 
 
@@ -112,7 +104,11 @@ class HyperParamTuple (Element):
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
         super().set_value(p_dim_id, p_value)
-        self._set.get_dim(p_dim_id).callback_on_change(p_value)
+
+        # Event C_EVENT_VALUE_CHANGED of the related dimensionis raised for the related
+        dim_obj   = self._set.get_dim(p_dim_id)
+        event_obj = Event( p_raising_object=dim_obj, p_value=p_value)
+        dim_obj._raise_event(p_event_id=HyperParam.C_EVENT_VALUE_CHANGED, p_event_object=event_obj)
 
 
 
@@ -168,7 +164,7 @@ class HyperParamDispatcher (HyperParamTuple):
 ## -------------------------------------------------------------------------------------------------
 class Model (EventManager, LoadSave, Plottable, ScientificObject):
     """
-    Fundamental template class for adaptive ML models. Supports especially
+    Fundamental template class for adaptive ML models. Supports in particular
       - Adaptivity
       - Data buffering
       - Hyperparameter management
@@ -181,11 +177,12 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         Initial size of internal data buffer. Defaut = 0 (no buffering).
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_par : Dict
-        Futher model specific parameters (to be defined in chhild class).
-
+        Further model specific hyperparameters (to be defined in chhild class).
     """
 
     C_TYPE              = 'Model'
@@ -198,9 +195,15 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_NONE     
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL, **p_par):  
+    def __init__( self, 
+                  p_buffer_size:int=0, 
+                  p_ada:bool=True, 
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_par ):  
 
         EventManager.__init__(self, p_logging=p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
         self._adapted           = False
         self.switch_adaptivity(p_ada)
         self._hyperparam_space  = HyperParamSpace()
@@ -225,8 +228,7 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         Parameters
         ----------
         p_par : Dict
-            Futher model specific parameters, that are passed through constructor.
-
+            Further model specific hyperparameters, that are passed through constructor.
         """
 
         pass
@@ -290,46 +292,45 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+    def adapt(self, **p_kwargs) -> bool:
         """
         Adapts the model by calling the custom method _adapt().
 
         Parameters
         ----------
-        p_args
+        p_kwargs : dict
             All parameters that are needed for the adaption. Depends on the specific higher context.
 
         Returns
         -------
-        bool
+        adapted : bool
             True, if something has been adapted. False otherwise.
 
         """
 
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_I, 'Adaptation started')
-        adapted = self._adapt(*p_args)
+        adapted = self._adapt(**p_kwargs)
         self._set_adapted(adapted)
         return adapted
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, **p_kwargs) -> bool:
         """
-        Custom implementation of the adaptation algorithm. Please describe the type and purpose of 
-        all parameters needed by your implementation. This method will be called by public method 
-        adapt() if adaptivity is switched on. 
+        Custom implementation of the adaptation algorithm. Please specify the parameters needed by
+        your implementation. This method will be called by public method adapt() if adaptivity is 
+        switched on. 
 
         Parameters
         ----------
-        p_args[0]           
-            ...
-        p_args[1]           
-            ...
+        p_kwargs : dict
+            All parameters that are needed for the adaption. Please replace by concrete parameter
+            definitions that meet the needs of your algorithm.
 
         Returns
         -------
-        bool
+        adapted : bool
             True, if something has been adapted. False otherwise.
 
         """
@@ -1026,249 +1027,3 @@ class Training (Log):
 ## -------------------------------------------------------------------------------------------------
     def get_results(self) -> TrainingResults:
         return self._results
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MLTask (Task, Model): 
-    """
-    Special ML model template that can be used as task standalone or in a workflow. See classes
-    Task and Workflow of module mlpro.bf.mt or the online documentation for more informations about
-    multitasking in MLPro.
-
-    Parameters
-    ----------
-    p_name : str
-        Optional name of the task. Default is None.
-    p_range_max : int
-        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
-    p_autorun : int
-        On value C_AUTORUN_RUN method run() is called imediately during instantiation.
-        On vaule C_AUTORUN_LOOP method run_loop() is called.
-        Value C_AUTORUN_NONE (default) causes an object instantiation without starting further
-        actions.    
-    p_class_shared
-        Optional class for a shared object (class Shared or a child class of Shared)
-    p_buffer_size : int
-        Initial size of internal data buffer. Defaut = 0 (no buffering).
-    p_ada : bool
-        Boolean switch for adaptivitiy. Default = True.
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_kwargs : dict
-        Further optional named parameters.
-    """
-
-    C_TYPE          = 'ML-Task'
-    
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_name:str=None,
-                  p_range_max=Async.C_RANGE_PROCESS, 
-                  p_autorun=Task.C_AUTORUN_NONE, 
-                  p_class_shared=None, 
-                  p_buffer_size=0,
-                  p_ada=True,
-                  p_logging=Log.C_LOG_ALL, 
-                  **p_kwargs ):
-
-        Task.__init__( self,
-                       p_name=p_name,
-                       p_range_max=p_range_max,
-                       p_autorun=p_autorun,
-                       p_class_shared=p_class_shared,
-                       p_logging=p_logging,
-                       p_kwargs = p_kwargs )
-
-        Model.__init__( self, 
-                        p_buffer_size=p_buffer_size, 
-                        p_ada=p_ada, 
-                        p_logging=p_logging,
-                        p_par = p_kwargs )  
-
-
-## -------------------------------------------------------------------------------------------------
-    def adapt_on_event(self, p_event_id:str, p_event_obj:Event):
-        """
-        Method to be used as event handler for event-based adaptations. Calls custom method 
-        _adapt_on_event() and updates the internal adaptation state.
-
-        Parameters
-        ----------
-        p_event_id : str
-            Event id.
-        p_event_obj : Event
-            Object with further context informations about the event.
-        """
-
-        self._set_adapted(p_adapted=self._adapt_on_event(p_event_id=p_event_id, p_event_obj=p_event_obj))        
-
-
-## -------------------------------------------------------------------------------------------------
-    def _adapt_on_event(self, p_event_id:str, p_event_obj:Event) -> bool:
-        """
-        Custom method to be used for event-based adaptation. See method adapt_on_event().
-
-        Parameters
-        ----------
-        p_event_id : str
-            Event id.
-        p_event_obj : Event
-            Object with further context informations about the event.
-
-        Returns
-        -------
-        adapted : bool
-            True, if something was adapted. False otherwise.
-        """
-
-        raise NotImplementedError
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MLWorkflow (Workflow, Model):
-    """
-    Special ML model template that can be used as a workflow. See classes Task and Workflow of 
-    module mlpro.bf.mt or the online documentation for more informations about multitasking in MLPro.
-
-    Parameters
-    ----------
-    p_name : str
-        Optional name of the task. Default is None.
-    p_range_max : int
-        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
-    p_class_shared
-        Optional class for a shared object (class Shared or a child class of Shared)
-    p_ada : bool
-        Boolean switch for adaptivitiy. Default = True.
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_kwargs : dict
-        Further optional named parameters.
-   """
-
-    C_TYPE          = 'ML-Workflow'
-    C_NAME          = ''
-    
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_name:str=None,
-                  p_range_max=Async.C_RANGE_PROCESS, 
-                  p_class_shared=None, 
-                  p_ada=True,
-                  p_logging=Log.C_LOG_ALL, 
-                  **p_kwargs ):
-       
-        Workflow.__init__( self, 
-                           p_name=p_name,
-                           p_range_max=p_range_max, 
-                           p_class_shared=p_class_shared, 
-                           p_logging=p_logging, 
-                           **p_kwargs )
-
-        Model.__init__( self, 
-                        p_ada=p_ada, 
-                        p_logging=p_logging )  
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task: Task, p_pred_tasks: list = None):
-        super().add_task(p_task, p_pred_tasks)
-
-        try:
-            # Set adaptivity of new task
-            p_task.switch_adaptivity(self._adaptivity)
-
-            # Hyperparameter space of workflow is extended by dimensions of hyperparameter space of
-            # the new task
-            task_hp_set = p_task.get_hyperparam().get_related_set()
-
-            for dim_id in task_hp_set.get_dim_ids():
-                self._hyperparam_space.add_dim(p_dim=task_hp_set.get_dim(p_id=dim_id)) 
-
-            # Hyperparameter tuple of workflow is extended by the hyperparameter tuple of the new task
-            if self._hyperparam_tuple is None: 
-                self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
-
-            task_hp_tuple = p_task.get_hyperparam()
-            if task_hp_tuple is not None:
-                self._hyperparam_tuple.add_hp_tuple(p_hpt=p_task.get_hyperparam())
-
-        except:
-            pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def switch_adaptivity(self, p_ada: bool):
-        for t in self._tasks:
-            try:
-                t.switch_adaptivity(p_ada=p_ada)
-            except:
-                pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_random_seed(self, p_seed=None):
-        for t in self._tasks:
-            try:
-                t.set_random_seed(p_seed=p_seed)
-            except:
-                pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_adapted(self) -> bool:
-        adapted = False
-
-        for t in self._tasks:
-            try:
-                adapted = adapted or t.get_adapted()
-            except:
-                pass
-
-        return adapted
-
-
-## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
-        adapted = False
-
-        for t in self._tasks:
-            try:
-                adapted = adapted or t.adapt(p_args=p_args)
-            except:
-                pass
-
-        return adapted
-
-
-## -------------------------------------------------------------------------------------------------
-    def clear_buffer(self):
-        for t in self._tasks:
-            try:
-                t.clear_buffer()
-            except:
-                pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_accuracy(self):
-        accuracy       = 0
-        adaptive_tasks = 0
-
-        for t in self._tasks:
-            try:
-                accuracy       += t.get_accuracy()
-                adaptive_tasks += 1
-            except:
-                pass
-
-        if adaptive_tasks > 0: return accuracy / adaptive_tasks
-        else: return 1

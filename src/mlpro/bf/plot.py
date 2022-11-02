@@ -12,10 +12,12 @@
 ## --                                Clean code assurance.
 ## -- 2022-10-24  2.0.0     DA       New class PlotSettings and extensions on class Plottable
 ## -- 2022-10-28  2.0.1     DA       Corrections of class documentations
+## -- 2022-10-29  2.0.2     DA       Refactoring of class Plottable
+## -- 2022-10-31  2.1.0     DA       Class Plottable: fixes and improvements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2022-10-28)
+Ver. 2.1.0 (2022-10-31)
 
 This module provides various classes related to data plotting.
 """
@@ -27,11 +29,11 @@ from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 import matplotlib.pyplot as plt
 import os
+import statistics
 from mlpro.bf.exceptions import ImplementationError, ParamError
 from mlpro.bf.various import LoadSave
-from mlpro.bf.math import Set
 from mlpro.bf.data import DataStoring
-import statistics
+
 
 
 
@@ -67,7 +69,7 @@ class PlotSettings:
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
-        self.view      = p_view
+        self.view      = p_view.copy()
         self.axes      = p_axes
         self.pos_x     = p_pos_x
         self.pos_y     = p_pos_y
@@ -90,6 +92,11 @@ class Plottable:
 
     See class Plotsettings for further detais.
 
+    Parameters
+    ----------
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
+
     Attributes
     ----------
     C_PLOT_ACTIVE : bool
@@ -106,13 +113,17 @@ class Plottable:
     C_PLOT_ACTIVE : bool        = False
     C_PLOT_STANDALONE : bool    = True
     C_PLOT_VALID_VIEWS : list   = []
-    C_PLOT_DEFAULT_VIEW : str   = ''
+    C_PLOT_DEFAULT_VIEW : str   = PlotSettings.C_VIEW_ND
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_visualize:bool=False):
+        self._visualize = self.C_PLOT_ACTIVE and p_visualize
+
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure:Figure=None,
                    p_plot_settings:list=[],
-                   p_set:Set=None,
                    p_plot_depth:int=0,
                    p_detail_level:int=0,
                    p_step_rate:int=1,
@@ -127,8 +138,6 @@ class Plottable:
         p_plot_settings : list
             Optional list of objects of class PlotSettings. All subplots that are addresses in the list
             are plotted in parallel. If the list is empty the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
-        p_set : Set : None
-            Optional set with informations about the underlying dimensions.
         p_plot_depth : int = 0
             Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
             depth is unlimited.
@@ -141,12 +150,20 @@ class Plottable:
             Further optional plot parameters.    
         """
 
-        # 0 Plot functionality turned on?
-        if not self.C_PLOT_ACTIVE: return
+        # 0 Plot functionality turned on? Initialization already called?
+        try:
+            if not self._visualize: return
+        except:
+            return
+
+        try:
+            self._plot_initialized
+            return
+        except:
+            pass
 
 
         # 1 Initialize internal plot attributes
-        self._plot_set          = p_set
         self._plot_depth        = p_plot_depth
         self._plot_step_counter = 0
         self._plot_kwargs       = p_kwargs.copy()
@@ -168,21 +185,6 @@ class Plottable:
                 # Plot functionality turned on but not implemented
                 raise ImplementationError('Please set attribute C_PLOT_DEFAULT_VIEW')               
 
-        if p_set is not None:
-            num_dim = p_set.get_num_dim()
-
-            if num_dim != 3: 
-                try:
-                    del self._plot_settings[PlotSettings.C_VIEW_3D]
-                except:
-                    pass
-
-            if num_dim != 2: 
-                try:
-                    del self._plot_settings[PlotSettings.C_VIEW_2D]
-                except:
-                    pass
-
         # 2.2 Dictionary with methods for initialization and update of a plot per view 
         self._plot_methods = { PlotSettings.C_VIEW_2D : [ self._init_plot_2d, self._update_plot_2d ], 
                                PlotSettings.C_VIEW_3D : [ self._init_plot_3d, self._update_plot_3d ], 
@@ -191,20 +193,26 @@ class Plottable:
 
         # 3 Setup the Matplotlib host figure if no one is provided as parameter
         if p_figure is None:
-            figure = self._init_figure()
+            self._figure : Figure   = self._init_figure()
+            self._plot_own_figure   = True
         else:
-            figure = p_figure
+            self._figure : Figure   = p_figure
+            self._plot_own_figure   = False
 
 
         # 4 Call of all initialization methods of the required views
         for view in self._plot_settings:
             try:
-                self._plot_methods[view][0](p_figure=figure, p_settings=self._plot_settings[view])
+                self._plot_methods[view][0](p_figure=self._figure, p_settings=self._plot_settings[view])
                 if self._plot_settings[view].axes is None:
                     raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
 
             except:
                 raise ParamError('Parameter p_plot_settings: wrong view "' + str(view) + '"')
+
+
+        # 5 Marker to ensure that initialization runs only once
+        self._plot_initialized = True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -287,30 +295,36 @@ class Plottable:
         """
 
         # 0 Plot functionality turned on?
-        if not self.C_PLOT_ACTIVE: return
-
-        # 1 Plot output is turned on every self._plot_step_rate time 
-        self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_step_rate)
-        if self._plot_step_counter==0:
-            output = True
-        else:
-            output = False
+        try:
+            if not self._visualize: return
+        except:
+            return
+            
+         # 1 Plot already initiated?
+        try:
+            self._plot_initialized
+        except: 
+            self.init_plot()
 
         # 2 Call of all required plot methods
         for view in self._plot_settings:
-            self._plot_methods[view][1](p_output=output, p_settings=self._plot_settings[view], p_kwargs=p_kwargs)
+            self._plot_methods[view][1](p_settings=self._plot_settings[view], p_kwargs=p_kwargs)
+
+        # 3 Update content of own(!) figure after self._plot_step_rate calls
+        if self._plot_own_figure:
+            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_step_rate)
+            if self._plot_step_counter==0: 
+                self._figure.canvas.draw()
+                self._figure.canvas.flush_events()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_output:bool, p_settings:PlotSettings, **p_kwargs):
+    def _update_plot_2d(self, p_settings:PlotSettings, **p_kwargs):
         """
         Custom method to update the 2d plot. The related MatPlotLib Axes object is stored in p_settings.
-        The plot output shall be done only if parameter p_output is True. 
 
         Parameters
         ----------
-        p_output : bool
-            If True, the plot output shall be carried out.  
         p_settings : PlotSettings
             Object with further plot settings.
         **p_kwargs 
@@ -321,15 +335,12 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_output:bool, p_settings:PlotSettings, **p_kwargs):
+    def _update_plot_3d(self, p_settings:PlotSettings, **p_kwargs):
         """
         Custom method to update the 3d plot. The related MatPlotLib Axes object is stored in p_settings.
-        The plot output shall be done only if parameter p_output is True. 
 
         Parameters
         ----------
-        p_output : bool
-            If True, the plot output shall be carried out.  
         p_settings : PlotSettings
             Object with further plot settings.
         **p_kwargs 
@@ -340,15 +351,12 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_output:bool, p_settings:PlotSettings, **p_kwargs):
+    def _update_plot_nd(self, p_settings:PlotSettings, **p_kwargs):
         """
         Custom method to update the nd plot. The related MatPlotLib Axes object is stored in p_settings.
-        The plot output shall be done only if parameter p_output is True. 
 
         Parameters
         ----------
-        p_output : bool
-            If True, the plot output shall be carried out.  
         p_settings : PlotSettings
             Object with further plot settings.
         **p_kwargs 
