@@ -12,10 +12,11 @@
 ## -- 2022-02-25  1.0.3     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-10-12  1.0.4     DA       Renaming and minor fixes
 ## -- 2022-10-17  1.0.5     SY       Refactoring 
+## -- 2022-11-02  1.0.6     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-10-17)
+Ver. 1.0.6 (2022-11-02)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 
@@ -32,7 +33,7 @@ You will learn:
 
 from mlpro.wrappers.hyperopt import *
 from mlpro.rl.pool.envs.bglp import BGLP
-from mlpro.rl.models import *
+from mlpro.rl import *
 import random
 from pathlib import Path
 
@@ -46,7 +47,6 @@ from pathlib import Path
 class myPolicy (Policy):
 
     C_NAME      = 'MyPolicy'
-    
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=True):
@@ -98,7 +98,7 @@ class myPolicy (Policy):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem:SARSElement) -> bool:
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
         return False
 

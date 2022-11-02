@@ -44,10 +44,14 @@
 ## -- 2022-10-29  1.7.0     DA       Refactoring after introduction of module bf.ops
 ## -- 2022-10-29  1.7.1     DA       Classes MLTask, MLWorkflow removed
 ## -- 2022-10-31  1.7.2     DA       Class Model: new parameter p_visualize
+## -- 2022-11-02  1.8.0     DA       - Class Model: changed parameters of method adapt() from tuple
+## --                                  to dictionary
+## --                                - Classes HyperParam, HyperParamTuple: replaced callback mechanism
+## --                                  by event handling
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.2 (2022-10-31)
+Ver. 1.8.0 (2022-11-02)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 """
@@ -71,17 +75,7 @@ class HyperParam (Dimension):
     Hyperparameter definition class. See class Dimension for further descriptions.
     """
 
-## -------------------------------------------------------------------------------------------------
-    def register_callback(self, p_cb):
-        self._cb = p_cb
-
-
-## -------------------------------------------------------------------------------------------------
-    def callback_on_change(self, p_value):
-        try:
-            self._cb(p_value)
-        except:
-            pass
+    C_EVENT_VALUE_CHANGED   = 'VALUE_CHANGED'
 
 
 
@@ -110,7 +104,11 @@ class HyperParamTuple (Element):
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
         super().set_value(p_dim_id, p_value)
-        self._set.get_dim(p_dim_id).callback_on_change(p_value)
+
+        # Event C_EVENT_VALUE_CHANGED of the related dimensionis raised for the related
+        dim_obj   = self._set.get_dim(p_dim_id)
+        event_obj = Event( p_raising_object=dim_obj, p_value=p_value)
+        dim_obj._raise_event(p_event_id=HyperParam.C_EVENT_VALUE_CHANGED, p_event_object=event_obj)
 
 
 
@@ -166,7 +164,7 @@ class HyperParamDispatcher (HyperParamTuple):
 ## -------------------------------------------------------------------------------------------------
 class Model (EventManager, LoadSave, Plottable, ScientificObject):
     """
-    Fundamental template class for adaptive ML models. Supports especially
+    Fundamental template class for adaptive ML models. Supports in particular
       - Adaptivity
       - Data buffering
       - Hyperparameter management
@@ -179,11 +177,12 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         Initial size of internal data buffer. Defaut = 0 (no buffering).
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_par : Dict
-        Futher model specific parameters (to be defined in chhild class).
-
+        Further model specific hyperparameters (to be defined in chhild class).
     """
 
     C_TYPE              = 'Model'
@@ -197,8 +196,8 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_buffer_size=0, 
-                  p_ada=True, 
+                  p_buffer_size:int=0, 
+                  p_ada:bool=True, 
                   p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL, 
                   **p_par ):  
@@ -229,8 +228,7 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         Parameters
         ----------
         p_par : Dict
-            Futher model specific parameters, that are passed through constructor.
-
+            Further model specific hyperparameters, that are passed through constructor.
         """
 
         pass
@@ -294,46 +292,45 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+    def adapt(self, **p_kwargs) -> bool:
         """
         Adapts the model by calling the custom method _adapt().
 
         Parameters
         ----------
-        p_args
+        p_kwargs : dict
             All parameters that are needed for the adaption. Depends on the specific higher context.
 
         Returns
         -------
-        bool
+        adapted : bool
             True, if something has been adapted. False otherwise.
 
         """
 
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_I, 'Adaptation started')
-        adapted = self._adapt(*p_args)
+        adapted = self._adapt(**p_kwargs)
         self._set_adapted(adapted)
         return adapted
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, **p_kwargs) -> bool:
         """
-        Custom implementation of the adaptation algorithm. Please describe the type and purpose of 
-        all parameters needed by your implementation. This method will be called by public method 
-        adapt() if adaptivity is switched on. 
+        Custom implementation of the adaptation algorithm. Please specify the parameters needed by
+        your implementation. This method will be called by public method adapt() if adaptivity is 
+        switched on. 
 
         Parameters
         ----------
-        p_args[0]           
-            ...
-        p_args[1]           
-            ...
+        p_kwargs : dict
+            All parameters that are needed for the adaption. Please replace by concrete parameter
+            definitions that meet the needs of your algorithm.
 
         Returns
         -------
-        bool
+        adapted : bool
             True, if something has been adapted. False otherwise.
 
         """
