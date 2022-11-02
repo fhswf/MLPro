@@ -18,10 +18,11 @@
 ## -- 2022-07-20  1.2.3     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-13  1.2.4     SY       Refactoring 
 ## -- 2022-11-01  1.2.5     DA       Refactoring 
+## -- 2022-11-02  1.2.6     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.5 (2022-11-01)
+Ver. 1.2.6 (2022-11-02)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 MLPro framework.
@@ -71,7 +72,7 @@ class MyPolicy (Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem: SARSElement) -> bool:
         # 1.4 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 

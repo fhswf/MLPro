@@ -673,13 +673,11 @@ class Agent(Policy):
         # 3 Adaptation
         if self._envmodel is None:
             # 3.1 Model-free adaptation
-            adapted = self._policy.adapt(
-                SARSElement(self._previous_observation, self._previous_action, p_reward, observation))
+            adapted = self._policy.adapt( p_sars_elem=SARSElement(self._previous_observation, self._previous_action, p_reward, observation) )
 
         else:
             # 3.2 Model-based adaptation
-            adapted = self._envmodel.adapt(
-                SARSElement(self._previous_observation, self._previous_action, p_reward, observation))
+            adapted = self._envmodel.adapt( p_sars_elem=SARSElement(self._previous_observation, self._previous_action, p_reward, observation) )
 
             if self._envmodel.get_accuracy() >= self._em_acc_thsld:
                 adapted = adapted or self._adapt_policy_by_model()

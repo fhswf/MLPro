@@ -19,10 +19,11 @@
 ## -- 2022-02-25  1.3.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-10-13  1.3.3     SY       Refactoring 
 ## -- 2022-11-01  1.3.4     DA       Refactoring 
+## -- 2022-11-02  1.3.5     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2022-11-01)
+Ver. 1.3.5 (2022-11-02)
 
 This module shows how to train an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -68,7 +69,7 @@ class MyPolicy(Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem:SARSElement) -> bool:
         # 1.4 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_I, 'Sorry, I am a stupid agent...')
 

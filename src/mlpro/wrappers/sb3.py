@@ -23,10 +23,11 @@
 ## -- 2022-08-22  1.2.1     MRD      Set proper name for class variable
 ## -- 2022-09-16  1.2.2     SY       Add Hindsight Experience Replay (HER) for off-policy algorithm
 ## -- 2022-10-08  1.2.3     SY       Bug fixing
+## -- 2022-11-02  1.2.4     DA       Refactoring: methods adapt(), _adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2022-10-08)
+Ver. 1.2.4 (2022-11-02)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
@@ -45,7 +46,7 @@ from stable_baselines3.common.vec_env.base_vec_env import VecEnv, VecEnvStepRetu
 from stable_baselines3.common.vec_env import DummyVecEnv
 from stable_baselines3 import HerReplayBuffer
 from collections import OrderedDict
-from mlpro.rl.models import *
+from mlpro.rl import *
 from typing import Any, Dict, Optional, Union
 
 
@@ -322,9 +323,9 @@ class WrPolicySB32MLPro(Wrapper, Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_off_policy(self, *p_args) -> bool:
+    def _adapt_off_policy(self, p_sars_elem:SARSElement) -> bool:
         # Add to buffer
-        self._add_buffer(p_args[0])
+        self._add_buffer(p_sars_elem)
 
         # Should Collect more steps
         if self.collected_steps < self.sb3.train_freq.frequency:
@@ -343,9 +344,9 @@ class WrPolicySB32MLPro(Wrapper, Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_on_policy(self, *p_args) -> bool:
+    def _adapt_on_policy(self, p_sars_elem:SARSElement) -> bool:
         # Add to buffer
-        self._add_buffer(p_args[0])
+        self._add_buffer(p_sars_elem)
 
         # Adapt only when Buffer is full
         if not self.sb3.rollout_buffer.full:
