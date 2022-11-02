@@ -2007,34 +2007,6 @@ class Process(Log):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class Sim_MPPS(HWControl):
-
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name, **p_param):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_module(self):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def setup_modules(self):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def to_be_added(self):
-        ... # to be added later
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-
 class HWControl(Environment):
 
 
@@ -2123,6 +2095,111 @@ class HWControl(Environment):
         """
 
         # get the data from the sensor class of the controller(s)
+
+        raise NotImplementedError
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+
+class Sim_MPPS(HWControl):
+    C_NAME = 'Simulation of MPPS 1.0'
+    C_LATENCY = timedelta(0,1,0)
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_name, **p_param):
+        ...
+            
+
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def setup_spaces():
+        """
+        This method is used to setup action and state spaces of the system.
+        
+        The actions and states are normalized between 0 to 1.
+        For the actions, 0 means minimum action and 1 means maximum action.
+        Meanwhile, for the states, 0 means minimum capacity (empty) and 1 means maximum capacity (full)
+        Returns
+        -------
+        state_space : ESpace()
+            state space of the system.
+        action_space : ESpace()
+            action space of the system.
+        """
+        state_space     = ESpace()
+        action_space    = ESpace()
+
+        # auto detect state space and action space
+
+        # state_space.add_dim(Dimension('E-0 LvlSiloA', 'R', 'Res-1 Level of Silo A', '', '', '', [0, 1]))
+        
+        # action_space.add_dim(Dimension('E-0 Act', 'R', 'Act-0 Belt Conveyor A', '', '', '', [0,1]))
+
+        return state_space, action_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_module(self):
+        ...
+
+
+## -------------------------------------------------------------------------------------------------
+    def setup_modules(self):
+        ...
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None) -> None:
+        """
+        Custom method to reset the environment to an initial/defined state. 
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed parameter for an internal random generator
+
+        """
+
+        raise NotImplementedError
+        
+        
+## -------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+        """
+        Custom implementation to simulate a state transition. See method simulate_reaction() for
+        further details.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
+        """
+        Custom reward computation method. See method compute_reward() for further details.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_success(self, p_state: State) -> bool:
+        """
+        Custom method for state evaluation 'success'. See method compute_success() for further details.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_broken(self, p_state: State) -> bool:
+        """
+        Custom method for state evaluation 'broken'. See method compute_broken() for further details.
+        """
 
         raise NotImplementedError
 
