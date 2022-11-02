@@ -17,7 +17,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2022-10-14)
+Ver. 1.0.7 (2022-11-02)
 
 This module shows how to wrap a native MLPro environment class to OpenAI Gym environment.
 """
