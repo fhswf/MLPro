@@ -44,10 +44,12 @@
 ## -- 2022-10-29  1.7.0     DA       Refactoring after introduction of module bf.ops
 ## -- 2022-10-29  1.7.1     DA       Classes MLTask, MLWorkflow removed
 ## -- 2022-10-31  1.7.2     DA       Class Model: new parameter p_visualize
+## -- 2022-11-02  1.8.0     DA       - Class Model: changed parameters of method adapt() from tuple
+## --                                  to dictionary
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.2 (2022-10-31)
+Ver. 1.8.0 (2022-11-02)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 """
@@ -294,18 +296,18 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+    def adapt(self, **p_kwargs) -> bool:
         """
         Adapts the model by calling the custom method _adapt().
 
         Parameters
         ----------
-        p_args
+        p_kwargs : dict
             All parameters that are needed for the adaption. Depends on the specific higher context.
 
         Returns
         -------
-        bool
+        adapted : bool
             True, if something has been adapted. False otherwise.
 
         """
@@ -318,22 +320,20 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, **p_kwargs) -> bool:
         """
-        Custom implementation of the adaptation algorithm. Please describe the type and purpose of 
-        all parameters needed by your implementation. This method will be called by public method 
-        adapt() if adaptivity is switched on. 
+        Custom implementation of the adaptation algorithm. Please specify the parameters needed by
+        your implementation. This method will be called by public method adapt() if adaptivity is 
+        switched on. 
 
         Parameters
         ----------
-        p_args[0]           
-            ...
-        p_args[1]           
-            ...
+        p_kwargs : dict
+            All parameters that are needed for the adaption. Depends on the specific higher context.
 
         Returns
         -------
-        bool
+        adapted : bool
             True, if something has been adapted. False otherwise.
 
         """
