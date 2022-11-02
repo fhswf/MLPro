@@ -2007,31 +2007,11 @@ class Process(Log):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class Sim_MPPS(Environment):
+class Sim_MPPS(HWControl):
 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name, **p_param):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_id(self):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_name(self):
-        ...
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_name(self):
         ...
 
 
@@ -2048,15 +2028,103 @@ class Sim_MPPS(Environment):
 ## -------------------------------------------------------------------------------------------------
     def to_be_added(self):
         ... # to be added later
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+
+class HWControl(Environment):
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_mode=Mode.C_MODE_REAL,
+                 p_latency:timedelta=None,
+                 p_afct_strans:AFctSTrans=None,
+                 p_afct_reward:AFctReward=None,
+                 p_afct_success:AFctSuccess=None,
+                 p_afct_broken:AFctBroken=None,
+                 p_visualize:bool=True,
+                 p_logging=Log.C_LOG_ALL):
         
-
-
-
-
-
+        super().__init__(p_mode=p_mode,
+                        p_latency=p_latency,
+                        p_afct_strans=p_afct_strans,
+                        p_afct_reward=p_afct_reward,
+                        p_afct_success=p_afct_success,
+                        p_afct_broken=p_afct_broken,
+                        p_visualize=p_visualize,
+                        p_logging=p_logging)
         
+        self.controller = {}
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_controller(self, p_controller, p_id:str=None):
+        """
+        This method provides a functionality to add or replace a controller to the system.
+
+        Parameters
+        ----------
+        p_controller :
+            the class of a specific controller, e.g. ConMQTT(), ConOPCUA(), or else.
+        p_id : str
+            the controller ID. Default: None.
+
+        Returns
+        -------
+        bool
+            True, if action export was successful. False otherwise.
+
+        """
+        if p_id is None:
+            self._id = str(uuid.uuid4())
+        else:
+            self._id = str(p_id)
+        self.controller[p_id] = p_controller
+
+
+## -------------------------------------------------------------------------------------------------
+    def _export_action(self, p_action: Action) -> bool:
+        """
+        Mode C_MODE_REAL only: exports given action to be processed externally 
+        (for instance by a real hardware). Please redefine. 
+
+        Parameters
+        ----------
+        p_action : Action
+            Action to be exported
+
+        Returns
+        -------
+        bool
+            True, if action export was successful. False otherwise.
+
+        """
+
+        # send the data to the actuator class of the controller(s)
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _import_state(self) -> bool:
+        """
+        Mode C_MODE_REAL only: imports state from an external system (for instance a real hardware). 
+        Please redefine. Please use method set_state() for internal update.
+
+        Returns
+        -------
+        bool
+            True, if state import was successful. False otherwise.
+
+        """
+
+        # get the data from the sensor class of the controller(s)
+
+        raise NotImplementedError
 
 
 
-    
-    
