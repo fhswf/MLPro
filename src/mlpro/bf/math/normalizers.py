@@ -13,10 +13,11 @@
 ## -- 2022-10-16  1.0.4     LSB      Updating z-transform parameters based on a new data/element(np.ndarray)
 ## -- 2022-10-18  1.0.5     LSB      Refactoring following the review
 ## -- 2022-11-03  1.0.6     LSB      Refactoring new update methods
+## -- 2022-11-03  1.0.7     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-10-18)
+Ver. 1.0.7 (2022-11-03)
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and 
 normalization by Z transformation.
 
@@ -219,7 +220,10 @@ class NormalizerZTrans(Normalizer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_parameters_added(self, p_dataset:np.ndarray = None, p_data:Union[Element, np.ndarray] = None):
+    def update_parameters(self,
+                          p_dataset:np.ndarray = None,
+                          p_data_new:Union[Element, np.ndarray] = None,
+                          p_data_del:Union[Element, np.ndarray] = None):
         """
         Method to update the normalization parameters for Z transformer
 
@@ -228,59 +232,11 @@ class NormalizerZTrans(Normalizer):
         p_dataset:numpy array
             Dataset related to the elements to be normalized. Using this parameter will reset the normalization
             parameters based on the dataset provided.
-        p_data:Element or numpy array
+        p_data_new:Element or numpy array
             New element to update the normalization parameters. Using this parameter will set/update the
             normalization parameters based on the data provided.
-
-        """
-        try: data = p_data.get_values()
-        except: data = p_data
-        if self._param_new is not None: self._param_old = self._param_new.copy()
-
-        if data is None and isinstance(p_dataset, np.ndarray):
-            self._std = np.std(p_dataset, axis=0, dtype=np.float64)
-            self._mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
-            self._n = len(p_dataset)
-            if self._param_new is None: self._param_new = np.zeros([2, self._std.shape[-1]])
-
-        elif isinstance(data, np.ndarray) and p_dataset is None:
-            # this try/except block checks if the parameters are previously set with a dataset, otherwise sets the
-            # parameters based on a single element
-            try:
-                old_mean = self._mean.copy()
-                self._n += 1
-                self._mean = (old_mean * (self._n - 1) + data) / (self._n)
-                self._std = np.sqrt((np.square(self._std) * (self._n - 1)
-                                     + (data - self._mean) * (data - old_mean)) / (self._n))
-
-            except:
-                self._n = 1
-                self._mean = data.copy()
-                self._std = np.zeros(shape=data.shape)
-
-            if self._param_new is None: self._param_new = np.zeros([2, data.shape[-1]])
-
-        else: raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
-                               "or a new data element as p_data ")
-
-        self._param_new[0] = 1 / self._std
-        self._param_new[1] = self._mean / self._std
-
-        self._param = self._param_new.copy()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_parameters_replaced(self, p_data_new:Union[np.ndarray, Element], p_data_del:Union[np.ndarray, Element]):
-        """
-        Method to update normalization parameters of Z-transformers based on a replaced data.
-
-        Parameters
-        ----------
-        p_data_new: Numpy array
-            New data element added to the dataset.
-
-        p_data_del: Numpy array
-            Old data element removed from the dataset
+        p_data_del:Element or Numpy array
+            Old element that is replaced with the new element.
 
         """
         try: data_new = p_data_new.get_values()
@@ -288,17 +244,46 @@ class NormalizerZTrans(Normalizer):
 
         try: data_del = p_data_del.get_values()
         except: data_del = p_data_del
-        self._param_old = self._param_new.copy()
 
-        try:
-            old_mean = self._mean.copy()
-            print(old_mean)
-            self._mean = old_mean + ((data_new - data_del) / (self._n))
-            self._std = np.sqrt(np.square(self._std)+(((np.square(data_new)-np.square(data_del))-self._n*(np.square(
-                self._mean)-np.square(old_mean))))/self._n)
+        if self._param_new is not None: self._param_old = self._param_new.copy()
 
-        except: raise ParamError("Normalization parameters are not initialised prior to updating with replacing a "
+        if data_new is None and data_del is None and isinstance(p_dataset, np.ndarray):
+            self._std = np.std(p_dataset, axis=0, dtype=np.float64)
+            self._mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
+            self._n = len(p_dataset)
+            if self._param_new is None: self._param_new = np.zeros([2, self._std.shape[-1]])
+
+        elif isinstance(data_new, np.ndarray) and data_del is None and p_dataset is None:
+            # this try/except block checks if the parameters are previously set with a dataset, otherwise sets the
+            # parameters based on a single element
+            try:
+                old_mean = self._mean.copy()
+                self._n += 1
+                self._mean = (old_mean * (self._n - 1) + data_new) / (self._n)
+                self._std = np.sqrt((np.square(self._std) * (self._n - 1)
+                                     + (data_new - self._mean) * (data_new - old_mean)) / (self._n))
+
+            except:
+                self._n = 1
+                self._mean = data_new.copy()
+                self._std = np.zeros(shape=data_new.shape)
+
+            if self._param_new is None: self._param_new = np.zeros([2, data_new.shape[-1]])
+
+        elif isinstance(data_new, np.ndarray) and isinstance(data_del, np.ndarray) and not p_dataset:
+            try:
+                old_mean = self._mean.copy()
+                self._mean = old_mean + ((data_new - data_del) / (self._n))
+                self._std = np.sqrt(np.square(self._std) + (
+                ((np.square(data_new) - np.square(data_del)) - self._n * (np.square(
+                    self._mean) - np.square(old_mean)))) / self._n)
+
+            except:
+                raise ParamError("Normalization parameters are not initialised prior to updating with replacing a "
                                  "data element")
+
+        else: raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
+                               "or a new data element as p_data ")
 
         self._param_new[0] = 1 / self._std
         self._param_new[1] = self._mean / self._std
