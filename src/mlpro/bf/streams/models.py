@@ -19,15 +19,19 @@
 ## -- 2022-10-25  0.4.0     DA       New classes StreamTask, StreamWorkfllow, StreamScenario
 ## -- 2022-10-29  0.4.1     DA       Refactoring after introduction of module bf.ops
 ## -- 2022-10-31  0.4.2     DA       Refactoring after changes on bf.mt
+## -- 2022-11-03  0.5.0     DA       - Class Instance: completion of constructor
+## --                                - Class Stream: extensions and corrections
+## --                                - Completion of doc strings 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.2 (2022-10-31)
+Ver. 0.5.0 (2022-11-03)
 
 This module provides classes for standardized stream processing. 
 """
 
 
+from mlpro.bf.math.basics import MSpace
 from mlpro.bf.various import *
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.plot import PlotSettings
@@ -64,20 +68,27 @@ class Instance:
     Parameters
     ----------
     p_feature_data : Element
-        feature data of the instance
+        Feature data of the instance.
     p_label_data : Element
-        label data of the corresponding instance
-
+        Optional label data of the instance.
+    p_time_stamp : datetime
+        Optional time stamp of the instance.
+    p_kwargs : dict
+        Further optional named parameters.
     """
 
     C_TYPE          = 'Instance'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_feature_data:Element, p_label_data:Element = None, **p_kwargs):
+    def __init__( self, 
+                  p_feature_data : Element, 
+                  p_label_data : Element = None, 
+                  p_time_stamp : datetime = None,
+                  **p_kwargs ):
 
         self._feature_data = p_feature_data
         self._label_data = p_label_data
-        self._time_stamp = datetime.now()
+        self._time_stamp = p_time_stamp
         self._kwargs = p_kwargs.copy()
 
 
@@ -122,65 +133,160 @@ class Stream (Mode, LoadSave, ScientificObject):
     Parameters
     ----------
     p_id
-        id of the stream
+        Optional id of the stream. Default = 0.
     p_name : str
-        name of the stream
+        Optional name of the stream. Default = ''.
     p_num_instances : int
-        Number of instances in the stream
+        Optional number of instances in the stream. Default = 0.
     p_version : str
-        Version of the stream
+        Optional version of the stream. Default = ''.
+    p_feature_space : MSpace
+        Optional feature space. Default = None.
+    p_label_space : MSpace
+        Optional label space. Default = None.
     p_mode
         Operation mode. Valid values are stored in constant C_VALID_MODES.
     p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_kwargs
-        Further stream specific parameters
-
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    p_kwargs : dict
+        Further stream specific parameters.
     """
 
     C_TYPE          = 'Stream'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_id=0,
-                  p_name:str='',
-                  p_num_instances:int=0,
-                  p_version:str='',
-                  p_mode=Mode.C_MODE_SIM,
-                  p_logging=Log.C_LOG_ALL,
-                  **p_kwargs):
+                  p_id = 0,
+                  p_name : str = '',
+                  p_num_instances : int = 0,
+                  p_version : str = '',
+                  p_feature_space : MSpace = None,
+                  p_label_space : MSpace = None,
+                  p_mode = Mode.C_MODE_SIM,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
 
-        super().__init__(p_mode=p_mode, p_logging=p_logging)
-        self._id = p_id
-        self.C_NAME = self.C_SCIREF_TITLE = p_name
+        self._id            = p_id
+        self.C_NAME         = self.C_SCIREF_TITLE = p_name
         self._num_instances = p_num_instances
-        self._version = p_version
-        self._kwargs = p_kwargs.copy()
+        self._version       = p_version
+        self._feature_space = p_feature_space
+        self._label_space   = p_label_space
+        self._kwargs        = p_kwargs.copy()
+        Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_id(self) -> str:
+    def get_id(self):
+        """
+        Returns the id of the stream.
+        """
+
         return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
+        """
+        Returns the name of the stream.
+
+        Returns
+        -------
+        stream_name : str
+            Name of the stream.
+        """
+
         return self.C_NAME
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_url(self) -> str:
+        """
+        Returns the URL of the scientific source/reference.
+
+        Returns
+        -------
+        url : str
+            URL of the scientific source/reference.
+        """
+
         return self.C_SCIREF_URL
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_num_features(self) -> int:
+    def get_num_instances(self) -> int:
+        """
+        Returns the number of instances of the stream.
+
+        Returns
+        -------
+        num_inst : int
+            Number of instances of the stream. If 0 the number is unknown.
+        """
+
         return self._num_instances
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_feature_space(self):
-        return self.get_feature_space()
+    def get_feature_space(self) -> MSpace:
+        """
+        Returns the feature space of the stream. 
+
+        Returns
+        -------
+        feature_space : MSpace
+            Feature space of the stream.
+        """
+
+        if self._feature_space is None:
+            self._feature_space = self._setup_feature_space()
+
+        return self._feature_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_feature_space(self) -> MSpace:
+        """
+        Custom method to set up the feature space of the stream. It is called by method get_feature_space().
+
+        Returns
+        -------
+        feature_space : MSpace
+            Feature space of the stream.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_label_space(self) -> MSpace:
+        """
+        Returns the label space of the stream. 
+
+        Returns
+        -------
+        label_space : MSpace
+            Label space of the stream.
+        """
+
+        if self._label_space is None:
+            self._label_space = self._setup_label_space()
+
+        return self._label_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_label_space(self) -> MSpace:
+        """
+        Custom method to set up the label space of the stream. It is called by method get_label_space().
+
+        Returns
+        -------
+        label_space : MSpace
+            Label space of the stream.
+        """
+
+        return None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -193,12 +299,11 @@ class Stream (Mode, LoadSave, ScientificObject):
         ----------
         p_seed : int
             Seed value for random generator.
-
         """
 
-        self._reset(p_seed=p_seed)
         self.log(self.C_LOG_TYPE_W, "\n\n")
         self.log(self.C_LOG_TYPE_W, "Resetting the stream")
+        self._reset(p_seed=p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
