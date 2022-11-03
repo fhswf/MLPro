@@ -11,10 +11,11 @@
 ## -- 2022-06-23  1.0.2     LSB      Fetching stream meta data
 ## -- 2022-06-25  1.0.3     LSB      Refactoring for new label and instance class
 ## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
+## -- 2022-11-03  1.1.1     LSB      Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-08-15)
+Ver. 1.1.1 (2022-11-03)
 
 This module provides wrapper functionalities to incorporate public data sets of the Scikit-learn ecosystem.
 
@@ -245,12 +246,10 @@ class WrStreamSklearn(Wrapper, Stream):
         # if not self._downloaded:
         #     self._downloaded = self._download()
 
-        try:
-
+        if self._feature_space is not None:
             return self._feature_space
 
-        except:
-
+        else:
             self._set_feature_space()
             return self._feature_space
 
