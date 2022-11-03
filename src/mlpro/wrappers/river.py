@@ -11,10 +11,11 @@
 ## -- 2022-06-23  1.0.2     LSB      Meta data and instances in Numpy format
 ## -- 2022-06-25  1.0.3     LSB      Refactoring for label and instance class
 ## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
+## -- 2022-11-03  1.1.1     LSB      Bug fix for river update
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-08-15)
+Ver. 1.1.1 (2022-11-03)
 
 This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
@@ -27,6 +28,7 @@ from mlpro.bf.various import ScientificObject
 from mlpro.wrappers.models import Wrapper
 from mlpro.bf.streams import *
 from mlpro.bf.math import *
+from river import datasets
 import river
 import numpy
 
@@ -84,7 +86,7 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
         Wrapper.__init__(self, p_logging=p_logging)
 
         for i in range(len(_datasets)):
-            _num_instances = eval("river.datasets."+_datasets[i]+"().n_samples")
+            _num_instances = eval("datasets."+_datasets[i]+"().n_samples")
             self._stream_list.append(WrStreamRiver(self._stream_ids[i],_datasets[i],_num_instances, p_logging=p_logging))
 
 
@@ -158,13 +160,13 @@ class WrStreamRiver(Wrapper, Stream):
         self._name = p_name
 
         try:
-            self.C_SCIREF_URL = eval("river.datasets."+self._name+"().url")
+            self.C_SCIREF_URL = eval("datasets."+self._name+"().url")
 
         except:
             self.C_SCIREF_URL = ''
 
         try:
-            self.C_SCIREF_ABSTRACT = eval("river.datasets."+self._name+"().desc")
+            self.C_SCIREF_ABSTRACT = eval("datasets."+self._name+"().desc")
 
         except:
             self.C_SCIREF_ABSTRACT = ''
@@ -202,7 +204,7 @@ class WrStreamRiver(Wrapper, Stream):
             self._downloaded = self._download()
 
         self._index = 0
-        self._dataset = iter(eval("river.datasets."+self._name+"()"))
+        self._dataset = iter(eval("datasets."+self._name+"()"))
         # self._instance = Instance(self.get_feature_space())
 
 
@@ -257,7 +259,7 @@ class WrStreamRiver(Wrapper, Stream):
             True for the download status of the stream
         """
 
-        self._dataset = iter(eval("river.datasets."+self._name+"()"))
+        self._dataset = iter(eval("datasets."+self._name+"()"))
         self._set_feature_space()
 
         if self._dataset is not None:
