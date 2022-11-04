@@ -16,11 +16,12 @@
 ## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
 ## -- 2022-11-03  1.2.0     DA       Class WrStreamOpenML: refactoring after changes on class 
 ## --                                bf.streams.Stream
-## -- 2022-11-04  1.2.1     DA       Class WrStreamProviderOpenML: refactoring 
+## -- 2022-11-04  1.3.0     DA       - Class WrStreamProviderOpenML: refactoring 
+## --                                - Class WrStreamOpenML: removed parent class Wrapper
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2022-11-04)
+Ver. 1.3.0 (2022-11-04)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -125,7 +126,7 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
 ## -------------------------------------------------------------------------------------------------
     def _get_stream(self, p_id, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
         """
-        Custom implementation to fetch an OpenML stream object
+        Custom implementation to fetch an OpenML stream object.
 
         Parameters
         ----------
@@ -169,7 +170,7 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamOpenML(Wrapper, Stream):
+class WrStreamOpenML (Stream):
     """
     Wrapper class for Streams from OpenML
 
@@ -195,8 +196,8 @@ class WrStreamOpenML(Wrapper, Stream):
         Further stream specific parameters.
     """
 
-    C_NAME              = 'OpenML stream'
-    C_WRAPPED_PACKAGE   = 'openml'
+    C_TYPE              = 'Wrapped OpenML stream'
+    C_NAME              = ''
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
 
 ## -------------------------------------------------------------------------------------------------
@@ -213,11 +214,9 @@ class WrStreamOpenML(Wrapper, Stream):
         self.C_ID = self._id = p_id
         self._name = p_name
 
-        Wrapper.__init__( self, p_logging=p_logging )
-
         Stream.__init__( self,
                          p_id=p_id,
-                         p_name=self.C_NAME + ' "' + p_name + '"',
+                         p_name=p_name,
                          p_num_instances=p_num_instances,
                          p_version=p_version,
                          p_feature_space=None,
