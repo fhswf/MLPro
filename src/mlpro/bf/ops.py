@@ -8,10 +8,11 @@
 ## -- 2022-10-28  0.0.0     DA       Creation 
 ## -- 2022-10-29  1.0.0     DA       Implementation of classes Mode, ScenarioBase 
 ## -- 2022-10-31  1.1.0     DA       Class ScenarioBase: plot functionality added 
+## -- 2022-11-04  1.1.1     DA       Removed dead code
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-10-31)
+Ver. 1.1.1 (2022-11-04)
 
 This module provides classes for operation.
 """
@@ -19,7 +20,6 @@ This module provides classes for operation.
 
 import sys
 from datetime import timedelta
-from matplotlib.figure import Figure
 from mlpro.bf.various import Log, LoadSave, Timer
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import *

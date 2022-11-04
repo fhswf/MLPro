@@ -16,10 +16,11 @@
 ## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
 ## -- 2022-11-03  1.2.0     DA       Class WrStreamOpenML: refactoring after changes on class 
 ## --                                bf.streams.Stream
+## -- 2022-11-04  1.2.1     DA       Class WrStreamProviderOpenML: refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-11-03)
+Ver. 1.2.1 (2022-11-04)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -49,7 +50,7 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
     Wrapper class for OpenML as StreamProvider.
     """
 
-    C_NAME              = 'Stream Provider OpenML'
+    C_NAME              = 'OpenML'
     C_WRAPPED_PACKAGE   = 'openml'
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
@@ -60,23 +61,32 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging = Log.C_LOG_ALL):
 
-        StreamProvider.__init__(self, p_logging = p_logging)
         Wrapper.__init__(self, p_logging = p_logging)
+        StreamProvider.__init__(self, p_logging = p_logging)
         self._stream_list = []
         self._stream_ids = []
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream_list(self, p_logging = Log.C_LOG_ALL, **p_kwargs) -> list:
+    def _get_stream_list(self, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> list:
         """
-        Custom class to get alist of stream objects from OpenML
+        Custom class to get a list of stream objects from OpenML.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level of stream objects (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
-        list_streams : List
-            Returns a list of Streams in OpenML
-
+        stream_list : list
+            List of provided streams.
         """
+
         if len(self._stream_list) == 0:
             list_datasets = openml.datasets.list_datasets(output_format='dict')
 
@@ -103,7 +113,8 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
                                     p_name=name, 
                                     p_num_instances=num_instances, 
                                     p_version=version, 
-                                    p_logging=p_logging)
+                                    p_mode=p_mode,
+                                    p_logging=Log.C_LOG_WE )
 
                 self._stream_list.append(s)
                 self._stream_ids.append(id)
@@ -112,28 +123,39 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream(self, p_id) -> Stream:
+    def _get_stream(self, p_id, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
         """
-        Custom class to fetch an OpenML stream object
+        Custom implementation to fetch an OpenML stream object
 
         Parameters
         ----------
-        p_id
-            id of the stream to be fetched
+        p_id : str
+            Id of the requested stream.
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
-        stream: Stream
-            Returns the stream corresponding to the id
+        s : Stream
+            Stream object or None in case of an error.
         """
+
         try:
 
             try:
                 stream = self._stream_list[self._stream_ids.index(int(p_id))]
 
             except:
-                self.get_stream_list()
+                self.get_stream_list(p_mode=p_mode, p_logging=p_logging, **p_kwargs)
                 stream = self._stream_list[self._stream_ids.index(int(p_id))]
+
+            stream.set_mode(p_mode=p_mode)
+            stream.switch_logging(p_logging=p_logging)
+            stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
 
             return stream
 
@@ -176,7 +198,6 @@ class WrStreamOpenML(Wrapper, Stream):
     C_NAME              = 'OpenML stream'
     C_WRAPPED_PACKAGE   = 'openml'
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 

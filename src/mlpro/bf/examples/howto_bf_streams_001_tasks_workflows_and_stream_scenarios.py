@@ -31,7 +31,6 @@ You will learn:
 """
 
 
-from mlpro.bf import streams
 from mlpro.bf.streams import *
 from mlpro.wrappers.openml import WrStreamProviderOpenML
 
@@ -64,12 +63,14 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
+    C_NAME      = 'Nine demo tasks'
+
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_logging):
 
         # 1 Import a stream from OpenML
-        openml  = WrStreamProviderOpenML(p_logging=False)
-        stream  = openml.get_stream(p_id=75)
+        openml  = WrStreamProviderOpenML(p_logging=p_logging)
+        stream  = openml.get_stream(p_id=75, p_mode=p_mode, p_logging=p_logging)
 
 
         # 2 Set up a stream workflow based on a custom stream task
@@ -136,5 +137,6 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
                          p_logging=logging )
 
 
-# 3 Run own stream scenario
-myscenario.run()                         
+# 3 Reset and run own stream scenario
+myscenario.reset()
+#myscenario.run()                         

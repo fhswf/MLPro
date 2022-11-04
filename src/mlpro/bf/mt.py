@@ -13,10 +13,11 @@
 ## -- 2022-10-09  1.1.0     DA       Class Shared: systematics for results
 ## -- 2022-10-12  1.1.1     DA       Replaced package multiprocessing (pickle) by multiprocess (dill)
 ## -- 2022-10-31  1.2.0     DA       Class Task, Workflow: plot functionality added
+## -- 2022-11-04  1.2.1     DA       Class Workflow: corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-10-31)
+Ver. 1.2.1 (2022-11-04)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -897,7 +898,7 @@ class Workflow (Task):
         self._ctr_final_tasks = len(self._final_tasks)
 
         for task in self._entry_tasks: 
-            task.run( p_range=p_range, p_kwargs=p_kwargs)
+            task.run( p_range=p_range, **p_kwargs )
 
         if p_wait: self.wait_async_tasks()
 
