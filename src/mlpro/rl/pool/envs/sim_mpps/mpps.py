@@ -2008,6 +2008,7 @@ class Process(Log):
 ## -------------------------------------------------------------------------------------------------
 
 class HWControl(Environment):
+    C_TYPE = 'Hardware Control'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -2044,11 +2045,6 @@ class HWControl(Environment):
             the class of a specific controller, e.g. ConMQTT(), ConOPCUA(), or else.
         p_id : str
             the controller ID. Default: None.
-
-        Returns
-        -------
-        bool
-            True, if action export was successful. False otherwise.
 
         """
         if p_id is None:
@@ -2105,7 +2101,7 @@ class HWControl(Environment):
 ## -------------------------------------------------------------------------------------------------
 
 class Sim_MPPS(HWControl):
-    C_NAME = 'Simulation of MPPS 1.0'
+    C_TYPE = 'Simulation of MPPS 1.0'
     C_LATENCY = timedelta(0,1,0)
 
 
@@ -2214,6 +2210,8 @@ class Sim_MPPS(HWControl):
         """
         Custom method for state evaluation 'broken'. See method compute_broken() for further details.
         """
+
+        # e.g. if actuator is broken or reservoir is overflow, then system is broken
 
         raise NotImplementedError
 
