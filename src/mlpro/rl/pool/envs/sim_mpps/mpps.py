@@ -2135,6 +2135,12 @@ class Sim_MPPS(HWControl):
 
         # auto detect state space and action space
 
+        # action space = 1 action per actuator?
+
+        # state space = 1 transfer function is assigned to 1 state space for actuators?
+        # 1 reservoir provide also 1 state space (fill-level)
+        # 1 manufacturing process provide 3 state spaces (fill-level before process, status of current process, fill-level after process)
+
         # state_space.add_dim(Dimension('E-0 LvlSiloA', 'R', 'Res-1 Level of Silo A', '', '', '', [0, 1]))
         
         # action_space.add_dim(Dimension('E-0 Act', 'R', 'Act-0 Belt Conveyor A', '', '', '', [0,1]))
@@ -2149,6 +2155,8 @@ class Sim_MPPS(HWControl):
 
 ## -------------------------------------------------------------------------------------------------
     def setup_modules(self):
+
+        # build the connection between modules
         ...
 
 
@@ -2173,6 +2181,12 @@ class Sim_MPPS(HWControl):
         Custom implementation to simulate a state transition. See method simulate_reaction() for
         further details.
         """
+
+        # send the actions to environment
+
+        # detect the process name 'transport_material' for each action
+
+        # calculate new states
 
         raise NotImplementedError
 
