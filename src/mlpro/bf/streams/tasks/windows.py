@@ -156,7 +156,6 @@ class Window(StreamTask):
             boundaries:np.ndarray
                 Returns the current window boundaries in the form of a Numpy array.
         """
-        boundaries = np.zeros((self._numeric_buffer.shape[-1],2))
         boundaries = np.stack(([np.min([self._buffer[i].get_values() for i in self._buffer.keys()], axis=0),
                       np.max([self._buffer[i].get_values() for i in self._buffer.keys()], axis=0)]), axis=1)
         return boundaries
@@ -201,4 +200,103 @@ class Window(StreamTask):
         return np.std(self._buffer.values(), axis=0, dtype=np.float64)
 
 
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
 
+        Parameters
+        ----------
+        p_figure
+        p_settings
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+
+        Parameters
+        ----------
+        p_figure
+        p_settings
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+
+        Parameters
+        ----------
+        p_figure
+        p_settings
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+
+        Parameters
+        ----------
+        p_settings
+        p_inst_new
+        p_inst_del
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+
+        Parameters
+        ----------
+        p_settings
+        p_inst_new
+        p_inst_del
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+        """
+
+        Parameters
+        ----------
+        p_settings
+        p_inst_new
+        p_inst_del
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+        pass
