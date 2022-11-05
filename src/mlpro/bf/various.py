@@ -35,10 +35,11 @@
 ## --                                - new methods Log.get_name(), Log.set_name()
 ## --                                - method log(): C_NAME in quotation marks
 ## -- 2022-10-29  1.8.1     DA       Class Log: removed call of switch_logging() from __init__()
+## -- 2022-11-04  1.8.2     DA       Class Timer: refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.1 (2022-10-29)
+Ver. 1.8.2 (2022-11-04)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer...
@@ -277,30 +278,32 @@ class Log:
 class Timer:
     """
     Timer class in two time modes (real/virtual) and with simple lap management.
+
+    Parameters
+    ----------
+    p_mode : int         
+        C_MODE_REAL for real time mode or C_MODE_VIRTUAL for virtual time mode
+    p_lap_duration : timedelta = None
+        Optional duration of a single lap.
+    p_lap_limit : int = C_LAP_LIMIT    
+        Maximum number of laps until the lap counter restarts with 0  
     """
 
-    C_MODE_REAL = 0  # Real time
-    C_MODE_VIRTUAL = 1  # Virtual time
+    C_MODE_REAL         = 0  # Real time
+    C_MODE_VIRTUAL      = 1  # Virtual time
 
-    C_LAP_LIMIT = 999999
+    C_LAP_LIMIT         = 999999
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode, p_lap_duration: timedelta, p_lap_limit=C_LAP_LIMIT) -> None:
-        """
-        Parameters:
-            p_mode          C_MODE_REAL for real time mode,
-                            C_MODE_VIRTUAL for virtual time mode
-            p_lap_duration  Duration of a single lap
-            p_lap_limit     maximum number of laps until the lap counter restarts with 0  
-        """
+    def __init__(self, p_mode:int, p_lap_duration:timedelta=None, p_lap_limit:int=C_LAP_LIMIT):
 
-        self.mode = p_mode
-        self.lap_duration = p_lap_duration
+        self._mode = p_mode
+        self._lap_duration = p_lap_duration
 
         if p_lap_limit == 0:
-            self.lap_limit = self.C_LAP_LIMIT
+            self._lap_limit = self.C_LAP_LIMIT
         else:
-            self.lap_limit = p_lap_limit
+            self._lap_limit = p_lap_limit
 
         self.reset()
 
@@ -318,7 +321,7 @@ class Timer:
         self.lap_time = timedelta(0, 0, 0)
         self.lap_id = 0
 
-        if self.mode == self.C_MODE_REAL:
+        if self._mode == self.C_MODE_REAL:
             self.timer_start_real = datetime.now()
             self.lap_start_real = self.timer_start_real
             self.time_real = self.timer_start_real
@@ -326,7 +329,7 @@ class Timer:
 
 ## -------------------------------------------------------------------------------------------------
     def get_time(self) -> timedelta:
-        if self.mode == self.C_MODE_REAL:
+        if self._mode == self.C_MODE_REAL:
             self.time_real = datetime.now()
             self.time = self.time_real - self.timer_start_real
 
@@ -335,7 +338,7 @@ class Timer:
 
 ## -------------------------------------------------------------------------------------------------
     def get_lap_time(self) -> timedelta:
-        if self.mode == self.C_MODE_REAL:
+        if self._mode == self.C_MODE_REAL:
             self.lap_time = datetime.now() - self.lap_start_real
 
         return self.lap_time
@@ -348,7 +351,7 @@ class Timer:
 
 ## -------------------------------------------------------------------------------------------------
     def add_time(self, p_delta: timedelta):
-        if self.mode == self.C_MODE_VIRTUAL:
+        if self._mode == self.C_MODE_VIRTUAL:
             self.lap_time = self.lap_time + p_delta
             self.time = self.time + p_delta
 
@@ -367,23 +370,24 @@ class Timer:
         timeout = False
 
         # Compute delay until next lap
-        delay = self.lap_duration - self.get_lap_time()
+        if self._lap_duration is not None:
+            delay = self._lap_duration - self.get_lap_time()
 
-        # Check for timeout
-        if delay < timedelta(0, 0, 0):
-            timeout = True
-            delay = timedelta(0, 0, 0)
+            # Check for timeout
+            if delay < timedelta(0, 0, 0):
+                timeout = True
+                delay = timedelta(0, 0, 0)
 
-        # Handle delay depending on timer mode
-        if self.mode == self.C_MODE_REAL:
-            # Wait until next lap start
-            sleep(delay.total_seconds())
-        else:
-            # Just set next lap start time
-            self.time = self.time + delay
+            # Handle delay depending on timer mode
+            if self._mode == self.C_MODE_REAL:
+                # Wait until next lap start
+                sleep(delay.total_seconds())
+            else:
+                # Just set next lap start time
+                self.time = self.time + delay
 
         # Update lap data
-        self.lap_id = divmod(self.lap_id + 1, self.lap_limit)[1]
+        self.lap_id = divmod(self.lap_id + 1, self._lap_limit)[1]
         self.lap_time = timedelta(0, 0, 0)
         self.lap_start_real = datetime.now()
 

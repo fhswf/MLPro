@@ -22,10 +22,11 @@
 ## -- 2022-11-03  0.5.0     DA       - Class Instance: completion of constructor
 ## --                                - Class Stream: extensions and corrections
 ## --                                - Completion of doc strings 
+## -- 2022-11-04  0.6.0     DA       - Class StreamProvider: refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2022-11-03)
+Ver. 0.6.0 (2022-11-04)
 
 This module provides classes for standardized stream processing. 
 """
@@ -145,7 +146,7 @@ class Stream (Mode, LoadSave, ScientificObject):
     p_label_space : MSpace
         Optional label space. Default = None.
     p_mode
-        Operation mode. Valid values are stored in constant C_VALID_MODES.
+        Operation mode. Default: Mode.C_MODE_SIM.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     p_kwargs : dict
@@ -301,8 +302,7 @@ class Stream (Mode, LoadSave, ScientificObject):
             Seed value for random generator.
         """
 
-        self.log(self.C_LOG_TYPE_W, "\n\n")
-        self.log(self.C_LOG_TYPE_W, "Resetting the stream")
+        self.log(self.C_LOG_TYPE_I, 'Reset')
         self._reset(p_seed=p_seed)
 
 
@@ -366,59 +366,70 @@ class StreamProvider (Log, ScientificObject):
     ----------
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-
     """
 
     C_TYPE          = 'Stream Provider'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging=p_logging)
+        Log.__init__(self, p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_stream_list(self, p_logging = Log.C_LOG_ALL, **p_kwargs) -> list:
+    def get_stream_list( self, p_mode = Mode.C_MODE_SIM, p_logging = Log.C_LOG_ALL, **p_kwargs ) -> list:
         """
         Gets a list of provided streams by calling custom method _get_stream_list().
 
         Parameters
         ----------
-        p_display_list:bool
-            boolean value to log the list of streams
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level of stream objects (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
         stream_list : list
             List of provided streams.
-
         """
-        stream_list = self._get_stream_list(p_logging = p_logging ,**p_kwargs)
-        self.log(self.C_LOG_TYPE_I, "\n\n\n")
-        self.log(self.C_LOG_TYPE_W, 'Getting list of streams...')
-        for stream in stream_list:
-            self.log(self.C_LOG_TYPE_I, "Stream ID: {:<15} Stream Name: {:<30}".format(stream.C_ID, stream.C_NAME))
-        self.log(self.C_LOG_TYPE_I, 'Number of streams found:', len(stream_list),'\n\n\n')
+
+        self.log(self.C_LOG_TYPE_I, 'Getting list of streams...')
+        stream_list = self._get_stream_list( p_mode=p_mode, p_logging=p_logging, **p_kwargs )
+#        for stream in stream_list:
+#            self.log(self.C_LOG_TYPE_I, 'Stream [' + str(stream.get_id()) + '] ' + stream.get_name())
+
+        self.log(self.C_LOG_TYPE_I, 'Number of streams found:', len(stream_list))
         return stream_list
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream_list(self, **p_kwargs) -> list:
+    def _get_stream_list( self, p_mode = Mode.C_MODE_SIM, p_logging = Log.C_LOG_ALL, **p_kwargs ) -> list:
         """
         Custom method to get the list of provided streams. See method get_stream_list() for further
         details.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level of stream objects (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
         stream_list : list
             List of provided streams.
-
         """
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_stream(self, p_id) -> Stream:
+    def get_stream( self, p_id, p_mode = Mode.C_MODE_SIM, p_logging = Log.C_LOG_ALL, **p_kwargs ) -> Stream:
         """
         Returns stream with the specified id by calling custom method _get_stream().
 
@@ -426,24 +437,29 @@ class StreamProvider (Log, ScientificObject):
         ----------
         p_id : str
             Id of the requested stream.
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level of stream object (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
         s : Stream
             Stream object or None in case of an error.
-
         """
 
         self.log(self.C_LOG_TYPE_I, 'Requested stream:', str(p_id))
-        s = self._get_stream(p_id)
+        s = self._get_stream(p_id=p_id, p_mode=p_mode, p_logging=p_logging, **p_kwargs)
         if s is None:
-            self.log(self.C_LOG_TYPE_E, 'Stream', str(p_id), 'not found\n')
+            self.log(self.C_LOG_TYPE_E, 'Stream', str(p_id), 'not found')
 
         return s
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream(self, p_id) -> Stream:
+    def _get_stream( self, p_id, p_mode = Mode.C_MODE_SIM, p_logging = Log.C_LOG_ALL, **p_kwargs ) -> Stream:
         """
         Custom method to get the specified stream. See method get_stream() for further details.
 
@@ -451,12 +467,17 @@ class StreamProvider (Log, ScientificObject):
         ----------
         p_id : str
             Id of the requested stream.
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level of stream object (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
         s : Stream
             Stream object or None in case of an error.
-
         """
 
         raise NotImplementedError 
@@ -710,12 +731,12 @@ class StreamWorkflow (Workflow):
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        super.__init__( p_name=p_name, 
-                           p_range_max=p_range_max, 
-                           p_class_shared=p_class_shared, 
-                           p_visualize=p_visualize,
-                           p_logging=p_logging, 
-                           **p_kwargs )
+        super().__init__( p_name=p_name, 
+                          p_range_max=p_range_max, 
+                          p_class_shared=p_class_shared, 
+                          p_visualize=p_visualize,
+                          p_logging=p_logging, 
+                          **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -852,8 +873,8 @@ class StreamWorkflow (Workflow):
 
 
 
-# -------------------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class StreamScenario (ScenarioBase): 
     """
     Template class for stream based scenarios.
@@ -874,7 +895,7 @@ class StreamScenario (ScenarioBase):
 
     C_PLOT_ACTIVE       = True
 
-# -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_mode, 
                   p_cycle_limit=0, 
@@ -891,7 +912,7 @@ class StreamScenario (ScenarioBase):
                           p_logging=p_logging )
 
 
-# -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def setup(self, p_mode, p_logging=Log.C_LOG_ALL):
         """
         Specialized method to set up a stream scenario. It is automatically called by the constructor
@@ -905,10 +926,10 @@ class StreamScenario (ScenarioBase):
             Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
         """
 
-        self._stream, self._workflow = self._setup(p_mode=p_mode, p_logging=Log.C_LOG_ALL)
+        self._stream, self._workflow = self._setup(p_mode=p_mode, p_logging=p_logging)
 
 
-# -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_logging):
         """
         Custom method to set up a stream scenario consisting of a stream and a processing stream
@@ -932,17 +953,22 @@ class StreamScenario (ScenarioBase):
         raise NotImplementedError
 
 
-# -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _set_mode(self, p_mode):
         self._stream.set_mode(p_mode=p_mode)
 
 
-# -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
         self._stream.reset(p_seed=p_seed)
 
 
-# -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self) -> timedelta:
+        return None
+
+
+## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
         """
         Gets next instance from the stream and lets process it by the stream workflow.
