@@ -22,11 +22,12 @@
 ## -- 2022-11-03  0.5.0     DA       - Class Instance: completion of constructor
 ## --                                - Class Stream: extensions and corrections
 ## --                                - Completion of doc strings 
-## -- 2022-11-04  0.6.0     DA       - Class StreamProvider: refactoring
+## -- 2022-11-04  0.6.0     DA       Classes StreamProvider, Stream: refactoring
+## -- 2022-11-05  0.7.0     DA       Class Stream: refactoring to make it iterable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2022-11-04)
+Ver. 0.7.0 (2022-11-05)
 
 This module provides classes for standardized stream processing. 
 """
@@ -40,6 +41,7 @@ from mlpro.bf.math import Dimension, Element
 from mlpro.bf.mt import Task, Workflow, Shared
 from datetime import datetime
 from matplotlib.figure import Figure
+import random
 
 
 
@@ -129,7 +131,7 @@ class Instance:
 ## -------------------------------------------------------------------------------------------------
 class Stream (Mode, LoadSave, ScientificObject):
     """
-    Template class for data streams.
+    Template class for data streams. Objects of this type can be used as iterators.
 
     Parameters
     ----------
@@ -291,47 +293,48 @@ class Stream (Mode, LoadSave, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None):
+    def set_random_seed(self, p_seed=None):
         """
-        Resets stream generator and initializes an internal random generator with the given seed
-        value by calling the custom method _reset().
-
-        Parameters
-        ----------
-        p_seed : int
-            Seed value for random generator.
+        Resets the internal random generator using the given seed.
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Reset')
-        self._reset(p_seed=p_seed)
+        random.seed(p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed):
+    def __iter__(self):
         """
-        Custom reset method for data stream. See method reset() for more details.
+        Resets the stream by calling custom method _reset().
 
-        Parameters
-        ----------
-        p_seed : int
-            Seed value for random generator.
+        Returns
+        -------
+        iter
+            Iterable stream object
+        """
 
+        self.log(self.C_LOG_TYPE_I, 'Reset')
+        self._reset()
+        return self
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self):
+        """
+        Custom reset method for data stream. See method __iter__() for more details.
         """
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_next(self) -> Instance:
+    def __next__(self) -> Instance:
         """
-        Returns next data stream instance or None at the end of the stream. The next instance is
-        determined by calling the custom method _get_next().
+        Returns next data stream instance by calling the custom method _get_next(). 
 
         Returns
         -------
         instance : Instance
             Next instance of data stream or None.
-
         """
 
         return self._get_next()
@@ -340,14 +343,14 @@ class Stream (Mode, LoadSave, ScientificObject):
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
         """
-        Custom method to determine the next data stream instance. See method get_next() for more
+        Custom method to determine the next data stream instance. At the end of the stream exception
+        StopIteration is to be raised. See method __next__() for more
         details.
 
         Returns
         -------
         instance : Instance
             Next instance of data stream or None.
-            
         """
 
         raise NotImplementedError

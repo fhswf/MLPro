@@ -18,10 +18,11 @@
 ## --                                bf.streams.Stream
 ## -- 2022-11-04  1.3.0     DA       - Class WrStreamProviderOpenML: refactoring 
 ## --                                - Class WrStreamOpenML: removed parent class Wrapper
+## -- 2022-11-05  1.4.0     DA       Class WrStreamOpenML: refactoring to make it iterable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2022-11-04)
+Ver. 1.4.0 (2022-11-05)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -232,14 +233,9 @@ class WrStreamOpenML (Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None):
+    def _reset(self):
         """
-        Custom reset method to download and reset an OpenML stream
-
-        Parameters
-        ----------
-        p_seed
-            Seed for resetting the stream
+        Custom reset method to download and reset an OpenML stream.
         """
 
         # Just to ensure the data download and set up of feature and label space
@@ -338,4 +334,4 @@ class WrStreamOpenML (Stream):
 
             return instance
 
-        return None
+        raise StopIteration
