@@ -30,7 +30,7 @@ You will learn:
 
 """
 
-
+from datetime import datetime
 from mlpro.wrappers.openml import WrStreamProviderOpenML
 from mlpro.bf.various import Log
 
@@ -45,28 +45,28 @@ else:
     logging     = Log.C_LOG_NOTHING
 
 
-# 1. Create a Wrapper for OpenML stream provider
+# 1 Create a Wrapper for OpenML stream provider
 open_ml = WrStreamProviderOpenML(p_logging = logging)
 
 
-# 2. Get a list of streams available at the stream provider
+# 2 Get a list of streams available at the stream provider
 stream_list = open_ml.get_stream_list(p_logging = logging)
 
 
-# 3. Get stream "BNG(autos,nominal,1000000)" from the stream provider OpenML
+# 3 Get stream "BNG(autos,nominal,1000000)" from the stream provider OpenML
 mystream = open_ml.get_stream( p_id=75, p_logging=logging)
 
 
-# 4. Get the feature space of the stream
+# 4 Get the feature space of the stream
 feature_space = mystream.get_feature_space()
 open_ml.log(mystream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim())
 
 
-# 5. Set up an iterator for the stream
+# 5 Set up an iterator for the stream
 myiterator = iter(mystream)
 
 
-# 6. Fetching some stream instances
+# 6 Fetching some stream instances
 myiterator.log(mystream.C_LOG_TYPE_W,'Fetching first', str(num_inst), 'stream instances...')
 for i in range(num_inst):
     curr_instance   = next(myiterator)
@@ -75,20 +75,27 @@ for i in range(num_inst):
     myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
 
 
-# 7. Resetting the iterator
+# 7 Resetting the iterator
 myiterator = iter(mystream)
 
 
-# 8. Fetching all 1,000,000 instances dark
+# 8 Fetching all 1,000,000 instances dark
 myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all 1,000,000 instances...')
 for i, curr_instance in enumerate(myiterator):
     if i == ( num_inst -1 ): 
         myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the 1,000,000 instances dark...')
         myiterator.switch_logging(p_logging=Log.C_LOG_NOTHING)
+        tp_start = datetime.now()
 
     curr_data       = curr_instance.get_feature_data().get_values()
     curr_label      = curr_instance.get_label_data().get_values()
     myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
 
+# 8.1 Some statistics...
+tp_end = datetime.now()
+duration = tp_end - tp_start
+duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
+rate = ( 1000000 - num_inst ) / duration_sec
+
 myiterator.switch_logging(p_logging=logging)
-myiterator.log(Log.C_LOG_TYPE_W, 'Done!')    
+myiterator.log(Log.C_LOG_TYPE_W, 'Done in', round(duration_sec,2), ' seconds (Throughput =', round(rate), 'instances/sec)')    
