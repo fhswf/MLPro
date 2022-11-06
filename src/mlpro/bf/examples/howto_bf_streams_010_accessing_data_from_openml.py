@@ -17,11 +17,17 @@
 """
 Ver. 1.1.0 (2022-11-05)
 
-This module shows how to wrap MLPro's Stream and StreamProvider class to OpenML, including how to fetch the list of
-streams and downloading a stream from the list of streams available with the stream provider, getting the feature
-spaces of the particular stream. This module also illustrates how to reset the stream and fetch the stream instances
-as needed.
-Please run the following code to understand the wrapper functionality and to produce similar results.
+This module demonstrates the use of OpenML datasets as streams in MLPro. To this regard, MLPro
+provides wrapper classes to standardize stream access in own ML applications.
+
+You will learn:
+
+1) How to access datasets of the OpenML project.
+
+2) How to iterate the instances of an OpenML stream.
+
+3) How to access feature and label data of a data stream.
+
 """
 
 
