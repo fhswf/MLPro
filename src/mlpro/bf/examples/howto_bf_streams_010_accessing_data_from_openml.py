@@ -82,7 +82,7 @@ myiterator = iter(mystream)
 # 8 Fetching all 1,000,000 instances dark
 myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all 1,000,000 instances...')
 for i, curr_instance in enumerate(myiterator):
-    if i == ( num_inst -1 ): 
+    if i == num_inst: 
         myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the 1,000,000 instances dark...')
         myiterator.switch_logging(p_logging=Log.C_LOG_NOTHING)
         tp_start = datetime.now()
@@ -98,4 +98,4 @@ duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
 rate = ( 1000000 - num_inst ) / duration_sec
 
 myiterator.switch_logging(p_logging=logging)
-myiterator.log(Log.C_LOG_TYPE_W, 'Done in', round(duration_sec,2), ' seconds (Throughput =', round(rate), 'instances/sec)')    
+myiterator.log(Log.C_LOG_TYPE_W, 'Done in', round(duration_sec,2), ' seconds (throughput =', round(rate), 'instances/sec)')    
