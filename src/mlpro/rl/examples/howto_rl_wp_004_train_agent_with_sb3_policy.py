@@ -16,10 +16,11 @@
 ## -- 2022-02-25  1.0.7     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-07-20  1.0.8     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-14  1.0.9     SY       Refactoring 
+## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.9 (2022-10-14)
+Ver. 1.1.0 (2022-11-07)
 
 This module shows how to train agent with SB3 Wrapper for On- and Off-Policy Algorithms
 
@@ -30,6 +31,7 @@ You will learn:
 2) How to run the scenario
     
 """
+
 
 import gym
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
@@ -44,11 +46,11 @@ from pathlib import Path
 class MyScenario(RLScenario):
     C_NAME = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1 Setup environment
         # self._env   = RobotHTM(p_logging=False)
         gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
-        self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
+        self._env = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging)
 
         # 2 Instantiate Policy From SB3
         # env is set to None, it will be set up later inside the wrapper
@@ -99,6 +101,7 @@ class MyScenario(RLScenario):
             p_observation_space=self._env.get_state_space(),
             p_action_space=self._env.get_action_space(),
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging)
 
         # 4 Setup standard single-agent with own policy
@@ -107,6 +110,7 @@ class MyScenario(RLScenario):
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging
         )
 

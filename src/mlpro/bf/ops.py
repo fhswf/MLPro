@@ -8,7 +8,9 @@
 ## -- 2022-10-28  0.0.0     DA       Creation 
 ## -- 2022-10-29  1.0.0     DA       Implementation of classes Mode, ScenarioBase 
 ## -- 2022-10-31  1.1.0     DA       Class ScenarioBase: plot functionality added 
-## -- 2022-11-07  1.2.0     DA       Class ScenarioBase: support of new event "end of data"
+## -- 2022-11-07  1.2.0     DA       Class ScenarioBase: 
+## --                                - support of new event "end of data"
+## --                                - method setup(): parameters removed
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -20,6 +22,7 @@ This module provides classes for operation.
 
 import sys
 from datetime import timedelta
+from matplotlib.figure import Figure
 from mlpro.bf.various import Log, LoadSave, Timer
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import *
@@ -113,7 +116,7 @@ class ScenarioBase (Mode, LoadSave, Plottable):
     p_auto_setup : bool
         If True custom method setup() is called after initialization.
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = True.
+        Boolean switch for visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
     """
@@ -139,7 +142,7 @@ class ScenarioBase (Mode, LoadSave, Plottable):
         self._timer         = None
 
         # 2 Optional automatic custom setup
-        if p_auto_setup: self.setup(p_mode=p_mode, p_logging=p_logging)
+        if p_auto_setup: self.setup()
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -153,17 +156,10 @@ class ScenarioBase (Mode, LoadSave, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self, p_mode, p_logging=Log.C_LOG_ALL):
+    def setup(self):
         """
         Custom method to set up all components of the scenario.
-
-        Parameters
-        ----------
-        p_mode
-            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
-        p_logging
-            Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
-         """
+        """
 
         raise NotImplementedError
 

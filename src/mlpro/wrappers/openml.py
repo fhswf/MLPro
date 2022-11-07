@@ -14,10 +14,15 @@
 ## -- 2022-06-23  1.0.5     LSB      fetching meta data
 ## -- 2022-06-25  1.0.6     LSB      Refactoring due to new label and instance class, new instance
 ## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
+## -- 2022-11-03  1.2.0     DA       Class WrStreamOpenML: refactoring after changes on class 
+## --                                bf.streams.Stream
+## -- 2022-11-04  1.3.0     DA       - Class WrStreamProviderOpenML: refactoring 
+## --                                - Class WrStreamOpenML: removed parent class Wrapper
+## -- 2022-11-05  1.4.0     DA       Class WrStreamOpenML: refactoring to make it iterable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-08-15)
+Ver. 1.4.0 (2022-11-05)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -29,10 +34,11 @@ https://docs.openml.org/APIs/
 """
 
 import numpy
-from mlpro.bf.various import ScientificObject
+from mlpro.bf.various import ScientificObject, Log
+from mlpro.bf.ops import Mode
 from mlpro.wrappers.models import Wrapper
-from mlpro.bf.streams import *
-from mlpro.bf.math import *
+from mlpro.bf.streams import Feature, Label, Instance, StreamProvider, Stream
+from mlpro.bf.math import Element, MSpace
 import openml
 
 
@@ -43,10 +49,10 @@ import openml
 ## -------------------------------------------------------------------------------------------------
 class WrStreamProviderOpenML (Wrapper, StreamProvider):
     """
-    Wrapper class for OpenML as StreamProvider
+    Wrapper class for OpenML as StreamProvider.
     """
 
-    C_NAME              = 'Stream Provider OpenML'
+    C_NAME              = 'OpenML'
     C_WRAPPED_PACKAGE   = 'openml'
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
@@ -57,76 +63,101 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging = Log.C_LOG_ALL):
 
-        StreamProvider.__init__(self, p_logging = p_logging)
         Wrapper.__init__(self, p_logging = p_logging)
+        StreamProvider.__init__(self, p_logging = p_logging)
         self._stream_list = []
         self._stream_ids = []
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream_list(self, p_logging = Log.C_LOG_ALL, **p_kwargs) -> list:
+    def _get_stream_list(self, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> list:
         """
-        Custom class to get alist of stream objects from OpenML
+        Custom class to get a list of stream objects from OpenML.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level of stream objects (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
-        list_streams:List
-            Returns a list of Streams in OpenML
-
+        stream_list : list
+            List of provided streams.
         """
+
         if len(self._stream_list) == 0:
             list_datasets = openml.datasets.list_datasets(output_format='dict')
 
 
             for d in list_datasets.items():
                 try:
-                    _name = d[1]['name']
+                    name = d[1]['name']
                 except:
-                    _name = ''
+                    name = ''
                 try:
-                    _id = d[1]['did']
+                    id = d[1]['did']
                 except:
-                    _id = ''
+                    id = ''
                 try:
-                    _num_instances = d[1]['NumberOfInstances']
+                    num_instances = d[1]['NumberOfInstances']
                 except:
-                    _num_instances = 0
+                    num_instances = 0
                 try:
-                    _version = d[1]['Version']
+                    version = d[1]['Version']
                 except:
-                    _version = 0
+                    version = 0
 
-                s = WrStreamOpenML(_id, _name, _num_instances, _version, p_logging= p_logging)
+                s = WrStreamOpenML( p_id=id, 
+                                    p_name=name, 
+                                    p_num_instances=num_instances, 
+                                    p_version=version, 
+                                    p_mode=p_mode,
+                                    p_logging=Log.C_LOG_WE )
 
                 self._stream_list.append(s)
-                self._stream_ids.append(_id)
+                self._stream_ids.append(id)
 
         return self._stream_list
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream(self, p_id) -> Stream:
+    def _get_stream(self, p_id, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
         """
-        Custom class to fetch an OpenML stream object
+        Custom implementation to fetch an OpenML stream object.
 
         Parameters
         ----------
-        p_id
-            id of the stream to be fetched
+        p_id : str
+            Id of the requested stream.
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
-        stream: Stream
-            Returns the stream corresponding to the id
+        s : Stream
+            Stream object or None in case of an error.
         """
+
         try:
 
             try:
                 stream = self._stream_list[self._stream_ids.index(int(p_id))]
 
             except:
-                self.get_stream_list()
+                self.get_stream_list(p_mode=p_mode, p_logging=p_logging, **p_kwargs)
                 stream = self._stream_list[self._stream_ids.index(int(p_id))]
+
+            stream.set_mode(p_mode=p_mode)
+            stream.switch_logging(p_logging=p_logging)
+            stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
 
             return stream
 
@@ -140,27 +171,45 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamOpenML(Wrapper, Stream):
+class WrStreamOpenML (Stream):
     """
     Wrapper class for Streams from OpenML
 
     Parameters
     ----------
     p_id
-        id of the Stream
-    p_name
-        name of the stream
-    p_num_features
-        Number of features of the Stream
+        Id of the stream.
+    p_name : str
+        Name of the stream. 
+    p_num_instances : int
+        Number of instances in the stream. 
+    p_version : str
+        Version of the stream. Default = ''.
+    p_feature_space : MSpace
+        Optional feature space. Default = None.
+    p_label_space : MSpace
+        Optional label space. Default = None.
+    p_mode
+        Operation mode. Valid values are stored in constant C_VALID_MODES.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    p_kwargs : dict
+        Further stream specific parameters.
     """
 
-    C_NAME              = 'OpenML stream'
-    C_WRAPPED_PACKAGE   = 'openml'
+    C_TYPE              = 'Wrapped OpenML stream'
+    C_NAME              = ''
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
 
-
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name, p_num_instances, p_version, p_logging = Log.C_LOG_ALL, p_mode = Mode.C_MODE_SIM, **p_kwargs):
+    def __init__( self, 
+                  p_id, 
+                  p_name : str, 
+                  p_num_instances : int, 
+                  p_version : str, 
+                  p_mode = Mode.C_MODE_SIM, 
+                  p_logging = Log.C_LOG_ALL, 
+                  **p_kwargs ):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
@@ -168,15 +217,14 @@ class WrStreamOpenML(Wrapper, Stream):
 
         Stream.__init__( self,
                          p_id=p_id,
-                         p_name=self.C_NAME + ' "' + p_name + '"',
+                         p_name=p_name,
                          p_num_instances=p_num_instances,
                          p_version=p_version,
-                         p_logging = p_logging,
-                         p_mode=p_mode)
-
-        Wrapper.__init__( self, p_logging=p_logging )
-
-        self._kwargs = p_kwargs.copy()
+                         p_feature_space=None,
+                         p_label_space=None,
+                         p_mode=p_mode,
+                         p_logging=p_logging,
+                         **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -185,57 +233,47 @@ class WrStreamOpenML(Wrapper, Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None):
+    def _reset(self):
         """
-        Custom reset method to download and reset an OpenML stream
-
-        Parameters
-        ----------
-        p_seed
-            Seed for resetting the stream
+        Custom reset method to download and reset an OpenML stream.
         """
 
-        if not self._downloaded:
-            self._downloaded = self._download()
+        # Just to ensure the data download and set up of feature and label space
+        self.get_feature_space()
+        self.get_label_space()
 
         self._index = 0
 
 
 ## --------------------------------------------------------------------------------------------------
-    def _set_feature_space(self):
-
-        self._feature_space = MSpace()
-
-        _, _, _, features = self._dataset
-        for feature in features:
-            self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
-
-
-## --------------------------------------------------------------------------------------------------
-    def get_feature_space(self):
-        """
-        Method to get the feature space of a stream object
-
-        Returns
-        -------
-        feature_space:
-            Returns the Feature space as MSpace of MLPro
-        """
+    def _setup_feature_space(self) -> MSpace:
 
         if not self._downloaded:
             self._downloaded = self._download()
+            if not self._downloaded: return None       
 
-        try:
+        feature_space = MSpace()
 
-            return self._feature_space
+        _, _, _, features = self._dataset
+        for feature in features:
+            feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
 
-        except:
-            self._set_feature_space()
-            return self._feature_space
+        return feature_space
 
 
 ## --------------------------------------------------------------------------------------------------
-    def _download(self):
+    def _setup_label_space(self) -> MSpace:
+        if not self._downloaded:
+            self._downloaded = self._download() 
+            if not self._downloaded: return None       
+
+        label_space = MSpace()
+        label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
+        return label_space
+
+
+## --------------------------------------------------------------------------------------------------
+    def _download(self) -> bool:
         """
         Custom method to download the corresponding OpenML dataset
 
@@ -244,30 +282,25 @@ class WrStreamOpenML(Wrapper, Stream):
         bool
             True for the download status of the stream
         """
-        _stream_meta = openml.datasets.get_dataset(self._id)
-
-        self._label_space = MSpace()
-
-        self._label = _stream_meta.default_target_attribute
-        self._label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
+        self._stream_meta = openml.datasets.get_dataset(self._id)
+        self._label = self._stream_meta.default_target_attribute
 
         try:
-            self.C_SCIREF_URL = _stream_meta.url
+            self.C_SCIREF_URL = self._stream_meta.url
         except:
             self.C_SCIREF_URL = ''
         try:
-            self.C_SCIREF_AUTHOR = _stream_meta.creator
+            self.C_SCIREF_AUTHOR = self._stream_meta.creator
             if isinstance(self.C_SCIREF_AUTHOR, list):
                 self.C_SCIREF_AUTHOR = ' and '.join(self.C_SCIREF_AUTHOR)
         except:
             self.C_SCIREF_AUTHOR =''
         try:
-            self.C_SCIREF_ABSTRACT = _stream_meta.description
+            self.C_SCIREF_ABSTRACT = self._stream_meta.description
         except:
             self.C_SCIREF_ABSTRACT =''
 
-        self._dataset = _stream_meta.get_data(dataset_format = 'array')
-        self._set_feature_space()
+        self._dataset = self._stream_meta.get_data(dataset_format = 'array')
 
         if self._dataset is not None:
             return True
@@ -283,18 +316,22 @@ class WrStreamOpenML(Wrapper, Stream):
 
         Returns
         -------
-        instance:
+        instance : Instance
             Next instance in the OpenML stream object (None after the last instance in the dataset).
         """
 
         if self._index < len(self._dataset[0]):
-            _feature_data = Element(self._feature_space)
-            _label_data = Element(self._label_space)
-            _feature_data.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
-            _label_data.set_values(numpy.asarray([self._dataset[0][self._index][self._dataset[3].index(self._label)]]))
-            _instance = Instance(_feature_data, _label_data)
+
+            # Determine feature data
+            feature_data  = Element( self.get_feature_space() )
+            feature_data.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
+
+            # Determine label data
+            label_data = Element(self.get_label_space())
+            label_data.set_values(numpy.asarray([self._dataset[0][self._index][self._dataset[3].index(self._label)]]))
+            instance = Instance( p_feature_data=feature_data, p_label_data=label_data )
             self._index += 1
 
-            return _instance
+            return instance
 
-        return None
+        raise StopIteration

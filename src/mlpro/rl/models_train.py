@@ -40,7 +40,9 @@
 ## -- 2022-05-23  1.7.2     SY       Bug fixing: storing data reward
 ## -- 2022-11-01  1.7.3     DA       Refactoring and code cleaning
 ## -- 2022-11-02  1.8.0     DA       Refactoring: methods adapt(), _adapt()
-## -- 2022-11-07  1.8.1     DA       Class RLScenario, method _run_cycle(): new return value "end_of_data"
+## -- 2022-11-07  1.8.1     DA       Class RLScenario:
+## --                                - method _run_cycle(): new return value "end_of_data"
+## --                                - method _setup(): refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -53,6 +55,7 @@ from mlpro.bf.data import DataStoring
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
 from mlpro.rl.models_sar import *
+
 
 
 
@@ -314,17 +317,25 @@ class RLScenario(Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada: bool, p_logging: bool) -> Model:
+    def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         """
-        Set up the ML scenario by redefinition. Please bind your environment to self._env and return
+        Custom method to set up the ML scenario. Please bind your environment to self._env and return
         the agent as model. 
 
-        Parameters:
-            p_mode          Operation mode (see class Mode)
-            p_ada           Boolean switch for adaptivity of internal model
-            p_logging       Boolean switch for logging functionality
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
+        p_ada : bool
+            Boolean switch for adaptivity.
+        p_visualize : bool
+            Boolean switch for env/agent visualisation. Default = True.
+        p_logging
+            Log level (see constants of class Log). 
 
-        Returns:
+        Returns
+        -------
+        agent : Agent
             Agent model (object of type Agent or Multi-agent)
         """
 

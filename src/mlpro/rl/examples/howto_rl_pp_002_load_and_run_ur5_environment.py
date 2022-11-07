@@ -8,23 +8,26 @@
 ## -- 2022-06-14  0.0.0     MRD      Creation
 ## -- 2022-06-14  1.0.0     MRD      Initial Release
 ## -- 2022-10-14  1.0.1     SY       Refactoring 
+## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-10-14)
+Ver. 1.1.0 (2022-11-07)
 
 This module shows how to load trained policy for UR5 robot (derivate for paper).
 """
 
-from mlpro.rl.models import *
+
+from mlpro.rl import *
 from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
+
 
 
 # 1 Implement your own RL scenario
 class ScenarioUR5A2C(RLScenario):
     C_NAME = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
         self._env = UR5JointControl(
             p_build=True, 
@@ -35,7 +38,7 @@ class ScenarioUR5A2C(RLScenario):
             p_net_interface="enp0s31f6",
             p_robot_ip="172.19.10.41",
             # p_reverse_ip="172.19.10.140", 
-            p_visualize=self._visualize, 
+            p_visualize=p_visualize, 
             p_logging=p_logging)
 
         return self.load("/home/at-lab/MLPRO/MLPro/src/mlpro/rl/examples", "trained_policy.pkl")

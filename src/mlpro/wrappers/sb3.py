@@ -24,10 +24,11 @@
 ## -- 2022-09-16  1.2.2     SY       Add Hindsight Experience Replay (HER) for off-policy algorithm
 ## -- 2022-10-08  1.2.3     SY       Bug fixing
 ## -- 2022-11-02  1.2.4     DA       Refactoring: methods adapt(), _adapt()
+## -- 2022-11-07  1.2.5     DA       Class WrPolicySB32MLPro: new parameter p_visualize
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2022-11-02)
+Ver. 1.2.5 (2022-11-07)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
@@ -112,7 +113,7 @@ class VecExtractDictObs(VecEnvWrapper):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrPolicySB32MLPro(Wrapper, Policy):
+class WrPolicySB32MLPro (Wrapper, Policy):
     """
     This class provides a policy wrapper from Standard Baselines 3 (SB3).
     Especially On-Policy Algorithm
@@ -129,6 +130,8 @@ class WrPolicySB32MLPro(Wrapper, Policy):
         Environment Action Space
     p_ada : bool
         Adaptability. Defaults to True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     p_num_envs : int
@@ -142,13 +145,13 @@ class WrPolicySB32MLPro(Wrapper, Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace,
-                 p_action_space:MSpace, p_ada:bool=True, p_logging=Log.C_LOG_ALL,
+                 p_action_space:MSpace, p_ada:bool=True, p_visualize:bool=False, p_logging=Log.C_LOG_ALL,
                  p_num_envs:int=1, p_desired_goals=None):
         # Set Name
         WrPolicySB32MLPro.C_NAME = "Policy " + type(p_sb3_policy).__name__
         
-        Policy.__init__(self, p_observation_space, p_action_space, p_ada=p_ada, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
+        Policy.__init__(self, p_observation_space, p_action_space, p_ada=p_ada, p_visualize=p_visualize, p_logging=p_logging)
 
         self.sb3 = p_sb3_policy
         self.last_buffer_element = None

@@ -46,10 +46,11 @@
 ## --                                - Update compute_action in Agent for action planning
 ## -- 2022-09-26  1.5.8     SY       Minor Improvement on _extract_observation method (Agent class)
 ## -- 2022-11-02  1.6.0     DA       Refactoring: methods adapt(), _adapt()
+## -- 2022-11-07  1.6.1     DA       Classes Policy, Agent, MultiAgent: new parameter p_visualize
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2022-11-02) 
+Ver. 1.6.1 (2022-11-07) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -92,13 +93,15 @@ class Policy (Model):
         Size of internal buffer. Default = 1.
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
-    C_TYPE = 'Policy'
-    C_NAME = '????'
-    C_BUFFER_CLS = SARSBuffer
+    C_TYPE          = 'Policy'
+    C_NAME          = '????'
+    C_BUFFER_CLS    = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -106,8 +109,14 @@ class Policy (Model):
                  p_action_space: MSpace,
                  p_buffer_size=1,
                  p_ada=True,
+                 p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL):
-        super().__init__(p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+                 
+        super().__init__( p_buffer_size=p_buffer_size, 
+                          p_ada=p_ada, 
+                          p_visualize=p_visualize, 
+                          p_logging=p_logging )
+
         self._observation_space = p_observation_space
         self._action_space = p_action_space
         self.set_id(0)
@@ -178,7 +187,7 @@ class Policy (Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ActionPlanner(Log):
+class ActionPlanner (Log):
     """
     Template class for action planning algorithms to be used as part of model-based planning agents. 
     The goal is to find the shortest sequence of actions that leads to a maximum reward.
@@ -393,7 +402,7 @@ class RLScenarioMBInt(RLScenario):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Agent(Policy):
+class Agent (Policy):
     """
     This class represents a single agent model.
 
@@ -420,13 +429,14 @@ class Agent(Policy):
         Optional unique agent id (especially important for multi-agent scenarios). Default = 0.
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging          
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_ALL.
     p_mb_training_param : dict
         Optional parameters for internal policy training with environment model (see parameters of
         class RLTraining). Hyperparameter tuning and data logging is not supported here. The suitable
         scenario class is added internally.
-
     """
 
     C_TYPE = 'Agent'
@@ -444,6 +454,7 @@ class Agent(Policy):
                  p_name='',
                  p_id=0,
                  p_ada=True,
+                 p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL,
                  **p_mb_training_param):
 
@@ -493,8 +504,8 @@ class Agent(Policy):
         self._set_id(p_id)
 
         Log.__init__(self, p_logging)
-        self.switch_logging(p_logging)
         self.switch_adaptivity(p_ada)
+        Plottable.__init__(self, p_visualize=p_visualize)
 
         self.clear_buffer()
 
@@ -722,23 +733,24 @@ class MultiAgent(Agent):
         Name of agent. Default = ''.
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
-
     """
 
-    C_TYPE = 'Multi-Agent'
-    C_NAME = ''
-    C_SUFFIX = '.cfg'
+    C_TYPE      = 'Multi-Agent'
+    C_NAME      = ''
+    C_SUFFIX    = '.cfg'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name='', p_ada=True, p_logging=True):
+    def __init__(self, p_name='', p_ada=True, p_visualize:bool=False, p_logging=True):
         self._agents = []
         self._agent_ids = []
         self.set_name(p_name)
 
         Log.__init__(self, p_logging)
-        self.switch_logging(p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
         self.switch_adaptivity(p_ada)
         self._set_adapted(False)
 
@@ -934,7 +946,9 @@ class MultiAgent(Agent):
         Doesn't support embedded plot of underlying agent hierarchy.
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Init vizualization for all agents...')
+        if not self.get_visualization(): return
+
+        self.log(self.C_LOG_TYPE_I, 'Init visualization for all agents...')
 
         for agent_entry in self._agents:
             agent_entry[0].init_plot(None)
@@ -942,7 +956,9 @@ class MultiAgent(Agent):
     
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
-        self.log(self.C_LOG_TYPE_I, 'Start vizualization for all agents...')
+        if not self.get_visualization(): return
+
+        self.log(self.C_LOG_TYPE_I, 'Start visualization for all agents...')
 
         for agent_entry in self._agents:
             agent_entry[0].update_plot()
