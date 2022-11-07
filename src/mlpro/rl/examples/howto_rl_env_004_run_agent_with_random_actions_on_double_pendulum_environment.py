@@ -14,11 +14,12 @@
 ## -- 2022-08-23  1.0.4     DA       Refactoring
 ## -- 2022-09-06  1.0.5     LSB/DA   Refactoring
 ## -- 2022-10-13  1.0.6     SY       Refactoring 
+## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.6 (2022-10-13)
+Ver. 1.1.0 (2022-11-07)
 
 This module shows how to run the double pendulum environment using random actions agent.
 
@@ -49,9 +50,9 @@ class ScenarioDoublePendulum(RLScenario):
 
     C_NAME      = 'Double Pendulum with Random Actions'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        self._env   = DoublePendulumS7(p_init_angles='random', p_max_torque=10, p_logging=p_logging)
+        self._env   = DoublePendulumS7(p_init_angles='random', p_max_torque=10, p_visualize=p_visualize, p_logging=p_logging)
 
 
         # 1.2 Setup and return random action agent
@@ -59,6 +60,7 @@ class ScenarioDoublePendulum(RLScenario):
                                         p_action_space=self._env.get_action_space(),
                                         p_buffer_size=1,
                                         p_ada=1,
+                                        p_visualize=p_visualize,
                                         p_logging=p_logging)
 
         return Agent(
@@ -66,6 +68,7 @@ class ScenarioDoublePendulum(RLScenario):
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging
         )
 

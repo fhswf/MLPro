@@ -16,10 +16,11 @@
 ## -- 2022-03-21  1.0.7     WB       Rewrite module description
 ## -- 2022-07-20  1.0.8     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-14  1.0.9     SY       Refactoring 
+## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.9 (2022-10-14)
+Ver. 1.1.0 (2022-11-07)
 
 This module shows comparison between native and wrapped SB3 policy (On-policy).
 """
@@ -62,7 +63,8 @@ policy_kwargs = dict(activation_fn=torch.nn.Tanh,
 class MyScenario(RLScenario):
     C_NAME = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
+
         class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
             def _reset(self, p_seed=None):
                 self.log(self.C_LOG_TYPE_I, 'Reset')
@@ -105,6 +107,7 @@ class MyScenario(RLScenario):
             p_observation_space=self._env.get_state_space(),
             p_action_space=self._env.get_action_space(),
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging)
 
         # 4 Setup standard single-agent with own policy
@@ -113,6 +116,7 @@ class MyScenario(RLScenario):
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging
         )
 

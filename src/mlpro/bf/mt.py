@@ -13,10 +13,12 @@
 ## -- 2022-10-09  1.1.0     DA       Class Shared: systematics for results
 ## -- 2022-10-12  1.1.1     DA       Replaced package multiprocessing (pickle) by multiprocess (dill)
 ## -- 2022-10-31  1.2.0     DA       Class Task, Workflow: plot functionality added
+## -- 2022-11-04  1.2.1     DA       Class Workflow: corrections
+## -- 2022-11-07  1.2.2     DA       Classes Async, Task, Workflow: corrections/refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-10-31)
+Ver. 1.2.2 (2022-11-07)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -279,10 +281,10 @@ class Async (Range, Log):
         Log.__init__(self, p_logging=p_logging)
         Range.__init__(self, p_range=p_range_max)
 
-        self._range_current = p_range_max
         self._async_tasks   = []
         self._mpmanager     = None
         self._class_shared  = p_class_shared
+
         self._so : Shared   = self._create_so(p_range=p_range_max, p_class_shared=p_class_shared)
 
 
@@ -293,7 +295,7 @@ class Async (Range, Log):
     
         Parameters
         ----------
-        p_range_max : int
+        p_range : int
             Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
         p_class_shared
             Class for a shared object (class Shared or a child class of Shared)
@@ -308,7 +310,7 @@ class Async (Range, Log):
 
             # Instantiation of shared object
             if p_range in [ self.C_RANGE_NONE, self.C_RANGE_THREAD ]:
-                return p_class_shared(p_range)
+               so = p_class_shared(p_range)
 
             elif p_range == self.C_RANGE_PROCESS:
                 if self._mpmanager is None:
@@ -316,10 +318,13 @@ class Async (Range, Log):
                     self._mpmanager = BaseManager()
                     self._mpmanager.start()
 
-                return self._mpmanager.Shared(p_range=p_range)
+                so = self._mpmanager.Shared(p_range=p_range)
 
             else:
                 raise NotImplementedError
+
+            self._range = min( self._range, so.get_range() )
+            return so
 
         else:
             return None
@@ -382,19 +387,19 @@ class Async (Range, Log):
 
         # 1 Determination of range of asynchronity
         if p_range is None:
-            self._range_current = self._range
+            range_run = self._range
         else:
-            self._range_current = min( self._range, p_range )
+            range_run = min( self._range, p_range )
 
 
         # 2 Execution depending on range of asynchronity
-        if self._range_current == self.C_RANGE_NONE: 
+        if range_run == self.C_RANGE_NONE: 
             # 2.1 Synchronous execution
             p_target(**p_kwargs)
 
-        elif self._range_current in [ self.C_RANGE_THREAD, self.C_RANGE_PROCESS ]:
+        elif range_run in [ self.C_RANGE_THREAD, self.C_RANGE_PROCESS ]:
             # 2.2 Asynchronous execution as separate thread or process
-            if self._range_current == self.C_RANGE_THREAD:
+            if range_run == self.C_RANGE_THREAD:
                 # 2.2.1 Preparation of a new thread
                 task = mt.Thread(target=p_target, kwargs=p_kwargs, group=None)
 
@@ -411,7 +416,7 @@ class Async (Range, Log):
 
 
         # 3 Returns actual range of asynchonicity
-        return self._range_current         
+        return range_run         
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -548,14 +553,19 @@ class Task (Async, EventManager, Plottable):
             Further parameters handed over to custom method _run().
         """
 
-        if p_range == self.C_RANGE_NONE:
+        if p_range is None:
+            self._range_run = self._range
+        else:
+            self._range_run = min( p_range, self._range )
+
+        if self._range_run == self.C_RANGE_NONE:
             self.log(Log.C_LOG_TYPE_S, 'Started synchronously')
-        elif p_range == self.C_RANGE_THREAD:
+        elif self._range_run == self.C_RANGE_THREAD:
             self.log(Log.C_LOG_TYPE_S, 'Started as new thread')
         else:
             self.log(Log.C_LOG_TYPE_S, 'Started as new process')
 
-        self._start_async( p_target=self._run_async, p_range=p_range, p_kwargs=p_kwargs )
+        self._start_async( p_target=self._run_async, p_range=self._range_run, p_kwargs=p_kwargs )
 
         if p_wait: self.wait_async_tasks()
         
@@ -575,17 +585,17 @@ class Task (Async, EventManager, Plottable):
             self._so.checkin(p_tid=self._tid)
             self.log(Log.C_LOG_TYPE_I, 'Checked in to shared object')
 
-        self._run(p_kwargs=p_kwargs)
+        self._run(**p_kwargs)
 
         if self._so is not None: 
             self._so.checkout(p_tid=self.get_tid())
             self.log(Log.C_LOG_TYPE_I, 'Checked out from shared object')
 
-        self.update_plot(p_kwargs=p_kwargs)
+        self.update_plot(**p_kwargs)
 
         self.log(Log.C_LOG_TYPE_S, 'Stopped')
 
-        self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self, p_range=self._range_current, p_wait=False) )
+        self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self, p_range=self._range_run, p_wait=False) )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -881,9 +891,14 @@ class Workflow (Task):
 
         self._finished.clear()
 
-        if p_range == self.C_RANGE_NONE:
+        if p_range is None:
+            range_run = self._range
+        else:
+            range_run = min( p_range, self._range )
+
+        if range_run == self.C_RANGE_NONE:
             self.log(Log.C_LOG_TYPE_S, 'Started synchronously')
-        elif p_range == self.C_RANGE_THREAD:
+        elif range_run == self.C_RANGE_THREAD:
             self.log(Log.C_LOG_TYPE_S, 'Started as new thread')
         else:
             self.log(Log.C_LOG_TYPE_S, 'Started as new process')
@@ -897,7 +912,7 @@ class Workflow (Task):
         self._ctr_final_tasks = len(self._final_tasks)
 
         for task in self._entry_tasks: 
-            task.run( p_range=p_range, p_kwargs=p_kwargs)
+            task.run( p_range=range_run, **p_kwargs )
 
         if p_wait: self.wait_async_tasks()
 

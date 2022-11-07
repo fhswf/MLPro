@@ -19,10 +19,11 @@
 ## -- 2022-10-13  1.2.3     SY       Refactoring 
 ## -- 2022-11-01  1.2.4     DA       Refactoring 
 ## -- 2022-11-02  1.2.5     DA       Refactoring 
+## -- 2022-11-07  1.3.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.5 (2022-11-02)
+Ver. 1.3.0 (2022-11-07)
  
 This module shows how to train an own multi-player with the enhanced multi-action
 game board MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -83,10 +84,10 @@ class MyGame(Game):
 
     C_NAME      = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
 
         # 1 Setup Multi-Player Environment (consisting of 3 OpenAI Gym Cartpole envs)
-        self._env   = MultiCartPolePGT(p_num_envs=3, p_logging=p_logging)
+        self._env   = MultiCartPolePGT(p_num_envs=3, p_visualize=p_visualize, p_logging=p_logging)
 
 
         # 2 Setup Multi-Player
@@ -95,6 +96,7 @@ class MyGame(Game):
         multi_player = MultiPlayer(
             p_name='Human Beings',
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging
         )
 
@@ -108,11 +110,13 @@ class MyGame(Game):
                     p_action_space=self._env.get_action_space().spawn([as_ids[0]]),
                     p_buffer_size=1,
                     p_ada=p_ada,
+                    p_visualize=p_visualize,
                     p_logging=p_logging
                 ),
                 p_name='Neo',
                 p_id=0,
                 p_ada=p_ada,
+                p_visualize=p_visualize,
                 p_logging=p_logging
             ),
             p_weight=0.3
@@ -127,11 +131,13 @@ class MyGame(Game):
                     p_action_space=self._env.get_action_space().spawn([as_ids[1],as_ids[2]]),
                     p_buffer_size=1,
                     p_ada=p_ada,
+                    p_visualize=p_visualize,
                     p_logging=p_logging
                 ),
                 p_name='Trinity',
                 p_id=1,
                 p_ada=p_ada,
+                p_visualize=p_visualize,
                 p_logging=p_logging
             ),
             p_weight=0.7

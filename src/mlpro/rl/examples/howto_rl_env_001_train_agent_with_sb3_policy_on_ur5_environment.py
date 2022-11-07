@@ -10,10 +10,11 @@
 ## -- 2021-12-07  1.0.1     DA       Refactoring
 ## -- 2022-10-13  1.0.2     SY       Refactoring 
 ## -- 2022-11-01  1.0.3     DA       Refactoring
+## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-11-01)
+Ver. 1.1.0 (2022-11-07)
 
 This module shows how to use SB3 wrapper to train UR5 robot.
 
@@ -42,9 +43,9 @@ from pathlib import Path
 class ScenarioUR5A2C(RLScenario):
     C_NAME = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 2.1 Setup environment
-        self._env = UR5JointControl(p_logging=p_logging)
+        self._env = UR5JointControl(p_visualize=p_visualize, p_logging=p_logging)
 
         policy_sb3 = PPO(
             policy="MlpPolicy",
@@ -59,6 +60,7 @@ class ScenarioUR5A2C(RLScenario):
             p_observation_space=self._env.get_state_space(),
             p_action_space=self._env.get_action_space(),
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging)
 
         # 2.2 Setup standard single-agent with own policy
@@ -67,6 +69,7 @@ class ScenarioUR5A2C(RLScenario):
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging
         )
 

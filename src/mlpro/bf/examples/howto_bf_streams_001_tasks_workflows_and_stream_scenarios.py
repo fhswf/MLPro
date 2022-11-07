@@ -6,17 +6,15 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-27  0.0.0     DA       Creation
+## -- 2022-11-07  1.0.0     DA       First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-10-27)
+Ver. 1.0.0 (2022-11-07)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, stream tasks
 are added to a stream workflow. This in turn is combined with a stream of a stream provider to a
 a stream scenario. The latter one can be executed.
-
-
--> serial processing vs multithreading
 
 You will learn:
 
@@ -31,7 +29,6 @@ You will learn:
 """
 
 
-from mlpro.bf import streams
 from mlpro.bf.streams import *
 from mlpro.wrappers.openml import WrStreamProviderOpenML
 
@@ -64,32 +61,35 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
+    C_NAME      = 'Nine tasks'
+
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_logging):
 
         # 1 Import a stream from OpenML
-        openml  = WrStreamProviderOpenML(p_logging=False)
-        stream  = openml.get_stream(p_id=75)
+        openml  = WrStreamProviderOpenML(p_logging=p_logging)
+        stream  = openml.get_stream(p_id=75, p_mode=p_mode, p_logging=p_logging)
 
 
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of 9 tasks
-        t1a = MyTask( p_name='t1a', p_logging=logging )
-        t1b = MyTask( p_name='t1b', p_logging=logging )
-        t1c = MyTask( p_name='t1c', p_logging=logging )
+        t1a = MyTask( p_name='t1a', p_visualize=self._visualize, p_logging=logging )
+        t1b = MyTask( p_name='t1b', p_visualize=self._visualize, p_logging=logging )
+        t1c = MyTask( p_name='t1c', p_visualize=self._visualize, p_logging=logging )
 
-        t2a = MyTask( p_name='t2a', p_logging=logging )
-        t2b = MyTask( p_name='t2b', p_logging=logging )
-        t2c = MyTask( p_name='t2c', p_logging=logging )
+        t2a = MyTask( p_name='t2a', p_visualize=self._visualize, p_logging=logging )
+        t2b = MyTask( p_name='t2b', p_visualize=self._visualize, p_logging=logging )
+        t2c = MyTask( p_name='t2c', p_visualize=self._visualize, p_logging=logging )
 
-        t3a = MyTask( p_name='t3a', p_logging=logging )
-        t3b = MyTask( p_name='t3b', p_logging=logging )
-        t3c = MyTask( p_name='t3c', p_logging=logging )
+        t3a = MyTask( p_name='t3a', p_visualize=self._visualize, p_logging=logging )
+        t3b = MyTask( p_name='t3b', p_visualize=self._visualize, p_logging=logging )
+        t3c = MyTask( p_name='t3c', p_visualize=self._visualize, p_logging=logging )
 
         # 2.2 Create a workflow and add the tasks
         workflow = StreamWorkflow( p_name='wf1', 
                                    p_range_max=StreamWorkflow.C_RANGE_THREAD, 
+                                   p_visualize=self._visualize,
                                    p_logging=logging )
 
         # 2.2.1 At first we add three tasks that build the starting points of our workflow
@@ -118,7 +118,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 1
+    cycle_limit = 10
     logging     = Log.C_LOG_ALL
     visualize   = False
   
@@ -136,5 +136,6 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
                          p_logging=logging )
 
 
-# 3 Run own stream scenario
+# 3 Reset and run own stream scenario
+myscenario.reset()
 myscenario.run()                         

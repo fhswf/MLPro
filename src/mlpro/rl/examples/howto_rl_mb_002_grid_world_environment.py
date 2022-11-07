@@ -9,11 +9,12 @@
 ## -- 2022-10-06  1.0.0     SY       Release first version
 ## -- 2022-10-07  1.0.1     SY       Add plotting
 ## -- 2022-10-13  1.0.2     SY       Refactoring 
+## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.2 (2022-10-13)
+Ver. 1.1.0 (2022-11-07)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem.
 
@@ -44,7 +45,7 @@ class ScenarioGridWorld(RLScenario):
 
     C_NAME      = 'Grid World with Random Actions'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
         self._env   = GridWorld(p_logging=p_logging,
                                 p_action_type=GridWorld.C_ACTION_TYPE_DISC_2D,
@@ -76,6 +77,7 @@ class ScenarioGridWorld(RLScenario):
             p_planning_width=50,
             p_name='Smith',
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging,
             **mb_training_param
         )
