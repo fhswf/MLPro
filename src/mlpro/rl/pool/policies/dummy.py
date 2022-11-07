@@ -8,10 +8,11 @@
 ## -- 2021-12-08  1.0.0     MRD      Creation
 ## -- 2022-11-02  1.1.0     DA       - Refactoring: methods adapt(), _adapt()
 ## --                                - Code cleaning
+## -- 2022-11-07  1.2.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-11-02)
+Ver. 1.2.0 (2022-11-07)
 
 This module provide Policy Dummy for unittest purpose.
 """
@@ -42,6 +43,8 @@ class MyDummyPolicy (Policy):
         Warm up step. Default = 10.
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
@@ -57,9 +60,16 @@ class MyDummyPolicy (Policy):
                   p_batch_size=5, 
                   p_warm_up_step=10, 
                   p_ada:bool=True, 
-                  p_logging=Log.C_LOG_ALL):
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL ):
 
-        super().__init__(p_observation_space, p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+        super().__init__ ( p_observation_space=p_observation_space, 
+                           p_action_space=p_action_space, 
+                           p_buffer_size=p_buffer_size, 
+                           p_ada=p_ada, 
+                           p_visualize=p_visualize, 
+                           p_logging=p_logging )
+
         self._state_space   = p_observation_space
         self._action_space  = p_action_space
         self.warm_up_phase = p_warm_up_step
