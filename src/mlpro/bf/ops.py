@@ -8,10 +8,11 @@
 ## -- 2022-10-28  0.0.0     DA       Creation 
 ## -- 2022-10-29  1.0.0     DA       Implementation of classes Mode, ScenarioBase 
 ## -- 2022-10-31  1.1.0     DA       Class ScenarioBase: plot functionality added 
+## -- 2022-11-07  1.2.0     DA       Class ScenarioBase: support of new event "end of data"
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-10-31)
+Ver. 1.2.0 (2022-11-07)
 
 This module provides classes for operation.
 """
@@ -19,7 +20,6 @@ This module provides classes for operation.
 
 import sys
 from datetime import timedelta
-from matplotlib.figure import Figure
 from mlpro.bf.various import Log, LoadSave, Timer
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import *
@@ -280,41 +280,47 @@ class ScenarioBase (Mode, LoadSave, Plottable):
             True, if cycle limit has reached. False otherwise.
         adapted : bool
             True, if something within the scenario has adapted something in this cycle. False otherwise.
+        end_of_data : bool
+            True, if the end of the related data source has been reached. False otherwise.
         """
 
-        # 0 Check timer
+        # 0 Initialization
+        limit = timeout = False
         if self._timer is None: self._init_timer()
 
 
         # 1 Run a single custom cycle
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Start of cycle', str(self._cycle_id))
-        success, error, adapted = self._run_cycle()
+        success, error, adapted, end_of_data = self._run_cycle()
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': End of cycle', str(self._cycle_id), '\n')
 
 
-        # 2 Update visualization
+        # 2 End of data source reached?
+        if end_of_data:
+            self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': End of data source reached')
+            return success, error, timeout, limit, adapted, end_of_data
+
+
+        # 3 Update visualization
         if self._visualize:
             self.update_plot()
 
 
-        # 3 Update cycle id and check for optional limit
+        # 4 Update cycle id and check for optional limit
         if ( self._cycle_limit > 0 ) and ( self._cycle_id >= ( self._cycle_limit -1 ) ): 
             limit = True
         else:
             self._cycle_id = ( self._cycle_id + 1 ) & self._cycle_max
-            limit = False
 
 
-        # 4 Wait for next cycle (real mode only)
+        # 5 Wait for next cycle (real mode only)
         if ( self._timer.finish_lap() == False ) and ( self._cycle_len is not None ):
             self.log(self.C_LOG_TYPE_W, 'Process time', self._timer.get_time(), ': Process timed out !!!')
             timeout = True
-        else:
-            timeout = False
 
 
-        # 5 Return result of custom cycle execution
-        return success, error, timeout, limit, adapted
+        # 6 Return result of custom cycle execution
+        return success, error, timeout, limit, adapted, end_of_data
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -330,6 +336,8 @@ class ScenarioBase (Mode, LoadSave, Plottable):
             True on error. False otherwise.
         adapted : bool
             True, if something within the scenario has adapted something in this cycle. False otherwise.
+        end_of_data : bool
+            True, if the end of the related data source has been reached. False otherwise.
         """
 
         raise NotImplementedError
@@ -373,6 +381,8 @@ class ScenarioBase (Mode, LoadSave, Plottable):
             True, if cycle limit has reached. False otherwise.
         adapted : bool
             True, if ml model adapted something. False otherwise.
+        end_of_data : bool
+            True, if the end of the related data source has been reached. False otherwise.
         num_cycles: int
             Number of cycles.
         """
@@ -383,13 +393,13 @@ class ScenarioBase (Mode, LoadSave, Plottable):
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'Start of processing')
 
         while True:
-            success, error, timeout, limit, adapted_cycle = self.run_cycle()
+            success, error, timeout, limit, adapted_cycle, end_of_data = self.run_cycle()
             adapted = adapted or adapted_cycle
             if p_term_on_success and success: break
             if p_term_on_error and error: break
             if p_term_on_timeout and timeout: break
-            if limit: break
+            if limit or end_of_data: break
 
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'End of processing')
 
-        return success, error, timeout, limit, adapted, self._cycle_id
+        return success, error, timeout, limit, adapted, end_of_data, self._cycle_id

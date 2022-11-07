@@ -40,10 +40,11 @@
 ## -- 2022-05-23  1.7.2     SY       Bug fixing: storing data reward
 ## -- 2022-11-01  1.7.3     DA       Refactoring and code cleaning
 ## -- 2022-11-02  1.8.0     DA       Refactoring: methods adapt(), _adapt()
+## -- 2022-11-07  1.8.1     DA       Class RLScenario, method _run_cycle(): new return value "end_of_data"
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2022-11-02)
+Ver. 1.8.1 (2022-11-07)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -401,8 +402,13 @@ class RLScenario(Scenario):
             True on error. False otherwise.
         adapted : bool
             True, if agent adapted something in this cycle. False otherwise.
-
+        end_of_data : bool
+            True, if the end of the related data source has been reached. False otherwise.
         """
+
+        # 0 Initialization
+        end_of_data = False
+
 
         # 1 Environment: get current state
         state = self._env.get_state()
@@ -410,6 +416,7 @@ class RLScenario(Scenario):
 
         if self._ds_states is not None:
             self._ds_states.memorize_row(self._cycle_id, self._timer.get_time(), state.get_values())
+
 
         # 2 Agent: compute and log next action
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent computes action...')
@@ -419,11 +426,13 @@ class RLScenario(Scenario):
         if self._ds_actions is not None:
             self._ds_actions.memorize_row(self._cycle_id, ts, action.get_sorted_values())
 
+
         # 3 Environment: process agent's action
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Env processes action...')
         self._env.process_action(action)
         self._timer.add_time(self._env.get_latency())  # in virtual mode only...
         self._env.get_state().set_tstamp(self._timer.get_time())
+
 
         # 4 Environment: compute and log reward
         reward = self._env.compute_reward()
@@ -438,9 +447,11 @@ class RLScenario(Scenario):
 
                 self._ds_rewards.memorize_row(self._cycle_id, ts, reward_values)
 
+
         # 5 Agent: adapt policy
         self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Agent adapts policy...')
         adapted = self._agent.adapt(p_state=self._env.get_state(), p_reward=reward)
+
 
         # 6 Check for terminating events
         success = self._env.get_state().get_success()
@@ -452,7 +463,7 @@ class RLScenario(Scenario):
         if error:
             self.log(self.C_LOG_TYPE_E, 'Process time', self._timer.get_time(), ': Environment terminated')
 
-        return success, error, adapted
+        return success, error, adapted, end_of_data
 
 
 
@@ -1021,7 +1032,7 @@ class RLTraining (Training):
             self._init_episode()
 
         # 2 Run a cycle
-        success, error, timeout, limit, adapted = self._scenario.run_cycle()
+        success, error, timeout, limit, adapted, end_of_data = self._scenario.run_cycle()
         self._cycles_episode += 1
 
         if adapted:
