@@ -16,10 +16,13 @@
 ## -- 2021-11-15  1.2.0     DA       Refactoring 
 ## -- 2022-02-25  1.2.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-10-13  1.2.2     SY       Refactoring 
+## -- 2022-11-01  1.2.3     DA       Refactoring 
+## -- 2022-11-02  1.2.4     DA       Refactoring 
+## -- 2022-11-07  1.3.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2022-10-13)
+Ver. 1.3.0 (2022-11-07)
 
 This module shows how to run an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -37,7 +40,7 @@ You will learn:
 """
 
 
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 import random
 
@@ -65,7 +68,7 @@ class MyPolicy (Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem:SARSElement) -> bool:
         # 1.4 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 
@@ -80,10 +83,9 @@ class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
-
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 2.1 Setup Multi-Agent Environment (consisting of 3 OpenAI Gym Cartpole envs)
-        self._env   = MultiCartPole(p_num_envs=3, p_logging=p_logging)
+        self._env   = MultiCartPole(p_num_envs=3, p_visualize=p_visualize, p_logging=p_logging)
 
 
         # 2.2 Setup Multi-Agent 
@@ -92,6 +94,7 @@ class MyScenario (RLScenario):
         multi_agent = MultiAgent(
             p_name='Smith',
             p_ada=True,
+            p_visualize=p_visualize,
             p_logging=p_logging
         )
 
@@ -161,4 +164,5 @@ myscenario  = MyScenario(
         p_logging=logging
 )
 
+myscenario.reset()
 myscenario.run() 

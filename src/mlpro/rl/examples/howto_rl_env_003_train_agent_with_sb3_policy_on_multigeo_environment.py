@@ -9,10 +9,12 @@
 ## -- 2021-12-19  1.0.0     MRD      Initial Release
 ## -- 2021-12-23  1.0.1     DA       Minor fix 
 ## -- 2022-10-13  1.0.2     SY       Refactoring 
+## -- 2022-11-01  1.0.3     DA       Refactoring 
+## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-10-13)
+Ver. 1.1.0 (2022-11-07)
 
 This module shows how to use SB3 wrapper to train Multi Geometry Robot.
 
@@ -26,21 +28,23 @@ You will learn:
     
 """
 
+
 from mlpro.bf.math import *
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.rl.pool.envs.multigeorobot import MultiGeo
 from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 
 
+
 # 1 Implement your own RL scenario
 class ScenarioMultiGeoPPO(RLScenario):
     C_NAME = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        self._env = MultiGeo(p_logging=p_logging)
+        self._env = MultiGeo(p_visualize=p_visualize, p_logging=p_logging)
 
         policy_sb3 = PPO(
             policy="MlpPolicy",
@@ -56,6 +60,7 @@ class ScenarioMultiGeoPPO(RLScenario):
             p_observation_space=self._env.get_state_space(),
             p_action_space=self._env.get_action_space(),
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging)
 
         # 1.2 Setup standard single-agent with own policy
@@ -64,6 +69,7 @@ class ScenarioMultiGeoPPO(RLScenario):
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging
         )
 

@@ -14,10 +14,11 @@
 ## -- 2022-06-13  1.2.2     MRD      Update possibility to run separate simulator and training
 ## --                                setting separate ROS Server IP
 ## -- 2022-10-14  1.2.3     SY       Refactoring 
+## -- 2022-11-07  1.3.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2022-06-14)
+Ver. 1.3.0 (2022-11-07)
 
 This module shows how to use SB3 wrapper to train UR5 robot (derivate for paper).
 
@@ -27,6 +28,7 @@ You will learn:
     
 """
 
+
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
 from stable_baselines3 import PPO
@@ -34,11 +36,12 @@ from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 
 
+
 # 1 Implement your own RL scenario
 class ScenarioUR5A2C(RLScenario):
     C_NAME = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
         self._env = UR5JointControl(
             p_build=True, 
@@ -49,7 +52,7 @@ class ScenarioUR5A2C(RLScenario):
             p_net_interface="enp0s31f6",
             p_robot_ip="172.19.10.41",
             # p_reverse_ip="172.19.10.140", 
-            p_visualize=self._visualize, 
+            p_visualize=p_visualize, 
             p_logging=p_logging)
 
         policy_sb3 = PPO(

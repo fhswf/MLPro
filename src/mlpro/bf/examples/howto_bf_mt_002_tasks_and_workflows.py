@@ -9,10 +9,11 @@
 ## -- 2022-10-09  1.1.0     DA       Simplification
 ## -- 2022-10-12  1.2.0     DA       Restructuring of demo steps
 ## -- 2022-10-13  1.3.0     DA       Simplification and reduction to multithreading
+## -- 2022-11-07  1.3.1     DA       Minor correction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2022-10-13)
+Ver. 1.3.1 (2022-11-07)
 
 This module demonstrates the use of tasks and workflows as part of MLPro's multitasking concept.
 To this regard, a demo custom task class is implemented. At first the task class is instantiated 9 
@@ -62,12 +63,14 @@ class MyTask (mt.Task):
                   p_range_max: int = mt.Task.C_RANGE_THREAD, 
                   p_autorun=mt.Task.C_AUTORUN_NONE,
                   p_class_shared=None, 
+                  p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL ):
 
         super().__init__( p_name=p_name,
                           p_range_max=p_range_max, 
                           p_autorun=p_autorun,
                           p_class_shared=p_class_shared, 
+                          p_visualize=p_visualize,
                           p_logging=p_logging )
 
         self._duration = p_duration
