@@ -6,17 +6,15 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-27  0.0.0     DA       Creation
+## -- 2022-11-07  1.0.0     DA       First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-10-27)
+Ver. 1.0.0 (2022-11-07)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, stream tasks
 are added to a stream workflow. This in turn is combined with a stream of a stream provider to a
 a stream scenario. The latter one can be executed.
-
-
--> serial processing vs multithreading
 
 You will learn:
 
@@ -63,7 +61,7 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = 'Nine demo tasks'
+    C_NAME      = 'Nine tasks'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_logging):
@@ -139,4 +137,4 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 
 # 3 Reset and run own stream scenario
 myscenario.reset()
-#myscenario.run()                         
+myscenario.run()                         

@@ -24,10 +24,11 @@
 ## --                                - Completion of doc strings 
 ## -- 2022-11-04  0.6.0     DA       Classes StreamProvider, Stream: refactoring
 ## -- 2022-11-05  0.7.0     DA       Class Stream: refactoring to make it iterable
+## -- 2022-11-07  0.7.1     DA       Class StreamScenario: refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.0 (2022-11-05)
+Ver. 0.7.1 (2022-11-07)
 
 This module provides classes for standardized stream processing. 
 """
@@ -906,6 +907,7 @@ class StreamScenario (ScenarioBase):
                   p_logging=Log.C_LOG_ALL ):
 
         self._stream : Stream           = None
+        self._iterator : Stream         = None
         self._workflow : StreamWorkflow = None
 
         super().__init__( p_mode, 
@@ -963,7 +965,8 @@ class StreamScenario (ScenarioBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
-        self._stream.reset(p_seed=p_seed)
+        self._iterator = iter(self._stream)
+        self._iterator.set_random_seed(p_seed=p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -986,7 +989,7 @@ class StreamScenario (ScenarioBase):
             True, if something within the scenario has adapted something in this cycle. False otherwise.
         """
 
-        self._workflow.run( p_inst=self._stream.get_next() )
+        self._workflow.run( p_inst=iter(self._iterator) )
         return True, False, False
 
 
