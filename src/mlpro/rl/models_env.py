@@ -33,21 +33,26 @@
 ## -- 2022-08-15  1.4.3     SY       Renaming maturity to accuracy
 ## -- 2022-10-06  1.4.4     SY       - Handling numpy array on _adapt method of AFctSTrans class
 ## --                                - Same issue on simulate_reaction method of AFctSTrans class
+## -- 2022-11-01  1.5.0     DA       - Classes EnvBase, Environment, EnvModel: new param p_visualize
+## --                                - Cleaned the code a bit
+## -- 2022-11-02  1.6.0     DA       Refactoring: methods adapt(), _adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.4 (2022-10-06)
+Ver. 1.6.0 (2022-11-02)
 
 This module provides model classes for environments and environment models.
 """
 
-from mlpro.sl.models import AdaptiveFunction
+from mlpro.sl import AdaptiveFunction
 from mlpro.rl.models_sar import *
 
 
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctBase(Model):
+class AFctBase (Model):
     """
     Base class for all special adaptive functions (state transition, reward, success, broken). 
 
@@ -76,7 +81,7 @@ class AFctBase(Model):
         Boolean switch for adaptivity. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_par : Dict
+    p_kwargs : Dict
         Further model specific parameters (to be specified in child class).
 
     Attributes
@@ -96,11 +101,11 @@ class AFctBase(Model):
 
     C_TYPE = 'AFct Base'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_afct_cls,
-                 p_state_space: MSpace,
-                 p_action_space: MSpace,
+                 p_state_space:MSpace,
+                 p_action_space:MSpace,
                  p_input_space_cls=ESpace,
                  p_output_space_cls=ESpace,
                  p_output_elem_cls=Element,
@@ -108,7 +113,7 @@ class AFctBase(Model):
                  p_buffer_size=0,
                  p_ada=True,
                  p_logging=Log.C_LOG_ALL,
-                 **p_par):
+                 **p_kwargs):
 
         self._state_space = p_state_space
         self._action_space = p_action_space
@@ -125,13 +130,14 @@ class AFctBase(Model):
                                     p_buffer_size=p_buffer_size,
                                     p_ada=p_ada,
                                     p_logging=p_logging,
-                                    **p_par)
+                                    **p_kwargs)
         except:
             raise ParamError('Class ' + str(p_afct_cls) + ' is not compatible to class AdaptiveFunction')
 
         super().__init__(p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
                       p_output_space: MSpace):
         """
@@ -154,68 +160,85 @@ class AFctBase(Model):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_afct(self) -> AdaptiveFunction:
         return self._afct
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_state_space(self) -> MSpace:
         return self._state_space
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_action_space(self) -> MSpace:
         return self._action_space
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self, **p_par):
         pass
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_hyperparam(self) -> HyperParamTuple:
         return self._afct.get_hyperparam()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada: bool):
         super().switch_adaptivity(p_ada)
         self._afct.switch_adaptivity(p_ada)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         super().switch_logging(p_logging)
         if self._afct is not None:
             self._afct.switch_logging(p_logging)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
         self._afct.set_random_seed(p_seed=p_seed)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_adapted(self) -> bool:
         return self._afct.get_adapted()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         self._afct.clear_buffer()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_accuracy(self):
         return self._afct.get_accuracy()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         self._afct.init_plot(p_figure=p_figure)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         self._afct.update_plot()
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctSTrans(AFctBase):
+class AFctSTrans (AFctBase):
+
     C_TYPE = 'AFct STrans'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_afct_cls,
                  p_state_space: MSpace,
@@ -228,6 +251,7 @@ class AFctSTrans(AFctBase):
                  p_ada=True,
                  p_logging=Log.C_LOG_ALL,
                  **p_par):
+
         super().__init__(p_afct_cls,
                          p_state_space,
                          p_action_space,
@@ -240,7 +264,8 @@ class AFctSTrans(AFctBase):
                          p_logging=p_logging,
                          **p_par)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
                       p_output_space: MSpace):
         # 1 Setup input space
@@ -250,7 +275,8 @@ class AFctSTrans(AFctBase):
         # 2 Setup output space
         p_output_space.append(p_state_space)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state: State, p_action: Action) -> State:
         # 1 Create input vector from given state and action
         input_values = p_state.get_values().copy()
@@ -264,8 +290,9 @@ class AFctSTrans(AFctBase):
         # 2 Compute and return new state
         return self._afct.map(input)
 
-    ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state: State, p_action: Action, p_state_new: State) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, p_state:State, p_action:Action, p_state_new:State) -> bool:
         """
         Triggers adaptation of the embedded adaptive function.
 
@@ -292,15 +319,20 @@ class AFctSTrans(AFctBase):
         input = Element(self._input_space)
         input.set_values(input_values)
 
-        return self._afct.adapt(input, p_state_new)
+        return self._afct.adapt(p_input=input, p_output=p_state_new)
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class AFctReward(AFctBase):
+
     C_TYPE = 'AFct Reward'
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
                       p_output_space: MSpace):
         # 1 Setup input space
@@ -311,7 +343,8 @@ class AFctReward(AFctBase):
         p_output_space.add_dim(
             Dimension(p_name_short='Rwd', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Reward'))
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def compute_reward(self, p_state: State = None, p_state_new: State = None) -> Reward:
         if (p_state is None) or (p_state_new is None):
             raise ParamError('Both parameters p_state and p_state_new are needed to compute the reward')
@@ -327,8 +360,9 @@ class AFctReward(AFctBase):
         reward = output.get_values()[0]
         return Reward(p_type=Reward.C_TYPE_OVERALL, p_value=reward)
 
-    ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state: State, p_state_new: State, p_reward: Reward) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, p_state:State, p_state_new:State, p_reward:Reward) -> bool:
         """
         Triggers adaptation of the embedded adaptive function.
 
@@ -343,7 +377,7 @@ class AFctReward(AFctBase):
 
         Returns
         -------
-        bool
+        adapted: bool
             True, if something was adapted. False otherwise.
         """
 
@@ -359,15 +393,19 @@ class AFctReward(AFctBase):
         output.set_value(ids_[0], p_reward.get_overall_reward())
 
         # 3 Trigger adaptation of embedded adaptive function
-        return self._afct.adapt(input, output)
+        return self._afct.adapt(p_input=input, p_output=output)
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AFctSuccess(AFctBase):
+class AFctSuccess (AFctBase):
+
     C_TYPE = 'AFct Success'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
                       p_output_space: MSpace):
 
@@ -379,7 +417,8 @@ class AFctSuccess(AFctBase):
             Dimension(p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success',
                       p_boundaries=[0, 1]))
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
         output = self._afct.map(p_state)
 
@@ -387,8 +426,9 @@ class AFctSuccess(AFctBase):
             return True
         return False
 
-    ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state: State) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, p_state:State) -> bool:
         output = Element(self._output_space)
         ids_ = output.get_dim_ids()
         if p_state.get_success():
@@ -396,17 +436,24 @@ class AFctSuccess(AFctBase):
         else:
             output.set_value(ids_[0], 0)
 
-        return self._afct.adapt(p_state, output)
+        return self._afct.adapt(p_input=p_state, p_output=output)
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class AFctBroken(AFctBase):
+
     C_TYPE = 'AFct Broken'
 
-    ## -------------------------------------------------------------------------------------------------
-    def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
-                      p_output_space: MSpace):
+## -------------------------------------------------------------------------------------------------
+    def _setup_spaces( self, 
+                       p_state_space:MSpace, 
+                       p_action_space:MSpace, 
+                       p_input_space:MSpace,
+                       p_output_space: MSpace ):
 
         # 1 Setup input space
         p_input_space.append(p_state_space)
@@ -416,16 +463,18 @@ class AFctBroken(AFctBase):
             Dimension(p_name_short='Success', p_base_set=Dimension.C_BASE_SET_R, p_name_long='Success',
                       p_boundaries=[0, 1]))
 
-    ## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: State) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state:State) -> bool:
         output = self._afct.map(p_state)
 
         if output.get_values()[0] >= 0.5:
             return True
         return False
 
-    ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_state: State) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, p_state:State) -> bool:
         output = Element(self._output_space)
         ids_ = output.get_dim_ids()
         if p_state.get_success():
@@ -433,12 +482,15 @@ class AFctBroken(AFctBase):
         else:
             output.set_value(ids_[0], 0)
 
-        return self._afct.adapt(p_state, output)
+        return self._afct.adapt(p_input=p_state, p_output=output)
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, ScientificObject):
+class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, ScientificObject):
     """
     Base class for all environment classes. It defines the interface and elementary properties for
     an environment in the context of reinforcement learning.
@@ -456,6 +508,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
         Optional external adaptive function for state evaluation 'success'.
     p_afct_broken : AFctBroken
         Optional external adaptive function for state evaluation 'broken'.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging 
         Log level (see class Log for more details).
 
@@ -482,23 +536,24 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
     """
 
-    C_TYPE = 'Environment Base'
-    C_NAME = '????'
+    C_TYPE          = 'Environment Base'
+    C_NAME          = '????'
 
-    C_LATENCY = timedelta(0, 1, 0)  # Default latency 1s
+    C_LATENCY       = timedelta(0, 1, 0)  # Default latency 1s
 
-    C_REWARD_TYPE = Reward.C_TYPE_OVERALL  # Default reward type for reinforcement learning
+    C_REWARD_TYPE   = Reward.C_TYPE_OVERALL  # Default reward type for reinforcement learning
 
-    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_NONE
+    C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_NONE
 
-    ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_latency: timedelta = None,
-                 p_afct_strans: AFctSTrans = None,
-                 p_afct_reward: AFctReward = None,
-                 p_afct_success: AFctSuccess = None,
-                 p_afct_broken: AFctBroken = None,
-                 p_logging=Log.C_LOG_ALL):
+## -------------------------------------------------------------------------------------------------
+    def __init__( self,
+                  p_latency:timedelta = None,
+                  p_afct_strans:AFctSTrans = None,
+                  p_afct_reward:AFctReward = None,
+                  p_afct_success:AFctSuccess = None,
+                  p_afct_broken:AFctBroken = None,
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL):
 
         self._afct_strans = p_afct_strans
         self._afct_reward = p_afct_reward
@@ -513,9 +568,11 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
         self._num_cycles = 0
 
         Log.__init__(self, p_logging=p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
         self.set_latency(p_latency)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada: bool):
         """
         Adaptivity is switched off here.  
@@ -523,15 +580,17 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         raise NotImplementedError('Classes of type ' + self.C_TYPE + ' are not adaptive!')
 
-    ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def adapt(self, **p_kwargs) -> bool:
         """
         Adaptivity is switched off here. If called, then something went wrong. 
         """
 
         raise NotImplementedError('Classes of type ' + self.C_TYPE + ' are not adaptive!')
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_adapted(self) -> bool:
         """
         Adaptivity is switched off here. If called, then something went wrong. 
@@ -539,7 +598,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         raise NotImplementedError('Classes of type ' + self.C_TYPE + ' are not adaptive!')
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_accuracy(self):
         """
         Accuracy computation is switched off here. If called, the something went wrong.
@@ -547,7 +607,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         raise NotImplementedError('Classes of type ' + self.C_TYPE + ' are not adaptive!')
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         Log.switch_logging(self, p_logging)
         if self._afct_strans is not None:
@@ -559,7 +620,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
         if self._afct_broken is not None:
             self._afct_broken.switch_logging(p_logging)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_latency(self) -> timedelta:
         """
         Returns latency of environment.
@@ -567,7 +629,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         return self._latency
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_latency(self, p_latency: timedelta = None) -> None:
         """
         Sets latency of environment. If p_latency is None latency will be reset
@@ -584,11 +647,13 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
         else:
             self._latency = p_latency
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_reward_type(self):
         return self.C_REWARD_TYPE
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_state(self) -> State:
         """
         Returns current state of environment.
@@ -596,7 +661,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         return self._state
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _set_state(self, p_state: State) -> None:
         """
         Explicitly sets the current state of the environment. Internal use only.
@@ -604,27 +670,32 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         self._state = p_state
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_success(self) -> bool:
         if self._state is None:
             return False
         return self._state.get_success()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_broken(self) -> bool:
         if self._state is None:
             return False
         return self._state.get_broken()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_last_reward(self) -> Reward:
         return self._last_reward
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_functions(self):
         return self._afct_strans, self._afct_reward, self._afct_success, self._afct_broken
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_cycle_limit(self) -> int:
         """
         Returns limit of cycles per training episode. To be implemented in child classes.
@@ -632,7 +703,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
         """
         Resets the internal random generator using the given seed.
@@ -646,7 +718,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         random.seed(p_seed)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None) -> None:
         """
         Resets environment to an initial state by calling the related custom method _reset().
@@ -664,7 +737,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
         if self._state is not None:
             self._state.set_initial(True)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
         """
         Custom method to reset the environment to an initial/defined state. 
@@ -678,7 +752,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def process_action(self, p_action: Action) -> bool:
         """
         Processes a state transition based on the current state and a given action. The state
@@ -718,7 +793,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         return result
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _process_action(self, p_action: Action) -> bool:
         """
         Custom method for state transition. To be implemented in a child class. See method 
@@ -727,7 +803,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state: State = None, p_action: Action = None) -> State:
         """
         Simulates a state transition based on a state and an action. The simulation step itself is
@@ -753,7 +830,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
         else:
             return self._simulate_reaction(p_state, p_action)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
         """
         Custom implementation to simulate a state transition. See method simulate_reaction() for
@@ -762,7 +840,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
         Computes a reward for the state transition, given by two successive states. The reward
@@ -808,7 +887,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         return self._last_reward
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
         """
         Custom reward computation method. See method compute_reward() for further details.
@@ -816,7 +896,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
         """
         Assesses the given state whether it is a 'success' state. Assessment is carried out either by
@@ -839,7 +920,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
         else:
             return self._compute_success(p_state)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _compute_success(self, p_state: State) -> bool:
         """
         Custom method for state evaluation 'success'. See method compute_success() for further details.
@@ -847,7 +929,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def compute_broken(self, p_state: State) -> bool:
         """
         Assesses the given state whether it is a 'broken' state. Assessment is carried out either by
@@ -870,7 +953,8 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
         else:
             return self._compute_broken(p_state)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
         """
         Custom method for state evaluation 'broken'. See method compute_broken() for further details.
@@ -878,17 +962,23 @@ class EnvBase(AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scient
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def update_plot(self):
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         pass
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -912,23 +1002,27 @@ class Environment(EnvBase, Mode):
         Optional external adaptive function for state evaluation 'success'
     p_afct_broken : AFctBroken
         Optional external adaptive function for state evaluation 'broken'
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = True.
     p_logging 
         Log level (see class Log for more details)
-
     """
 
-    C_TYPE = 'Environment'
+    C_TYPE          = 'Environment'
 
-    C_CYCLE_LIMIT = 0  # Recommended cycle limit for training episodes
+    C_CYCLE_LIMIT   = 0  # Recommended cycle limit for training episodes
 
-    ## -------------------------------------------------------------------------------------------------
+    C_PLOT_ACTIVE   = True
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_mode=Mode.C_MODE_SIM,
-                 p_latency: timedelta = None,
-                 p_afct_strans: AFctSTrans = None,
-                 p_afct_reward: AFctReward = None,
-                 p_afct_success: AFctSuccess = None,
-                 p_afct_broken: AFctBroken = None,
+                 p_latency:timedelta=None,
+                 p_afct_strans:AFctSTrans=None,
+                 p_afct_reward:AFctReward=None,
+                 p_afct_success:AFctSuccess=None,
+                 p_afct_broken:AFctBroken=None,
+                 p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL):
 
         EnvBase.__init__(self,
@@ -937,13 +1031,15 @@ class Environment(EnvBase, Mode):
                          p_afct_reward=p_afct_reward,
                          p_afct_success=p_afct_success,
                          p_afct_broken=p_afct_broken,
+                         p_visualize=p_visualize,
                          p_logging=p_logging)
 
         Mode.__init__(self, p_mode, p_logging)
         self._state_space, self._action_space = self.setup_spaces()
         self._num_cylces = 0
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
         """
@@ -960,7 +1056,8 @@ class Environment(EnvBase, Mode):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_cycle_limit(self) -> int:
         """
         Returns limit of cycles per training episode.
@@ -972,7 +1069,8 @@ class Environment(EnvBase, Mode):
             # In real operation mode there is no cycle limit
             return 0
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _process_action(self, p_action: Action) -> bool:
         """
         Processes given action and updates the state of the environment.
@@ -1022,7 +1120,8 @@ class Environment(EnvBase, Mode):
         # 3 Outro
         return True
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _export_action(self, p_action: Action) -> bool:
         """
         Mode C_MODE_REAL only: exports given action to be processed externally 
@@ -1042,7 +1141,8 @@ class Environment(EnvBase, Mode):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _import_state(self) -> bool:
         """
         Mode C_MODE_REAL only: imports state from an external system (for instance a real hardware). 
@@ -1056,6 +1156,10 @@ class Environment(EnvBase, Mode):
         """
 
         raise NotImplementedError
+
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1082,6 +1186,8 @@ class EnvModel(EnvBase, Model):
         Optional external adaptive function for state assessment 'broken'.
     p_ada : bool
         Boolean switch for adaptivity
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging 
         Log level (see class Log for more details)
 
@@ -1089,7 +1195,7 @@ class EnvModel(EnvBase, Model):
 
     C_TYPE = 'EnvModel'
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_observation_space: MSpace,
                  p_action_space: MSpace,
@@ -1099,6 +1205,7 @@ class EnvModel(EnvBase, Model):
                  p_afct_success: AFctSuccess = None,
                  p_afct_broken: AFctBroken = None,
                  p_ada=True,
+                 p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL):
 
         # 1 Intro
@@ -1108,6 +1215,7 @@ class EnvModel(EnvBase, Model):
                          p_afct_reward=p_afct_reward,
                          p_afct_success=p_afct_success,
                          p_afct_broken=p_afct_broken,
+                         p_visualize=p_visualize,
                          p_logging=p_logging)
 
         Model.__init__(self, p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
@@ -1149,7 +1257,8 @@ class EnvModel(EnvBase, Model):
             raise ParamError(
                 'Observation spaces of environment model and adaptive function for assessment broken are not equal')
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self, **p_par):
 
         # 1 Create overall hyperparameter space of all adaptive components inside
@@ -1210,13 +1319,14 @@ class EnvModel(EnvBase, Model):
             pass
         
         
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
         self.set_random_seed(p_seed=p_seed)
         self._state = None
         self._prev_state = None
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_cycle_limit(self) -> int:
         """
         Returns limit of cycles per training episode.
@@ -1224,7 +1334,8 @@ class EnvModel(EnvBase, Model):
 
         return self._cycle_limit
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _process_action(self, p_action: Action) -> bool:
 
         # 1 State transition
@@ -1237,7 +1348,8 @@ class EnvModel(EnvBase, Model):
 
         return True
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada: bool):
         Model.switch_adaptivity(self, p_ada)
 
@@ -1261,25 +1373,29 @@ class EnvModel(EnvBase, Model):
         except:
             pass
 
-    ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def adapt(self, **p_kwargs) -> bool:
         """
         Reactivated adaptation mechanism. See method Model.adapt() for further details.
         """
 
-        return Model.adapt(self, *p_args)
+        return Model.adapt(self, **p_kwargs)
 
-    ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, p_sars_elem:SARSElement) -> bool:
         """
         Adapts the environment model based on State-Action-Reward-State (SARS) data.
 
-        Parameters:
-            p_args[0]           Object of type SARSElement
+        Parameters
+        ----------
+        p_sars_elem : SARSElement
+            Object of type SARSElement.
         """
 
         try:
-            sars_dict = p_args[0].get_data()
+            sars_dict = p_sars_elem.get_data()
             state = sars_dict['state']
             action = sars_dict['action']
             reward = sars_dict['reward']
@@ -1287,16 +1403,16 @@ class EnvModel(EnvBase, Model):
         except:
             raise ParamError('Parameter must be of type SARSElement')
 
-        adapted = self._afct_strans.adapt(state, action, state_new)
+        adapted = self._afct_strans.adapt(p_state=state, p_action=action, p_state_new=state_new)
 
         if self._afct_reward is not None:
-            adapted = adapted or self._afct_reward.adapt(state, state_new, reward)
+            adapted = adapted or self._afct_reward.adapt(p_state=state, p_state_new=state_new, p_reward=reward)
 
         if self._afct_success is not None:
-            adapted = adapted or self._afct_success.adapt(state_new)
+            adapted = adapted or self._afct_success.adapt(p_state=state_new)
 
         if self._afct_broken is not None:
-            adapted = adapted or self._afct_broken.adapt(state_new)
+            adapted = adapted or self._afct_broken.adapt(p_state=state_new)
 
         if (self._cycle_limit == 0) and state_new.get_timeout():
             # First timeout state defines the cycle limit
@@ -1304,11 +1420,13 @@ class EnvModel(EnvBase, Model):
 
         return adapted
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_adapted(self) -> bool:
         return Model.get_adapted(self)
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_accuracy(self):
         """
         Returns accuracy of environment model as average accuracy of the embedded adaptive functions.
@@ -1340,7 +1458,8 @@ class EnvModel(EnvBase, Model):
 
         return accuracy / num_afct
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         self._afct_strans.clear_buffer()
         if self._afct_reward is not None:

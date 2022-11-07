@@ -17,10 +17,13 @@
 ## -- 2021-12-03  1.2.2     DA       Refactoring 
 ## -- 2022-07-20  1.2.3     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-13  1.2.4     SY       Refactoring 
+## -- 2022-11-01  1.2.5     DA       Refactoring 
+## -- 2022-11-02  1.2.6     DA       Refactoring 
+## -- 2022-11-07  1.3.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2022-10-13)
+Ver. 1.3.0 (2022-11-07)
 
 This module shows how to run an own policy inside the standard agent model with an OpenAI Gym environment using 
 MLPro framework.
@@ -41,7 +44,7 @@ You will learn:
 
 
 from mlpro.bf.math import *
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 import gym
 import random
@@ -70,7 +73,7 @@ class MyPolicy (Policy):
         return Action(self._id, self._action_space, my_action_values)
 
 
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem: SARSElement) -> bool:
         # 1.4 Adapting the internal policy is up to you...
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am a stupid agent...')
 
@@ -85,20 +88,22 @@ class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
         gym_env     = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
-        self._env   = WrEnvGYM2MLPro(gym_env, p_logging=p_logging) 
+        self._env   = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging) 
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),
                                          p_action_space=self._env.get_action_space(),
                                          p_buffer_size=1,
                                          p_ada=p_ada,
+                                         p_visualize=p_visualize,
                                          p_logging=p_logging),    
                       p_envmodel=None,
                       p_name='Smith',
                       p_ada=p_ada,
+                      p_visualize=p_visualize,
                       p_logging=p_logging)
 
 
