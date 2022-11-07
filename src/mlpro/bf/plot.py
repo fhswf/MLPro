@@ -96,7 +96,7 @@ class Plottable:
     Parameters
     ----------
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = False.
+        Boolean switch for visualisation. Default = False.
 
     Attributes
     ----------

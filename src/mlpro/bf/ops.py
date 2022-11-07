@@ -116,7 +116,7 @@ class ScenarioBase (Mode, LoadSave, Plottable):
     p_auto_setup : bool
         If True custom method setup() is called after initialization.
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = True.
+        Boolean switch for visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
     """

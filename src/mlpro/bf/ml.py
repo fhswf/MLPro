@@ -179,7 +179,7 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = False.
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_par : Dict
@@ -389,7 +389,7 @@ class Scenario (ScenarioBase):
     p_cycle_limit : int
         Maximum number of cycles. Default = 0 (no limit).
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = True.
+        Boolean switch for visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     """
@@ -401,8 +401,8 @@ class Scenario (ScenarioBase):
     def __init__(self, 
                  p_mode=Mode.C_MODE_SIM,       
                  p_ada:bool=True,               
-                 p_cycle_limit=0,              
-                 p_visualize=True,              
+                 p_cycle_limit:int=0,              
+                 p_visualize:bool=True,              
                  p_logging=Log.C_LOG_ALL ):  
 
         self._ada = p_ada
@@ -443,7 +443,7 @@ class Scenario (ScenarioBase):
         p_ada : bool
             Boolean switch for adaptivity.
         p_visualize : bool
-            Boolean switch for env/agent visualisation. Default = True.
+            Boolean switch for visualisation. 
         p_logging
             Log level (see constants of class Log). 
 
@@ -762,7 +762,7 @@ class Training (Log):
     p_path : str
         Optional destination path to store training data. Default = None.
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = False
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_WE.
 

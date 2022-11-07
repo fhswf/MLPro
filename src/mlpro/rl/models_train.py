@@ -55,7 +55,7 @@ from mlpro.bf.data import DataStoring
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
 from mlpro.rl.models_sar import *
-from mlpro.rl.models_agents import Agent
+
 
 
 
@@ -317,7 +317,7 @@ class RLScenario(Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada: bool, p_vizualize:bool, p_logging) -> Agent:
+    def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         """
         Custom method to set up the ML scenario. Please bind your environment to self._env and return
         the agent as model. 

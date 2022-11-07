@@ -506,7 +506,7 @@ class StreamTask (Task):
         If True the incoming data are copied before processing. Otherwise the origin incoming data
         are modified.        
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = False.
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : dict
@@ -716,7 +716,7 @@ class StreamWorkflow (Workflow):
     p_class_shared
         Optional class for a shared object (class Shared or a child class of Shared)
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = False.
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : dict
@@ -890,7 +890,7 @@ class StreamScenario (ScenarioBase):
     p_cycle_limit : int
         Maximum number of cycles. Default = 0 (no limit).
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = False.
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
     """
@@ -940,7 +940,7 @@ class StreamScenario (ScenarioBase):
         p_mode
             Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
         p_visualize : bool
-            Boolean switch for env/agent visualisation. Default = False.
+            Boolean switch for visualisation.
         p_logging
             Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
 
