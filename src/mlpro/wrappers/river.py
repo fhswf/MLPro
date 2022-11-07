@@ -42,7 +42,7 @@ import numpy
 ## -------------------------------------------------------------------------------------------------
 class WrStreamProviderRiver (Wrapper, StreamProvider):
     """
-    Wrapper class for River as StreamProvider
+    Wrapper class for River as StreamProvider.
     """
 
     C_NAME              = 'River'
@@ -114,7 +114,7 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
                                                          p_num_instances=eval("datasets."+ stream_id + "().n_samples"),
                                                          p_version='',
                                                          p_mode=p_mode,
-                                                         p_logging=p_logging,
+                                                         p_logging=Log.C_LOG_WE,
                                                          **p_kwargs) )
 
         return self._stream_list
@@ -146,6 +146,7 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
             stream = self._stream_list[self._stream_ids.index(p_id)]
             stream.set_mode(p_mode=p_mode)
             stream.switch_logging(p_logging=p_logging)
+            stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
             return stream
 
         except ValueError:
