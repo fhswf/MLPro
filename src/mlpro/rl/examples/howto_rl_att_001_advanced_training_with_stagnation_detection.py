@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_002_advanced_training_with_stagnation_detection.py
+## -- Module  : howto_rl_att_001_advanced_training_with_stagnation_detection.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,10 +12,13 @@
 ## -- 2022-02-27  1.2.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-19  1.2.2     SY       Utilize RandomGenerator
 ## -- 2022-10-13  1.2.3     SY       Refactoring 
+## -- 2022-10-19  1.2.4     DA       Renamed 
+## -- 2022-11-01  1.2.5     DA       Refactoring 
+## -- 2022-11-07  1.3.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2022-10-13)
+Ver. 1.3.0 (2022-11-07)
 
 This module demonstrates advanced training with evaluation and stagnation detection.
 
@@ -28,9 +31,8 @@ You will learn:
 """
 
 
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.rl.pool.envs.multicartpole import MultiCartPole
-import random
 from pathlib import Path
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
@@ -42,10 +44,10 @@ class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
 
         # 1 Setup Multi-Agent Environment (consisting of 3 OpenAI Gym Cartpole envs)
-        self._env   = MultiCartPole(p_num_envs=3, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_logging=p_logging)
+        self._env   = MultiCartPole(p_num_envs=3, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_visualize=p_visualize, p_logging=p_logging)
 
 
         # 2 Setup Multi-Agent 
@@ -54,6 +56,7 @@ class MyScenario (RLScenario):
         multi_agent = MultiAgent(
             p_name='Smith',
             p_ada=True,
+            p_visualize=p_visualize,
             p_logging=p_logging
         )
 
@@ -67,12 +70,14 @@ class MyScenario (RLScenario):
                     p_action_space=self._env.get_action_space().spawn([as_ids[0]]),
                     p_buffer_size=1,
                     p_ada=True,
+                    p_visualize=p_visualize,
                     p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-1',
                 p_id=0,
                 p_ada=True,
+                p_visualize=p_visualize,
                 p_logging=p_logging
             ),
             p_weight=0.3
@@ -86,12 +91,14 @@ class MyScenario (RLScenario):
                     p_action_space=self._env.get_action_space().spawn([as_ids[1],as_ids[2]]),
                     p_buffer_size=1,
                     p_ada=True,
+                    p_visualize=p_visualize,
                     p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-2',
                 p_id=1,
                 p_ada=True,
+                p_visualize=p_visualize,
                 p_logging=p_logging
             ),
             p_weight=0.7

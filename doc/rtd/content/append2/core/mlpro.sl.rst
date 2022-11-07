@@ -4,7 +4,7 @@ Supervised Learning
 Models
 -----------
 
-.. image:: images/sl/MLPro-SL_class_diagram.png
+.. image:: images/sl/MLPro-SL_class_diagram.drawio.png
 .. automodule:: mlpro.sl.models
    :members:
    :undoc-members:

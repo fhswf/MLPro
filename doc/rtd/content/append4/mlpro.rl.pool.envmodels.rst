@@ -11,6 +11,12 @@ Submodules
    :show-inheritance:
 
 
+.. automodule:: mlpro.rl.pool.envmodels.mlp_gridworld
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 .. automodule:: mlpro.rl.pool.envmodels.mlp_robotinhtm
    :members:
    :undoc-members:

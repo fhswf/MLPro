@@ -19,10 +19,11 @@
 ## -- 2022-02-25  1.2.5     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-04-06  1.2.6     LSB      Freezing single environment after done returns true
 ## -- 2022-07-20  1.2.7     SY       Update due to the latest introduction of Gym 0.25
+## -- 2022-11-07  1.3.0     DA       Class MultiCartPole: new parameter p_visualize
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.7 (2022-07-20)
+Ver. 1.3.0 (2022-11-07)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -55,12 +56,13 @@ class MultiCartPole (Environment):
     def __init__(self, 
                  p_num_envs=2,                          # Number of internal sub-environments
                  p_reward_type=Reward.C_TYPE_OVERALL,   # Reward type to be computed
+                 p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL):              # Log level (see constants of class Log)
 
         self._envs           = []
         self._num_envs       = p_num_envs
         self._reward_type    = p_reward_type
-        super().__init__(p_mode=Mode.C_MODE_SIM, p_logging=p_logging)
+        super().__init__(p_mode=Mode.C_MODE_SIM, p_visualize=p_visualize, p_logging=p_logging)
         self._state_space, self._action_space = self._setup_spaces()
 
         for i in range(self._num_envs): 
@@ -69,7 +71,7 @@ class MultiCartPole (Environment):
             state_space_env  = self._state_space.spawn([state_space_id[i*4], state_space_id[i*4+1], state_space_id[i*4+2], state_space_id[i*4+3]])
             action_space_env = self._action_space.spawn([action_space_id[i]])
             env_make         = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
-            env              = WrEnvGYM2MLPro(env_make, state_space_env, action_space_env, p_logging=p_logging)
+            env              = WrEnvGYM2MLPro(env_make, state_space_env, action_space_env, p_visualize=p_visualize, p_logging=p_logging)
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)
         

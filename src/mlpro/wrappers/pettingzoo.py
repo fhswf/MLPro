@@ -38,10 +38,11 @@
 ## -- 2022-08-15  1.4.0     DA       Introduction of root class Wrapper
 ## -- 2022-09-26  1.5.0     SY       Update following PettingZoo version 1.21.0 and Gym 0.26
 ## -- 2022-10-06  2.0.0     SY       Major update following PettingZoo version 1.22.0
+## -- 2022-11-01  2.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2022-10-06)
+Ver. 2.0.1 (2022-11-01)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -53,7 +54,7 @@ See also: https://pypi.org/project/PettingZoo/
 import gymnasium
 import numpy as np
 from mlpro.wrappers.models import Wrapper
-from mlpro.rl.models import *
+from mlpro.rl import *
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector
 from pettingzoo.utils import wrappers
@@ -78,6 +79,8 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
         Optional external state space object that meets the state space of the gym environment
     p_action_space : MSpace 
         Optional external action space object that meets the action space of the gym environment
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
@@ -87,11 +90,17 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
     C_MINIMUM_VERSION   = '1.20.0'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_zoo_env, p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=Log.C_LOG_ALL):
+    def __init__( self, 
+                  p_zoo_env, 
+                  p_state_space:MSpace=None, 
+                  p_action_space:MSpace=None, 
+                  p_visualize:bool=True,
+                  p_logging=Log.C_LOG_ALL):
+
         self._zoo_env     = p_zoo_env
         self.C_NAME       = 'Env "' + self._zoo_env.metadata['name'] + '"'
 
-        Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+        Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_visualize=p_visualize, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
         
         if p_state_space is not None: 
@@ -235,12 +244,12 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
-        self._zoo_env.render()
+        if self._visualize: self._zoo_env.render()
 
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
-        self._zoo_env.render()
+        if self._visualize: self._zoo_env.render()
 
 
 ## -------------------------------------------------------------------------------------------------

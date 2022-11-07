@@ -23,13 +23,16 @@
 ## --                                - Code reformatting
 ## -- 2022-10-06  1.5.1     DA       Class Dimension: event C_EVENT_BOUNDARIES converted to string
 ## -- 2022-10-08  1.6.0     DA       New method Set.get_dims()
+## -- 2022-10-21  1.7.0     DA       Class Dimension: extension by optional property symmetry
+## -- 2022-10-24  1.8.0     DA       Class Element: new method copy()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2022-10-08)
+Ver. 1.8.0 (2022-10-24)
 
 This module provides basic mathematical classes.
 """
+
 
 import numpy as np
 from itertools import repeat
@@ -61,10 +64,12 @@ class Dimension (EventManager):
         Unit (optional)
     p_unit_latex : str
         LaTeX code of unit (optional)
-    p_boundaries : List
+    p_boundaries : list
         List with minimum and maximum value (optional)
     p_description : str
         Description of dimension (optional)
+    p_symmetrical : bool
+        Information about the symmetry of the dimension (optional, default is False)
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
 
@@ -85,8 +90,9 @@ class Dimension (EventManager):
                   p_name_latex='', 
                   p_unit='',
                   p_unit_latex='', 
-                  p_boundaries=[], 
+                  p_boundaries:list=[], 
                   p_description='',
+                  p_symmetrical:bool=False,
                   p_logging=Log.C_LOG_NOTHING ):
 
         EventManager.__init__(self, p_logging=p_logging)
@@ -99,6 +105,7 @@ class Dimension (EventManager):
         self._unit = p_unit
         self._unit_latex = p_unit_latex
         self._description = p_description
+        self._symmetrical = p_symmetrical
 
         self.set_boundaries(p_boundaries=p_boundaries)
 
@@ -144,8 +151,26 @@ class Dimension (EventManager):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_boundaries(self, p_boundaries):
-        self._boundaries = p_boundaries
+    def set_boundaries(self, p_boundaries:list):
+        """
+        Sets new boundaries with respect to the symmmetry and raises event C_EVENT_BOUNDARIES.
+
+        Parameters
+        ----------
+        p_boundaries : list
+            New boundaries (lower and upper value)
+        """
+
+        self._boundaries = p_boundaries.copy()
+        
+        if ( self._symmetrical ) and ( len(self._boundaries)== 2 ):
+            abs_low  = abs(self._boundaries[0])
+            abs_high = abs(self._boundaries[1])
+            if abs_high > abs_low:
+                self._boundaries[0] = - abs_high
+            else:
+                self._boundaries[1] = abs_low
+
         self._raise_event( p_event_id=self.C_EVENT_BOUNDARIES, p_event_object=Event(p_raising_object=self, p_boundaries=p_boundaries) )
 
 
@@ -155,15 +180,21 @@ class Dimension (EventManager):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_symmetrical(self) -> bool:
+        return self._symmetrical
+
+
+## -------------------------------------------------------------------------------------------------
     def copy(self):
-        return self.__class__(p_name_short=self._name_short,
-                              p_base_set=self._base_set,
-                              p_name_long=self._name_long,
-                              p_name_latex=self._name_latex,
-                              p_unit=self._unit,
-                              p_unit_latex=self._unit_latex,
-                              p_boundaries=self._boundaries,
-                              p_description=self._description)
+        return self.__class__( p_name_short=self._name_short,
+                               p_base_set=self._base_set,
+                               p_name_long=self._name_long,
+                               p_name_latex=self._name_latex,
+                               p_unit=self._unit,
+                               p_unit_latex=self._unit_latex,
+                               p_boundaries=self._boundaries,
+                               p_description=self._description,
+                               p_symmetrical=self._symmetrical )
 
 
 
@@ -309,10 +340,15 @@ class DataObject:
 class Element:
     """
     Element of a (multivariate) set.
+
+    Parameters
+    ----------
+    p_set : Set
+        Underlying set.
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_set: Set) -> None:
+    def __init__(self, p_set: Set):
         self._set = p_set
         self._values = list(repeat(0, self._set.get_num_dim()))
 
@@ -352,6 +388,13 @@ class Element:
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
         self._values[self._set.get_dim_ids().index(p_dim_id)] = p_value
+
+
+## -------------------------------------------------------------------------------------------------
+    def copy(self):
+        duplicate = self.__class__(p_set=self._set)
+        duplicate.set_values(p_values=self._values.copy())
+        return duplicate
 
 
 
