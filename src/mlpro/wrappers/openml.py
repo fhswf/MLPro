@@ -173,7 +173,7 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
 ## -------------------------------------------------------------------------------------------------
 class WrStreamOpenML (Stream):
     """
-    Wrapper class for Streams from OpenML
+    Wrapper class for Streams from OpenML.
 
     Parameters
     ----------
@@ -312,7 +312,7 @@ class WrStreamOpenML (Stream):
 ## ------------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
         """
-        Custom method to get the instances one after another sequentially in the OpenML stream
+        Custom method to get the next instance of the OpenML stream.
 
         Returns
         -------
@@ -320,18 +320,17 @@ class WrStreamOpenML (Stream):
             Next instance in the OpenML stream object (None after the last instance in the dataset).
         """
 
-        if self._index < len(self._dataset[0]):
+        # 1 Check: end of data stream reached?
+        if self._index >= len(self._dataset[0]): raise StopIteration
 
-            # Determine feature data
-            feature_data  = Element( self.get_feature_space() )
-            feature_data.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
+        # 2 Determine feature data
+        feature_data  = Element( self.get_feature_space() )
+        feature_data.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
 
-            # Determine label data
-            label_data = Element(self.get_label_space())
-            label_data.set_values(numpy.asarray([self._dataset[0][self._index][self._dataset[3].index(self._label)]]))
-            instance = Instance( p_feature_data=feature_data, p_label_data=label_data )
-            self._index += 1
+        # 3 Determine label data
+        label_data = Element(self.get_label_space())
+        label_data.set_values(numpy.asarray([self._dataset[0][self._index][self._dataset[3].index(self._label)]]))
 
-            return instance
+        self._index += 1
 
-        raise StopIteration
+        return Instance( p_feature_data=feature_data, p_label_data=label_data )

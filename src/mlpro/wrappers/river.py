@@ -14,10 +14,11 @@
 ## -- 2022-11-03  1.1.1     LSB      Bug fix for river update
 ## -- 2022-11-03  1.2.0     DA       - Refactoring
 ## --                                - Class WrStreamRiver: removed parent class Wrapper
+## -- 2022-11-07  1.3.0     DA       Class WrStreamOpenML: refactoring to make it iterable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-11-04)
+Ver. 1.3.0 (2022-11-07)
 
 This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
@@ -31,7 +32,6 @@ from mlpro.wrappers.models import Wrapper
 from mlpro.bf.streams import *
 from mlpro.bf.math import *
 from river import datasets
-#import river
 import numpy
 
 
@@ -159,10 +159,8 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
 ## -------------------------------------------------------------------------------------------------
 class WrStreamRiver (Stream):
     """
-    Wrapper class for Streams from River
+    Wrapper class for Streams from River.
 
-    Parameters
-    ----------
     Parameters
     ----------
     p_id
@@ -319,27 +317,30 @@ class WrStreamRiver (Stream):
 ## ------------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
         """
-        Custom method to get the instances one after another sequentially in the River stream
+        Custom method to get the next instance of the River stream.
 
         Returns
         -------
-        instance:
+        instance : Instance
             Next instance in the River stream object (None after the last instance in the dataset).
         """
 
-        if not self._index < self._num_instances:return None
-        _instance_dict = next(self._dataset)
+        # 1 Check: end of data stream reached?
+        if self._index >= self._num_instances: raise StopIteration
 
-        _feature_data = Element(self._feature_space)
-        _label_data = Element(self._label_space)
+        # 2 Determine feature data
+        instance_dict = next(self._dataset)
+        feature_data  = Element(self._feature_space)
+        feature_data.set_values(list(instance_dict[0].values()))
 
-        _feature_data.set_values(list(_instance_dict[0].values()))
-
-        if isinstance(_instance_dict[1], dict):
-            _label_data.set_values(numpy.asarray(list(_instance_dict[1].values())))
-        else: _label_data.set_values(numpy.asarray([_instance_dict[1]]))
-
+        # 3 Determine label data
+        label_data    = Element(self._label_space)
+        if isinstance(instance_dict[1], dict):
+            label_data.set_values(numpy.asarray(list(instance_dict[1].values())))
+        else: 
+            label_data.set_values(numpy.asarray([instance_dict[1]]))
 
         self._index += 1
-        return Instance(_feature_data, _label_data)
+
+        return Instance( p_feature_data=feature_data, p_label_data=label_data )
 

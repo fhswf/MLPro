@@ -9,69 +9,92 @@
 ## -- 2022-06-14  1.0.0     LSB      Release of first version
 ## -- 2022-06-25  1.0.1     LSB      Refactoring for new label and instance class
 ## -- 2022-10-12  1.0.2     DA       Renaming
+## -- 2022-11-07  1.1.0     DA       Refactoring after changes on class Stream
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-10-12)
+Ver. 1.1.0 (2022-11-07)
 
-This module shows how to wrap MLPro's Stream and StreamProvider class to River, including how to fetch the list of
-streams and downloading a stream from the list of streams available with the stream provider, getting the feature
-spaces of the particular stream. This module also illustrates how to reset the stream and fetch the stream instances
-as needed.
-Please run the following code to understand the wrapper functionality and to produce similar results.
+This module demonstrates the use of River datasets as streams in MLPro. To this regard, MLPro
+provides wrapper classes to standardize stream access in own ML applications.
+
+You will learn:
+
+1) How to access datasets of the River project.
+
+2) How to iterate the instances of an River stream.
+
+3) How to access feature and label data of a data stream.
+
 """
 
 
-
+from datetime import datetime
 from mlpro.wrappers.river import *
 from mlpro.bf.various import Log
 
 
-# Checking for unit test
+
+# 0 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    p_logging = Log.C_LOG_ALL
+    num_inst    = 10
+    logging     = Log.C_LOG_ALL
 else:
-    p_logging = Log.C_LOG_NOTHING
+    num_inst    = 2
+    logging     = Log.C_LOG_NOTHING
 
 
-# 1. Create a Wrapper for OpenML stream provider
-river_wrap = WrStreamProviderRiver(p_logging=p_logging)
+# 1 Create a Wrapper for River stream provider
+river  = WrStreamProviderRiver(p_logging=logging)
 
 
-# 2. Get a list of streams available at the stream provider
-stream_list = river_wrap.get_stream_list(p_logging = p_logging)
+# 2 Get a list of streams available at the stream provider
+stream_list = river.get_stream_list(p_logging = logging)
 
 
-# 3. Get a specific stream from the stream provider
-stream = river_wrap.get_stream('Bikes')
+# 3 Get stream "Bikes" from the stream provider
+mystream = river.get_stream('Bikes')
 
 
-# 4. get the feature space of the stream
-feature_space = stream.get_feature_space()
-river_wrap.log(stream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim(),'\n\n')
+# 4 Get the feature space of the stream
+feature_space = mystream.get_feature_space()
+river.log(mystream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim())
 
 
-# 5. resetting the stream
-stream.reset()
+# 5 Set up an iterator for the stream
+myiterator = iter(mystream)
 
 
-# 6. Loading stream instances
-stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
-for i in range(10):
-    curr_instance = stream.get_next()
-    curr_features = curr_instance.get_feature_data().get_values()
-    curr_label = curr_instance.get_label_data().get_values()
-    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:', curr_features, '\nLabel:', curr_label, '\n')
+# 6 Fetching some stream instances
+myiterator.log(mystream.C_LOG_TYPE_W,'Fetching first', str(num_inst), 'stream instances...')
+for i in range(num_inst):
+    curr_instance   = next(myiterator)
+    curr_data       = curr_instance.get_feature_data().get_values()
+    curr_label      = curr_instance.get_label_data().get_values()
+    myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
 
 
-# 7. resetting the stream
-stream.reset()
+# 7 Resetting the iterator
+myiterator = iter(mystream)
 
 
-# 8. Getting stream instances
-stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
-for i in range(5):
-    curr_instance = stream.get_next()
-    curr_features = curr_instance.get_feature_data().get_values()
-    curr_label = curr_instance.get_label_data().get_values()
-    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:', curr_features, '\nLabel:', curr_label, '\n')
+# 8 Fetching all 182,470 instances
+myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all 182,470 instances...')
+for i, curr_instance in enumerate(myiterator):
+    if i == num_inst: 
+        myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the 182,470 instances dark...')
+        myiterator.switch_logging(p_logging=Log.C_LOG_NOTHING)
+        tp_start = datetime.now()
+
+    curr_data       = curr_instance.get_feature_data().get_values()
+    curr_label      = curr_instance.get_label_data().get_values()
+    myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
+
+# 8.1 Some statistics...
+tp_end = datetime.now()
+duration = tp_end - tp_start
+duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
+rate = ( 182470 - num_inst ) / duration_sec
+
+myiterator.switch_logging(p_logging=logging)
+myiterator.log(Log.C_LOG_TYPE_W, 'Done in', round(duration_sec,2), ' seconds (throughput =', round(rate), 'instances/sec)')    

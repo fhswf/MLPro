@@ -30,6 +30,7 @@ You will learn:
 
 """
 
+
 from datetime import datetime
 from mlpro.wrappers.openml import WrStreamProviderOpenML
 from mlpro.bf.various import Log
@@ -46,20 +47,20 @@ else:
 
 
 # 1 Create a Wrapper for OpenML stream provider
-open_ml = WrStreamProviderOpenML(p_logging = logging)
+openml = WrStreamProviderOpenML(p_logging = logging)
 
 
 # 2 Get a list of streams available at the stream provider
-stream_list = open_ml.get_stream_list(p_logging = logging)
+stream_list = openml.get_stream_list(p_logging = logging)
 
 
 # 3 Get stream "BNG(autos,nominal,1000000)" from the stream provider OpenML
-mystream = open_ml.get_stream( p_id=75, p_logging=logging)
+mystream = openml.get_stream( p_id=75, p_logging=logging)
 
 
 # 4 Get the feature space of the stream
 feature_space = mystream.get_feature_space()
-open_ml.log(mystream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim())
+openml.log(mystream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim())
 
 
 # 5 Set up an iterator for the stream
@@ -79,7 +80,7 @@ for i in range(num_inst):
 myiterator = iter(mystream)
 
 
-# 8 Fetching all 1,000,000 instances dark
+# 8 Fetching all 1,000,000 instances
 myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all 1,000,000 instances...')
 for i, curr_instance in enumerate(myiterator):
     if i == num_inst: 
