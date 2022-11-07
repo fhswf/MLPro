@@ -9,10 +9,11 @@
 ## -- 2021-06-06  1.0.0     DA       Released first version
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
 ## -- 2021-12-03  1.0.1     DA       Refactoring
+## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-12-03)
+Ver. 1.1.0 (2022-11-07)
 
 This module provides game board classes based on the Multi-CartPole environment
 of the reinforcement learning pool.
@@ -35,9 +36,12 @@ class MultiCartPoleGT(MultiCartPole, GameBoard):
 
     C_NAME          = 'MultiCartPole(GT)'
 
-    def __init__(self, p_num_envs=2, p_logging=Log.C_LOG_ALL):
-        MultiCartPole.__init__(self, p_num_envs=p_num_envs, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_logging=p_logging)
-
+    def __init__(self, p_num_envs=2, p_visualize:bool=True, p_logging=Log.C_LOG_ALL):
+        MultiCartPole.__init__( self, 
+                                p_num_envs=p_num_envs, 
+                                p_reward_type=Reward.C_TYPE_EVERY_AGENT, 
+                                p_visualize=p_visualize, 
+                                p_logging=p_logging )
 
 
 
@@ -52,5 +56,9 @@ class MultiCartPolePGT(MultiCartPole, PGameBoard):
 
     C_NAME          = 'MultiCartPole(PGT)'
 
-    def __init__(self, p_num_envs=2, p_logging=Log.C_LOG_ALL):
-        MultiCartPole.__init__(self, p_num_envs=p_num_envs, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_logging=p_logging)
+    def __init__(self, p_num_envs=2, p_visualize:bool=True, p_logging=Log.C_LOG_ALL):
+        MultiCartPole.__init__( self, 
+                                p_num_envs=p_num_envs, 
+                                p_reward_type=Reward.C_TYPE_EVERY_AGENT, 
+                                p_visualize=p_visualize,
+                                p_logging=p_logging )

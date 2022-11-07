@@ -20,10 +20,11 @@
 ## -- 2022-10-13  1.3.3     SY       Refactoring 
 ## -- 2022-11-01  1.3.4     DA       Refactoring 
 ## -- 2022-11-02  1.3.5     DA       Refactoring 
+## -- 2022-11-07  1.4.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.5 (2022-11-02)
+Ver. 1.4.0 (2022-11-07)
 
 This module shows how to train an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -84,10 +85,10 @@ class MyScenario (RLScenario):
 
     C_NAME      = 'Matrix'
 
-    def _setup(self, p_mode, p_ada:bool, p_logging) -> Model:
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
 
         # 2.1 Setup Multi-Agent Environment (consisting of 3 OpenAI Gym Cartpole envs)
-        self._env   = MultiCartPole(p_num_envs=3, p_logging=p_logging)
+        self._env   = MultiCartPole(p_num_envs=3, p_visualize=p_visualize, p_logging=p_logging)
 
 
         # 2.2 Setup Multi-Agent 
@@ -96,6 +97,7 @@ class MyScenario (RLScenario):
         multi_agent     = MultiAgent(
             p_name='Smith',
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging
         )
 
@@ -128,12 +130,14 @@ class MyScenario (RLScenario):
                     p_action_space=self._env.get_action_space().spawn([as_ids[1],as_ids[2]]),
                     p_buffer_size=1,
                     p_ada=p_ada,
+                    p_visualize=p_visualize,
                     p_logging=p_logging
                 ),
                 p_envmodel=None,
                 p_name='Smith-2',
                 p_id=1,
                 p_ada=p_ada,
+                p_visualize=p_visualize,
                 p_logging=p_logging
             ),
             p_weight=0.7
