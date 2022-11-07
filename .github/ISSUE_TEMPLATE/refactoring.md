@@ -14,7 +14,9 @@ assignees: ''
 **Benefit**
 ...
 
-**Changes are backward compatible:** -[ ]
+**Are the proposed changes backward compatible?** 
+- [ ] Yes
+- [ ] No
 
 **Related development objects**
 - [ ] ...
