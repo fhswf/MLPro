@@ -48,10 +48,11 @@
 ## --                                  to dictionary
 ## --                                - Classes HyperParam, HyperParamTuple: replaced callback mechanism
 ## --                                  by event handling
+## -- 2022-11-07  1.8.1     DA       Class Scenario, method setup(): parameters removed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2022-11-02)
+Ver. 1.8.1 (2022-11-07)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 """
@@ -420,14 +421,18 @@ class Scenario (ScenarioBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self, p_mode, p_logging=Log.C_LOG_ALL):
-        self._model = self._setup(p_mode=p_mode, p_ada=self._ada, p_logging=p_logging)
+    def setup(self):
+        self._model = self._setup( p_mode=self.get_mode(), 
+                                   p_ada=self._ada, 
+                                   p_visualize=self.get_visualization(),
+                                   p_logging=self.get_log_level() )
+
         if self._model is None: 
             raise ImplementationError('Please return your ML model in custom method self._setup()')
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada:bool, p_logging) -> Model:
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
         """
         Custom setup of ML scenario.
 
@@ -437,12 +442,14 @@ class Scenario (ScenarioBase):
             Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
         p_ada : bool
             Boolean switch for adaptivity.
+        p_visualize : bool
+            Boolean switch for env/agent visualisation. Default = True.
         p_logging
             Log level (see constants of class Log). 
 
         Returns
         -------
-        Model
+        model : Model
             Adaptive model inside the ML scenario
         """
 

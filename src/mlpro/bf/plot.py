@@ -14,10 +14,11 @@
 ## -- 2022-10-28  2.0.1     DA       Corrections of class documentations
 ## -- 2022-10-29  2.0.2     DA       Refactoring of class Plottable
 ## -- 2022-10-31  2.1.0     DA       Class Plottable: fixes and improvements
+## -- 2022-11-07  2.2.0     DA       Class Plottable: new method get_visualization()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2022-10-31)
+Ver. 2.2.0 (2022-11-07)
 
 This module provides various classes related to data plotting.
 """
@@ -213,6 +214,11 @@ class Plottable:
 
         # 5 Marker to ensure that initialization runs only once
         self._plot_initialized = True
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_visualization(self) -> bool:
+        return self._visualize
 
 
 ## -------------------------------------------------------------------------------------------------

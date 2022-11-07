@@ -36,10 +36,11 @@
 ## --                                - method log(): C_NAME in quotation marks
 ## -- 2022-10-29  1.8.1     DA       Class Log: removed call of switch_logging() from __init__()
 ## -- 2022-11-04  1.8.2     DA       Class Timer: refactoring
+## -- 2022-11-07  1.9.0     DA       Class Log: new method get_log_level()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.2 (2022-11-04)
+Ver. 1.9.0 (2022-11-07)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer...
@@ -231,6 +232,11 @@ class Log:
 
         if p_logging not in self.C_LOG_LEVELS: raise ParamError('Wrong log level. See class Log for valid log levels')
         self._level = p_logging
+
+
+ ## -------------------------------------------------------------------------------------------------
+    def get_log_level(self):
+        return self._level
 
  
  ## -------------------------------------------------------------------------------------------------

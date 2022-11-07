@@ -918,32 +918,29 @@ class StreamScenario (ScenarioBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self, p_mode, p_logging=Log.C_LOG_ALL):
+    def setup(self):
         """
         Specialized method to set up a stream scenario. It is automatically called by the constructor
         and calls in turn the custom method _setup().
-
-        Parameters
-        ----------
-        p_mode
-            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
-        p_logging
-            Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
         """
 
-        self._stream, self._workflow = self._setup(p_mode=p_mode, p_logging=p_logging)
+        self._stream, self._workflow = self._setup( p_mode=self.get_mode(), 
+                                                    p_visualize=self.get_visualization(),
+                                                    p_logging=self.get_log_level() )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_logging):
+    def _setup(self, p_mode, p_visualize:bool, p_logging):
         """
         Custom method to set up a stream scenario consisting of a stream and a processing stream
-        worflow.
+        workflow.
 
         Parameters
         ----------
         p_mode
             Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        p_visualize : bool
+            Boolean switch for env/agent visualisation. Default = False.
         p_logging
             Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
 
@@ -987,10 +984,19 @@ class StreamScenario (ScenarioBase):
             True on error. False otherwise.
         adapted : bool
             True, if something within the scenario has adapted something in this cycle. False otherwise.
+        end_of_data : bool
+            True, if the end of the related data source has been reached. False otherwise.
         """
 
-        self._workflow.run( p_inst=iter(self._iterator) )
-        return True, False, False
+        try:
+            self._workflow.run( p_inst=iter(self._iterator) )
+            end_of_data = False
+            adapted     = self._workflow.get_adapted()
+        except:
+            adapted     = False
+            end_of_data = True
+
+        return True, False, adapted, end_of_data
 
 
 ## -------------------------------------------------------------------------------------------------
