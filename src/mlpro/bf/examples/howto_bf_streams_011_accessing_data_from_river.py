@@ -10,10 +10,11 @@
 ## -- 2022-06-25  1.0.1     LSB      Refactoring for new label and instance class
 ## -- 2022-10-12  1.0.2     DA       Renaming
 ## -- 2022-11-07  1.1.0     DA       Refactoring after changes on class Stream
+## -- 2022-11-08  1.1.1     DA       Minor improvements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-11-07)
+Ver. 1.1.1 (2022-11-08)
 
 This module demonstrates the use of River datasets as streams in MLPro. To this regard, MLPro
 provides wrapper classes to standardize stream access in own ML applications.
@@ -94,7 +95,7 @@ for i, curr_instance in enumerate(myiterator):
 tp_end = datetime.now()
 duration = tp_end - tp_start
 duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
-rate = ( 182470 - num_inst ) / duration_sec
+rate = ( myiterator.get_num_instances() - num_inst ) / duration_sec
 
 myiterator.switch_logging(p_logging=logging)
-myiterator.log(Log.C_LOG_TYPE_W, 'Done in', round(duration_sec,2), ' seconds (throughput =', round(rate), 'instances/sec)')    
+myiterator.log(Log.C_LOG_TYPE_W, 'Done in', round(duration_sec,3), ' seconds (throughput =', round(rate), 'instances/sec)')    
