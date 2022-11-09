@@ -53,10 +53,11 @@
 ## -- 2022-09-09  2.0.4     SY       Updating reward function and compute success function
 ## -- 2022-09-09  2.0.5     LSB      Updating the boundaries
 ## -- 2022-10-08  2.0.6     LSB      Bug fix
+## -- 2022-11-09  2.1.0     DA       Refactorung due to changes on the plot systematics
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.4 (2022-09-09)
+Ver. 2.1.0 (2022-11-09)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -66,7 +67,7 @@ Pendulum consists of an input motor providing the torque in either directions to
 below shows the visualisation of MLPro's Double Pendulum environment.
 """
 
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.bf.various import *
 import numpy as np
 from numpy import sin, cos
@@ -110,34 +111,38 @@ class DoublePendulumRoot (Environment):
         Gravitational acceleration. The default is 9.8
     p_history_length : int, optional
         Historical trajectory points to display. The default is 5.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
-
     """
 
-    C_NAME = "DoublePendulumRoot"
+    C_NAME              = "DoublePendulumRoot"
 
-    C_CYCLE_LIMIT = 0
-    C_LATENCY = timedelta(0, 0, 40000)
-
-    C_REWARD_TYPE = Reward.C_TYPE_OVERALL
-
-    C_SCIREF_TYPE = ScientificObject.C_SCIREF_TYPE_ONLINE
-    C_SCIREF_AUTHOR = "John Hunter, Darren Dale, Eric Firing, Michael \
+    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_SCIREF_AUTHOR     = "John Hunter, Darren Dale, Eric Firing, Michael \
                                        Droettboom and the Matplotlib development team"
-    C_SCIREF_TITLE = "The Double Pendulum Problem"
-    C_SCIREF_URL = "https://matplotlib.org/stable/gallery/animation/double_pendulum.html"
+    C_SCIREF_TITLE      = "The Double Pendulum Problem"
+    C_SCIREF_URL        = "https://matplotlib.org/stable/gallery/animation/double_pendulum.html"
 
-    C_ANGLES_UP = 'up'
-    C_ANGLES_DOWN = 'down'
-    C_ANGLES_RND = 'random'
+    C_PLOT_ACTIVE       = True
+    C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_2D
 
-    C_VALID_ANGLES = [C_ANGLES_UP, C_ANGLES_DOWN, C_ANGLES_RND]
+    C_CYCLE_LIMIT       = 0
+    C_LATENCY           = timedelta(0, 0, 40000)
 
-    C_THRSH_GOAL = 0
+    C_REWARD_TYPE       = Reward.C_TYPE_OVERALL
 
-    C_ANI_FRAME = 30
-    C_ANI_STEP = 0.001
+    C_ANGLES_UP         = 'up'
+    C_ANGLES_DOWN       = 'down'
+    C_ANGLES_RND        = 'random'
+
+    C_VALID_ANGLES      = [C_ANGLES_UP, C_ANGLES_DOWN, C_ANGLES_RND]
+
+    C_THRSH_GOAL        = 0
+
+    C_ANI_FRAME         = 30
+    C_ANI_STEP          = 0.001
 
 ## -------------------------------------------------------------------------------------------------
     def __init__ ( self, 
@@ -151,6 +156,7 @@ class DoublePendulumRoot (Environment):
                    p_init_angles=C_ANGLES_RND,
                    p_g=9.8,
                    p_history_length=5, 
+                   p_visualize:bool=False,
                    p_logging=Log.C_LOG_ALL ):
 
         self._max_torque = p_max_torque
@@ -170,7 +176,7 @@ class DoublePendulumRoot (Environment):
         self._history_x = deque(maxlen=p_history_length)
         self._history_y = deque(maxlen=p_history_length)
 
-        super().__init__(p_mode=p_mode, p_logging=p_logging, p_latency=p_latency)
+        super().__init__(p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging, p_latency=p_latency)
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
         self._state = State(self._state_space)
@@ -208,6 +214,11 @@ class DoublePendulumRoot (Environment):
 
 
         return state_space, action_space
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _init_figure(self) -> Figure:
+        return Figure(figsize=(5, 4))
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -466,31 +477,27 @@ class DoublePendulumRoot (Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         """
-        This method initializes the plot figure of each episode. When the environment
-        is reset, the previous figure is closed and reinitialized.
+        Custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
+        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
+        created in the given figure and stored in p_settings.axes.
 
         Parameters
         ----------
-        p_figure : matplotlib.figure.Figure
-            A Figure object of the matplotlib library.
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings
+            Object with further plot settings.
         """
 
-        if hasattr(self, '_fig'):
-            plt.close(self._fig)
+        # if hasattr(self, '_fig'):
+        #     plt.close(self._fig)
 
-        if p_figure is None:
-            self._fig = plt.figure(figsize=(5, 4))
-            self._embedded_fig = False
-        else:
-            self._fig = p_figure
-            self._embedded_fig = True
-
-        self._ax = self._fig.add_subplot(autoscale_on=False,
-                                       xlim=(-self._L * 1.2, self._L * 1.2), ylim=(-self._L * 1.2, self._L * 1.2))
-        self._ax.set_aspect('equal')
-        self._ax.grid()
+        p_settings.axes = p_figure.add_subplot(autoscale_on=False,
+                                               xlim=(-self._L * 1.2, self._L * 1.2), ylim=(-self._L * 1.2, self._L * 1.2))
+        p_settings.axes.set_aspect('equal')
+        p_settings.axes.grid()
 
         self._cw_arc = Arc([0, 0], 0.5 * self._l1, 0.5 * self._l1, angle=0, theta1=0,
                           theta2=250, color='crimson')
@@ -506,22 +513,22 @@ class DoublePendulumRoot (Environment):
         self._ccw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(70 + 320),
                                         color='crimson')
 
-        self._ax.add_patch(self._cw_arc)
-        self._ax.add_patch(self._cw_arrow)
-        self._ax.add_patch(self._ccw_arc)
-        self._ax.add_patch(self._ccw_arrow)
+        p_settings.axes.add_patch(self._cw_arc)
+        p_settings.axes.add_patch(self._cw_arrow)
+        p_settings.axes.add_patch(self._ccw_arc)
+        p_settings.axes.add_patch(self._ccw_arrow)
 
         self._cw_arc.set_visible(False)
         self._cw_arrow.set_visible(False)
         self._ccw_arc.set_visible(False)
         self._ccw_arrow.set_visible(False)
 
-        self._line, = self._ax.plot([], [], 'o-', lw=2)
-        self._trace, = self._ax.plot([], [], '.-', lw=1, ms=2)
+        self._line, = p_settings.axes.plot([], [], 'o-', lw=2)
+        self._trace, = p_settings.axes.plot([], [], '.-', lw=1, ms=2)
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def update_plot(self):
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
         """
         This method updates the plot figure of each episode. When the figure is
         detected to be an embedded figure, this method will only set up the
@@ -533,7 +540,6 @@ class DoublePendulumRoot (Environment):
 
         x2 = self._l2 * sin(self._y[:, 2]) + x1
         y2 = -self._l2 * cos(self._y[:, 2]) + y1
-
 
         for i in range(len(self._y)):
             thisx = [0, x1[i], x2[i]]
@@ -560,9 +566,9 @@ class DoublePendulumRoot (Environment):
                 self._ccw_arc.set_alpha(self._alpha)
                 self._ccw_arrow.set_alpha(self._alpha)
 
-            if not self._embedded_fig and i%self.C_ANI_FRAME == 0: #:
-                self._fig.canvas.draw()
-                self._fig.canvas.flush_events()
+            # if not self._embedded_fig and i%self.C_ANI_FRAME == 0: #:
+                # self._figure.canvas.draw()
+                # self._figure.canvas.flush_events()
 
 
 
@@ -599,9 +605,10 @@ class DoublePendulumS4 (DoublePendulumRoot):
         Gravitational acceleration. The default is 9.8
     p_history_length : int, optional
         Historical trajectory points to display. The default is 5.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
-
     """
 
     C_NAME = 'DoublePendulumS4'
@@ -618,6 +625,7 @@ class DoublePendulumS4 (DoublePendulumRoot):
                    p_init_angles=DoublePendulumRoot.C_ANGLES_RND,
                    p_g=9.8, 
                    p_history_length=5, 
+                   p_visualize:bool=False,
                    p_logging=Log.C_LOG_ALL ):
 
         super().__init__( p_mode=p_mode,
@@ -630,6 +638,7 @@ class DoublePendulumS4 (DoublePendulumRoot):
                           p_init_angles=p_init_angles,
                           p_g=p_g,
                           p_history_length=p_history_length,
+                          p_visualize=p_visualize,
                           p_logging=p_logging)
 
         self._target_state = State(self._state_space)

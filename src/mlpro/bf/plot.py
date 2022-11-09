@@ -15,7 +15,7 @@
 ## -- 2022-10-29  2.0.2     DA       Refactoring of class Plottable
 ## -- 2022-10-31  2.1.0     DA       Class Plottable: fixes and improvements
 ## -- 2022-11-07  2.2.0     DA       Class Plottable: new method get_visualization()
-## -- 2022-11-09  2.2.1     DA       Class Plottable: correction
+## -- 2022-11-09  2.2.1     DA       Classes Plottable, PlotSettings: correction
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -71,7 +71,7 @@ class PlotSettings:
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
-        self.view      = p_view.copy()
+        self.view      = p_view
         self.axes      = p_axes
         self.pos_x     = p_pos_x
         self.pos_y     = p_pos_y
@@ -206,12 +206,12 @@ class Plottable:
         for view in self._plot_settings:
             try:
                 self._plot_methods[view][0](p_figure=self._figure, p_settings=self._plot_settings[view])
-                if self._plot_settings[view].axes is None:
-                    raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
-
             except:
                 raise ParamError('Parameter p_plot_settings: wrong view "' + str(view) + '"')
 
+            if self._plot_settings[view].axes is None:
+                raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
+                
 
         # 5 Marker to ensure that initialization runs only once
         self._plot_initialized = True

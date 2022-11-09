@@ -43,8 +43,6 @@ from pathlib import Path
 
 
 
-
-
 # 1 Implement the random RL scenario
 class ScenarioDoublePendulum(RLScenario):
 
