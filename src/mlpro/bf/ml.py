@@ -383,7 +383,7 @@ class Scenario (ScenarioBase):
     Parameters
     ----------
     p_mode
-        Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        Operation mode. See bf.ops.Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
     p_ada : bool
         Boolean switch for adaptivity. Default = True.
     p_cycle_limit : int
