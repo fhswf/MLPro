@@ -218,7 +218,7 @@ class DoublePendulumRoot (Environment):
 
 ## ------------------------------------------------------------------------------------------------------
     def _init_figure(self) -> Figure:
-        return Figure(figsize=(5, 4))
+        return plt.figure(figsize=(5,4))
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -491,9 +491,6 @@ class DoublePendulumRoot (Environment):
             Object with further plot settings.
         """
 
-        # if hasattr(self, '_fig'):
-        #     plt.close(self._fig)
-
         p_settings.axes = p_figure.add_subplot(autoscale_on=False,
                                                xlim=(-self._L * 1.2, self._L * 1.2), ylim=(-self._L * 1.2, self._L * 1.2))
         p_settings.axes.set_aspect('equal')
@@ -565,10 +562,6 @@ class DoublePendulumRoot (Environment):
                 self._ccw_arrow.set_visible(True)
                 self._ccw_arc.set_alpha(self._alpha)
                 self._ccw_arrow.set_alpha(self._alpha)
-
-            # if not self._embedded_fig and i%self.C_ANI_FRAME == 0: #:
-                # self._figure.canvas.draw()
-                # self._figure.canvas.flush_events()
 
 
 

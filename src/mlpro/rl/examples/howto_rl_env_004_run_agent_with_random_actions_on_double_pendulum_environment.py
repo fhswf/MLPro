@@ -75,13 +75,13 @@ class ScenarioDoublePendulum(RLScenario):
 # 2 Create scenario and run the scenario
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit         = 200
+    cycle_limit         = 300
     logging             = Log.C_LOG_ALL
     visualize           = True
     plotting            = True
 else:
     # 2.2 Parameters for unittest
-    cycle_limit         = 20
+    cycle_limit         = 2
     logging             = Log.C_LOG_NOTHING
     visualize           = False
     plotting            = False
