@@ -7,20 +7,20 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-12-08  1.0.0     MRD      Creation
 ## -- 2022-05-19  1.0.1     SY       Add RandomGenerator policy
+## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-12-08)
+Ver. 1.1.0 (2022-11-07)
 
 Unit test classes for policies.
 """
 
 
 import pytest
-import random
 import gym
 import numpy as np
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.rl.pool.policies.dummy import MyDummyPolicy
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
@@ -36,10 +36,10 @@ def test_pool_policies(policy_cls):
 
         C_NAME      = 'Matrix'
 
-        def _setup(self, p_mode, p_ada, p_logging):
+        def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
             # 1 Setup environment
             gym_env     = gym.make('CartPole-v1')
-            self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False) 
+            self._env   = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging) 
 
             # 2 Setup and return standard single-agent with own policy
             return Agent(
@@ -48,11 +48,13 @@ def test_pool_policies(policy_cls):
                     p_action_space=self._env.get_action_space(),
                     p_buffer_size=10,
                     p_ada=p_ada,
+                    p_visualize=p_visualize,
                     p_logging=p_logging
                 ),    
                 p_envmodel=None,
                 p_name='Smith',
                 p_ada=p_ada,
+                p_visualize=p_visualize,
                 p_logging=p_logging
             )
 
@@ -62,7 +64,8 @@ def test_pool_policies(policy_cls):
             p_cycle_limit=100,
             p_max_adaptations=0,
             p_max_stagnations=0,
-            p_logging=False
+            p_visualize=False,
+            p_logging=Log.C_LOG_NOTHING
     )
 
     training.run()

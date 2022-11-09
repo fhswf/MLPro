@@ -11,6 +11,12 @@ Submodules
    :show-inheritance:
 
 
+.. automodule:: mlpro.rl.examples.howto_rl_022_validating_dp
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 .. automodule:: mlpro.rl.examples.howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment
    :members:
    :undoc-members:

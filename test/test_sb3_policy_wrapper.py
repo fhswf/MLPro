@@ -14,10 +14,11 @@
 ## -- 2022-01-21  2.0.1     MRD      Include RobotHTM as the continues action envrionment
 ## -- 2022-07-21  2.0.2     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-11-02  2.0.3     DA       Refactoring: methods adapt(), _adapt()
+## -- 2022-11-07  2.0.4     DA       Refactoring: method RLScenario._setup()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.3 (2022-11-02)
+Ver. 2.0.4 (2022-11-07)
 
 Unit test classes for environment.
 """
@@ -51,7 +52,7 @@ def test_sb3_policy_wrapper(env_cls):
 
         C_NAME = 'Matrix'
 
-        def _setup(self, p_mode, p_ada, p_logging):
+        def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
             class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
                 def _reset(self, p_seed=None):
                     self.log(self.C_LOG_TYPE_I, 'Reset')
@@ -68,7 +69,7 @@ def test_sb3_policy_wrapper(env_cls):
 
             if issubclass(env_cls, OnPolicyAlgorithm):
                 # 1 Setup environment
-                self._env = RobotHTM(p_reset_seed=False, p_target_mode="fix", p_logging=False)
+                self._env = RobotHTM(p_reset_seed=False, p_target_mode="fix", p_logging=Log.C_LOG_NOTHING)
                 policy_sb3 = env_cls(
                     policy="MlpPolicy",
                     env=None,
@@ -84,7 +85,7 @@ def test_sb3_policy_wrapper(env_cls):
                     gym_env.seed(2)
                     self._env = CustomWrapperFixedSeed(gym_env, p_logging=False)
                 else:
-                    self._env = RobotHTM(p_reset_seed=False, p_target_mode="fix", p_logging=False)
+                    self._env = RobotHTM(p_reset_seed=False, p_target_mode="fix", p_logging=Log.C_LOG_NOTHING)
 
                 policy_sb3 = env_cls(
                     policy="MlpPolicy",
@@ -104,7 +105,7 @@ def test_sb3_policy_wrapper(env_cls):
                 """
 
                 def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space, p_action_space, p_ada=True,
-                             p_logging=True):
+                             p_logging=Log.C_LOG_ALL):
                     super().__init__(p_sb3_policy, p_cycle_limit, p_observation_space, p_action_space, p_ada=p_ada,
                                      p_logging=p_logging)
                     self.loss_cnt = []
@@ -157,6 +158,7 @@ def test_sb3_policy_wrapper(env_cls):
         p_collect_actions=True,
         p_collect_rewards=True,
         p_collect_training=True,
+        p_visualize=False,
         p_logging=False
     )
 

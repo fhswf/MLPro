@@ -48,10 +48,12 @@
 ## --                                  to dictionary
 ## --                                - Classes HyperParam, HyperParamTuple: replaced callback mechanism
 ## --                                  by event handling
+## -- 2022-11-07  1.8.1     DA       Class Scenario, method setup(): parameters removed
+## -- 2022-11-09  1.8.2     DA       Class Scenario: refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2022-11-02)
+Ver. 1.8.2 (2022-11-09)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 """
@@ -178,7 +180,7 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = False.
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_par : Dict
@@ -382,13 +384,13 @@ class Scenario (ScenarioBase):
     Parameters
     ----------
     p_mode
-        Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        Operation mode. See bf.ops.Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
     p_ada : bool
         Boolean switch for adaptivity. Default = True.
     p_cycle_limit : int
         Maximum number of cycles. Default = 0 (no limit).
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = True.
+        Boolean switch for visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     """
@@ -400,8 +402,8 @@ class Scenario (ScenarioBase):
     def __init__(self, 
                  p_mode=Mode.C_MODE_SIM,       
                  p_ada:bool=True,               
-                 p_cycle_limit=0,              
-                 p_visualize=True,              
+                 p_cycle_limit:int=0,              
+                 p_visualize:bool=True,              
                  p_logging=Log.C_LOG_ALL ):  
 
         self._ada = p_ada
@@ -420,14 +422,18 @@ class Scenario (ScenarioBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self, p_mode, p_logging=Log.C_LOG_ALL):
-        self._model = self._setup(p_mode=p_mode, p_ada=self._ada, p_logging=p_logging)
+    def setup(self):
+        self._model = self._setup( p_mode=self.get_mode(), 
+                                   p_ada=self._ada, 
+                                   p_visualize=self.get_visualization(),
+                                   p_logging=self.get_log_level() )
+
         if self._model is None: 
             raise ImplementationError('Please return your ML model in custom method self._setup()')
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada:bool, p_logging) -> Model:
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
         """
         Custom setup of ML scenario.
 
@@ -437,12 +443,14 @@ class Scenario (ScenarioBase):
             Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
         p_ada : bool
             Boolean switch for adaptivity.
+        p_visualize : bool
+            Boolean switch for visualisation. 
         p_logging
             Log level (see constants of class Log). 
 
         Returns
         -------
-        Model
+        model : Model
             Adaptive model inside the ML scenario
         """
 
@@ -450,13 +458,25 @@ class Scenario (ScenarioBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        self._model.init_plot(p_figure=p_figure)
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings: list = [], 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 0, 
+                   **p_kwargs):
+
+        self._model.init_plot( p_figure=p_figure, 
+                               p_plot_settings=p_plot_settings,
+                               p_plot_depth=p_plot_depth, 
+                               p_detail_level=p_detail_level, 
+                               p_step_rate=p_step_rate, 
+                               **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
-        self._model.update_plot()
+    def update_plot(self, **p_kwargs):
+        self._model.update_plot(**p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -755,7 +775,7 @@ class Training (Log):
     p_path : str
         Optional destination path to store training data. Default = None.
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = False
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_WE.
 

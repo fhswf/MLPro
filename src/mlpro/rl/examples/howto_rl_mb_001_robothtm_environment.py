@@ -13,10 +13,11 @@
 ## -- 2022-08-15  1.0.4     SY        - Renaming maturity to accuracy
 ## --                                 - Utilize MPC from pool of objects
 ## -- 2022-10-13  1.0.5     SY        Refactoring 
+## -- 2022-11-07  1.1.0     DA        Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-10-13)
+Ver. 1.1.0 (2022-11-07)
 
 This module demonstrates model-based reinforcement learning (MBRL) with action planner using MPC.
 
@@ -55,9 +56,9 @@ class ActualTraining(RLTraining):
 class ScenarioRobotHTMActual(RLScenario):
     C_NAME = "Matrix1"
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        self._env = RobotHTM(p_logging=True)
+        self._env = RobotHTM(p_visualize=p_visualize, p_logging=True)
 
         policy_kwargs = dict(activation_fn=torch.nn.Tanh,
                              net_arch=[dict(pi=[128, 128], vf=[128, 128])])
@@ -77,6 +78,7 @@ class ScenarioRobotHTMActual(RLScenario):
             p_observation_space=self._env.get_state_space(),
             p_action_space=self._env.get_action_space(),
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging,
         )
 
@@ -99,9 +101,11 @@ class ScenarioRobotHTMActual(RLScenario):
             p_planning_width=5,
             p_name="Smith1",
             p_ada=p_ada,
+            p_visualize=p_visualize,
             p_logging=p_logging,
             **mb_training_param
         )
+
 
 
 # 2 Train agent in scenario
@@ -119,6 +123,7 @@ else:
     visualize   = False
     path        = None
     plotting    = False
+
 
 training = ActualTraining(
     p_scenario_cls=ScenarioRobotHTMActual,

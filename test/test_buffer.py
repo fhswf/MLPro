@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-09-27  1.0.0     WB       Creation
 ## -- 2021-09-27  1.0.0     WB       Release First Version
+## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-09-27)
+Ver. 1.1.0 (2022-11-07)
 
 Unit test classes for SARBuffer.
 """
@@ -41,9 +42,9 @@ def test_buffer(buffer_cls):
 
         C_NAME      = 'Matrix'
 
-        def _setup(self, p_mode, p_ada, p_logging):
+        def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
             gym_env     = gym.make('CartPole-v1')
-            self._env   = WrEnvGYM2MLPro(gym_env, p_logging=False)
+            self._env   = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging)
 
             class MyDummyPol(MyDummyPolicy):
                 C_BUFFER_CLS = buffer_cls
@@ -71,7 +72,8 @@ def test_buffer(buffer_cls):
         p_collect_actions=True,
         p_collect_rewards=True,
         p_collect_training=True,
-        p_logging=False
+        p_visualize=False,
+        p_logging=Log.C_LOG_NOTHING
     )
 
     training.run()

@@ -2,7 +2,7 @@
 name: Refactoring
 about: "(Incompatible) change to improve the quality, flexibility, unterstandability,
   stability of a development object."
-title: 'Refactoring: ...'
+title: 'Refact: ...'
 labels: quality, refactoring
 assignees: ''
 
@@ -13,6 +13,10 @@ assignees: ''
 
 **Benefit**
 ...
+
+**Are the proposed changes backward compatible?** 
+- [ ] Yes
+- [ ] No
 
 **Related development objects**
 - [ ] ...

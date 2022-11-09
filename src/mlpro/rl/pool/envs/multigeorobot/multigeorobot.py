@@ -9,15 +9,16 @@
 ## -- 2021-12-19  1.0.0     MRD      Released first version
 ## -- 2022-02-25  1.0.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-04-29  1.0.2     MRD      Wrap the environment with WrEnvGYM2MLPro
+## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-04-29)
+Ver. 1.1.0 (2022-11-07)
 
 This module provides an environment for multi geometry robot.
 """
 
-from mlpro.rl.models import *
+from mlpro.rl import *
 import mlpro
 import rospy
 import subprocess
@@ -26,6 +27,10 @@ from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from openai_ros.openai_ros_common import StartOpenAI_ROS_Environment
 from openai_ros.task_envs.task_commons import LoadYamlFileParamsTest
 
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class MultiGeo(WrEnvGYM2MLPro):
     """
     This module provides an environment for multi geometry robot.
@@ -35,7 +40,8 @@ class MultiGeo(WrEnvGYM2MLPro):
     C_LATENCY   = timedelta(0,5,0)
     C_INFINITY  = np.finfo(np.float32).max  
 
-    def __init__(self, p_seed=0, p_logging=True):
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_seed=0, p_visualize:bool=True, p_logging=Log.C_LOG_ALL):
         roscore = subprocess.Popen('roscore')
         rospy.init_node('multi_geo_robot_training', anonymous=True, log_level=rospy.WARN)
 
@@ -55,8 +61,9 @@ class MultiGeo(WrEnvGYM2MLPro):
         env = StartOpenAI_ROS_Environment(task_and_robot_environment_name, max_step_episode)
         env.seed(p_seed)       
         
-        super().__init__(p_gym_env=env)
+        super().__init__(p_gym_env=env, p_visualize=p_visualize, p_logging=p_logging)
     
+
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
         obs = p_state.get_values()
