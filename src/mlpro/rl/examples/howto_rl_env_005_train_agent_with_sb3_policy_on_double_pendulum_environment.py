@@ -6,15 +6,16 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-03-22  0.0.0     WB       Creation
-## -- 2022-08-14  1.0.0     LSB       Training howto released with a lower value of torque
-## -- 2022-10-13  1.0.1     SY       Refactoring 
+## -- 2022-08-14  1.0.0     LSB      Training howto released with a lower value of torque
+## -- 2022-09-09  1.0.1     SY       Refactoring and add DDPG algorithm as an option
+## -- 2022-10-13  1.0.2     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.1 (2022-10-13)
+Ver. 1.0.2 (2022-10-13)
 
-This module shows how to use SB3 wrapper to train double pendulum. Currently under construction...
+This module shows how to train double pendulum using on-policy and off-policy RL algorithms from SB3.
 """
 
 
@@ -23,7 +24,10 @@ from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.doublependulum import *
 from stable_baselines3 import A2C
+from stable_baselines3 import DDPG
+from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM
 from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,20 +40,38 @@ class ScenarioDoublePendulum(RLScenario):
     C_NAME      = 'Matrix'
 
     def _setup(self, p_mode, p_ada, p_logging):
-        # 1 Setup environment
-        self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_max_torque=50)
+        # 1.1 Setup environment
+        self._env   = DoublePendulumS7(p_logging=True, p_init_angles='down', p_max_torque=10)
 
-        policy_kwargs = dict(activation_fn=torch.nn.Tanh,
+        # 1.2 Select an algorithm by uncomment the opted algorithm
+        # On-Policy RL Algorithm: A2C
+        policy_kwargs = dict(activation_fn=torch.nn.ReLU,
                      net_arch=[dict(pi=[128, 128], vf=[128, 128])])
-
         policy_sb3 = A2C(
                     policy="MlpPolicy",
-                    n_steps=100, 
+                    n_steps=150, 
                     env=None,
                     _init_setup_model=False,
                     policy_kwargs=policy_kwargs,
                     seed=1)
-
+        
+        # Off-Policy RL Algorithm: DDPG
+        # action_space = WrEnvMLPro2GYM.recognize_space(self._env.get_action_space())
+        # n_actions = action_space.shape[-1]
+        # action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
+        # policy_kwargs = dict(net_arch=dict(pi=[128, 128], qf=[128, 128]))
+        # policy_sb3 = DDPG(
+        #     policy="MlpPolicy",
+        #     learning_rate=3e-4,
+        #     buffer_size=10000,
+        #     learning_starts=100,
+        #     action_noise=action_noise,
+        #     policy_kwargs=policy_kwargs,
+        #     env=None,
+        #     _init_setup_model=False,
+        #     device="cpu")
+            
+        # 1.3 Wrapped the SB3 policy to MLPro compatible policy
         policy_wrapped = WrPolicySB32MLPro(
                 p_sb3_policy=policy_sb3,
                 p_cycle_limit=self._cycle_limit, 
@@ -58,7 +80,7 @@ class ScenarioDoublePendulum(RLScenario):
                 p_ada=p_ada,
                 p_logging=p_logging)
 
-        # 2 Setup standard single-agent with own policy
+        # 1.4 Setup standard single-agent with the wrapped policy
         return Agent(
             p_policy=policy_wrapped,  
             p_envmodel=None,
@@ -71,17 +93,17 @@ class ScenarioDoublePendulum(RLScenario):
 # 2 Create scenario and start training
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit         = 0
-    adaptation_limit    = 6000
+    cycle_limit         = 100000
+    adaptation_limit    = 0
     stagnation_limit    = 0
     eval_frequency      = 5
-    eval_grp_size       = 5
+    eval_grp_size       = 3
     logging             = Log.C_LOG_WE
     visualize           = True
     path                = str(Path.home())
-    plotting            = True
+    plotting            = False
 else:
-    # 2.2 Parameters for demo mode
+    # 2.2 Parameters for unittest
     cycle_limit         = 0
     adaptation_limit    = 1
     stagnation_limit    = 0
@@ -108,55 +130,3 @@ training        = RLTraining(
 )
 
 training.run()
-
-
-
-# 4 Create Plotting Class
-class MyDataPlotting(DataPlotting):
-    def get_plots(self):
-        """
-        A function to plot data
-        """
-        for name in self.data.names:
-            maxval  = 0
-            minval  = 0
-            if self.printing[name][0]:
-                fig     = plt.figure(figsize=(7,7))
-                raw   = []
-                label   = []
-                ax = fig.subplots(1,1)
-                ax.set_title(name)
-                ax.grid(True, which="both", axis="both")
-                for fr_id in self.data.frame_id[name]:
-                    raw.append(np.sum(self.data.get_values(name,fr_id)))
-                    if self.printing[name][1] == -1:
-                        maxval = max(raw)
-                        minval = min(raw)
-                    else:
-                        maxval = self.printing[name][2]
-                        minval = self.printing[name][1]
-                    
-                    label.append("%s"%fr_id)
-                ax.plot(raw)
-                ax.set_ylim(minval-(abs(minval)*0.1), maxval+(abs(maxval)*0.1))
-                ax.set_xlabel("Episode")
-                ax.legend(label, bbox_to_anchor = (1,0.5), loc = "center left")
-                self.plots[0].append(name)
-                self.plots[1].append(ax)
-                if self.showing:
-                    plt.show()
-                else:
-                    plt.close(fig)
-
-
-# 5 Plotting 1 MLpro    
-data_printing   = {"Cycle":        [False],
-                    "Day":          [False],
-                    "Second":       [False],
-                    "Microsecond":  [False],
-                    "Smith":        [True,-1]}
-
-
-mem = training.get_results().ds_rewards
-mem_plot    = MyDataPlotting(mem, p_showing=plotting, p_printing=data_printing)
-mem_plot.get_plots()

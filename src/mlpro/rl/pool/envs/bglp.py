@@ -31,10 +31,11 @@
 ## -- 2022-05-30  2.2.4     SY       Replace 'energy' related parameters to 'power'
 ## -- 2022-06-14  2.2.5     SY       Add termination condition for batch production scenario
 ## -- 2022-08-24  2.2.6     SY       Update state calculation function
+## -- 2022-11-09  2.2.7     DA       Refactoring due to changes on plot systematics
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.6 (2022-08-24)
+Ver. 2.2.7 (2022-11-09)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -631,6 +632,8 @@ class BGLP (Environment):
     ----------
     p_reward_type : Reward, optional
         rewarding type. The default is Reward.C_TYPE_EVERY_AGENT.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
     p_logging : Log, optional
         logging functionalities. The default is Log.C_LOG_ALL.
     t_step : float, optional
@@ -756,13 +759,13 @@ class BGLP (Environment):
     prod_scenario       = 0
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_logging=Log.C_LOG_ALL,
+    def __init__(self, p_reward_type=Reward.C_TYPE_EVERY_AGENT, p_visualize:bool=False, p_logging=Log.C_LOG_ALL,
                  t_step=0.5, t_set=10.0, demand=0.1, lr_margin=1.0, lr_demand=4.0,
                  lr_power=0.0010, margin_p=[0.2,0.8,4], prod_target=10000,
                  prod_scenario='continuous', cycle_limit=0):
         self.num_envs       = 5                                                 # Number of internal sub-environments
         self.reward_type    = p_reward_type
-        super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+        super().__init__(p_mode=Environment.C_MODE_SIM, p_visualize=p_visualize, p_logging=p_logging)
         
         self.C_SCIREF_TYPE    = self.C_SCIREF_TYPE_ARTICLE
         self.C_SCIREF_AUTHOR  = "Dorothea Schwung, Steve Yuwono, Andreas Schwung, Steven X. Ding"

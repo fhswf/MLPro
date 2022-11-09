@@ -41,7 +41,7 @@ from pathlib import Path
 
 
 # 1 Implement your own RL scenario
-class ScenarioRobotHTM(RLScenario):
+class ScenarioRobotHTM (RLScenario):
     C_NAME = 'Matrix'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:

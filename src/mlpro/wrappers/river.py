@@ -14,10 +14,12 @@
 ## -- 2022-11-03  1.1.1     LSB      Bug fix for river update
 ## -- 2022-11-03  1.2.0     DA       - Refactoring
 ## --                                - Class WrStreamRiver: removed parent class Wrapper
+## -- 2022-11-07  1.3.0     DA       Class WrStreamOpenML: refactoring to make it iterable
+## -- 2022-11-08  1.3.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-11-04)
+Ver. 1.3.1 (2022-11-08)
 
 This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
@@ -31,7 +33,6 @@ from mlpro.wrappers.models import Wrapper
 from mlpro.bf.streams import *
 from mlpro.bf.math import *
 from river import datasets
-#import river
 import numpy
 
 
@@ -42,7 +43,12 @@ import numpy
 ## -------------------------------------------------------------------------------------------------
 class WrStreamProviderRiver (Wrapper, StreamProvider):
     """
-    Wrapper class for River as StreamProvider
+    Wrapper class for River as StreamProvider.
+
+    Parameters
+    ----------
+    p_logging
+        Log level of stream objects (see constants of class Log). Default: Log.C_LOG_ALL.
     """
 
     C_NAME              = 'River'
@@ -51,7 +57,6 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
     C_SCIREF_AUTHOR     = 'River'
     C_SCIREF_URL        = 'riverml.xyz'
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging = Log.C_LOG_ALL):
@@ -114,7 +119,7 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
                                                          p_num_instances=eval("datasets."+ stream_id + "().n_samples"),
                                                          p_version='',
                                                          p_mode=p_mode,
-                                                         p_logging=p_logging,
+                                                         p_logging=Log.C_LOG_WE,
                                                          **p_kwargs) )
 
         return self._stream_list
@@ -146,6 +151,7 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
             stream = self._stream_list[self._stream_ids.index(p_id)]
             stream.set_mode(p_mode=p_mode)
             stream.switch_logging(p_logging=p_logging)
+            stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
             return stream
 
         except ValueError:
@@ -159,10 +165,8 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
 ## -------------------------------------------------------------------------------------------------
 class WrStreamRiver (Stream):
     """
-    Wrapper class for Streams from River
+    Wrapper class for Streams from River.
 
-    Parameters
-    ----------
     Parameters
     ----------
     p_id
@@ -236,63 +240,50 @@ class WrStreamRiver (Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None):
+    def _reset(self):
         """
         Custom reset method to download and reset an River stream
-
-        Parameters
-        ----------
-        p_seed
-            Seed for resetting the stream
         """
 
-        if not self._downloaded:
-            self._downloaded = self._download()
+        # Just to ensure the data download and set up of feature and label space
+        self.get_feature_space()
+        self.get_label_space()
 
         self._index = 0
-        self._dataset = iter(eval("datasets."+self._name+"()"))
-        # self._instance = Instance(self.get_feature_space())
 
 
 ## --------------------------------------------------------------------------------------------------
-    def _set_feature_space(self):
+    def _setup_feature_space(self) -> MSpace:
+        if not self._downloaded:
+            self._downloaded = self._download()
+            if not self._downloaded: return None       
 
-        self._feature_space = MSpace()
+        feature_space = MSpace()
 
         features = next(self._dataset)[0].keys()
         for feature in features:
-            self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
-        self._label_space = MSpace()
+            feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
+
+        return feature_space
+
+
+## --------------------------------------------------------------------------------------------------
+    def _setup_label_space(self) -> MSpace:
+        if not self._downloaded:
+            self._downloaded = self._download()
+            if not self._downloaded: return None       
+
+        label_space = MSpace()
 
         if isinstance(next(self._dataset)[1], dict):
             self._label = next(self._dataset)[1].keys()
             for label in self._label:
-                self._label_space.add_dim(Label(p_name_long=str(label), p_name_short=str(label[0:5])))
+                label_space.add_dim(Label(p_name_long=str(label), p_name_short=str(label[0:5])))
 
         else:
-            self._label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
+            label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
 
-
-## --------------------------------------------------------------------------------------------------
-    def get_feature_space(self) -> MSpace:
-        """
-        Method to get the feature space of a stream object
-
-        Returns
-        -------
-        feature_space:
-            Returns the Feature space as MSpace of MLPro
-        """
-
-        if not self._downloaded:
-            self._downloaded = self._download()
-
-        try:
-            return self._feature_space
-
-        except:
-            self._set_feature_space()
-            return self._feature_space
+        return label_space
 
 
 ## --------------------------------------------------------------------------------------------------
@@ -302,12 +293,11 @@ class WrStreamRiver (Stream):
 
         Returns
         -------
-        bool
+        loaded : bool
             True for the download status of the stream
         """
 
         self._dataset = iter(eval("datasets."+self._name+"()"))
-        self._set_feature_space()
 
         if self._dataset is not None:
             return True
@@ -319,27 +309,30 @@ class WrStreamRiver (Stream):
 ## ------------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
         """
-        Custom method to get the instances one after another sequentially in the River stream
+        Custom method to get the next instance of the River stream.
 
         Returns
         -------
-        instance:
+        instance : Instance
             Next instance in the River stream object (None after the last instance in the dataset).
         """
 
-        if not self._index < self._num_instances:return None
-        _instance_dict = next(self._dataset)
+        # 1 Check: end of data stream reached?
+        if self._index >= self._num_instances: raise StopIteration
 
-        _feature_data = Element(self._feature_space)
-        _label_data = Element(self._label_space)
+        # 2 Determine feature data
+        instance_dict = next(self._dataset)
+        feature_data  = Element(self._feature_space)
+        feature_data.set_values(list(instance_dict[0].values()))
 
-        _feature_data.set_values(list(_instance_dict[0].values()))
-
-        if isinstance(_instance_dict[1], dict):
-            _label_data.set_values(numpy.asarray(list(_instance_dict[1].values())))
-        else: _label_data.set_values(numpy.asarray([_instance_dict[1]]))
-
+        # 3 Determine label data
+        label_data    = Element(self._label_space)
+        if isinstance(instance_dict[1], dict):
+            label_data.set_values(numpy.asarray(list(instance_dict[1].values())))
+        else: 
+            label_data.set_values(numpy.asarray([instance_dict[1]]))
 
         self._index += 1
-        return Instance(_feature_data, _label_data)
+
+        return Instance( p_feature_data=feature_data, p_label_data=label_data )
 
