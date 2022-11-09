@@ -218,7 +218,6 @@ class NormalizerZTrans(Normalizer):
     Class for Normalization based on Z transformation.
     """
 
-
 ## -------------------------------------------------------------------------------------------------
     def update_parameters(self,
                           p_dataset:np.ndarray = None,
