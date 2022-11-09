@@ -43,10 +43,11 @@
 ## -- 2022-08-15  1.4.3     DA       Correction of integration of class Wrapper
 ## -- 2022-10-08  1.4.4     SY       Bug fixing and minor improvements: return of the reset function
 ## -- 2022-11-01  1.4.5     DA       Refactoring
+## -- 2022-11-09  1.4.6     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.5 (2022-11-01)
+Ver. 1.4.6 (2022-11-09)
 
 This module provides wrapper classes for OpenAI Gym environments.
 
@@ -86,6 +87,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
     C_TYPE              = 'Wrapper OpenAI Gym -> MLPro'
     C_WRAPPED_PACKAGE   = 'gym'
+    C_PLOT_ACTIVE: bool = True
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,

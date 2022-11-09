@@ -19,10 +19,11 @@
 ## -- 2022-11-04  1.3.0     DA       - Class WrStreamProviderOpenML: refactoring 
 ## --                                - Class WrStreamOpenML: removed parent class Wrapper
 ## -- 2022-11-05  1.4.0     DA       Class WrStreamOpenML: refactoring to make it iterable
+## -- 2022-11-08  1.4.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-11-05)
+Ver. 1.4.1 (2022-11-08)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -50,6 +51,11 @@ import openml
 class WrStreamProviderOpenML (Wrapper, StreamProvider):
     """
     Wrapper class for OpenML as StreamProvider.
+
+    Parameters
+    ----------
+    p_logging
+        Log level of stream objects (see constants of class Log). Default: Log.C_LOG_ALL.
     """
 
     C_NAME              = 'OpenML'
@@ -59,10 +65,8 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
     C_SCIREF_AUTHOR     = 'OpenML'
     C_SCIREF_URL        = 'new.openml.org'
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging = Log.C_LOG_ALL):
-
         Wrapper.__init__(self, p_logging = p_logging)
         StreamProvider.__init__(self, p_logging = p_logging)
         self._stream_list = []
@@ -173,7 +177,7 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
 ## -------------------------------------------------------------------------------------------------
 class WrStreamOpenML (Stream):
     """
-    Wrapper class for Streams from OpenML
+    Wrapper class for Streams from OpenML.
 
     Parameters
     ----------
@@ -247,7 +251,6 @@ class WrStreamOpenML (Stream):
 
 ## --------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
-
         if not self._downloaded:
             self._downloaded = self._download()
             if not self._downloaded: return None       
@@ -282,6 +285,7 @@ class WrStreamOpenML (Stream):
         bool
             True for the download status of the stream
         """
+
         self._stream_meta = openml.datasets.get_dataset(self._id)
         self._label = self._stream_meta.default_target_attribute
 
@@ -312,7 +316,7 @@ class WrStreamOpenML (Stream):
 ## ------------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
         """
-        Custom method to get the instances one after another sequentially in the OpenML stream
+        Custom method to get the next instance of the OpenML stream.
 
         Returns
         -------
@@ -320,18 +324,17 @@ class WrStreamOpenML (Stream):
             Next instance in the OpenML stream object (None after the last instance in the dataset).
         """
 
-        if self._index < len(self._dataset[0]):
+        # 1 Check: end of data stream reached?
+        if self._index >= len(self._dataset[0]): raise StopIteration
 
-            # Determine feature data
-            feature_data  = Element( self.get_feature_space() )
-            feature_data.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
+        # 2 Determine feature data
+        feature_data  = Element( self.get_feature_space() )
+        feature_data.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
 
-            # Determine label data
-            label_data = Element(self.get_label_space())
-            label_data.set_values(numpy.asarray([self._dataset[0][self._index][self._dataset[3].index(self._label)]]))
-            instance = Instance( p_feature_data=feature_data, p_label_data=label_data )
-            self._index += 1
+        # 3 Determine label data
+        label_data = Element(self.get_label_space())
+        label_data.set_values(numpy.asarray([self._dataset[0][self._index][self._dataset[3].index(self._label)]]))
 
-            return instance
+        self._index += 1
 
-        raise StopIteration
+        return Instance( p_feature_data=feature_data, p_label_data=label_data )

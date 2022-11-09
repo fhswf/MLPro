@@ -11,19 +11,19 @@
 ## -- 2022-06-23  1.0.2     LSB      Fetching stream meta data
 ## -- 2022-06-25  1.0.3     LSB      Refactoring for new label and instance class
 ## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
-## -- 2022-11-03  1.1.1     LSB      Bug Fix
+## -- 2022-11-08  1.2.0     DA       Class WrStreamSKlearn: refactoring to make it iterable
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-11-03)
+Ver. 1.2.0 (2022-11-08)
 
 This module provides wrapper functionalities to incorporate public data sets of the Scikit-learn ecosystem.
 
 Learn more:
 https://scikit-learn.org
 
-
 """
+
 
 from mlpro.bf.various import ScientificObject
 from mlpro.wrappers.models import Wrapper
@@ -84,18 +84,15 @@ class WrStreamProviderSklearn (Wrapper, StreamProvider):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging = Log.C_LOG_ALL):
 
+        Wrapper.__init__(self, p_logging=p_logging)
+        StreamProvider.__init__(self, p_logging=p_logging)
+
         self._stream_list = []
         self._stream_ids = self._datasets
 
-        StreamProvider.__init__(self, p_logging=p_logging)
-        Wrapper.__init__(self, p_logging=p_logging)
-
-        for i in range(len(self._datasets)):
-            self._stream_list.append(WrStreamSklearn(self._stream_ids[i],self._datasets[i], p_logging=p_logging))
-
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream_list(self, **p_kwargs) -> list:
+    def _get_stream_list(self, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> list:
         """
         Custom class to get alist of stream objects from Sklearn
 
@@ -106,30 +103,54 @@ class WrStreamProviderSklearn (Wrapper, StreamProvider):
 
         """
 
+        for i in range(len(self._datasets)):
+            self._stream_list.append(WrStreamSklearn( p_id=self._stream_ids[i],
+                                                      p_name=self._datasets[i], 
+                                                      p_mode=p_mode,
+                                                      p_logging=Log.C_LOG_WE))
+
         return self._stream_list
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream(self, p_id) -> Stream:
+    def _get_stream(self, p_id, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
         """
-        Custom class to fetch an Sklearn stream object
+        Custom class to fetch an Sklearn stream object.
 
         Parameters
         ----------
-        p_id
-            id of the stream to be fetched
+        p_id : str
+            Id of the requested stream.
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
-        stream: Stream
-            Returns the stream corresponding to the id
+        s : Stream
+            Stream object or None in case of an error.
         """
 
         try:
-            stream = self._stream_list[self._stream_ids.index(p_id)]
+
+            try:
+                stream = self._stream_list[self._stream_ids.index(p_id)]
+
+            except:
+                self.get_stream_list(p_mode=p_mode, p_logging=p_logging, **p_kwargs)
+                stream = self._stream_list[self._stream_ids.index(p_id)]
+
+            stream.set_mode(p_mode=p_mode)
+            stream.switch_logging(p_logging=p_logging)
+            stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
+
             return stream
 
-        except:
+
+        except ValueError:
             raise ValueError('Stream id not in the available list')
 
 
@@ -138,27 +159,45 @@ class WrStreamProviderSklearn (Wrapper, StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamSklearn(Wrapper, Stream):
+class WrStreamSklearn (Stream):
     """
     Wrapper class for Streams from Sklearn
 
     Parameters
     ----------
     p_id
-        id of the Stream
-    p_name
-        name of the stream
-    p_num_features
-        Number of features of the Stream
+        Id of the stream.
+    p_name : str
+        Name of the stream. 
+    p_num_instances : int
+        Number of instances in the stream. 
+    p_version : str
+        Version of the stream. Default = ''.
+    p_feature_space : MSpace
+        Optional feature space. Default = None.
+    p_label_space : MSpace
+        Optional label space. Default = None.
+    p_mode
+        Operation mode. Valid values are stored in constant C_VALID_MODES.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    p_kwargs : dict
+        Further stream specific parameters.
     """
 
     C_NAME              = 'Sklearn stream'
     C_WRAPPED_PACKAGE   = 'sklearn'
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
 
-
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name, p_num_instances=None, p_version=None, p_logging = Log.C_LOG_ALL, p_mode= Mode.C_MODE_SIM, **p_kwargs):
+    def __init__( self, 
+                  p_id, 
+                  p_name, 
+                  p_num_instances : int = 0, 
+                  p_version : str = '', 
+                  p_logging = Log.C_LOG_ALL, 
+                  p_mode= Mode.C_MODE_SIM, 
+                  **p_kwargs ):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
@@ -169,12 +208,11 @@ class WrStreamSklearn(Wrapper, Stream):
                          p_name=self.C_NAME + ' "' + p_name + '"',
                          p_num_instances=p_num_instances,
                          p_version=p_version,
+                         p_feature_space=None,
+                         p_label_space=None,
+                         p_mode=p_mode,
                          p_logging=p_logging,
-                         p_mode=p_mode)
-
-        Wrapper.__init__( self, p_logging=p_logging )
-
-        self._kwargs = p_kwargs.copy()
+                         **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -183,75 +221,52 @@ class WrStreamSklearn(Wrapper, Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None):
+    def _reset(self):
         """
-        Custom reset method to download and reset an Sklearn stream
+        Custom reset method to download and reset an Sklearn stream.
+        """
 
-        Parameters
-        ----------
-        p_seed
-            Seed for resetting the stream
-        """
+        self.get_feature_space()
+        self.get_label_space()
 
         self._index = 0
 
-        if self._dataset is not None:
-           self._downloaded = self._download()
-
-        self._num_instances = len(self._dataset.data)
-
-        try:
-            self.C_SCIREF_ABSTRACT = eval("len(sklearn.datasets."
-                                     + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
-                                     + ".DESCR")
-
-        except:
-            self.C_SCIREF_ABSTRACT = ''
-
 
 ## --------------------------------------------------------------------------------------------------
-    def _set_feature_space(self):
+    def _setup_feature_space(self)-> MSpace:
+        if not self._downloaded:
+            self._downloaded = self._download()
+            if not self._downloaded: return None       
 
-        self._feature_space = MSpace()
-        self._label_space = MSpace()
-
+        feature_space = MSpace()
 
         try:
             features = self._dataset.feature_names
 
         except:
-            self._downloaded = self._download()
             if not isinstance(self._dataset['data'], list):
                 features = self._dataset['feature_names']
             else:
                 features = ['Attr_1']
 
         for feature in features:
-            self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(feature[0:5])))
+            feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(feature[0:5])))
 
-        for label in self._dataset['target_names']:
-            self._label_space.add_dim(Feature(p_name_long=str(label), p_name_short=str(label[0:5])))
+        return feature_space
+
 
 ## --------------------------------------------------------------------------------------------------
-    def get_feature_space(self) -> MSpace:
-        """
-        Method to get the feature space of a stream object
+    def _setup_label_space(self) -> MSpace:
+        if not self._downloaded:
+            self._downloaded = self._download()
+            if not self._downloaded: return None       
 
-        Returns
-        -------
-        feature_space:
-            Returns the Feature space as MSpace of MLPro
-        """
+        label_space = MSpace()
 
-        # if not self._downloaded:
-        #     self._downloaded = self._download()
+        for label in self._dataset['target_names']:
+            label_space.add_dim(Feature(p_name_long=str(label), p_name_short=str(label[0:5])))
 
-        if self._feature_space is not None:
-            return self._feature_space
-
-        else:
-            self._set_feature_space()
-            return self._feature_space
+        return label_space
 
 
 ## --------------------------------------------------------------------------------------------------
@@ -262,6 +277,13 @@ class WrStreamSklearn(Wrapper, Stream):
 
         self._dataset = eval("sklearn.datasets."
                          + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)])
+
+        self._num_instances = len(self._dataset.data)
+        self.C_SCIREF_ABSTRACT = eval("len(sklearn.datasets."
+                                 + WrStreamProviderSklearn._load_utils[WrStreamProviderSklearn._datasets.index(self.C_ID)]
+                                 + ".DESCR)")
+
+        return True
 
 
 ## --------------------------------------------------------------------------------------------------
@@ -275,15 +297,13 @@ class WrStreamSklearn(Wrapper, Stream):
             Next instance in the Sklearn stream object (None after the last instance in the dataset).
         """
 
-        if not self._index < self._num_instances:return None
+        if self._index >= self._num_instances: raise StopIteration
 
+        feature_data = Element(self._feature_space)
+        label_data = Element(self._label_space)
+        feature_data.set_values(self._dataset['data'][self._index])
+        label_data.set_values(numpy.asarray([self._dataset['target'][self._index]]))
 
-        _feature_data = Element(self._feature_space)
-        _label_data = Element(self._label_space)
-        _feature_data.set_values(self._dataset['data'][self._index])
-        _label_data.set_values(numpy.asarray([self._dataset['target'][self._index]]))
         self._index += 1
 
-
-        return Instance(_feature_data, _label_data)
-
+        return Instance(feature_data, label_data)

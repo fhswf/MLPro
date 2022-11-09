@@ -39,10 +39,11 @@
 ## -- 2022-09-26  1.5.0     SY       Update following PettingZoo version 1.21.0 and Gym 0.26
 ## -- 2022-10-06  2.0.0     SY       Major update following PettingZoo version 1.22.0
 ## -- 2022-11-01  2.0.1     DA       Refactoring
+## -- 2022-11-09  2.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2022-11-01)
+Ver. 2.0.2 (2022-11-09)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -88,6 +89,7 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
     C_TYPE              = 'Wrapper PettingZoo -> MLPro'
     C_WRAPPED_PACKAGE   = 'pettingzoo'
     C_MINIMUM_VERSION   = '1.20.0'
+    C_PLOT_ACTIVE: bool = True
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
