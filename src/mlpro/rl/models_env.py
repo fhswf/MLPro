@@ -229,7 +229,7 @@ class AFctBase (Model):
                    p_plot_settings: list = [], 
                    p_plot_depth: int = 0, 
                    p_detail_level: int = 0, 
-                   p_step_rate: int = 1, 
+                   p_step_rate: int = 0, 
                    **p_kwargs ):
 
         self._afct.init_plot( p_figure=p_figure,
@@ -986,7 +986,7 @@ class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scien
                    p_plot_settings: list = [], 
                    p_plot_depth: int = 0, 
                    p_detail_level: int = 0, 
-                   p_step_rate: int = 1, 
+                   p_step_rate: int = 0, 
                    **p_kwargs ):
 
         Plottable.init_plot( self, 

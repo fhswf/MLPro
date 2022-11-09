@@ -49,10 +49,11 @@
 ## --                                - Classes HyperParam, HyperParamTuple: replaced callback mechanism
 ## --                                  by event handling
 ## -- 2022-11-07  1.8.1     DA       Class Scenario, method setup(): parameters removed
+## -- 2022-11-09  1.8.2     DA       Class Scenario: refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.1 (2022-11-07)
+Ver. 1.8.2 (2022-11-09)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 """
@@ -457,13 +458,25 @@ class Scenario (ScenarioBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        self._model.init_plot(p_figure=p_figure)
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings: list = [], 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 0, 
+                   **p_kwargs):
+
+        self._model.init_plot( p_figure=p_figure, 
+                               p_plot_settings=p_plot_settings,
+                               p_plot_depth=p_plot_depth, 
+                               p_detail_level=p_detail_level, 
+                               p_step_rate=p_step_rate, 
+                               **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
-        self._model.update_plot()
+    def update_plot(self, **p_kwargs):
+        self._model.update_plot(**p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------

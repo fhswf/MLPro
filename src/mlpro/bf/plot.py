@@ -15,7 +15,7 @@
 ## -- 2022-10-29  2.0.2     DA       Refactoring of class Plottable
 ## -- 2022-10-31  2.1.0     DA       Class Plottable: fixes and improvements
 ## -- 2022-11-07  2.2.0     DA       Class Plottable: new method get_visualization()
-## -- 2022-11-09  2.2.1     DA       Class Plottable: correction
+## -- 2022-11-09  2.2.1     DA       Classes Plottable, PlotSettings: correction
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -71,7 +71,7 @@ class PlotSettings:
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
-        self.view      = p_view.copy()
+        self.view      = p_view
         self.axes      = p_axes
         self.pos_x     = p_pos_x
         self.pos_y     = p_pos_y
@@ -120,6 +120,7 @@ class Plottable:
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_visualize:bool=False):
         self._visualize = self.C_PLOT_ACTIVE and p_visualize
+        self.set_plot_step_rate(p_step_rate=1)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -128,7 +129,7 @@ class Plottable:
                    p_plot_settings:list=[],
                    p_plot_depth:int=0,
                    p_detail_level:int=0,
-                   p_step_rate:int=1,
+                   p_step_rate:int=0,
                    **p_kwargs):
         """
         Initializes the plot functionalities of the class.
@@ -139,15 +140,16 @@ class Plottable:
             Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
         p_plot_settings : list
             Optional list of objects of class PlotSettings. All subplots that are addresses in the list
-            are plotted in parallel. If the list is empty the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
-        p_plot_depth : int = 0
+            are plotted in parallel. If the list is empty the default view is plotted (see attribute 
+            C_PLOT_DEFAULT_VIEW).
+        p_plot_depth : int 
             Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
-            depth is unlimited.
-        p_detail_level : int = 0
+            depth is unlimited. Default = 0.
+        p_detail_level : int 
             Optional detail level.
-        p_step_rate : int = 1
-            Decides after how many calls of the update_plot() method the custom methods 
-            _update_plot() make an output.
+        p_step_rate : int 
+            Optional step rate. Decides after how many calls of the update_plot() method the custom 
+            methods _update_plot() carries out an output. Default = 0 (no change).
         **p_kwargs : dict
             Further optional plot parameters.    
         """
@@ -169,7 +171,7 @@ class Plottable:
         self._plot_depth        = p_plot_depth
         self._plot_step_counter = 0
         self._plot_kwargs       = p_kwargs.copy()
-        self.set_plot_step_rate(p_step_rate)
+        self.set_plot_step_rate(p_step_rate=p_step_rate)
         self.set_plot_detail_level(p_detail_level=p_detail_level)
 
 
@@ -206,12 +208,12 @@ class Plottable:
         for view in self._plot_settings:
             try:
                 self._plot_methods[view][0](p_figure=self._figure, p_settings=self._plot_settings[view])
-                if self._plot_settings[view].axes is None:
-                    raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
-
             except:
                 raise ParamError('Parameter p_plot_settings: wrong view "' + str(view) + '"')
 
+            if self._plot_settings[view].axes is None:
+                raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
+                
 
         # 5 Marker to ensure that initialization runs only once
         self._plot_initialized = True
@@ -233,7 +235,7 @@ class Plottable:
             Matplotlib figure object to host the subplot(s)
         """
 
-        return Figure()            
+        return plt.figure()     
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -375,12 +377,12 @@ class Plottable:
 
 ## -------------------------------------------------------------------------------------------------
     def set_plot_step_rate(self, p_step_rate:int):
-        self._plot_step_rate = min(p_step_rate,1)
+        if p_step_rate > 0: self._plot_step_rate = p_step_rate
 
 
 ## -------------------------------------------------------------------------------------------------
     def set_plot_detail_level(self, p_detail_level:int):
-        self._plot_detail_level = min(0, p_detail_level)
+        self._plot_detail_level = max(0, p_detail_level)
 
 
 
