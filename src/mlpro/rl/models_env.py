@@ -36,10 +36,11 @@
 ## -- 2022-11-01  1.5.0     DA       - Classes EnvBase, Environment, EnvModel: new param p_visualize
 ## --                                - Cleaned the code a bit
 ## -- 2022-11-02  1.6.0     DA       Refactoring: methods adapt(), _adapt()
+## -- 2022-11-09  1.6.1     DA       Refactoring due to changes on plot systematics
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2022-11-02)
+Ver. 1.6.1 (2022-11-09)
 
 This module provides model classes for environments and environment models.
 """
@@ -79,6 +80,8 @@ class AFctBase (Model):
         Initial size of internal data buffer. Default = 0 (no buffering).
     p_ada : bool
         Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : Dict
@@ -96,24 +99,24 @@ class AFctBase (Model):
         Output space oof embedded adaptive function
     _afct : AdaptiveFunction
         Embedded adaptive function
-
     """
 
     C_TYPE = 'AFct Base'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_afct_cls,
-                 p_state_space:MSpace,
-                 p_action_space:MSpace,
-                 p_input_space_cls=ESpace,
-                 p_output_space_cls=ESpace,
-                 p_output_elem_cls=Element,
-                 p_threshold=0,
-                 p_buffer_size=0,
-                 p_ada=True,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_kwargs):
+    def __init__( self,
+                  p_afct_cls,
+                  p_state_space:MSpace,
+                  p_action_space:MSpace,
+                  p_input_space_cls=ESpace,
+                  p_output_space_cls=ESpace,
+                  p_output_elem_cls=Element,
+                  p_threshold=0,
+                  p_buffer_size=0,
+                  p_ada:bool=True,
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs):
 
         self._state_space = p_state_space
         self._action_space = p_action_space
@@ -129,6 +132,7 @@ class AFctBase (Model):
                                     p_threshold=p_threshold,
                                     p_buffer_size=p_buffer_size,
                                     p_ada=p_ada,
+                                    p_visualize=p_visualize,
                                     p_logging=p_logging,
                                     **p_kwargs)
         except:
@@ -220,13 +224,25 @@ class AFctBase (Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        self._afct.init_plot(p_figure=p_figure)
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings: list = [], 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 1, 
+                   **p_kwargs ):
+
+        self._afct.init_plot( p_figure=p_figure,
+                              p_plot_settings=p_plot_settings,
+                              p_plot_depth=p_plot_depth,
+                              p_detail_level=p_detail_level,
+                              p_step_rate=p_step_rate,
+                              **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
-        self._afct.update_plot()
+    def update_plot(self, **p_kwargs):
+        self._afct.update_plot( **p_kwargs )
 
 
 
@@ -239,18 +255,19 @@ class AFctSTrans (AFctBase):
     C_TYPE = 'AFct STrans'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_afct_cls,
-                 p_state_space: MSpace,
-                 p_action_space: MSpace,
-                 p_input_space_cls=ESpace,
-                 p_output_space_cls=ESpace,
-                 p_output_elem_cls=State,  # Specific output element type
-                 p_threshold=0,
-                 p_buffer_size=0,
-                 p_ada=True,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_par):
+    def __init__( self,
+                  p_afct_cls,
+                  p_state_space: MSpace,
+                  p_action_space: MSpace,
+                  p_input_space_cls=ESpace,
+                  p_output_space_cls=ESpace,
+                  p_output_elem_cls=State,  # Specific output element type
+                  p_threshold=0,
+                  p_buffer_size=0,
+                  p_ada:bool=True,
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL,
+                  **p_par):
 
         super().__init__(p_afct_cls,
                          p_state_space,
@@ -261,6 +278,7 @@ class AFctSTrans (AFctBase):
                          p_threshold=p_threshold,
                          p_buffer_size=p_buffer_size,
                          p_ada=p_ada,
+                         p_visualize=p_visualize,
                          p_logging=p_logging,
                          **p_par)
 
@@ -330,7 +348,6 @@ class AFctSTrans (AFctBase):
 class AFctReward(AFctBase):
 
     C_TYPE = 'AFct Reward'
-
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
@@ -964,13 +981,26 @@ class EnvBase (AFctSTrans, AFctReward, AFctSuccess, AFctBroken, Plottable, Scien
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        raise NotImplementedError
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings: list = [], 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 1, 
+                   **p_kwargs ):
+
+        Plottable.init_plot( self, 
+                             p_figure=p_figure, 
+                             p_plot_settings=p_plot_settings,
+                             p_plot_depth=p_plot_depth,
+                             p_detail_level=p_detail_level,
+                             p_step_rate=p_step_rate,
+                             **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
-        raise NotImplementedError
+    def update_plot(self, **p_kwargs):
+        Plottable.update_plot(self, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1012,27 +1042,27 @@ class Environment(EnvBase, Mode):
 
     C_CYCLE_LIMIT   = 0  # Recommended cycle limit for training episodes
 
-    C_PLOT_ACTIVE   = True
+    C_PLOT_ACTIVE   = False
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_mode=Mode.C_MODE_SIM,
-                 p_latency:timedelta=None,
-                 p_afct_strans:AFctSTrans=None,
-                 p_afct_reward:AFctReward=None,
-                 p_afct_success:AFctSuccess=None,
-                 p_afct_broken:AFctBroken=None,
-                 p_visualize:bool=True,
-                 p_logging=Log.C_LOG_ALL):
+    def __init__( self,
+                  p_mode=Mode.C_MODE_SIM,
+                  p_latency:timedelta=None,
+                  p_afct_strans:AFctSTrans=None,
+                  p_afct_reward:AFctReward=None,
+                  p_afct_success:AFctSuccess=None,
+                  p_afct_broken:AFctBroken=None,
+                  p_visualize:bool=True,
+                  p_logging=Log.C_LOG_ALL ):
 
-        EnvBase.__init__(self,
-                         p_latency=p_latency,
-                         p_afct_strans=p_afct_strans,
-                         p_afct_reward=p_afct_reward,
-                         p_afct_success=p_afct_success,
-                         p_afct_broken=p_afct_broken,
-                         p_visualize=p_visualize,
-                         p_logging=p_logging)
+        EnvBase.__init__( self,
+                          p_latency=p_latency,
+                          p_afct_strans=p_afct_strans,
+                          p_afct_reward=p_afct_reward,
+                          p_afct_success=p_afct_success,
+                          p_afct_broken=p_afct_broken,
+                          p_visualize=p_visualize,
+                          p_logging=p_logging )
 
         Mode.__init__(self, p_mode, p_logging)
         self._state_space, self._action_space = self.setup_spaces()
