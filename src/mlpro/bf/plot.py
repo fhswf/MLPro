@@ -15,10 +15,11 @@
 ## -- 2022-10-29  2.0.2     DA       Refactoring of class Plottable
 ## -- 2022-10-31  2.1.0     DA       Class Plottable: fixes and improvements
 ## -- 2022-11-07  2.2.0     DA       Class Plottable: new method get_visualization()
+## -- 2022-11-09  2.2.1     DA       Class Plottable: correction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2022-11-07)
+Ver. 2.2.1 (2022-11-09)
 
 This module provides various classes related to data plotting.
 """
@@ -153,7 +154,7 @@ class Plottable:
 
         # 0 Plot functionality turned on? Initialization already called?
         try:
-            if not self._visualize: return
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
         except:
             return
 
@@ -302,7 +303,7 @@ class Plottable:
 
         # 0 Plot functionality turned on?
         try:
-            if not self._visualize: return
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
         except:
             return
             
