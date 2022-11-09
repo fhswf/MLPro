@@ -43,13 +43,15 @@
 ## -- 2022-11-07  1.8.1     DA       Class RLScenario:
 ## --                                - method _run_cycle(): new return value "end_of_data"
 ## --                                - method _setup(): refactoring
+## -- 2022-11-09  1.8.2     DA       Refactoring and code cleaning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.1 (2022-11-07)
+Ver. 1.8.2 (2022-11-09)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
+
 
 from mlpro.bf.data import DataStoring
 from mlpro.bf.math import *
@@ -65,25 +67,25 @@ class RLDataStoring(DataStoring):
     """
     Derivative of basic class DataStoring that is specialized to store episodic training data in the
     context of reinforcement learning.
+
+    Parameters
+    ----------
+    p_space : Set         
+        Space object that provides dimensional information for raw data. If None, a training header 
+        data object will be instantiated.
     """
 
     # Frame ID renamed
-    C_VAR0 = 'Episode ID'
+    C_VAR0          = 'Episode ID'
 
     # Variables for episodic detail data storage
-    C_VAR_CYCLE = 'Cycle'
-    C_VAR_DAY = 'Day'
-    C_VAR_SEC = 'Second'
-    C_VAR_MICROSEC = 'Microsecond'
+    C_VAR_CYCLE     = 'Cycle'
+    C_VAR_DAY       = 'Day'
+    C_VAR_SEC       = 'Second'
+    C_VAR_MICROSEC  = 'Microsecond'
 
  ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_space: Set = None):
-        """
-        Parameters:
-            p_space         Space object that provides dimensional information for raw data. If None
-                            a training header data object will be instantiated.
-        """
-
         self.space = p_space
 
         # Initialization as an episodic detail data storage
@@ -150,7 +152,6 @@ class RLDataStoringEval(DataStoring):
     p_space : Set
         Set object that provides dimensional information for raw data. If None a training header data object will
     be instantiated.
-
     """
 
     # Frame ID renamed
@@ -277,9 +278,29 @@ class RLDataStoringEval(DataStoring):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RLScenario(Scenario):
+class RLScenario (Scenario):
     """
     Template class for an RL scenario consisting of an environment and an agent. 
+
+    Parameters
+    ----------
+    p_mode
+        Operation mode. See bf.ops.Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_cycle_limit : int
+        Maximum number of cycles (0=no limit, -1=get from env). Default = 0.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
+    p_logging
+        Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
+
+    Attributes
+    ----------
+    C_TYPE : str
+        Constant class type for logging: 'RL-Scenario'.
+    C_NAME : str
+        Constant custom name for logging. To be set in own child class.
     """
 
     C_TYPE = 'RL-Scenario'
@@ -287,16 +308,21 @@ class RLScenario(Scenario):
 
  ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_mode=Mode.C_MODE_SIM,  # Operation mode (see class Mode)
-                 p_ada:bool=True,  # Boolean switch for adaptivity of internal model
-                 p_cycle_limit=0,  # Maximum number of cycles (0=no limit, -1=get from env)
-                 p_visualize:bool=True,  # Boolean switch for env/agent visualisation
-                 p_logging=Log.C_LOG_ALL):  # Log level (see constants of class Log)
+                 p_mode=Mode.C_MODE_SIM,  
+                 p_ada:bool=True,  
+                 p_cycle_limit=0, 
+                 p_visualize:bool=True,  
+                 p_logging=Log.C_LOG_ALL):  
 
         # 1 Setup entire scenario
         self._env = None
-        super().__init__(p_mode=p_mode, p_ada=p_ada, p_cycle_limit=p_cycle_limit, p_visualize=p_visualize,
-                         p_logging=p_logging)
+
+        super().__init__( p_mode=p_mode, 
+                          p_ada=p_ada, 
+                          p_cycle_limit=p_cycle_limit, 
+                          p_visualize=p_visualize,
+                          p_logging=p_logging )
+
         if self._env is None:
             raise ImplementationError('Please bind your RL environment to self._env')
 
@@ -606,7 +632,6 @@ class RLTraining (Training):
         Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
-
     """
 
     C_NAME = 'RL'

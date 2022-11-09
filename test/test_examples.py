@@ -20,13 +20,15 @@
 ## -- 2022-10-13  1.2.1     DA       Removed howto bf mt 001 due of it's multiprocessing parts
 ## -- 2022-10-14  1.3.0     SY       Incorporation of refactored bf howto files (RL/GT)
 ## -- 2022-10-19  1.3.1     DA       Renamed howtos rl_att_001, rl_att_002
+## -- 2022-11-07  1.3.2     DA       Reactivated howtp bf_streams_011
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2022-10-19)
+Ver. 1.3.2 (2022-11-07)
 
 Unit test for all examples available.
 """
+
 
 import pytest
 import importlib
@@ -46,7 +48,7 @@ howto_list = {
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
     "bf_streams_010": "mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml",
-#    "bf_streams_011": "mlpro.bf.examples.howto_bf_streams_011_accessing_data_from_river",
+    "bf_streams_011": "mlpro.bf.examples.howto_bf_streams_011_accessing_data_from_river",
     "bf_streams_012": "mlpro.bf.examples.howto_bf_streams_012_accessing_data_from_scikitlearn",
 
 # Reinforcement Learning:
