@@ -11,10 +11,11 @@
 ## -- 2022-10-12  1.0.2     DA       Renaming and minor fixes
 ## -- 2022-10-17  1.0.3     SY       Refactoring 
 ## -- 2022-11-02  1.0.4     DA       Refactoring 
+## -- 2022-11-09  1.1.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-11-02)
+Ver. 1.1.0 (2022-11-09)
 
 This module demonstrates how to utilize wrapper class for Optuna in RL context.
 
@@ -46,7 +47,6 @@ class myPolicy (Policy):
 
     C_NAME      = 'MyPolicy'
     
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=True):
         """
@@ -112,12 +112,11 @@ class myPolicy (Policy):
 class BGLP_Rnd(RLScenario):
 
     C_NAME      = 'BGLP_Dummy'
-    
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         self._env       = BGLP(p_logging=logging)
-        self._agent     = MultiAgent(p_name='Dummy Policy', p_ada=1, p_logging=False)
+        self._agent     = MultiAgent(p_name='Dummy Policy', p_ada=1, p_logging=p_logging)
         state_space     = self._env.get_state_space()
         action_space    = self._env.get_action_space()
         
@@ -134,7 +133,8 @@ class BGLP_Rnd(RLScenario):
                 p_envmodel=None,
                 p_name=_name,
                 p_id=_id,
-                p_ada=True,
+                p_ada=p_ada,
+                p_visualize=p_visualize,
                 p_logging=logging),
             p_weight=1.0
             )
@@ -152,7 +152,8 @@ class BGLP_Rnd(RLScenario):
                 p_envmodel=None,
                 p_name=_name,
                 p_id=_id,
-                p_ada=True,
+                p_ada=p_ada,
+                p_visualize=p_visualize,
                 p_logging=logging),
             p_weight=1.0
             )
@@ -170,7 +171,8 @@ class BGLP_Rnd(RLScenario):
                 p_envmodel=None,
                 p_name=_name,
                 p_id=_id,
-                p_ada=True,
+                p_ada=p_ada,
+                p_visualize=p_visualize,
                 p_logging=logging),
             p_weight=1.0
             )
@@ -188,7 +190,8 @@ class BGLP_Rnd(RLScenario):
                 p_envmodel=None,
                 p_name=_name,
                 p_id=_id,
-                p_ada=True,
+                p_ada=p_ada,
+                p_visualize=p_visualize,
                 p_logging=logging),
             p_weight=1.0
             )
@@ -206,7 +209,8 @@ class BGLP_Rnd(RLScenario):
                 p_envmodel=None,
                 p_name=_name,
                 p_id=_id,
-                p_ada=True,
+                p_ada=p_ada,
+                p_visualize=p_visualize,
                 p_logging=logging),
             p_weight=1.0
             )
