@@ -4,6 +4,8 @@
 [![Anaconda-Version Badge](https://anaconda.org/mlpro/mlpro/badges/version.svg)](https://anaconda.org/mlpro/mlpro)
 [![PyPI Total Downloads](https://static.pepy.tech/personalized-badge/mlpro?period=total&units=international_system&left_color=blue&right_color=orange&left_text=PyPI%20Total%20Downloads)](https://pepy.tech/project/mlpro)
 [![PyPI Last Month Downloads](https://static.pepy.tech/personalized-badge/mlpro?period=month&units=international_system&left_color=blue&right_color=orange&left_text=PyPI%20Last%20Month%20Download)](https://pepy.tech/project/mlpro)
+[![Anaconda Total Downloads](https://anaconda.org/mlpro/mlpro/badges/downloads.svg)](https://anaconda.org/mlpro/mlpro/badges/downloads.svg)
+
 
 <img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png?raw=True" align="right" width="40%"/>
 
