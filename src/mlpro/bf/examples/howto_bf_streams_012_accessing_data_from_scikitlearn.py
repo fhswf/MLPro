@@ -10,17 +10,23 @@
 ## -- 2022-06-18  1.0.1     LSB      Restructured logging output
 ## -- 2022-06-25  1.0.2     LSB      Refactoring for new label and instance class
 ## -- 2022-10-12  1.0.3     DA       Renaming
+## -- 2022-11-08  1.1.0     DA       Refactoring after changes on class Stream
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-10-12)
+Ver. 1.1.0 (2022-11-08)
 
+This module demonstrates the use of Scikit-learn datasets as streams in MLPro. To this regard, MLPro
+provides wrapper classes to standardize stream access in own ML applications.
 
-This module shows how to wrap MLPro's Stream and StreamProvider class to Scikit learn, including how to fetch the
-list of streams and downloading a stream from the list of streams available with the stream provider, getting the
-feature spaces of the particular stream. This module also illustrates how to reset the stream and fetch the stream
-instances as needed.
-Please run the following code to understand the wrapper functionality and to produce similar results.
+You will learn:
+
+1) How to access datasets of the Scikit-learn project.
+
+2) How to iterate the instances of an Scikit-learn stream.
+
+3) How to access feature and label data of a data stream.
+
 """
 
 
@@ -28,50 +34,67 @@ from mlpro.wrappers.sklearn import *
 from mlpro.bf.various import Log
 
 
-# Checking for unit test
+
+## 0 Prepare Demo/Unit test mode
 if __name__ == '__main__':
-    p_logging = Log.C_LOG_ALL
+    num_inst    = 10
+    logging     = Log.C_LOG_ALL
 else:
-    p_logging = Log.C_LOG_NOTHING
+    num_inst    = 2
+    logging     = Log.C_LOG_NOTHING
 
 
-# 1. Create a Wrapper for OpenML stream provider
-sk_learn = WrStreamProviderSklearn(p_logging=p_logging)
+# 1 Create a Wrapper for OpenML stream provider
+sk_learn = WrStreamProviderSklearn(p_logging=logging)
 
 
-# 2. Get a list of streams available at the stream provider
-stream_list = sk_learn.get_stream_list(p_logging=p_logging)
+# 2 Get a list of streams available at the stream provider
+stream_list = sk_learn.get_stream_list(p_logging=logging)
 
 
-# 3. Get a specific stream from the stream provider
-stream = sk_learn.get_stream('iris')
+# 3 Get a specific stream from the stream provider
+mystream = sk_learn.get_stream( p_id='iris', p_logging=logging)
 
 
-# 4. get the feature space of the stream
-feature_space = stream.get_feature_space()
-sk_learn.log(stream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim(),'\n\n')
+# 4 Get the feature space of the stream
+feature_space = mystream.get_feature_space()
+sk_learn.log(mystream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim(),'\n\n')
 
 
-# 5. resetting the stream
-stream.reset()
-
-stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
-# 6. Loading stream instances
-for i in range(10):
-    curr_instance = stream.get_next()
-    curr_features = curr_instance.get_feature_data().get_values()
-    curr_label = curr_instance.get_label_data().get_values()
-    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:', curr_features, '\nLabel:', curr_label, '\n')
+# 5 Set up an iterator for the stream
+myiterator = iter(mystream)
 
 
-# 7. resetting the stream
-stream.reset()
+# 6 Fetching some stream instances
+myiterator.log(mystream.C_LOG_TYPE_W,'Fetching first', str(num_inst), 'stream instances...')
+for i in range(num_inst):
+    curr_instance   = next(myiterator)
+    curr_data       = curr_instance.get_feature_data().get_values()
+    curr_label      = curr_instance.get_label_data().get_values()
+    myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
 
 
-# 8. Getting stream instances
-stream.log(stream.C_LOG_TYPE_W,'Fetching the stream instances')
-for i in range(5):
-    curr_instance = stream.get_next()
-    curr_features = curr_instance.get_feature_data().get_values()
-    curr_label = curr_instance.get_label_data().get_values()
-    stream.log(stream.C_LOG_TYPE_I, '\n\nCurrent Instance:', curr_features, '\nLabel:', curr_label, '\n')
+# 7 Resetting the iterator
+myiterator = iter(mystream)
+
+
+# 8 Fetching all 150 instances
+myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all 150 instances...')
+for i, curr_instance in enumerate(myiterator):
+    if i == num_inst: 
+        myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the 150 instances dark...')
+        myiterator.switch_logging(p_logging=Log.C_LOG_NOTHING)
+        tp_start = datetime.now()
+
+    curr_data       = curr_instance.get_feature_data().get_values()
+    curr_label      = curr_instance.get_label_data().get_values()
+    myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
+
+# 8.1 Some statistics...
+tp_end = datetime.now()
+duration = tp_end - tp_start
+duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
+rate = ( mystream.get_num_instances() - num_inst ) / duration_sec
+
+myiterator.switch_logging(p_logging=logging)
+myiterator.log(Log.C_LOG_TYPE_W, 'Done in', round(duration_sec,3), ' seconds (throughput =', round(rate), 'instances/sec)')    
