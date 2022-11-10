@@ -703,7 +703,7 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamWorkflow (Workflow):
+class StreamWorkflow (StreamTask, Workflow):
     """
     Workflow for stream processing. See class bf.mt.Workflow for further details.
 
@@ -735,12 +735,21 @@ class StreamWorkflow (Workflow):
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        super().__init__( p_name=p_name, 
-                          p_range_max=p_range_max, 
-                          p_class_shared=p_class_shared, 
-                          p_visualize=p_visualize,
-                          p_logging=p_logging, 
-                          **p_kwargs )
+        StreamTask.__init__( self,
+                             p_name=p_name,
+                             p_range_max=p_range_max,
+                             p_duplicate_data=False,
+                             p_visualize=p_visualize,
+                             p_logging=p_logging,
+                             **p_kwargs )
+                             
+        Workflow.__init__( self,
+                           p_name=p_name, 
+                           p_range_max=p_range_max, 
+                           p_class_shared=p_class_shared, 
+                           p_visualize=p_visualize,
+                           p_logging=p_logging, 
+                           **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
