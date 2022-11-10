@@ -38,14 +38,14 @@ Mathematics
 
 
 
-Data Sets and Streams
----------------------
+Data Stream Processing
+----------------------
 
 .. toctree::
    :maxdepth: 1
    :glob:
 
-   bf/data/howto*   
+   bf/streams/howto*   
 
 
 

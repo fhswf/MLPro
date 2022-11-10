@@ -51,8 +51,6 @@ class MyTask (StreamTask):
 
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MyScenario (StreamScenario):
@@ -64,7 +62,7 @@ class MyScenario (StreamScenario):
     C_NAME      = 'Nine tasks'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_logging):
+    def _setup(self, p_mode, p_visualize: bool, p_logging):
 
         # 1 Import a stream from OpenML
         openml  = WrStreamProviderOpenML(p_logging=p_logging)
@@ -74,22 +72,22 @@ class MyScenario (StreamScenario):
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of 9 tasks
-        t1a = MyTask( p_name='t1a', p_visualize=self._visualize, p_logging=logging )
-        t1b = MyTask( p_name='t1b', p_visualize=self._visualize, p_logging=logging )
-        t1c = MyTask( p_name='t1c', p_visualize=self._visualize, p_logging=logging )
+        t1a = MyTask( p_name='t1a', p_visualize=p_visualize, p_logging=logging )
+        t1b = MyTask( p_name='t1b', p_visualize=p_visualize, p_logging=logging )
+        t1c = MyTask( p_name='t1c', p_visualize=p_visualize, p_logging=logging )
 
-        t2a = MyTask( p_name='t2a', p_visualize=self._visualize, p_logging=logging )
-        t2b = MyTask( p_name='t2b', p_visualize=self._visualize, p_logging=logging )
-        t2c = MyTask( p_name='t2c', p_visualize=self._visualize, p_logging=logging )
+        t2a = MyTask( p_name='t2a', p_visualize=p_visualize, p_logging=logging )
+        t2b = MyTask( p_name='t2b', p_visualize=p_visualize, p_logging=logging )
+        t2c = MyTask( p_name='t2c', p_visualize=p_visualize, p_logging=logging )
 
-        t3a = MyTask( p_name='t3a', p_visualize=self._visualize, p_logging=logging )
-        t3b = MyTask( p_name='t3b', p_visualize=self._visualize, p_logging=logging )
-        t3c = MyTask( p_name='t3c', p_visualize=self._visualize, p_logging=logging )
+        t3a = MyTask( p_name='t3a', p_visualize=p_visualize, p_logging=logging )
+        t3b = MyTask( p_name='t3b', p_visualize=p_visualize, p_logging=logging )
+        t3c = MyTask( p_name='t3c', p_visualize=p_visualize, p_logging=logging )
 
         # 2.2 Create a workflow and add the tasks
         workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=StreamWorkflow.C_RANGE_THREAD, 
-                                   p_visualize=self._visualize,
+                                   p_range_max=StreamWorkflow.C_RANGE_NONE,    #StreamWorkflow.C_RANGE_THREAD, 
+                                   p_visualize=p_visualize,
                                    p_logging=logging )
 
         # 2.2.1 At first we add three tasks that build the starting points of our workflow
@@ -110,7 +108,6 @@ class MyScenario (StreamScenario):
 
         # 3 Return stream and workflow
         return stream, workflow
-
 
 
 
@@ -138,4 +135,4 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 
 # 3 Reset and run own stream scenario
 myscenario.reset()
-myscenario.run()                         
+myscenario.run()
