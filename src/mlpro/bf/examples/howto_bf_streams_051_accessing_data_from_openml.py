@@ -74,7 +74,7 @@ myiterator = iter(mystream)
 
 
 # 7 Fetching some stream instances
-myiterator.log(mystream.C_LOG_TYPE_W,'Fetching first', str(num_inst), 'stream instances...')
+myiterator.log(mystream.C_LOG_TYPE_W, 'Fetching first', str(num_inst), 'stream instances...')
 for i in range(num_inst):
     curr_instance   = next(myiterator)
     curr_data       = curr_instance.get_feature_data().get_values()
