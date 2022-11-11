@@ -15,6 +15,7 @@ This module provides pool of window objects further used in the context of onlin
 """
 from matplotlib.axes import Axes
 from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from matplotlib.collections import PolyCollection
 from matplotlib.patches import Rectangle
 import matplotlib.pyplot as plt
@@ -22,6 +23,7 @@ import numpy as np
 from mlpro.bf.streams.models import *
 from mlpro.bf.events import *
 from typing import Union, List, Iterable
+
 
 
 
@@ -253,7 +255,7 @@ class Window(StreamTask):
         else:
             self.axes = p_settings.axes
 
-        self.
+        self.window_patch = Poly3DCollection(verts=[])
         pass
 
 
