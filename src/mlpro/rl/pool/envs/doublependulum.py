@@ -54,10 +54,11 @@
 ## -- 2022-09-09  2.0.5     LSB      Updating the boundaries
 ## -- 2022-10-08  2.0.6     LSB      Bug fix
 ## -- 2022-11-09  2.1.0     DA       Refactorung due to changes on the plot systematics
+## -- 2022-11-11  2.1.1     LSB      Bug fix for random seed dependent reproducibility
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2022-11-09)
+Ver. 2.1.1 (2022-11-11)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -66,6 +67,7 @@ connected to a fixed point at one end and to outer pole at other end. The native
 Pendulum consists of an input motor providing the torque in either directions to actuate the system. The figure
 below shows the visualisation of MLPro's Double Pendulum environment.
 """
+import random
 
 from mlpro.rl import *
 from mlpro.bf.various import *
@@ -233,6 +235,8 @@ class DoublePendulumRoot (Environment):
             The default is None.
 
         """
+        if p_seed:
+            random.seed(p_seed)
         if self._init_angles == self.C_ANGLES_UP:
             self._th1 = 0
             self._th2 = 0
