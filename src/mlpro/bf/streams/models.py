@@ -25,7 +25,7 @@
 ## -- 2022-11-04  0.6.0     DA       Classes StreamProvider, Stream: refactoring
 ## -- 2022-11-05  0.7.0     DA       Class Stream: refactoring to make it iterable
 ## -- 2022-11-07  0.7.1     DA       Class StreamScenario: refactoring 
-## -- 2022-11-07  0.8.0     DA       Class Stream: new custom method set_options()
+## -- 2022-11-11  0.8.0     DA       Class Stream: new custom method set_options()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -746,13 +746,13 @@ class StreamWorkflow (StreamTask, Workflow):
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        StreamTask.__init__( self,
-                             p_name=p_name,
-                             p_range_max=p_range_max,
-                             p_duplicate_data=False,
-                             p_visualize=p_visualize,
-                             p_logging=p_logging,
-                             **p_kwargs )
+        # StreamTask.__init__( self,
+        #                      p_name=p_name,
+        #                      p_range_max=p_range_max,
+        #                      p_duplicate_data=False,
+        #                      p_visualize=p_visualize,
+        #                      p_logging=p_logging,
+        #                      **p_kwargs )
                              
         Workflow.__init__( self,
                            p_name=p_name, 
@@ -761,6 +761,9 @@ class StreamWorkflow (StreamTask, Workflow):
                            p_visualize=p_visualize,
                            p_logging=p_logging, 
                            **p_kwargs )
+
+        self._inst_new = []
+        self._inst_del = []
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -780,7 +783,8 @@ class StreamWorkflow (StreamTask, Workflow):
             If True, the method waits until all (a)synchronous tasks are finished.
         """
 
-        super().run(p_range=p_range, p_wait=p_wait, p_inst=p_inst)                          
+        self._inst_new.append(p_inst)
+        Workflow.run(self, p_range=p_range, p_wait=p_wait, p_inst_new=self._inst_new, p_inst_del=self._inst_del)                          
 
 
 ## -------------------------------------------------------------------------------------------------
