@@ -10,24 +10,38 @@
 ## -- 2022-09-30  0.5.0     DA       Implementation of classes Range, Shared, Async
 ## -- 2022-10-04  1.0.0     DA       Implementation of classes Task, Workflow
 ## -- 2022-10-06  1.0.1     DA       Class Task: event definition as string
+## -- 2022-10-09  1.1.0     DA       Class Shared: systematics for results
+## -- 2022-10-12  1.1.1     DA       Replaced package multiprocessing (pickle) by multiprocess (dill)
+## -- 2022-10-31  1.2.0     DA       Class Task, Workflow: plot functionality added
+## -- 2022-11-04  1.2.1     DA       Class Workflow: corrections
+## -- 2022-11-07  1.2.2     DA       Classes Async, Task, Workflow: corrections/refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-10-06)
+Ver. 1.2.2 (2022-11-07)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
-on shared objects.
+on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
+parallel programming.
+
+Annotation to multitasking: Standard Python package multiprocessing uses pickle for serialization.
+This leads to problems with more complex objects. That was the reason to opt for the more flexible 
+package multiprocess, which is a fork of multiprocessing and uses dill for serialization.
+
+See also: https://stackoverflow.com/questions/40234771/replace-pickle-in-python-multiprocessing-lib
 """
 
 
 from time import sleep
 import uuid
 import threading as mt
-import multiprocessing as mp
-from multiprocessing.managers import BaseManager
+import multiprocess as mp
+from matplotlib.figure import Figure
+from multiprocess.managers import BaseManager
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.events import EventManager, Event
+from mlpro.bf.plot import PlotSettings, Plottable
 
 
 
@@ -101,7 +115,7 @@ class Shared (Range):
 
         self._locking_task  = None
         self._active_tasks  = []
-        self._messages      = {}
+        self._results       = {}
 
 
 # -------------------------------------------------------------------------------------------------
@@ -178,13 +192,63 @@ class Shared (Range):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def send_message ( self, p_msg_type, p_tid=None, **p_kwargs):
-        raise NotImplementedError
+    def add_result(self, p_tid, p_result):
+        """
+        Adds a result for a task.
+ 
+        Parameters
+        ----------
+        p_tid
+            Task id.
+        p_result
+            Any kind of result data.
+        """
+
+        self.lock(p_tid=p_tid)
+        self._results[p_tid] = p_result
+        self.unlock()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def receive_message(self, p_tid, p_msg_type=None):
-        raise NotImplementedError
+    def get_result(self, p_tid):
+        """
+        Returns the result data of a task.
+
+        Parameters
+        ----------
+        p_tid
+            Task id.
+
+        Returns
+        -------
+        task_results
+            Result data of a task.
+        """
+
+        return self._results.get(p_tid)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_results(self):
+        """
+        Returns reference to internal dictionary of results
+
+        Returns
+        -------
+        results : dict
+            Dictionary of results
+        """
+
+        return self._results
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_results(self):
+        """
+        Clears internal dictionary of results
+        """
+
+        self._results.clear()
 
 
 
@@ -217,10 +281,10 @@ class Async (Range, Log):
         Log.__init__(self, p_logging=p_logging)
         Range.__init__(self, p_range=p_range_max)
 
-        self._range_current = p_range_max
         self._async_tasks   = []
         self._mpmanager     = None
         self._class_shared  = p_class_shared
+
         self._so : Shared   = self._create_so(p_range=p_range_max, p_class_shared=p_class_shared)
 
 
@@ -231,7 +295,7 @@ class Async (Range, Log):
     
         Parameters
         ----------
-        p_range_max : int
+        p_range : int
             Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
         p_class_shared
             Class for a shared object (class Shared or a child class of Shared)
@@ -246,7 +310,7 @@ class Async (Range, Log):
 
             # Instantiation of shared object
             if p_range in [ self.C_RANGE_NONE, self.C_RANGE_THREAD ]:
-                return p_class_shared(p_range)
+               so = p_class_shared(p_range)
 
             elif p_range == self.C_RANGE_PROCESS:
                 if self._mpmanager is None:
@@ -254,10 +318,13 @@ class Async (Range, Log):
                     self._mpmanager = BaseManager()
                     self._mpmanager.start()
 
-                return self._mpmanager.Shared(p_range=p_range)
+                so = self._mpmanager.Shared(p_range=p_range)
 
             else:
                 raise NotImplementedError
+
+            self._range = min( self._range, so.get_range() )
+            return so
 
         else:
             return None
@@ -320,19 +387,19 @@ class Async (Range, Log):
 
         # 1 Determination of range of asynchronity
         if p_range is None:
-            self._range_current = self._range
+            range_run = self._range
         else:
-            self._range_current = min( self._range, p_range )
+            range_run = min( self._range, p_range )
 
 
         # 2 Execution depending on range of asynchronity
-        if self._range_current == self.C_RANGE_NONE: 
+        if range_run == self.C_RANGE_NONE: 
             # 2.1 Synchronous execution
             p_target(**p_kwargs)
 
-        elif self._range_current in [ self.C_RANGE_THREAD, self.C_RANGE_PROCESS ]:
+        elif range_run in [ self.C_RANGE_THREAD, self.C_RANGE_PROCESS ]:
             # 2.2 Asynchronous execution as separate thread or process
-            if self._range_current == self.C_RANGE_THREAD:
+            if range_run == self.C_RANGE_THREAD:
                 # 2.2.1 Preparation of a new thread
                 task = mt.Thread(target=p_target, kwargs=p_kwargs, group=None)
 
@@ -349,7 +416,7 @@ class Async (Range, Log):
 
 
         # 3 Returns actual range of asynchonicity
-        return self._range_current         
+        return range_run         
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -375,7 +442,7 @@ class Async (Range, Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Task (Async, EventManager): 
+class Task (Async, EventManager, Plottable): 
     """
     Template class for a task, that can run things - and even itself - asynchronously in a thread
     or process. Tasks can run standalone or as part of a workflow (see class Workflow). The integrated
@@ -394,6 +461,8 @@ class Task (Async, EventManager):
         actions.    
     p_class_shared
         Optional class for a shared object (class Shared or a child class of Shared)
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : dict
@@ -414,6 +483,7 @@ class Task (Async, EventManager):
                   p_range_max:int=Async.C_RANGE_PROCESS, 
                   p_autorun=C_AUTORUN_NONE,
                   p_class_shared=None, 
+                  p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
 
@@ -430,6 +500,7 @@ class Task (Async, EventManager):
 
         Async.__init__(self, p_range_max=p_range_max, p_class_shared=p_class_shared, p_logging=p_logging)
         EventManager.__init__(self, p_logging=p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
 
         self._autorun(p_autorun=p_autorun, p_kwargs=self._kwargs)
 
@@ -482,14 +553,19 @@ class Task (Async, EventManager):
             Further parameters handed over to custom method _run().
         """
 
-        if p_range == self.C_RANGE_NONE:
+        if p_range is None:
+            self._range_run = self._range
+        else:
+            self._range_run = min( p_range, self._range )
+
+        if self._range_run == self.C_RANGE_NONE:
             self.log(Log.C_LOG_TYPE_S, 'Started synchronously')
-        elif p_range == self.C_RANGE_THREAD:
+        elif self._range_run == self.C_RANGE_THREAD:
             self.log(Log.C_LOG_TYPE_S, 'Started as new thread')
         else:
             self.log(Log.C_LOG_TYPE_S, 'Started as new process')
 
-        self._start_async( p_target=self._run_async, p_range=p_range, p_kwargs=p_kwargs )
+        self._start_async( p_target=self._run_async, p_range=self._range_run, p_kwargs=p_kwargs )
 
         if p_wait: self.wait_async_tasks()
         
@@ -509,15 +585,17 @@ class Task (Async, EventManager):
             self._so.checkin(p_tid=self._tid)
             self.log(Log.C_LOG_TYPE_I, 'Checked in to shared object')
 
-        self._run(p_kwargs=p_kwargs)
+        self._run(**p_kwargs)
 
         if self._so is not None: 
             self._so.checkout(p_tid=self.get_tid())
             self.log(Log.C_LOG_TYPE_I, 'Checked out from shared object')
 
+        self.update_plot(**p_kwargs)
+
         self.log(Log.C_LOG_TYPE_S, 'Stopped')
 
-        self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self, p_range=self._range_current, p_wait=False) )
+        self._raise_event( self.C_EVENT_FINISHED, Event(p_raising_object=self, p_range=self._range_run, p_wait=False) )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -615,6 +693,8 @@ class Workflow (Task):
         Range of asynchonicity. See class Range. Default is Range.C_RANGE_THREAD.
     p_class_shared
         Optional class for a shared object (class Shared or a child class of Shared)
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : dict
@@ -624,11 +704,14 @@ class Workflow (Task):
     C_TYPE          = 'Workflow'
     C_NAME          = ''
 
+    C_PLOT_ACTIVE   = True
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name:str=None,
                   p_range_max=Async.C_RANGE_THREAD, 
                   p_class_shared=None, 
+                  p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
@@ -644,6 +727,7 @@ class Workflow (Task):
                           p_range_max=p_range_max,
                           p_autorun=self.C_AUTORUN_NONE,
                           p_class_shared=p_class_shared,
+                          p_visualize=p_visualize,
                           p_logging=p_logging,
                           p_kwargs=p_kwargs )
 
@@ -719,6 +803,75 @@ class Workflow (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def init_plot( self, 
+                   p_figure:Figure=None, 
+                   p_plot_settings:list=[], 
+                   p_plot_depth:int=0, 
+                   p_detail_level:int=0, 
+                   p_step_rate:int=1, 
+                   **p_kwargs):
+        """
+        Initializes the plot of a workflow. The method creates a host figure for all tasks if no 
+        external host figure is parameterized. The sub-plots of the tasks are autmatically arranged
+        within the host figure.
+
+        See method init_plot() of class mlpro.bf.plot.Plottable for further details.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure, optional
+            Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
+        p_plot_settings : list
+            Optional list of objects of class PlotSettings. All subplots that are addresses in the list
+            are plotted in parallel. If the list is empty the default view is plotted (see attribute 
+            C_PLOT_DEFAULT_VIEW).
+        p_plot_depth : int = 0
+            Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
+            depth is unlimited.
+        p_detail_level : int = 0
+            Optional detail level.
+        p_step_rate : int = 1
+            Decides after how many calls of the update_plot() method the custom methods 
+            _update_plot() make an output.
+        **p_kwargs : dict
+            Further optional plot parameters.    
+        """
+
+        super().init_plot( p_figure=p_figure, 
+                           p_plot_settings=p_plot_settings, 
+                           p_plot_depth=p_plot_depth, 
+                           p_detail_level=p_detail_level, 
+                           p_step_rate=p_step_rate, 
+                           p_kwargs=p_kwargs )
+
+        task:Task
+        task_pos_x  = 0
+        task_pos_y  = 0
+
+        for task in self._tasks:
+            task_plot_settings = []
+            for ps in self._plot_settings:
+                if task.C_PLOT_STANDALONE:
+                    task_axes   = None
+                    task_pos_x  += 1
+                else:
+                    task_axes   = ps.axes
+
+                task_plot_settings.append( PlotSettings( p_view=ps.view,
+                                                         p_axes=task_axes,
+                                                         p_pos_x=task_pos_x,
+                                                         p_pos_y=task_pos_y,
+                                                         p_kwargs=p_kwargs ) )
+                
+            task.init_plot( p_figure=self._figure,
+                            p_plot_settings=task_plot_settings,
+                            p_plot_depth=p_plot_depth,
+                            p_detail_level=p_detail_level,
+                            p_step_rate=p_step_rate,
+                            p_kwargs=p_kwargs )
+                           
+
+    ## -------------------------------------------------------------------------------------------------
     def run(self, p_range:int=None, p_wait:bool=False, **p_kwargs):
         """
         Executes all tasks of the workflow. At the end event C_EVENT_FINISHED is raised to start 
@@ -727,8 +880,9 @@ class Workflow (Task):
         Parameters
         ----------
         p_range : int
-            Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
-            range defined during instantiation is taken. Oterwise the minimum range of both is taken.
+            Optional deviating range of asynchonicity. See class Range. Default is None what means that 
+            the maximum range defined during instantiation is taken. Oterwise the minimum range of both 
+            is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
         p_kwargs : dict
@@ -737,9 +891,14 @@ class Workflow (Task):
 
         self._finished.clear()
 
-        if p_range == self.C_RANGE_NONE:
+        if p_range is None:
+            range_run = self._range
+        else:
+            range_run = min( p_range, self._range )
+
+        if range_run == self.C_RANGE_NONE:
             self.log(Log.C_LOG_TYPE_S, 'Started synchronously')
-        elif p_range == self.C_RANGE_THREAD:
+        elif range_run == self.C_RANGE_THREAD:
             self.log(Log.C_LOG_TYPE_S, 'Started as new thread')
         else:
             self.log(Log.C_LOG_TYPE_S, 'Started as new process')
@@ -753,7 +912,7 @@ class Workflow (Task):
         self._ctr_final_tasks = len(self._final_tasks)
 
         for task in self._entry_tasks: 
-            task.run( p_range=p_range, p_kwargs=p_kwargs)
+            task.run( p_range=range_run, **p_kwargs )
 
         if p_wait: self.wait_async_tasks()
 

@@ -18,8 +18,8 @@ sys.path.insert(0, os.path.abspath('../../src'))
 # -- Project information -----------------------------------------------------
 
 project = 'MLPro Documentations'
-copyright = '2021 South Westphalia University of Applied Sciences, Germany'
-author = 'Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya, William Budiatmadjaja'
+copyright = '2022 South Westphalia University of Applied Sciences, Germany'
+author = 'Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya et al'
 
 # The full version, including alpha/beta/rc tags
 release = '1.0.0'
