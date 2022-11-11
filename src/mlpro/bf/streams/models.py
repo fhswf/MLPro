@@ -25,10 +25,11 @@
 ## -- 2022-11-04  0.6.0     DA       Classes StreamProvider, Stream: refactoring
 ## -- 2022-11-05  0.7.0     DA       Class Stream: refactoring to make it iterable
 ## -- 2022-11-07  0.7.1     DA       Class StreamScenario: refactoring 
+## -- 2022-11-07  0.8.0     DA       Class Stream: new custom method set_options()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.1 (2022-11-07)
+Ver. 0.8.0 (2022-11-11)
 
 This module provides classes for standardized stream processing. 
 """
@@ -176,7 +177,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         self._version       = p_version
         self._feature_space = p_feature_space
         self._label_space   = p_label_space
-        self._kwargs        = p_kwargs.copy()
+        self.set_options(**p_kwargs)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
 
 
@@ -291,6 +292,16 @@ class Stream (Mode, LoadSave, ScientificObject):
         """
 
         return None
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_options(self, **p_kwargs):
+        """
+        Method to set specific options for the stream. The possible options depend on the 
+        stream provider and stream itself.
+        """
+
+        self._kwargs        = p_kwargs.copy()
 
 
 ## -------------------------------------------------------------------------------------------------

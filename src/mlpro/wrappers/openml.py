@@ -20,10 +20,11 @@
 ## --                                - Class WrStreamOpenML: removed parent class Wrapper
 ## -- 2022-11-05  1.4.0     DA       Class WrStreamOpenML: refactoring to make it iterable
 ## -- 2022-11-08  1.4.1     DA       Corrections
+## -- 2022-11-11  1.5.0     DA       Class WrStreamOpenML: new support of optional parameters.
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-11-08)
+Ver. 1.5.0 (2022-11-11)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -198,7 +199,9 @@ class WrStreamOpenML (Stream):
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     p_kwargs : dict
-        Further stream specific parameters.
+        Further stream specific parameters. See https://docs.openml.org/Python-API/ for more informations. 
+        In particular, the optional parameters of method openml.datasets.OpenMLDataset.get_data() can
+        be handed over here (or later by using method set_options()).
     """
 
     C_TYPE              = 'Wrapped OpenML stream'
@@ -304,7 +307,7 @@ class WrStreamOpenML (Stream):
         except:
             self.C_SCIREF_ABSTRACT =''
 
-        self._dataset = self._stream_meta.get_data(dataset_format = 'array')
+        self._dataset = self._stream_meta.get_data(dataset_format = 'array', **self._kwargs)
 
         if self._dataset is not None:
             return True
