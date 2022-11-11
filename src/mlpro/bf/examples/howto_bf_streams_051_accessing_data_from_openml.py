@@ -13,10 +13,11 @@
 ## -- 2022-10-12  1.0.4     DA       Renaming
 ## -- 2022-11-05  1.1.0     DA       Refactoring after changes on class Stream
 ## -- 2022-11-08  1.1.1     DA       Minor improvements
+## -- 2022-11-11  1.1.2     LSB      Refactoring for the new set options method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-11-08)
+Ver. 1.1.2 (2022-11-11)
 
 This module demonstrates the use of OpenML datasets as streams in MLPro. To this regard, MLPro
 provides wrapper classes to standardize stream access in own ML applications.
@@ -56,19 +57,23 @@ stream_list = openml.get_stream_list(p_logging = logging)
 
 
 # 3 Get stream "BNG(autos,nominal,1000000)" from the stream provider OpenML
-mystream = openml.get_stream( p_id=75, p_logging=logging)
+mystream = openml.get_stream( p_id=31, p_logging=logging)
 
 
-# 4 Get the feature space of the stream
+# 4 Setting up additional stream options, the target label in this case
+mystream.set_options(target = 'checking_status')
+
+
+# 5 Get the feature space of the stream
 feature_space = mystream.get_feature_space()
 openml.log(mystream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim())
 
 
-# 5 Set up an iterator for the stream
+# 6 Set up an iterator for the stream
 myiterator = iter(mystream)
 
 
-# 6 Fetching some stream instances
+# 7 Fetching some stream instances
 myiterator.log(mystream.C_LOG_TYPE_W,'Fetching first', str(num_inst), 'stream instances...')
 for i in range(num_inst):
     curr_instance   = next(myiterator)
@@ -77,15 +82,15 @@ for i in range(num_inst):
     myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
 
 
-# 7 Resetting the iterator
+# 8 Resetting the iterator
 myiterator = iter(mystream)
 
 
-# 8 Fetching all 1,000,000 instances
-myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all 1,000,000 instances...')
+# 9 Fetching all 1,000,000 instances
+myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all 1,000 instances...')
 for i, curr_instance in enumerate(myiterator):
     if i == num_inst: 
-        myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the 1,000,000 instances dark...')
+        myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the 1,000 instances dark...')
         myiterator.switch_logging(p_logging=Log.C_LOG_NOTHING)
         tp_start = datetime.now()
 
@@ -93,7 +98,7 @@ for i, curr_instance in enumerate(myiterator):
     curr_label      = curr_instance.get_label_data().get_values()
     myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
 
-# 8.1 Some statistics...
+# 9.1 Some statistics...
 tp_end = datetime.now()
 duration = tp_end - tp_start
 duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
