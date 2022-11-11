@@ -21,10 +21,11 @@
 ## -- 2022-11-05  1.4.0     DA       Class WrStreamOpenML: refactoring to make it iterable
 ## -- 2022-11-08  1.4.1     DA       Corrections
 ## -- 2022-11-11  1.5.0     DA       Class WrStreamOpenML: new support of optional parameters.
+## -- 2022-11-11  1.5.1     LSB      Refactoring for the new target parameter for get_data() method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-11-11)
+Ver. 1.5.1 (2022-11-11)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -290,7 +291,7 @@ class WrStreamOpenML (Stream):
         """
 
         self._stream_meta = openml.datasets.get_dataset(self._id)
-        self._label = self._stream_meta.default_target_attribute
+        self._label = self._kwargs['target'] if self._kwargs['target'] else self._stream_meta.default_target_attribute
 
         try:
             self.C_SCIREF_URL = self._stream_meta.url
@@ -307,7 +308,7 @@ class WrStreamOpenML (Stream):
         except:
             self.C_SCIREF_ABSTRACT =''
 
-        self._dataset = self._stream_meta.get_data(dataset_format = 'array', **self._kwargs)
+        self._dataset = self._stream_meta.get_data(target = self._label, dataset_format = 'array')
 
         if self._dataset is not None:
             return True
@@ -332,11 +333,11 @@ class WrStreamOpenML (Stream):
 
         # 2 Determine feature data
         feature_data  = Element( self.get_feature_space() )
-        feature_data.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
+        feature_data.set_values(self._dataset[0][self._index])
 
         # 3 Determine label data
         label_data = Element(self.get_label_space())
-        label_data.set_values(numpy.asarray([self._dataset[0][self._index][self._dataset[3].index(self._label)]]))
+        label_data.set_values(numpy.asarray([self._dataset[1][self._index]]))
 
         self._index += 1
 
