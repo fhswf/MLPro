@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_010_accessing_data_from_openml.py
+## -- Module  : howto_bf_streams_051_accessing_data_from_openml.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -56,7 +56,7 @@ openml = WrStreamProviderOpenML(p_logging = logging)
 stream_list = openml.get_stream_list(p_logging = logging)
 
 
-# 3 Get stream "BNG(autos,nominal,1000000)" from the stream provider OpenML
+# 3 Get stream "credit-g" from the stream provider OpenML
 mystream = openml.get_stream( p_id=31, p_logging=logging)
 
 
@@ -86,7 +86,7 @@ for i in range(num_inst):
 myiterator = iter(mystream)
 
 
-# 9 Fetching all 1,000,000 instances
+# 9 Fetching all 1,000 instances
 myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all 1,000 instances...')
 for i, curr_instance in enumerate(myiterator):
     if i == num_inst: 
