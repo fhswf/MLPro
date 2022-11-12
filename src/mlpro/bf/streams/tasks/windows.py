@@ -253,9 +253,8 @@ class Window(StreamTask):
         else:
             self.axes = p_settings.axes
 
-        self.
-        pass
-
+        # ...
+        
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
