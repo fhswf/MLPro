@@ -762,9 +762,6 @@ class StreamWorkflow (StreamTask, Workflow):
                            p_logging=p_logging, 
                            **p_kwargs )
 
-        self._inst_new = []
-        self._inst_del = []
-
 
 ## -------------------------------------------------------------------------------------------------
     def run( self, p_inst:Instance, p_range: int = None, p_wait: bool = False ):
@@ -783,7 +780,9 @@ class StreamWorkflow (StreamTask, Workflow):
             If True, the method waits until all (a)synchronous tasks are finished.
         """
 
-        self._inst_new.append(p_inst)
+        self._inst_new = [ p_inst ]
+        self._inst_del = []
+
         Workflow.run(self, p_range=p_range, p_wait=p_wait, p_inst_new=self._inst_new, p_inst_del=self._inst_del)                          
 
 
@@ -1015,12 +1014,10 @@ class StreamScenario (ScenarioBase):
         try:
             self._workflow.run( p_inst=iter(self._iterator) )
             end_of_data = False
-            adapted     = self._workflow.get_adapted()
         except:
-            adapted     = False
             end_of_data = True
 
-        return True, False, adapted, end_of_data
+        return True, False, False, end_of_data
 
 
 ## -------------------------------------------------------------------------------------------------

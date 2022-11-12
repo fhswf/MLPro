@@ -42,7 +42,7 @@ class MyTask (StreamTask):
     """
 
     # needed for proper logging (see class mlpro.bf.various.Log)
-    C_NAME      = 'My stream task'
+    C_NAME      = 'Custom'
 
 
 ## -------------------------------------------------------------------------------------------------

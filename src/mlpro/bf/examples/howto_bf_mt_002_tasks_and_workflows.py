@@ -160,7 +160,6 @@ wf.run( p_range=mt.Workflow.C_RANGE_NONE, p_wait=True )
 wf.log(Log.C_LOG_TYPE_I, 'Result in shared object:\n', wf.get_so().get_results())
 
 
-
 # 4 Clear result list in shared object and wait for next run (for better observation)
 wf.get_so().clear_results()
 wf.log(Log.C_LOG_TYPE_W, 'Short break for better observation of CPU load in perfmeter')

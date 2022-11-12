@@ -15,10 +15,11 @@
 ## -- 2022-10-31  1.2.0     DA       Class Task, Workflow: plot functionality added
 ## -- 2022-11-04  1.2.1     DA       Class Workflow: corrections
 ## -- 2022-11-07  1.2.2     DA       Classes Async, Task, Workflow: corrections/refactoring
+## -- 2022-11-12  1.2.3     DA       Bugfix in method Task.run()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2022-11-07)
+Ver. 1.2.3 (2022-11-12)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -565,7 +566,7 @@ class Task (Async, EventManager, Plottable):
         else:
             self.log(Log.C_LOG_TYPE_S, 'Started as new process')
 
-        self._start_async( p_target=self._run_async, p_range=self._range_run, p_kwargs=p_kwargs )
+        self._start_async( p_target=self._run_async, p_range=self._range_run, **p_kwargs )
 
         if p_wait: self.wait_async_tasks()
         
@@ -672,7 +673,10 @@ class Task (Async, EventManager, Plottable):
             else:
                 self._ctr_predecessors = self._num_predecessors
 
-        self.run(**p_event_object.get_data())
+        # self.run(**p_event_object.get_data())
+        self.run(p_event_object.get_data())
+
+        pass
 
 
 

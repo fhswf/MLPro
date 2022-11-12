@@ -11,10 +11,11 @@
 ## -- 2022-11-07  1.2.0     DA       Class ScenarioBase: 
 ## --                                - support of new event "end of data"
 ## --                                - method setup(): parameters removed
+## -- 2022-11-12  1.2.1     DA       Class ScenarioBase: minor changes on logging
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-11-07)
+Ver. 1.2.1 (2022-11-12)
 
 This module provides classes for operation.
 """
@@ -286,14 +287,14 @@ class ScenarioBase (Mode, LoadSave, Plottable):
 
 
         # 1 Run a single custom cycle
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Start of cycle', str(self._cycle_id))
+        self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': Start of cycle', str(self._cycle_id))
         success, error, adapted, end_of_data = self._run_cycle()
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': End of cycle', str(self._cycle_id), '\n')
+        self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': End of cycle', str(self._cycle_id))
 
 
         # 2 End of data source reached?
         if end_of_data:
-            self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': End of data source reached')
+            self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': End of data source reached')
             return success, error, timeout, limit, adapted, end_of_data
 
 
@@ -386,7 +387,7 @@ class ScenarioBase (Mode, LoadSave, Plottable):
         self._cycle_id  = 0
         adapted         = False
         if self._timer is None: self._init_timer()
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'Start of processing')
+        self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': Start of processing')
 
         while True:
             success, error, timeout, limit, adapted_cycle, end_of_data = self.run_cycle()
@@ -396,6 +397,6 @@ class ScenarioBase (Mode, LoadSave, Plottable):
             if p_term_on_timeout and timeout: break
             if limit or end_of_data: break
 
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'End of processing')
+        self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': End of processing')
 
         return success, error, timeout, limit, adapted, end_of_data, self._cycle_id
