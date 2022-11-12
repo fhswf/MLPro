@@ -673,10 +673,7 @@ class Task (Async, EventManager, Plottable):
             else:
                 self._ctr_predecessors = self._num_predecessors
 
-        # self.run(**p_event_object.get_data())
-        self.run(p_event_object.get_data())
-
-        pass
+        self.run(**p_event_object.get_data())
 
 
 
