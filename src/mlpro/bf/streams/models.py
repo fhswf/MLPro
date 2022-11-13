@@ -25,11 +25,12 @@
 ## -- 2022-11-04  0.6.0     DA       Classes StreamProvider, Stream: refactoring
 ## -- 2022-11-05  0.7.0     DA       Class Stream: refactoring to make it iterable
 ## -- 2022-11-07  0.7.1     DA       Class StreamScenario: refactoring 
-## -- 2022-11-11  0.8.0     DA       Class Stream: new custom method set_options()
+## -- 2022-11-13  0.8.0     DA       - Class Stream: new custom method set_options()
+## --                                - New class StreamShared
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.0 (2022-11-11)
+Ver. 0.8.0 (2022-11-13)
 
 This module provides classes for standardized stream processing. 
 """
@@ -40,7 +41,7 @@ from mlpro.bf.various import *
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import Dimension, Element
-from mlpro.bf.mt import Task, Workflow, Shared
+from mlpro.bf.mt import *
 from datetime import datetime
 from matplotlib.figure import Figure
 import random
@@ -125,6 +126,43 @@ class Instance:
         duplicate._time_stamp = self._time_stamp
         return duplicate
 
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamShared (Shared):
+    """
+    Template class for shared objects in the context of stream processing.
+
+    Attributes
+    ----------
+    _inst_new : list
+        List of new instances of a process cycle. At the beginning of a cycle it contains the incoming
+        instance of a stream. The list evolves due to the manipulations of the stream tasks.
+    _inst_del : list
+        List of instances to be removed. At the beginning of a cycle it is empty. The list evolves due 
+        to the manipulations of the stream tasks.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
+        super().__init__(p_range)
+        self._inst_new : list = None
+        self._inst_del : list = None
+    
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_inst_new : list):
+        self._inst_new = []
+        self._inst_del = []
+        self._inst_new.extend(p_inst_new)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_instances(self):
+        return self._inst_new, self._inst_del
 
 
 
@@ -513,9 +551,6 @@ class StreamTask (Task):
         Optional name of the task. Default is None.
     p_range_max : int
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
-    p_duplicate_data : bool     
-        If True the incoming data are copied before processing. Otherwise the origin incoming data
-        are modified.        
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
@@ -535,7 +570,6 @@ class StreamTask (Task):
     def __init__( self, 
                   p_name: str = None, 
                   p_range_max=Task.C_RANGE_THREAD, 
-                  p_duplicate_data:bool=False,
                   p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -548,37 +582,40 @@ class StreamTask (Task):
                           p_logging=p_logging, 
                           **p_kwargs )
 
-        self._duplicate_data = p_duplicate_data
-
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, p_inst_new:list, p_inst_del:list, p_range:int = None, p_wait: bool = False):
+    def run(self, p_range:int = None, p_wait: bool = False, p_inst_new:list = None, p_inst_del:list = None):
         """
-        Executes the task specific actions implemented in custom method _run(). At the end event
-        C_EVENT_FINISHED is raised to start subsequent actions (p_wait=True).
+        Executes the specific actions of the task implemented in custom method _run(). At the end event
+        C_EVENT_FINISHED is raised to start subsequent actions.
 
         Parameters
         ----------
-        p_inst_new : list
-            List of new stream instances to be processed.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
         p_range : int
             Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
             range defined during instantiation is taken. Oterwise the minimum range of both is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
-        p_kwargs : dict
-            Further parameters handed over to custom method _run().
+        p_inst_new : list
+            Optional list of new stream instances to be processed. If None, the list of the shared object
+            is used instead. Default = None.
+        p_inst_del : list
+            List of obsolete stream instances to be removed. If None, the list of the shared object
+            is used instead. Default = None.
         """
 
-        if self._duplicate_data:
-            inst_new = [ inst.copy() for inst in p_inst_new ] 
-            inst_del = [ inst.copy() for inst in p_inst_del ]
-        else:
+        if p_inst_new is not None:
             inst_new = p_inst_new
-            inst_del = p_inst_del
+        else:
+            so = self.get_so()
+            if so is None:
+                raise ImplementationError('Class StreamTask needs instance data as parameters or from a shared object')
 
+            try: 
+                inst_new, inst_del = so.get_instances()
+            except:
+                raise ImplementationError('Shared object not compatible to class StreamShared')
+        
         super().run(p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
 
 
@@ -725,7 +762,8 @@ class StreamWorkflow (StreamTask, Workflow):
     p_range_max : int
         Range of asynchonicity. See class Range. Default is Range.C_RANGE_THREAD.
     p_class_shared
-        Optional class for a shared object (class Shared or a child class of Shared)
+        Optional class for a shared object (class StreamShared or a child class of StreamShared).
+        Default = StreamShared
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
@@ -741,7 +779,7 @@ class StreamWorkflow (StreamTask, Workflow):
     def __init__( self, 
                   p_name: str = None, 
                   p_range_max=Workflow.C_RANGE_THREAD, 
-                  p_class_shared=Shared, 
+                  p_class_shared=StreamShared, 
                   p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -764,26 +802,34 @@ class StreamWorkflow (StreamTask, Workflow):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run( self, p_inst:Instance, p_range: int = None, p_wait: bool = False ):
+    def run(self, p_range:int = None, p_wait: bool = False, p_inst_new:list = None, p_inst_del:list = None):
         """
         Runs all stream tasks according to their predecessor relations.
 
         Parameters
         ----------
-        p_inst : Instance
-            Single stream instance to process.
         p_range : int
             Optional deviating range of asynchonicity. See class Range. Default is None what means that 
             the maximum range defined during instantiation is taken. Oterwise the minimum range of both 
             is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
+        p_inst_new : list
+            Optional list of new stream instances to be processed. If None, the list of the shared object
+            is used instead. Default = None.
+        p_inst_del : list
+            List of obsolete stream instances to be removed. If None, the list of the shared object
+            is used instead. Default = None.
         """
 
-        self._inst_new = [ p_inst ]
-        self._inst_del = []
+        if p_inst_new is not None:
+            # This workflow is the leading workflow and opens a new process cycle based on external instances
+            try:
+                self.get_so().reset( p_inst_new )
+            except:
+                raise ImplementationError('Stream workflows need a shared object of type StreamShared (or inherited)')
 
-        Workflow.run(self, p_range=p_range, p_wait=p_wait, p_inst_new=self._inst_new, p_inst_del=self._inst_del)                          
+        Workflow.run(self, p_range=p_range, p_wait=p_wait)                          
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1012,12 +1058,12 @@ class StreamScenario (ScenarioBase):
         """
 
         try:
-            self._workflow.run( p_inst=iter(self._iterator) )
+            self._workflow.run( p_inst_new = [ iter(self._iterator) ], p_inst_del=[] )
             end_of_data = False
         except:
             end_of_data = True
 
-        return True, False, False, end_of_data
+        return False, False, False, end_of_data
 
 
 ## -------------------------------------------------------------------------------------------------
