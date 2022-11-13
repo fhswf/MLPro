@@ -561,7 +561,7 @@ class StreamTask (Task):
 
     C_TYPE              = 'Stream-Task'
 
-    C_PLOT_ACTIVE       = True
+    C_PLOT_ACTIVE       = False #True
     C_PLOT_STANDALONE   = True
     C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
@@ -773,7 +773,7 @@ class StreamWorkflow (StreamTask, Workflow):
     """
 
     C_TYPE              = 'Stream-Workflow'
-    C_PLOT_ACTIVE       = True
+    C_PLOT_ACTIVE       = False #True
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -1077,106 +1077,35 @@ class StreamScenario (ScenarioBase):
             Matplotlib figure object to host the subplot(s)
         """
 
-        return Figure()            
+        return None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure:Figure, p_settings:PlotSettings):
-        """
-        Custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
-        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-        created in the given figure and stored in p_settings.axes.
-
-        Parameters
-        ----------
-        p_figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s).
-        p_settings : PlotSettings
-            Object with further plot settings.
-        """
-
-        pass
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings: list = None, 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 0, 
+                   **p_kwargs ):
+        self._workflow.init_plot( p_figure=p_figure, 
+                                  p_plot_settings=p_plot_settings, 
+                                  p_plot_depth=p_plot_depth, 
+                                  p_detail_level=p_detail_level, 
+                                  p_step_rate=p_step_rate, 
+                                  **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure:Figure, p_settings:PlotSettings):
-        """
-        Custom method to initialize a 3D plot. If attribute p_settings.axes is not None the 
-        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-        created in the given figure and stored in p_settings.axes.
-
-        Parameters
-        ----------
-        p_figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s).
-        p_settings : PlotSettings
-            Object with further plot settings.
-        """
-
-        pass
+    def update_plot(self, **p_kwargs):
+        return NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_nd(self, p_figure:Figure, p_settings:PlotSettings):
-        """
-        Custom method to initialize a nD plot. If attribute p_settings.axes is not None the 
-        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-        created in the given figure and stored in p_settings.axes.
-
-        Parameters
-        ----------
-        p_figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s).
-        p_settings : PlotSettings
-            Object with further plot settings.
-        """
-
-        pass
+    def get_stream(self) -> Stream:
+        return self._stream
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, **p_kwargs):
-        """
-        Custom method to update the 2d plot. The related MatPlotLib Axes object is stored in p_settings.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        **p_kwargs 
-            Implementation-specific data and parameters.             
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, **p_kwargs):
-        """
-        Custom method to update the 3d plot. The related MatPlotLib Axes object is stored in p_settings.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        **p_kwargs 
-            Implementation-specific data and parameters.             
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, **p_kwargs):
-        """
-        Custom method to update the nd plot. The related MatPlotLib Axes object is stored in p_settings.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        **p_kwargs 
-            Implementation-specific data and parameters.             
-        """
-
-        pass
+    def get_workflow(self) -> StreamWorkflow:
+        return self._workflow

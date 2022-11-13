@@ -384,11 +384,17 @@ class ScenarioBase (Mode, LoadSave, Plottable):
             Number of cycles.
         """
 
+        #  1 Intro
         self._cycle_id  = 0
         adapted         = False
         if self._timer is None: self._init_timer()
         self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': Start of processing')
 
+        # 2 Late initialization of visualization with default parameters
+        if self._visualize:
+            self.init_plot()
+
+        # 3 Main loop 
         while True:
             success, error, timeout, limit, adapted_cycle, end_of_data = self.run_cycle()
             adapted = adapted or adapted_cycle
@@ -397,6 +403,6 @@ class ScenarioBase (Mode, LoadSave, Plottable):
             if p_term_on_timeout and timeout: break
             if limit or end_of_data: break
 
+        # 4 Outro
         self.log(self.C_LOG_TYPE_S, 'Process time', self._timer.get_time(), ': End of processing')
-
         return success, error, timeout, limit, adapted, end_of_data, self._cycle_id

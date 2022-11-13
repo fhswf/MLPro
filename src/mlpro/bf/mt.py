@@ -119,7 +119,7 @@ class Shared (Range):
         self._results       = {}
 
 
-# -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def lock(self, p_tid=None, p_timeout:float=None) -> bool: 
         """
         Locks the shared object for a specific process.
@@ -157,7 +157,7 @@ class Shared (Range):
         self._lock_obj.release()
 
 
-### -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def checkin(self, p_tid):
         """
         Registers a task.
@@ -843,8 +843,13 @@ class Workflow (Task):
                            p_plot_depth=p_plot_depth, 
                            p_detail_level=p_detail_level, 
                            p_step_rate=p_step_rate, 
-                           p_kwargs=p_kwargs )
+                           **p_kwargs )
 
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+        
         task:Task
         task_pos_x  = 0
         task_pos_y  = 0
@@ -872,7 +877,7 @@ class Workflow (Task):
                             p_kwargs=p_kwargs )
                            
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def run(self, p_range:int=None, p_wait:bool=False, **p_kwargs):
         """
         Executes all tasks of the workflow. At the end event C_EVENT_FINISHED is raised to start 

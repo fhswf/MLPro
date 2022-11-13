@@ -44,7 +44,6 @@ class MyTask (StreamTask):
     # needed for proper logging (see class mlpro.bf.various.Log)
     C_NAME      = 'Custom'
 
-
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
         pass
@@ -95,7 +94,7 @@ if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     cycle_limit = 10
     logging     = Log.C_LOG_ALL
-    visualize   = False
+    visualize   = True
   
 else:
     # 1.2 Parameters for internal unit test
