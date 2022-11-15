@@ -9,43 +9,69 @@
 ## -- 2021-12-17  1.0.0     MRD       Released first version
 ## -- 2022-01-02  2.0.0     MRD       Re-released afct for pytorch
 ## -- 2022-05-22  2.0.1     MRD       Renamed Class to TorchAFct
+## -- 2022-11-15  2.0.2     DA        Class TorchAFct: new parent class SLAdaptiveFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2022-05-22)
+Ver. 2.0.2 (2022-11-15)
 
 This module provides Adaptive Functions for state transition with Neural Network based on Pytorch.
 """
 
 import torch
 
-from mlpro.rl.models import *
+from mlpro.bf.data import BufferElement
+from mlpro.sl import *
 
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class TorchBuffer(Buffer, torch.utils.data.Dataset):
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_size=1):
         Buffer.__init__(self, p_size=p_size)
         self._internal_counter = 0
 
+
+## -------------------------------------------------------------------------------------------------
     def add_element(self, p_elem: BufferElement):
         Buffer.add_element(self, p_elem)
         self._internal_counter += 1
 
+
+## -------------------------------------------------------------------------------------------------
     def get_internal_counter(self):
         return self._internal_counter
 
+
+## -------------------------------------------------------------------------------------------------
     def __getitem__(self,idx):
         return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
 
 
-class TorchBufferElement(BufferElement):
-    def __init__(self, p_input: torch.Tensor, p_output: torch.Tensor):
 
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class TorchBufferElement(BufferElement):
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_input: torch.Tensor, p_output: torch.Tensor):
         super().__init__({"input": p_input, "output": p_output})
 
 
-class TorchAFct(AdaptiveFunction):
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class TorchAFct(SLAdaptiveFunction):
     C_NAME = "Pytorch based Adaptive Function"
 
+## -------------------------------------------------------------------------------------------------
     def __init__(
         self,
         p_input_space: MSpace,
@@ -75,6 +101,7 @@ class TorchAFct(AdaptiveFunction):
             raise ParamError("Please assign your network model to self.net_model")
         
     
+## -------------------------------------------------------------------------------------------------
     def _setup_model(self):
         """
         Setup Neural Network.
@@ -94,6 +121,8 @@ class TorchAFct(AdaptiveFunction):
 
         return None
 
+
+## -------------------------------------------------------------------------------------------------
     def input_preproc(self, p_input: Element) -> torch.Tensor:
         # Convert p_input from Element to Tensor
         input = torch.Tensor([p_input.get_values()])
@@ -103,6 +132,8 @@ class TorchAFct(AdaptiveFunction):
 
         return input
 
+
+## -------------------------------------------------------------------------------------------------
     def output_postproc(self, p_output: torch.Tensor) -> list:
         # Output Post Processing
         output = self._output_postproc(p_output)
@@ -112,12 +143,18 @@ class TorchAFct(AdaptiveFunction):
 
         return output
 
+
+## -------------------------------------------------------------------------------------------------
     def _input_preproc(self, p_input: torch.Tensor) -> torch.Tensor:
         return p_input
 
+
+## -------------------------------------------------------------------------------------------------
     def _output_postproc(self, p_output: torch.Tensor) -> torch.Tensor:
         return p_output
 
+
+## -------------------------------------------------------------------------------------------------
     def _map(self, p_input: Element, p_output: Element):
         # Input pre processing
         input = self.input_preproc(p_input)
