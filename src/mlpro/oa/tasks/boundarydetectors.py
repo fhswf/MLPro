@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.oa.pool.tasks.boundarydetectors
+## -- Package : mlpro.oa.tasks.boundarydetectors
 ## -- Module  : boundarydetectors.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
