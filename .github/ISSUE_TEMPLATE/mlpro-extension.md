@@ -14,12 +14,11 @@ A new MLPro extension shall be created.
 **1.2 Template:** fhswf/mlpro-extension
 
 **1.3 Privacy level**
-   - [ ] Private
-   - [ ] Public
+   - [ ] **Private**
+   - [ ] **Public**
          Please note: publication of code related to research topics of FAT need the approval of Prof. Schwung! 
         - [ ] Binaries only (.pyc)
         - [ ] Open source
-
 
 **1.4 Administrators:**...
 
@@ -31,8 +30,9 @@ A new MLPro extension shall be created.
 
 **4 Origin of the code**
 - [ ] New 
-- [ ] Extraction of existing MLPro code
-     ...
+- [ ] Extraction of existing MLPro code (please enumerate below)
+      (The approval of at least two MLPro administrators is needed! Please assign.)
+      ...
 
 **5 Annotations**
 ...
