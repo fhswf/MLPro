@@ -12,6 +12,9 @@ A new MLPro extension shall be created.
 **GitHub repository** 
 Name: fhswf/mlpro-...
 Template: fhswf/mlpro-extension
+Privacy level
+   - [ ] Private
+   - [ ] Public
 
 **Topic**
 ...
@@ -23,6 +26,3 @@ Template: fhswf/mlpro-extension
 a) Code
    - [ ] New
    - [ ] Extraction of ...
-b) Privacy level
-   - [ ] Private
-   - [ ] Public
