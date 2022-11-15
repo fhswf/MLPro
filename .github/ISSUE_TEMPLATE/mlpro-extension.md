@@ -9,12 +9,14 @@ assignees: detlefarend
 
 A new MLPro extension shall be created.
 
-**GitHub repository** 
+**1 GitHub repository** 
 Name: fhswf/mlpro-...
 Template: fhswf/mlpro-extension
 Privacy level
    - [ ] Private
-   - [ ] Public
+   - [ ] Public, binary only
+   - [ ] Public, open source (approval by Prof. Schwung required!)
+Administrators: ...
 
 **Topic**
 ...
