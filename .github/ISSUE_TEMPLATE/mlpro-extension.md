@@ -12,19 +12,24 @@ A new MLPro extension shall be created.
 **1 GitHub repository** 
 Name: fhswf/mlpro-...
 Template: fhswf/mlpro-extension
+
 Privacy level
    - [ ] Private
    - [ ] Public, binary only
    - [ ] Public, open source (approval by Prof. Schwung required!)
+
 Administrators: ...
 
-**Topic**
+**2 Topic**
 ...
 
-**Key features**
+**3 Key features**
 ...
 
-**Classification**
-a) Code
-   - [ ] New
-   - [ ] Extraction of ...
+**4 Origin of the code**
+- [ ] New
+- [ ] Extraction of existing MLPro code
+     ...
+
+**5 Annotations**
+...
