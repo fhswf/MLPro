@@ -2,7 +2,7 @@
 name: MLPro-Extension
 about: New GitHub repo as MLPro extension
 title: 'MLPro-Extension: ...'
-labels: BF, enhancement, refactoring
+labels: MLPro Extension
 assignees: detlefarend
 
 ---
@@ -10,15 +10,18 @@ assignees: detlefarend
 A new MLPro extension shall be created.
 
 **1 GitHub repository** 
-1.1 Name: fhswf/mlpro-...
-1.2 Template: fhswf/mlpro-extension
+**1.1 Name:** fhswf/mlpro-...
+**1.2 Template:** fhswf/mlpro-extension
 
-1.3 Privacy level
+**1.3 Privacy level**
    - [ ] Private
-   - [ ] Public, binary only
-   - [ ] Public, open source
+   - [ ] Public
+         Please note: publication of code related to research topics of FAT need the approval of Prof. Schwung! 
+        - [ ] Binaries only (.pyc)
+        - [ ] Open source
 
-1.4 Administrators: ...
+
+**1.4 Administrators:**...
 
 **2 Topic**
 ...
@@ -27,8 +30,8 @@ A new MLPro extension shall be created.
 ...
 
 **4 Origin of the code**
-- [ ] New (label enhancement)
-- [ ] Extraction of existing MLPro code (
+- [ ] New 
+- [ ] Extraction of existing MLPro code
      ...
 
 **5 Annotations**
