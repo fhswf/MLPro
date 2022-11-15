@@ -16,7 +16,7 @@ A new MLPro extension shall be created.
 **1.3 Privacy level**
    - [ ] **Private**
    - [ ] **Public**
-         Please note: publication of code related to research topics of FAT need the approval of Prof. Schwung! 
+         Please note: publication of code related to research topics of FAT needs the approval of Prof. Schwung! 
         - [ ] Binaries only (.pyc)
         - [ ] Open source
 
@@ -31,7 +31,7 @@ A new MLPro extension shall be created.
 **4 Origin of the code**
 - [ ] New 
 - [ ] Extraction of existing MLPro code (please enumerate below)
-      (The approval of at least two MLPro administrators is needed! Please assign.)
+      (The approval of all MLPro administrators is needed! Please assign.)
       ...
 
 **5 Annotations**
