@@ -68,7 +68,7 @@ howto_list = {
     "rl_ht_001": "mlpro.rl.examples.howto_rl_ht_001_hyperopt",
     "rl_ht_002": "mlpro.rl.examples.howto_rl_ht_002_optuna",
     # "rl_mb_001": "mlpro.rl.examples.howto_rl_mb_001_robothtm_environment",
-    "rl_mb_002": "mlpro.rl.examples.howto_rl_mb_002_grid_world_environment",
+    # "rl_mb_002": "mlpro.rl.examples.howto_rl_mb_002_grid_world_environment",
     # "rl_pp_001": "mlpro.rl.examples.howto_rl_pp_001_train_agent_with_sb3_policy_on_ur5_environment",
     # "rl_pp_002": "mlpro.rl.examples.howto_rl_pp_002_load_and_run_ur5_environment",
     "rl_ui_001": "mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit",
