@@ -47,7 +47,7 @@ howto_list = {
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
-    "bf_streams_010": "mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml",
+    # "bf_streams_010": "mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml",
     "bf_streams_011": "mlpro.bf.examples.howto_bf_streams_011_accessing_data_from_river",
     #"bf_streams_012": "mlpro.bf.examples.howto_bf_streams_012_accessing_data_from_scikitlearn",
 
