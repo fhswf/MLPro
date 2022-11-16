@@ -1,7 +1,7 @@
 ---
 name: Meeting
 about: Meeting
-title: 'Meeting: ---'
+title: 'Meeting: ...'
 labels: meeting
 assignees: ''
 
