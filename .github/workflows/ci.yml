@@ -47,7 +47,6 @@ jobs:
         pip install sphinx
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
-        pip install hyperopt
         pip install optuna
         pip install transformations
         pip install river
