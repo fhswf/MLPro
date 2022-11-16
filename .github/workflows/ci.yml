@@ -57,6 +57,10 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install transformations
+        pip install optuna
+        pip install hyperopt
+        pip install river
+        pip install openml
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
