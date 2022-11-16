@@ -44,7 +44,6 @@ jobs:
         pip install gym==0.25.0
         pip install pyglet
         pip install pymunk
-        pypy3 -m pip install pygame
         pip install sphinx
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
