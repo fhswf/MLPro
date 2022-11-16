@@ -42,7 +42,7 @@ jobs:
         
     - name: Install Dependencies for Scikit
       run: |
-        sudo apt-get install libarrow-dev -y
+        sudo apt-get install libparquet-dev -y
 
     - name: Install dependencies
       run: |
