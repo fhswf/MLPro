@@ -48,7 +48,6 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install transformations
-        pip install river
         pip install openml
     - name: Lint with flake8
       run: |
