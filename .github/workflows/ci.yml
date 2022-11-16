@@ -34,7 +34,7 @@ jobs:
         
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        pypy3 -m pip install --upgrade pip
         pip install flake8 pytest
         pip install numpy
         pip install matplotlib
@@ -44,7 +44,7 @@ jobs:
         pip install gym==0.25.0
         pip install pyglet
         pip install pymunk
-        pip install pygame
+        pypy3 -m pip install pygame
         pip install sphinx
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
