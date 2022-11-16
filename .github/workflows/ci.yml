@@ -39,6 +39,10 @@ jobs:
     - name: Install Dependencies for Pygame in pypy
       run: |
         sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libfreetype6-dev libportmidi-dev libjpeg-dev -y
+        
+    - name: Install Dependencies for Scikit
+      run: |
+        sudo apt-get install libarrow-dev -y
 
     - name: Install dependencies
       run: |
@@ -57,11 +61,6 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install transformations
-        pip install optuna
-        pip install hyperopt
-        pip install openml
-        pip install river
-        pip install sklearn
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
