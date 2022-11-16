@@ -36,9 +36,9 @@ jobs:
       run: |
         sudo apt-get install libopenblas-dev -y
 
-    - name: Install SDL2 for pygame
+    - name: Install Dependencies for Pygame in pypy
       run: |
-        sudo apt-get install libsdl2-dev -y
+        sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libfreetype6-dev libportmidi-dev libjpeg-dev -y
 
     - name: Install dependencies
       run: |
