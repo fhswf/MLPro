@@ -511,7 +511,7 @@ class DoublePendulumRoot (Environment):
                 grid = p_figure.add_grid_spec(1,1)
             if self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ALL:
                 grid = p_figure.add_gridspec(1,2)
-                p_figure.set_size_inches(10,5)
+                p_figure.set_size_inches(11,5)
             p_settings.axes.append(p_figure.add_subplot(grid[0],autoscale_on=False,
                                                    xlim=(-self._L * 1.2, self._L * 1.2), ylim=(-self._L * 1.2,
                                                                                                self._L * 1.2)))
@@ -550,12 +550,9 @@ class DoublePendulumRoot (Environment):
 
 
             p_settings.axes[-1].set_title('Reward - '+ self.C_NAME)
-            # p_settings.axes[-1].set_aspect('equal')
-            # p_settings.axes[-1].set_autoscale_on(True)
             p_settings.axes[-1].autoscale_view()
             p_settings.axes[-1].grid()
-            self._reward_plot,  = p_settings.axes[-1].plot(range(len(self._reward_history)), self._reward_history,
-                'b', lw = 1)
+            self._reward_plot,  = p_settings.axes[-1].plot(range(len(self._reward_history)), self._reward_history,'b', lw = 1)
 
     ## ------------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
@@ -565,11 +562,9 @@ class DoublePendulumRoot (Environment):
         necessary data of the figure.
         """
         try:
-            # self._reward_plot, = p_settings.axes[-1].plot(range(len(self._reward_history)), self._reward_history, 'r', lw=1)
             self._reward_plot.set_data(list(range(len(self._reward_history))), self._reward_history)
-            p_settings.axes[-1].relim()
             p_settings.axes[-1].autoscale_view(False, True, True)
-            # p_settings.axes[-1].set_aspect('equal')
+            p_settings.axes[-1].relim()
 
         except:
             pass
