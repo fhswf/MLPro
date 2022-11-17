@@ -16,7 +16,7 @@
 ## -- 2022-10-31  2.1.0     DA       Class Plottable: fixes and improvements
 ## -- 2022-11-07  2.2.0     DA       Class Plottable: new method get_visualization()
 ## -- 2022-11-09  2.2.1     DA       Classes Plottable, PlotSettings: correction
-## -- 2022-11-17  2.3.0     DA       Classes Plottable, PlotSettings: extensions
+## -- 2022-11-17  2.3.0     DA       Classes Plottable, PlotSettings: extensions, corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -225,7 +225,7 @@ class Plottable:
                 raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
                 
 
-        # 5 In standalone mode: refresh figure
+        # # 5 In standalone mode: refresh figure
         if self._plot_own_figure:
             self._figure.canvas.draw()
             self._figure.canvas.flush_events()
@@ -342,7 +342,7 @@ class Plottable:
 
         # 2 Call of all required plot methods
         for view in self._plot_settings:
-            self._plot_methods[view][1](p_settings=self._plot_settings[view], p_kwargs=p_kwargs)
+            self._plot_methods[view][1](p_settings=self._plot_settings[view], **p_kwargs)
 
         # 3 Update content of own(!) figure after self._plot_step_rate calls
         if self._plot_own_figure:

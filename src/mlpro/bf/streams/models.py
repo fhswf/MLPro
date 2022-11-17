@@ -1056,7 +1056,7 @@ class StreamScenario (ScenarioBase):
         """
 
         try:
-            self._workflow.run( p_inst_new = [ iter(self._iterator) ], p_inst_del=[] )
+            self._workflow.run( p_inst_new = [ next(self._iterator) ], p_inst_del=[] )
             end_of_data = False
         except:
             end_of_data = True

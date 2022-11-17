@@ -931,6 +931,10 @@ class Workflow (Task):
                             p_detail_level=p_detail_level,
                             p_step_rate=p_step_rate,
                             p_kwargs=p_kwargs )
+
+        if self._plot_own_figure:
+            self._figure.canvas.draw()
+            self._figure.canvas.flush_events()
                            
 
 ## -------------------------------------------------------------------------------------------------

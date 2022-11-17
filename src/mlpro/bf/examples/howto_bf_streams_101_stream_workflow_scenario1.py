@@ -104,7 +104,7 @@ else:
 
 
 # 2 Instantiate the stream scenario
-myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
+myscenario = MyScenario( p_mode=Mode.C_MODE_REAL,
                          p_cycle_limit=cycle_limit,
                          p_visualize=visualize,
                          p_logging=logging )
