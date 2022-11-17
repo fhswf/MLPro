@@ -63,7 +63,6 @@ jobs:
         conda install hyperopt
         conda install optuna
         pip install transformations
-        conda install sklearn
         conda install river
         conda install openml
 
