@@ -28,9 +28,11 @@ jobs:
         ref: ${{ github.head_ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: s-weigand/setup-conda@v1
       with:
+        update-conda: true
         python-version: ${{ matrix.python-version }}
+        conda-channels: anaconda, conda-forge
 
     - name: Add conda to system path
       run: |
