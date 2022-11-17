@@ -34,6 +34,7 @@ https://docs.openml.org/APIs/
 
 """
 
+import sklearn
 import numpy
 from mlpro.bf.various import ScientificObject, Log
 from mlpro.bf.ops import Mode
