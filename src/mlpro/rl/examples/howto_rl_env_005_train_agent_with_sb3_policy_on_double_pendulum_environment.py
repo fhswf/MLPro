@@ -41,7 +41,9 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_visualize, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulumS7(p_logging=True, p_init_angles='down', p_max_torque=10)
+        self._env   = DoublePendulumS7(p_logging=True, p_init_angles='down', p_max_torque=10, p_visualize=True,
+        p_plot_level=
+        DoublePendulumRoot.C_PLOT_DEPTH_REWARD)
 
         # 1.2 Select an algorithm by uncomment the opted algorithm
         # On-Policy RL Algorithm: A2C

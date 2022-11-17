@@ -55,6 +55,7 @@
 ## -- 2022-10-08  2.0.6     LSB      Bug fix
 ## -- 2022-11-09  2.1.0     DA       Refactorung due to changes on the plot systematics
 ## -- 2022-11-11  2.1.1     LSB      Bug fix for random seed dependent reproducibility
+## -- 2022-11-17  2.2.0     LSB      New plot systematics
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -146,6 +147,10 @@ class DoublePendulumRoot (Environment):
     C_ANI_FRAME         = 30
     C_ANI_STEP          = 0.001
 
+    C_PLOT_DEPTH_ENV    = 0
+    C_PLOT_DEPTH_REWARD = 1
+    C_PLOT_DEPTH_ALL    = 2
+    C_VALID_DEPTH       = [C_PLOT_DEPTH_ENV, C_PLOT_DEPTH_REWARD, C_PLOT_DEPTH_ALL]
 ## -------------------------------------------------------------------------------------------------
     def __init__ ( self, 
                    p_mode = Mode.C_MODE_SIM, 
@@ -159,6 +164,7 @@ class DoublePendulumRoot (Environment):
                    p_g=9.8,
                    p_history_length=5, 
                    p_visualize:bool=False,
+                   p_plot_level:int=2,
                    p_logging=Log.C_LOG_ALL ):
 
         self._max_torque = p_max_torque
@@ -177,11 +183,14 @@ class DoublePendulumRoot (Environment):
 
         self._history_x = deque(maxlen=p_history_length)
         self._history_y = deque(maxlen=p_history_length)
+        self._plot_level = p_plot_level
 
         super().__init__(p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging, p_latency=p_latency)
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
         self._state = State(self._state_space)
+        if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
+            self._reward_history = []
         self.reset()
 
 
@@ -220,7 +229,7 @@ class DoublePendulumRoot (Environment):
 
 ## ------------------------------------------------------------------------------------------------------
     def _init_figure(self) -> Figure:
-        return plt.figure(figsize=(5,4))
+        return plt.figure(figsize=(5,5))
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -424,7 +433,8 @@ class DoublePendulumRoot (Environment):
             current_reward.set_overall_reward(1)
         else:
             current_reward.set_overall_reward(-d)
-
+        if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
+            self._reward_history.append(current_reward.overall_reward)
         return current_reward
 
 
@@ -494,79 +504,102 @@ class DoublePendulumRoot (Environment):
         p_settings : PlotSettings
             Object with further plot settings.
         """
+        p_figure.canvas.set_window_title('Environment - '+self.C_NAME)
+        p_settings.axes = []
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
+            if self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ENV:
+               env_plot_pos = (1,2)
+            if self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ALL:
+                env_plot_pos = (1,1)
+                p_figure.set_size_inches(10,5)
+            p_settings.axes.append(p_figure.add_subplot(1,2,env_plot_pos,autoscale_on=False,
+                                                   xlim=(-self._L * 1.2, self._L * 1.2), ylim=(-self._L * 1.2,
+                                                                                               self._L * 1.2)))
+            p_settings.axes[0].set_aspect('equal')
+            p_settings.axes[0].grid()
+            p_settings.axes[0].set_title(self.C_NAME)
 
-        p_settings.axes = p_figure.add_subplot(autoscale_on=False,
-                                               xlim=(-self._L * 1.2, self._L * 1.2), ylim=(-self._L * 1.2, self._L * 1.2))
-        p_settings.axes.set_aspect('equal')
-        p_settings.axes.grid()
+            self._cw_arc = Arc([0, 0], 0.5 * self._l1, 0.5 * self._l1, angle=0, theta1=0,
+                              theta2=250, color='crimson')
+            endX = (0.5 * self._l1 / 2) * np.cos(np.radians(0))
+            endY = (0.5 * self._l1 / 2) * np.sin(np.radians(0))
+            self._cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(180),
+                                           color='crimson')
 
-        self._cw_arc = Arc([0, 0], 0.5 * self._l1, 0.5 * self._l1, angle=0, theta1=0,
-                          theta2=250, color='crimson')
-        endX = (0.5 * self._l1 / 2) * np.cos(np.radians(0))
-        endY = (0.5 * self._l1 / 2) * np.sin(np.radians(0))
-        self._cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(180),
-                                       color='crimson')
+            self._ccw_arc = Arc([0, 0], 0.5 * self._l1, 0.5 * self._l1, angle=70, theta1=0,
+                               theta2=320, color='crimson')
+            endX = (0.5 * self._l1 / 2) * np.cos(np.radians(70 + 320))
+            endY = (0.5 * self._l1 / 2) * np.sin(np.radians(70 + 320))
+            self._ccw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(70 + 320),
+                                            color='crimson')
 
-        self._ccw_arc = Arc([0, 0], 0.5 * self._l1, 0.5 * self._l1, angle=70, theta1=0,
-                           theta2=320, color='crimson')
-        endX = (0.5 * self._l1 / 2) * np.cos(np.radians(70 + 320))
-        endY = (0.5 * self._l1 / 2) * np.sin(np.radians(70 + 320))
-        self._ccw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(70 + 320),
-                                        color='crimson')
+            p_settings.axes[0].add_patch(self._cw_arc)
+            p_settings.axes[0].add_patch(self._cw_arrow)
+            p_settings.axes[0].add_patch(self._ccw_arc)
+            p_settings.axes[0].add_patch(self._ccw_arrow)
 
-        p_settings.axes.add_patch(self._cw_arc)
-        p_settings.axes.add_patch(self._cw_arrow)
-        p_settings.axes.add_patch(self._ccw_arc)
-        p_settings.axes.add_patch(self._ccw_arrow)
+            self._cw_arc.set_visible(False)
+            self._cw_arrow.set_visible(False)
+            self._ccw_arc.set_visible(False)
+            self._ccw_arrow.set_visible(False)
 
-        self._cw_arc.set_visible(False)
-        self._cw_arrow.set_visible(False)
-        self._ccw_arc.set_visible(False)
-        self._ccw_arrow.set_visible(False)
+            self._line, = p_settings.axes[0].plot([], [], 'o-', lw=2)
+            self._trace, = p_settings.axes[0].plot([], [], '.-', lw=1, ms=2)
 
-        self._line, = p_settings.axes.plot([], [], 'o-', lw=2)
-        self._trace, = p_settings.axes.plot([], [], '.-', lw=1, ms=2)
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_REWARD,DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
+            if self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_REWARD:
+                rew_plot_pos = (1,2)
+            else:
+                rew_plot_pos = 2
+            p_settings.axes.append(p_figure.add_subplot(1,2,rew_plot_pos))
+
+            p_settings.axes[-1].set_title('Reward - '+ self.C_NAME)
 
 
-## ------------------------------------------------------------------------------------------------------
+    ## ------------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
         """
         This method updates the plot figure of each episode. When the figure is
         detected to be an embedded figure, this method will only set up the
         necessary data of the figure.
         """
+        try:
+            p_settings.axes[-1].plot(range(len(self._reward_history)), self._reward_history, 'r')
+            # p_settings.axes[-1].plot([1,2,3], [1,2,3], 'r')
+        except:
+            pass
+        try:
+            x1 = self._l1 * sin(self._y[:, 0])
+            y1 = -self._l1 * cos(self._y[:, 0])
 
-        x1 = self._l1 * sin(self._y[:, 0])
-        y1 = -self._l1 * cos(self._y[:, 0])
+            x2 = self._l2 * sin(self._y[:, 2]) + x1
+            y2 = -self._l2 * cos(self._y[:, 2]) + y1
 
-        x2 = self._l2 * sin(self._y[:, 2]) + x1
-        y2 = -self._l2 * cos(self._y[:, 2]) + y1
+            for i in range(len(self._y)):
+                thisx = [0, x1[i], x2[i]]
+                thisy = [0, y1[i], y2[i]]
 
-        for i in range(len(self._y)):
-            thisx = [0, x1[i], x2[i]]
-            thisy = [0, y1[i], y2[i]]
+                if i % self.C_ANI_FRAME == 0:
+                    self._history_x.appendleft(thisx[2])
+                    self._history_y.appendleft(thisy[2])
+                    self._line.set_data(thisx, thisy)
+                    self._trace.set_data(self._history_x, self._history_y)
 
-            if i % self.C_ANI_FRAME == 0:
-                self._history_x.appendleft(thisx[2])
-                self._history_y.appendleft(thisy[2])
-                self._line.set_data(thisx, thisy)
-                self._trace.set_data(self._history_x, self._history_y)
-
-            if self._action_cw:
-                self._cw_arc.set_visible(True)
-                self._cw_arrow.set_visible(True)
-                self._cw_arc.set_alpha(self._alpha)
-                self._cw_arrow.set_alpha(self._alpha)
-                self._ccw_arc.set_visible(False)
-                self._ccw_arrow.set_visible(False)
-            else:
-                self._cw_arc.set_visible(False)
-                self._cw_arrow.set_visible(False)
-                self._ccw_arc.set_visible(True)
-                self._ccw_arrow.set_visible(True)
-                self._ccw_arc.set_alpha(self._alpha)
-                self._ccw_arrow.set_alpha(self._alpha)
-
+                if self._action_cw:
+                    self._cw_arc.set_visible(True)
+                    self._cw_arrow.set_visible(True)
+                    self._cw_arc.set_alpha(self._alpha)
+                    self._cw_arrow.set_alpha(self._alpha)
+                    self._ccw_arc.set_visible(False)
+                    self._ccw_arrow.set_visible(False)
+                else:
+                    self._cw_arc.set_visible(False)
+                    self._cw_arrow.set_visible(False)
+                    self._ccw_arc.set_visible(True)
+                    self._ccw_arrow.set_visible(True)
+                    self._ccw_arc.set_alpha(self._alpha)
+                    self._ccw_arrow.set_alpha(self._alpha)
+        except: pass
 
 
 
@@ -623,6 +656,7 @@ class DoublePendulumS4 (DoublePendulumRoot):
                    p_g=9.8, 
                    p_history_length=5, 
                    p_visualize:bool=False,
+                   p_plot_level:int = 2,
                    p_logging=Log.C_LOG_ALL ):
 
         super().__init__( p_mode=p_mode,
@@ -636,6 +670,7 @@ class DoublePendulumS4 (DoublePendulumRoot):
                           p_g=p_g,
                           p_history_length=p_history_length,
                           p_visualize=p_visualize,
+                          p_plot_level = p_plot_level,
                           p_logging=p_logging)
 
         self._target_state = State(self._state_space)
