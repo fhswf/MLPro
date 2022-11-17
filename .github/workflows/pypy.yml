@@ -65,6 +65,7 @@ jobs:
         pip install transformations
         conda install river
         conda install openml
+        conda install scikit-learn
 
     - name: Check Python
       run: which python
