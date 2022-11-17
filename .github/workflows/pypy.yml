@@ -43,6 +43,24 @@ jobs:
       run: |
         conda install -c conda-forge pypy
         conda install scipy
+        conda install numpy
+        conda install matplotlib
+        conda install dill
+        conda install multiprocess
+        pip install PettingZoo
+        pip install gym==0.25.0
+        pip install pyglet
+        pip install pymunk
+        pip install pygame
+        pip install sphinx
+        pip install sphinx-rtd-theme
+        pip install sphinx-copybutton
+        conda install hyperopt
+        conda install optuna
+        pip install transformations
+        conda install sklearn
+        conda install river
+        conda install openml
 
     - name: Check Python
       run: which python
