@@ -60,12 +60,12 @@ jobs:
         pip install sphinx
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
-        conda install hyperopt
-        conda install optuna
         pip install transformations
+        conda install -c conda-forge scikit-learn
         conda install river
         conda install openml
-        conda install scikit-learn
+        conda install hyperopt
+        conda install optuna
 
     - name: Check Python
       run: which python
