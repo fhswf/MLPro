@@ -16,10 +16,11 @@
 ## -- 2022-10-31  2.1.0     DA       Class Plottable: fixes and improvements
 ## -- 2022-11-07  2.2.0     DA       Class Plottable: new method get_visualization()
 ## -- 2022-11-09  2.2.1     DA       Classes Plottable, PlotSettings: correction
+## -- 2022-11-17  2.3.0     DA       Classes Plottable, PlotSettings: extensions
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.1 (2022-11-09)
+Ver. 2.3.0 (2022-11-17)
 
 This module provides various classes related to data plotting.
 """
@@ -49,14 +50,16 @@ class PlotSettings:
     ----------
     p_view : str
         ID of the view (see constants C_VIEW_*)
-    p_axes : Axes = None
-        Optional Matplotlib Axes object as destination for plot outputs
-    p_pos_x : int = 0
-        Optional x position of a subplot within a Matplotlib figure
-    p_pos_y : int = 0
-        Optional y position of a subplot within a Matplotlib figure
+    p_axes : Axes 
+        Optional Matplotlib Axes object as destination for plot outputs. Default is None.
+    p_pos_x : int 
+        Optional x position of a subplot within a Matplotlib figure. Default = 1.
+    p_pos_y : int 
+        Optional y position of a subplot within a Matplotlib figure. Default = 1.
+    p_id : int
+        Optional unique id of the subplot within the figure. Default = 1.
     p_kwargs : dict
-        Further optional named parameters
+        Further optional named parameters.
     """
 
     C_VIEW_2D   = '2D'
@@ -66,7 +69,13 @@ class PlotSettings:
     C_VALID_VIEWS   = [ C_VIEW_2D, C_VIEW_3D, C_VIEW_ND ]
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, p_view:str, p_axes:Axes=None, p_pos_x:int=0, p_pos_y:int=0, **p_kwargs ):
+    def __init__( self, 
+                  p_view : str, 
+                  p_axes : Axes = None, 
+                  p_pos_x : int = 1, 
+                  p_pos_y : int = 1, 
+                  p_id : int = 1,
+                  **p_kwargs ):
 
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
@@ -75,6 +84,7 @@ class PlotSettings:
         self.axes      = p_axes
         self.pos_x     = p_pos_x
         self.pos_y     = p_pos_y
+        self.id        = p_id
         self.kwargs    = p_kwargs.copy()
 
 
@@ -251,6 +261,8 @@ class Plottable:
         initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
         created in the given figure and stored in p_settings.axes.
 
+        Note: Please call this method in your custom implementation to create a default subplot.
+
         Parameters
         ----------
         p_figure : Matplotlib.figure.Figure
@@ -259,7 +271,8 @@ class Plottable:
             Object with further plot settings.
         """
 
-        pass
+        if p_settings.axes is None:
+            p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -269,6 +282,8 @@ class Plottable:
         initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
         created in the given figure and stored in p_settings.axes.
 
+        Note: Please call this method in your custom implementation to create a default subplot.
+
         Parameters
         ----------
         p_figure : Matplotlib.figure.Figure
@@ -277,7 +292,8 @@ class Plottable:
             Object with further plot settings.
         """
 
-        pass
+        if p_settings.axes is None:
+            p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id, projection='3d' )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -287,6 +303,8 @@ class Plottable:
         initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
         created in the given figure and stored in p_settings.axes.
 
+        Note: Please call this method in your custom implementation to create a default subplot.
+
         Parameters
         ----------
         p_figure : Matplotlib.figure.Figure
@@ -295,7 +313,8 @@ class Plottable:
             Object with further plot settings.
         """
 
-        pass
+        if p_settings.axes is None:
+            p_settings.axes = p_figure.add_subplot( p_settings.pos_y, p_settings.pos_x, p_settings.id )
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -16,11 +16,12 @@
 ## -- 2022-11-04  1.2.1     DA       Class Workflow: corrections
 ## -- 2022-11-07  1.2.2     DA       Classes Async, Task, Workflow: corrections/refactoring
 ## -- 2022-11-12  1.2.3     DA       Bugfix in method Task.run()
-## -- 2022-11-17  1.2.4     DA       Bugfix in method Workflow.init_plot()
+## -- 2022-11-17  1.3.0     DA       - Class Task: extensions on plotting
+## --                                - Bugfix in method Workflow.init_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.4 (2022-11-17)
+Ver. 1.3.0 (2022-11-17)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -58,12 +59,23 @@ class Range:
     ----------
     p_range : int
         Range of asynchonicity 
+
+    Attributes
+    ----------
+    C_RANGE_NONE : int
+        Synchronous execution only.
+    C_RANGE_THREAD : int
+        Asynchronous execution as separate thread within the current process.
+    C_RANGE_PROCESS : int
+        Asynchronous execution as separate process within the current machine.
+    C_VALID_RANGES : list
+        List of valid ranges.        
     """
 
     # Possible ranges
-    C_RANGE_NONE        = 0  # synchronous execution only
-    C_RANGE_THREAD      = 1  # asynchronous execution as separate thread within the current process
-    C_RANGE_PROCESS     = 2  # asynchronous execution as separate process within the current machine    
+    C_RANGE_NONE        = 0  
+    C_RANGE_THREAD      = 1  
+    C_RANGE_PROCESS     = 2  
 
     C_VALID_RANGES      = [ C_RANGE_NONE, C_RANGE_THREAD, C_RANGE_PROCESS ] 
 
@@ -677,6 +689,39 @@ class Task (Async, EventManager, Plottable):
         self.run(**p_event_object.get_data())
 
 
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        super()._init_plot_2d( p_figure=p_figure, p_settings=p_settings )
+        p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        super()._init_plot_3d( p_figure=p_figure, p_settings=p_settings )
+        p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        details.
+        """
+
+        super()._init_plot_nd( p_figure=p_figure, p_settings=p_settings )
+        p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
+
+
 
 
 
@@ -805,6 +850,13 @@ class Workflow (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _init_figure(self) -> Figure:
+        figure = super()._init_figure()
+        figure.canvas.set_window_title('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
+        return figure
+
+
+## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure:Figure=None, 
                    p_plot_settings:list=[], 
@@ -852,8 +904,9 @@ class Workflow (Task):
             return
         
         task:Task
-        task_pos_x  = 0
-        task_pos_y  = 0
+        task_pos_x  = 1
+        task_pos_y  = 1
+        task_ax_id  = 1
 
         for task in self._tasks:
             task_plot_settings = []
@@ -861,6 +914,7 @@ class Workflow (Task):
                 if task.C_PLOT_STANDALONE:
                     task_axes   = None
                     task_pos_x  += 1
+                    task_ax_id  += 1
                 else:
                     task_axes   = ps.axes
 
@@ -868,6 +922,7 @@ class Workflow (Task):
                                                          p_axes=task_axes,
                                                          p_pos_x=task_pos_x,
                                                          p_pos_y=task_pos_y,
+                                                         p_id=task_ax_id,
                                                          p_kwargs=p_kwargs ) )
                 
             task.init_plot( p_figure=self._figure,

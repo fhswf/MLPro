@@ -641,7 +641,7 @@ class StreamTask (Task):
         details.
         """
 
-        pass
+        super()._init_plot_2d( p_figure=p_figure, p_settings=p_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -651,7 +651,7 @@ class StreamTask (Task):
         details.
         """
 
-        pass
+        super()._init_plot_3d( p_figure=p_figure, p_settings=p_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -661,11 +661,7 @@ class StreamTask (Task):
         details.
         """
 
-        if p_settings.axes is None:
-            p_settings.axes = p_figure.add_subplot()
-            p_settings.axes.set_title( label=self.get_name)
-
-        pass
+        super()._init_plot_nd( p_figure=p_figure, p_settings=p_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -842,7 +838,7 @@ class StreamWorkflow (StreamTask, Workflow):
         details.
         """
 
-        pass
+        super()._init_plot_2d( p_figure=p_figure, p_settings=p_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -852,7 +848,7 @@ class StreamWorkflow (StreamTask, Workflow):
         details.
         """
 
-        pass
+        super()._init_plot_3d( p_figure=p_figure, p_settings=p_settings)
 
 
 ## -------------------------------------------------------------------------------------------------

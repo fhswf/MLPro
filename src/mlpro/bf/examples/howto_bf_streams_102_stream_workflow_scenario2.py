@@ -136,3 +136,6 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 # 3 Reset and run own stream scenario
 myscenario.reset()
 myscenario.run()
+
+if __name__ == '__main__':
+    input('Press key to exit...')
