@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['pypy3.9']
+        python-version: ['3.9']
 
     steps:
     - name: Checkout Codes
@@ -41,6 +41,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        conda install -c pypy
         conda install scipy
         
         
