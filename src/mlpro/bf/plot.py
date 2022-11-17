@@ -215,7 +215,13 @@ class Plottable:
                 raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
                 
 
-        # 5 Marker to ensure that initialization runs only once
+        # 5 In standalone mode: refresh figure
+        if self._plot_own_figure:
+            self._figure.canvas.draw()
+            self._figure.canvas.flush_events()
+
+
+        # 6 Marker to ensure that initialization runs only once
         self._plot_initialized = True
 
 

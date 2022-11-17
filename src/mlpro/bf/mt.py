@@ -16,10 +16,11 @@
 ## -- 2022-11-04  1.2.1     DA       Class Workflow: corrections
 ## -- 2022-11-07  1.2.2     DA       Classes Async, Task, Workflow: corrections/refactoring
 ## -- 2022-11-12  1.2.3     DA       Bugfix in method Task.run()
+## -- 2022-11-17  1.2.4     DA       Bugfix in method Workflow.init_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2022-11-12)
+Ver. 1.2.4 (2022-11-17)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -856,7 +857,7 @@ class Workflow (Task):
 
         for task in self._tasks:
             task_plot_settings = []
-            for ps in self._plot_settings:
+            for ps in self._plot_settings.values():
                 if task.C_PLOT_STANDALONE:
                     task_axes   = None
                     task_pos_x  += 1

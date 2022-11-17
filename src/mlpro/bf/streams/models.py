@@ -560,8 +560,7 @@ class StreamTask (Task):
     """
 
     C_TYPE              = 'Stream-Task'
-
-    C_PLOT_ACTIVE       = False #True
+    C_PLOT_ACTIVE       = True
     C_PLOT_STANDALONE   = True
     C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND ]
     C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
@@ -661,6 +660,10 @@ class StreamTask (Task):
         Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
         details.
         """
+
+        if p_settings.axes is None:
+            p_settings.axes = p_figure.add_subplot()
+            p_settings.axes.set_title( label=self.get_name)
 
         pass
 
@@ -773,7 +776,7 @@ class StreamWorkflow (StreamTask, Workflow):
     """
 
     C_TYPE              = 'Stream-Workflow'
-    C_PLOT_ACTIVE       = False #True
+    C_PLOT_ACTIVE       = True
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -859,7 +862,7 @@ class StreamWorkflow (StreamTask, Workflow):
         details.
         """
 
-        pass
+        super()._init_plot_nd( p_figure=p_figure, p_settings=p_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -965,7 +968,6 @@ class StreamScenario (ScenarioBase):
     """
     
     C_TYPE              = 'Stream-Scenario'
-
     C_PLOT_ACTIVE       = True
 
 ## -------------------------------------------------------------------------------------------------
@@ -1083,7 +1085,7 @@ class StreamScenario (ScenarioBase):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure: Figure = None, 
-                   p_plot_settings: list = None, 
+                   p_plot_settings: list = [], 
                    p_plot_depth: int = 0, 
                    p_detail_level: int = 0, 
                    p_step_rate: int = 0, 
