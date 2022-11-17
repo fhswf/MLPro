@@ -47,9 +47,9 @@ howto_list = {
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
-    # "bf_streams_010": "mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml",
+    "bf_streams_010": "mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml",
     "bf_streams_011": "mlpro.bf.examples.howto_bf_streams_011_accessing_data_from_river",
-    #"bf_streams_012": "mlpro.bf.examples.howto_bf_streams_012_accessing_data_from_scikitlearn",
+    "bf_streams_012": "mlpro.bf.examples.howto_bf_streams_012_accessing_data_from_scikitlearn",
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
@@ -74,7 +74,7 @@ howto_list = {
     "rl_ui_001": "mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit",
     "rl_wp_001": "mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment",
     "rl_wp_002": "mlpro.rl.examples.howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment",
-    # "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
+    "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
     # "rl_wp_004": "mlpro.rl.examples.howto_rl_wp_004_train_agent_with_sb3_policy",
     # "rl_wp_005": "mlpro.rl.examples.howto_rl_wp_005_validation_wrapped_sb3_on_policy",
     # "rl_wp_006": "mlpro.rl.examples.howto_rl_wp_006_validation_wrapped_sb3_off_policy",
