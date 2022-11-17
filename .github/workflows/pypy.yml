@@ -32,41 +32,15 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install Openblas for Scipy
+    - name: Add conda to system path
       run: |
-        sudo apt-get install libopenblas-dev -y
-
-    - name: Install Dependencies for Pygame in pypy
-      run: |
-        sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libfreetype6-dev libportmidi-dev libjpeg-dev -y
-
-    - name: Install Dependencies for Scikit in pypy
-      run: |
-        sudo apt-get install -y -V ca-certificates lsb-release wget
-        wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-        sudo apt-get install -y -V ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-        sudo apt-get update
-        sudo apt-get install -y -V libarrow-dev
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
 
     - name: Install dependencies
       run: |
-        pip install flake8 pytest
-        pip install numpy
-        pip install matplotlib
-        pip install dill
-        pip install multiprocess
-        pip install PettingZoo
-        pip install gym==0.25.0
-        pip install pygame
-        pip install pyglet
-        pip install pymunk
-        pip install sphinx
-        pip install sphinx-rtd-theme
-        pip install sphinx-copybutton
-        pip install transformations
-        pip install optuna
-        pip install hyperopt
-        pip install river
+        conda install scipy
+        
         
     - name: Test with pytest
       run: |
