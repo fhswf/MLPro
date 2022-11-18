@@ -55,11 +55,12 @@
 ## -- 2022-10-08  2.0.6     LSB      Bug fix
 ## -- 2022-11-09  2.1.0     DA       Refactorung due to changes on the plot systematics
 ## -- 2022-11-11  2.1.1     LSB      Bug fix for random seed dependent reproducibility
-## -- 2022-11-18  2.2.0     LSB      New plot systematics
+## -- 2022-11-17  2.2.0     LSB      New plot systematics
+## -- 2022-11-18  2.2.1     LSB      Method DoublePendulumRoot._init_figure(): title
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2022-11-18)
+Ver. 2.2.1 (2022-11-18)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -229,7 +230,14 @@ class DoublePendulumRoot (Environment):
 
 ## ------------------------------------------------------------------------------------------------------
     def _init_figure(self) -> Figure:
-        return plt.figure(figsize=(7,6))
+        figure = plt.figure(figsize=(7,6))
+
+        try:
+            figure.canvas.set_window_title('Environment - '+self.C_NAME)
+        except AttributeError:
+            figure.canvas.setWindowTitle('Environment - '+self.C_NAME)
+
+        return figure
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -504,8 +512,7 @@ class DoublePendulumRoot (Environment):
         p_settings : PlotSettings
             Object with further plot settings.
         """
-        p_figure.canvas.set_window_title('Environment - '+self.C_NAME)
-        plt.subplots_adjust(left=0.05, right=0.95)
+
         p_settings.axes = []
 
         # Creates a grid space in the figure to use for subplot location
@@ -553,12 +560,14 @@ class DoublePendulumRoot (Environment):
 
         if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_REWARD, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
             p_settings.axes.append(p_figure.add_subplot(grid[-1]))
+
+
             p_settings.axes[-1].set_title('Reward - '+ self.C_NAME)
+            p_settings.axes[-1].autoscale_view()
             p_settings.axes[-1].grid()
             p_settings.axes[-1].set_xlabel('Cycle ID')
             p_settings.axes[-1].set_ylabel('Reward')
             self._reward_plot,  = p_settings.axes[-1].plot(range(len(self._reward_history)), self._reward_history,'b', lw = 1)
-
 
 
     ## ------------------------------------------------------------------------------------------------------
