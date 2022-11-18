@@ -56,7 +56,7 @@
 ## -- 2022-11-09  2.1.0     DA       Refactorung due to changes on the plot systematics
 ## -- 2022-11-11  2.1.1     LSB      Bug fix for random seed dependent reproducibility
 ## -- 2022-11-17  2.2.0     LSB      New plot systematics
-## -- 2022-11-18  2.2.1     LSB      Method DoublePendulumRoot._init_figure(): title
+## -- 2022-11-18  2.2.1     DA       Method DoublePendulumRoot._init_figure(): title
 ## -------------------------------------------------------------------------------------------------
 
 """
