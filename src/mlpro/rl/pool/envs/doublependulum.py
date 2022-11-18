@@ -174,9 +174,11 @@ class DoublePendulumRoot (Environment):
                    p_plot_level:int=2,
                    p_rst_balancing = C_RST_BALANCING_002,
                    p_rst_swinging = None,
+                   p_reward_trend: bool = True,
+                   p_reward_window:int = 500,
                    p_random_range:list = None,
                    p_balancing_range:list = [-1,1],
-                   p_break_swinging = True,
+                   p_break_swinging:bool = True,
                    p_logging=Log.C_LOG_ALL ):
 
         self._max_torque = p_max_torque
@@ -209,6 +211,9 @@ class DoublePendulumRoot (Environment):
                             DoublePendulumRoot.C_RST_BALANCING_002:self.compute_reward_002}
         if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
             self._reward_history = []
+            self._reward_trend = p_reward_trend
+            self._reward_window = p_reward_window
+
 
         self._state = State(self._state_space)
         self.reset()
@@ -620,8 +625,12 @@ class DoublePendulumRoot (Environment):
         if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, self.C_PLOT_DEPTH_REWARD]:
             grid = p_figure.add_gridspec(1, 1)
         elif self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ALL:
-            grid = p_figure.add_gridspec(1, 2)
-            p_figure.set_size_inches(11, 5)
+            if self._reward_trend:
+                grid = p_figure.add_gridspec(1, 3)
+                p_figure.set_size_inches(17, 5)
+            else:
+                grid = p_figure.add_gridspec(1,2)
+                p_figure.set_size_inches(11, 5)
 
         if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
             p_settings.axes.append(p_figure.add_subplot(grid[0],autoscale_on=False,xlim=(-self._L * 1.2, self._L * 1.2),
@@ -658,9 +667,13 @@ class DoublePendulumRoot (Environment):
             self._trace, = p_settings.axes[0].plot([], [], '.-', lw=1, ms=2)
 
 
-
         if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_REWARD, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
-            p_settings.axes.append(p_figure.add_subplot(grid[-1]))
+            if self._reward_trend:
+                p_settings.axes.append(p_figure.add_subplot(grid[1:3]))
+                self._plot_reward_trend, = p_settings.axes[-1].plot(range(len(self._reward_history)),
+                    self._reward_history, 'r--', lw = 2)
+            else:
+                p_settings.axes.append(p_figure.add_subplot(grid[1:3]))
 
 
             p_settings.axes[-1].set_title('Reward - '+ self.C_NAME)
@@ -679,9 +692,16 @@ class DoublePendulumRoot (Environment):
         necessary data of the figure.
         """
         try:
-            self._reward_plot.set_data(list(range(len(self._reward_history))), self._reward_history)
+            try:
+                self._reward_plot.set_data(list(range(self._reward_window)), self._reward_history[-100:])
+            except:
+                self._reward_plot.set_data(list(range(len(self._reward_history))), self._reward_history)
+            if self._reward_trend:
+                self._plot_reward_trend.set_data(list(range(len(self._reward_history))), np.convolve(
+                self._reward_history, np.ones(len(self._reward_history))/len(self._reward_history), mode = 'same'))
             p_settings.axes[-1].autoscale_view(False, True, True)
             p_settings.axes[-1].relim()
+
 
         except:
             pass
