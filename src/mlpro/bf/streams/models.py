@@ -25,11 +25,13 @@
 ## -- 2022-11-04  0.6.0     DA       Classes StreamProvider, Stream: refactoring
 ## -- 2022-11-05  0.7.0     DA       Class Stream: refactoring to make it iterable
 ## -- 2022-11-07  0.7.1     DA       Class StreamScenario: refactoring 
-## -- 2022-11-07  0.8.0     DA       Class Stream: new custom method set_options()
+## -- 2022-11-13  0.8.0     DA       - Class Stream: new custom method set_options()
+## --                                - New class StreamShared
+## -- 2022-11-18  0.8.1     DA       Refactoring of try/except statements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.0 (2022-11-11)
+Ver. 0.8.1 (2022-11-18)
 
 This module provides classes for standardized stream processing. 
 """
@@ -40,7 +42,7 @@ from mlpro.bf.various import *
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math import Dimension, Element
-from mlpro.bf.mt import Task, Workflow, Shared
+from mlpro.bf.mt import *
 from datetime import datetime
 from matplotlib.figure import Figure
 import random
@@ -125,6 +127,43 @@ class Instance:
         duplicate._time_stamp = self._time_stamp
         return duplicate
 
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class StreamShared (Shared):
+    """
+    Template class for shared objects in the context of stream processing.
+
+    Attributes
+    ----------
+    _inst_new : list
+        List of new instances of a process cycle. At the beginning of a cycle it contains the incoming
+        instance of a stream. The list evolves due to the manipulations of the stream tasks.
+    _inst_del : list
+        List of instances to be removed. At the beginning of a cycle it is empty. The list evolves due 
+        to the manipulations of the stream tasks.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
+        super().__init__(p_range)
+        self._inst_new : list = None
+        self._inst_del : list = None
+    
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_inst_new : list):
+        self._inst_new = []
+        self._inst_del = []
+        self._inst_new.extend(p_inst_new)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_instances(self):
+        return self._inst_new, self._inst_del
 
 
 
@@ -513,9 +552,6 @@ class StreamTask (Task):
         Optional name of the task. Default is None.
     p_range_max : int
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
-    p_duplicate_data : bool     
-        If True the incoming data are copied before processing. Otherwise the origin incoming data
-        are modified.        
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
@@ -525,7 +561,6 @@ class StreamTask (Task):
     """
 
     C_TYPE              = 'Stream-Task'
-
     C_PLOT_ACTIVE       = True
     C_PLOT_STANDALONE   = True
     C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND ]
@@ -535,7 +570,6 @@ class StreamTask (Task):
     def __init__( self, 
                   p_name: str = None, 
                   p_range_max=Task.C_RANGE_THREAD, 
-                  p_duplicate_data:bool=False,
                   p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -548,37 +582,40 @@ class StreamTask (Task):
                           p_logging=p_logging, 
                           **p_kwargs )
 
-        self._duplicate_data = p_duplicate_data
-
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, p_inst_new:list, p_inst_del:list, p_range:int = None, p_wait: bool = False):
+    def run(self, p_range:int = None, p_wait: bool = False, p_inst_new:list = None, p_inst_del:list = None):
         """
-        Executes the task specific actions implemented in custom method _run(). At the end event
-        C_EVENT_FINISHED is raised to start subsequent actions (p_wait=True).
+        Executes the specific actions of the task implemented in custom method _run(). At the end event
+        C_EVENT_FINISHED is raised to start subsequent actions.
 
         Parameters
         ----------
-        p_inst_new : list
-            List of new stream instances to be processed.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
         p_range : int
             Optional deviating range of asynchonicity. See class Range. Default is None what means that the maximum
             range defined during instantiation is taken. Oterwise the minimum range of both is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
-        p_kwargs : dict
-            Further parameters handed over to custom method _run().
+        p_inst_new : list
+            Optional list of new stream instances to be processed. If None, the list of the shared object
+            is used instead. Default = None.
+        p_inst_del : list
+            List of obsolete stream instances to be removed. If None, the list of the shared object
+            is used instead. Default = None.
         """
 
-        if self._duplicate_data:
-            inst_new = [ inst.copy() for inst in p_inst_new ] 
-            inst_del = [ inst.copy() for inst in p_inst_del ]
-        else:
+        if p_inst_new is not None:
             inst_new = p_inst_new
-            inst_del = p_inst_del
+        else:
+            so = self.get_so()
+            if so is None:
+                raise ImplementationError('Class StreamTask needs instance data as parameters or from a shared object')
 
+            try: 
+                inst_new, inst_del = so.get_instances()
+            except AttributeError:
+                raise ImplementationError('Shared object not compatible to class StreamShared')
+        
         super().run(p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
 
 
@@ -605,7 +642,7 @@ class StreamTask (Task):
         details.
         """
 
-        pass
+        super()._init_plot_2d( p_figure=p_figure, p_settings=p_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -615,7 +652,7 @@ class StreamTask (Task):
         details.
         """
 
-        pass
+        super()._init_plot_3d( p_figure=p_figure, p_settings=p_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -625,7 +662,7 @@ class StreamTask (Task):
         details.
         """
 
-        pass
+        super()._init_plot_nd( p_figure=p_figure, p_settings=p_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -725,7 +762,8 @@ class StreamWorkflow (StreamTask, Workflow):
     p_range_max : int
         Range of asynchonicity. See class Range. Default is Range.C_RANGE_THREAD.
     p_class_shared
-        Optional class for a shared object (class Shared or a child class of Shared)
+        Optional class for a shared object (class StreamShared or a child class of StreamShared).
+        Default = StreamShared
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
@@ -741,18 +779,18 @@ class StreamWorkflow (StreamTask, Workflow):
     def __init__( self, 
                   p_name: str = None, 
                   p_range_max=Workflow.C_RANGE_THREAD, 
-                  p_class_shared=Shared, 
+                  p_class_shared=StreamShared, 
                   p_visualize:bool=False,
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        StreamTask.__init__( self,
-                             p_name=p_name,
-                             p_range_max=p_range_max,
-                             p_duplicate_data=False,
-                             p_visualize=p_visualize,
-                             p_logging=p_logging,
-                             **p_kwargs )
+        # StreamTask.__init__( self,
+        #                      p_name=p_name,
+        #                      p_range_max=p_range_max,
+        #                      p_duplicate_data=False,
+        #                      p_visualize=p_visualize,
+        #                      p_logging=p_logging,
+        #                      **p_kwargs )
                              
         Workflow.__init__( self,
                            p_name=p_name, 
@@ -764,23 +802,34 @@ class StreamWorkflow (StreamTask, Workflow):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run( self, p_inst:Instance, p_range: int = None, p_wait: bool = False ):
+    def run(self, p_range:int = None, p_wait: bool = False, p_inst_new:list = None, p_inst_del:list = None):
         """
         Runs all stream tasks according to their predecessor relations.
 
         Parameters
         ----------
-        p_inst : Instance
-            Single stream instance to process.
         p_range : int
             Optional deviating range of asynchonicity. See class Range. Default is None what means that 
             the maximum range defined during instantiation is taken. Oterwise the minimum range of both 
             is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
+        p_inst_new : list
+            Optional list of new stream instances to be processed. If None, the list of the shared object
+            is used instead. Default = None.
+        p_inst_del : list
+            List of obsolete stream instances to be removed. If None, the list of the shared object
+            is used instead. Default = None.
         """
 
-        super().run(p_range=p_range, p_wait=p_wait, p_inst=p_inst)                          
+        if p_inst_new is not None:
+            # This workflow is the leading workflow and opens a new process cycle based on external instances
+            try:
+                self.get_so().reset( p_inst_new )
+            except AttributeError:
+                raise ImplementationError('Stream workflows need a shared object of type StreamShared (or inherited)')
+
+        Workflow.run(self, p_range=p_range, p_wait=p_wait)                          
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -790,7 +839,7 @@ class StreamWorkflow (StreamTask, Workflow):
         details.
         """
 
-        pass
+        super()._init_plot_2d( p_figure=p_figure, p_settings=p_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -800,7 +849,7 @@ class StreamWorkflow (StreamTask, Workflow):
         details.
         """
 
-        pass
+        super()._init_plot_3d( p_figure=p_figure, p_settings=p_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -810,7 +859,7 @@ class StreamWorkflow (StreamTask, Workflow):
         details.
         """
 
-        pass
+        super()._init_plot_nd( p_figure=p_figure, p_settings=p_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -916,7 +965,6 @@ class StreamScenario (ScenarioBase):
     """
     
     C_TYPE              = 'Stream-Scenario'
-
     C_PLOT_ACTIVE       = True
 
 ## -------------------------------------------------------------------------------------------------
@@ -1009,14 +1057,12 @@ class StreamScenario (ScenarioBase):
         """
 
         try:
-            self._workflow.run( p_inst=iter(self._iterator) )
+            self._workflow.run( p_inst_new = [ next(self._iterator) ], p_inst_del=[] )
             end_of_data = False
-            adapted     = self._workflow.get_adapted()
-        except:
-            adapted     = False
+        except StopIteration:
             end_of_data = True
 
-        return True, False, adapted, end_of_data
+        return False, False, False, end_of_data
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1030,106 +1076,35 @@ class StreamScenario (ScenarioBase):
             Matplotlib figure object to host the subplot(s)
         """
 
-        return Figure()            
+        return None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure:Figure, p_settings:PlotSettings):
-        """
-        Custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
-        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-        created in the given figure and stored in p_settings.axes.
-
-        Parameters
-        ----------
-        p_figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s).
-        p_settings : PlotSettings
-            Object with further plot settings.
-        """
-
-        pass
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings: list = [], 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 0, 
+                   **p_kwargs ):
+        self._workflow.init_plot( p_figure=p_figure, 
+                                  p_plot_settings=p_plot_settings, 
+                                  p_plot_depth=p_plot_depth, 
+                                  p_detail_level=p_detail_level, 
+                                  p_step_rate=p_step_rate, 
+                                  **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure:Figure, p_settings:PlotSettings):
-        """
-        Custom method to initialize a 3D plot. If attribute p_settings.axes is not None the 
-        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-        created in the given figure and stored in p_settings.axes.
-
-        Parameters
-        ----------
-        p_figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s).
-        p_settings : PlotSettings
-            Object with further plot settings.
-        """
-
-        pass
+    def update_plot(self, **p_kwargs):
+        return NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_nd(self, p_figure:Figure, p_settings:PlotSettings):
-        """
-        Custom method to initialize a nD plot. If attribute p_settings.axes is not None the 
-        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-        created in the given figure and stored in p_settings.axes.
-
-        Parameters
-        ----------
-        p_figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s).
-        p_settings : PlotSettings
-            Object with further plot settings.
-        """
-
-        pass
+    def get_stream(self) -> Stream:
+        return self._stream
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, **p_kwargs):
-        """
-        Custom method to update the 2d plot. The related MatPlotLib Axes object is stored in p_settings.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        **p_kwargs 
-            Implementation-specific data and parameters.             
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, **p_kwargs):
-        """
-        Custom method to update the 3d plot. The related MatPlotLib Axes object is stored in p_settings.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        **p_kwargs 
-            Implementation-specific data and parameters.             
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, **p_kwargs):
-        """
-        Custom method to update the nd plot. The related MatPlotLib Axes object is stored in p_settings.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        **p_kwargs 
-            Implementation-specific data and parameters.             
-        """
-
-        pass
+    def get_workflow(self) -> StreamWorkflow:
+        return self._workflow

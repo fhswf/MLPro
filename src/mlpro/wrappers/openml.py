@@ -22,10 +22,11 @@
 ## -- 2022-11-08  1.4.1     DA       Corrections
 ## -- 2022-11-11  1.5.0     DA       Class WrStreamOpenML: new support of optional parameters.
 ## -- 2022-11-11  1.5.1     LSB      Refactoring for the new target parameter for get_data() method
+## -- 2022-11-12  1.5.2     DA       Correction in method WrStreamOpenML._download()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.1 (2022-11-11)
+Ver. 1.5.2 (2022-11-12)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -291,7 +292,11 @@ class WrStreamOpenML (Stream):
         """
 
         self._stream_meta = openml.datasets.get_dataset(self._id)
-        self._label = self._kwargs['target'] if self._kwargs['target'] else self._stream_meta.default_target_attribute
+
+        try:
+            self._label = self._kwargs['target'] 
+        except:
+            self._label = self._stream_meta.default_target_attribute
 
         try:
             self.C_SCIREF_URL = self._stream_meta.url

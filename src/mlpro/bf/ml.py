@@ -50,10 +50,11 @@
 ## --                                  by event handling
 ## -- 2022-11-07  1.8.1     DA       Class Scenario, method setup(): parameters removed
 ## -- 2022-11-09  1.8.2     DA       Class Scenario: refactoring
+## -- 2022-11-15  1.9.0     DA       New abstract template class AdaptiveFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.2 (2022-11-09)
+Ver. 1.9.0 (2022-11-15)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 """
@@ -1047,3 +1048,60 @@ class Training (Log):
 ## -------------------------------------------------------------------------------------------------
     def get_results(self) -> TrainingResults:
         return self._results
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AdaptiveFunction (Function, Model):
+    """
+    Template class for an adaptive bi-multivariate mathematical function. The kind of adaptation
+    (learning paradigm) is to be specified in child classes.
+
+    Parameters
+    ----------
+    p_input_space : MSpace
+        Input space of function
+    p_output_space : MSpace
+        Output space of function
+    p_output_elem_cls 
+        Output element class (compatible to/inherited from class Element)
+    p_buffer_size : int
+        Initial size of internal data buffer. Default = 0 (no buffering).
+    p_ada : bool
+        Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : Dict
+        Further model specific parameters (to be specified in child class).
+    """
+
+    C_TYPE = 'Adaptive Function'
+    C_NAME = '????'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self,
+                  p_input_space: MSpace,
+                  p_output_space:MSpace,
+                  p_output_elem_cls=Element,
+                  p_buffer_size=0,
+                  p_ada:bool=True,
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs ):
+
+        Function.__init__( self, 
+                           p_input_space=p_input_space, 
+                           p_output_space=p_output_space,
+                           p_output_elem_cls=p_output_elem_cls )
+
+        Model.__init__( self, 
+                        p_buffer_size=p_buffer_size, 
+                        p_ada=p_ada, 
+                        p_visualize=p_visualize,
+                        p_logging=p_logging, 
+                        **p_kwargs )
