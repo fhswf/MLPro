@@ -294,11 +294,6 @@ class WrStreamOpenML (Stream):
         self._stream_meta = openml.datasets.get_dataset(self._id)
 
         try:
-            self._label = self._kwargs['target'] 
-        except:
-            self._label = self._stream_meta.default_target_attribute
-
-        try:
             self.C_SCIREF_URL = self._stream_meta.url
         except:
             self.C_SCIREF_URL = ''
@@ -313,7 +308,7 @@ class WrStreamOpenML (Stream):
         except:
             self.C_SCIREF_ABSTRACT =''
 
-        self._dataset = self._stream_meta.get_data(target = self._label, dataset_format = 'array')
+        self._dataset = self._stream_meta.get_data(**self._kwargs, dataset_format = 'array')
 
         if self._dataset is not None:
             return True
