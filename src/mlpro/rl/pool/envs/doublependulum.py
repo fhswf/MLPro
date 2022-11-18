@@ -152,20 +152,30 @@ class DoublePendulumRoot (Environment):
     C_PLOT_DEPTH_REWARD = 1
     C_PLOT_DEPTH_ALL    = 2
     C_VALID_DEPTH       = [C_PLOT_DEPTH_ENV, C_PLOT_DEPTH_REWARD, C_PLOT_DEPTH_ALL]
+
+    C_RST_BALANCING_001 = 'rst_001'
+    C_RST_BALANCING_002 = 'rst_002'
+    C_VALID_RST_BALANCING = ['rst_001','rst_002']
+    C_VALID_RST_REWARD = []
 ## -------------------------------------------------------------------------------------------------
-    def __init__ ( self, 
-                   p_mode = Mode.C_MODE_SIM, 
+    def __init__ ( self,
+                   p_mode = Mode.C_MODE_SIM,
                    p_latency = None,
                    p_max_torque=20,
-                   p_l1=1.0, 
-                   p_l2=1.0, 
-                   p_m1=1.0, 
-                   p_m2=1.0, 
+                   p_l1=1.0,
+                   p_l2=1.0,
+                   p_m1=1.0,
+                   p_m2=1.0,
                    p_init_angles=C_ANGLES_RND,
                    p_g=9.8,
-                   p_history_length=5, 
+                   p_history_length=5,
                    p_visualize:bool=False,
                    p_plot_level:int=2,
+                   p_rst_balancing = C_RST_BALANCING_001,
+                   p_rst_swinging = None,
+                   p_random_range:list = (-20,20),
+                   p_balancing_range:list = (-1,1),
+                   p_break_swinging = True,
                    p_logging=Log.C_LOG_ALL ):
 
         self._max_torque = p_max_torque
@@ -179,6 +189,9 @@ class DoublePendulumRoot (Environment):
         self._g = p_g
 
         self._init_angles = p_init_angles
+        self._random_range = p_random_range
+        self._balancing_range = p_balancing_range
+        self._break_swinging = p_break_swinging and p_balancing_range
 
         if self._init_angles not in self.C_VALID_ANGLES: raise ParamError("The initial angles are not valid")
 
@@ -186,12 +199,17 @@ class DoublePendulumRoot (Environment):
         self._history_y = deque(maxlen=p_history_length)
         self._plot_level = p_plot_level
 
+
         super().__init__(p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging, p_latency=p_latency)
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
-        self._state = State(self._state_space)
+        self._rst_balancing = p_rst_balancing
+        self._rst_methods = {DoublePendulumRoot.C_RST_BALANCING_001:self.compute_reward_001,
+                            DoublePendulumRoot.C_RST_BALANCING_002:self.compute_reward_002}
         if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
             self._reward_history = []
+
+        self._state = State(self._state_space)
         self.reset()
 
 
@@ -261,8 +279,23 @@ class DoublePendulumRoot (Environment):
             self._th1 = 180
             self._th2 = 180
         elif self._init_angles == self.C_ANGLES_RND:
-            self._th1 = random.random()*180
-            self._th2 = random.random()*180
+            if self._random_range:
+                if len(self._random_range) == 1 or isinstance(self._random_range, int):
+                    self._th1 = random.uniform(-self._random_range,self._random_range)
+                    self._th2 = random.uniform(-self._random_range,self._random_range)
+                elif len(self._random_range) == 2:
+                    self._th1 = random.uniform(-self._random_range[0], self._random_range[1])
+                    self._th2 = random.uniform(-self._random_range[0], self._random_range[1])
+            if self._balancing_range:
+                if len(self._balancing_range) == 1 or isinstance(self._balancing_range, int):
+                    self._th1 = random.uniform(-self._balancing_range,self._balancing_range)
+                    self._th2 = random.uniform(-self._balancing_range,self._balancing_range)
+                elif len(self._balancing_range) == 2:
+                    self._th1 = random.uniform(-self._balancing_range[0], self._balancing_range[1])
+                    self._th2 = random.uniform(-self._balancing_range[0], self._balancing_range[1])
+            else:
+                self._th1 = random.uniform(-180, 180)
+                self._th2 = random.uniform(-180, 180)
         else:
             raise NotImplementedError("init_angles value must be up or down")
 
@@ -411,6 +444,28 @@ class DoublePendulumRoot (Environment):
             current calculated Reward values.
         """
 
+        if self._rst_balancing in self.C_VALID_RST_BALANCING:
+            current_reward = self._rst_methods[self._rst_balancing](p_state_old, p_state_new)
+
+        else:
+            raise AttributeError('Reward strategy does not exist.')
+
+        return current_reward
+
+
+## ------------------------------------------------------------------------------------------------------
+    def compute_reward_001(self, p_state_old:State=None, p_state_new:State=None):
+        """
+
+        Parameters
+        ----------
+        p_state_old
+        p_state_new
+
+        Returns
+        -------
+
+        """
         current_reward = Reward()
         state = p_state_new.get_values().copy()
         p_state_normalized = self._normalize(state)
@@ -436,7 +491,7 @@ class DoublePendulumRoot (Environment):
         d = self.get_state_space().distance(norm_state, goal_state)
         # value = d_max - d
         # current_reward.set_overall_reward(value)
-        
+
         if d <= self.C_THRSH_GOAL:
             current_reward.set_overall_reward(1)
         else:
@@ -447,11 +502,37 @@ class DoublePendulumRoot (Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
+    def compute_reward_002(self, p_state_old:State=None, p_state_new:State=None):
+        """
+
+        Parameters
+        ----------
+        p_state_old
+        p_state_new
+
+        Returns
+        -------
+
+        """
+        pass
+
+## ------------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
         """
         Custom method to compute broken state. In this case always returns false as the environment doesn't break
         """
-
+        if self._break_swinging:
+            if len(self._balancing_range) == 1 or isinstance(self._balancing_range, int):
+                if -self._balancing_range <= p_state.get_values()[0] <= self._balancing_range:
+                    return True
+                if -self._balancing_range <= p_state.get_values()[2] <= self._balancing_range:
+                    return True
+            elif len(self._balancing_range) == 2:
+                if self._balancing_range[0] >= p_state.get_values()[0] or p_state.get_values()[0] <= \
+                        self._balancing_range[1]:
+                    return True
+                if self._balancing_range[0] >= p_state.get_values()[2] <= self._balancing_range[1]:
+                    return True
         return False
 
 

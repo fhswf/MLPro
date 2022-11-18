@@ -42,7 +42,7 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_visualize, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulumS4(p_logging=True, p_init_angles='down', p_max_torque=10, p_visualize=True,
+        self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_max_torque=10, p_visualize=True,
                                        p_plot_level=DoublePendulumRoot.C_PLOT_DEPTH_ALL)
 
         # 1.2 Select an algorithm by uncomment the opted algorithm
