@@ -171,10 +171,10 @@ class DoublePendulumRoot (Environment):
                    p_history_length=5,
                    p_visualize:bool=False,
                    p_plot_level:int=2,
-                   p_rst_balancing = C_RST_BALANCING_001,
+                   p_rst_balancing = C_RST_BALANCING_002,
                    p_rst_swinging = None,
                    p_random_range:list = (-20,20),
-                   p_balancing_range:list = (-1,1),
+                   p_balancing_range:list = [-1,1],
                    p_break_swinging = True,
                    p_logging=Log.C_LOG_ALL ):
 
@@ -279,6 +279,8 @@ class DoublePendulumRoot (Environment):
             self._th1 = 180
             self._th2 = 180
         elif self._init_angles == self.C_ANGLES_RND:
+            self._th1 = random.uniform(-180, 180)
+            self._th2 = random.uniform(-180, 180)
             if self._random_range:
                 if len(self._random_range) == 1 or isinstance(self._random_range, int):
                     self._th1 = random.uniform(-self._random_range,self._random_range)
@@ -293,9 +295,8 @@ class DoublePendulumRoot (Environment):
                 elif len(self._balancing_range) == 2:
                     self._th1 = random.uniform(-self._balancing_range[0], self._balancing_range[1])
                     self._th2 = random.uniform(-self._balancing_range[0], self._balancing_range[1])
-            else:
-                self._th1 = random.uniform(-180, 180)
-                self._th2 = random.uniform(-180, 180)
+
+
         else:
             raise NotImplementedError("init_angles value must be up or down")
 
@@ -449,7 +450,8 @@ class DoublePendulumRoot (Environment):
 
         else:
             raise AttributeError('Reward strategy does not exist.')
-
+        if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
+            self._reward_history.append(current_reward.overall_reward)
         return current_reward
 
 
@@ -496,8 +498,7 @@ class DoublePendulumRoot (Environment):
             current_reward.set_overall_reward(1)
         else:
             current_reward.set_overall_reward(-d)
-        if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
-            self._reward_history.append(current_reward.overall_reward)
+
         return current_reward
 
 
@@ -514,7 +515,25 @@ class DoublePendulumRoot (Environment):
         -------
 
         """
-        pass
+        current_reward = Reward()
+        state_new = p_state_new.get_values().copy()
+        p_state_new_normalized = self._normalize(state_new)
+        norm_state_new = State(self.get_state_space())
+        norm_state_new.set_values(p_state_new_normalized)
+
+        state_old = p_state_old.get_values().copy()
+        p_state_old_normalized = self._normalize(state_old)
+        norm_state_old = State(self.get_state_space())
+        norm_state_old.set_values(p_state_old_normalized)
+        goal_state = self._target_state
+
+        d_old = abs(self.get_state_space().distance(norm_state_old, goal_state))
+        d_new = abs(self.get_state_space().distance(norm_state_new, goal_state))
+        d = d_new - d_old
+
+        current_reward.set_overall_reward(d)
+
+        return current_reward
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
@@ -754,6 +773,11 @@ class DoublePendulumS4 (DoublePendulumRoot):
                    p_history_length=5, 
                    p_visualize:bool=False,
                    p_plot_level:int = 2,
+                   p_rst_balancing=DoublePendulumRoot.C_RST_BALANCING_002,
+                   p_rst_swinging=None,
+                   p_random_range: list = (-20, 20),
+                   p_balancing_range: list = None,
+                   p_break_swinging=True,
                    p_logging=Log.C_LOG_ALL ):
 
         super().__init__( p_mode=p_mode,
@@ -768,6 +792,11 @@ class DoublePendulumS4 (DoublePendulumRoot):
                           p_history_length=p_history_length,
                           p_visualize=p_visualize,
                           p_plot_level = p_plot_level,
+                          p_rst_balancing = p_rst_balancing,
+                          p_rst_swinging = p_rst_swinging,
+                          p_random_range=p_random_range,
+                          p_balancing_range=p_balancing_range,
+                          p_break_swinging=p_break_swinging,
                           p_logging=p_logging)
 
         self._target_state = State(self._state_space)
