@@ -17,10 +17,11 @@
 ## -- 2022-11-07  2.2.0     DA       Class Plottable: new method get_visualization()
 ## -- 2022-11-09  2.2.1     DA       Classes Plottable, PlotSettings: correction
 ## -- 2022-11-17  2.3.0     DA       Classes Plottable, PlotSettings: extensions, corrections
+## -- 2022-11-18  2.3.1     DA       Classes Plottable, PlotSettings: improvements try/except
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.0 (2022-11-17)
+Ver. 2.3.1 (2022-11-18)
 
 This module provides various classes related to data plotting.
 """
@@ -195,9 +196,9 @@ class Plottable:
         else:
             try:
                 self._plot_settings[self.C_PLOT_DEFAULT_VIEW] = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
-            except:
+            except ParamError:
                 # Plot functionality turned on but not implemented
-                raise ImplementationError('Please set attribute C_PLOT_DEFAULT_VIEW')               
+                raise ImplementationError('Please check attribute C_PLOT_DEFAULT_VIEW')               
 
         # 2.2 Dictionary with methods for initialization and update of a plot per view 
         self._plot_methods = { PlotSettings.C_VIEW_2D : [ self._init_plot_2d, self._update_plot_2d ], 
@@ -217,9 +218,11 @@ class Plottable:
         # 4 Call of all initialization methods of the required views
         for view in self._plot_settings:
             try:
-                self._plot_methods[view][0](p_figure=self._figure, p_settings=self._plot_settings[view])
-            except:
+                plot_method = self._plot_methods[view][0]
+            except KeyError:
                 raise ParamError('Parameter p_plot_settings: wrong view "' + str(view) + '"')
+
+            plot_method(p_figure=self._figure, p_settings=self._plot_settings[view])
 
             if self._plot_settings[view].axes is None:
                 raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
