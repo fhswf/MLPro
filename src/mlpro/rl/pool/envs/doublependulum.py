@@ -57,10 +57,11 @@
 ## -- 2022-11-11  2.1.1     LSB      Bug fix for random seed dependent reproducibility
 ## -- 2022-11-17  2.2.0     LSB      New plot systematics
 ## -- 2022-11-18  2.2.1     DA       Method DoublePendulumRoot._init_figure(): title
+## -- 2022-11-18  2.2.2     LSB      reward strategies, broken computation, balancing and swinging
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.1 (2022-11-18)
+Ver. 2.2.2 (2022-11-18)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -173,7 +174,7 @@ class DoublePendulumRoot (Environment):
                    p_plot_level:int=2,
                    p_rst_balancing = C_RST_BALANCING_002,
                    p_rst_swinging = None,
-                   p_random_range:list = (-20,20),
+                   p_random_range:list = None,
                    p_balancing_range:list = [-1,1],
                    p_break_swinging = True,
                    p_logging=Log.C_LOG_ALL ):
@@ -286,15 +287,15 @@ class DoublePendulumRoot (Environment):
                     self._th1 = random.uniform(-self._random_range,self._random_range)
                     self._th2 = random.uniform(-self._random_range,self._random_range)
                 elif len(self._random_range) == 2:
-                    self._th1 = random.uniform(-self._random_range[0], self._random_range[1])
-                    self._th2 = random.uniform(-self._random_range[0], self._random_range[1])
+                    self._th1 = random.uniform(self._random_range[0], self._random_range[1])
+                    self._th2 = random.uniform(self._random_range[0], self._random_range[1])
             if self._balancing_range:
                 if len(self._balancing_range) == 1 or isinstance(self._balancing_range, int):
                     self._th1 = random.uniform(-self._balancing_range,self._balancing_range)
                     self._th2 = random.uniform(-self._balancing_range,self._balancing_range)
                 elif len(self._balancing_range) == 2:
-                    self._th1 = random.uniform(-self._balancing_range[0], self._balancing_range[1])
-                    self._th2 = random.uniform(-self._balancing_range[0], self._balancing_range[1])
+                    self._th1 = random.uniform(self._balancing_range[0], self._balancing_range[1])
+                    self._th2 = random.uniform(self._balancing_range[0], self._balancing_range[1])
 
 
         else:
@@ -527,9 +528,9 @@ class DoublePendulumRoot (Environment):
         norm_state_old.set_values(p_state_old_normalized)
         goal_state = self._target_state
 
-        d_old = abs(self.get_state_space().distance(norm_state_old, goal_state))
-        d_new = abs(self.get_state_space().distance(norm_state_new, goal_state))
-        d = d_new - d_old
+        d_old = abs(self.get_state_space().distance(goal_state, norm_state_old))
+        d_new = abs(self.get_state_space().distance(goal_state, norm_state_new))
+        d = d_old - d_new
 
         current_reward.set_overall_reward(d)
 
@@ -542,15 +543,15 @@ class DoublePendulumRoot (Environment):
         """
         if self._break_swinging:
             if len(self._balancing_range) == 1 or isinstance(self._balancing_range, int):
-                if -self._balancing_range <= p_state.get_values()[0] <= self._balancing_range:
+                if -self._balancing_range >= p_state.get_values()[0] >= self._balancing_range:
                     return True
-                if -self._balancing_range <= p_state.get_values()[2] <= self._balancing_range:
+                if -self._balancing_range >= p_state.get_values()[2] >= self._balancing_range:
                     return True
             elif len(self._balancing_range) == 2:
-                if self._balancing_range[0] >= p_state.get_values()[0] or p_state.get_values()[0] <= \
+                if self._balancing_range[0] >= p_state.get_values()[0] or p_state.get_values()[0] >= \
                         self._balancing_range[1]:
                     return True
-                if self._balancing_range[0] >= p_state.get_values()[2] <= self._balancing_range[1]:
+                if self._balancing_range[0] >= p_state.get_values()[2] or p_state.get_values()[2] >= self._balancing_range[1]:
                     return True
         return False
 
@@ -775,7 +776,7 @@ class DoublePendulumS4 (DoublePendulumRoot):
                    p_plot_level:int = 2,
                    p_rst_balancing=DoublePendulumRoot.C_RST_BALANCING_002,
                    p_rst_swinging=None,
-                   p_random_range: list = (-20, 20),
+                   p_random_range: list = None,
                    p_balancing_range: list = None,
                    p_break_swinging=True,
                    p_logging=Log.C_LOG_ALL ):
