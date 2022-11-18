@@ -20,10 +20,13 @@
 ## --                                - Class WrStreamOpenML: removed parent class Wrapper
 ## -- 2022-11-05  1.4.0     DA       Class WrStreamOpenML: refactoring to make it iterable
 ## -- 2022-11-08  1.4.1     DA       Corrections
+## -- 2022-11-11  1.5.0     DA       Class WrStreamOpenML: new support of optional parameters.
+## -- 2022-11-11  1.5.1     LSB      Refactoring for the new target parameter for get_data() method
+## -- 2022-11-12  1.5.2     DA       Correction in method WrStreamOpenML._download()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-11-08)
+Ver. 1.5.2 (2022-11-12)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -198,7 +201,9 @@ class WrStreamOpenML (Stream):
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
     p_kwargs : dict
-        Further stream specific parameters.
+        Further stream specific parameters. See https://docs.openml.org/Python-API/ for more informations. 
+        In particular, the optional parameters of method openml.datasets.OpenMLDataset.get_data() can
+        be handed over here (or later by using method set_options()).
     """
 
     C_TYPE              = 'Wrapped OpenML stream'
@@ -287,7 +292,11 @@ class WrStreamOpenML (Stream):
         """
 
         self._stream_meta = openml.datasets.get_dataset(self._id)
-        self._label = self._stream_meta.default_target_attribute
+
+        try:
+            self._label = self._kwargs['target'] 
+        except:
+            self._label = self._stream_meta.default_target_attribute
 
         try:
             self.C_SCIREF_URL = self._stream_meta.url
@@ -304,7 +313,7 @@ class WrStreamOpenML (Stream):
         except:
             self.C_SCIREF_ABSTRACT =''
 
-        self._dataset = self._stream_meta.get_data(dataset_format = 'array')
+        self._dataset = self._stream_meta.get_data(target = self._label, dataset_format = 'array')
 
         if self._dataset is not None:
             return True
@@ -329,11 +338,11 @@ class WrStreamOpenML (Stream):
 
         # 2 Determine feature data
         feature_data  = Element( self.get_feature_space() )
-        feature_data.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
+        feature_data.set_values(self._dataset[0][self._index])
 
         # 3 Determine label data
         label_data = Element(self.get_label_space())
-        label_data.set_values(numpy.asarray([self._dataset[0][self._index][self._dataset[3].index(self._label)]]))
+        label_data.set_values(numpy.asarray([self._dataset[1][self._index]]))
 
         self._index += 1
 
