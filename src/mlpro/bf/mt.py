@@ -855,9 +855,9 @@ class Workflow (Task):
         figure = super()._init_figure()
 
         try:
-            figure.canvas.set_window_title('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
-        except AttributeError:
             figure.canvas.setWindowTitle('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
+        except AttributeError:
+            figure.canvas.set_window_title('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
 
         return figure
 
@@ -910,19 +910,30 @@ class Workflow (Task):
             return
         
         task:Task
-        task_pos_x  = 1
-        task_pos_y  = 1
-        task_ax_id  = 1
+        emb_task_pos_x  = 1
+        emb_task_pos_y  = 1
+        emb_task_ax_id  = 1
 
         for task in self._tasks:
             task_plot_settings = []
             for ps in self._plot_settings.values():
                 if task.C_PLOT_STANDALONE:
+                    # Task plots in a separate figure (=window)
+                    task_figure = None
                     task_axes   = None
-                    task_pos_x  += 1
-                    task_ax_id  += 1
+                    task_pos_x  = 1
+                    task_pos_y  = 1
+                    task_ax_id  = 1
                 else:
+                    # Task plots embedded in the workflow figure/subplot
+                    task_figure = self._figure
                     task_axes   = ps.axes
+                    task_pos_x  = emb_task_pos_x
+                    task_pos_y  = emb_task_pos_y
+                    task_ax_id  = emb_task_ax_id
+                    emb_task_pos_x += 1
+                    emb_task_pos_y += 1
+                    emb_task_ax_id += 1
 
                 task_plot_settings.append( PlotSettings( p_view=ps.view,
                                                          p_axes=task_axes,
@@ -931,7 +942,7 @@ class Workflow (Task):
                                                          p_id=task_ax_id,
                                                          p_kwargs=p_kwargs ) )
                 
-            task.init_plot( p_figure=self._figure,
+            task.init_plot( p_figure=task_figure,
                             p_plot_settings=task_plot_settings,
                             p_plot_depth=p_plot_depth,
                             p_detail_level=p_detail_level,

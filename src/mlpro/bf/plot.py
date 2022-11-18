@@ -177,6 +177,8 @@ class Plottable:
         except:
             pass
 
+        plt.ion()
+
 
         # 1 Initialize internal plot attributes
         self._plot_depth        = p_plot_depth
