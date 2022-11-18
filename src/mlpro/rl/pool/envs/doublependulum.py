@@ -80,7 +80,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
 from collections import deque
-plt.ion()
+
 
 
 
