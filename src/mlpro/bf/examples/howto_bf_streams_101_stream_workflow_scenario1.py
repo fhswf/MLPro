@@ -92,7 +92,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 10
+    cycle_limit = 2  #10
     logging     = Log.C_LOG_ALL
     visualize   = True
   
@@ -112,7 +112,10 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_REAL,
 
 # 3 Reset and run own stream scenario
 myscenario.reset()
-myscenario.run()
+
+myscenario.init_plot()
+
+#myscenario.run()
 
 if __name__ == '__main__':
     input('Press ENTER to exit...')
