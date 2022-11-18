@@ -230,7 +230,7 @@ class DoublePendulumRoot (Environment):
 
 ## ------------------------------------------------------------------------------------------------------
     def _init_figure(self) -> Figure:
-        figure = plt.figure(figsize=(5,5))
+        figure = plt.figure(figsize=(7,6))
 
         try:
             figure.canvas.set_window_title('Environment - '+self.C_NAME)
@@ -514,15 +514,17 @@ class DoublePendulumRoot (Environment):
         """
 
         p_settings.axes = []
+
+        # Creates a grid space in the figure to use for subplot location
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, self.C_PLOT_DEPTH_REWARD]:
+            grid = p_figure.add_gridspec(1, 1)
+        elif self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ALL:
+            grid = p_figure.add_gridspec(1, 2)
+            p_figure.set_size_inches(11, 5)
+
         if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
-            if self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ENV:
-                grid = p_figure.add_grid_spec(1,1)
-            if self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ALL:
-                grid = p_figure.add_gridspec(1,2)
-                p_figure.set_size_inches(11,5)
-            p_settings.axes.append(p_figure.add_subplot(grid[0],autoscale_on=False,
-                                                   xlim=(-self._L * 1.2, self._L * 1.2), ylim=(-self._L * 1.2,
-                                                                                               self._L * 1.2)))
+            p_settings.axes.append(p_figure.add_subplot(grid[0],autoscale_on=False,xlim=(-self._L * 1.2, self._L * 1.2),
+                                                                                   ylim=(-self._L * 1.2,self._L * 1.2)))
             p_settings.axes[0].set_aspect('equal')
             p_settings.axes[0].grid()
             p_settings.axes[0].set_title(self.C_NAME)
@@ -554,13 +556,19 @@ class DoublePendulumRoot (Environment):
             self._line, = p_settings.axes[0].plot([], [], 'o-', lw=2)
             self._trace, = p_settings.axes[0].plot([], [], '.-', lw=1, ms=2)
 
+
+
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_REWARD, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
             p_settings.axes.append(p_figure.add_subplot(grid[-1]))
 
 
             p_settings.axes[-1].set_title('Reward - '+ self.C_NAME)
             p_settings.axes[-1].autoscale_view()
             p_settings.axes[-1].grid()
+            p_settings.axes[-1].set_xlabel('Cycle ID')
+            p_settings.axes[-1].set_ylabel('Reward')
             self._reward_plot,  = p_settings.axes[-1].plot(range(len(self._reward_history)), self._reward_history,'b', lw = 1)
+
 
     ## ------------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
