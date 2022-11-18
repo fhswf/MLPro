@@ -18,6 +18,7 @@
 ## -- 2022-11-12  1.2.3     DA       Bugfix in method Task.run()
 ## -- 2022-11-17  1.3.0     DA       - Class Task: extensions on plotting
 ## --                                - Bugfix in method Workflow.init_plot()
+## -- 2022-11-18  1.3.1     DA       Method Workflow._init_figure: support of different backend types
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -852,7 +853,12 @@ class Workflow (Task):
 ## -------------------------------------------------------------------------------------------------
     def _init_figure(self) -> Figure:
         figure = super()._init_figure()
-        figure.canvas.set_window_title('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
+
+        try:
+            figure.canvas.set_window_title('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
+        except AttributeError:
+            figure.canvas.setWindowTitle('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
+
         return figure
 
 

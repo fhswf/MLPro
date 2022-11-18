@@ -27,10 +27,11 @@
 ## -- 2022-11-07  0.7.1     DA       Class StreamScenario: refactoring 
 ## -- 2022-11-13  0.8.0     DA       - Class Stream: new custom method set_options()
 ## --                                - New class StreamShared
+## -- 2022-11-18  0.8.1     DA       Refactoring of try/except statements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.0 (2022-11-13)
+Ver. 0.8.1 (2022-11-18)
 
 This module provides classes for standardized stream processing. 
 """
@@ -612,7 +613,7 @@ class StreamTask (Task):
 
             try: 
                 inst_new, inst_del = so.get_instances()
-            except:
+            except AttributeError:
                 raise ImplementationError('Shared object not compatible to class StreamShared')
         
         super().run(p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
@@ -825,7 +826,7 @@ class StreamWorkflow (StreamTask, Workflow):
             # This workflow is the leading workflow and opens a new process cycle based on external instances
             try:
                 self.get_so().reset( p_inst_new )
-            except:
+            except AttributeError:
                 raise ImplementationError('Stream workflows need a shared object of type StreamShared (or inherited)')
 
         Workflow.run(self, p_range=p_range, p_wait=p_wait)                          
@@ -1058,7 +1059,7 @@ class StreamScenario (ScenarioBase):
         try:
             self._workflow.run( p_inst_new = [ next(self._iterator) ], p_inst_del=[] )
             end_of_data = False
-        except:
+        except StopIteration:
             end_of_data = True
 
         return False, False, False, end_of_data
