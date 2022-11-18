@@ -112,10 +112,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_REAL,
 
 # 3 Reset and run own stream scenario
 myscenario.reset()
-
-myscenario.init_plot()
-
-#myscenario.run()
+myscenario.run()
 
 if __name__ == '__main__':
     input('Press ENTER to exit...')
