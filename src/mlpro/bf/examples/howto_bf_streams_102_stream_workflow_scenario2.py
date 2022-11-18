@@ -138,4 +138,4 @@ myscenario.reset()
 myscenario.run()
 
 if __name__ == '__main__':
-    input('Press key to exit...')
+    input('Press ENTER to exit...')
