@@ -292,7 +292,10 @@ class WrStreamOpenML (Stream):
         """
 
         self._stream_meta = openml.datasets.get_dataset(self._id)
-
+        try:
+            self._label = self._kwargs['target']
+        except:
+            self._label = self._stream_meta.default_target_attribute
         try:
             self.C_SCIREF_URL = self._stream_meta.url
         except:
