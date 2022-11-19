@@ -23,10 +23,11 @@
 ## -- 2022-11-11  1.5.0     DA       Class WrStreamOpenML: new support of optional parameters.
 ## -- 2022-11-11  1.5.1     LSB      Refactoring for the new target parameter for get_data() method
 ## -- 2022-11-12  1.5.2     DA       Correction in method WrStreamOpenML._download()
+## -- 2022-11-19  1.5.3     DA       Class WrStreamOpenML: changes due to stream options
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.2 (2022-11-12)
+Ver. 1.5.3 (2022-11-19)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -273,7 +274,8 @@ class WrStreamOpenML (Stream):
     def _setup_label_space(self) -> MSpace:
         if not self._downloaded:
             self._downloaded = self._download() 
-            if not self._downloaded: return None       
+            if ( not self._downloaded ) or ( self._label == '' ):
+                return None       
 
         label_space = MSpace()
         label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
@@ -293,9 +295,11 @@ class WrStreamOpenML (Stream):
 
         self._stream_meta = openml.datasets.get_dataset(self._id)
         try:
-            self._label = self._kwargs['target']
+            self._label = str(self._kwargs['target']).lstrip()
+            self._kwargs['target'] = self._label
         except:
             self._label = self._stream_meta.default_target_attribute
+            self._kwargs['target'] = self._label
         try:
             self.C_SCIREF_URL = self._stream_meta.url
         except:
@@ -339,8 +343,12 @@ class WrStreamOpenML (Stream):
         feature_data.set_values(self._dataset[0][self._index])
 
         # 3 Determine label data
-        label_data = Element(self.get_label_space())
-        label_data.set_values(numpy.asarray([self._dataset[1][self._index]]))
+        label_space = self.get_label_space()
+        if label_space is not None:
+            label_data = Element(self.get_label_space())
+            label_data.set_values(numpy.asarray([self._dataset[1][self._index]]))
+        else:
+            label_data = None
 
         self._index += 1
 
