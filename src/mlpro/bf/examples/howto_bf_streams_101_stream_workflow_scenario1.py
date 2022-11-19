@@ -65,7 +65,7 @@ class MyScenario (StreamScenario):
 
         # 1 Import a stream from OpenML
         openml  = WrStreamProviderOpenML(p_logging=p_logging)
-        stream  = openml.get_stream(p_id=75, p_mode=p_mode, p_logging=p_logging)
+        stream  = openml.get_stream(p_name='BNG(autos,nominal,1000000)', p_mode=p_mode, p_logging=p_logging)
 
 
         # 2 Set up a stream workflow based on a custom stream task
@@ -92,7 +92,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 2  #10
+    cycle_limit = 2
     logging     = Log.C_LOG_ALL
     visualize   = True
   

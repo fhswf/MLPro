@@ -28,10 +28,11 @@
 ## -- 2022-11-13  0.8.0     DA       - Class Stream: new custom method set_options()
 ## --                                - New class StreamShared
 ## -- 2022-11-18  0.8.1     DA       Refactoring of try/except statements
+## -- 2022-11-19  0.8.2     DA       Class Stream: new parameter p_name for methods *get_stream()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.1 (2022-11-18)
+Ver. 0.8.2 (2022-11-19)
 
 This module provides classes for standardized stream processing. 
 """
@@ -483,14 +484,16 @@ class StreamProvider (Log, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_stream( self, p_id, p_mode = Mode.C_MODE_SIM, p_logging = Log.C_LOG_ALL, **p_kwargs ) -> Stream:
+    def get_stream( self, p_id:str=None, p_name:str=None, p_mode = Mode.C_MODE_SIM, p_logging = Log.C_LOG_ALL, **p_kwargs ) -> Stream:
         """
         Returns stream with the specified id by calling custom method _get_stream().
 
         Parameters
         ----------
         p_id : str
-            Id of the requested stream.
+            Optional Id of the requested stream. Default = None.
+        p_name : str
+            Optional name of the requested stream. Default = None.
         p_mode
             Operation mode. Default: Mode.C_MODE_SIM.
         p_logging
@@ -504,8 +507,14 @@ class StreamProvider (Log, ScientificObject):
             Stream object or None in case of an error.
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Requested stream:', str(p_id))
-        s = self._get_stream(p_id=p_id, p_mode=p_mode, p_logging=p_logging, **p_kwargs)
+        if p_id is not None:
+            self.log(self.C_LOG_TYPE_I, 'Id of requested stream:', p_id)
+        elif p_name is not None:
+            self.log(self.C_LOG_TYPE_I, 'Name of requested stream:', p_name)
+        else:
+            raise ParamError('Please specify the requested stream by id or name')
+
+        s = self._get_stream(p_id=p_id, p_name=p_name, p_mode=p_mode, p_logging=p_logging, **p_kwargs)
         if s is None:
             self.log(self.C_LOG_TYPE_E, 'Stream', str(p_id), 'not found')
 
@@ -513,14 +522,16 @@ class StreamProvider (Log, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream( self, p_id, p_mode = Mode.C_MODE_SIM, p_logging = Log.C_LOG_ALL, **p_kwargs ) -> Stream:
+    def _get_stream( self, p_id:str=None, p_name:str=None, p_mode = Mode.C_MODE_SIM, p_logging = Log.C_LOG_ALL, **p_kwargs ) -> Stream:
         """
         Custom method to get the specified stream. See method get_stream() for further details.
 
         Parameters
         ----------
         p_id : str
-            Id of the requested stream.
+            Optional Id of the requested stream. Default = None.
+        p_name : str
+            Optional name of the requested stream. Default = None.
         p_mode
             Operation mode. Default: Mode.C_MODE_SIM.
         p_logging
