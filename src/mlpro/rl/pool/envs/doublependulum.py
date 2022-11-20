@@ -478,6 +478,8 @@ class DoublePendulumRoot (Environment):
         else:
             raise AttributeError('Reward strategy does not exist.')
         if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
+            if self._reward_window != 0 and len(self._reward_history) >= self._reward_window:
+                self._reward_history.pop(0)
             self._reward_history.append(current_reward.overall_reward)
         return current_reward
 
@@ -714,7 +716,7 @@ class DoublePendulumRoot (Environment):
         """
         try:
             if self._reward_window != 0 and len(self._reward_history) >= self._reward_window:
-                self._reward_plot.set_data(list(range(self._reward_window)), self._reward_history[-self._reward_window:])
+                self._reward_plot.set_data(list(range(self._reward_window)), self._reward_history)
             else:
                 self._reward_plot.set_data(list(range(len(self._reward_history))), self._reward_history)
             if self._reward_trend:
