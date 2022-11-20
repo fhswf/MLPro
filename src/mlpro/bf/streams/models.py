@@ -29,10 +29,11 @@
 ## --                                - New class StreamShared
 ## -- 2022-11-18  0.8.1     DA       Refactoring of try/except statements
 ## -- 2022-11-19  0.8.2     DA       Class Stream: new parameter p_name for methods *get_stream()
+## -- 2022-11-20  0.9.0     DA       Classes StreamWorkflow, StreamScenario: plot funcionality
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.2 (2022-11-19)
+Ver. 0.9.0 (2022-11-20)
 
 This module provides classes for standardized stream processing. 
 """
@@ -677,7 +678,7 @@ class StreamTask (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def update_plot(self, p_inst_new:list=None, p_inst_del:list=None, **p_kwargs):
         """
         Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
 
@@ -844,13 +845,30 @@ class StreamWorkflow (StreamTask, Workflow):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings: list = [], 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 0, 
+                   **p_kwargs ):
+        return Workflow.init_plot( self, 
+                                   p_figure=p_figure, 
+                                   p_plot_settings=p_plot_settings, 
+                                   p_plot_depth=p_plot_depth, 
+                                   p_detail_level=p_detail_level, 
+                                   p_step_rate=p_step_rate, 
+                                   **p_kwargs )
+
+
+## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
         """
 
-        super()._init_plot_2d( p_figure=p_figure, p_settings=p_settings)
+        StreamTask._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -860,7 +878,7 @@ class StreamWorkflow (StreamTask, Workflow):
         details.
         """
 
-        super()._init_plot_3d( p_figure=p_figure, p_settings=p_settings)
+        StreamTask._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -870,11 +888,11 @@ class StreamWorkflow (StreamTask, Workflow):
         details.
         """
 
-        super()._init_plot_nd( p_figure=p_figure, p_settings=p_settings)
+        StreamTask._init_plot_nd( self, p_figure=p_figure, p_settings=p_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def update_plot(self, p_inst_new:list=None, p_inst_del:list=None, **p_kwargs):
         """
         Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
 
@@ -888,70 +906,17 @@ class StreamWorkflow (StreamTask, Workflow):
             Further optional plot parameters.
         """
 
-        return super().update_plot(p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
 
+        # Update of workflow master plot
+        StreamTask.update_plot(self, p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
 
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
-        """
-        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
-        details.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
-        p_kwargs : dict
-            Further optional plot parameters.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
-        """
-        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
-        details.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
-        p_kwargs : dict
-            Further optional plot parameters.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings: PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
-        """
-        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
-        details.
-
-        Parameters
-        ----------
-        p_settings : PlotSettings
-            Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
-        p_kwargs : dict
-            Further optional plot parameters.
-        """
-
-        pass
+        # Update of all task subplots
+        for task in self._tasks:
+            task.update_plot(**p_kwargs)
 
 
 
@@ -1108,7 +1073,7 @@ class StreamScenario (ScenarioBase):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
-        return NotImplementedError
+        self._workflow.update_plot(**p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------

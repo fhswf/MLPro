@@ -691,6 +691,17 @@ class Task (Async, EventManager, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
+        self.log(Log.C_LOG_TYPE_I, 'Init plot')
+        return super().init_plot( p_figure=p_figure, 
+                                  p_plot_settings=p_plot_settings, 
+                                  p_plot_depth=p_plot_depth, 
+                                  p_detail_level=p_detail_level, 
+                                  p_step_rate=p_step_rate, 
+                                  **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         """
         Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
@@ -721,6 +732,12 @@ class Task (Async, EventManager, Plottable):
 
         super()._init_plot_nd( p_figure=p_figure, p_settings=p_settings )
         p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, **p_kwargs):
+        self.log(Log.C_LOG_TYPE_I, 'Update plot')
+        return super().update_plot(**p_kwargs)
 
 
 
@@ -953,6 +970,19 @@ class Workflow (Task):
             self._figure.canvas.draw()
             self._figure.canvas.flush_events()
                            
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, **p_kwargs):
+        super().update_plot(**p_kwargs)
+
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+
+        for task in self._tasks:
+            task.update_plot(**p_kwargs)
+
 
 ## -------------------------------------------------------------------------------------------------
     def run(self, p_range:int=None, p_wait:bool=False, **p_kwargs):

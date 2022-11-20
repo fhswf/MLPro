@@ -117,7 +117,7 @@ if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     cycle_limit = 10
     logging     = Log.C_LOG_ALL
-    visualize   = False
+    visualize   = True
   
 else:
     # 1.2 Parameters for internal unit test
