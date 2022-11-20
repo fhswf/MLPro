@@ -118,6 +118,25 @@ class DoublePendulumRoot (Environment):
         Historical trajectory points to display. The default is 5.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
+    p_plot_level : int
+        Types and number of plots to be plotted. Default = ALL
+        C_PLOT_DEPTH_ENV only plots the environment
+        C_PLOT_DEPTH_REWARD only plots the reward
+        C_PLOT_ALL plots both reward and the environment
+    p_rst_balancingL
+        Reward strategy to be used for the balancing region of the environment
+    p_rst_swinging
+        Reward strategy to be used for the swinging region of the environment
+    p_reward_trend:bool
+        Boolean value stating whether to plot reward trend
+    p_reward_window:int
+        The number of latest rewards to be shown in the plot. Default is 0
+    p_random_range:list
+        The boundaries for state space for initialization of environment randomly
+    p_balancing range:list
+        The boundaries for state space of environment in balancing region
+    p_break_swinging:bool
+        Boolean value stating whether the environment shall be broken outside the balancing region
     p_logging
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
@@ -174,10 +193,10 @@ class DoublePendulumRoot (Environment):
                    p_plot_level:int=2,
                    p_rst_balancing = C_RST_BALANCING_002,
                    p_rst_swinging = None,
-                   p_reward_trend: bool = True,
-                   p_reward_window:int = 500,
+                   p_reward_trend: bool = False,
+                   p_reward_window:int = 0,
                    p_random_range:list = None,
-                   p_balancing_range:list = [-1,1],
+                   p_balancing_range:list = [-10,10],
                    p_break_swinging:bool = True,
                    p_logging=Log.C_LOG_ALL ):
 
@@ -692,9 +711,9 @@ class DoublePendulumRoot (Environment):
         necessary data of the figure.
         """
         try:
-            try:
-                self._reward_plot.set_data(list(range(self._reward_window)), self._reward_history[-100:])
-            except:
+            if self._reward_window != 0 and len(self._reward_history) >= self._reward_window:
+                self._reward_plot.set_data(list(range(self._reward_window)), self._reward_history[-self._reward_window:])
+            else:
                 self._reward_plot.set_data(list(range(len(self._reward_history))), self._reward_history)
             if self._reward_trend:
                 self._plot_reward_trend.set_data(list(range(len(self._reward_history))), np.convolve(
@@ -774,6 +793,25 @@ class DoublePendulumS4 (DoublePendulumRoot):
         Historical trajectory points to display. The default is 5.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
+    p_plot_level : int
+        Types and number of plots to be plotted. Default = ALL
+        C_PLOT_DEPTH_ENV only plots the environment
+        C_PLOT_DEPTH_REWARD only plots the reward
+        C_PLOT_ALL plots both reward and the environment
+    p_rst_balancingL
+        Reward strategy to be used for the balancing region of the environment
+    p_rst_swinging
+        Reward strategy to be used for the swinging region of the environment
+    p_reward_trend:bool
+        Boolean value stating whether to plot reward trend
+    p_reward_window:int
+        The number of latest rewards to be shown in the plot. Default is 0
+    p_random_range:list
+        The boundaries for state space for initialization of environment randomly
+    p_balancing range:list
+        The boundaries for state space of environment in balancing region
+    p_break_swinging:bool
+        Boolean value stating whether the environment shall be broken outside the balancing region
     p_logging
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
@@ -796,6 +834,8 @@ class DoublePendulumS4 (DoublePendulumRoot):
                    p_plot_level:int = 2,
                    p_rst_balancing=DoublePendulumRoot.C_RST_BALANCING_002,
                    p_rst_swinging=None,
+                   p_reward_trend: bool = False,
+                   p_reward_window: int = 0,
                    p_random_range: list = None,
                    p_balancing_range: list = None,
                    p_break_swinging=True,
@@ -815,6 +855,8 @@ class DoublePendulumS4 (DoublePendulumRoot):
                           p_plot_level = p_plot_level,
                           p_rst_balancing = p_rst_balancing,
                           p_rst_swinging = p_rst_swinging,
+                          p_reward_trend = p_reward_trend,
+                          p_reward_window =p_reward_window,
                           p_random_range=p_random_range,
                           p_balancing_range=p_balancing_range,
                           p_break_swinging=p_break_swinging,
