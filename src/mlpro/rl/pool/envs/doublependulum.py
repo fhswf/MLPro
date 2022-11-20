@@ -58,10 +58,12 @@
 ## -- 2022-11-17  2.2.0     LSB      New plot systematics
 ## -- 2022-11-18  2.2.1     DA       Method DoublePendulumRoot._init_figure(): title
 ## -- 2022-11-18  2.2.2     LSB      reward strategies, broken computation, balancing and swinging
+## -- 2022-11-20  2.2.3     LSB      Reward Window, reward trend, reward strategies, balancing
+##                                   and swinging zones
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.2 (2022-11-18)
+Ver. 2.2.3 (2022-11-dd)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
