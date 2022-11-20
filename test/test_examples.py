@@ -22,11 +22,10 @@
 ## -- 2022-10-19  1.3.1     DA       Renamed howtos rl_att_001, rl_att_002
 ## -- 2022-11-07  1.3.2     DA       Reactivated howto bf_streams_011
 ## -- 2022-11-10  1.3.3     DA       Renamed howtos bf_streams*
-## -- 2022-11-20  1.3.4     DA       Temporarily disabled bf_streams_051
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2022-11-20)
+Ver. 1.3.3 (2022-11-10)
 
 Unit test for all examples available.
 """
@@ -49,7 +48,7 @@ howto_list = {
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
-    # "bf_streams_051": "mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml",
+    "bf_streams_051": "mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml",
     "bf_streams_052": "mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn",
     "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
 
