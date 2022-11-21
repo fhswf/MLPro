@@ -2,7 +2,8 @@
 Howto BF-STREAMS-051: Accessing Data from OpenML
 ================================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml
+.. 2022-11-21/DA commented due to problems with openml 
+    .. automodule:: mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml
 
 
 Prerequisites
