@@ -34,80 +34,79 @@ You will learn:
 
 
 from datetime import datetime
-print('\n\n', datetime.now(), 'howto_bf_streams_051: I swear, I really do nothing!\n\n')
-
-# from mlpro.wrappers.openml import WrStreamProviderOpenML
-# from mlpro.bf.various import Log
+from mlpro.bf.various import Log
+from mlpro.wrappers.openml import WrStreamProviderOpenML
 
 
 
-# # 0 Prepare Demo/Unit test mode
-# if __name__ == '__main__':
-#     num_inst    = 10
-#     logging     = Log.C_LOG_ALL
-# else:
-#     num_inst    = 2
-#     logging     = Log.C_LOG_NOTHING
+# 0 Prepare Demo/Unit test mode
+if __name__ == '__main__':
+    num_inst    = 10
+    logging     = Log.C_LOG_ALL
+else:
+    print('\n', datetime.now(), __file__)
+    num_inst    = 2
+    logging     = Log.C_LOG_NOTHING
 
 
 
-# # 1 Create a Wrapper for OpenML stream provider
-# openml = WrStreamProviderOpenML(p_logging = logging)
+# 1 Create a Wrapper for OpenML stream provider
+openml = WrStreamProviderOpenML(p_logging = logging)
 
 
 
-# # 2 Get a list of streams available at the stream provider
-# stream_list = openml.get_stream_list(p_logging = logging)
+# 2 Get a list of streams available at the stream provider
+stream_list = openml.get_stream_list(p_logging = logging)
 
 
 
-# # 3 Get stream "credit-g" from the stream provider OpenML
-# mystream = openml.get_stream( p_name='BNG(autos,nominal,1000000)', p_logging=logging)
+# 3 Get stream "credit-g" from the stream provider OpenML
+mystream = openml.get_stream( p_name='BNG(autos,nominal,1000000)', p_logging=logging)
 
 
-# # 4 Setting up additional stream options, the target label in this case
-# #mystream.set_options(target = 'checking_status')
+# 4 Setting up additional stream options, the target label in this case
+#mystream.set_options(target = 'checking_status')
 
 
-# # 5 Get the feature space of the stream
-# feature_space = mystream.get_feature_space()
-# openml.log(mystream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim())
+# 5 Get the feature space of the stream
+feature_space = mystream.get_feature_space()
+openml.log(mystream.C_LOG_TYPE_I,"Number of features in the stream:",feature_space.get_num_dim())
 
 
-# # 6 Set up an iterator for the stream
-# myiterator = iter(mystream)
+# 6 Set up an iterator for the stream
+myiterator = iter(mystream)
 
 
-# # 7 Fetching some stream instances
-# myiterator.log(mystream.C_LOG_TYPE_W, 'Fetching first', str(num_inst), 'stream instances...')
-# for i in range(num_inst):
-#     curr_instance   = next(myiterator)
-#     curr_data       = curr_instance.get_feature_data().get_values()
-#     curr_label      = curr_instance.get_label_data().get_values()
-#     myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
+# 7 Fetching some stream instances
+myiterator.log(mystream.C_LOG_TYPE_W, 'Fetching first', str(num_inst), 'stream instances...')
+for i in range(num_inst):
+    curr_instance   = next(myiterator)
+    curr_data       = curr_instance.get_feature_data().get_values()
+    curr_label      = curr_instance.get_label_data().get_values()
+    myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
 
 
-# # 8 Resetting the iterator
-# myiterator = iter(mystream)
+# 8 Resetting the iterator
+myiterator = iter(mystream)
 
 
-# # 9 Fetching all 1,000 instances
-# myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all', myiterator.get_num_instances(), 'instances...')
-# for i, curr_instance in enumerate(myiterator):
-#     if i == num_inst: 
-#         myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the', myiterator.get_num_instances(), 'instances dark...')
-#         myiterator.switch_logging(p_logging=Log.C_LOG_NOTHING)
-#         tp_start = datetime.now()
+# 9 Fetching all 1,000 instances
+myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all', myiterator.get_num_instances(), 'instances...')
+for i, curr_instance in enumerate(myiterator):
+    if i == num_inst: 
+        myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the', myiterator.get_num_instances(), 'instances dark...')
+        myiterator.switch_logging(p_logging=Log.C_LOG_NOTHING)
+        tp_start = datetime.now()
 
-#     curr_data       = curr_instance.get_feature_data().get_values()
-#     curr_label      = curr_instance.get_label_data().get_values()
-#     myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
+    curr_data       = curr_instance.get_feature_data().get_values()
+    curr_label      = curr_instance.get_label_data().get_values()
+    myiterator.log(mystream.C_LOG_TYPE_I, 'Instance', str(i) + ': \n   Data:', curr_data[0:14], '...\n   Label:', curr_label)
 
-# # 9.1 Some statistics...
-# tp_end = datetime.now()
-# duration = tp_end - tp_start
-# duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
-# rate = ( myiterator.get_num_instances() - num_inst ) / duration_sec
+# 9.1 Some statistics...
+tp_end = datetime.now()
+duration = tp_end - tp_start
+duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
+rate = ( myiterator.get_num_instances() - num_inst ) / duration_sec
 
-# myiterator.switch_logging(p_logging=logging)
-# myiterator.log(Log.C_LOG_TYPE_W, 'Done in', round(duration_sec,3), ' seconds (throughput =', round(rate), 'instances/sec)')    
+myiterator.switch_logging(p_logging=logging)
+myiterator.log(Log.C_LOG_TYPE_W, 'Done in', round(duration_sec,3), ' seconds (throughput =', round(rate), 'instances/sec)')    

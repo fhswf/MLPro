@@ -40,6 +40,7 @@ if __name__ == '__main__':
     num_inst    = 10
     logging     = Log.C_LOG_ALL
 else:
+    print('\n', datetime.now(), __file__)
     num_inst    = 2
     logging     = Log.C_LOG_NOTHING
 
