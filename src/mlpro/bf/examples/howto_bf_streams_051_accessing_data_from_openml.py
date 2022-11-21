@@ -51,6 +51,7 @@ else:
 # 1 Create a Wrapper for OpenML stream provider
 openml = WrStreamProviderOpenML(p_logging = logging)
 
+exit()
 
 # 2 Get a list of streams available at the stream provider
 stream_list = openml.get_stream_list(p_logging = logging)
