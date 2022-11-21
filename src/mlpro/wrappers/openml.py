@@ -322,7 +322,7 @@ class WrStreamOpenML (Stream):
         except:
             self.C_SCIREF_ABSTRACT =''
 
-        self._dataset = self._stream_meta.get_data(**self._kwargs, dataset_format = 'array')
+        self._dataset = self._stream_meta.get_data(dataset_format = 'array', **self._kwargs)
 
         if self._dataset is not None:
             return True
