@@ -121,5 +121,5 @@ Change Log
   
 Cross Reference
 ===============
-    + :ref:`Howto RL-020: Run a native random agent in MLPro’s native DoublePendulum environment <Howto RL 020>`
+    + :ref:`Howto RL-ENV-005: SB3 Policy on Double Pendulum Environment <Howto Env RL 005>`
     + :ref:`API Reference <Double Pendulum>`

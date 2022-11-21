@@ -1,7 +1,7 @@
 3.2 Adaptive Function
-================
+=====================
 
-Add text here!
+Further descriptions coming soon...
 
 
 .. toctree::
