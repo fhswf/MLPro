@@ -39,6 +39,7 @@ from mlpro.wrappers.openml import WrStreamProviderOpenML
 
 
 
+
 # 0 Prepare Demo/Unit test mode
 if __name__ == '__main__':
     num_inst    = 10
@@ -48,7 +49,7 @@ else:
     num_inst    = 2
     logging     = Log.C_LOG_NOTHING
 
-
+exit()
 
 # 1 Create a Wrapper for OpenML stream provider
 openml = WrStreamProviderOpenML(p_logging = logging)

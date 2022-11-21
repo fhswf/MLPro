@@ -39,7 +39,7 @@ This module provides classes for standardized stream processing.
 """
 
 
-from mlpro.bf.math.basics import MSpace
+from mlpro.bf.math.basics import *
 from mlpro.bf.various import *
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.plot import PlotSettings
@@ -572,11 +572,16 @@ class StreamTask (Task):
         Further optional named parameters.
     """
 
-    C_TYPE              = 'Stream-Task'
-    C_PLOT_ACTIVE       = True
-    C_PLOT_STANDALONE   = True
-    C_PLOT_VALID_VIEWS  = [ PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND ]
-    C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_ND
+    C_TYPE                  = 'Stream-Task'
+
+    C_PLOT_ACTIVE           = True
+    C_PLOT_STANDALONE       = True
+    C_PLOT_VALID_VIEWS      = [ PlotSettings.C_VIEW_2D, PlotSettings.C_VIEW_3D, PlotSettings.C_VIEW_ND ]
+    C_PLOT_DEFAULT_VIEW     = PlotSettings.C_VIEW_ND
+
+    C_PLOT_ND_XLABEL_INST   = 'Instance index'
+    C_PLOT_ND_XLABEL_TIME   = 'Time index'
+    C_PLOT_ND_YLABEL        = 'Feature Data'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -645,22 +650,41 @@ class StreamTask (Task):
         """
 
         raise NotImplementedError
+  
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings: list = [], 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 0, 
+                   **p_kwargs ):
+
+        self._plot_num_inst = 0
+
+        super().init_plot( p_figure=p_figure, 
+                           p_plot_settings=p_plot_settings, 
+                           p_plot_depth=p_plot_depth, 
+                           p_detail_level=p_detail_level, 
+                           p_step_rate=p_step_rate, 
+                           **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
         """
 
         super()._init_plot_2d( p_figure=p_figure, p_settings=p_settings )
-
+ 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
         """
 
@@ -670,11 +694,21 @@ class StreamTask (Task):
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
         """
 
         super()._init_plot_nd( p_figure=p_figure, p_settings=p_settings )
+
+        self._plot_nd_xlabel = self.C_PLOT_ND_XLABEL_INST
+        p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
+        p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
+        p_settings.axes.grid(visible=True)
+        p_settings.axes.set_autoscalex_on(True)
+        p_settings.axes.set_autoscaley_on(True)
+
+        self._plot_nd_xdata  = []
+        self._plot_nd_plots  = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -692,13 +726,23 @@ class StreamTask (Task):
             Further optional plot parameters.
         """
 
-        return super().update_plot(p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
+        if p_inst_new is None:
+            inst_new, inst_del = self.get_so().get_instances()
+        else:
+            inst_new = p_inst_new
+            inst_del = p_inst_del
+
+        super().update_plot(p_inst_new=inst_new, p_inst_del=inst_del, **p_kwargs)
+
+        self._plot_num_inst += len(inst_new)
+
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
 
         Parameters
@@ -719,7 +763,7 @@ class StreamTask (Task):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
 
         Parameters
@@ -740,7 +784,7 @@ class StreamTask (Task):
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
+        Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
 
         Parameters
@@ -755,7 +799,45 @@ class StreamTask (Task):
             Further optional plot parameters.
         """
 
-        pass
+        # 1 Check for new instances to be plotted
+        if len(p_inst_new) == 0: return
+
+
+        # 2 Check whether x label needs to be changed to time index
+        if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( p_inst_new[0].get_time_stamp() is not None ):
+            p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
+
+
+        # 3 Late initialization of plot object
+        if self._plot_nd_plots is None:
+            self._plot_nd_plots = {}
+
+            feature_space = p_inst_new[0].get_feature_data().get_related_set()
+            for feature in feature_space.get_dims():
+                if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
+                    feature_xdata = self._plot_nd_xdata
+                    feature_ydata = []
+                    feature_plot, = p_settings.axes.plot( feature_xdata, feature_ydata, lw=1)
+                    self._plot_nd_plots[feature.get_id()] = [ feature_xdata, feature_ydata, feature_plot ]
+
+
+        # 4 Add data of new instances to plot objects
+        inst_id = self._plot_num_inst
+
+        for inst in p_inst_new:
+            self._plot_nd_xdata.append(inst_id)
+            inst_id += 1
+
+            feature_data = inst.get_feature_data().get_values()
+
+            for i, fplot_id in enumerate(self._plot_nd_plots.keys()):
+                self._plot_nd_plots[fplot_id][1].append(feature_data[i])
+
+
+        # 5 Set new plot data of all feature plots
+        for fplot in self._plot_nd_plots.values():
+            fplot[2].set_xdata(fplot[0])
+            fplot[2].set_ydata(fplot[1])
 
 
 
@@ -852,6 +934,9 @@ class StreamWorkflow (StreamTask, Workflow):
                    p_detail_level: int = 0, 
                    p_step_rate: int = 0, 
                    **p_kwargs ):
+
+        self._plot_num_inst = 0
+
         return Workflow.init_plot( self, 
                                    p_figure=p_figure, 
                                    p_plot_settings=p_plot_settings, 
