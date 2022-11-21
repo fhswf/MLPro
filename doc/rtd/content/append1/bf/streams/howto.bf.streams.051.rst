@@ -15,5 +15,5 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../../src/mlpro/bf/examples/howto_bf_streams_051_accessing_data_from_openml.py.py
+.. literalinclude:: ../../../../../../src/mlpro/bf/examples/howto_bf_streams_051_accessing_data_from_openml.py
 	:language: python
