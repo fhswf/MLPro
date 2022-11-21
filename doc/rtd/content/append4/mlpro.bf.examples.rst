@@ -65,18 +65,6 @@ Submodules
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_streams_001_tasks_workflows_and_stream_scenarios
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-.. automodule:: mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 .. automodule:: mlpro.bf.examples.howto_bf_streams_011_accessing_data_from_river
    :members:
    :undoc-members:
