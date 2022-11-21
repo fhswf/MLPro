@@ -49,7 +49,7 @@ else:
     num_inst    = 2
     logging     = Log.C_LOG_NOTHING
 
-exit()
+exit(0)
 
 # 1 Create a Wrapper for OpenML stream provider
 openml = WrStreamProviderOpenML(p_logging = logging)

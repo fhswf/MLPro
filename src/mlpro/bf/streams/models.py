@@ -151,7 +151,7 @@ class StreamShared (Shared):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
-        super().__init__(p_range)
+        Shared.__init__(self, p_range=p_range)
         self._inst_new : list = None
         self._inst_del : list = None
     
@@ -591,13 +591,14 @@ class StreamTask (Task):
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        super().__init__( p_name=p_name, 
-                          p_range_max=p_range_max, 
-                          p_autorun=Task.C_AUTORUN_NONE, 
-                          p_class_shared=None, 
-                          p_visualize=p_visualize,
-                          p_logging=p_logging, 
-                          **p_kwargs )
+        Task.__init__( self, 
+                       p_name=p_name, 
+                       p_range_max=p_range_max, 
+                       p_autorun=Task.C_AUTORUN_NONE, 
+                       p_class_shared=None, 
+                       p_visualize=p_visualize,
+                       p_logging=p_logging, 
+                       **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -633,7 +634,7 @@ class StreamTask (Task):
             except AttributeError:
                 raise ImplementationError('Shared object not compatible to class StreamShared')
         
-        super().run(p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
+        Task.run(self, p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -663,12 +664,13 @@ class StreamTask (Task):
 
         self._plot_num_inst = 0
 
-        super().init_plot( p_figure=p_figure, 
-                           p_plot_settings=p_plot_settings, 
-                           p_plot_depth=p_plot_depth, 
-                           p_detail_level=p_detail_level, 
-                           p_step_rate=p_step_rate, 
-                           **p_kwargs)
+        Task.init_plot( self,
+                        p_figure=p_figure, 
+                        p_plot_settings=p_plot_settings, 
+                        p_plot_depth=p_plot_depth, 
+                        p_detail_level=p_detail_level, 
+                        p_step_rate=p_step_rate, 
+                        **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -678,7 +680,7 @@ class StreamTask (Task):
         details.
         """
 
-        super()._init_plot_2d( p_figure=p_figure, p_settings=p_settings )
+        Task._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
  
 
 ## -------------------------------------------------------------------------------------------------
@@ -688,7 +690,7 @@ class StreamTask (Task):
         details.
         """
 
-        super()._init_plot_3d( p_figure=p_figure, p_settings=p_settings )
+        Task._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -698,17 +700,19 @@ class StreamTask (Task):
         details.
         """
 
-        super()._init_plot_nd( p_figure=p_figure, p_settings=p_settings )
+        Task._init_plot_nd( self, p_figure=p_figure, p_settings=p_settings )
 
         self._plot_nd_xlabel = self.C_PLOT_ND_XLABEL_INST
         p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
         p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
         p_settings.axes.grid(visible=True)
-        p_settings.axes.set_autoscalex_on(True)
-        p_settings.axes.set_autoscaley_on(True)
+        p_settings.axes.set_xlim(0,1)
+        p_settings.axes.set_ylim(-1,1)
 
         self._plot_nd_xdata  = []
         self._plot_nd_plots  = None
+        self._plot_nd_ymin   = None
+        self._plot_nd_ymax   = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -732,11 +736,9 @@ class StreamTask (Task):
             inst_new = p_inst_new
             inst_del = p_inst_del
 
-        super().update_plot(p_inst_new=inst_new, p_inst_del=inst_del, **p_kwargs)
+        Task.update_plot(self, p_inst_new=inst_new, p_inst_del=inst_del, **p_kwargs)
 
         self._plot_num_inst += len(inst_new)
-
-        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -831,13 +833,27 @@ class StreamTask (Task):
             feature_data = inst.get_feature_data().get_values()
 
             for i, fplot_id in enumerate(self._plot_nd_plots.keys()):
-                self._plot_nd_plots[fplot_id][1].append(feature_data[i])
+                feature_value = feature_data[i]
+
+                if ( self._plot_nd_ymin is None ) or ( self._plot_nd_ymin > feature_value ):
+                    self._plot_nd_ymin = feature_value
+
+                if ( self._plot_nd_ymax is None ) or ( self._plot_nd_ymax < feature_value ):
+                    self._plot_nd_ymax = feature_value
+
+                self._plot_nd_plots[fplot_id][1].append(feature_value)
 
 
         # 5 Set new plot data of all feature plots
         for fplot in self._plot_nd_plots.values():
             fplot[2].set_xdata(fplot[0])
             fplot[2].set_ydata(fplot[1])
+
+
+        # 6 Update ax limits
+        p_settings.axes.set_xlim(0, max(1, inst_id-1))
+        p_settings.axes.set_ylim(self._plot_nd_ymin, self._plot_nd_ymax)
+                    
 
 
 
@@ -1039,11 +1055,12 @@ class StreamScenario (ScenarioBase):
         self._iterator : Stream         = None
         self._workflow : StreamWorkflow = None
 
-        super().__init__( p_mode, 
-                          p_cycle_limit=p_cycle_limit, 
-                          p_auto_setup=True, 
-                          p_visualize=p_visualize, 
-                          p_logging=p_logging )
+        ScenarioBase.__init__( self,
+                               p_mode, 
+                               p_cycle_limit=p_cycle_limit, 
+                               p_auto_setup=True, 
+                               p_visualize=p_visualize, 
+                               p_logging=p_logging )
 
 
 ## -------------------------------------------------------------------------------------------------

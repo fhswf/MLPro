@@ -19,10 +19,11 @@
 ## -- 2022-11-17  1.3.0     DA       - Class Task: extensions on plotting
 ## --                                - Bugfix in method Workflow.init_plot()
 ## -- 2022-11-18  1.3.1     DA       Method Workflow._init_figure: support of different backend types
+## -- 2022-11-21  1.3.2     DA       Class Async, Task, Workflow: corrections on plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2022-11-17)
+Ver. 1.3.2 (2022-11-21)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -117,7 +118,7 @@ class Shared (Range):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_range:int=Range.C_RANGE_PROCESS):
 
-        super().__init__(p_range=p_range)
+        Range.__init__(self, p_range=p_range)
 
         if p_range in [ self.C_RANGE_NONE, self.C_RANGE_THREAD ]:
             self._lock_obj  = mt.Lock()
@@ -693,12 +694,13 @@ class Task (Async, EventManager, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
         self.log(Log.C_LOG_TYPE_I, 'Init plot')
-        return super().init_plot( p_figure=p_figure, 
-                                  p_plot_settings=p_plot_settings, 
-                                  p_plot_depth=p_plot_depth, 
-                                  p_detail_level=p_detail_level, 
-                                  p_step_rate=p_step_rate, 
-                                  **p_kwargs)
+        return Plottable.init_plot( self,
+                                    p_figure=p_figure, 
+                                    p_plot_settings=p_plot_settings, 
+                                    p_plot_depth=p_plot_depth, 
+                                    p_detail_level=p_detail_level, 
+                                    p_step_rate=p_step_rate, 
+                                    **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -708,7 +710,7 @@ class Task (Async, EventManager, Plottable):
         details.
         """
 
-        super()._init_plot_2d( p_figure=p_figure, p_settings=p_settings )
+        Plottable._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
         p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
 
 
@@ -719,7 +721,7 @@ class Task (Async, EventManager, Plottable):
         details.
         """
 
-        super()._init_plot_3d( p_figure=p_figure, p_settings=p_settings )
+        Plottable._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
         p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
 
 
@@ -730,14 +732,14 @@ class Task (Async, EventManager, Plottable):
         details.
         """
 
-        super()._init_plot_nd( p_figure=p_figure, p_settings=p_settings )
+        Plottable._init_plot_nd( self, p_figure=p_figure, p_settings=p_settings )
         p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
 
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
         self.log(Log.C_LOG_TYPE_I, 'Update plot')
-        return super().update_plot(**p_kwargs)
+        Plottable.update_plot(self, **p_kwargs)
 
 
 
@@ -788,13 +790,14 @@ class Workflow (Task):
         self._finished      = mt.Event()
         self._finished.clear()
 
-        super().__init__( p_name=p_name,
-                          p_range_max=p_range_max,
-                          p_autorun=self.C_AUTORUN_NONE,
-                          p_class_shared=p_class_shared,
-                          p_visualize=p_visualize,
-                          p_logging=p_logging,
-                          p_kwargs=p_kwargs )
+        Task.__init__( self, 
+                       p_name=p_name,
+                       p_range_max=p_range_max,
+                       p_autorun=self.C_AUTORUN_NONE,
+                       p_class_shared=p_class_shared,
+                       p_visualize=p_visualize,
+                       p_logging=p_logging,
+                       p_kwargs=p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -808,7 +811,7 @@ class Workflow (Task):
             Log level (see constants of class Log).
         """
 
-        super().switch_logging(p_logging)
+        Task.switch_logging(self, p_logging=p_logging)
         for task in self._tasks: task.switch_logging(p_logging=p_logging)
 
 
@@ -869,7 +872,7 @@ class Workflow (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_figure(self) -> Figure:
-        figure = super()._init_figure()
+        figure = Task._init_figure(self)
 
         try:
             figure.canvas.setWindowTitle('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
@@ -914,12 +917,13 @@ class Workflow (Task):
             Further optional plot parameters.    
         """
 
-        super().init_plot( p_figure=p_figure, 
-                           p_plot_settings=p_plot_settings, 
-                           p_plot_depth=p_plot_depth, 
-                           p_detail_level=p_detail_level, 
-                           p_step_rate=p_step_rate, 
-                           **p_kwargs )
+        Task.init_plot( self,
+                        p_figure=p_figure, 
+                        p_plot_settings=p_plot_settings, 
+                        p_plot_depth=p_plot_depth, 
+                        p_detail_level=p_detail_level, 
+                        p_step_rate=p_step_rate, 
+                         **p_kwargs )
 
         try:
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
@@ -957,14 +961,14 @@ class Workflow (Task):
                                                          p_pos_x=task_pos_x,
                                                          p_pos_y=task_pos_y,
                                                          p_id=task_ax_id,
-                                                         p_kwargs=p_kwargs ) )
+                                                         **p_kwargs ) )
                 
             task.init_plot( p_figure=task_figure,
                             p_plot_settings=task_plot_settings,
                             p_plot_depth=p_plot_depth,
                             p_detail_level=p_detail_level,
                             p_step_rate=p_step_rate,
-                            p_kwargs=p_kwargs )
+                            **p_kwargs )
 
         if self._plot_own_figure:
             self._figure.canvas.draw()
@@ -973,7 +977,7 @@ class Workflow (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
-        super().update_plot(**p_kwargs)
+        Task.update_plot(self,**p_kwargs)
 
         try:
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
