@@ -55,6 +55,7 @@ openml = WrStreamProviderOpenML(p_logging = logging)
 # 2 Get a list of streams available at the stream provider
 stream_list = openml.get_stream_list(p_logging = logging)
 
+exit()
 
 # 3 Get stream "credit-g" from the stream provider OpenML
 mystream = openml.get_stream( p_name='BNG(autos,nominal,1000000)', p_logging=logging)
