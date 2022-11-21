@@ -65,25 +65,37 @@ Submodules
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_streams_001_tasks_workflows_and_stream_scenarios
+.. automodule:: mlpro.bf.examples.howto_bf_streams_001_accessing_native_data_from_mlpro
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml
+.. automodule:: mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_streams_011_accessing_data_from_river
+.. automodule:: mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn
    :members:
    :undoc-members:
    :show-inheritance:
 
 
-.. automodule:: mlpro.bf.examples.howto_bf_streams_012_accessing_data_from_scikitlearn
+.. automodule:: mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: mlpro.bf.examples.howto_bf_streams_101_stream_workflow_scenario1
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+.. automodule:: mlpro.bf.examples.howto_bf_streams_102_stream_workflow_scenario2
    :members:
    :undoc-members:
    :show-inheritance:

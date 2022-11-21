@@ -8,6 +8,7 @@ Subpackages
    :maxdepth: 4
 
    mlpro.bf.streams.tasks
+   mlpro.bf.streams.workflows
 
 Submodules
 ----------
