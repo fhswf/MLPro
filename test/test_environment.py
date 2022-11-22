@@ -30,7 +30,6 @@ from mlpro.rl.pool.envs.gridworld import GridWorld
 from mlpro.rl.pool.envs.multicartpole import MultiCartPole
 from mlpro.rl.pool.envs.doublependulum import DoublePendulumS7
 from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4
-# from mlpro.rl.pool.envs.ur5jointcontrol import UR5JointControl
 
 
 ## -------------------------------------------------------------------------------------------------
