@@ -13,7 +13,12 @@
 Ver. 0.1.0 (2022-11-04)
 This module provides pool of window objects further used in the context of online adaptivity.
 """
-
+from matplotlib.axes import Axes
+from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
+from matplotlib.collections import PolyCollection
+from matplotlib.patches import Rectangle
+import matplotlib.pyplot as plt
 import numpy as np
 from mlpro.bf.streams.models import *
 from mlpro.bf.events import *
@@ -203,33 +208,53 @@ class Window(StreamTask):
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         """
+        Custom method to initialize a 2D plot for the window object
 
         Parameters
         ----------
-        p_figure
-        p_settings
+        p_figure: Matplotlib.figure.Figure
+            The figure object that hosts the plot
 
-        Returns
-        -------
+        p_settings: list of PlotSettings objects.
+            Additional settings for the plot
 
         """
+
+        if p_figure is None:
+            p_figure = plt.figure()
+
+        if not p_settings.axes:
+            self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
+        else:
+            self.axes = p_settings.axes
+
+        self.window_patch = Rectangle((0,0),0,0)
+
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
         """
+        Custom method to initialize a 3D plot for window object
 
         Parameters
         ----------
-        p_figure
-        p_settings
+        p_figure: matplotlib.figure.Figure
+            The figure object to host the plot.
 
-        Returns
-        -------
-
+        p_settings: PlotSettings
+            Additional Settings for the plot
         """
-        pass
+        if p_figure is None:
+            p_figure = plt.figure()
+
+        if not p_settings.axes:
+            self.axes = Axes3D(p_figure, (0.05,0.05,0.9,0.9))
+        else:
+            self.axes = p_settings.axes
+
+        # ...
 
 
 ## -------------------------------------------------------------------------------------------------

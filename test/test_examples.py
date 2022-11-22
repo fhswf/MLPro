@@ -20,11 +20,13 @@
 ## -- 2022-10-13  1.2.1     DA       Removed howto bf mt 001 due of it's multiprocessing parts
 ## -- 2022-10-14  1.3.0     SY       Incorporation of refactored bf howto files (RL/GT)
 ## -- 2022-10-19  1.3.1     DA       Renamed howtos rl_att_001, rl_att_002
-## -- 2022-11-07  1.3.2     DA       Reactivated howtp bf_streams_011
+## -- 2022-11-07  1.3.2     DA       Reactivated howto bf_streams_011
+## -- 2022-11-10  1.3.3     DA       Renamed howtos bf_streams*
+## -- 2022-11-22  1.3.4     DA       Removed howto_bf_streams_051 due to delay caused by OpenML
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-11-07)
+Ver. 1.3.4 (2022-11-22)
 
 Unit test for all examples available.
 """
@@ -47,9 +49,9 @@ howto_list = {
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
-    "bf_streams_010": "mlpro.bf.examples.howto_bf_streams_010_accessing_data_from_openml",
-    "bf_streams_011": "mlpro.bf.examples.howto_bf_streams_011_accessing_data_from_river",
-    "bf_streams_012": "mlpro.bf.examples.howto_bf_streams_012_accessing_data_from_scikitlearn",
+    # "bf_streams_051": "mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml",
+    "bf_streams_052": "mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn",
+    "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
