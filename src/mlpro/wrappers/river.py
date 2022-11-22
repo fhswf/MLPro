@@ -16,10 +16,11 @@
 ## --                                - Class WrStreamRiver: removed parent class Wrapper
 ## -- 2022-11-07  1.3.0     DA       Class WrStreamOpenML: refactoring to make it iterable
 ## -- 2022-11-08  1.3.1     DA       Corrections
+## -- 2022-11-19  1.4.0     DA       Method WrStreamRiver._get_string(): new parameter p_name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2022-11-08)
+Ver. 1.4.0 (2022-11-19)
 
 This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
@@ -126,14 +127,16 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream(self, p_id, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
+    def _get_stream(self, p_id: str = None, p_name: str = None, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
         """
         Custom class to fetch an River stream object.
 
         Parameters
         ----------
         p_id : str
-            Id of the requested stream.
+            Optional Id of the requested stream. Default = None.
+        p_name : str
+            Optional name of the requested stream. Default = None.
         p_mode
             Operation mode. Default: Mode.C_MODE_SIM.
         p_logging
@@ -147,15 +150,22 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
             Stream object or None in case of an error.
         """
 
-        try:
-            stream = self._stream_list[self._stream_ids.index(p_id)]
-            stream.set_mode(p_mode=p_mode)
-            stream.switch_logging(p_logging=p_logging)
-            stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
-            return stream
+        if p_id is not None:
+            try:
+                stream = self._stream_list[int(p_id)]
+            except ValueError:
+                raise ValueError('Stream with id', p_id, 'not found')
 
-        except ValueError:
-            raise ValueError('Stream id not in the available list')
+        elif p_name is not None:
+            try:
+                stream = self._stream_list[self._stream_ids.index(p_name)]
+            except ValueError:
+                raise ValueError('Stream with name "' + p_name + '" not found')
+
+        stream.set_mode(p_mode=p_mode)
+        stream.switch_logging(p_logging=p_logging)
+        stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
+        return stream
 
 
 

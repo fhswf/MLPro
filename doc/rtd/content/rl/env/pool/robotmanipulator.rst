@@ -97,14 +97,4 @@ Change Log
     
 Cross Reference
 ===============
-Other documents related to the environment should be referenced here. For example, 
-the respecitve API Reference.
-    
-+ :ref:`API Reference <...>`
-
-If you apply this environment in your research or work, please kindly cite the following related paper:
-
-.. code-block:: bibtex
-
- @article{NoName2021
-  }
+...
