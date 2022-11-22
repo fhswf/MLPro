@@ -9,6 +9,8 @@
 ## -------------------------------------------------------------------------------------------------
 
 
+import numpy as np
+
 from mlpro.rl.models import *
 from mlpro.wrappers.mujoco import WrEnvMujoco
 
@@ -20,7 +22,12 @@ from mlpro.wrappers.mujoco import WrEnvMujoco
 class DoublePendulum(WrEnvMujoco):
     def __init__(self, p_frame_skip=1, p_logging=False):
         p_model_path = None
-        super().__init__(p_model_path, p_frame_skip, p_logging)
+        p_model_file = "doublependulum.xml"
+        super().__init__(p_model_file, p_frame_skip=p_frame_skip, p_model_path=p_model_path, p_logging=p_logging)
+
+        self._state = State(self._state_space)
+
+        self.reset()
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -35,16 +42,21 @@ class DoublePendulum(WrEnvMujoco):
 
         state_space.add_dim(
             Dimension(p_name_long='theta 1', p_name_short='th1', p_description='Angle of Pendulum 1', p_name_latex='',
-                    p_unit='radian', p_unit_latex='\textdegrees', p_boundaries=[-180, 180]))
+                    p_unit='radian', p_unit_latex='\textdegrees'))
         state_space.add_dim(
             Dimension(p_name_long='theta 2', p_name_short='th2', p_description='Angle of pendulum 2', p_name_latex='',
-                    p_unit='radian', p_unit_latex='\textdegrees', p_boundaries=[-180, 180]))
+                    p_unit='radian', p_unit_latex='\textdegrees'))
         state_space.add_dim(
             Dimension(p_name_long='omega 1', p_name_short='w1', p_description='Angular Velocity of Pendulum 1',
-                    p_name_latex='', p_unit='radian/second', p_unit_latex='\textdegrees/s',p_boundaries=[-800, 800]))
+                    p_name_latex='', p_unit='radian/second', p_unit_latex='\textdegrees/s'))
         state_space.add_dim(
             Dimension(p_name_long='omega 2', p_name_short='w2', p_description='Angular Velocity of Pendulum 2',
-                    p_name_latex='', p_unit='radian/second', p_unit_latex='\textdegrees/s', p_boundaries=[-950, 950]))
+                    p_name_latex='', p_unit='radian/second', p_unit_latex='\textdegrees/s'))
+
+        action_space.add_dim(
+            Dimension(p_name_long='torque', p_name_short='tau', p_description='Torque Joint 1',
+                    p_name_latex='', p_unit='radian/second', p_unit_latex='\textdegrees/s', p_boundaries=[-1, 1])
+                    )
         
 
         return state_space, action_space
@@ -68,6 +80,23 @@ class DoublePendulum(WrEnvMujoco):
         ob = self.reset_model()
         self.render()
 
+        self._state.set_values(ob)
+
+## ------------------------------------------------------------------------------------------------------
+    def reset_model(self):
+        qpos = self.init_qpos + np.random.uniform(
+            size=self.model.nq, low=-0.01, high=0.01
+        )
+        qvel = self.init_qvel + np.random.uniform(
+            size=self.model.nv, low=-0.01, high=0.01
+        )
+        self.set_state(qpos, qvel)
+        return self._get_obs()
+
+## ------------------------------------------------------------------------------------------------------
+    def _get_obs(self):
+        return np.concatenate([self.data.qpos, self.data.qvel]).ravel()
+
 
 ## ------------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state:State, p_action:Action):
@@ -88,18 +117,21 @@ class DoublePendulum(WrEnvMujoco):
 
         """
         action = p_action.get_sorted_values()
-        self._step_simulation(action, self.frame_skip)
+        self._step_simulation(action)
         joint_angle = self.data.qpos.flat[:]
         joint_velocity = self.data.qvel.flat[:]
 
         current_state = State(self._state_space)
+        current_state.set_values([*joint_angle, *joint_velocity])
 
         return current_state
 
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
-        pass
+        current_reward = Reward()
+        current_reward.set_overall_reward(1)
+        return current_reward
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -128,9 +160,6 @@ class DoublePendulum(WrEnvMujoco):
             True if the distance between current state and goal state is less than the goal threshold else false
         """
 
-        goal_state = self._target_state
-        d = self.get_state_space().distance(p_state, goal_state)
-        if d < self.C_THRSH_GOAL: return True
         return False
 
 

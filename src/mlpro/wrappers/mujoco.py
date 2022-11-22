@@ -13,11 +13,13 @@
 
 import time
 import glfw
+import os
 import imageio
 import mujoco
 import numpy as np
 from threading import Lock
 
+import mlpro
 from mlpro.rl.models import *
 from mlpro.wrappers.models import Wrapper
 
@@ -160,7 +162,7 @@ class RenderViewer(CallbacksViewer):
         self.viewport = mujoco.MjrRect(0, 0, framebuffer_width, framebuffer_height)
 
         # overlay, markers
-        self._overlay = {}
+        self._overlays = {}
 
         mujoco.mj_forward(self.model, self.data)
 
@@ -190,8 +192,8 @@ class RenderViewer(CallbacksViewer):
 
 ## -------------------------------------------------------------------------------------------------
     def render(self):
-        def update(self):
-            self._create_overlay()
+        def update():
+            self._create_overlays()
 
             render_start = time.time()
 
@@ -272,11 +274,15 @@ class WrEnvMujoco(Wrapper, Environment):
     C_WRAPPED_PACKAGE   = 'mujoco'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_model_path, p_frame_skip, p_logging=False):
+    def __init__(self, p_model_file, p_frame_skip, p_model_path=None, p_logging=False):
 
         self.viewer = None
-        self.model_path = p_model_path
         self.frame_skip = p_frame_skip
+
+        if p_model_path is None:
+            self.model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", p_model_file)
+        else:
+            self.model_path = os.path.join(p_model_path, p_model_file)
 
         self._initialize_simulation()
 
@@ -310,9 +316,9 @@ class WrEnvMujoco(Wrapper, Environment):
 
 ## -------------------------------------------------------------------------------------------------    
     def _initialize_simulation(self):
-        self.model = mujoco.MjModel.from_xml_path(self.fullpath)
-        self.model.vis.global_.offwidth = self.width
-        self.model.vis.global_.offheight = self.height
+        self.model = mujoco.MjModel.from_xml_path(self.model_path)
+        self.model.vis.global_.offwidth = 480
+        self.model.vis.global_.offheight = 480
         self.data = mujoco.MjData(self.model)
 
 ## -------------------------------------------------------------------------------------------------    
@@ -336,11 +342,12 @@ class WrEnvMujoco(Wrapper, Environment):
         self.data.ctrl[:] = action
         mujoco.mj_step(self.model, self.data, nstep=self.frame_skip)
         mujoco.mj_rnePostConstraint(self.model, self.data)
+        self.render()
 
 
 ## -------------------------------------------------------------------------------------------------
     def render(self):
-        pass
+        self._get_viewer().render()
 
 
 ## -------------------------------------------------------------------------------------------------
