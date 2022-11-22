@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.pool.policies
 ## -- Module  : randomgenerator
 ## -------------------------------------------------------------------------------------------------
@@ -8,10 +8,13 @@
 ## -- 2022-05-19  0.0.0     SY       Creation
 ## -- 2022-05-19  1.0.0     SY       Release of first version
 ## -- 2022-05-20  1.0.1     SY       Remove constructor and raise error for undefined boundaries
+## -- 2022-09-19  1.0.2     SY       Minor improvements: False operation for integers
+## -- 2022-10-08  1.0.3     SY       Bug fixing
+## -- 2022-11-02  1.0.4     DA       Refactoring: method _adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-05-20)
+Ver. 1.0.4 (2022-11-02)
 
 This module providew random genarator for multi purposes, e.g. testing environment, etc..
 """
@@ -23,23 +26,12 @@ import random
         
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RandomGenerator(Policy):
+class RandomGenerator (Policy):
     """
-    A random policy that generates random actions for each dimension
-    of the underlying action space.
+    A random policy that generates random actions for each dimension of the underlying action space.
 
-    Parameters
-    ----------
-    p_observation_space : MSpace     
-        Subspace of an environment that is observed by the policy.
-    p_action_space : MSpace
-        Action space object.
-    p_buffer_size : int           
-        Size of internal buffer. Default = 1.
-    p_ada : bool               
-        Boolean switch for adaptivity. Default = True.
-    p_logging
-        Log level (see constants of class Log). Default = Log.C_LOG_ALL.
+    See class mlpro.rl.Policy for furter details.
+
     """
 
     C_NAME      = 'RandomGenerator'
@@ -64,7 +56,7 @@ class RandomGenerator(Policy):
                 else:
                     lower_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[0]
                     upper_boundaries = self._action_space.get_dim(ids[d]).get_boundaries()[1]
-                if base_set == 'Z' and base_set == 'N':
+                if base_set == 'Z' or base_set == 'N':
                     my_action_values[d] = random.randint(lower_boundaries, upper_boundaries)
                 elif base_set == 'R' or base_set == 'DO':
                     my_action_values[d] = random.uniform(lower_boundaries, upper_boundaries)
@@ -74,7 +66,8 @@ class RandomGenerator(Policy):
         # 3 Return an action object with the generated random values
         return Action(self._id, self._action_space, my_action_values)
 
+
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, **p_kwargs) -> bool:
         self.log(self.C_LOG_TYPE_W, 'Sorry, I am not adapting anything!')
         return False

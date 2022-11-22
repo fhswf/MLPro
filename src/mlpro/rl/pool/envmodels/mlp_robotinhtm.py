@@ -13,12 +13,13 @@
 ## --                                TorchAFctTrans
 ## -- 2022-02-25  2.0.1     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-05-22  2.0.2     MRD      Refactoring TorchAFct
-## -- 2022-05-30  1.0.1     MRD      Cleaning up MLPEnvModel, now inherit directly from the
+## -- 2022-05-30  2.0.3     MRD      Cleaning up MLPEnvModel, now inherit directly from the
 ## --                                actual environment
+## -- 2022-09-20  2.0.4     SY       Code cleaning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.3 (2022-05-30)
+Ver. 2.0.4 (2022-09-20)
 
 This module provides Environment Model based on MLP Neural Network for
 robotinhtm environment.
@@ -35,12 +36,24 @@ from mlpro.sl.pool.afct.afct_pytorch import TorchAFct
 from torch.utils.data.sampler import SubsetRandomSampler
 from collections import deque
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 def init(module, weight_init, bias_init, gain=1):
     weight_init(module.weight.data, gain=gain)
     bias_init(module.bias.data)
     return module
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class RobotMLPModel(torch.nn.Module):
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, n_joint, timeStep):
         super(RobotMLPModel, self).__init__()
         self.n_joint = n_joint
@@ -60,7 +73,8 @@ class RobotMLPModel(torch.nn.Module):
             init_(torch.nn.Linear(self.hidden,7*(self.n_joint+1))),
             torch.nn.Tanh()
             )
-        
+
+## -------------------------------------------------------------------------------------------------
     def forward(self, I):
         BatchSize=I.shape[0]
         newI = I.reshape(BatchSize,2,self.n_joint) * torch.cat([torch.Tensor([self.timeStep]).repeat(1,self.n_joint), torch.ones(1,self.n_joint)])
@@ -69,32 +83,54 @@ class RobotMLPModel(torch.nn.Module):
         out2 = out2.reshape(BatchSize,self.n_joint+1,7)
         return out2
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class IOElement(BufferElement):
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_input: torch.Tensor, p_output: torch.Tensor):
 
         super().__init__({"input": p_input, "output": p_output})
 
 
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 # Buffer
 class MyOwnBuffer(Buffer, torch.utils.data.Dataset):
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_size=1):
         Buffer.__init__(self, p_size=p_size)
         self._internal_counter = 0
 
+## -------------------------------------------------------------------------------------------------
     def add_element(self, p_elem: BufferElement):
         Buffer.add_element(self, p_elem)
         self._internal_counter += 1
 
+## -------------------------------------------------------------------------------------------------
     def get_internal_counter(self):
         return self._internal_counter
 
+## -------------------------------------------------------------------------------------------------
     def __getitem__(self,idx):
         return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class RobothtmAFct(TorchAFct):
     C_NAME = "Robothtm Adaptive Function"
     C_BUFFER_CLS = MyOwnBuffer
 
+## -------------------------------------------------------------------------------------------------
     def _setup_model(self):
         self.joint_num = self._output_space.get_num_dim() - 6
         self.net_model = RobotMLPModel(self.joint_num, 0.01)
@@ -142,6 +178,7 @@ class RobothtmAFct(TorchAFct):
 
         self.sim_env.update_joint_coords()
 
+## -------------------------------------------------------------------------------------------------
     def _input_preproc(self, p_input: torch.Tensor) -> torch.Tensor:
         input = torch.cat([p_input[0][6+self.joint_num:], p_input[0][6:6+self.joint_num]])
         input = input.reshape(1,self.joint_num*2)
@@ -149,6 +186,7 @@ class RobothtmAFct(TorchAFct):
         
         return input
 
+## -------------------------------------------------------------------------------------------------
     def _output_postproc(self, p_output: torch.Tensor) -> torch.Tensor:
         angles = torch.Tensor([])
         thets = torch.zeros(3)
@@ -161,7 +199,8 @@ class RobothtmAFct(TorchAFct):
         output = torch.cat([output, angles], dim=1)
 
         return output
-    
+
+## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_input: Element, p_output: Element) -> bool:
         model_input = deque(p_input.get_values()[6:])
         model_input.rotate(self.joint_num)
@@ -214,12 +253,19 @@ class RobothtmAFct(TorchAFct):
 
         return True
 
+## -------------------------------------------------------------------------------------------------
     def _add_buffer(self, p_buffer_element: IOElement):
         self._buffer.add_element(p_buffer_element)
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class MLPEnvModel(RobotHTM, EnvModel):
     C_NAME = "MLP Env Model"
 
+## -------------------------------------------------------------------------------------------------
     def __init__(
         self,
         p_num_joints=4,

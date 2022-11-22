@@ -39,23 +39,33 @@
 ## --                                setting up environment mode
 ## -- 2022-08-22  1.4.0     DA       Class Model: event management added
 ## -- 2022-09-01  1.4.1     SY       Renaming maturity to accuracy
-## -- 2022-09-11  1.5.0     DA       New classes MLTask and MLWorkflow
+## -- 2022-10-06  1.5.0     DA       New classes MLTask and MLWorkflow
+## -- 2022-10-10  1.6.0     DA       Class MLTask: new methods adapt_on_event() and _adapt_on_event()
+## -- 2022-10-29  1.7.0     DA       Refactoring after introduction of module bf.ops
+## -- 2022-10-29  1.7.1     DA       Classes MLTask, MLWorkflow removed
+## -- 2022-10-31  1.7.2     DA       Class Model: new parameter p_visualize
+## -- 2022-11-02  1.8.0     DA       - Class Model: changed parameters of method adapt() from tuple
+## --                                  to dictionary
+## --                                - Classes HyperParam, HyperParamTuple: replaced callback mechanism
+## --                                  by event handling
+## -- 2022-11-07  1.8.1     DA       Class Scenario, method setup(): parameters removed
+## -- 2022-11-09  1.8.2     DA       Class Scenario: refactoring
+## -- 2022-11-15  1.9.0     DA       New abstract template class AdaptiveFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-09-11)
-This module provides fundamental machine learning templates, functionalities and properties.
+Ver. 1.9.0 (2022-11-15)
+
+This module provides the fundamental templates and processes for machine learning in MLPro.
 """
 
 
-import sys
-from typing import Dict
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
 from mlpro.bf.plot import *
 from mlpro.bf.events import *
-from mlpro.bf.mp import Async, Task, Workflow
+from mlpro.bf.ops import Mode, ScenarioBase
 import random
 
 
@@ -68,17 +78,7 @@ class HyperParam (Dimension):
     Hyperparameter definition class. See class Dimension for further descriptions.
     """
 
-## -------------------------------------------------------------------------------------------------
-    def register_callback(self, p_cb):
-        self._cb = p_cb
-
-
-## -------------------------------------------------------------------------------------------------
-    def callback_on_change(self, p_value):
-        try:
-            self._cb(p_value)
-        except:
-            pass
+    C_EVENT_VALUE_CHANGED   = 'VALUE_CHANGED'
 
 
 
@@ -107,7 +107,11 @@ class HyperParamTuple (Element):
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
         super().set_value(p_dim_id, p_value)
-        self._set.get_dim(p_dim_id).callback_on_change(p_value)
+
+        # Event C_EVENT_VALUE_CHANGED of the related dimensionis raised for the related
+        dim_obj   = self._set.get_dim(p_dim_id)
+        event_obj = Event( p_raising_object=dim_obj, p_value=p_value)
+        dim_obj._raise_event(p_event_id=HyperParam.C_EVENT_VALUE_CHANGED, p_event_object=event_obj)
 
 
 
@@ -163,7 +167,7 @@ class HyperParamDispatcher (HyperParamTuple):
 ## -------------------------------------------------------------------------------------------------
 class Model (EventManager, LoadSave, Plottable, ScientificObject):
     """
-    Fundamental template class for adaptive ML models. Supports especially
+    Fundamental template class for adaptive ML models. Supports in particular
       - Adaptivity
       - Data buffering
       - Hyperparameter management
@@ -176,26 +180,33 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         Initial size of internal data buffer. Defaut = 0 (no buffering).
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_par : Dict
-        Futher model specific parameters (to be defined in chhild class).
-
+        Further model specific hyperparameters (to be defined in chhild class).
     """
 
     C_TYPE              = 'Model'
     C_NAME              = '????'
 
-    C_EVENT_ADAPTED     = 0
+    C_EVENT_ADAPTED     = 'ADAPTED'
 
     C_BUFFER_CLS        = Buffer       
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_NONE     
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_buffer_size=0, p_ada=True, p_logging=Log.C_LOG_ALL, **p_par):  
+    def __init__( self, 
+                  p_buffer_size:int=0, 
+                  p_ada:bool=True, 
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_par ):  
 
         EventManager.__init__(self, p_logging=p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
         self._adapted           = False
         self.switch_adaptivity(p_ada)
         self._hyperparam_space  = HyperParamSpace()
@@ -220,8 +231,7 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         Parameters
         ----------
         p_par : Dict
-            Futher model specific parameters, that are passed through constructor.
-
+            Further model specific hyperparameters, that are passed through constructor.
         """
 
         pass
@@ -285,46 +295,45 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, *p_args) -> bool:
+    def adapt(self, **p_kwargs) -> bool:
         """
         Adapts the model by calling the custom method _adapt().
 
         Parameters
         ----------
-        p_args
+        p_kwargs : dict
             All parameters that are needed for the adaption. Depends on the specific higher context.
 
         Returns
         -------
-        bool
+        adapted : bool
             True, if something has been adapted. False otherwise.
 
         """
 
         if not self._adaptivity: return False
         self.log(self.C_LOG_TYPE_I, 'Adaptation started')
-        adapted = self._adapt(*p_args)
+        adapted = self._adapt(**p_kwargs)
         self._set_adapted(adapted)
         return adapted
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, **p_kwargs) -> bool:
         """
-        Custom implementation of the adaptation algorithm. Please describe the type and purpose of 
-        all parameters needed by your implementation. This method will be called by public method 
-        adapt() if adaptivity is switched on. 
+        Custom implementation of the adaptation algorithm. Please specify the parameters needed by
+        your implementation. This method will be called by public method adapt() if adaptivity is 
+        switched on. 
 
         Parameters
         ----------
-        p_args[0]           
-            ...
-        p_args[1]           
-            ...
+        p_kwargs : dict
+            All parameters that are needed for the adaption. Please replace by concrete parameter
+            definitions that meet the needs of your algorithm.
 
         Returns
         -------
-        bool
+        adapted : bool
             True, if something has been adapted. False otherwise.
 
         """
@@ -360,68 +369,11 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Mode (Log):
-    """
-    Property class that adds a mode and related methods to a child class.
-
-    Parameters
-    ----------
-    p_mode
-        Operation mode. Valid values are stored in constant C_VALID_MODES.
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-
-    """
-
-    C_MODE_INITIAL  = -1
-    C_MODE_SIM      = 0
-    C_MODE_REAL     = 1
-
-    C_VALID_MODES   = [ C_MODE_SIM, C_MODE_REAL ]
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging)
-        self._mode = self.C_MODE_INITIAL
-        self.set_mode(p_mode)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_mode(self):
-        """
-        Returns current mode.
-        """
-
-        return self._mode
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_mode(self, p_mode):
-        """
-        Sets new mode.
-
-        Parameters
-        ----------
-        p_mode
-            Operation mode. Valid values are stored in constant C_VALID_MODES.
-
-        """
-
-        if not p_mode in self.C_VALID_MODES: raise ParamError('Invalid mode')
-        if self._mode == p_mode: return
-        self._mode = p_mode
-        self.log(self.C_LOG_TYPE_I, 'Operation mode set to', self._mode)
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class Scenario (Mode, LoadSave, Plottable):
+class Scenario (ScenarioBase):
     """
     Template class for a common ML scenario with an adaptive model inside. To be inherited and 
-    specialized in higher ML subtopic layers.
+    specialized in higher ML subtopic layers. See class bf.ops.ScenarioBase for further details and
+    custom methods.
     
     The following key features are included:
       - Operation mode
@@ -433,54 +385,37 @@ class Scenario (Mode, LoadSave, Plottable):
     Parameters
     ----------
     p_mode
-        Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        Operation mode. See bf.ops.Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
     p_ada : bool
         Boolean switch for adaptivity. Default = True.
     p_cycle_limit : int
         Maximum number of cycles. Default = 0 (no limit).
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = True.
+        Boolean switch for visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.
-    
     """
 
-    C_TYPE      = 'Scenario'
+    C_TYPE      = 'ML-Scenario'
     C_NAME      = '????'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
                  p_mode=Mode.C_MODE_SIM,       
                  p_ada:bool=True,               
-                 p_cycle_limit=0,              
-                 p_visualize=True,              
-                 p_logging=Log.C_LOG_ALL ):    
+                 p_cycle_limit:int=0,              
+                 p_visualize:bool=True,              
+                 p_logging=Log.C_LOG_ALL ):  
 
-        # 0 Intro
-        self._cycle_max     = sys.maxsize
-        self._cycle_id      = 0
-        self._visualize     = p_visualize
-        self.set_cycle_limit(p_cycle_limit)
+        self._ada = p_ada
 
+        super().__init__( p_mode=p_mode,
+                          p_cycle_limit=p_cycle_limit,
+                          p_auto_setup=True,
+                          p_visualize=p_visualize,
+                          p_logging=p_logging )  
 
-        # 1 Setup entire scenario
-        self._model = self._setup(p_mode=p_mode, p_ada=p_ada, p_logging=p_logging)
-        if self._model is None: 
-            raise ImplementationError('Please return your ML model in method self._setup()')
-
-        super().__init__(p_mode, p_logging)
-
-
-        # 2 Init timer
-        if self.get_mode() == Mode.C_MODE_SIM:
-            t_mode = Timer.C_MODE_VIRTUAL
-        else:
-            t_mode = Timer.C_MODE_REAL
-
-        self._cycle_len = self.get_latency()
-        self._timer     = Timer(t_mode, self._cycle_len, self._cycle_limit)
-
-
+     
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
         super().switch_logging(p_logging)
@@ -488,7 +423,18 @@ class Scenario (Mode, LoadSave, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada:bool, p_logging) -> Model:
+    def setup(self):
+        self._model = self._setup( p_mode=self.get_mode(), 
+                                   p_ada=self._ada, 
+                                   p_visualize=self.get_visualization(),
+                                   p_logging=self.get_log_level() )
+
+        if self._model is None: 
+            raise ImplementationError('Please return your ML model in custom method self._setup()')
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
         """
         Custom setup of ML scenario.
 
@@ -498,12 +444,14 @@ class Scenario (Mode, LoadSave, Plottable):
             Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
         p_ada : bool
             Boolean switch for adaptivity.
+        p_visualize : bool
+            Boolean switch for visualisation. 
         p_logging
             Log level (see constants of class Log). 
 
         Returns
         -------
-        Model
+        model : Model
             Adaptive model inside the ML scenario
         """
 
@@ -511,13 +459,25 @@ class Scenario (Mode, LoadSave, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        self._model.init_plot(p_figure=p_figure)
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings: list = [], 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 0, 
+                   **p_kwargs):
+
+        self._model.init_plot( p_figure=p_figure, 
+                               p_plot_settings=p_plot_settings,
+                               p_plot_depth=p_plot_depth, 
+                               p_detail_level=p_detail_level, 
+                               p_step_rate=p_step_rate, 
+                               **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
-        self._model.update_plot()
+    def update_plot(self, **p_kwargs):
+        self._model.update_plot(**p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -527,35 +487,6 @@ class Scenario (Mode, LoadSave, Plottable):
         """
 
         return self._model
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_mode(self, p_mode):
-        super().set_mode(p_mode)
-        self._set_mode(p_mode)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_mode(self, p_mode):
-        """
-        Redefine this method to switch the scenario between simulation or real operation mode.
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_latency(self) -> timedelta:
-        """
-        Returns the latency of the scenario. To be implemented in child class.
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_cycle_limit(self, p_limit):
-        self._cycle_limit = p_limit
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -571,161 +502,13 @@ class Scenario (Mode, LoadSave, Plottable):
 
         """
 
-        # 0 Intro
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Scenario reset with seed', str(p_seed))
+        # 1 Standard reset procedure including custom reset
+        super().reset(p_seed=p_seed)
 
-        # 1 Internal ML model reset
+
+        # 2 Reset of internal ML model
         self._model.set_random_seed(p_seed)
         if self._visualize: self._model.init_plot()
-
-        # 2 Custom reset of further scenario-specific components
-        self._reset(p_seed)
-
-        # 3 Timer reset
-        self._timer.reset()
-
-        # 4 Cycle counter reset
-        self._cycle_id = 0
-
-
-## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed):
-        """
-        Custom method to reset further components of the scenario (not the ML model itself) and to 
-        set the given random seed value. See method reset() for further details.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def run_cycle(self):
-        """
-        Runs a single process cycle.
-
-        Returns
-        -------
-        success : bool
-            True on success. False otherwise.
-        error : bool
-            True on error. False otherwise.
-        timeout : bool
-            True on timeout. False otherwise.
-        cycle_limit : bool
-            True, if cycle limit has reached. False otherwise.
-        adapted : bool
-            True, if ml model adapted something in this cycle. False otherwise.
-
-        """
-
-        # 1 Run a single custom cycle
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': Start of cycle', str(self._cycle_id))
-        success, error, adapted = self._run_cycle()
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), ': End of cycle', str(self._cycle_id), '\n')
-
-
-        # 2 Update visualization
-        if self._visualize:
-            self.update_plot()
-
-
-        # 3 Update cycle id and check for optional limit
-        if ( self._cycle_limit > 0 ) and ( self._cycle_id >= ( self._cycle_limit -1 ) ): 
-            limit = True
-        else:
-            self._cycle_id = ( self._cycle_id + 1 ) & self._cycle_max
-            limit = False
-
-
-        # 4 Wait for next cycle (real mode only)
-        if ( self._timer.finish_lap() == False ) and ( self._cycle_len is not None ):
-            self.log(self.C_LOG_TYPE_W, 'Process time', self._timer.get_time(), ': Process timed out !!!')
-            timeout = True
-        else:
-            timeout = False
-
-
-        # 5 Return result of custom cycle execution
-        return success, error, timeout, limit, adapted
-
-
-## -------------------------------------------------------------------------------------------------
-    def _run_cycle(self):
-        """
-        Custom implementation of a single process cycle. To be redefined.
-
-        Returns
-        -------
-        success : bool
-            True on success. False otherwise.
-        error : bool
-            True on error. False otherwise.
-        adapted : bool
-            True, if ml model adapted something in this cycle. False otherwise.
-
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_cycle_id(self):
-        """
-        Returns current cycle id.
-        """
-
-        return self._cycle_id
-
-
-## -------------------------------------------------------------------------------------------------
-    def run(self, 
-            p_term_on_success:bool=True,        
-            p_term_on_error:bool=True,          
-            p_term_on_timeout:bool=False ):    
-        """
-        Runs the scenario as a sequence of single process steps until a terminating event occures.
-
-        Parameters
-        ----------
-        p_term_on_success : bool
-            If True, the run terminates on success. Default = True.
-        p_term_on_error : bool
-            If True, the run terminates on error. Default = True.
-        p_term_on_timeout : bool
-            If True, the run terminates on timeout. Default = False.
-
-        Returns
-        -------
-        success : bool
-            True on success. False otherwise.
-        error : bool
-            True on error. False otherwise.
-        timeout : bool
-            True on timeout. False otherwise.
-        cycle_limit : bool
-            True, if cycle limit has reached. False otherwise.
-        adapted : bool
-            True, if ml model adapted something. False otherwise.
-        num_cycles: int
-            Number of cycles.
-
-        """
-
-        self._cycle_id  = 0
-        adapted         = False
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'Start of processing')
-
-        while True:
-            success, error, timeout, limit, adapted_cycle = self.run_cycle()
-            adapted = adapted or adapted_cycle
-            if p_term_on_success and success: break
-            if p_term_on_error and error: break
-            if p_term_on_timeout and timeout: break
-            if limit: break
-
-        self.log(self.C_LOG_TYPE_I, 'Process time', self._timer.get_time(), 'End of processing')
-
-        return success, error, timeout, limit, adapted, self._cycle_id
 
 
 
@@ -993,7 +776,7 @@ class Training (Log):
     p_path : str
         Optional destination path to store training data. Default = None.
     p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = False
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_WE.
 
@@ -1272,76 +1055,53 @@ class Training (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MLTask (Task, Model): 
+class AdaptiveFunction (Function, Model):
     """
-    ...
+    Template class for an adaptive bi-multivariate mathematical function. The kind of adaptation
+    (learning paradigm) is to be specified in child classes.
 
     Parameters
     ----------
-
+    p_input_space : MSpace
+        Input space of function
+    p_output_space : MSpace
+        Output space of function
+    p_output_elem_cls 
+        Output element class (compatible to/inherited from class Element)
+    p_buffer_size : int
+        Initial size of internal data buffer. Default = 0 (no buffering).
+    p_ada : bool
+        Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : Dict
+        Further model specific parameters (to be specified in child class).
     """
 
-    C_TYPE          = 'ML-Task'
-    
+    C_TYPE = 'Adaptive Function'
+    C_NAME = '????'
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_range=Async.C_RANGE_PROCESS, 
-                  p_autorun=Task.C_AUTORUN_NONE, 
-                  p_cls_shared=None, 
+    def __init__( self,
+                  p_input_space: MSpace,
+                  p_output_space:MSpace,
+                  p_output_elem_cls=Element,
                   p_buffer_size=0,
-                  p_ada=True,
-                  p_logging=Log.C_LOG_ALL, 
+                  p_ada:bool=True,
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        Task.__init__( self,
-                       p_range=p_range,
-                       p_autorun=p_autorun,
-                       p_cls_shared=p_cls_shared,
-                       p_logging=p_logging )
+        Function.__init__( self, 
+                           p_input_space=p_input_space, 
+                           p_output_space=p_output_space,
+                           p_output_elem_cls=p_output_elem_cls )
 
         Model.__init__( self, 
                         p_buffer_size=p_buffer_size, 
                         p_ada=p_ada, 
-                        p_logging=p_logging )  
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MLWorkflow (Workflow, Model):
-    """
-    ...
-
-    Parameters
-    ----------
-    
-    """
-
-    C_TYPE          = 'ML-Workflow'
-    
-## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_range=Async.C_RANGE_PROCESS, 
-                  p_autorun=Task.C_AUTORUN_NONE, 
-                  p_cls_shared=None, 
-                  p_ada=True,
-                  p_logging=Log.C_LOG_ALL, 
-                  **p_kwargs ):
-       
-        Workflow.__init__( self, 
-                           p_range=p_range, 
-                           p_autorun=p_autorun, 
-                           p_cls_shared=p_cls_shared, 
-                           p_logging=Log.C_LOG_ALL, 
-                           **p_kwargs )
-
-        Model.__init__( self, 
-                        p_ada=p_ada, 
-                        p_logging=p_logging )  
-
-
-## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
-        raise NotImplementedError
+                        p_visualize=p_visualize,
+                        p_logging=p_logging, 
+                        **p_kwargs )

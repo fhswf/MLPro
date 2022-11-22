@@ -11,10 +11,16 @@
 ## -- 2022-06-23  1.0.2     LSB      Meta data and instances in Numpy format
 ## -- 2022-06-25  1.0.3     LSB      Refactoring for label and instance class
 ## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
+## -- 2022-11-03  1.1.1     LSB      Bug fix for river update
+## -- 2022-11-03  1.2.0     DA       - Refactoring
+## --                                - Class WrStreamRiver: removed parent class Wrapper
+## -- 2022-11-07  1.3.0     DA       Class WrStreamOpenML: refactoring to make it iterable
+## -- 2022-11-08  1.3.1     DA       Corrections
+## -- 2022-11-19  1.4.0     DA       Method WrStreamRiver._get_string(): new parameter p_name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-08-15)
+Ver. 1.4.0 (2022-11-19)
 
 This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
@@ -27,7 +33,7 @@ from mlpro.bf.various import ScientificObject
 from mlpro.wrappers.models import Wrapper
 from mlpro.bf.streams import *
 from mlpro.bf.math import *
-import river
+from river import datasets
 import numpy
 
 
@@ -38,21 +44,25 @@ import numpy
 ## -------------------------------------------------------------------------------------------------
 class WrStreamProviderRiver (Wrapper, StreamProvider):
     """
-    Wrapper class for River as StreamProvider
+    Wrapper class for River as StreamProvider.
+
+    Parameters
+    ----------
+    p_logging
+        Log level of stream objects (see constants of class Log). Default: Log.C_LOG_ALL.
     """
 
-    C_NAME              = 'Stream Provider River'
+    C_NAME              = 'River'
     C_WRAPPED_PACKAGE   = 'river'
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
     C_SCIREF_AUTHOR     = 'River'
     C_SCIREF_URL        = 'riverml.xyz'
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging = Log.C_LOG_ALL):
 
-        _datasets = [
+        self._stream_ids = [
                 "AirlinePassengers",
                 "Bananas",
                 "Bikes",
@@ -78,52 +88,84 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
             ]
 
         self._stream_list = []
-        self._stream_ids = _datasets
 
-        StreamProvider.__init__(self, p_logging = p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
-
-        for i in range(len(_datasets)):
-            _num_instances = eval("river.datasets."+_datasets[i]+"().n_samples")
-            self._stream_list.append(WrStreamRiver(self._stream_ids[i],_datasets[i],_num_instances, p_logging=p_logging))
+        StreamProvider.__init__(self, p_logging = p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream_list(self, **p_kwargs) -> list:
+    def _get_stream_list(self, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> list:
         """
-        Custom class to get alist of stream objects from River
+        Custom class to get alist of stream objects from River.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level of stream objects (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
-        list_streams:List
-            Returns a list of Streams in River
-
+        stream_list : list
+            List of provided streams.
         """
+
+        if len(self._stream_list) == 0:
+            for i, stream_id in enumerate(self._stream_ids):
+                self._stream_list.append( WrStreamRiver( p_id=stream_id,
+                                                         p_name=stream_id,
+                                                         p_num_instances=eval("datasets."+ stream_id + "().n_samples"),
+                                                         p_version='',
+                                                         p_mode=p_mode,
+                                                         p_logging=Log.C_LOG_WE,
+                                                         **p_kwargs) )
+
         return self._stream_list
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream(self, p_id) -> Stream:
+    def _get_stream(self, p_id: str = None, p_name: str = None, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
         """
-        Custom class to fetch an River stream object
+        Custom class to fetch an River stream object.
 
         Parameters
         ----------
-        p_id
-            id of the stream to be fetched
+        p_id : str
+            Optional Id of the requested stream. Default = None.
+        p_name : str
+            Optional name of the requested stream. Default = None.
+        p_mode
+            Operation mode. Default: Mode.C_MODE_SIM.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+        p_kwargs : dict
+            Further stream specific parameters.
 
         Returns
         -------
-        stream: Stream
-            Returns the stream corresponding to the id
+        s : Stream
+            Stream object or None in case of an error.
         """
 
-        try:
-            stream = self._stream_list[self._stream_ids.index(p_id)]
-            return stream
+        if p_id is not None:
+            try:
+                stream = self._stream_list[int(p_id)]
+            except ValueError:
+                raise ValueError('Stream with id', p_id, 'not found')
 
-        except ValueError:
-            raise ValueError('Stream id not in the available list')
+        elif p_name is not None:
+            try:
+                stream = self._stream_list[self._stream_ids.index(p_name)]
+            except ValueError:
+                raise ValueError('Stream with name "' + p_name + '" not found')
+
+        stream.set_mode(p_mode=p_mode)
+        stream.switch_logging(p_logging=p_logging)
+        stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
+        return stream
 
 
 
@@ -131,40 +173,59 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamRiver(Wrapper, Stream):
+class WrStreamRiver (Stream):
     """
-    Wrapper class for Streams from River
+    Wrapper class for Streams from River.
 
     Parameters
     ----------
     p_id
-        id of the Stream
-    p_name
-        name of the stream
-    p_num_features
-        Number of features of the Stream
+        Optional id of the stream. Default = 0.
+    p_name : str
+        Optional name of the stream. Default = ''.
+    p_num_instances : int
+        Optional number of instances in the stream. Default = 0.
+    p_version : str
+        Optional version of the stream. Default = ''.
+    p_feature_space : MSpace
+        Optional feature space. Default = None.
+    p_label_space : MSpace
+        Optional label space. Default = None.
+    p_mode
+        Operation mode. Default: Mode.C_MODE_SIM.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    p_kwargs : dict
+        Further stream specific parameters.
     """
 
     C_NAME              = 'River stream'
-    C_WRAPPED_PACKAGE   = 'river'
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
 
-
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name, p_num_instances=None, p_version=None, p_logging = Log.C_LOG_ALL, p_mode = Mode.C_MODE_SIM, **p_kwargs):
+    def __init__( self,
+                  p_id = 0,
+                  p_name : str = '',
+                  p_num_instances : int = 0,
+                  p_version : str = '',
+                  p_feature_space : MSpace = None,
+                  p_label_space : MSpace = None,
+                  p_mode = Mode.C_MODE_SIM,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
         self._name = p_name
 
         try:
-            self.C_SCIREF_URL = eval("river.datasets."+self._name+"().url")
+            self.C_SCIREF_URL = eval("datasets."+self._name+"().url")
 
         except:
             self.C_SCIREF_URL = ''
 
         try:
-            self.C_SCIREF_ABSTRACT = eval("river.datasets."+self._name+"().desc")
+            self.C_SCIREF_ABSTRACT = eval("datasets."+self._name+"().desc")
 
         except:
             self.C_SCIREF_ABSTRACT = ''
@@ -174,13 +235,14 @@ class WrStreamRiver(Wrapper, Stream):
                          p_name=self.C_NAME + ' "' + p_name + '"',
                          p_num_instances=p_num_instances,
                          p_version=p_version,
+                         p_feature_space=p_feature_space,
+                         p_label_space=p_label_space,
+                         p_mode=p_mode,
                          p_logging=p_logging,
-                         p_mode=p_mode )
+                         **p_kwargs )
 
-        Wrapper.__init__(self, p_logging=p_logging)
-
-        self._kwargs = p_kwargs.copy()
         self._label = 'Label'
+
 
 ## -------------------------------------------------------------------------------------------------
     def __repr__(self):
@@ -188,77 +250,64 @@ class WrStreamRiver(Wrapper, Stream):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None):
+    def _reset(self):
         """
         Custom reset method to download and reset an River stream
-
-        Parameters
-        ----------
-        p_seed
-            Seed for resetting the stream
         """
 
-        if not self._downloaded:
-            self._downloaded = self._download()
+        # Just to ensure the data download and set up of feature and label space
+        self.get_feature_space()
+        self.get_label_space()
 
         self._index = 0
-        self._dataset = iter(eval("river.datasets."+self._name+"()"))
-        # self._instance = Instance(self.get_feature_space())
 
 
 ## --------------------------------------------------------------------------------------------------
-    def _set_feature_space(self):
+    def _setup_feature_space(self) -> MSpace:
+        if not self._downloaded:
+            self._downloaded = self._download()
+            if not self._downloaded: return None       
 
-        self._feature_space = MSpace()
+        feature_space = MSpace()
 
         features = next(self._dataset)[0].keys()
         for feature in features:
-            self._feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
-        self._label_space = MSpace()
+            feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
+
+        return feature_space
+
+
+## --------------------------------------------------------------------------------------------------
+    def _setup_label_space(self) -> MSpace:
+        if not self._downloaded:
+            self._downloaded = self._download()
+            if not self._downloaded: return None       
+
+        label_space = MSpace()
 
         if isinstance(next(self._dataset)[1], dict):
             self._label = next(self._dataset)[1].keys()
             for label in self._label:
-                self._label_space.add_dim(Label(p_name_long=str(label), p_name_short=str(label[0:5])))
+                label_space.add_dim(Label(p_name_long=str(label), p_name_short=str(label[0:5])))
 
         else:
-            self._label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
+            label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
 
-    ## --------------------------------------------------------------------------------------------------
-    def get_feature_space(self) -> MSpace:
-        """
-        Method to get the feature space of a stream object
-
-        Returns
-        -------
-        feature_space:
-            Returns the Feature space as MSpace of MLPro
-        """
-
-        if not self._downloaded:
-            self._downloaded = self._download()
-
-        try:
-            return self._feature_space
-
-        except:
-            self._set_feature_space()
-            return self._feature_space
+        return label_space
 
 
-    ## --------------------------------------------------------------------------------------------------
+## --------------------------------------------------------------------------------------------------
     def _download(self):
         """
         Custom method to download the corresponding River dataset
 
         Returns
         -------
-        bool
+        loaded : bool
             True for the download status of the stream
         """
 
-        self._dataset = iter(eval("river.datasets."+self._name+"()"))
-        self._set_feature_space()
+        self._dataset = iter(eval("datasets."+self._name+"()"))
 
         if self._dataset is not None:
             return True
@@ -270,27 +319,30 @@ class WrStreamRiver(Wrapper, Stream):
 ## ------------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
         """
-        Custom method to get the instances one after another sequentially in the River stream
+        Custom method to get the next instance of the River stream.
 
         Returns
         -------
-        instance:
+        instance : Instance
             Next instance in the River stream object (None after the last instance in the dataset).
         """
 
-        if not self._index < self._num_instances:return None
-        _instance_dict = next(self._dataset)
+        # 1 Check: end of data stream reached?
+        if self._index >= self._num_instances: raise StopIteration
 
-        _feature_data = Element(self._feature_space)
-        _label_data = Element(self._label_space)
+        # 2 Determine feature data
+        instance_dict = next(self._dataset)
+        feature_data  = Element(self._feature_space)
+        feature_data.set_values(list(instance_dict[0].values()))
 
-        _feature_data.set_values(list(_instance_dict[0].values()))
-
-        if isinstance(_instance_dict[1], dict):
-            _label_data.set_values(numpy.asarray(list(_instance_dict[1].values())))
-        else: _label_data.set_values(numpy.asarray([_instance_dict[1]]))
-
+        # 3 Determine label data
+        label_data    = Element(self._label_space)
+        if isinstance(instance_dict[1], dict):
+            label_data.set_values(numpy.asarray(list(instance_dict[1].values())))
+        else: 
+            label_data.set_values(numpy.asarray([instance_dict[1]]))
 
         self._index += 1
-        return Instance(_feature_data, _label_data)
+
+        return Instance( p_feature_data=feature_data, p_label_data=label_data )
 

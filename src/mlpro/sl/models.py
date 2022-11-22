@@ -8,20 +8,24 @@
 ## -- 2021-12-08  0.0.0     DA       Creation 
 ## -- 2021-12-10  0.1.0     DA       Took over class AdaptiveFunction from bf.ml
 ## -- 2022-08-15  0.1.1     SY       Renaming maturity to accuracy
+## -- 2022-11-02  0.2.0     DA       Refactoring: methods adapt(), _adapt()
+## -- 2022-11-15  0.3.0     DA       Class SLAdaptiveFunction: new parent class AdaptiveFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2022-08-15)
+Ver. 0.3.0 (2022-11-15)
 
 This module provides model classes for supervised learning tasks. 
 """
 
+
 from mlpro.bf.ml import *
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AdaptiveFunction(Model, Function):
+class SLAdaptiveFunction (AdaptiveFunction):
     """
     Template class for an adaptive bi-multivariate mathematical function that adapts by supervised
     learning.
@@ -41,36 +45,45 @@ class AdaptiveFunction(Model, Function):
         Initial size of internal data buffer. Default = 0 (no buffering).
     p_ada : bool
         Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_par : Dict
+    p_kwargs : Dict
         Further model specific parameters (to be specified in child class).
-
     """
 
-    C_TYPE = 'Adaptive Function'
+    C_TYPE = 'Adaptive Function (SL)'
     C_NAME = '????'
 
-    ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_input_space: MSpace,
-                 p_output_space: MSpace,
-                 p_output_elem_cls=Element,
-                 p_threshold=0,
-                 p_buffer_size=0,
-                 p_ada=True,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_par):
+## -------------------------------------------------------------------------------------------------
+    def __init__( self,
+                  p_input_space: MSpace,
+                  p_output_space:MSpace,
+                  p_output_elem_cls=Element,
+                  p_threshold=0,
+                  p_buffer_size=0,
+                  p_ada:bool=True,
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs ):
 
-        Model.__init__(self, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging, **p_par)
-        Function.__init__(self, p_input_space=p_input_space, p_output_space=p_output_space,
-                          p_output_elem_cls=p_output_elem_cls)
-        self._threshold = p_threshold
+        super().__init__( p_input_space=p_input_space,
+                          p_output_space=p_output_space,
+                          p_output_elem_cls=p_output_elem_cls,
+                          p_buffer_size=p_buffer_size,
+                          p_ada=p_ada,
+                          p_visualize=p_visualize,
+                          p_logging=p_logging,
+                          **p_kwargs )                  
+        
+        self._threshold      = p_threshold
         self._mappings_total = 0  # Number of mappings since last adaptation
-        self._mappings_good = 0  # Number of 'good' mappings since last adaptation
+        self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
 
-    ## -------------------------------------------------------------------------------------------------
-    def adapt(self, p_input: Element, p_output: Element) -> bool:
+
+## -------------------------------------------------------------------------------------------------
+    def adapt(self, p_input:Element, p_output:Element) -> bool:
         """
         Adaption by supervised learning.
         
@@ -80,7 +93,6 @@ class AdaptiveFunction(Model, Function):
             Abscissa/input element object (type Element)
         p_output : Element
             Setpoint ordinate/output element (type Element)
-
         """
 
         if not self._adaptivity:
@@ -110,7 +122,8 @@ class AdaptiveFunction(Model, Function):
 
         return self.get_adapted()
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_input: Element, p_output: Element) -> bool:
         """
         Custom adaptation algorithm that is called by public adaptation method. Please redefine.
@@ -126,7 +139,8 @@ class AdaptiveFunction(Model, Function):
 
         raise NotImplementedError
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def get_accuracy(self):
         """
         Returns the accuracy of the adaptive function. The accuracy is defined as the relation 
@@ -139,14 +153,24 @@ class AdaptiveFunction(Model, Function):
         return self._mappings_good / self._mappings_total
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SLScenario(Scenario):
+class SLScenario (Scenario):
     """
     To be designed.
     """
 
     C_TYPE = 'SL-Scenario'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_mode=Mode.C_MODE_SIM, p_ada: bool = True, p_cycle_limit: int = 0, p_visualize: bool = True, p_logging=Log.C_LOG_ALL):
+        raise NotImplementedError
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -157,3 +181,7 @@ class SLTraining(Training):
     """
 
     C_NAME = 'SL'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, **p_kwargs):
+        raise NotImplementedError

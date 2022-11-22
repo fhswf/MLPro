@@ -41,10 +41,13 @@
 ## -- 2022-07-27  1.4.1     DA       Introduction of root class Wrapper
 ## -- 2022-07-28  1.4.2     SY       Minor improvements: API documentation and logging
 ## -- 2022-08-15  1.4.3     DA       Correction of integration of class Wrapper
+## -- 2022-10-08  1.4.4     SY       Bug fixing and minor improvements: return of the reset function
+## -- 2022-11-01  1.4.5     DA       Refactoring
+## -- 2022-11-09  1.4.6     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.3 (2022-08-15)
+Ver. 1.4.6 (2022-11-09)
 
 This module provides wrapper classes for OpenAI Gym environments.
 
@@ -55,7 +58,7 @@ See also: https://pypi.org/project/gym
 import gym
 from gym.core import Env
 from mlpro.wrappers.models import Wrapper
-from mlpro.rl.models import *
+from mlpro.rl import *
 
 
 
@@ -76,25 +79,28 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
         Optional external state space object that meets the state space of the Gym environment
     p_action_space : MSpace 
         Optional external action space object that meets the action space of the Gym environment
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
-
     C_TYPE              = 'Wrapper OpenAI Gym -> MLPro'
     C_WRAPPED_PACKAGE   = 'gym'
+    C_PLOT_ACTIVE: bool = True
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_gym_env,  
                  p_state_space: MSpace = None,  
                  p_action_space: MSpace = None,  
+                 p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL):
 
         self._gym_env = p_gym_env
         self.C_NAME = 'Env "' + self._gym_env.spec.id + '"'
 
-        Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_latency=None, p_logging=p_logging)
+        Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
 
         if p_state_space is not None:
@@ -145,7 +151,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
         if isinstance(p_gym_space, gym.spaces.Discrete):
             space.add_dim(
-                Dimension(p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[p_gym_space.n]))
+                Dimension(p_name_short='0', p_base_set=Dimension.C_BASE_SET_Z, p_boundaries=[0, int(p_gym_space.n-1)]))
         elif isinstance(p_gym_space, gym.spaces.Box):
             shape_dim = len(p_gym_space.shape)
             for i in range(shape_dim):
@@ -344,7 +350,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
         Plot initialization function, deployed by render functionality from OpenAI Gym.
 
         """
-        self._gym_env.render()
+        if self._visualize: self._gym_env.render()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -353,7 +359,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
         Updating the actual plot, deployed by render functionality from OpenAI Gym.
 
         """
-        self._gym_env.render()
+        if self._visualize: self._gym_env.render()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -459,8 +465,9 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
         space = None
         action_dim = p_mlpro_space.get_num_dim()
         id_dim = p_mlpro_space.get_dim_ids()[0]
+        base_set = p_mlpro_space.get_dim(id_dim).get_base_set()
         if len(p_mlpro_space.get_dim(id_dim).get_boundaries()) == 1:
-            space = gym.spaces.Discrete(p_mlpro_space.get_dim(id_dim).get_boundaries()[0])
+            space = gym.spaces.Discrete(p_mlpro_space.get_dim(id_dim).get_boundaries()[0]+1)
         else:
             lows = []
             highs = []
@@ -595,8 +602,8 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
         else:
             obs = np.array(self._mlpro_env.get_state().get_values())
         
+        info = {}
         if return_info:
-            info = {}
             return obs, info
         else:
             return obs

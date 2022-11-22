@@ -36,10 +36,14 @@
 ## -- 2022-05-30  1.3.7     SY       Replace function env.seed(seed) to env.reset(seed=seed)
 ## -- 2022-07-20  1.3.8     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-08-15  1.4.0     DA       Introduction of root class Wrapper
+## -- 2022-09-26  1.5.0     SY       Update following PettingZoo version 1.21.0 and Gym 0.26
+## -- 2022-10-06  2.0.0     SY       Major update following PettingZoo version 1.22.0
+## -- 2022-11-01  2.0.1     DA       Refactoring
+## -- 2022-11-09  2.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-08-15)
+Ver. 2.0.2 (2022-11-09)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -48,11 +52,10 @@ See also: https://pypi.org/project/PettingZoo/
 """
 
 
-import gym
+import gymnasium
 import numpy as np
 from mlpro.wrappers.models import Wrapper
-from mlpro.rl.models import *
-from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM
+from mlpro.rl import *
 from pettingzoo import AECEnv
 from pettingzoo.utils import agent_selector
 from pettingzoo.utils import wrappers
@@ -77,6 +80,8 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
         Optional external state space object that meets the state space of the gym environment
     p_action_space : MSpace 
         Optional external action space object that meets the action space of the gym environment
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = True.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
@@ -84,13 +89,20 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
     C_TYPE              = 'Wrapper PettingZoo -> MLPro'
     C_WRAPPED_PACKAGE   = 'pettingzoo'
     C_MINIMUM_VERSION   = '1.20.0'
+    C_PLOT_ACTIVE: bool = True
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_zoo_env, p_state_space:MSpace=None, p_action_space:MSpace=None, p_logging=Log.C_LOG_ALL):
+    def __init__( self, 
+                  p_zoo_env, 
+                  p_state_space:MSpace=None, 
+                  p_action_space:MSpace=None, 
+                  p_visualize:bool=True,
+                  p_logging=Log.C_LOG_ALL):
+
         self._zoo_env     = p_zoo_env
         self.C_NAME       = 'Env "' + self._zoo_env.metadata['name'] + '"'
 
-        Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+        Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_visualize=p_visualize, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
         
         if p_state_space is not None: 
@@ -122,17 +134,18 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
             space.add_dim(Dimension(p_name_short='0', p_base_set='DO'))
         elif dict_name == "action":
             for k in p_zoo_space:
-                if isinstance(p_zoo_space[k], gym.spaces.Discrete):
+                if isinstance(p_zoo_space[k], gymnasium.spaces.Discrete):
                     space.add_dim(Dimension(p_name_short=k, p_base_set=Dimension.C_BASE_SET_Z,
-                                            p_boundaries=[0, p_zoo_space[k].n]))
-                elif isinstance(p_zoo_space[k], gym.spaces.Box):
-                    shape_dim = len(p_zoo_space[k].shape)
-                    for i in range(shape_dim):
-                        for d in range(p_zoo_space[k].shape[i]):
-                            space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
-                                                    p_boundaries=[p_zoo_space[k].low[d], p_zoo_space[k].high[d]]))
+                                            p_boundaries=[0, int(p_zoo_space[k].n-1)]))
                 else:
-                    space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
+                    try:
+                        shape_dim = len(p_zoo_space[k].shape)
+                        for i in range(shape_dim):
+                            for d in range(p_zoo_space[k].shape[i]):
+                                space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
+                                                        p_boundaries=[p_zoo_space[k].low[d], p_zoo_space[k].high[d]]))
+                    except:
+                        space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
                 
         return space
 
@@ -152,7 +165,7 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
         except:
             self._zoo_env.seed(p_seed)
             self._zoo_env.reset()
-        observation, _, _, _ = self._zoo_env.last()
+        observation, _, _, _, _ = self._zoo_env.last()
         obs     = DataObject(observation)
         
         # 2 Create state object from Zoo observation
@@ -184,11 +197,11 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
             action_zoo = action_sorted_agent.astype(self._zoo_env.action_spaces[k].dtype)
             
         # 2 Process step of Zoo environment that automatically switches control to the next agent.
-            observation, reward_zoo, done, info = self._zoo_env.last()
+            observation, reward_zoo, termination, truncation, info = self._zoo_env.last()
 
             obs     = DataObject(observation)
             
-            if done:
+            if termination or truncation:
                 self._zoo_env.step(None)
                 new_state.set_terminal(True)
 
@@ -233,12 +246,12 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure=None):
-        self._zoo_env.render()
+        if self._visualize: self._zoo_env.render()
 
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
-        self._zoo_env.render()
+        if self._visualize: self._zoo_env.render()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -282,7 +295,8 @@ class WrEnvMLPro2PZoo(Wrapper):
         self.C_NAME = 'Env "' + p_mlpro_env.C_NAME + '"'
         Wrapper.__init__(self, p_logging=p_logging)
         self.pzoo_env   = self.raw_env(p_mlpro_env, p_num_agents, p_state_space, p_action_space)
-        self.pzoo_env   = wrappers.CaptureStdoutWrapper(self.pzoo_env)
+        if self.pzoo_env.render_mode == 'ansi':
+            self.pzoo_env   = wrappers.CaptureStdoutWrapper(self.pzoo_env)
         self.pzoo_env   = wrappers.OrderEnforcingWrapper(self.pzoo_env)
 
 
@@ -291,10 +305,11 @@ class WrEnvMLPro2PZoo(Wrapper):
         metadata = {'render_modes': ['human', 'ansi'], "name": "pzoo_custom"}
 
 ## -------------------------------------------------------------------------------------------------
-        def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None):
+        def __init__(self, p_mlpro_env, p_num_agents, p_state_space:MSpace=None, p_action_space:MSpace=None, p_render_mode='human'):
             self._mlpro_env             = p_mlpro_env
             self.possible_agents        = [str(r) for r in range(p_num_agents)]
             self.agent_name_mapping     = dict(zip(self.possible_agents, list(range(len(self.possible_agents)))))
+            self.render_mode            = p_render_mode
             
             if p_state_space is not None: 
                 self.observation_spaces = p_state_space
@@ -311,7 +326,32 @@ class WrEnvMLPro2PZoo(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
         def _recognize_space(self, p_mlpro_space):
-            space           = WrEnvMLPro2GYM.recognize_space(p_mlpro_space)
+            space = None
+            action_dim = p_mlpro_space.get_num_dim()
+            id_dim = p_mlpro_space.get_dim_ids()[0]
+            base_set = p_mlpro_space.get_dim(id_dim).get_base_set()
+            if len(p_mlpro_space.get_dim(id_dim).get_boundaries()) == 1:
+                space = gymnasium.spaces.Discrete(p_mlpro_space.get_dim(id_dim).get_boundaries()[0]+1)
+            elif base_set == Dimension.C_BASE_SET_Z or base_set == Dimension.C_BASE_SET_N:
+                low_limit = p_mlpro_space.get_dim(id_dim).get_boundaries()[0]
+                up_limit = p_mlpro_space.get_dim(id_dim).get_boundaries()[1]
+                num_discrete = int(up_limit-low_limit+1)
+                space = gymnasium.spaces.Discrete(num_discrete)
+            else:
+                lows = []
+                highs = []
+                for dimension in range(action_dim):
+                    id_dim = p_mlpro_space.get_dim_ids()[dimension]
+                    lows.append(p_mlpro_space.get_dim(id_dim).get_boundaries()[0])
+                    highs.append(p_mlpro_space.get_dim(id_dim).get_boundaries()[1])
+    
+                space = gymnasium.spaces.Box(
+                    low=np.array(lows, dtype=np.float32),
+                    high=np.array(highs, dtype=np.float32),
+                    shape=(action_dim,),
+                    dtype=np.float32
+                )
+                
             setup_space     = {agent: space for agent in self.possible_agents}
                 
             return setup_space
@@ -319,8 +359,9 @@ class WrEnvMLPro2PZoo(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
         def step(self, action):
-            if self.dones[self.agent_selection]:
-                return self._was_done_step(action)
+            if (self.terminations[self.agent_selection] or self.truncations[self.agent_selection]):
+                self._was_dead_step(action)
+                return
             
             agent = self.agent_selection
             self._cumulative_rewards[agent] = 0
@@ -331,7 +372,7 @@ class WrEnvMLPro2PZoo(Wrapper):
             if agent == self.possible_agents[-1]:
                 _action     = Action()
                 idx         = self._mlpro_env.get_action_space().get_num_dim()
-                if isinstance(self.observation_spaces, gym.spaces.Discrete):
+                if isinstance(self.observation_spaces, gymnasium.spaces.Discrete):
                     action = np.array([action])
                 for i in range(idx):
                     _act_set    = Set()
@@ -348,7 +389,8 @@ class WrEnvMLPro2PZoo(Wrapper):
                         self.rewards[self.possible_agents[i]] = 0
             
                 if self._mlpro_env.get_state().get_terminal():
-                    self.dones = {agent: True for agent in self.agents}
+                    self.truncations = {agent: True for agent in self.agents}
+                    self.terminations = {agent: True for agent in self.agents}
                     
                 for i in self.agents:
                     self.observations[i] = self.state[self.agents[1-int(i)]]
@@ -377,7 +419,8 @@ class WrEnvMLPro2PZoo(Wrapper):
             self.agents = self.possible_agents[:]
             self.rewards = {agent: 0 for agent in self.agents}
             self._cumulative_rewards = {agent: 0 for agent in self.agents}
-            self.dones = {agent: False for agent in self.agents}
+            self.terminations = {agent: False for agent in self.agents}
+            self.truncations = {agent: False for agent in self.agents}
             self.infos = {agent: {} for agent in self.agents}
             self.state = {agent: None for agent in self.agents}
             self.observations = {agent: None for agent in self.agents}

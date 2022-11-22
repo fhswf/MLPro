@@ -44,10 +44,13 @@
 ## -- 2022-08-15  1.5.7     SY       - Renaming maturity to accuracy
 ## --                                - Move MPC implementation to the pool of objects
 ## --                                - Update compute_action in Agent for action planning
+## -- 2022-09-26  1.5.8     SY       Minor Improvement on _extract_observation method (Agent class)
+## -- 2022-11-02  1.6.0     DA       Refactoring: methods adapt(), _adapt()
+## -- 2022-11-07  1.6.1     DA       Classes Policy, Agent, MultiAgent: new parameter p_visualize
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.7 (2022-08-15) 
+Ver. 1.6.1 (2022-11-07) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -57,11 +60,9 @@ from mlpro.rl.models_train import RLScenario, RLTraining
 
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Policy(Model):
+class Policy (Model):
     """
     This class represents the policy of a single-agent. It is adaptive and can be trained with
     State-Action-Reward (SAR) data that will be expected as a SAR buffer object. 
@@ -92,14 +93,15 @@ class Policy(Model):
         Size of internal buffer. Default = 1.
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
-
     """
 
-    C_TYPE = 'Policy'
-    C_NAME = '????'
-    C_BUFFER_CLS = SARSBuffer
+    C_TYPE          = 'Policy'
+    C_NAME          = '????'
+    C_BUFFER_CLS    = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -107,8 +109,14 @@ class Policy(Model):
                  p_action_space: MSpace,
                  p_buffer_size=1,
                  p_ada=True,
+                 p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL):
-        super().__init__(p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
+                 
+        super().__init__( p_buffer_size=p_buffer_size, 
+                          p_ada=p_ada, 
+                          p_visualize=p_visualize, 
+                          p_logging=p_logging )
+
         self._observation_space = p_observation_space
         self._action_space = p_action_space
         self.set_id(0)
@@ -155,13 +163,13 @@ class Policy(Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_sars_elem:SARSElement) -> bool:
         """
         Adapts the policy based on State-Action-Reward-State (SARS) data.
 
         Parameters
         ----------
-        p_arg[0] : SARSElement
+        p_sars_elem : SARSElement
             Object of type SARSElement.
 
         Returns
@@ -179,7 +187,7 @@ class Policy(Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ActionPlanner(Log):
+class ActionPlanner (Log):
     """
     Template class for action planning algorithms to be used as part of model-based planning agents. 
     The goal is to find the shortest sequence of actions that leads to a maximum reward.
@@ -394,7 +402,7 @@ class RLScenarioMBInt(RLScenario):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Agent(Policy):
+class Agent (Policy):
     """
     This class represents a single agent model.
 
@@ -421,13 +429,14 @@ class Agent(Policy):
         Optional unique agent id (especially important for multi-agent scenarios). Default = 0.
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging          
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_ALL.
     p_mb_training_param : dict
         Optional parameters for internal policy training with environment model (see parameters of
         class RLTraining). Hyperparameter tuning and data logging is not supported here. The suitable
         scenario class is added internally.
-
     """
 
     C_TYPE = 'Agent'
@@ -445,6 +454,7 @@ class Agent(Policy):
                  p_name='',
                  p_id=0,
                  p_ada=True,
+                 p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL,
                  **p_mb_training_param):
 
@@ -494,8 +504,8 @@ class Agent(Policy):
         self._set_id(p_id)
 
         Log.__init__(self, p_logging)
-        self.switch_logging(p_logging)
         self.switch_adaptivity(p_ada)
+        Plottable.__init__(self, p_visualize=p_visualize)
 
         self.clear_buffer()
 
@@ -587,7 +597,10 @@ class Agent(Policy):
 
         for dim_id in obs_dim_ids:
             p_state_ids = p_state.get_dim_ids()
-            obs_idx = obs_space.get_dim_ids().index(dim_id)
+            try:
+                obs_idx = p_state.get_dim_ids().index(dim_id)
+            except:
+                obs_idx = obs_space.get_dim_ids().index(dim_id)
             observation.set_value(dim_id, p_state.get_value(p_state_ids[obs_idx]))
 
         return observation
@@ -641,15 +654,15 @@ class Agent(Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, p_state:State, p_reward:Reward) -> bool:
         """
         Default adaptation implementation of a single agent.
 
         Parameters
         ----------
-        p_args[0] : State       
+        p_state : State       
             State object.
-        p_args[1] : Reward     
+        p_reward : Reward     
             Reward object.
  
         Returns
@@ -665,21 +678,17 @@ class Agent(Policy):
             return False
 
         # 2 Extract agent specific observation data from state
-        state = p_args[0]
-        reward = p_args[1]
-        observation = self._extract_observation(state)
+        observation = self._extract_observation(p_state)
         adapted = False
 
         # 3 Adaptation
         if self._envmodel is None:
             # 3.1 Model-free adaptation
-            adapted = self._policy.adapt(
-                SARSElement(self._previous_observation, self._previous_action, reward, observation))
+            adapted = self._policy.adapt( p_sars_elem=SARSElement(self._previous_observation, self._previous_action, p_reward, observation) )
 
         else:
             # 3.2 Model-based adaptation
-            adapted = self._envmodel.adapt(
-                SARSElement(self._previous_observation, self._previous_action, reward, observation))
+            adapted = self._envmodel.adapt( p_sars_elem=SARSElement(self._previous_observation, self._previous_action, p_reward, observation) )
 
             if self._envmodel.get_accuracy() >= self._em_acc_thsld:
                 adapted = adapted or self._adapt_policy_by_model()
@@ -724,23 +733,24 @@ class MultiAgent(Agent):
         Name of agent. Default = ''.
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
-
     """
 
-    C_TYPE = 'Multi-Agent'
-    C_NAME = ''
-    C_SUFFIX = '.cfg'
+    C_TYPE      = 'Multi-Agent'
+    C_NAME      = ''
+    C_SUFFIX    = '.cfg'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name='', p_ada=True, p_logging=True):
+    def __init__(self, p_name='', p_ada=True, p_visualize:bool=False, p_logging=True):
         self._agents = []
         self._agent_ids = []
         self.set_name(p_name)
 
         Log.__init__(self, p_logging)
-        self.switch_logging(p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
         self.switch_adaptivity(p_ada)
         self._set_adapted(False)
 
@@ -907,19 +917,16 @@ class MultiAgent(Agent):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
-        state = p_args[0]
-        reward = p_args[1]
-
+    def _adapt(self, p_state:State, p_reward:Reward) -> bool:
         self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')
 
         adapted = False
         for agent_entry in self._agents:
             agent = agent_entry[0]
-            if (reward.get_type() != Reward.C_TYPE_OVERALL) and not reward.is_rewarded(agent.get_id()):
+            if (p_reward.get_type() != Reward.C_TYPE_OVERALL) and not p_reward.is_rewarded(agent.get_id()):
                 continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-            adapted = agent.adapt(state, reward) or adapted
+            adapted = agent.adapt(p_state=p_state, p_reward=p_reward) or adapted
 
         self.log(self.C_LOG_TYPE_I, 'End of adaptation for all agents...')
 
@@ -939,7 +946,9 @@ class MultiAgent(Agent):
         Doesn't support embedded plot of underlying agent hierarchy.
         """
 
-        self.log(self.C_LOG_TYPE_I, 'Init vizualization for all agents...')
+        if not self.get_visualization(): return
+
+        self.log(self.C_LOG_TYPE_I, 'Init visualization for all agents...')
 
         for agent_entry in self._agents:
             agent_entry[0].init_plot(None)
@@ -947,7 +956,9 @@ class MultiAgent(Agent):
     
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self):
-        self.log(self.C_LOG_TYPE_I, 'Start vizualization for all agents...')
+        if not self.get_visualization(): return
+
+        self.log(self.C_LOG_TYPE_I, 'Start visualization for all agents...')
 
         for agent_entry in self._agents:
             agent_entry[0].update_plot()

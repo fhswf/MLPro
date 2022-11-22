@@ -136,6 +136,6 @@ Cross Reference
 Refer these documents for further understanding of MLPro Multicartpole environment and other functionalities of MLPro
     
 + :ref:`API Reference <Multi Cartpole>`
-+ :ref:`How to run a multi-cartpole environment with multi-agent <Howto RL 4>`
-+ :ref:`How to train a multi-cartpole environment with multi-agent <Howto RL 5>`
++ :ref:`Howto RL-AGENT-003: Run Multi-Agent with Own Policy <Howto Agent RL 003>`
++ :ref:`Howto RL-AGENT-004: Train Multi-Agent with Own Policy <Howto Agent RL 004>`
 
