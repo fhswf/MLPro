@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-27  0.0.0     DA       Creation
-## -- 2022-11-07  1.0.0     DA       First implementation
+## -- 2022-11-22  1.0.0     DA       First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-11-07)
+Ver. 1.0.0 (2022-11-22)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, stream tasks
 are added to a stream workflow. This in turn is combined with a stream of a stream provider to a
@@ -135,6 +135,11 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_REAL,
 
 # 3 Reset and run own stream scenario
 myscenario.reset()
+
+if __name__ == '__main__':
+    myscenario.init_plot()
+    input('Press ENTER to start stream processing...')
+
 myscenario.run()
 
 if __name__ == '__main__':

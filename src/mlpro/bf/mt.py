@@ -19,11 +19,11 @@
 ## -- 2022-11-17  1.3.0     DA       - Class Task: extensions on plotting
 ## --                                - Bugfix in method Workflow.init_plot()
 ## -- 2022-11-18  1.3.1     DA       Method Workflow._init_figure: support of different backend types
-## -- 2022-11-21  1.3.2     DA       Class Async, Task, Workflow: corrections on plotting
+## -- 2022-11-22  1.3.2     DA       Class Async, Task, Workflow: corrections on plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-11-21)
+Ver. 1.3.2 (2022-11-22)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -706,8 +706,18 @@ class Task (Async, EventManager, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
-        details.
+        Extended custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
+        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
+        created in the given figure and stored in p_settings.axes.
+
+        Note: Please call this method in your custom implementation to create a default subplot.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings
+            Object with further plot settings.
         """
 
         Plottable._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
@@ -717,8 +727,18 @@ class Task (Async, EventManager, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
-        details.
+        Extended custom method to initialize a 3D plot. If attribute p_settings.axes is not None the 
+        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
+        created in the given figure and stored in p_settings.axes.
+
+        Note: Please call this method in your custom implementation to create a default subplot.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings
+            Object with further plot settings.
         """
 
         Plottable._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
@@ -728,8 +748,18 @@ class Task (Async, EventManager, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
         """
-        Default implementation for online adaptive tasks. See class mlpro.bf.plot.Plottable for more
-        details.
+        Extended custom method to initialize a nD plot. If attribute p_settings.axes is not None the 
+        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
+        created in the given figure and stored in p_settings.axes.
+
+        Note: Please call this method in your custom implementation to create a default subplot.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings
+            Object with further plot settings.
         """
 
         Plottable._init_plot_nd( self, p_figure=p_figure, p_settings=p_settings )
@@ -973,19 +1003,6 @@ class Workflow (Task):
         if self._plot_own_figure:
             self._figure.canvas.draw()
             self._figure.canvas.flush_events()
-                           
-
-## -------------------------------------------------------------------------------------------------
-    def update_plot(self, **p_kwargs):
-        Task.update_plot(self,**p_kwargs)
-
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
-
-        for task in self._tasks:
-            task.update_plot(**p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1006,8 +1023,11 @@ class Workflow (Task):
             Further parameters handed over to custom method _run().
         """
 
+        # 1 Intro
         self._finished.clear()
 
+
+        # 2 Determine the scope of asynchronicity
         if p_range is None:
             range_run = self._range
         else:
@@ -1020,6 +1040,8 @@ class Workflow (Task):
         else:
             self.log(Log.C_LOG_TYPE_S, 'Started as new process')
 
+
+        # 3 Prepare inner task structure for first run
         if self._first_run:
             for t_final in self._final_tasks:
                 t_final.register_event_handler(p_event_id=self.C_EVENT_FINISHED, p_event_handler=self.event_forwarder)
@@ -1028,6 +1050,12 @@ class Workflow (Task):
 
         self._ctr_final_tasks = len(self._final_tasks)
 
+
+        # 4 Update plot of workflow
+        self.update_plot(**p_kwargs)
+
+
+        # 5 Execution of all tasks within the workflow
         for task in self._entry_tasks: 
             task.run( p_range=range_run, **p_kwargs )
 

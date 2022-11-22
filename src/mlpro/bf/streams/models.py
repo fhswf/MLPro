@@ -29,11 +29,11 @@
 ## --                                - New class StreamShared
 ## -- 2022-11-18  0.8.1     DA       Refactoring of try/except statements
 ## -- 2022-11-19  0.8.2     DA       Class Stream: new parameter p_name for methods *get_stream()
-## -- 2022-11-20  0.9.0     DA       Classes StreamWorkflow, StreamScenario: plot funcionality
+## -- 2022-11-22  0.9.0     DA       Classes StreamWorkflow, StreamScenario: plot funcionality
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.0 (2022-11-20)
+Ver. 0.9.0 (2022-11-22)
 
 This module provides classes for standardized stream processing. 
 """
@@ -166,6 +166,7 @@ class StreamShared (Shared):
 ## -------------------------------------------------------------------------------------------------
     def get_instances(self):
         return self._inst_new, self._inst_del
+
 
 
 
@@ -551,7 +552,6 @@ class StreamProvider (Log, ScientificObject):
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class StreamTask (Task):
@@ -894,14 +894,6 @@ class StreamWorkflow (StreamTask, Workflow):
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        # StreamTask.__init__( self,
-        #                      p_name=p_name,
-        #                      p_range_max=p_range_max,
-        #                      p_duplicate_data=False,
-        #                      p_visualize=p_visualize,
-        #                      p_logging=p_logging,
-        #                      **p_kwargs )
-                             
         Workflow.__init__( self,
                            p_name=p_name, 
                            p_range_max=p_range_max, 
@@ -1007,18 +999,8 @@ class StreamWorkflow (StreamTask, Workflow):
             Further optional plot parameters.
         """
 
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
-
-        # Update of workflow master plot
+        # Update of workflow master plot by using the StreamTask default implementation
         StreamTask.update_plot(self, p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
-
-        # Update of all task subplots
-        for task in self._tasks:
-            task.update_plot(**p_kwargs)
-
 
 
 
@@ -1175,7 +1157,10 @@ class StreamScenario (ScenarioBase):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
-        self._workflow.update_plot(**p_kwargs)
+        """
+        Plot updates take place during workflow/task processing and are disabled here...
+        """
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
