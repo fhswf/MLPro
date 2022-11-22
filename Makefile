@@ -1,5 +1,5 @@
 pytest: Makefile
-	python3 -m pytest --ignore=src/mlpro/rl/pool/envs/ur5jointcontrol/src/ --ignore=src/mlpro/rl/pool/envs/multigeorobot/src/
+	python3 -m pytest
 
 docu: Makefile
 	cd doc/rtd && make html
