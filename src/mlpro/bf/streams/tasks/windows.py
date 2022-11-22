@@ -15,6 +15,7 @@ This module provides pool of window objects further used in the context of onlin
 """
 from matplotlib.axes import Axes
 from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from matplotlib.collections import PolyCollection
 from matplotlib.patches import Rectangle
 import matplotlib.pyplot as plt
@@ -254,7 +255,7 @@ class Window(StreamTask):
             self.axes = p_settings.axes
 
         # ...
-        
+
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):

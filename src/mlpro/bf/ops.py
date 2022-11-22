@@ -12,10 +12,11 @@
 ## --                                - support of new event "end of data"
 ## --                                - method setup(): parameters removed
 ## -- 2022-11-12  1.2.1     DA       Class ScenarioBase: minor changes on logging
+## -- 2022-11-21  1.2.2     DA       Eliminated all uses of super()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2022-11-12)
+Ver. 1.2.2 (2022-11-21)
 
 This module provides classes for operation.
 """
@@ -62,7 +63,7 @@ class Mode (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_mode, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging)
+        Log.__init__(self, p_logging=p_logging)
         if not p_mode in self.C_VALID_MODES: raise ParamError('Invalid mode')
         self._mode = p_mode
 
@@ -176,7 +177,7 @@ class ScenarioBase (Mode, LoadSave, Plottable):
             Operation mode. See class bf.ops.Mode for further details.
         """
 
-        super().set_mode(p_mode)
+        Mode.set_mode(self, p_mode=p_mode)
         self._set_mode(p_mode)
         self._timer = None
 

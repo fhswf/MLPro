@@ -11,10 +11,12 @@
 ## -- 2022-10-12  1.0.2     DA       Renaming
 ## -- 2022-11-07  1.1.0     DA       Refactoring after changes on class Stream
 ## -- 2022-11-08  1.1.1     DA       Minor improvements
+## -- 2022-11-19  1.1.2     DA       Get string by name
+## -- 2022-11-21  1.1.3     DA       Correction on logging
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-11-08)
+Ver. 1.1.3 (2022-11-21)
 
 This module demonstrates the use of River datasets as streams in MLPro. To this regard, MLPro
 provides wrapper classes to standardize stream access in own ML applications.
@@ -36,11 +38,13 @@ from mlpro.bf.various import Log
 
 
 
+
 # 0 Prepare Demo/Unit test mode
 if __name__ == '__main__':
     num_inst    = 10
     logging     = Log.C_LOG_ALL
 else:
+    print('\n', datetime.now(), __file__)
     num_inst    = 2
     logging     = Log.C_LOG_NOTHING
 
@@ -54,7 +58,7 @@ stream_list = river.get_stream_list(p_logging = logging)
 
 
 # 3 Get stream "Bikes" from the stream provider
-mystream = river.get_stream('Bikes')
+mystream = river.get_stream(p_name='Bikes', p_logging=logging)
 
 
 # 4 Get the feature space of the stream

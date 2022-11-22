@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-27  0.0.0     DA       Creation
-## -- 2022-11-11  1.0.0     DA       First implementation
+## -- 2022-11-22  1.0.0     DA       First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-11-11)
+Ver. 1.0.0 (2022-11-22)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow and just one simple stream task within to a
@@ -65,7 +65,7 @@ class MyScenario (StreamScenario):
 
         # 1 Import a stream from OpenML
         openml  = WrStreamProviderOpenML(p_logging=p_logging)
-        stream  = openml.get_stream(p_id=75, p_mode=p_mode, p_logging=p_logging)
+        stream  = openml.get_stream(p_name='BNG(autos,nominal,1000000)', p_mode=p_mode, p_logging=p_logging)
 
 
         # 2 Set up a stream workflow based on a custom stream task
@@ -92,7 +92,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 2  #10
+    cycle_limit = 50
     logging     = Log.C_LOG_ALL
     visualize   = True
   
@@ -112,6 +112,11 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_REAL,
 
 # 3 Reset and run own stream scenario
 myscenario.reset()
+
+if __name__ == '__main__':
+    myscenario.init_plot()
+    input('Press ENTER to start stream processing...')
+
 myscenario.run()
 
 if __name__ == '__main__':

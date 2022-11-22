@@ -35,11 +35,13 @@ from mlpro.bf.various import Log
 
 
 
+
 ## 0 Prepare Demo/Unit test mode
 if __name__ == '__main__':
     num_inst    = 10
     logging     = Log.C_LOG_ALL
 else:
+    print('\n', datetime.now(), __file__)
     num_inst    = 2
     logging     = Log.C_LOG_NOTHING
 
@@ -53,7 +55,7 @@ stream_list = sk_learn.get_stream_list(p_logging=logging)
 
 
 # 3 Get a specific stream from the stream provider
-mystream = sk_learn.get_stream( p_id='iris', p_logging=logging)
+mystream = sk_learn.get_stream( p_name='iris', p_logging=logging)
 
 
 # 4 Get the feature space of the stream

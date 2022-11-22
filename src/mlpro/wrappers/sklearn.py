@@ -12,10 +12,11 @@
 ## -- 2022-06-25  1.0.3     LSB      Refactoring for new label and instance class
 ## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
 ## -- 2022-11-08  1.2.0     DA       Class WrStreamSKlearn: refactoring to make it iterable
+## -- 2022-11-19  1.3.0     DA       Method WrStreamSklearn._get_string(): new parameter p_name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2022-11-08)
+Ver. 1.3.0 (2022-11-19)
 
 This module provides wrapper functionalities to incorporate public data sets of the Scikit-learn ecosystem.
 
@@ -113,14 +114,16 @@ class WrStreamProviderSklearn (Wrapper, StreamProvider):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream(self, p_id, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
+    def _get_stream(self, p_id: str = None, p_name: str = None, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
         """
         Custom class to fetch an Sklearn stream object.
 
         Parameters
         ----------
         p_id : str
-            Id of the requested stream.
+            Optional Id of the requested stream. Default = None.
+        p_name : str
+            Optional name of the requested stream. Default = None.
         p_mode
             Operation mode. Default: Mode.C_MODE_SIM.
         p_logging
@@ -134,24 +137,25 @@ class WrStreamProviderSklearn (Wrapper, StreamProvider):
             Stream object or None in case of an error.
         """
 
-        try:
+        self.get_stream_list(p_mode=p_mode, p_logging=p_logging, **p_kwargs)
 
+        if p_id is not None:
             try:
-                stream = self._stream_list[self._stream_ids.index(p_id)]
+                stream = self._stream_list[int(p_id)]
+            except ValueError:
+                raise ValueError('Stream with id', p_id, 'not found')
 
-            except:
-                self.get_stream_list(p_mode=p_mode, p_logging=p_logging, **p_kwargs)
-                stream = self._stream_list[self._stream_ids.index(p_id)]
+        elif p_name is not None:
+            try:
+                stream = self._stream_list[self._stream_ids.index(p_name)]
+            except ValueError:
+                raise ValueError('Stream with name "' + p_name + '" not found')
 
-            stream.set_mode(p_mode=p_mode)
-            stream.switch_logging(p_logging=p_logging)
-            stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
+        stream.set_mode(p_mode=p_mode)
+        stream.switch_logging(p_logging=p_logging)
+        stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
 
-            return stream
-
-
-        except ValueError:
-            raise ValueError('Stream id not in the available list')
+        return stream
 
 
 
@@ -186,7 +190,6 @@ class WrStreamSklearn (Stream):
     """
 
     C_NAME              = 'Sklearn stream'
-    C_WRAPPED_PACKAGE   = 'sklearn'
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
 
 ## -------------------------------------------------------------------------------------------------
