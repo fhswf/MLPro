@@ -35,7 +35,7 @@ class MyPolicy (Policy):
 
         # 1.2 Computing action values is up to you...
         for d in range(self._action_space.get_num_dim()):
-            my_action_values[d] = random.random() 
+            my_action_values[d] = np.random.uniform(-50, 50)
 
         # 1.3 Return an action object with your values
         return Action(self._id, self._action_space, my_action_values)
@@ -74,7 +74,7 @@ class MyScenario (RLScenario):
 # 3 Create scenario and run some cycles
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit = 100
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
   
@@ -95,4 +95,5 @@ myscenario  = MyScenario(
 )
 
 myscenario.reset(p_seed=3)
-myscenario.run() 
+
+myscenario.run()

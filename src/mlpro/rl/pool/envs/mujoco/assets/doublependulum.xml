@@ -1,5 +1,5 @@
 <mujoco>
-	<option timestep="1" gravity="0 0 -9.81" integrator="RK4">
+	<option timestep="0.01" gravity="0 0 -9.81" integrator="RK4">
 		<flag sensornoise="enable" energy="enable"/>
 	</option>
 	<worldbody>

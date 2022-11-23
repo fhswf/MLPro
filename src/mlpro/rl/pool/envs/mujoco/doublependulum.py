@@ -118,6 +118,7 @@ class DoublePendulum(WrEnvMujoco):
         """
         action = p_action.get_sorted_values()
         self._step_simulation(action)
+        self.render()
         joint_angle = self.data.qpos.flat[:]
         joint_velocity = self.data.qvel.flat[:]
 

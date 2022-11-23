@@ -44,6 +44,7 @@ class CallbacksViewer():
         self._time_per_render = 1 / 60.0
         self._run_speed = 1.0
         self._loop_count = 0
+        self._advance_by_one_step = False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -304,7 +305,11 @@ class WrEnvMujoco(Wrapper, Environment):
 
 ## -------------------------------------------------------------------------------------------------    
     def set_state(self, qpos, qvel):
-        pass
+        self.data.qpos[:] = np.copy(qpos)
+        self.data.qvel[:] = np.copy(qvel)
+        if self.model.na == 0:
+            self.data.act[:] = None
+        mujoco.mj_forward(self.model, self.data)
 
 
 ## -------------------------------------------------------------------------------------------------    
@@ -323,7 +328,9 @@ class WrEnvMujoco(Wrapper, Environment):
 
 ## -------------------------------------------------------------------------------------------------    
     def _get_viewer(self):
-        self.viewer = RenderViewer(self.model, self.data)
+        if self.viewer is None:
+            self.viewer = RenderViewer(self.model, self.data)
+        
         return self.viewer
 
 
@@ -342,7 +349,6 @@ class WrEnvMujoco(Wrapper, Environment):
         self.data.ctrl[:] = action
         mujoco.mj_step(self.model, self.data, nstep=self.frame_skip)
         mujoco.mj_rnePostConstraint(self.model, self.data)
-        self.render()
 
 
 ## -------------------------------------------------------------------------------------------------
