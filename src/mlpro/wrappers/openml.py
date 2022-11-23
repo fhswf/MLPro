@@ -21,10 +21,15 @@
 ## -- 2022-11-05  1.4.0     DA       Class WrStreamOpenML: refactoring to make it iterable
 ## -- 2022-11-08  1.4.1     DA       Corrections
 ## -- 2022-11-11  1.5.0     DA       Class WrStreamOpenML: new support of optional parameters.
+## -- 2022-11-11  1.5.1     LSB      Refactoring for the new target parameter for get_data() method
+## -- 2022-11-12  1.5.2     DA       Correction in method WrStreamOpenML._download()
+## -- 2022-11-19  1.6.0     DA       Class WrStreamOpenML: 
+## --                                - changes due to stream options
+## --                                - method _get_string(): new parameter p_name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-11-11)
+Ver. 1.6.0 (2022-11-19)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -70,8 +75,9 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
     def __init__(self, p_logging = Log.C_LOG_ALL):
         Wrapper.__init__(self, p_logging = p_logging)
         StreamProvider.__init__(self, p_logging = p_logging)
-        self._stream_list = []
-        self._stream_ids = []
+        self._stream_list   = []
+        self._stream_ids    = []
+        self._stream_names  = []
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -125,19 +131,22 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
 
                 self._stream_list.append(s)
                 self._stream_ids.append(id)
+                self._stream_names.append(name)
 
         return self._stream_list
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_stream(self, p_id, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
+    def _get_stream(self, p_id: str = None, p_name: str = None, p_mode=Mode.C_MODE_SIM, p_logging=Log.C_LOG_ALL, **p_kwargs) -> Stream:
         """
         Custom implementation to fetch an OpenML stream object.
 
         Parameters
         ----------
         p_id : str
-            Id of the requested stream.
+            Optional Id of the requested stream. Default = None.
+        p_name : str
+            Optional name of the requested stream. Default = None.
         p_mode
             Operation mode. Default: Mode.C_MODE_SIM.
         p_logging
@@ -151,24 +160,25 @@ class WrStreamProviderOpenML (Wrapper, StreamProvider):
             Stream object or None in case of an error.
         """
 
-        try:
+        self.get_stream_list(p_mode=p_mode, p_logging=p_logging, **p_kwargs)
 
+        if p_id is not None:
             try:
                 stream = self._stream_list[self._stream_ids.index(int(p_id))]
+            except ValueError:
+                raise ValueError('Stream with id', p_id, 'not found')
 
-            except:
-                self.get_stream_list(p_mode=p_mode, p_logging=p_logging, **p_kwargs)
-                stream = self._stream_list[self._stream_ids.index(int(p_id))]
+        elif p_name is not None:
+            try:
+                stream = self._stream_list[self._stream_names.index(p_name)]
+            except ValueError:
+                raise ValueError('Stream with name "' + p_name + '" not found')
 
-            stream.set_mode(p_mode=p_mode)
-            stream.switch_logging(p_logging=p_logging)
-            stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
+        stream.set_mode(p_mode=p_mode)
+        stream.switch_logging(p_logging=p_logging)
+        stream.log(Log.C_LOG_TYPE_I, 'Ready to access in mode', p_mode)
 
-            return stream
-
-
-        except ValueError:
-            raise ValueError('Stream id not in the available list')
+        return stream
 
 
 
@@ -271,7 +281,8 @@ class WrStreamOpenML (Stream):
     def _setup_label_space(self) -> MSpace:
         if not self._downloaded:
             self._downloaded = self._download() 
-            if not self._downloaded: return None       
+            if ( not self._downloaded ) or ( self._label == '' ):
+                return None       
 
         label_space = MSpace()
         label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
@@ -290,8 +301,12 @@ class WrStreamOpenML (Stream):
         """
 
         self._stream_meta = openml.datasets.get_dataset(self._id)
-        self._label = self._stream_meta.default_target_attribute
-
+        try:
+            self._label = str(self._kwargs['target']).lstrip()
+            self._kwargs['target'] = self._label
+        except:
+            self._label = self._stream_meta.default_target_attribute
+            self._kwargs['target'] = self._label
         try:
             self.C_SCIREF_URL = self._stream_meta.url
         except:
@@ -332,11 +347,15 @@ class WrStreamOpenML (Stream):
 
         # 2 Determine feature data
         feature_data  = Element( self.get_feature_space() )
-        feature_data.set_values(numpy.delete(self._dataset[0][self._index] , self._dataset[3].index(self._label)))
+        feature_data.set_values(self._dataset[0][self._index])
 
         # 3 Determine label data
-        label_data = Element(self.get_label_space())
-        label_data.set_values(numpy.asarray([self._dataset[0][self._index][self._dataset[3].index(self._label)]]))
+        label_space = self.get_label_space()
+        if label_space is not None:
+            label_data = Element(self.get_label_space())
+            label_data.set_values(numpy.asarray([self._dataset[1][self._index]]))
+        else:
+            label_data = None
 
         self._index += 1
 

@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_010_accessing_data_from_openml.py
+## -- Module  : howto_bf_streams_051_accessing_data_from_openml.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -34,8 +34,9 @@ You will learn:
 
 
 from datetime import datetime
-from mlpro.wrappers.openml import WrStreamProviderOpenML
 from mlpro.bf.various import Log
+from mlpro.wrappers.openml import WrStreamProviderOpenML
+
 
 
 
@@ -44,24 +45,28 @@ if __name__ == '__main__':
     num_inst    = 10
     logging     = Log.C_LOG_ALL
 else:
+    print('\n', datetime.now(), __file__)
     num_inst    = 2
     logging     = Log.C_LOG_NOTHING
+
 
 
 # 1 Create a Wrapper for OpenML stream provider
 openml = WrStreamProviderOpenML(p_logging = logging)
 
 
+
 # 2 Get a list of streams available at the stream provider
 stream_list = openml.get_stream_list(p_logging = logging)
 
 
-# 3 Get stream "BNG(autos,nominal,1000000)" from the stream provider OpenML
-mystream = openml.get_stream( p_id=31, p_logging=logging)
+
+# 3 Get stream "credit-g" from the stream provider OpenML
+mystream = openml.get_stream( p_name='BNG(autos,nominal,1000000)', p_logging=logging)
 
 
 # 4 Setting up additional stream options, the target label in this case
-mystream.set_options(target = 'checking_status')
+#mystream.set_options(target = 'checking_status')
 
 
 # 5 Get the feature space of the stream
@@ -74,7 +79,7 @@ myiterator = iter(mystream)
 
 
 # 7 Fetching some stream instances
-myiterator.log(mystream.C_LOG_TYPE_W,'Fetching first', str(num_inst), 'stream instances...')
+myiterator.log(mystream.C_LOG_TYPE_W, 'Fetching first', str(num_inst), 'stream instances...')
 for i in range(num_inst):
     curr_instance   = next(myiterator)
     curr_data       = curr_instance.get_feature_data().get_values()
@@ -86,11 +91,11 @@ for i in range(num_inst):
 myiterator = iter(mystream)
 
 
-# 9 Fetching all 1,000,000 instances
-myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all 1,000 instances...')
+# 9 Fetching all 1,000 instances
+myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all', myiterator.get_num_instances(), 'instances...')
 for i, curr_instance in enumerate(myiterator):
     if i == num_inst: 
-        myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the 1,000 instances dark...')
+        myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the', myiterator.get_num_instances(), 'instances dark...')
         myiterator.switch_logging(p_logging=Log.C_LOG_NOTHING)
         tp_start = datetime.now()
 

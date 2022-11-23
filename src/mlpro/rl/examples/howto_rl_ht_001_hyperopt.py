@@ -14,10 +14,11 @@
 ## -- 2022-10-17  1.0.5     SY       Refactoring 
 ## -- 2022-11-02  1.0.6     DA       Refactoring 
 ## -- 2022-11-09  1.1.0     DA       Refactoring 
+## -- 2022-11-21  1.1.1     DA       Corrections on logging
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-11-09)
+Ver. 1.1.1 (2022-11-21)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 
@@ -50,7 +51,7 @@ class myPolicy (Policy):
     C_NAME      = 'MyPolicy'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=True):
+    def __init__(self, p_observation_space:MSpace, p_action_space:MSpace, p_buffer_size=1, p_ada=True, p_logging=Log.C_LOG_ALL):
         """
          Parameters:
             p_observation_space     Subspace of an environment that is observed by the policy
@@ -59,7 +60,7 @@ class myPolicy (Policy):
             p_ada                   Boolean switch for adaptivity
             p_logging               Boolean switch for logging functionality
         """
-        super().__init__(p_observation_space, p_action_space, p_buffer_size, p_ada, p_logging)
+        super().__init__( p_observation_space=p_observation_space, p_action_space=p_action_space, p_buffer_size=p_buffer_size, p_ada=p_ada, p_logging=p_logging)
         self._hyperparam_space  = HyperParamSpace()
         self._hyperparam_tuple  = None
         self._init_hyperparam()
@@ -128,7 +129,7 @@ class BGLP_Rnd(RLScenario):
         _id           = 0
         _ospace       = state_space.spawn([state_space.get_dim_ids()[0],state_space.get_dim_ids()[1]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[0]])
-        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=Log.C_LOG_NOTHING)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
@@ -147,7 +148,7 @@ class BGLP_Rnd(RLScenario):
         _id           = 1
         _ospace       = state_space.spawn([state_space.get_dim_ids()[1],state_space.get_dim_ids()[2]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[1]])
-        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=Log.C_LOG_NOTHING)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
@@ -166,7 +167,7 @@ class BGLP_Rnd(RLScenario):
         _id           = 2
         _ospace       = state_space.spawn([state_space.get_dim_ids()[2],state_space.get_dim_ids()[3]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[2]])
-        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=Log.C_LOG_NOTHING)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
@@ -185,7 +186,7 @@ class BGLP_Rnd(RLScenario):
         _id           = 3
         _ospace       = state_space.spawn([state_space.get_dim_ids()[3],state_space.get_dim_ids()[4]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[3]])
-        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=Log.C_LOG_NOTHING)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
@@ -204,7 +205,7 @@ class BGLP_Rnd(RLScenario):
         _id           = 4
         _ospace       = state_space.spawn([state_space.get_dim_ids()[4],state_space.get_dim_ids()[5]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[4]])
-        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=False)
+        _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=Log.C_LOG_NOTHING)
         self._agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
