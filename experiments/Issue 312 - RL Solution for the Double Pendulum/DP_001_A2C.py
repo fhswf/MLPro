@@ -38,19 +38,18 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_visualize, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulumS7(p_logging=True, p_init_angles='down', p_max_torque=10, p_visualize=True,
-        p_plot_level=
-        DoublePendulumRoot.C_PLOT_DEPTH_ALL)
+        self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_balancing_range=[-70,70], p_max_torque=30, p_visualize=True,
+        p_plot_level=DoublePendulumRoot.C_PLOT_DEPTH_ALL, p_reward_window=100)
 
         # 1.2 Select an algorithm
         # On-Policy RL Algorithm: A2C
         
         # Parameters, refer to https://stable-baselines3.readthedocs.io/en/master/modules/a2c.html
-        actor_size = 128
-        critic_size = 128
+        actor_size = 256
+        critic_size = 256
         learning_rate = 7e-4
         n_steps = 5
-        gamma = 0.99
+        gamma = 0.8
         
         policy_kwargs = dict(activation_fn=torch.nn.ReLU,
                      net_arch=[dict(pi=[actor_size, actor_size], vf=[critic_size, critic_size])])
