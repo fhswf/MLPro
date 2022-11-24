@@ -389,13 +389,14 @@ class Window(StreamTask):
         if self._plot_nd_plots is None:
             self._plot_nd_plots = {}
 
-            colour_names = list(colors.cnames.values())
+            color_names = list(colors.cnames.values())
 
         # If not create new patch objects and add them to the attribute
             feature_space = p_inst_new[0].get_feature_data().get_related_set()
             for i,feature in enumerate(feature_space.get_dims()):
                 if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
-                    feature_window = Rectangle((0,0), 0,0, facecolor = 'none', edgecolor=colour_names[i], lw = 1.5)
+                    feature_window = Rectangle((0,0), 0,0, facecolor = color_names[i], edgecolor=color_names[i],
+                        lw = 1.5, alpha = 0.5)
                     self.axes.add_patch(feature_window)
                     self._plot_nd_plots[feature.get_id()] = feature_window
 
