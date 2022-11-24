@@ -45,14 +45,11 @@ class MyStreamScenario(StreamScenario):
         return stream, workflow
 
 
-
-
-# 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 10
+    cycle_limit = 100
     logging = Log.C_LOG_ALL
-    visualize = False
+    visualize = True
 
 else:
     # 1.2 Parameters for internal unit test
@@ -61,11 +58,19 @@ else:
     visualize = False
 
 # 2 Instantiate the stream scenario
-myscenario = MyStreamScenario(p_mode=Mode.C_MODE_SIM,
-                        p_cycle_limit=cycle_limit,
-                        p_visualize=visualize,
-                        p_logging=logging)
+myscenario = MyStreamScenario(p_mode=Mode.C_MODE_REAL,
+    p_cycle_limit=cycle_limit,
+    p_visualize=visualize,
+    p_logging=logging)
 
 # 3 Reset and run own stream scenario
 myscenario.reset()
+
+if __name__ == '__main__':
+    myscenario.init_plot()
+    input('Press ENTER to start stream processing...')
+
 myscenario.run()
+
+if __name__ == '__main__':
+    input('Press ENTER to exit...')
