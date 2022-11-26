@@ -8,12 +8,15 @@
 ## -- 2022-10-16  0.0.0     LSB      Creation
 ## -- 2022-11-04  0.1.0     LSB      Removing class WindowR
 ## -- 2022-11-24  0.2.0     LSB      Implementations and release of nd plotting
+## -- 2022-11-26  0.3.0     LSB      Implementations and release of 3-d plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2022-11-24)
+Ver. 0.3.0 (2022-11-26)
 This module provides pool of window objects further used in the context of online adaptivity.
 """
+
+
 from matplotlib.axes import Axes
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -269,7 +272,7 @@ class Window(StreamTask):
         else:
             self.axes = p_settings.axes
 
-        self.window_patch = Rectangle((0,0),0,0)
+        self.window_patch2D = Rectangle((0,0),0,0)
 
         pass
 
@@ -294,6 +297,8 @@ class Window(StreamTask):
             self.axes = Axes3D(p_figure, (0.05,0.05,0.9,0.9))
         else:
             self.axes = p_settings.axes
+
+        self.window_patch3D = Poly3DCollection([])
 
         # ...
 
@@ -343,25 +348,70 @@ class Window(StreamTask):
         -------
 
         """
-        pass
+        boundaries = self.get_boundaries()
+        x = boundaries[0][0]
+        y = boundaries[1][0]
+        w = boundaries[0][1] - boundaries[0][0]
+        h = boundaries[1][1] - boundaries[1][0]
+        self.window_patch2D.set_bounds(x,y,w,h)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
 
+        Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
+        for more details.
+
         Parameters
         ----------
-        p_settings
-        p_inst_new
-        p_inst_del
-        p_kwargs
-
-        Returns
-        -------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
 
         """
-        pass
+        # 1. Returns if no new instances passed
+        if p_inst_new is None: return
+        b = self.get_boundaries()
+
+        # 2. Logic for vertices of the cuboid
+        verts = np.asarray([[[b[0][0], b[1][0], b[2][1]],
+                             [b[0][1], b[1][0], b[2][1]],
+                             [b[0][1], b[1][0], b[2][0]],
+                             [b[0][0], b[1][0], b[2][0]]],
+
+                            [[b[0][0], b[1][0], b[2][1]],
+                             [b[0][1], b[1][0], b[2][1]],
+                             [b[0][1], b[1][1], b[2][1]],
+                             [b[0][0], b[1][1], b[2][1]]],
+
+                            [[b[0][0], b[1][0], b[2][1]],
+                             [b[0][0], b[1][1], b[2][1]],
+                             [b[0][0], b[1][1], b[2][0]],
+                             [b[0][0], b[1][0], b[2][0]]],
+
+                            [[b[0][1], b[1][0], b[2][1]],
+                             [b[0][1], b[1][1], b[2][1]],
+                             [b[0][1], b[1][1], b[2][0]],
+                             [b[0][1], b[1][0], b[2][0]]],
+
+                            [[b[0][0], b[1][1], b[2][1]],
+                             [b[0][1], b[1][1], b[2][1]],
+                             [b[0][1], b[1][1], b[2][0]],
+                             [b[0][0], b[1][1], b[2][0]]],
+
+                            [[b[0][0], b[1][0], b[2][0]],
+                             [b[0][1], b[1][0], b[2][0]],
+                             [b[0][1], b[1][1], b[2][0]],
+                             [b[0][0], b[1][1], b[2][0]]]])
+
+        # 3. Setting the vertices for the cuboid
+        self.window_patch3D.set_verts(verts)
 
 
 ## -------------------------------------------------------------------------------------------------
