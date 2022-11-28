@@ -45,7 +45,7 @@ Ver. 1.6.1 (2022-11-09)
 This module provides model classes for environments and environment models.
 """
 
-from mlpro.sl import AdaptiveFunction
+from mlpro.bf.ml import AdaptiveFunction
 from mlpro.rl.models_sar import *
 
 
