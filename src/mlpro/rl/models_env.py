@@ -37,15 +37,16 @@
 ## --                                - Cleaned the code a bit
 ## -- 2022-11-02  1.6.0     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-09  1.6.1     DA       Refactoring due to changes on plot systematics
+## -- 2022-11-29  1.7.0     DA       Refactoring due to new underlying module mlpro.bf.systems
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.1 (2022-11-09)
+Ver. 1.7.0 (2022-11-29)
 
 This module provides model classes for environments and environment models.
 """
 
-from mlpro.bf.ml import AdaptiveFunction
+from mlpro.sl import SLAdaptiveFunction
 from mlpro.rl.models_sar import *
 
 
@@ -60,7 +61,7 @@ class AFctBase (Model):
     Parameters
     ----------
     p_afct_cls 
-        Adaptive function class (compatible to class AdaptiveFunction)
+        Adaptive function class (compatible to class mlpro.sl.SLAdaptiveFunction)
     p_state_space : MSpace
         State space of an environment or observation space of an agent
     p_action_space : MSpace
@@ -97,7 +98,7 @@ class AFctBase (Model):
         Input space of embedded adaptive function
     _output_space : MSpace
         Output space oof embedded adaptive function
-    _afct : AdaptiveFunction
+    _afct : SLAdaptiveFunction
         Embedded adaptive function
     """
 
@@ -126,17 +127,17 @@ class AFctBase (Model):
         self._setup_spaces(self._state_space, self._action_space, self._input_space, self._output_space)
 
         try:
-            self._afct = p_afct_cls(p_input_space=self._input_space,
-                                    p_output_space=self._output_space,
-                                    p_output_elem_cls=p_output_elem_cls,
-                                    p_threshold=p_threshold,
-                                    p_buffer_size=p_buffer_size,
-                                    p_ada=p_ada,
-                                    p_visualize=p_visualize,
-                                    p_logging=p_logging,
-                                    **p_kwargs)
+            self._afct = p_afct_cls( p_input_space=self._input_space,
+                                     p_output_space=self._output_space,
+                                     p_output_elem_cls=p_output_elem_cls,
+                                     p_threshold=p_threshold,
+                                     p_buffer_size=p_buffer_size,
+                                     p_ada=p_ada,
+                                     p_visualize=p_visualize,
+                                     p_logging=p_logging,
+                                     **p_kwargs )
         except:
-            raise ParamError('Class ' + str(p_afct_cls) + ' is not compatible to class AdaptiveFunction')
+            raise ParamError('Class ' + str(p_afct_cls) + ' is not compatible to class mlpro.sl.SLAdaptiveFunction')
 
         super().__init__(p_buffer_size=0, p_ada=p_ada, p_logging=p_logging)
 
@@ -166,7 +167,7 @@ class AFctBase (Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_afct(self) -> AdaptiveFunction:
+    def get_afct(self) -> SLAdaptiveFunction:
         return self._afct
 
 
@@ -1121,8 +1122,7 @@ class Environment(EnvBase, Mode):
             self.log(self.C_LOG_TYPE_I, 'Actions of agent', agent, '=', p_action.get_elem(agent).get_values())
 
         # 1 State transition
-        if self.\
-                _mode == self.C_MODE_SIM:
+        if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
             self._set_state(self.simulate_reaction(self.get_state(), p_action))
 
