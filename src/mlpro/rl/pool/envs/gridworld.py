@@ -20,10 +20,11 @@
 ## -- 2022-09-19  2.0.0     SY       Add discrete action as an option and predefined target
 ## -- 2022-10-07  2.0.1     SY       Boundaries updates and reward function updates
 ## -- 2022-10-08  2.0.2     SY       Bug fixing
+## -- 2022-11-29  2.0.3     DA       Bug fixing
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.2 (2022-10-08)
+Ver. 2.0.3 (2022-11-29)
 
 This module provides an environment of customizable Gridworld.
 """
@@ -87,6 +88,8 @@ class GridWorld(Environment):
         self.grid_size = np.array(p_grid_size)
         self.random_start_position = p_random_start_position
         self.random_goal_position = p_random_goal_position
+        self.start_position = p_start_position
+        self.goal_position  = p_goal_position
             
         self.max_step = p_max_step
         self.action_type = p_action_type
@@ -142,8 +145,8 @@ class GridWorld(Environment):
                                 if self.random_start_position 
                                 else 0 for border in self.grid_size])
         else:
-            if p_start_position is not None:
-                self.agent_pos = np.array(p_start_position)
+            if self.start_position is not None:
+                self.agent_pos = np.array(self.start_position)
             else:
                 raise NotImplementedError('Please define p_start_position or set p_random_start_position to True!')
 
@@ -152,8 +155,8 @@ class GridWorld(Environment):
                                 if self.random_goal_position 
                                 else border-1 for border in self.grid_size])
         else:
-            if p_goal_position is not None:
-                self.goal_pos = np.array(p_goal_position)
+            if self.goal_position is not None:
+                self.goal_pos = np.array(self.goal_position)
             else:
                 raise NotImplementedError('Please define p_goal_position or set p_random_goal_position to True!')
                 
