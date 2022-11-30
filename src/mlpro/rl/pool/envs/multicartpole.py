@@ -20,10 +20,11 @@
 ## -- 2022-04-06  1.2.6     LSB      Freezing single environment after done returns true
 ## -- 2022-07-20  1.2.7     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-11-07  1.3.0     DA       Class MultiCartPole: new parameter p_visualize
+## -- 2022-11-29  1.3.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2022-11-07)
+Ver. 1.3.1 (2022-11-29)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -253,12 +254,12 @@ class MultiCartPole (Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
         for env in self._envs: env.init_plot(p_figure=None)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
-        for env in self._envs: env.update_plot()
+    def update_plot(self, **p_kwargs):
+        for env in self._envs: env.update_plot( **p_kwargs )
 
 
