@@ -6,11 +6,13 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-11-29  1.0.0     DA       Creation 
+## -- 2022-11-30  1.0.1     DA       Class System: corrections and deviating default implementations
+## --                                for custom methods _compute_success(), _compute_broken()
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.0 (2022-11-29)
+Ver. 1.0.1 (2022-11-30)
 
 This module provides models and templates for state based systems.
 """
@@ -269,7 +271,7 @@ class FctSTrans (Log):
     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
         """
         Custom method for a simulated state transition. See method simulate_reaction() for further
-        detail.
+        details.
         """
 
         raise NotImplementedError
@@ -323,7 +325,7 @@ class FctSuccess (Log):
         Custom method for assessment for success. See method compute_success() for further details.
         """
 
-        return False
+        raise NotImplementedError
 
 
 
@@ -374,7 +376,7 @@ class FctBroken (Log):
         Custom method for assessment for breakdown. See method compute_broken() for further details.
         """
 
-        return False
+        raise NotImplementedError
 
 
 
@@ -685,6 +687,17 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObjec
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+        """
+        Custom method for a simulated state transition. Implement this method if no external state
+        transition function is used. See method simulate_reaction() for further
+        details.
+        """
+        
+        raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
+
+
+## -------------------------------------------------------------------------------------------------
     def _export_action(self, p_action: Action) -> bool:
         """
         Mode C_MODE_REAL only: exports given action to be processed externally (for instance by a 
@@ -739,7 +752,23 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObjec
         if self._fct_success is not None:
             return self._fct_success.compute_success(p_state)
         else:
-            return FctSuccess._compute_success(self, p_state)
+            return FctSuccess.compute_success(self, p_state)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_success(self, p_state: State) -> bool:
+        """
+        Custom method for assessment for success. Implement this method if no external function is 
+        used. See method compute_success() for further details.
+        """
+
+        return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_success(self) -> bool:
+        if self._state is None: return False
+        return self._state.get_success()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -762,13 +791,17 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObjec
         if self._fct_broken is not None:
             return self._fct_broken.compute_broken(p_state)
         else:
-            return FctBroken._compute_broken(self, p_state)
+            return FctBroken.compute_broken(self, p_state)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_success(self) -> bool:
-        if self._state is None: return False
-        return self._state.get_success()
+    def _compute_broken(self, p_state: State) -> bool:
+        """
+        Custom method for assessment for breakdown. Implement this method if no external function is 
+        used. See method compute_broken() for further details.
+        """
+
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
