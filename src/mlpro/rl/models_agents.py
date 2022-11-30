@@ -47,15 +47,18 @@
 ## -- 2022-09-26  1.5.8     SY       Minor Improvement on _extract_observation method (Agent class)
 ## -- 2022-11-02  1.6.0     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-07  1.6.1     DA       Classes Policy, Agent, MultiAgent: new parameter p_visualize
+## -- 2022-11-29  1.6.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.1 (2022-11-07) 
+Ver. 1.6.2 (2022-11-29) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
 
+from mlpro.bf.ml import Model
 from mlpro.rl.models_env import *
+from mlpro.rl.models_env_ada import *
 from mlpro.rl.models_train import RLScenario, RLTraining
 
 
@@ -941,7 +944,7 @@ class MultiAgent(Agent):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
         """
         Doesn't support embedded plot of underlying agent hierarchy.
         """
@@ -951,11 +954,11 @@ class MultiAgent(Agent):
         self.log(self.C_LOG_TYPE_I, 'Init visualization for all agents...')
 
         for agent_entry in self._agents:
-            agent_entry[0].init_plot(None)
+            agent_entry[0].init_plot(p_figure = None)
 
     
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
+    def update_plot(self, **p_kwargs):
         if not self.get_visualization(): return
 
         self.log(self.C_LOG_TYPE_I, 'Start visualization for all agents...')
