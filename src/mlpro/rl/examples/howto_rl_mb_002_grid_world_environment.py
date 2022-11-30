@@ -87,14 +87,14 @@ class ScenarioGridWorld(RLScenario):
 # 2 Train agent in scenario
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
-    cycle_limit = 50000
+    cycle_limit = 5000
     logging     = Log.C_LOG_ALL
     visualize   = True
     path        = str(Path.home())
     plotting    = True
 else:
     # 2.2 Parameters for internal unit test
-    cycle_limit = 100
+    cycle_limit = 10
     logging     = Log.C_LOG_NOTHING
     visualize   = False
     path        = None

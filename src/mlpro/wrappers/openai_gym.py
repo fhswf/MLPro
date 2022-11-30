@@ -44,10 +44,11 @@
 ## -- 2022-10-08  1.4.4     SY       Bug fixing and minor improvements: return of the reset function
 ## -- 2022-11-01  1.4.5     DA       Refactoring
 ## -- 2022-11-09  1.4.6     DA       Refactoring
+## -- 2022-11-29  1.4.7     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.6 (2022-11-09)
+Ver. 1.4.7 (2022-11-29)
 
 This module provides wrapper classes for OpenAI Gym environments.
 
@@ -345,16 +346,12 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        """
-        Plot initialization function, deployed by render functionality from OpenAI Gym.
-
-        """
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
         if self._visualize: self._gym_env.render()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
+    def update_plot(self, **p_kwargs):
         """
         Updating the actual plot, deployed by render functionality from OpenAI Gym.
 
