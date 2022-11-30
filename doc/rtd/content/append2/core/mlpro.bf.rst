@@ -90,6 +90,16 @@ Normalizers
    :show-inheritance:
 
    
+State-based Systems
+-------------------
+
+.. image:: images/bf/MLPro-BF-Systems_class_diagram.drawio.png
+.. automodule:: mlpro.bf.systems
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
 Stream Providers and Streams
 ----------------------------
 

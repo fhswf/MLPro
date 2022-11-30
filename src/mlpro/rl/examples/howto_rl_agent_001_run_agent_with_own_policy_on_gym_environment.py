@@ -91,7 +91,7 @@ class MyScenario (RLScenario):
     def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
         gym_env     = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
-        self._env   = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging) 
+        self._env   = WrEnvGYM2MLPro( p_gym_env=gym_env, p_visualize=p_visualize, p_logging=p_logging) 
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),

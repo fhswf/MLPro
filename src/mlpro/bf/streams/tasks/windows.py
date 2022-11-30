@@ -7,12 +7,16 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-16  0.0.0     LSB      Creation
 ## -- 2022-11-04  0.1.0     LSB      Removing class WindowR
+## -- 2022-11-24  0.2.0     LSB      Implementations and release of nd plotting
+## -- 2022-11-26  0.3.0     LSB      Implementations and release of 3-d plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2022-11-04)
+Ver. 0.3.0 (2022-11-26)
 This module provides pool of window objects further used in the context of online adaptivity.
 """
+
+
 from matplotlib.axes import Axes
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -23,6 +27,7 @@ import numpy as np
 from mlpro.bf.streams.models import *
 from mlpro.bf.events import *
 from typing import Union, List, Iterable
+import matplotlib.colors as colors
 
 
 
@@ -118,7 +123,8 @@ class Window(StreamTask):
                     # raises an event, and stores the new instances and continues the loop
 
                     self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
-                                                                       p_related_set=i.get_related_set()))
+                                                                       p_related_set=i.get_feature_data().
+                                                                           get_related_set()))
                     p_inst_del.append(self._buffer[self._buffer_pos])
                     self._buffer[self._buffer_pos] = i
                     if self._statistics_enabled:
@@ -161,8 +167,9 @@ class Window(StreamTask):
             boundaries:np.ndarray
                 Returns the current window boundaries in the form of a Numpy array.
         """
-        boundaries = np.stack(([np.min([self._buffer[i].get_values() for i in self._buffer.keys()], axis=0),
-                      np.max([self._buffer[i].get_values() for i in self._buffer.keys()], axis=0)]), axis=1)
+        boundaries = np.stack(([np.min([self._buffer[i].get_feature_data().get_values() for i in self._buffer.keys()],
+            axis=0),
+                      np.max([self._buffer[i].get_feature_data().get_values() for i in self._buffer.keys()], axis=0)]), axis=1)
         return boundaries
 
 
@@ -204,6 +211,43 @@ class Window(StreamTask):
         """
         return np.std(self._buffer.values(), axis=0, dtype=np.float64)
 
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self,
+                      p_figure: Figure = None,
+                      p_plot_settings: list = [],
+                      p_plot_depth: int = 0,
+                      p_detail_level: int = 0,
+                      p_step_rate: int = 0,
+                      **p_kwargs):
+        """
+        Method to initialize the plot for Window task.
+
+        Parameters
+        ----------
+        p_figure:Figure
+            Figure to host the plot.
+        p_plot_settings:PlotSettings
+            Specific plot settings
+        p_plot_depth:
+            Depth of plotting style
+        p_detail_level:
+            Level of details for the plot style
+        p_step_rate:
+            Rate of update for updating the plot
+        p_kwargs:
+            Additional key-worded arguments
+
+        """
+        self._plot_num_inst = 0
+
+        Task.init_plot(self,
+                p_figure=p_figure,
+                p_plot_settings=p_plot_settings,
+                p_plot_depth=p_plot_depth,
+                p_detail_level=p_detail_level,
+                p_step_rate=p_step_rate,
+                **p_kwargs)
+
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
@@ -212,7 +256,7 @@ class Window(StreamTask):
 
         Parameters
         ----------
-        p_figure: Matplotlib.figure.Figure
+        p_figure: Figure
             The figure object that hosts the plot
 
         p_settings: list of PlotSettings objects.
@@ -228,7 +272,7 @@ class Window(StreamTask):
         else:
             self.axes = p_settings.axes
 
-        self.window_patch = Rectangle((0,0),0,0)
+        self.window_patch2D = Rectangle((0,0),0,0)
 
         pass
 
@@ -254,23 +298,39 @@ class Window(StreamTask):
         else:
             self.axes = p_settings.axes
 
+        self.window_patch3D = Poly3DCollection([])
+
         # ...
 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
         """
+        Custom method to initialize plot for Window tasks for N-dimensional plotting.
 
         Parameters
         ----------
-        p_figure
-        p_settings
-
-        Returns
-        -------
+        p_figure:Figure
+            Figure to host the plot
+        p_settings: PlotSettings
+            PlotSettings objects with specific settings for the plot
 
         """
-        pass
+        if p_figure is None:
+            p_figure = plt.figure()
+
+        if not p_settings.axes:
+            self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
+            p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
+            p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
+            p_settings.axes.grid(visible=True)
+
+        else:
+            self.axes = p_settings.axes
+
+        self._plot_nd_plots = None
+        self._plot_windows = []
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -288,40 +348,118 @@ class Window(StreamTask):
         -------
 
         """
-        pass
+        boundaries = self.get_boundaries()
+        x = boundaries[0][0]
+        y = boundaries[1][0]
+        w = boundaries[0][1] - boundaries[0][0]
+        h = boundaries[1][1] - boundaries[1][0]
+        self.window_patch2D.set_bounds(x,y,w,h)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
 
+        Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
+        for more details.
+
         Parameters
         ----------
-        p_settings
-        p_inst_new
-        p_inst_del
-        p_kwargs
-
-        Returns
-        -------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
 
         """
-        pass
+        # 1. Returns if no new instances passed
+        if p_inst_new is None: return
+        b = self.get_boundaries()
+
+        # 2. Logic for vertices of the cuboid
+        verts = np.asarray([[[b[0][0], b[1][0], b[2][1]],
+                             [b[0][1], b[1][0], b[2][1]],
+                             [b[0][1], b[1][0], b[2][0]],
+                             [b[0][0], b[1][0], b[2][0]]],
+
+                            [[b[0][0], b[1][0], b[2][1]],
+                             [b[0][1], b[1][0], b[2][1]],
+                             [b[0][1], b[1][1], b[2][1]],
+                             [b[0][0], b[1][1], b[2][1]]],
+
+                            [[b[0][0], b[1][0], b[2][1]],
+                             [b[0][0], b[1][1], b[2][1]],
+                             [b[0][0], b[1][1], b[2][0]],
+                             [b[0][0], b[1][0], b[2][0]]],
+
+                            [[b[0][1], b[1][0], b[2][1]],
+                             [b[0][1], b[1][1], b[2][1]],
+                             [b[0][1], b[1][1], b[2][0]],
+                             [b[0][1], b[1][0], b[2][0]]],
+
+                            [[b[0][0], b[1][1], b[2][1]],
+                             [b[0][1], b[1][1], b[2][1]],
+                             [b[0][1], b[1][1], b[2][0]],
+                             [b[0][0], b[1][1], b[2][0]]],
+
+                            [[b[0][0], b[1][0], b[2][0]],
+                             [b[0][1], b[1][0], b[2][0]],
+                             [b[0][1], b[1][1], b[2][0]],
+                             [b[0][0], b[1][1], b[2][0]]]])
+
+        # 3. Setting the vertices for the cuboid
+        self.window_patch3D.set_verts(verts)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
+        Default N-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
+        for more details.
 
         Parameters
         ----------
-        p_settings
-        p_inst_new
-        p_inst_del
-        p_kwargs
-
-        Returns
-        -------
-
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
         """
-        pass
+
+        # 1. CHeck if there is a new instance to be plotted
+        if p_inst_new is None: return
+
+        # 2. Check if the rectangle patches are already created
+        if self._plot_nd_plots is None:
+            self._plot_nd_plots = {}
+
+            color_names = list(colors.cnames.values())
+
+        # If not create new patch objects and add them to the attribute
+            feature_space = p_inst_new[0].get_feature_data().get_related_set()
+            for i,feature in enumerate(feature_space.get_dims()):
+                if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
+                    feature_window = Rectangle((0,0), 0,0, facecolor = color_names[i], edgecolor=color_names[i],
+                        lw = 1.5, alpha = 0.5)
+                    self.axes.add_patch(feature_window)
+                    self._plot_nd_plots[feature.get_id()] = feature_window
+
+        # 2. Getting the boundaries
+        boundaries = self.get_boundaries()
+
+        # 3. Adding rectangular patches to the plots
+        for i,feature in enumerate(p_inst_new[0].get_feature_data().get_related_set().get_dims()):
+            if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
+                x = self._plot_num_inst-self.buffer_size+1
+                y = boundaries[i][0]
+                w = self.buffer_size
+                h = boundaries[i][1] - boundaries[i][0]
+                self._plot_nd_plots[feature.get_id()].set_bounds(x,y,w,h)
+                self._plot_nd_plots[feature.get_id()].set_visible(True)
+
