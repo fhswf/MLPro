@@ -29,7 +29,7 @@
 ## --                                - New class StreamShared
 ## -- 2022-11-18  0.8.1     DA       Refactoring of try/except statements
 ## -- 2022-11-19  0.8.2     DA       Class Stream: new parameter p_name for methods *get_stream()
-## -- 2022-11-22  0.9.0     DA       Classes StreamWorkflow, StreamScenario: plot funcionality
+## -- 2022-11-22  0.9.0     DA       Classes StreamWorkflow, StreamScenario: plot functionality
 ## -------------------------------------------------------------------------------------------------
 
 """
