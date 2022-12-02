@@ -38,17 +38,15 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_visualize, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_max_torque=10, p_visualize=True,
-        p_plot_level=DoublePendulumRoot.C_PLOT_DEPTH_ALL, p_balancing_range=[-70,70
-
-                                                                             ])
+        self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_max_torque=10, p_visualize=False,
+        p_plot_level=DoublePendulumRoot.C_PLOT_DEPTH_ALL, p_balancing_range=[-70,70], p_rst_balancing=DoublePendulumRoot.C_RST_BALANCING_002)
 
         # 1.2 Select an algorithm
         # On-Policy RL Algorithm: DDPG
         
         # Parameters, refer to https://stable-baselines3.readthedocs.io/en/master/modules/ddpg.html
-        actor_size = 128
-        critic_size = 128
+        actor_size = 256
+        critic_size = 256
         learning_rate = 3e-4
         action_noise = True             # Either True or None
         sigma_noise = 0.1
