@@ -235,7 +235,7 @@ class FctSTrans (Log):
     Parameters
     ----------
     p_logging 
-        Log level (see class Log for more details).
+        Log level (see class Log for more details). Default = Log.C_LOG_ALL.
     """
 
     C_TYPE = 'Fct STrans'
@@ -290,7 +290,7 @@ class FctSuccess (Log):
     Parameters
     ----------
     p_logging 
-        Log level (see class Log for more details).
+        Log level (see class Log for more details). Default = Log.C_LOG_ALL.
     """
 
     C_TYPE = 'Fct Success'
@@ -341,7 +341,7 @@ class FctBroken (Log):
     Parameters
     ----------
     p_logging 
-        Log level (see class Log for more details).
+        Log level (see class Log for more details). Default = Log.C_LOG_ALL.
     """
 
     C_TYPE = 'Fct Broken'
@@ -405,7 +405,7 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = False.
     p_logging 
-        Log level (see class Log for more details).
+        Log level (see class Log for more details). Default = Log.C_LOG_ALL.
 
     Attributes
     ----------
@@ -448,9 +448,9 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         self._prev_state            = None
         self._last_action           = None
 
-        FctSTrans.__init__(self, p_logging=Log.C_LOG_NOTHING)
-        FctSuccess.__init__(self, p_logging=Log.C_LOG_NOTHING)
-        FctBroken.__init__(self, p_logging=Log.C_LOG_NOTHING)
+        FctSTrans.__init__(self, p_logging=p_logging)
+        FctSuccess.__init__(self, p_logging=p_logging)
+        FctBroken.__init__(self, p_logging=p_logging)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
         self.set_latency(p_latency)
@@ -559,7 +559,8 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
         """
-        Custom method to reset the system to an initial/defined state. 
+        Custom method to reset the system to an initial/defined state. Use method _set_status() to
+        set the state.
 
         Parameters
         ----------
@@ -645,7 +646,9 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
                 return False
 
             # 1.2.2 Wait for the defined latency
-            sleep(self.get_latency().total_seconds())
+            latency = self.get_latency().total_seconds()
+            self.log(Log.C_LOG_TYPE_I, 'Waiting the system latency time of', str(latency), 'seconds...')
+            sleep(latency)
 
             # 1.2.3 Import state from executing system
             if not self._import_state():
@@ -722,7 +725,7 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
     def _import_state(self) -> bool:
         """
         Mode C_MODE_REAL only: imports state from an external system (for instance a real hardware). 
-        Please redefine. Please use method set_state() for internal update.
+        Please redefine. Please use method _set_state() for internal update.
 
         Returns
         -------
@@ -852,6 +855,8 @@ class Controller (EventManager):
         Unique id of the controller.
     p_name : str
         Optional name of the controller.
+    p_logging 
+        Log level (see class Log for more details). Default = Log.C_LOG_ALL.
     p_kwargs : dict
         Further keyword arguments specific to the controller.
 
@@ -865,15 +870,18 @@ class Controller (EventManager):
     C_EVENT_COMM_ERROR  = 'COMM_ERROR'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_id, p_name:str = '', **p_kwargs):
+    def __init__(self, p_id, p_name:str = '', p_logging : bool = Log.C_LOG_ALL, **p_kwargs):
         self._id        = p_id
         self._name      = p_name
         self._kwargs    = p_kwargs.copy()
 
         if self._name != '':
-            self.C_NAME = self.C_NAME + ' "' + self._name + '"'
+            self.C_NAME = self.C_NAME + ' ' + self._name
+
         self._sensors   = Set()
         self._actuators = Set()
+
+        EventManager.__init__(self, p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -941,7 +949,7 @@ class Controller (EventManager):
         Parameters
         ----------
         p_id
-            Id if the sensor.
+            Id of the sensor.
 
         Returns
         -------
@@ -950,15 +958,15 @@ class Controller (EventManager):
             C_EVENT_COMM_ERROR is raised additionally.
         """
 
-        self.log(Log.C_LOG_TYPE_I, 'Getting value of sensor "', p_id, '"...')
+        self.log(Log.C_LOG_TYPE_I, 'Getting value of sensor "' + str(p_id) + '"...')
         value = self._get_sensor_value(p_id)
 
         if value is None:
-            self.log(Log.C_LOG_TYPE_E, 'Value of sensor "', p_id, '" could not be determined')
+            self.log(Log.C_LOG_TYPE_E, 'Value of sensor "' + str(p_id) + '" could not be determined')
             self._raise_event( p_event_id=self.C_EVENT_COMM_ERROR, p_event_object=Event(p_raising_object=self, p_sensor_id=p_id) )
             return None
         else:
-            self.log(Log.C_LOG_TYPE_I, 'Value of sensor "', p_id, '" determined successfully')
+            self.log(Log.C_LOG_TYPE_I, 'Value of sensor "' + str(p_id) + '" determined successfully')
             return value
 
 
@@ -970,7 +978,7 @@ class Controller (EventManager):
         Parameters
         ----------
         p_id
-            Id if the sensor.
+            Id of the sensor.
 
         Returns
         -------
@@ -1012,7 +1020,7 @@ class Controller (EventManager):
         Parameters
         ----------
         p_id
-            Id if the actuator.
+            Id of the actuator.
         p_value
             New actuator value.
 
@@ -1023,27 +1031,27 @@ class Controller (EventManager):
             additionally.
         """
 
-        self.log(Log.C_LOG_TYPE_I, 'Setting new value of actuator "', p_id, '"...')
-        successful = self._set_sensor_value(p_id=p_id, p_value=p_value)
+        self.log(Log.C_LOG_TYPE_I, 'Setting new value of actuator "' + str(p_id) + '"...')
+        successful = self._set_actuator_value(p_id=p_id, p_value=p_value)
 
         if not successful:
-            self.log(Log.C_LOG_TYPE_E, 'Value of actuator "', p_id, '" could not be set')
+            self.log(Log.C_LOG_TYPE_E, 'Value of actuator "' + str(p_id) + '" could not be set')
             self._raise_event(p_event_id=self.C_EVENT_COMM_ERROR, p_event_object=Event(p_raising_object=self, p_actuator_id=p_id))
             return False
         else:
-            self.log(Log.C_LOG_TYPE_I, 'Value of actuator "', p_id, '" set successfully')
+            self.log(Log.C_LOG_TYPE_I, 'Value of actuator "' + str(p_id) + '" set successfully')
             return True
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_sensor_value(self, p_id, p_value) -> bool:
+    def _set_actuator_value(self, p_id, p_value) -> bool:
         """
         Custom method to set an actuator value. See method set_sensor_value() for further details.
 
         Parameters
         ----------
         p_id
-            Id if the actuator.
+            Id of the actuator.
         p_value
             New actuator value.
 
@@ -1054,6 +1062,7 @@ class Controller (EventManager):
         """
 
         raise NotImplementedError
+
 
 
 
@@ -1081,17 +1090,32 @@ class System (SystemBase):
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL ):
 
-        super().__init__( p_mode=p_mode, 
-                          p_latency=p_latency, 
-                          p_fct_strans=p_fct_strans, 
-                          p_fct_success=p_fct_success, 
-                          p_fct_broken=p_fct_broken, 
-                          p_visualize=p_visualize, 
-                          p_logging=p_logging )
+        SystemBase.__init__( self,
+                             p_mode=p_mode, 
+                             p_latency=p_latency, 
+                             p_fct_strans=p_fct_strans, 
+                             p_fct_success=p_fct_success, 
+                             p_fct_broken=p_fct_broken, 
+                             p_visualize=p_visualize, 
+                             p_logging=p_logging )
 
         self._controllers       = []
         self._mapping_actions   = {}
         self._mapping_states    = {}
+
+    
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_seed=None) -> None:
+        """
+        Resets the system by calling method SystemBase.reset() and the related custom method _reset().
+        Furthermore, in real operation mode all assigned controllers are reset as well.
+        """
+
+        SystemBase.reset(self, p_seed)
+
+        if self.get_mode() == Mode.C_MODE_REAL:
+            for con in self._controllers: con.reset()
+            self._import_state()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1153,10 +1177,11 @@ class System (SystemBase):
         for state_dim_id in self._state_space.get_dim_ids():
             mapping = self._mapping_states[state_dim_id]
             sensor_value = mapping[0].get_sensor_value( p_id = mapping[1] )
+
             if sensor_value is None: 
                 successful = False
             else:
-                new_state.set_value(p_dim_id=state_dim_id, p_value = mapping[0].get_sensor_value( p_id = mapping[1] ) )
+                new_state.set_value(p_dim_id=state_dim_id, p_value = sensor_value )
 
         if not successful: 
             self.log(Log.C_LOG_TYPE_E, 'State import failed')
@@ -1193,4 +1218,3 @@ class System (SystemBase):
         else:
             self.log(Log.C_LOG_TYPE_I, 'Action exported successfully')
             return True
-        
