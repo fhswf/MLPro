@@ -52,7 +52,8 @@ jobs:
         pip install hyperopt
         pip install optuna
         pip install transformations
-        pip install sklearn
+#        pip install sklearn
+        pip install scikit-learn
         pip install river
         pip install openml
     - name: Lint with flake8

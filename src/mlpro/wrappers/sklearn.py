@@ -44,11 +44,11 @@ class WrStreamProviderSklearn (Wrapper, StreamProvider):
     Wrapper class for Sklearn as StreamProvider
     """
 
-    C_NAME              = 'Stream Provider Sklearn'
-    C_WRAPPED_PACKAGE   = 'sklearn'
+    C_NAME              = 'Stream Provider Scikit-learn'
+    C_WRAPPED_PACKAGE   = 'scikit-learn'
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
-    C_SCIREF_AUTHOR     = 'sklearn'
+    C_SCIREF_AUTHOR     = 'Scikit-learn'
     C_SCIREF_URL        = 'https://scikit-learn.org'
 
     _load_utils = [
