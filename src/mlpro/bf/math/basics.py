@@ -25,10 +25,11 @@
 ## -- 2022-10-08  1.6.0     DA       New method Set.get_dims()
 ## -- 2022-10-21  1.7.0     DA       Class Dimension: extension by optional property symmetry
 ## -- 2022-10-24  1.8.0     DA       Class Element: new method copy()
+## -- 2022-12-05  1.9.0     DA       Class Dimension: new param p_kwargs and method get_kwargs()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2022-10-24)
+Ver. 1.9.0 (2022-12-05)
 
 This module provides basic mathematical classes.
 """
@@ -72,8 +73,11 @@ class Dimension (EventManager):
         Information about the symmetry of the dimension (optional, default is False)
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-
+    p_kwargs : dict
+        Further optional keyword parameters.
     """
+
+    C_TYPE              = 'Dimension'
 
     C_BASE_SET_R        = 'R'           # real numbers
     C_BASE_SET_N        = 'N'           # natural numbers
@@ -93,19 +97,21 @@ class Dimension (EventManager):
                   p_boundaries:list=[], 
                   p_description='',
                   p_symmetrical:bool=False,
-                  p_logging=Log.C_LOG_NOTHING ):
+                  p_logging=Log.C_LOG_NOTHING,
+                  **p_kwargs ):
 
         EventManager.__init__(self, p_logging=p_logging)
 
         self._id = str(uuid.uuid4())
-        self._name_short = p_name_short
-        self._base_set = p_base_set
-        self._name_long = p_name_long
-        self._name_latex = p_name_latex
-        self._unit = p_unit
-        self._unit_latex = p_unit_latex
-        self._description = p_description
-        self._symmetrical = p_symmetrical
+        self._name_short    = self.C_NAME = p_name_short
+        self._base_set      = p_base_set
+        self._name_long     = p_name_long
+        self._name_latex    = p_name_latex
+        self._unit          = p_unit
+        self._unit_latex    = p_unit_latex
+        self._description   = p_description
+        self._symmetrical   = p_symmetrical
+        self._kwargs        = p_kwargs.copy()
 
         self.set_boundaries(p_boundaries=p_boundaries)
 
@@ -182,6 +188,11 @@ class Dimension (EventManager):
 ## -------------------------------------------------------------------------------------------------
     def get_symmetrical(self) -> bool:
         return self._symmetrical
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_kwargs(self) -> dict:
+        return self._kwargs
 
 
 ## -------------------------------------------------------------------------------------------------

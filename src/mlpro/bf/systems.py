@@ -8,11 +8,12 @@
 ## -- 2022-11-29  1.0.0     DA       Creation 
 ## -- 2022-11-30  1.0.1     DA       Class System: corrections and deviating default implementations
 ## --                                for custom methods _compute_success(), _compute_broken()
+## -- 2022-12-05  1.1.0     DA       New classes SystemBase, Sensor, Actuator, Controller
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.1 (2022-11-30)
+Ver. 1.1.0 (2022-12-05)
 
 This module provides models and templates for state based systems.
 """
@@ -384,9 +385,9 @@ class FctBroken (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObject):
+class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObject):
     """
-    Template class for state based systems.
+    Base class for state based systems.
 
     Parameters
     ----------
@@ -424,7 +425,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObjec
         Internal function for state evaluation 'broken'.
     """
 
-    C_TYPE          = 'System'
+    C_TYPE          = 'System Base'
 
     C_LATENCY       = timedelta(0, 1, 0)  # Default latency 1s
 
@@ -438,14 +439,14 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObjec
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
 
-        self._fct_strans   = p_fct_strans
-        self._fct_success  = p_fct_success
-        self._fct_broken   = p_fct_broken
-        self._state_space  = None
-        self._action_space = None
-        self._state        = None
-        self._prev_state   = None
-        self._last_action  = None
+        self._fct_strans            = p_fct_strans
+        self._fct_success           = p_fct_success
+        self._fct_broken            = p_fct_broken
+        self._state_space : MSpace  = None
+        self._action_space : MSpace = None
+        self._state                 = None
+        self._prev_state            = None
+        self._last_action           = None
 
         FctSTrans.__init__(self, p_logging=Log.C_LOG_NOTHING)
         FctSuccess.__init__(self, p_logging=Log.C_LOG_NOTHING)
@@ -808,3 +809,388 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObjec
     def get_broken(self) -> bool:
         if self._state is None: return False
         return self._state.get_broken()
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Sensor (Dimension):
+    """
+    Template for a sensor.
+    """
+    
+    C_TYPE      = 'Sensor'
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Actuator (Dimension):
+    """
+    Template for an actuator.
+    """
+    
+    C_TYPE      = 'Actuator'
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Controller (EventManager):
+    """
+    Template for a controller that enables access to sensors and actuators.
+
+    Parameters
+    ----------
+    p_id
+        Unique id of the controller.
+    p_name : str
+        Optional name of the controller.
+    p_kwargs : dict
+        Further keyword arguments specific to the controller.
+
+    Attributes
+    ----------
+    C_EVENT_COMM_ERROR
+        Event that is raised on a communication error
+    """
+
+    C_TYPE              = 'Controller'
+    C_EVENT_COMM_ERROR  = 'COMM_ERROR'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_id, p_name:str = '', **p_kwargs):
+        self._id        = p_id
+        self._name      = p_name
+        self._kwargs    = p_kwargs.copy()
+
+        if self._name != '':
+            self.C_NAME = self.C_NAME + ' "' + self._name + '"'
+        self._sensors   = Set()
+        self._actuators = Set()
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self) -> bool:
+        """
+        Resets the controller by calling custom method _reset().
+
+        Returns
+        -------
+        result : bool
+            True, if successful. False otherwise. Additionally event C_EVENT_COMM_ERROR is raised.
+        """
+
+        self.log(Log.C_LOG_TYPE_I, 'Reset started')
+        if not self._reset():
+            self.log(Log.C_LOG_TYPE_E, 'Reset failed')
+            self._raise_event(self.C_EVENT_COMM_ERROR, Event(p_raising_object=self))
+            return False
+        else:
+            self.log(Log.C_LOG_TYPE_I, 'Reset finished successfully')
+            return True
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self) -> bool:
+        """
+        Custom reset method.
+
+        Returns
+        -------
+        result : bool
+            True, if successful. False otherwise. 
+        """
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_sensor(self, p_sensor : Sensor):
+        """
+        Adds a sensor to the controller.
+
+        Parameters
+        ----------
+        p_sensor : Sensor
+            Sensor object to be added.
+        """
+
+        self._sensors.add_dim(p_dim=p_sensor)
+
+    
+## -------------------------------------------------------------------------------------------------
+    def get_sensor(self, p_id) -> Sensor:
+        """
+        Returns a sensor.
+        """
+
+        return self._sensors.get_dim(p_id=p_id)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_sensor_value(self, p_id):
+        """
+        Deternines the value of a sensor by calling custom method _get_sensor_value().
+
+        Parameters
+        ----------
+        p_id
+            Id if the sensor.
+
+        Returns
+        -------
+        value
+            Current value of the sensor or None on a communication error. In that case, event 
+            C_EVENT_COMM_ERROR is raised additionally.
+        """
+
+        self.log(Log.C_LOG_TYPE_I, 'Getting value of sensor "', p_id, '"...')
+        value = self._get_sensor_value(p_id)
+
+        if value is None:
+            self.log(Log.C_LOG_TYPE_E, 'Value of sensor "', p_id, '" could not be determined')
+            self._raise_event( p_event_id=self.C_EVENT_COMM_ERROR, p_event_object=Event(p_raising_object=self, p_sensor_id=p_id) )
+            return None
+        else:
+            self.log(Log.C_LOG_TYPE_I, 'Value of sensor "', p_id, '" determined successfully')
+            return value
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_sensor_value(self, p_id):
+        """
+        Custom method to get a sensor value. See method get_sensor_value() for further details.
+
+        Parameters
+        ----------
+        p_id
+            Id if the sensor.
+
+        Returns
+        -------
+        value
+            Current value of the sensor or None on a communication error.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_actuator(self, p_actuator : Actuator):
+        """
+        Adds an actuator to the controller.
+
+        Parameters
+        ----------
+        p_actuator : Actuator
+            Actuator object to be added.
+        """
+
+        self._actuators.add_dim(p_dim=p_actuator)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_actuator(self, p_id) -> Actuator:
+        """
+        Returns an actuator.
+        """
+
+        return self._actuators.get_dim(p_id=p_id)
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_actuator_value(self, p_id, p_value) -> bool:
+        """
+        Sets the value of an actuator by calling custom method _set_actuatur_value().
+
+        Parameters
+        ----------
+        p_id
+            Id if the actuator.
+        p_value
+            New actuator value.
+
+        Returns
+        -------
+        successful : bool
+            True, if successful. False otherwise. In that case, event C_EVENT_COMM_ERROR is raised
+            additionally.
+        """
+
+        self.log(Log.C_LOG_TYPE_I, 'Setting new value of actuator "', p_id, '"...')
+        successful = self._set_sensor_value(p_id=p_id, p_value=p_value)
+
+        if not successful:
+            self.log(Log.C_LOG_TYPE_E, 'Value of actuator "', p_id, '" could not be set')
+            self._raise_event(p_event_id=self.C_EVENT_COMM_ERROR, p_event_object=Event(p_raising_object=self, p_actuator_id=p_id))
+            return False
+        else:
+            self.log(Log.C_LOG_TYPE_I, 'Value of actuator "', p_id, '" set successfully')
+            return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _set_sensor_value(self, p_id, p_value) -> bool:
+        """
+        Custom method to set an actuator value. See method set_sensor_value() for further details.
+
+        Parameters
+        ----------
+        p_id
+            Id if the actuator.
+        p_value
+            New actuator value.
+
+        Returns
+        -------
+        successful : bool
+            True, if successful. False otherwise.
+        """
+
+        raise NotImplementedError
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class System (SystemBase):
+    """
+    Template for more specific state based systems focussing on hardware control. In addition
+    to class SystemBase a controller management is added to access external hardware in mode
+    C_MODE_REAL.
+
+    See class SystemBase for further detais.
+    """
+
+    C_TYPE      = 'System'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_mode = Mode.C_MODE_SIM, 
+                  p_latency : timedelta = None, 
+                  p_fct_strans : FctSTrans = None, 
+                  p_fct_success : FctSuccess = None, 
+                  p_fct_broken : FctBroken = None, 
+                  p_visualize : bool = False, 
+                  p_logging = Log.C_LOG_ALL ):
+
+        super().__init__( p_mode=p_mode, 
+                          p_latency=p_latency, 
+                          p_fct_strans=p_fct_strans, 
+                          p_fct_success=p_fct_success, 
+                          p_fct_broken=p_fct_broken, 
+                          p_visualize=p_visualize, 
+                          p_logging=p_logging )
+
+        self._controllers       = []
+        self._mapping_actions   = {}
+        self._mapping_states    = {}
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_controller(self, p_controller : Controller, p_mapping : list) -> bool:
+        """
+        Adds a controller and a related mapping of states and actions to sensors and actuators.
+
+        Parameters
+        ----------
+        p_controller : Controller
+            Controller object to be added.
+        p_mapping : list
+            A list of mapping tuples following the syntax ( [Type = 'S' or 'A'], [Id state/action] [Id sensor/actuator] )
+
+        Returns
+        -------
+        successful : bool
+            True, if controller and related mapping was added successfully. False otherwise.
+        """
+
+        # 1 Check of mapping entries
+        for entry in p_mapping:
+            if entry[0] == 'S':
+                try:
+                    self._state_space.get_dim(p_id=entry[1])
+                except:
+                    raise ParamError('Invalid state component id "' + str(entry[1] + '"'))
+                    
+            elif entry[0] == 'A':
+                try:
+                    self._action_space.get_dim(p_id=entry[1])
+                except:
+                    raise ParamError('Invalid action component id "' + str(entry[1] + '"'))
+
+            else:
+                raise ParamError('Type "' + entry[0] + '" not valid!')
+
+
+        # 2 Takeover of mapping entries and controller
+        for entry in p_mapping:
+            if entry[0] == 'S':
+                self._mapping_states[entry[1]] = ( p_controller, entry[2] )
+            else:
+                self._mapping_actions[entry[1]] = ( p_controller, entry[2] )
+
+        self._controllers.append(p_controller)
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _import_state(self) -> bool:
+
+        # 1 Initialization
+        new_state  = State( p_state_space=self._state_space )
+        successful = True
+        self.log(Log.C_LOG_TYPE_I, 'Start importing state...')
+
+        # 2 Import of all related sensor values 
+        for state_dim_id in self._state_space.get_dim_ids():
+            mapping = self._mapping_states[state_dim_id]
+            sensor_value = mapping[0].get_sensor_value( p_id = mapping[1] )
+            if sensor_value is None: 
+                successful = False
+            else:
+                new_state.set_value(p_dim_id=state_dim_id, p_value = mapping[0].get_sensor_value( p_id = mapping[1] ) )
+
+        if not successful: 
+            self.log(Log.C_LOG_TYPE_E, 'State import failed')
+            return False
+
+        # 3 Assessment of new state
+        new_state.set_success( self.compute_success(new_state) )
+        new_state.set_broken( self.compute_broken(new_state) )
+
+        # 4 Set new state
+        self._set_state(p_state=new_state)
+        self.log(Log.C_LOG_TYPE_I, 'State imported successfully')
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _export_action(self, p_action: Action) -> bool:
+
+        # 1 Initialization
+        successful = True
+        self.log(Log.C_LOG_TYPE_I, 'Start exporting action...')
+
+        for agent_id in p_action.get_agent_ids():
+            action_elem = p_action.get_elem(p_id=agent_id)
+
+            for action_dim_id in action_elem.get_dim_ids():
+                mapping = self._mapping_actions[action_dim_id]
+                actuator_value = action_elem.get_value(p_dim_id=action_dim_id)
+                successful = successful and mapping[0].set_actuator_value(p_id=mapping[1], p_value=actuator_value)
+
+        if not successful:
+            self.log(Log.C_LOG_TYPE_E, 'Action export failed')
+            return False
+        else:
+            self.log(Log.C_LOG_TYPE_I, 'Action exported successfully')
+            return True
+        
