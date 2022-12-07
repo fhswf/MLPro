@@ -174,7 +174,7 @@ class NormalizerMinMax (Normalizer):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def update_parameters(self, p_set:Set=None, p_boundaries=None):
+    def update_parameters(self, p_set:Set=None, p_boundaries:Union[list, np.ndarray]=None):
         """
         Method to update the normalization parameters of MinMax normalizer.
 
