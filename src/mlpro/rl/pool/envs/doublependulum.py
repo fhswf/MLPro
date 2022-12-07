@@ -184,10 +184,10 @@ class DoublePendulumRoot (Environment):
     C_RST_BALANCING_001 = 'rst_001'
     C_RST_BALANCING_002 = 'rst_002'
     C_RST_SWINGING_001  = 'rst_003'
-    C_RST_SWINGING_OUTER_POLE_001 = 'rst_0040'
+    C_RST_SWINGING_OUTER_POLE_001 = 'rst_004'
     C_VALID_RST_BALANCING = ['rst_001','rst_002']
-    C_VALID_RST_SWINGING = ['rst003']
-    C_VALID_RST_SWINGING_OUTER_POLE = ['rst004']
+    C_VALID_RST_SWINGING = ['rst_003']
+    C_VALID_RST_SWINGING_OUTER_POLE = ['rst_004']
 
 ## -------------------------------------------------------------------------------------------------
     def __init__ ( self,
@@ -625,12 +625,14 @@ class DoublePendulumRoot (Environment):
         """
         current_reward = Reward()
         state_new = p_state_new.get_values().copy()
-        state_new[1,4] = [0,0]
+        state_new[1] = 0
+        state_new[4] = 0
         norm_state_new = State(self.get_state_space())
         norm_state_new.set_values(state_new)
 
         state_old = p_state_old.get_values().copy()
-        state_old[1, 4] = [0, 0]
+        state_old[1] = 0
+        state_old[4] = 0
         norm_state_old = State(self.get_state_space())
         norm_state_old.set_values(state_old)
         goal_state = self._target_state
@@ -677,8 +679,12 @@ class DoublePendulumRoot (Environment):
 
         term_1 = abs(p_state_old_normalized[0] - p_state_new_normalized[0])
 
-        term_2 = (abs(p_state_new_normalized[1]+p_state_new_normalized[4])
-                  - abs(p_state_old_normalized[1]+p_state_old_normalized[4]))
+        try:
+            term_2 = (abs(p_state_new_normalized[1]+p_state_new_normalized[4])
+                        - abs(p_state_old_normalized[1]+p_state_old_normalized[4]))
+
+        except:
+            term_2 = (abs(p_state_new_normalized[1]) - abs(p_state_old_normalized[1]))
 
         current_reward.set_overall_reward(term_1+term_2)
         return current_reward
