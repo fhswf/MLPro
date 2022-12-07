@@ -198,7 +198,8 @@ class DoublePendulumRoot (Environment):
                    p_reward_trend: bool = False,
                    p_reward_window:int = 0,
                    p_random_range:list = None,
-                   p_balancing_range:list = [-10,10],
+                   p_balancing_range:list = (-36,36),
+                   p_swinging_outer_pole = (36,90),
                    p_break_swinging:bool = True,
                    p_logging=Log.C_LOG_ALL ):
 
@@ -215,6 +216,8 @@ class DoublePendulumRoot (Environment):
         self._init_angles = p_init_angles
         self._random_range = p_random_range
         self._balancing_range = p_balancing_range
+        self._swinging_outer_pole = p_swinging_outer_pole
+        self._swinging = (self._swinging_outer_pole, 180)
         self._break_swinging = p_break_swinging and p_balancing_range
 
         if self._init_angles not in self.C_VALID_ANGLES: raise ParamError("The initial angles are not valid")
@@ -453,7 +456,7 @@ class DoublePendulumRoot (Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old, p_state_new):
+    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
         This method calculates the reward for C_TYPE_OVERALL reward type. The current reward is based on the
         worst possible distance between two states and the best possible minimum distance between current and
@@ -468,7 +471,7 @@ class DoublePendulumRoot (Environment):
 
         Returns
         -------
-        reward : Reward
+        current_reward : Reward
             current calculated Reward values.
         """
 
@@ -487,16 +490,21 @@ class DoublePendulumRoot (Environment):
 ## ------------------------------------------------------------------------------------------------------
     def compute_reward_001(self, p_state_old:State=None, p_state_new:State=None):
         """
+        Reward strategy with only new normalized state
 
         Parameters
         ----------
-        p_state_old
-        p_state_new
+        p_state_old : State
+            Previous state.
+        p_state_new : State
+            New state.
 
         Returns
         -------
-
+        current_reward : Reward
+            current calculated Reward values.
         """
+
         current_reward = Reward()
         state = p_state_new.get_values().copy()
         p_state_normalized = self._normalize(state)
@@ -534,15 +542,19 @@ class DoublePendulumRoot (Environment):
 ## ------------------------------------------------------------------------------------------------------
     def compute_reward_002(self, p_state_old:State=None, p_state_new:State=None):
         """
+        Reward strategy with both new and old normalized state based on euclidean distance from the goal state
 
         Parameters
         ----------
-        p_state_old
-        p_state_new
+        p_state_old : State
+            Previous state.
+        p_state_new : State
+            New state.
 
         Returns
         -------
-
+        current_reward : Reward
+            current calculated Reward values.
         """
         current_reward = Reward()
         state_new = p_state_new.get_values().copy()
@@ -563,6 +575,89 @@ class DoublePendulumRoot (Environment):
         current_reward.set_overall_reward(d)
 
         return current_reward
+
+
+## ------------------------------------------------------------------------------------------------------
+    def compute_reward_003(self, p_state_old: State = None, p_state_new: State = None):
+        """
+        Reward strategy with both new and old normalized state based on euclidean distance from the goal state,
+        designed for the swinging of outer pole. Both angles and velocity and acceleration of the outer pole are
+        considered for the reward computation.
+
+        Parameters
+        ----------
+        p_state_old : State
+            Previous state.
+        p_state_new : State
+            New state.
+
+        Returns
+        -------
+        current_reward : Reward
+            current calculated Reward values.
+        """
+        current_reward = Reward()
+        state_new = p_state_new.get_values().copy()
+        p_state_new_normalized = self._normalize(state_new)
+        p_state_new_normalized[1,4] = [0,0]
+        norm_state_new = State(self.get_state_space())
+        norm_state_new.set_values(p_state_new_normalized)
+
+        state_old = p_state_old.get_values().copy()
+        p_state_old_normalized = self._normalize(state_old)
+        p_state_old_normalized[1, 4] = [0, 0]
+        norm_state_old = State(self.get_state_space())
+        norm_state_old.set_values(p_state_old_normalized)
+        goal_state = self._target_state
+
+        d_old = abs(self.get_state_space().distance(goal_state, norm_state_old))
+        d_new = abs(self.get_state_space().distance(goal_state, norm_state_new))
+        d = d_old - d_new
+
+        current_reward.set_overall_reward(d)
+
+        return current_reward
+
+## ------------------------------------------------------------------------------------------------------
+    def compute_reward_004(self, p_state_old: State = None, p_state_new: State = None):
+        """
+        Reward strategy with both new and old normalized state based on euclidean distance from the goal state,
+        designed for the swinging up region. Both angles and velocity and acceleration of the outer pole are
+        considered for the reward computation.
+
+        The reward strategy is as follows:
+
+        reward = (|old_theta1n| - |new_theta1n|) + (|new_omega1n + new_alpha1n| - |old_omega1n + old_alpha1n|)
+
+        Parameters
+        ----------
+        p_state_old : State
+            Previous state.
+        p_state_new : State
+            New state.
+
+        Returns
+        -------
+        current_reward : Reward
+            current calculated Reward values.
+        """
+        current_reward = Reward()
+        state_new = p_state_new.get_values().copy()
+        p_state_new_normalized = self._normalize(state_new)
+
+
+        state_old = p_state_old.get_values().copy()
+        p_state_old_normalized = self._normalize(state_old)
+
+
+        term_1 = abs(p_state_old_normalized[0] - p_state_new_normalized[0])
+
+        term_2 = (abs(p_state_new_normalized[1]+p_state_new_normalized[4])
+                  - abs(p_state_old_normalized[1]+p_state_old_normalized[4]))
+
+        current_reward.set_overall_reward(term_1+term_2)
+        return current_reward
+
 
 ## ------------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
@@ -619,7 +714,7 @@ class DoublePendulumRoot (Environment):
 
         Returns
         -------
-        state:State
+        state
             Normalized state values
 
         """
@@ -878,12 +973,12 @@ class DoublePendulumS4 (DoublePendulumRoot):
 
         Parameters
         ----------
-        p_state:State
+        p_state
             The state to be normalized
 
         Returns
         -------
-        state:State
+        state
             Normalized state values
 
         """
