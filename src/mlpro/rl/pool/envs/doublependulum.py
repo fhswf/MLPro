@@ -60,10 +60,12 @@
 ## -- 2022-11-18  2.2.2     LSB      reward strategies, broken computation, balancing and swinging
 ## -- 2022-11-20  2.2.3     LSB      Reward Window, reward trend, reward strategies, balancing
 ##                                   and swinging zones
+## -- 2022-12-07  2.2.4     LSB      - updated the reward strategy
+##                                   - removed constructor of S4 class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.3 (2022-11-dd)
+Ver. 2.2.4 (2022-12-07)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -129,6 +131,8 @@ class DoublePendulumRoot (Environment):
         Reward strategy to be used for the balancing region of the environment
     p_rst_swinging
         Reward strategy to be used for the swinging region of the environment
+    p_rst_swinging_outer_pole
+        Reward Strategy to be used for swinging up outer pole
     p_reward_trend:bool
         Boolean value stating whether to plot reward trend
     p_reward_window:int
@@ -137,6 +141,8 @@ class DoublePendulumRoot (Environment):
         The boundaries for state space for initialization of environment randomly
     p_balancing range:list
         The boundaries for state space of environment in balancing region
+    p_swinging_outer_pole_range
+        The boundaries for state space of environment in swinging of outer pole region
     p_break_swinging:bool
         Boolean value stating whether the environment shall be broken outside the balancing region
     p_logging
@@ -177,8 +183,12 @@ class DoublePendulumRoot (Environment):
 
     C_RST_BALANCING_001 = 'rst_001'
     C_RST_BALANCING_002 = 'rst_002'
+    C_RST_SWINGING_001  = 'rst_003'
+    C_RST_SWINGING_OUTER_POLE_001 = 'rst_0040'
     C_VALID_RST_BALANCING = ['rst_001','rst_002']
-    C_VALID_RST_REWARD = []
+    C_VALID_RST_SWINGING = ['rst003']
+    C_VALID_RST_SWINGING_OUTER_POLE = ['rst004']
+
 ## -------------------------------------------------------------------------------------------------
     def __init__ ( self,
                    p_mode = Mode.C_MODE_SIM,
@@ -194,13 +204,14 @@ class DoublePendulumRoot (Environment):
                    p_visualize:bool=False,
                    p_plot_level:int=2,
                    p_rst_balancing = C_RST_BALANCING_002,
-                   p_rst_swinging = None,
+                   p_rst_swinging = C_RST_SWINGING_001,
+                   p_rst_swinging_outer_pole = C_RST_SWINGING_OUTER_POLE_001,
                    p_reward_trend: bool = False,
                    p_reward_window:int = 0,
                    p_random_range:list = None,
-                   p_balancing_range:list = (-36,36),
-                   p_swinging_outer_pole = (36,90),
-                   p_break_swinging:bool = True,
+                   p_balancing_range:list = (-0.2,0.2),
+                   p_swinging_outer_pole_range = (0.2,0.5),
+                   p_break_swinging:bool = False,
                    p_logging=Log.C_LOG_ALL ):
 
         self._max_torque = p_max_torque
@@ -216,8 +227,8 @@ class DoublePendulumRoot (Environment):
         self._init_angles = p_init_angles
         self._random_range = p_random_range
         self._balancing_range = p_balancing_range
-        self._swinging_outer_pole = p_swinging_outer_pole
-        self._swinging = (self._swinging_outer_pole, 180)
+        self._swinging_outer_pole_range = p_swinging_outer_pole_range
+        self._swinging = (self._swinging_outer_pole_range, 180)
         self._break_swinging = p_break_swinging and p_balancing_range
 
         if self._init_angles not in self.C_VALID_ANGLES: raise ParamError("The initial angles are not valid")
@@ -231,8 +242,12 @@ class DoublePendulumRoot (Environment):
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
         self._rst_balancing = p_rst_balancing
+        self._rst_swinging = p_rst_swinging
+        self._rst_swinging_outer_pole = p_rst_swinging_outer_pole
         self._rst_methods = {DoublePendulumRoot.C_RST_BALANCING_001:self.compute_reward_001,
-                            DoublePendulumRoot.C_RST_BALANCING_002:self.compute_reward_002}
+                             DoublePendulumRoot.C_RST_BALANCING_002:self.compute_reward_002,
+                             DoublePendulumRoot.C_RST_SWINGING_001:self.compute_reward_003,
+                             DoublePendulumRoot.C_RST_SWINGING_OUTER_POLE_001:self.compute_reward_004}
         if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
             self._reward_history = []
             self._reward_trend = p_reward_trend
@@ -240,6 +255,8 @@ class DoublePendulumRoot (Environment):
 
 
         self._state = State(self._state_space)
+        self._target_state = State(self._state_space)
+        self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
         self.reset()
 
 
@@ -474,12 +491,24 @@ class DoublePendulumRoot (Environment):
         current_reward : Reward
             current calculated Reward values.
         """
+        if (abs(p_state_new.get_values()[0]) <= 0.2 and abs(p_state_new.get_values()[2] <= 0.2)):
+            if self._rst_balancing in self.C_VALID_RST_BALANCING:
+                current_reward = self._rst_methods[self._rst_balancing](p_state_old, p_state_new)
+            else:
+                raise AttributeError('Reward strategy does not exist.')
 
-        if self._rst_balancing in self.C_VALID_RST_BALANCING:
-            current_reward = self._rst_methods[self._rst_balancing](p_state_old, p_state_new)
+        elif (0.5 >= abs(p_state_new.get_values()[0]) > 0.2):
+            if self._rst_swinging_outer_pole in self.C_VALID_RST_SWINGING_OUTER_POLE:
+                current_reward = self._rst_methods[self._rst_swinging_outer_pole](p_state_old, p_state_new)
+            else:
+                raise AttributeError('Reward strategy does not exist.')
 
         else:
-            raise AttributeError('Reward strategy does not exist.')
+            if self._rst_swinging in self.C_VALID_RST_SWINGING:
+                current_reward = self._rst_methods[self._rst_swinging](p_state_old, p_state_new)
+            else:
+                raise AttributeError('Reward strategy does not exist.')
+
         if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
             if self._reward_window != 0 and len(self._reward_history) >= self._reward_window:
                 self._reward_history.pop(0)
@@ -526,10 +555,9 @@ class DoublePendulumRoot (Environment):
         min_state = State(self.get_state_space())
         min_state.set_values(min_values)
 
-        # d_max = self.get_state_space().distance(max_state, min_state)
+
         d = self.get_state_space().distance(norm_state, goal_state)
-        # value = d_max - d
-        # current_reward.set_overall_reward(value)
+
 
         if d <= self.C_THRSH_GOAL:
             current_reward.set_overall_reward(1)
@@ -916,53 +944,6 @@ class DoublePendulumS4 (DoublePendulumRoot):
     """
 
     C_NAME = 'DoublePendulumS4'
-
-## ------------------------------------------------------------------------------------------------------
-    def __init__ ( self, 
-                   p_mode = Mode.C_MODE_SIM, 
-                   p_latency = None,
-                   p_max_torque=20,
-                   p_l1=1.0, 
-                   p_l2=1.0, 
-                   p_m1=1.0, 
-                   p_m2=1.0, 
-                   p_init_angles=DoublePendulumRoot.C_ANGLES_RND,
-                   p_g=9.8, 
-                   p_history_length=5, 
-                   p_visualize:bool=False,
-                   p_plot_level:int = 2,
-                   p_rst_balancing=DoublePendulumRoot.C_RST_BALANCING_002,
-                   p_rst_swinging=None,
-                   p_reward_trend: bool = False,
-                   p_reward_window: int = 0,
-                   p_random_range: list = None,
-                   p_balancing_range: list = None,
-                   p_break_swinging=True,
-                   p_logging=Log.C_LOG_ALL ):
-
-        super().__init__( p_mode=p_mode,
-                          p_latency=p_latency,
-                          p_max_torque=p_max_torque,
-                          p_l1=p_l1,
-                          p_l2=p_l2,
-                          p_m1=p_m1,
-                          p_m2=p_m2,
-                          p_init_angles=p_init_angles,
-                          p_g=p_g,
-                          p_history_length=p_history_length,
-                          p_visualize=p_visualize,
-                          p_plot_level = p_plot_level,
-                          p_rst_balancing = p_rst_balancing,
-                          p_rst_swinging = p_rst_swinging,
-                          p_reward_trend = p_reward_trend,
-                          p_reward_window =p_reward_window,
-                          p_random_range=p_random_range,
-                          p_balancing_range=p_balancing_range,
-                          p_break_swinging=p_break_swinging,
-                          p_logging=p_logging)
-
-        self._target_state = State(self._state_space)
-        self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
 
 
 ## ------------------------------------------------------------------------------------------------------
