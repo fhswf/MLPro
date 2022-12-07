@@ -491,21 +491,32 @@ class DoublePendulumRoot (Environment):
         current_reward : Reward
             current calculated Reward values.
         """
-        if (abs(p_state_new.get_values()[0]) <= 0.2 and abs(p_state_new.get_values()[2] <= 0.2)):
+
+        state_new = p_state_new.get_values().copy()
+        p_state_new_normalized = self._normalize(state_new)
+        norm_state_new = State(self.get_state_space())
+        norm_state_new.set_values(p_state_new_normalized)
+
+        state_old = p_state_old.get_values().copy()
+        p_state_old_normalized = self._normalize(state_old)
+        norm_state_old = State(self.get_state_space())
+        norm_state_old.set_values(p_state_old_normalized)
+
+        if (abs(p_state_new_normalized[0]) <= 0.2 and abs(p_state_new_normalized[2] <= 0.2)):
             if self._rst_balancing in self.C_VALID_RST_BALANCING:
-                current_reward = self._rst_methods[self._rst_balancing](p_state_old, p_state_new)
+                current_reward = self._rst_methods[self._rst_balancing](norm_state_old, norm_state_new)
             else:
                 raise AttributeError('Reward strategy does not exist.')
 
-        elif (0.5 >= abs(p_state_new.get_values()[0]) > 0.2):
+        elif (0.5 >= abs(p_state_new_normalized[0]) > 0.2):
             if self._rst_swinging_outer_pole in self.C_VALID_RST_SWINGING_OUTER_POLE:
-                current_reward = self._rst_methods[self._rst_swinging_outer_pole](p_state_old, p_state_new)
+                current_reward = self._rst_methods[self._rst_swinging_outer_pole](norm_state_old, norm_state_new)
             else:
                 raise AttributeError('Reward strategy does not exist.')
 
         else:
             if self._rst_swinging in self.C_VALID_RST_SWINGING:
-                current_reward = self._rst_methods[self._rst_swinging](p_state_old, p_state_new)
+                current_reward = self._rst_methods[self._rst_swinging](norm_state_old, norm_state_new)
             else:
                 raise AttributeError('Reward strategy does not exist.')
 
@@ -524,21 +535,17 @@ class DoublePendulumRoot (Environment):
         Parameters
         ----------
         p_state_old : State
-            Previous state.
+            Normalized old state.
         p_state_new : State
-            New state.
+            Normalized new state.
 
         Returns
         -------
         current_reward : Reward
             current calculated Reward values.
         """
-
         current_reward = Reward()
-        state = p_state_new.get_values().copy()
-        p_state_normalized = self._normalize(state)
-        norm_state = State(self.get_state_space())
-        norm_state.set_values(p_state_normalized)
+
         goal_state = self._target_state
 
         max_values = []
@@ -556,7 +563,7 @@ class DoublePendulumRoot (Environment):
         min_state.set_values(min_values)
 
 
-        d = self.get_state_space().distance(norm_state, goal_state)
+        d = self.get_state_space().distance(p_state_new, goal_state)
 
 
         if d <= self.C_THRSH_GOAL:
@@ -575,9 +582,9 @@ class DoublePendulumRoot (Environment):
         Parameters
         ----------
         p_state_old : State
-            Previous state.
+            Normalized old state.
         p_state_new : State
-            New state.
+            Normalized new state.
 
         Returns
         -------
@@ -585,19 +592,11 @@ class DoublePendulumRoot (Environment):
             current calculated Reward values.
         """
         current_reward = Reward()
-        state_new = p_state_new.get_values().copy()
-        p_state_new_normalized = self._normalize(state_new)
-        norm_state_new = State(self.get_state_space())
-        norm_state_new.set_values(p_state_new_normalized)
 
-        state_old = p_state_old.get_values().copy()
-        p_state_old_normalized = self._normalize(state_old)
-        norm_state_old = State(self.get_state_space())
-        norm_state_old.set_values(p_state_old_normalized)
         goal_state = self._target_state
 
-        d_old = abs(self.get_state_space().distance(goal_state, norm_state_old))
-        d_new = abs(self.get_state_space().distance(goal_state, norm_state_new))
+        d_old = abs(self.get_state_space().distance(goal_state, p_state_old))
+        d_new = abs(self.get_state_space().distance(goal_state, p_state_new))
         d = d_old - d_new
 
         current_reward.set_overall_reward(d)
@@ -615,9 +614,9 @@ class DoublePendulumRoot (Environment):
         Parameters
         ----------
         p_state_old : State
-            Previous state.
+            Normalized old state.
         p_state_new : State
-            New state.
+            Normalized new state.
 
         Returns
         -------
@@ -626,16 +625,14 @@ class DoublePendulumRoot (Environment):
         """
         current_reward = Reward()
         state_new = p_state_new.get_values().copy()
-        p_state_new_normalized = self._normalize(state_new)
-        p_state_new_normalized[1,4] = [0,0]
+        state_new[1,4] = [0,0]
         norm_state_new = State(self.get_state_space())
-        norm_state_new.set_values(p_state_new_normalized)
+        norm_state_new.set_values(state_new)
 
         state_old = p_state_old.get_values().copy()
-        p_state_old_normalized = self._normalize(state_old)
-        p_state_old_normalized[1, 4] = [0, 0]
+        state_old[1, 4] = [0, 0]
         norm_state_old = State(self.get_state_space())
-        norm_state_old.set_values(p_state_old_normalized)
+        norm_state_old.set_values(state_old)
         goal_state = self._target_state
 
         d_old = abs(self.get_state_space().distance(goal_state, norm_state_old))
@@ -660,9 +657,9 @@ class DoublePendulumRoot (Environment):
         Parameters
         ----------
         p_state_old : State
-            Previous state.
+            Normalized old state.
         p_state_new : State
-            New state.
+            Normalized new state.
 
         Returns
         -------
