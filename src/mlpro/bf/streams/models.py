@@ -30,10 +30,11 @@
 ## -- 2022-11-18  0.8.1     DA       Refactoring of try/except statements
 ## -- 2022-11-19  0.8.2     DA       Class Stream: new parameter p_name for methods *get_stream()
 ## -- 2022-11-22  0.9.0     DA       Classes StreamWorkflow, StreamScenario: plot functionality
+## -- 2022-12-08  0.9.1     DA       Classes StreamTask, StreamWorkflow: bugfixes on plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.0 (2022-11-22)
+Ver. 0.9.1 (2022-12-08)
 
 This module provides classes for standardized stream processing. 
 """
@@ -662,6 +663,11 @@ class StreamTask (Task):
                    p_step_rate: int = 0, 
                    **p_kwargs ):
 
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+
         self._plot_num_inst = 0
 
         Task.init_plot( self,
@@ -729,6 +735,11 @@ class StreamTask (Task):
         p_kwargs : dict
             Further optional plot parameters.
         """
+
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
 
         if p_inst_new is None:
             inst_new, inst_del = self.get_so().get_instances()
@@ -942,6 +953,11 @@ class StreamWorkflow (StreamTask, Workflow):
                    p_detail_level: int = 0, 
                    p_step_rate: int = 0, 
                    **p_kwargs ):
+
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
 
         self._plot_num_inst = 0
 

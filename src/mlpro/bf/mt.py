@@ -20,10 +20,11 @@
 ## --                                - Bugfix in method Workflow.init_plot()
 ## -- 2022-11-18  1.3.1     DA       Method Workflow._init_figure: support of different backend types
 ## -- 2022-11-22  1.3.2     DA       Class Async, Task, Workflow: corrections on plotting
+## -- 2022-12-08  1.3.3     DA       Classes Task, Workflow: bugfixes in plot methods
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-11-22)
+Ver. 1.3.3 (2022-12-08)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -693,6 +694,11 @@ class Task (Async, EventManager, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+
         self.log(Log.C_LOG_TYPE_I, 'Init plot')
         return Plottable.init_plot( self,
                                     p_figure=p_figure, 
@@ -768,6 +774,11 @@ class Task (Async, EventManager, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+
         self.log(Log.C_LOG_TYPE_I, 'Update plot')
         Plottable.update_plot(self, **p_kwargs)
 
@@ -947,6 +958,11 @@ class Workflow (Task):
             Further optional plot parameters.    
         """
 
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+
         Task.init_plot( self,
                         p_figure=p_figure, 
                         p_plot_settings=p_plot_settings, 
@@ -954,12 +970,7 @@ class Workflow (Task):
                         p_detail_level=p_detail_level, 
                         p_step_rate=p_step_rate, 
                          **p_kwargs )
-
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
-        
+      
         task:Task
         emb_task_pos_x  = 1
         emb_task_pos_y  = 1
