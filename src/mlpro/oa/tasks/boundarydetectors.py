@@ -7,15 +7,21 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-17  0.0.0     LSB      Creation
 ## -- 2022-10-21  1.0.0     LSB      Release
+## -- 2022-12-07  1.0.1     LSB      Refactoring for scaler factor
+## -- 2022-12-08  1.0.2     LSB      Compatibiltty for instance and Element objects
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-21)
+Ver. 1.0.2 (2022-12-08)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 
+
+from mlpro.bf.mt import Task as MLTask
+import mlpro.bf.streams.tasks.windows as windows
 from mlpro.oa import *
-from typing import Union, Iterable
+from typing import Union, Iterable, List
+
 
 
 
@@ -33,14 +39,32 @@ class BoundaryDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scaler:Union[float, Iterable], p_logging = Log.C_LOG_ALL):
+    def __init__(self,
+                 p_name:str = None,
+                 p_range_max = MLTask.C_RANGE_THREAD,
+                 p_ada : bool = True,
+                 p_duplicate_data : bool = False,
+                 p_visualize : bool = False,
+                 p_logging=Log.C_LOG_ALL,
+                 p_window: windows.Window = None,
+                 p_scaler:Union[float, Iterable] = None,
+                 **p_kwargs):
 
+
+        super().__init__(p_name = p_name,
+                         p_range_max = p_range_max,
+                         p_ada = p_ada,
+                         p_duplicate_data = p_duplicate_data,
+                         p_visualize = p_visualize,
+                         p_logging = p_logging)
+
+        self._window = p_window
         self._scaler = p_scaler
-        super().__init__(p_logging = p_logging)
+
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:list, p_inst_del:list):
+    def _adapt(self, p_inst_new:List[Instance], p_inst_del:List[Instance]):
         """
         Method to check if the new instances exceed the current boundaries of the Set.
 
@@ -54,24 +78,37 @@ class BoundaryDetector(OATask):
             bool
                 Returns true if there is a change of boundaries, false otherwise.
         """
+        if p_inst_new is None: return
+
+        if isinstance(p_inst_new[0], Instance):
+            inst_new = p_inst_new[0].get_feature_data()
+        else:
+            inst_new = p_inst_new[0]
+
+        if self._scaler is None:
+            self._scaler = np.ones(len(inst_new.get_values()))
         dim = []
-        for id in p_inst_new[0].get_related_set().get_dim_ids():
-            dim.append(p_inst_new[0].get_related_set().get_dim(id))
+        for id in inst_new.get_related_set().get_dim_ids():
+            dim.append(inst_new.get_related_set().get_dim(id))
         for inst in p_inst_new:
+            if isinstance(inst, Instance):
+                inst = inst.get_feature_data()
             for i,value in enumerate(inst.get_values()):
-                boundary = dim[i].get_boundaries()[0]
+                boundary = dim[i].get_boundaries()
+                if len(boundary) == 0:
+                    boundary = [0,0]
                 if value < boundary[0]:
-                    dim[i].set_boundaries([value, boundary[1]])
+                    dim[i].set_boundaries([value*self._scaler, boundary[1]])
                     return True
                 elif value > boundary[1]:
-                    dim[i].set_boundaries([boundary[0],value])
+                    dim[i].set_boundaries([boundary[0],value*self._scaler])
                     return True
                 else:
                     return False
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:list, p_inst_del:list):
+    def _run(self, p_inst_new:List[Element], p_inst_del:List[Element]):
         """
         Method to run the boundary detector task
 
@@ -83,7 +120,7 @@ class BoundaryDetector(OATask):
                 List of old obsolete instance/s removed from the workflow
         """
         if p_inst_new and not p_inst_del:
-            self.adapt(p_inst_new, p_inst_del)
+            self.adapt(p_inst_new=p_inst_new, p_inst_del=p_inst_del)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -102,6 +139,8 @@ class BoundaryDetector(OATask):
             bool
                 Returns true if adapted, false otherwise.
         """
+        if self._scaler is None:
+            self._scaler = np.ones(len(p_event_obj.get_data()["p_set"].get_dims()))
         adapted = False
         try:
             boundaries = self._scaler*p_event_obj.get_raising_object().get_boundaries()
@@ -112,3 +151,51 @@ class BoundaryDetector(OATask):
                     adapted = True
         except: raise ImplementationError("Event not raised by a window")
         return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+
+        Parameters
+        ----------
+        p_figure
+        p_settings
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+
+        Parameters
+        ----------
+        p_figure
+        p_settings
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+        """
+
+        Parameters
+        ----------
+        p_figure
+        p_settings
+
+        Returns
+        -------
+
+        """
+        pass

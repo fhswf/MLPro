@@ -9,10 +9,12 @@
 ## -- 2022-11-04  0.1.0     LSB      Removing class WindowR
 ## -- 2022-11-24  0.2.0     LSB      Implementations and release of nd plotting
 ## -- 2022-11-26  0.3.0     LSB      Implementations and release of 3-d plotting
+## -- 2022-12-08  1.0.0     LSB      Release
+## -- 2022-12-08  1.0.1     LSB      Compatilbility for both Instance and Element object
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2022-11-26)
+Ver. 1.0.1 (2022-12-08)
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
@@ -90,7 +92,7 @@ class Window(StreamTask):
 
         self._buffer = {}
         self._buffer_pos = 0
-        self._statistics_enabled = p_enable_statistics
+        self._statistics_enabled = p_enable_statistics or p_visualize
         self._numeric_buffer:np.ndarray = None
         self._numeric_features = []
 ## -------------------------------------------------------------------------------------------------
@@ -107,7 +109,9 @@ class Window(StreamTask):
         """
         if p_inst_new:
             for i in p_inst_new:
-                if not self._numeric_buffer and self._statistics_enabled:
+                if isinstance(i, Instance):
+                    i = i.get_feature_data()
+                if self._numeric_buffer is None and self._statistics_enabled:
                     for j in i.get_dim_ids():
                         if i.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
                                                                              Dimension.C_BASE_SET_R,
@@ -123,8 +127,7 @@ class Window(StreamTask):
                     # raises an event, and stores the new instances and continues the loop
 
                     self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
-                                                                       p_related_set=i.get_feature_data().
-                                                                           get_related_set()))
+                                                                       p_related_set=i.get_related_set()))
                     p_inst_del.append(self._buffer[self._buffer_pos])
                     self._buffer[self._buffer_pos] = i
                     if self._statistics_enabled:
@@ -167,9 +170,8 @@ class Window(StreamTask):
             boundaries:np.ndarray
                 Returns the current window boundaries in the form of a Numpy array.
         """
-        boundaries = np.stack(([np.min([self._buffer[i].get_feature_data().get_values() for i in self._buffer.keys()],
-            axis=0),
-                      np.max([self._buffer[i].get_feature_data().get_values() for i in self._buffer.keys()], axis=0)]), axis=1)
+        boundaries = np.stack(([np.min(self._numeric_buffer, axis=0),
+                      np.max(self._numeric_buffer, axis=0)]), axis=1)
         return boundaries
 
 

@@ -38,7 +38,7 @@ class MyStreamScenario(StreamScenario):
                                    p_visualize=p_visualize,
                                    p_logging=logging)
 
-        window_task = Window(p_buffer_size=30, p_name = 'Window-1', p_visualize = p_visualize)
+        window_task = Window(p_buffer_size=30, p_name = 'Window-1', p_visualize = p_visualize, p_enable_statistics=True)
 
         workflow.add_task(window_task)
 
