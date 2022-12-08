@@ -9,6 +9,7 @@
 ## -- 2022-11-04  0.1.0     LSB      Removing class WindowR
 ## -- 2022-11-24  0.2.0     LSB      Implementations and release of nd plotting
 ## -- 2022-11-26  0.3.0     LSB      Implementations and release of 3-d plotting
+## -- 2022-12-08  0.4.0     DA       Refactoring after changes on bf.streams
 ## -- 2022-12-08  1.0.0     LSB      Release
 ## -- 2022-12-08  1.0.1     LSB      Compatilbility for both Instance and Element object
 ## -------------------------------------------------------------------------------------------------
@@ -37,7 +38,7 @@ import matplotlib.colors as colors
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Window(StreamTask):
+class Window (StreamTask):
     """
     This is the base class for window implementations
 
@@ -56,14 +57,13 @@ class Window(StreamTask):
         p_logging      -Optional
             Log level for the object. Default is log everything.
     """
-    C_NAME = 'Window'
 
-    C_PLOT_STANDALONE = False
+    C_NAME                  = 'Window'
 
-    C_EVENT_BUFFER_FULL = 'BUFFER_FULL'
-    C_EVENT_DATA_REMOVED = 'DATA_REMOVED'
+    C_PLOT_STANDALONE       = False
 
-
+    C_EVENT_BUFFER_FULL     = 'BUFFER_FULL'
+    C_EVENT_DATA_REMOVED    = 'DATA_REMOVED'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -95,18 +95,21 @@ class Window(StreamTask):
         self._statistics_enabled = p_enable_statistics or p_visualize
         self._numeric_buffer:np.ndarray = None
         self._numeric_features = []
+
+
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:List[Element], p_inst_del:List[Element]):
+    def _run(self, p_inst_new:set, p_inst_del:set ):
         """
         Method to run the window including adding and deleting of elements
 
         Parameters
         ----------
-            p_inst_new:list
-                Instance/s to be added to the window
-            p_inst_del:list
-                Instance/s to be deleted from the window
+        p_inst_new : set
+            Instance/s to be added to the window
+        p_inst_del : set
+            Instance/s to be deleted from the window
         """
+
         if p_inst_new:
             for i in p_inst_new:
                 if isinstance(i, Instance):
@@ -127,8 +130,9 @@ class Window(StreamTask):
                     # raises an event, and stores the new instances and continues the loop
 
                     self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
-                                                                       p_related_set=i.get_related_set()))
-                    p_inst_del.append(self._buffer[self._buffer_pos])
+                                                                       p_related_set=i.get_feature_data().
+                                                                           get_related_set()))
+                    p_inst_del.add(self._buffer[self._buffer_pos])
                     self._buffer[self._buffer_pos] = i
                     if self._statistics_enabled:
                         self._numeric_buffer[self._buffer_pos] = [i.get_value(k) for k in self._numeric_features]
@@ -144,7 +148,6 @@ class Window(StreamTask):
                     self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
 
 
-
 ## -------------------------------------------------------------------------------------------------
     def get_buffered_data(self):
         """
@@ -157,6 +160,7 @@ class Window(StreamTask):
             buffer_pos:int
                 the latest buffer position
         """
+
         return self._buffer, self._buffer_pos
 
 
@@ -185,6 +189,7 @@ class Window(StreamTask):
             mean:np.ndarray
                 Returns the mean of the current data in the window in the form of a Numpy array.
         """
+
         return np.mean(self._buffer.values(), axis=0, dtype=np.float64)
 
 
@@ -198,6 +203,7 @@ class Window(StreamTask):
             variance:np.ndarray
                 Returns the variance of the current data in the window as a numpy array.
         """
+
         return np.variance(self._buffer.values(), axis=0, dtype=np.float64)
 
 
@@ -211,7 +217,9 @@ class Window(StreamTask):
             std:np.ndarray
                 Returns the standard deviation of the data in the window as a numpy array.
         """
+
         return np.std(self._buffer.values(), axis=0, dtype=np.float64)
+
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self,
@@ -238,8 +246,8 @@ class Window(StreamTask):
             Rate of update for updating the plot
         p_kwargs:
             Additional key-worded arguments
-
         """
+
         self._plot_num_inst = 0
 
         Task.init_plot(self,
@@ -334,9 +342,8 @@ class Window(StreamTask):
         self._plot_windows = []
 
 
-
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
         """
 
         Parameters
@@ -359,7 +366,7 @@ class Window(StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
         """
 
         Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
@@ -417,7 +424,7 @@ class Window(StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
         """
         Default N-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
@@ -438,13 +445,15 @@ class Window(StreamTask):
         if p_inst_new is None: return
 
         # 2. Check if the rectangle patches are already created
+        inst_new = list(p_inst_new)
+
         if self._plot_nd_plots is None:
             self._plot_nd_plots = {}
 
             color_names = list(colors.cnames.values())
 
         # If not create new patch objects and add them to the attribute
-            feature_space = p_inst_new[0].get_feature_data().get_related_set()
+            feature_space = inst_new[0].get_feature_data().get_related_set()
             for i,feature in enumerate(feature_space.get_dims()):
                 if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
                     feature_window = Rectangle((0,0), 0,0, facecolor = color_names[i], edgecolor=color_names[i],
@@ -456,7 +465,7 @@ class Window(StreamTask):
         boundaries = self.get_boundaries()
 
         # 3. Adding rectangular patches to the plots
-        for i,feature in enumerate(p_inst_new[0].get_feature_data().get_related_set().get_dims()):
+        for i,feature in enumerate(inst_new[0].get_feature_data().get_related_set().get_dims()):
             if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
                 x = self._plot_num_inst-self.buffer_size+1
                 y = boundaries[i][0]
