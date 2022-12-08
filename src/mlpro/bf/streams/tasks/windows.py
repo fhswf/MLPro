@@ -130,8 +130,7 @@ class Window (StreamTask):
                     # raises an event, and stores the new instances and continues the loop
 
                     self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
-                                                                       p_related_set=i.get_feature_data().
-                                                                           get_related_set()))
+                                                                       p_related_set=i.get_related_set()))
                     p_inst_del.add(self._buffer[self._buffer_pos])
                     self._buffer[self._buffer_pos] = i
                     if self._statistics_enabled:
