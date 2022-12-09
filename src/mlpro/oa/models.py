@@ -10,10 +10,11 @@
 ## -- 2022-10-26  0.2.0     DA       Refactoring
 ## -- 2022-10-29  0.3.0     DA       Refactoring
 ## -- 2022-11-30  0.4.0     DA       Refactoring after changes on bf.streams design
+## -- 2022-12-09  0.4.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2022-11-30)
+Ver. 0.4.1 (2022-12-09)
 
 Core classes for online machine learning.
 """
@@ -54,6 +55,8 @@ class OATask (StreamTask, Model):
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : dict
@@ -72,18 +75,21 @@ class OATask (StreamTask, Model):
                   p_name: str = None, 
                   p_range_max = StreamTask.C_RANGE_THREAD, 
                   p_ada : bool = True, 
+                  p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
 
         StreamTask.__init__( self,
                              p_name = p_name,
                              p_range_max = p_range_max,
+                             p_visualize = p_visualize,
                              p_logging = p_logging,
                              **p_kwargs )                             
 
         Model.__init__( self, 
                         p_buffer_size = 0, 
                         p_ada = p_ada, 
+                        p_visualize = p_visualize,
                         p_logging = p_logging,
                         **p_kwargs )  
 
@@ -110,7 +116,7 @@ class OATask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt_on_event(self, p_event_id:str, p_event_obj:Event):
+    def adapt_on_event(self, p_event_id:str, p_event_object:Event):
         """
         Method to be used as event handler for event-based adaptations. Calls custom method 
         _adapt_on_event() and updates the internal adaptation state.
@@ -119,15 +125,15 @@ class OATask (StreamTask, Model):
         ----------
         p_event_id : str
             Event id.
-        p_event_obj : Event
+        p_event_object : Event
             Object with further context informations about the event.
         """
 
-        self._set_adapted(p_adapted=self._adapt_on_event(p_event_id=p_event_id, p_event_obj=p_event_obj))        
+        self._set_adapted(p_adapted=self._adapt_on_event(p_event_id=p_event_id, p_event_object=p_event_object))        
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_on_event(self, p_event_id:str, p_event_obj:Event) -> bool:
+    def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
         """
         Custom method to be used for event-based adaptation. See method adapt_on_event().
 
@@ -135,7 +141,7 @@ class OATask (StreamTask, Model):
         ----------
         p_event_id : str
             Event id.
-        p_event_obj : Event
+        p_event_object : Event
             Object with further context informations about the event.
 
         Returns
@@ -166,6 +172,8 @@ class OAWorkflow (StreamWorkflow, Model):
         Optional class for a shared object (class OAShared or a child class of OAShared)
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_kwargs : dict
@@ -180,6 +188,7 @@ class OAWorkflow (StreamWorkflow, Model):
                   p_range_max = StreamWorkflow.C_RANGE_THREAD, 
                   p_class_shared = OAShared, 
                   p_ada : bool = True, 
+                  p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
 
@@ -187,12 +196,14 @@ class OAWorkflow (StreamWorkflow, Model):
                                  p_name = p_name,
                                  p_range_max = p_range_max,
                                  p_class_shared = p_class_shared,
+                                 p_visualize = p_visualize,
                                  p_logging = p_logging,
                                  **p_kwargs )
 
         Model.__init__( self,
                         p_buffer_size = 0,
                         p_ada = p_ada,
+                        p_visualize = p_visualize,
                         p_logging = p_logging,
                         **p_kwargs )                            
 
