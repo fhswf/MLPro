@@ -243,7 +243,7 @@ class Set:
         except:
             pass
         else:
-            raise ParamError('Dimension "' + name_short + '"already exists!')
+            raise ParamError('Dimension "' + name_short + '" already exists!')
 
         # 2 Store new dimension under it's id and name
         self._dim_by_name[name_short]   = p_dim
