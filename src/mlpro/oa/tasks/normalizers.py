@@ -70,7 +70,7 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_on_event(self, p_event_id:str, p_event_obj:Event) -> bool:
+    def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
         """
         Custom method to adapt the MinMax normalizer parameters based on event raised by Boundary object for changed
         boundaries.
@@ -90,7 +90,7 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
         """
         adapted = False
 
-        inst_new = p_event_obj.get_data()['p_inst_new']
+        inst_new = p_event_object.get_data()['p_inst_new']
         for i in inst_new:
             set = i.get_feature_data().get_related_set()
             break
