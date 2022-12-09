@@ -26,10 +26,13 @@
 ## -- 2022-10-21  1.7.0     DA       Class Dimension: extension by optional property symmetry
 ## -- 2022-10-24  1.8.0     DA       Class Element: new method copy()
 ## -- 2022-12-05  1.9.0     DA       Class Dimension: new param p_kwargs and method get_kwargs()
+## -- 2022-12-09  2.0.0     DA       Class Set: 
+## --                                - new method get_dim_by_name()
+## --                                - internal optimizations
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.0 (2022-12-05)
+Ver. 2.0.0 (2022-12-09)
 
 This module provides basic mathematical classes.
 """
@@ -220,8 +223,8 @@ class Set:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self) -> None:
-        self._dim_list = []
-        self._dim_ids = []
+        self._dim_by_id     = {}
+        self._dim_by_name   = {}
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -233,8 +236,18 @@ class Set:
             p_dim       Dimension to be added
         """
 
-        self._dim_ids.append(p_dim.get_id())
-        self._dim_list.append(p_dim)
+        # 1 Check, whether a dimension with same name was already added
+        name_short = p_dim.get_name_short()
+        try:
+            dim = self._dim_by_name[name_short]
+        except:
+            pass
+        else:
+            raise ParamError('Dimension "' + name_short + '"already exists!')
+
+        # 2 Store new dimension under it's id and name
+        self._dim_by_name[name_short]   = p_dim
+        self._dim_by_id[p_dim.get_id()] = p_dim
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -243,7 +256,12 @@ class Set:
         Returns the dimension specified by it's unique id.
         """
 
-        return self._dim_list[self._dim_ids.index(p_id)]
+        return self._dim_by_id[p_id]
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_dim_by_name(self, p_name) -> Dimension:
+        return self._dim_by_name[p_name]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -252,7 +270,7 @@ class Set:
         Returns all dimensions.
         """
 
-        return self._dim_list
+        return list(self._dim_by_id.values())
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -261,7 +279,7 @@ class Set:
         Returns the dimensionality of the set (=number of dimensions of the set).
         """
 
-        return len(self._dim_list)
+        return len(self.get_dims())
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -270,11 +288,11 @@ class Set:
         Returns the unique ids of the related dimensions.
         """
 
-        return self._dim_ids
+        return list(self._dim_by_id.keys())
 
 
 ## -------------------------------------------------------------------------------------------------
-    def spawn(self, p_id_list: list):
+    def spawn(self, p_id_list:list):
         """
         Spawns a new class with same type and a subset of dimensions specified
         by an index list.
@@ -287,8 +305,8 @@ class Set:
         """
 
         new_set = self.__class__()
-        for i in p_id_list:
-            new_set.add_dim(self._dim_list[self._dim_ids.index(i)])
+        for dim_id in p_id_list:
+            new_set.add_dim(self._dim_by_id[dim_id])
 
         return new_set
 
@@ -298,11 +316,11 @@ class Set:
         new_set = self.__class__()
 
         if p_new_dim_ids:
-            for dim_id in self.get_dim_ids():
-                new_set.add_dim(self.get_dim(dim_id).copy())
+            for dim in self._dim_by_id.values():
+                new_set.add_dim(dim.copy())
         else:
-            for dim_id in self.get_dim_ids():
-                new_set.add_dim(self.get_dim(dim_id))
+            for dim in self._dim_by_id.values():
+                new_set.add_dim(dim)
 
         return new_set
 
@@ -310,11 +328,11 @@ class Set:
 ## -------------------------------------------------------------------------------------------------
     def append(self, p_set, p_new_dim_ids=True):
         if p_new_dim_ids:
-            for dim_id in p_set.get_dim_ids():
-                self.add_dim(p_set.get_dim(dim_id).copy())
+            for dim in p_set.get_dims():
+                self.add_dim(dim.copy())
         else:
-            for dim_id in p_set.get_dim_ids():
-                self.add_dim(p_set.get_dim(dim_id))
+            for dim in p_set.get_dims():
+                self.add_dim(dim)
 
 
 

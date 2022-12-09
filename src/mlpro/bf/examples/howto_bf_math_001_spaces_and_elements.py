@@ -10,10 +10,11 @@
 ## -- 2021-09-23  1.0.1     DA       Adaption to changes in class Element
 ## -- 2021-12-03  1.0.2     DA       New method copy_append_spaces()
 ## -- 2022-02-25  1.0.3     SY       Refactoring due to auto generated ID in class Dimension
+## -- 2022-12-09  1.1.0     DA       Refactoring due to new restrictions in class Set
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-02-25)
+Ver. 1.1.0 (2022-12-09)
 
 This module demonstrates how to create a space and subspaces and to spawn elements.
 """
@@ -43,7 +44,6 @@ class MathDemo(Log):
     def __init__(self, p_logging=True):
         super().__init__(p_logging=p_logging)
         self.create_euclidian_space()
-        self.copy_append_spaces()
         self.create_subspace1()
         self.create_subspace2()
         self.create_subspace3()
@@ -71,13 +71,6 @@ class MathDemo(Log):
         self.C_AACC      = _ids[5]
         
         self.log(self.C_LOG_TYPE_I, '6-dimensional Euclidian space created')
-
-
-## -------------------------------------------------------------------------------------------------
-    def copy_append_spaces(self):
-        new_space = self.espace.copy(True)
-        new_space.append(self.espace, p_new_dim_ids=False)
-        self.log(self.C_LOG_TYPE_I, str(new_space.get_num_dim()) + '-dimensional Euclidian space created')
 
 
 ## -------------------------------------------------------------------------------------------------

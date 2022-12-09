@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-05  1.0.0     DA       Creation
+## -- 2022-12-09  1.1.0     DA       Simplification
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-12-05)
+Ver. 1.1.0 (2022-12-09)
 
 This module demonstrates the principles of using classes System, Controller, Actuator and Sensor. To
 this regard we assume a custom system with two state and action components and a custom controller
@@ -67,13 +68,13 @@ class MySystem (System):
         
         # 1 State space
         state_space = ESpace()
-        state_space.add_dim( p_dim = Dimension( p_name_short='State value 1') )
-        state_space.add_dim( p_dim = Dimension( p_name_short='State value 2') )
+        state_space.add_dim( p_dim = Dimension( p_name_short='State 1') )
+        state_space.add_dim( p_dim = Dimension( p_name_short='State 2') )
 
         # 2 Action space
         action_space = ESpace()
-        action_space.add_dim( p_dim = Dimension( p_name_short='Action value 1') )
-        action_space.add_dim( p_dim = Dimension( p_name_short='Action value 2') )
+        action_space.add_dim( p_dim = Dimension( p_name_short='Action 1') )
+        action_space.add_dim( p_dim = Dimension( p_name_short='Action 2') )
 
         return state_space, action_space
 
@@ -88,12 +89,14 @@ class MySystem (System):
 # 0 Prepare Demo/Unit test mode
 if __name__ == '__main__':
     logging     = Log.C_LOG_ALL
+    latency     = timedelta(0,1,0)
 else:
     logging     = Log.C_LOG_NOTHING
+    latency     = timedelta(0,0,100000)
 
 
 # 1 Instantiate own system in simulation mode
-sys = MySystem( p_logging=logging )
+sys = MySystem( p_latency=latency, p_logging=logging )
 
 
 # 2 Instantiate and configure own controller
@@ -111,14 +114,11 @@ con.add_actuator( p_actuator=a2 )
 
 
 # 3 Add controller to system and assign sensors to states and actuators to actions
-sys_actions = sys.get_action_space().get_dim_ids()
-sys_states  = sys.get_state_space().get_dim_ids()
-
 sys.add_controller( p_controller=con, 
-                    p_mapping=[ ( 'S', sys_states[0], s1.get_id() ), 
-                                ( 'S', sys_states[1], s2.get_id() ), 
-                                ( 'A', sys_actions[0], a1.get_id() ), 
-                                ( 'A', sys_actions[1], a2.get_id() ) ] )
+                    p_mapping=[ ( 'S', 'State 1', 'Sensor 1' ), 
+                                ( 'S', 'State 2', 'Sensor 2' ), 
+                                ( 'A', 'Action 1', 'Actuator 1' ), 
+                                ( 'A', 'Action 2', 'Actuator 2') ] )
 
 
 # 4 Switch system to real mode

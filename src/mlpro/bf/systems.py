@@ -9,11 +9,14 @@
 ## -- 2022-11-30  1.0.1     DA       Class System: corrections and deviating default implementations
 ## --                                for custom methods _compute_success(), _compute_broken()
 ## -- 2022-12-05  1.1.0     DA       New classes SystemBase, Sensor, Actuator, Controller
+## -- 2022-12-09  1.2.0     DA       - Class Controller: new methods get_sensors(), get_actuators()
+## --                                - Class System, method add_controller(): all components can now
+## --                                  be addressed by their names
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.1.0 (2022-12-05)
+Ver. 1.2.0 (2022-12-09)
 
 This module provides models and templates for state based systems.
 """
@@ -933,6 +936,20 @@ class Controller (EventManager):
 
     
 ## -------------------------------------------------------------------------------------------------
+    def get_sensors(self) -> Set:
+        """
+        Returns the internal set of sensors.
+
+        Returns
+        -------
+        sensors : Set
+            Set of sensors.
+        """
+
+        return self._sensors
+
+
+## -------------------------------------------------------------------------------------------------
     def get_sensor(self, p_id) -> Sensor:
         """
         Returns a sensor.
@@ -958,16 +975,17 @@ class Controller (EventManager):
             C_EVENT_COMM_ERROR is raised additionally.
         """
 
-        self.log(Log.C_LOG_TYPE_I, 'Getting value of sensor "' + str(p_id) + '"...')
-        value = self._get_sensor_value(p_id)
+        sensor_name = self._sensors.get_dim(p_id).get_name()
+        self.log(Log.C_LOG_TYPE_I, 'Getting value of sensor "' + sensor_name + '"...')
+        sensor_value = self._get_sensor_value(p_id)
 
-        if value is None:
-            self.log(Log.C_LOG_TYPE_E, 'Value of sensor "' + str(p_id) + '" could not be determined')
+        if sensor_value is None:
+            self.log(Log.C_LOG_TYPE_E, 'Value of sensor "' + sensor_name + '" could not be determined')
             self._raise_event( p_event_id=self.C_EVENT_COMM_ERROR, p_event_object=Event(p_raising_object=self, p_sensor_id=p_id) )
             return None
         else:
-            self.log(Log.C_LOG_TYPE_I, 'Value of sensor "' + str(p_id) + '" determined successfully')
-            return value
+            self.log(Log.C_LOG_TYPE_I, 'Value of sensor "' + sensor_name + '" = ' + str(sensor_value))
+            return sensor_value
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1004,6 +1022,20 @@ class Controller (EventManager):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_actuators(self) -> Set:
+        """
+        Returns the internal set of actuators.
+
+        Returns
+        -------
+        actuators : Set
+            Set of actuators.
+        """
+
+        return self._actuators
+
+
+## -------------------------------------------------------------------------------------------------
     def get_actuator(self, p_id) -> Actuator:
         """
         Returns an actuator.
@@ -1031,15 +1063,16 @@ class Controller (EventManager):
             additionally.
         """
 
-        self.log(Log.C_LOG_TYPE_I, 'Setting new value of actuator "' + str(p_id) + '"...')
+        actuator_name = self._actuators.get_dim(p_id).get_name()
+        self.log(Log.C_LOG_TYPE_I, 'Setting new value of actuator "' + actuator_name + '"...')
         successful = self._set_actuator_value(p_id=p_id, p_value=p_value)
 
         if not successful:
-            self.log(Log.C_LOG_TYPE_E, 'Value of actuator "' + str(p_id) + '" could not be set')
+            self.log(Log.C_LOG_TYPE_E, 'Value of actuator "' + actuator_name + '" could not be set')
             self._raise_event(p_event_id=self.C_EVENT_COMM_ERROR, p_event_object=Event(p_raising_object=self, p_actuator_id=p_id))
             return False
         else:
-            self.log(Log.C_LOG_TYPE_I, 'Value of actuator "' + str(p_id) + '" set successfully')
+            self.log(Log.C_LOG_TYPE_I, 'Value of actuator "' + actuator_name + '" set to ' + str(p_value))
             return True
 
 
@@ -1128,7 +1161,7 @@ class System (SystemBase):
         p_controller : Controller
             Controller object to be added.
         p_mapping : list
-            A list of mapping tuples following the syntax ( [Type = 'S' or 'A'], [Id state/action] [Id sensor/actuator] )
+            A list of mapping tuples following the syntax ( [Type = 'S' or 'A'], [Name of state/action] [Name of sensor/actuator] )
 
         Returns
         -------
@@ -1136,32 +1169,71 @@ class System (SystemBase):
             True, if controller and related mapping was added successfully. False otherwise.
         """
 
-        # 1 Check of mapping entries
+        # 0 Preparation
+        states      = self._state_space
+        actions     = self._action_space
+        sensors     = p_controller.get_sensors()
+        actuators   = p_controller.get_actuators()
+        mapping_int = []
+        successful  = True
+        self.log(Log.C_LOG_TYPE_I, 'Adding controller "' + p_controller.get_name() + '"...')
+
+
+        # 1 Check/conversion of mapping entries
         for entry in p_mapping:
             if entry[0] == 'S':
+                # 1.1 Check state and sensor
                 try:
-                    self._state_space.get_dim(p_id=entry[1])
+                    state_id = states.get_dim_by_name(entry[1]).get_id()
                 except:
-                    raise ParamError('Invalid state component id "' + str(entry[1] + '"'))
+                    self.log(Log.C_LOG_TYPE_E, 'Invalid state component "' + entry[1] + '"')
+                    successful = False
+
+                try:
+                    sensor_id = sensors.get_dim_by_name(entry[2]).get_id()
+                except:
+                    self.log(Log.C_LOG_TYPE_E, 'Invalid sensor "' + entry[2] + '"')
+                    successful = False
+                
+                if successful:
+                    mapping_int.append( ( entry[0], entry[1], entry[2], state_id, sensor_id ) )
                     
             elif entry[0] == 'A':
+                # 1.2 Check action and actuator
                 try:
-                    self._action_space.get_dim(p_id=entry[1])
+                    action_id = actions.get_dim_by_name(entry[1]).get_id()
                 except:
-                    raise ParamError('Invalid action component id "' + str(entry[1] + '"'))
+                    self.log(Log.C_LOG_TYPE_E, 'Invalid action component "' + entry[1] + '"')
+                    successful = False
+
+                try:
+                    actuator_id = actuators.get_dim_by_name(entry[2]).get_id()
+                except:
+                    self.log(Log.C_LOG_TYPE_E, 'Invalid sensor "' + entry[2] + '"')
+                    successful = False
+                
+                if successful:
+                    mapping_int.append( ( entry[0], entry[1], entry[2], action_id, actuator_id ) )
 
             else:
                 raise ParamError('Type "' + entry[0] + '" not valid!')
 
+        if not successful:
+            self.log(Log.C_LOG_TYPE_E, 'Controller "' + p_controller.get_name() + '" could not be added')
+            return False
+
 
         # 2 Takeover of mapping entries and controller
-        for entry in p_mapping:
+        for entry in mapping_int:
             if entry[0] == 'S':
-                self._mapping_states[entry[1]] = ( p_controller, entry[2] )
+                self._mapping_states[entry[3]] = ( p_controller, entry[4] )
+                self.log(Log.C_LOG_TYPE_I, 'State component "' + entry[1] + '" assigned to sensor "' + entry[2] +'"')
             else:
-                self._mapping_actions[entry[1]] = ( p_controller, entry[2] )
+                self._mapping_actions[entry[3]] = ( p_controller, entry[4] )
+                self.log(Log.C_LOG_TYPE_I, 'Action component "' + entry[1] + '" assigned to actuator "' + entry[2] +'"')
 
         self._controllers.append(p_controller)
+        self.log(Log.C_LOG_TYPE_I, 'Controller "' + p_controller.get_name() + '" added successfully')
         return True
 
 
@@ -1174,17 +1246,24 @@ class System (SystemBase):
         self.log(Log.C_LOG_TYPE_I, 'Start importing state...')
 
         # 2 Import of all related sensor values 
-        for state_dim_id in self._state_space.get_dim_ids():
-            mapping = self._mapping_states[state_dim_id]
-            sensor_value = mapping[0].get_sensor_value( p_id = mapping[1] )
+        for state_dim in self._state_space.get_dims():
+            state_dim_id   = state_dim.get_id()
+            state_dim_name = state_dim.get_name()
 
-            if sensor_value is None: 
+            try:
+                mapping = self._mapping_states[state_dim_id]
+            except:
+                self.log(Log.C_LOG_TYPE_E, 'State component "' + state_dim_name + '" not assigned to a controller/sensor')
                 successful = False
             else:
-                new_state.set_value(p_dim_id=state_dim_id, p_value = sensor_value )
+                sensor_value = mapping[0].get_sensor_value( p_id = mapping[1] )
+
+                if sensor_value is None: 
+                    successful = False
+                else:
+                    new_state.set_value(p_dim_id=state_dim_id, p_value = sensor_value )
 
         if not successful: 
-            self.log(Log.C_LOG_TYPE_E, 'State import failed')
             return False
 
         # 3 Assessment of new state
@@ -1193,7 +1272,6 @@ class System (SystemBase):
 
         # 4 Set new state
         self._set_state(p_state=new_state)
-        self.log(Log.C_LOG_TYPE_I, 'State imported successfully')
         return True
 
 
@@ -1204,17 +1282,19 @@ class System (SystemBase):
         successful = True
         self.log(Log.C_LOG_TYPE_I, 'Start exporting action...')
 
+        # Export auf all related actuator values
         for agent_id in p_action.get_agent_ids():
             action_elem = p_action.get_elem(p_id=agent_id)
 
             for action_dim_id in action_elem.get_dim_ids():
-                mapping = self._mapping_actions[action_dim_id]
-                actuator_value = action_elem.get_value(p_dim_id=action_dim_id)
-                successful = successful and mapping[0].set_actuator_value(p_id=mapping[1], p_value=actuator_value)
+                try:
+                    mapping = self._mapping_actions[action_dim_id]
+                except:
+                    action_dim_name = action_elem.get_related_set().get_dim(action_dim_id).get_name()
+                    self.log(Log.C_LOG_TYPE_E, 'Action component "' + action_dim_name + '" not assigned to a controller/sensor')
+                    successful = False
+                else:
+                    actuator_value = action_elem.get_value(p_dim_id=action_dim_id)
+                    successful = successful and mapping[0].set_actuator_value(p_id=mapping[1], p_value=actuator_value)
 
-        if not successful:
-            self.log(Log.C_LOG_TYPE_E, 'Action export failed')
-            return False
-        else:
-            self.log(Log.C_LOG_TYPE_I, 'Action exported successfully')
-            return True
+        return successful
