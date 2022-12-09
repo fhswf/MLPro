@@ -228,22 +228,28 @@ class Set:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_dim(self, p_dim: Dimension):
+    def add_dim(self, p_dim:Dimension, p_ignore_duplicates:bool=False ):
         """
         Raises the dimensionality of the set by adding a new dimension.
 
-        Parameters:
-            p_dim       Dimension to be added
+        Parameters
+        ----------
+        p_dim : Dimension
+            Dimension to be added.
+        p_ignore_duplicates : bool
+            If True, duplicated short names of dimensions are accepted. Default = False.
         """
 
         # 1 Check, whether a dimension with same name was already added
         name_short = p_dim.get_name_short()
-        try:
-            dim = self._dim_by_name[name_short]
-        except:
-            pass
-        else:
-            raise ParamError('Dimension "' + name_short + '" already exists!')
+
+        if not p_ignore_duplicates:
+            try:
+                dim = self._dim_by_name[name_short]
+            except:
+                pass
+            else:
+                raise ParamError('Dimension "' + name_short + '" already exists!')
 
         # 2 Store new dimension under it's id and name
         self._dim_by_name[name_short]   = p_dim
@@ -312,27 +318,27 @@ class Set:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def copy(self, p_new_dim_ids=True):
+    def copy(self, p_new_dim_ids=True, p_ignore_duplicates:bool=False):
         new_set = self.__class__()
 
         if p_new_dim_ids:
             for dim in self._dim_by_id.values():
-                new_set.add_dim(dim.copy())
+                new_set.add_dim(p_dim=dim.copy(), p_ignore_duplicates=p_ignore_duplicates)
         else:
             for dim in self._dim_by_id.values():
-                new_set.add_dim(dim)
+                new_set.add_dim(p_dim=dim, p_ignore_duplicates=p_ignore_duplicates)
 
         return new_set
 
 
 ## -------------------------------------------------------------------------------------------------
-    def append(self, p_set, p_new_dim_ids=True):
+    def append(self, p_set, p_new_dim_ids=True, p_ignore_duplicates:bool=False):
         if p_new_dim_ids:
             for dim in p_set.get_dims():
-                self.add_dim(dim.copy())
+                self.add_dim(p_dim=dim.copy(), p_ignore_duplicates=p_ignore_duplicates)
         else:
             for dim in p_set.get_dims():
-                self.add_dim(dim)
+                self.add_dim(p_dim=dim, p_ignore_duplicates=p_ignore_duplicates)
 
 
 
