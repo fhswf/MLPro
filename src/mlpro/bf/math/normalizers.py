@@ -14,10 +14,12 @@
 ## -- 2022-10-18  1.0.5     LSB      Refactoring following the review
 ## -- 2022-11-03  1.0.6     LSB      Refactoring new update methods
 ## -- 2022-11-03  1.0.7     LSB      Refactoring
+## -- 2022-12-09  1.0.8     LSB      Handling zero division error
+## -- 2022-12-09  1.0.9     LSB      Returning same object after normalization and denormalization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2022-11-03)
+Ver. 1.0.9 (2022-12-09)
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and 
 normalization by Z transformation.
 
@@ -83,12 +85,11 @@ class Normalizer:
         if self._param is None:
             raise ImplementationError('Normalization parameters not set')
         if isinstance(p_data, Element):
-            normalized_element = Element(p_data.get_related_set())
-            normalized_element.set_values(np.multiply(p_data.get_values(), self._param[0]) - self._param[1])
+            p_data.set_values(np.multiply(p_data.get_values(), self._param[0]) - self._param[1])
         elif isinstance(p_data, np.ndarray):
-            normalized_element = np.multiply(p_data, self._param[0]) - self._param[1]
+            p_data = np.multiply(p_data, self._param[0]) - self._param[1]
         else: raise ParamError('Wrong data type provided for normalization')
-        return normalized_element
+        return p_data
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -111,17 +112,17 @@ class Normalizer:
             raise ImplementationError('Normalization parameters not set')
 
         if isinstance(p_data, Element):
-            denormalized_element = Element(p_data.get_related_set())
-            denormalized_element.set_values(np.multiply(p_data.get_values(), 1 / self._param[0]) + (
+
+            p_data.set_values(np.multiply(p_data.get_values(), 1 / self._param[0]) + (
                         self._param[1] / self._param[0]))
 
         elif isinstance(p_data, np.ndarray):
-            denormalized_element = np.multiply(p_data, 1 / self._param[0]) + \
+            p_data = np.multiply(p_data, 1 / self._param[0]) + \
                                    (self._param[1] / self._param[0])
         else:
             raise ParamError('Wrong datatype provided for denormalization')
 
-        return denormalized_element
+        return p_data
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -174,7 +175,7 @@ class NormalizerMinMax (Normalizer):
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def update_parameters(self, p_set:Set=None, p_boundaries=None):
+    def update_parameters(self, p_set:Set=None, p_boundaries:Union[list, np.ndarray]=None):
         """
         Method to update the normalization parameters of MinMax normalizer.
 
@@ -201,10 +202,15 @@ class NormalizerMinMax (Normalizer):
                 raise ParamError("Wrong parameters provided for update. Please provide a set as p_set or boundaries as "
                                  "p_boundaries")
 
-        for i in range(len(boundaries)):
-            self._param_new[0][i] = (2 / (boundaries[i][1] - boundaries[i][0]))
-            self._param_new[1][i] = (2 * boundaries[i][0] / (boundaries[i][1] - boundaries[i][0]) + 1)
-
+        for i,boundary in enumerate(boundaries):
+            try:
+                self._param_new[0][i] = (2 / (boundary[1] - boundary[0]))
+            except ZeroDivisionError:
+                self._param_new[0][i] = 0
+            try:
+                self._param_new[1][i] = (2 * boundary[0] / (boundary[1] - boundary[0]) + 1)
+            except ZeroDivisionError:
+                self._param_new[0][i] = 0
         self._param = self._param_new
 
 
