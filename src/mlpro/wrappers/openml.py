@@ -26,10 +26,11 @@
 ## -- 2022-11-19  1.6.0     DA       Class WrStreamOpenML: 
 ## --                                - changes due to stream options
 ## --                                - method _get_string(): new parameter p_name
+## -- 2022-12-09  1.6.1     DA       Bugfix: features/labels need to be added under their full name
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2022-11-19)
+Ver. 1.6.1 (2022-12-09)
 
 This module provides wrapper functionalities to incorporate public data sets of the OpenML ecosystem.
 
@@ -272,7 +273,7 @@ class WrStreamOpenML (Stream):
 
         _, _, _, features = self._dataset
         for feature in features:
-            feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
+            feature_space.add_dim(Feature(p_name_short=str(feature), p_name_long=str(feature)))
 
         return feature_space
 
@@ -285,7 +286,7 @@ class WrStreamOpenML (Stream):
                 return None       
 
         label_space = MSpace()
-        label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
+        label_space.add_dim(Label(p_name_short=str(self._label), p_name_long=str(self._label)))
         return label_space
 
 

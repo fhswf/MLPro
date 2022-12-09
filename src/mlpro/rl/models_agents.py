@@ -48,10 +48,11 @@
 ## -- 2022-11-02  1.6.0     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-07  1.6.1     DA       Classes Policy, Agent, MultiAgent: new parameter p_visualize
 ## -- 2022-11-29  1.6.2     DA       Refactoring
+## -- 2022-12-09  1.6.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.2 (2022-11-29) 
+Ver. 1.6.3 (2022-12-09) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -845,7 +846,9 @@ class MultiAgent(Agent):
             if p_agent.get_id() == 0:
                 self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
             else:
-                self._hyperparam_space.append(agent_model._policy.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+                self._hyperparam_space.append( p_set=agent_model._policy.get_hyperparam().get_related_set(), 
+                                               p_new_dim_ids=False,
+                                               p_ignore_duplicates=True )
         
         if agent_model._envmodel is not None:
             try:

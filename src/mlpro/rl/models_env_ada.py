@@ -260,8 +260,8 @@ class AFctSTrans (AFctBase, FctSTrans):
     def _setup_spaces(self, p_state_space: MSpace, p_action_space: MSpace, p_input_space: MSpace,
                       p_output_space: MSpace):
         # 1 Setup input space
-        p_input_space.append(p_state_space)
-        p_input_space.append(p_action_space)
+        p_input_space.append( p_set=p_state_space )
+        p_input_space.append( p_set=p_action_space, p_ignore_duplicates=True)
 
         # 2 Setup output space
         p_output_space.append(p_state_space)

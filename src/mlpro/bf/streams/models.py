@@ -29,11 +29,12 @@
 ## --                                - New class StreamShared
 ## -- 2022-11-18  0.8.1     DA       Refactoring of try/except statements
 ## -- 2022-11-19  0.8.2     DA       Class Stream: new parameter p_name for methods *get_stream()
-## -- 2022-11-22  0.9.0     DA       Classes StreamWorkflow, StreamScenario: plot funcionality
+## -- 2022-11-22  0.9.0     DA       Classes StreamWorkflow, StreamScenario: plot functionality
+## -- 2022-12-08  0.9.1     DA       Classes StreamTask, StreamWorkflow: bugfixes on plotting
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.0 (2022-11-22)
+Ver. 0.9.1 (2022-12-08)
 
 This module provides classes for standardized stream processing. 
 """
@@ -152,20 +153,78 @@ class StreamShared (Shared):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
         Shared.__init__(self, p_range=p_range)
-        self._inst_new : list = None
-        self._inst_del : list = None
+        self._instances = {}
     
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_inst_new : list):
-        self._inst_new = []
-        self._inst_del = []
-        self._inst_new.extend(p_inst_new)
+    def reset(self, p_inst_new:set):
+        """
+        Resets the shared object and prepares the processing of the given set of new instances.
+
+        Parameters
+        ----------
+        p_inst_new : set
+            Set of new instances to be processed.
+        """
+
+        self._instances.clear()
+        self._instances['wf'] = ( p_inst_new, set() )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_instances(self):
-        return self._inst_new, self._inst_del
+    def get_instances(self, p_task_ids:list):
+        """
+        Provides the result instances of all given task ids.
+
+        Parameters
+        ----------
+        p_task_ids : list
+            List of task ids.
+
+        Returns
+        -------
+        inst_new : set
+            Set of new instances of all given task ids.
+        inst_del : set
+            Set of instances to be deleted of all given task ids.
+        """
+
+        inst_new = set()
+        inst_del = set()
+
+        if len(p_task_ids) > 0:
+            for task_id in p_task_ids:
+                try:
+                    instances = self._instances[task_id]
+                except KeyError:
+                    instances = self._instances['wf']
+
+                inst_new.update(instances[0])
+                inst_del.update(instances[1])
+        else:
+            instances = self._instances['wf']
+            inst_new.update(instances[0])
+            inst_del.update(instances[1])
+
+        return inst_new, inst_del
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_instances(self, p_task_id, p_inst_new:set, p_inst_del:set):
+        """
+        Stores result instances of a task in the shared object.
+
+        Parameters
+        ----------
+        p_task_id
+            Id of related task.
+        p_inst_new : set
+            Set of new instances.
+        p_inst_del : set
+            Set of instances to be deleted.
+        """
+
+        self._instances[p_task_id] = ( p_inst_new, p_inst_del ) 
 
 
 
@@ -454,9 +513,6 @@ class StreamProvider (Log, ScientificObject):
 
         self.log(self.C_LOG_TYPE_I, 'Getting list of streams...')
         stream_list = self._get_stream_list( p_mode=p_mode, p_logging=p_logging, **p_kwargs )
-#        for stream in stream_list:
-#            self.log(self.C_LOG_TYPE_I, 'Stream [' + str(stream.get_id()) + '] ' + stream.get_name())
-
         self.log(self.C_LOG_TYPE_I, 'Number of streams found:', len(stream_list))
         return stream_list
 
@@ -602,7 +658,11 @@ class StreamTask (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, p_range:int = None, p_wait: bool = False, p_inst_new:list = None, p_inst_del:list = None):
+    def run( self, 
+             p_range : int = None, 
+             p_wait: bool = False, 
+             p_inst_new : set = None, 
+             p_inst_del : set = None ):
         """
         Executes the specific actions of the task implemented in custom method _run(). At the end event
         C_EVENT_FINISHED is raised to start subsequent actions.
@@ -614,40 +674,45 @@ class StreamTask (Task):
             range defined during instantiation is taken. Oterwise the minimum range of both is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
-        p_inst_new : list
-            Optional list of new stream instances to be processed. If None, the list of the shared object
+        p_inst_new : set
+            Optional set of new stream instances to be processed. If None, the set of the shared object
             is used instead. Default = None.
-        p_inst_del : list
-            List of obsolete stream instances to be removed. If None, the list of the shared object
+        p_inst_del : set
+            Set of obsolete stream instances to be removed. If None, the set of the shared object
             is used instead. Default = None.
         """
+
+        so : StreamShared = self.get_so()
 
         if p_inst_new is not None:
             inst_new = p_inst_new
         else:
-            so = self.get_so()
             if so is None:
                 raise ImplementationError('Class StreamTask needs instance data as parameters or from a shared object')
 
             try: 
-                inst_new, inst_del = so.get_instances()
+                inst_new, inst_del = so.get_instances(p_task_ids=self._predecessor_ids)
             except AttributeError:
                 raise ImplementationError('Shared object not compatible to class StreamShared')
         
         Task.run(self, p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
 
+        so.set_instances( p_task_id = self.get_tid(), p_inst_new=inst_new, p_inst_del=inst_del )
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:list, p_inst_del:list):
+    def _run( self, 
+              p_inst_new : set, 
+              p_inst_del : set ):
         """
         Custom method that is called by method run(). 
 
         Parameters
         ----------
-        p_inst_new : list
-            List of new stream instances to be processed.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst_new : set
+            Set of new stream instances to be processed.
+        p_inst_del : set
+            Set of obsolete stream instances to be removed.
         """
 
         raise NotImplementedError
@@ -661,6 +726,11 @@ class StreamTask (Task):
                    p_detail_level: int = 0, 
                    p_step_rate: int = 0, 
                    **p_kwargs ):
+
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
 
         self._plot_num_inst = 0
 
@@ -716,22 +786,30 @@ class StreamTask (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst_new:list=None, p_inst_del:list=None, **p_kwargs):
+    def update_plot( self, 
+                     p_inst_new : set = None, 
+                     p_inst_del : set = None, 
+                     **p_kwargs ):
         """
         Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
 
         Parameters
         ----------
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst_new : set
+           Set of new stream instances to be plotted.
+        p_inst_del : set
+            Set of obsolete stream instances to be removed.
         p_kwargs : dict
             Further optional plot parameters.
         """
 
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+
         if p_inst_new is None:
-            inst_new, inst_del = self.get_so().get_instances()
+            inst_new, inst_del = self.get_so().get_instances(p_task_ids=[self.get_tid()])
         else:
             inst_new = p_inst_new
             inst_del = p_inst_del
@@ -742,7 +820,11 @@ class StreamTask (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def _update_plot_2d( self, 
+                         p_settings : PlotSettings, 
+                         p_inst_new : list, 
+                         p_inst_del : list, 
+                         **p_kwargs ):
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
@@ -751,10 +833,10 @@ class StreamTask (Task):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst_new : set
+            Set of new stream instances to be plotted.
+        p_inst_del : set
+            Set of obsolete stream instances to be removed.
         p_kwargs : dict
             Further optional plot parameters.
         """
@@ -763,7 +845,11 @@ class StreamTask (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def _update_plot_3d( self, 
+                         p_settings : PlotSettings, 
+                         p_inst_new : set, 
+                         p_inst_del : set, 
+                         **p_kwargs ):
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
@@ -772,10 +858,10 @@ class StreamTask (Task):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst_new : set
+            Set of new stream instances to be plotted.
+        p_inst_del : set
+            Set of obsolete stream instances to be removed.
         p_kwargs : dict
             Further optional plot parameters.
         """
@@ -784,7 +870,11 @@ class StreamTask (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
+    def _update_plot_nd( self, 
+                         p_settings : PlotSettings, 
+                         p_inst_new : set, 
+                         p_inst_del : set, 
+                         **p_kwargs ):
         """
         Default implementation for stream tasks. See class mlpro.bf.plot.Plottable for more
         details.
@@ -793,20 +883,21 @@ class StreamTask (Task):
         ----------
         p_settings : PlotSettings
             Object with further plot settings.
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst_new : set
+            Set of new stream instances to be plotted.
+        p_inst_del : set
+            Set of obsolete stream instances to be removed.
         p_kwargs : dict
             Further optional plot parameters.
         """
 
         # 1 Check for new instances to be plotted
-        if len(p_inst_new) == 0: return
+        inst_new = list(p_inst_new)
+        if len(inst_new) == 0: return
 
 
         # 2 Check whether x label needs to be changed to time index
-        if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( p_inst_new[0].get_time_stamp() is not None ):
+        if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( inst_new[0].get_time_stamp() is not None ):
             p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
 
 
@@ -814,7 +905,7 @@ class StreamTask (Task):
         if self._plot_nd_plots is None:
             self._plot_nd_plots = {}
 
-            feature_space = p_inst_new[0].get_feature_data().get_related_set()
+            feature_space = inst_new[0].get_feature_data().get_related_set()
             for feature in feature_space.get_dims():
                 if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
                     feature_xdata = self._plot_nd_xdata
@@ -826,7 +917,7 @@ class StreamTask (Task):
         # 4 Add data of new instances to plot objects
         inst_id = self._plot_num_inst
 
-        for inst in p_inst_new:
+        for inst in inst_new:
             self._plot_nd_xdata.append(inst_id)
             inst_id += 1
 
@@ -888,10 +979,10 @@ class StreamWorkflow (StreamTask, Workflow):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name: str = None, 
-                  p_range_max=Workflow.C_RANGE_THREAD, 
-                  p_class_shared=StreamShared, 
-                  p_visualize:bool=False,
-                  p_logging=Log.C_LOG_ALL, 
+                  p_range_max = Workflow.C_RANGE_THREAD, 
+                  p_class_shared = StreamShared, 
+                  p_visualize : bool = False,
+                  p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
 
         Workflow.__init__( self,
@@ -904,7 +995,11 @@ class StreamWorkflow (StreamTask, Workflow):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, p_range:int = None, p_wait: bool = False, p_inst_new:list = None, p_inst_del:list = None):
+    def run( self, 
+             p_range : int = None, 
+             p_wait: bool = False, 
+             p_inst_new : set = None, 
+             p_inst_del : set = None ):
         """
         Runs all stream tasks according to their predecessor relations.
 
@@ -916,11 +1011,11 @@ class StreamWorkflow (StreamTask, Workflow):
             is taken.
         p_wait : bool
             If True, the method waits until all (a)synchronous tasks are finished.
-        p_inst_new : list
-            Optional list of new stream instances to be processed. If None, the list of the shared object
+        p_inst_new : set
+            Optional set of new stream instances to be processed. If None, the set of the shared object
             is used instead. Default = None.
-        p_inst_del : list
-            List of obsolete stream instances to be removed. If None, the list of the shared object
+        p_inst_del : set
+            Set of obsolete stream instances to be removed. If None, the set of the shared object
             is used instead. Default = None.
         """
 
@@ -942,6 +1037,11 @@ class StreamWorkflow (StreamTask, Workflow):
                    p_detail_level: int = 0, 
                    p_step_rate: int = 0, 
                    **p_kwargs ):
+
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
 
         self._plot_num_inst = 0
 
@@ -985,16 +1085,19 @@ class StreamWorkflow (StreamTask, Workflow):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self, p_inst_new:list=None, p_inst_del:list=None, **p_kwargs):
+    def update_plot( self, 
+                     p_inst_new : set = None, 
+                     p_inst_del : set = None, 
+                     **p_kwargs ):
         """
         Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
 
         Parameters
         ----------
-        p_inst_new : list
-            List of new stream instances to be plotted.
-        p_inst_del : list
-            List of obsolete stream instances to be removed.
+        p_inst_new : set
+            Set of new stream instances to be plotted.
+        p_inst_del : set
+            Set of obsolete stream instances to be removed.
         p_kwargs : dict
             Further optional plot parameters.
         """
@@ -1116,8 +1219,11 @@ class StreamScenario (ScenarioBase):
             True, if the end of the related data source has been reached. False otherwise.
         """
 
+
         try:
-            self._workflow.run( p_inst_new = [ next(self._iterator) ], p_inst_del=[] )
+            inst_new = set()
+            inst_new.add(next(self._iterator))
+            self._workflow.run( p_inst_new = inst_new, p_inst_del=set() )
             end_of_data = False
         except StopIteration:
             end_of_data = True
@@ -1147,6 +1253,7 @@ class StreamScenario (ScenarioBase):
                    p_detail_level: int = 0, 
                    p_step_rate: int = 0, 
                    **p_kwargs ):
+
         self._workflow.init_plot( p_figure=p_figure, 
                                   p_plot_settings=p_plot_settings, 
                                   p_plot_depth=p_plot_depth, 
