@@ -13,10 +13,11 @@
 ## -- 2022-08-15  1.1.0     DA       Introduction of root class Wrapper
 ## -- 2022-11-08  1.2.0     DA       Class WrStreamSKlearn: refactoring to make it iterable
 ## -- 2022-11-19  1.3.0     DA       Method WrStreamSklearn._get_string(): new parameter p_name
+## -- 2022-12-09  1.3.1     DA       Bugfix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2022-11-19)
+Ver. 1.3.1 (2022-12-09)
 
 This module provides wrapper functionalities to incorporate public data sets of the Scikit-learn ecosystem.
 
@@ -44,11 +45,11 @@ class WrStreamProviderSklearn (Wrapper, StreamProvider):
     Wrapper class for Sklearn as StreamProvider
     """
 
-    C_NAME              = 'Stream Provider Sklearn'
-    C_WRAPPED_PACKAGE   = 'sklearn'
+    C_NAME              = 'Stream Provider Scikit-learn'
+    C_WRAPPED_PACKAGE   = 'scikit-learn'
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
-    C_SCIREF_AUTHOR     = 'sklearn'
+    C_SCIREF_AUTHOR     = 'Scikit-learn'
     C_SCIREF_URL        = 'https://scikit-learn.org'
 
     _load_utils = [
@@ -253,7 +254,7 @@ class WrStreamSklearn (Stream):
                 features = ['Attr_1']
 
         for feature in features:
-            feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(feature[0:5])))
+            feature_space.add_dim(Feature(p_name_short=str(feature)))
 
         return feature_space
 
@@ -267,7 +268,7 @@ class WrStreamSklearn (Stream):
         label_space = MSpace()
 
         for label in self._dataset['target_names']:
-            label_space.add_dim(Feature(p_name_long=str(label), p_name_short=str(label[0:5])))
+            label_space.add_dim(Feature(p_name_short=str(label)))
 
         return label_space
 

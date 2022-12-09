@@ -23,10 +23,12 @@
 ## -- 2022-11-07  1.3.2     DA       Reactivated howto bf_streams_011
 ## -- 2022-11-10  1.3.3     DA       Renamed howtos bf_streams*
 ## -- 2022-11-22  1.3.4     DA       Removed howto_bf_streams_051 due to delay caused by OpenML
+## -- 2022-12-05  1.4.0     DA       Added howto bf_systems_001
+## -- 2022-12-09  1.4.1     DA       Temporarily removed howto rl_wp_003 due to problems with pettingzoo
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.4 (2022-11-22)
+Ver. 1.4.1 (2022-12-09)
 
 Unit test for all examples available.
 """
@@ -52,6 +54,7 @@ howto_list = {
     # "bf_streams_051": "mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml",
     "bf_streams_052": "mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn",
     "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
+    "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
@@ -76,7 +79,7 @@ howto_list = {
     "rl_ui_001": "mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit",
     "rl_wp_001": "mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment",
     "rl_wp_002": "mlpro.rl.examples.howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment",
-    "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
+    # "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
     "rl_wp_004": "mlpro.rl.examples.howto_rl_wp_004_train_agent_with_sb3_policy",
     "rl_wp_005": "mlpro.rl.examples.howto_rl_wp_005_validation_wrapped_sb3_on_policy",
     "rl_wp_006": "mlpro.rl.examples.howto_rl_wp_006_validation_wrapped_sb3_off_policy",
