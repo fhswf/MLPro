@@ -44,17 +44,18 @@ class MyAdaptiveScenario(StreamScenario):
     def _setup(self, p_mode, p_visualize:bool, p_logging):
         # 1 Import a stream from OpenML
         openml = WrStreamProviderOpenML(p_logging=p_logging)
-        stream = openml.get_stream(p_name='BNG(autos,nominal,1000000)', p_mode=p_mode, p_logging=p_logging)
+        stream = openml.get_stream(p_name='BNG(autos,nominal,1000000)', p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging)
 
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a task
-        TaskBoundaryDetector = BoundaryDetector(p_name='Demo Boundary Detector', p_logging=p_logging)
-        TaskNormalizerMinMax = NormalizerMinMax(p_name='Demo MinMax Normalizer', p_ada=True, p_logging=p_logging)
+        TaskBoundaryDetector = BoundaryDetector(p_name='Demo Boundary Detector', p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
+        TaskNormalizerMinMax = NormalizerMinMax(p_name='Demo MinMax Normalizer', p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
 
         # 2.2 Creation of a workflow
         workflow = OAWorkflow(p_name='wf1',
             p_range_max=OAWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
+            p_visualize=p_visualize, 
             p_logging=p_logging)
 
         # 2.3 Addition of the task to the workflow
@@ -74,7 +75,7 @@ if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     cycle_limit = 100
     logging = Log.C_LOG_ALL
-    visualize = False
+    visualize = True
 
 else:
     # 1.2 Parameters for internal unit test
