@@ -6,6 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-07  0.0.0     LSB      Creation
+## -- 2022-12-09  1.0.0     LSB      Release
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -60,6 +61,11 @@ class MyAdaptiveScenario(StreamScenario):
         workflow.add_task(p_task = TaskBoundaryDetector)
         workflow.add_task(p_task = TaskNormalizerMinMax)
 
+
+        # 3 Registering event handlers for normalizer on events raised by boundaries
+        TaskBoundaryDetector.register_event_handler(BoundaryDetector.C_EVENT_BOUNDARY_CHANGED, TaskNormalizerMinMax.adapt_on_event)
+
+
         # 3 Return stream and workflow
         return stream, workflow
 
@@ -76,11 +82,15 @@ else:
     logging = Log.C_LOG_NOTHING
     visualize = False
 
+
 # 2 Instantiate the stream scenario
 myscenario = MyAdaptiveScenario(p_mode=Mode.C_MODE_REAL,
     p_cycle_limit=cycle_limit,
     p_visualize=visualize,
     p_logging=logging)
+
+
+
 
 # 3 Reset and run own stream scenario
 myscenario.reset()

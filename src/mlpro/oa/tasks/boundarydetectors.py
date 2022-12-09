@@ -36,6 +36,7 @@ class BoundaryDetector(OATask):
     """
 
     C_NAME = 'Boundary Detector'
+    C_EVENT_BOUNDARY_CHANGED = 'Boundary Changed'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -80,31 +81,34 @@ class BoundaryDetector(OATask):
         """
         if p_inst_new is None: return
 
-        if isinstance(p_inst_new[0], Instance):
-            inst_new = p_inst_new[0].get_feature_data()
-        else:
-            inst_new = p_inst_new[0]
+        adapted = False
 
-        if self._scaler is None:
-            self._scaler = np.ones(len(inst_new.get_values()))
-        dim = []
-        for id in inst_new.get_related_set().get_dim_ids():
-            dim.append(inst_new.get_related_set().get_dim(id))
+
         for inst in p_inst_new:
             if isinstance(inst, Instance):
                 inst = inst.get_feature_data()
+
+            dim = inst.get_related_set().get_dims()
+
+            if self._scaler is None:
+                self._scaler = np.ones(len(inst.get_values()))
+
             for i,value in enumerate(inst.get_values()):
                 boundary = dim[i].get_boundaries()
                 if len(boundary) == 0:
                     boundary = [0,0]
+                    dim[i].set_boundaries(boundary)
                 if value < boundary[0]:
-                    dim[i].set_boundaries([value*self._scaler, boundary[1]])
-                    return True
+                    dim[i].set_boundaries([value*self._scaler[i], boundary[i]])
+                    adapted = True
                 elif value > boundary[1]:
-                    dim[i].set_boundaries([boundary[0],value*self._scaler])
-                    return True
+                    dim[i].set_boundaries([boundary[0],value*self._scaler[i]])
+                    adapted = True
                 else:
-                    return False
+                    adapted = False or adapted
+
+        if adapted:
+            self._raise_event(self.C_EVENT_BOUNDARY_CHANGED, Event(self, p_inst_new = p_inst_new))
 
 
 ## -------------------------------------------------------------------------------------------------

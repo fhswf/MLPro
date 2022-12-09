@@ -28,6 +28,24 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def __init__(self,p_name: str = None,
+                  p_range_max = StreamTask.C_RANGE_THREAD,
+                  p_ada : bool = True,
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs):
+
+        OATask.__init__(self,
+                        p_name = p_name,
+                        p_range_max = p_range_max,
+                        p_ada = p_ada,
+                        p_logging=p_logging,
+                        **p_kwargs)
+
+        Norm.NormalizerMinMax.__init__(self)
+
+
+
+## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new:list, p_inst_del:list):
         """
         Custom method to for run MinMax Normalizer task for normalizing new instances and denormalizing deleted
@@ -42,12 +60,12 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
 
         """
         for i,inst in enumerate(p_inst_new):
-            normalized_element = self.normalize(inst)
-            p_inst_new[i] = normalized_element
+            normalized_element = self.normalize(inst.get_feature_data())
+            inst = normalized_element
 
         for j, del_inst in enumerate(p_inst_del):
-            denormalized_element = self.denormalize(del_inst)
-            p_inst_del[j] = denormalized_element
+            denormalized_element = self.denormalize(del_inst.get_feature_data())
+            del_inst = denormalized_element
 
 
 
@@ -71,11 +89,15 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
             Returns True, if the task has adapted. False otherwise.
         """
         adapted = False
-        try:
-            self.update_parameters(p_event_obj.get_raising_object(),)
-            adapted = True
-        except:
-            pass
+
+        inst_new = p_event_obj.get_data()['p_inst_new']
+        for i in inst_new:
+            set = i.get_feature_data().get_related_set()
+            break
+        self.update_parameters(set)
+        adapted = True
+        # except:
+        #     pass
         return adapted
 
 
@@ -88,6 +110,23 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
     """
     Class with functionality of adaptive normalization of instances with Z-Transformation
     """
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_name: str = None,
+                 p_range_max=StreamTask.C_RANGE_THREAD,
+                 p_ada: bool = True,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
+
+        OATask.__init__(self,
+            p_name=p_name,
+            p_range_max=p_range_max,
+            p_ada=p_ada,
+            p_logging=p_logging,
+            **p_kwargs)
+
+        Norm.NormalizerMinMax.__init__(self)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -106,11 +145,11 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
         self.adapt(p_inst_new=p_inst_new, p_inst_del=p_inst_del)
 
         for i, inst in enumerate(p_inst_new):
-            normalized_element = self.normalize(inst)
+            normalized_element = self.normalize(inst.get_feature_data())
             p_inst_new[i] = normalized_element
 
         for i,del_inst in enumerate(p_inst_del):
-            denormalized_element = self.denormalize(del_inst)
+            denormalized_element = self.denormalize(del_inst.get_feature_data())
             p_inst_del[i] = denormalized_element
 
 

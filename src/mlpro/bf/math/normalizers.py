@@ -14,6 +14,7 @@
 ## -- 2022-10-18  1.0.5     LSB      Refactoring following the review
 ## -- 2022-11-03  1.0.6     LSB      Refactoring new update methods
 ## -- 2022-11-03  1.0.7     LSB      Refactoring
+## -- 2022-12-09  1.0.8     LSB      Handling zero division error
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -201,10 +202,15 @@ class NormalizerMinMax (Normalizer):
                 raise ParamError("Wrong parameters provided for update. Please provide a set as p_set or boundaries as "
                                  "p_boundaries")
 
-        for i in range(len(boundaries)):
-            self._param_new[0][i] = (2 / (boundaries[i][1] - boundaries[i][0]))
-            self._param_new[1][i] = (2 * boundaries[i][0] / (boundaries[i][1] - boundaries[i][0]) + 1)
-
+        for i,boundary in enumerate(boundaries):
+            try:
+                self._param_new[0][i] = (2 / (boundary[1] - boundary[0]))
+            except ZeroDivisionError:
+                self._param_new[0][i] = 0
+            try:
+                self._param_new[1][i] = (2 * boundary[0] / (boundary[1] - boundary[0]) + 1)
+            except ZeroDivisionError:
+                self._param_new[0][i] = 0
         self._param = self._param_new
 
 
