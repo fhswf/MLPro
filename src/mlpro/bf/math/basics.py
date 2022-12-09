@@ -318,21 +318,21 @@ class Set:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def copy(self, p_new_dim_ids=True, p_ignore_duplicates:bool=False):
+    def copy(self, p_new_dim_ids:bool=True):
         new_set = self.__class__()
 
         if p_new_dim_ids:
             for dim in self._dim_by_id.values():
-                new_set.add_dim(p_dim=dim.copy(), p_ignore_duplicates=p_ignore_duplicates)
+                new_set.add_dim(p_dim=dim.copy())
         else:
             for dim in self._dim_by_id.values():
-                new_set.add_dim(p_dim=dim, p_ignore_duplicates=p_ignore_duplicates)
+                new_set.add_dim(p_dim=dim)
 
         return new_set
 
 
 ## -------------------------------------------------------------------------------------------------
-    def append(self, p_set, p_new_dim_ids=True, p_ignore_duplicates:bool=False):
+    def append(self, p_set, p_new_dim_ids:bool=True, p_ignore_duplicates:bool=False):
         if p_new_dim_ids:
             for dim in p_set.get_dims():
                 self.add_dim(p_dim=dim.copy(), p_ignore_duplicates=p_ignore_duplicates)
