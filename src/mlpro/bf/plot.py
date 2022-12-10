@@ -30,9 +30,12 @@ This module provides various classes related to data plotting.
 from operator import mod
 import numpy as np
 
-from tkinter import *
-import matplotlib
-matplotlib.use('TkAgg')
+try:
+    from tkinter import *
+    import matplotlib
+    matplotlib.use('TkAgg')
+except:
+    import matplotlib
 
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
