@@ -29,6 +29,11 @@ This module provides various classes related to data plotting.
 
 from operator import mod
 import numpy as np
+
+from tkinter import *
+import matplotlib
+matplotlib.use('TkAgg')
+
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 import matplotlib.pyplot as plt
@@ -256,7 +261,17 @@ class Plottable:
             Matplotlib figure object to host the subplot(s)
         """
 
-        return plt.figure()     
+        # 1 Create a new figure
+        fig = plt.figure()    
+
+        # 2 Get active backend
+        backend = matplotlib.get_backend()
+
+        # 3 Bring and keep window on top of the screen
+        if backend == 'TkAgg':
+            fig.canvas.manager.window.attributes('-topmost', True)
+
+        return fig
 
 
 ## -------------------------------------------------------------------------------------------------
