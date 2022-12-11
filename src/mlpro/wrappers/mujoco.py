@@ -6,6 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-17  0.0.0     MRD       Creation
+## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -14,7 +15,6 @@
 import time
 import glfw
 import os
-import imageio
 import mujoco
 import numpy as np
 from threading import Lock
@@ -266,7 +266,7 @@ class RenderViewer(CallbacksViewer):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvMujoco(Wrapper, Environment):
+class WrEnvMujoco(Wrapper, System):
     """
     Wrap native MLPRo Environment with MuJuCo functionality.
     """
@@ -290,7 +290,7 @@ class WrEnvMujoco(Wrapper, Environment):
         self.init_qpos = self.data.qpos.ravel().copy()
         self.init_qvel = self.data.qvel.ravel().copy()
 
-        Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_latency=None, p_logging=p_logging)
+        System.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
 
 

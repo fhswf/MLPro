@@ -6,6 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-17  0.0.0     MRD       Creation
+## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -17,7 +18,8 @@ from mlpro.bf.ops import Mode
 from mlpro.bf.various import Log
 from mlpro.rl.models_agents import Policy, Agent
 from mlpro.rl.models_train import RLScenario
-from mlpro.rl.models_sar import State, Action, SARSElement
+from mlpro.bf.systems import State, Action
+from mlpro.rl.models_env_ada import SARSElement
 from mlpro.rl.pool.envs.mujoco.doublependulum import DoublePendulum
 
 # 1 Implement your own agent policy
@@ -76,7 +78,7 @@ if __name__ == "__main__":
     # 3.1 Parameters for demo mode
     cycle_limit = 2000
     logging     = Log.C_LOG_ALL
-    visualize   = True
+    visualize   = False
   
 else:
     # 3.2 Parameters for internal unit test

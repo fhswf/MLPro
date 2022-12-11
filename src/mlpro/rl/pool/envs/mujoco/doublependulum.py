@@ -6,6 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-19  0.0.0     MRD       Creation
+## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -19,13 +20,15 @@ from mlpro.wrappers.mujoco import WrEnvMujoco
 
 ## ---------------------------------------------------------------------------------------------------------------------
 ## ---------------------------------------------------------------------------------------------------------------------
-class DoublePendulum(WrEnvMujoco):
+class DoublePendulum(WrEnvMujoco, FctReward):
     def __init__(self, p_frame_skip=1, p_logging=False):
         p_model_path = None
         p_model_file = "doublependulum.xml"
         super().__init__(p_model_file, p_frame_skip=p_frame_skip, p_model_path=p_model_path, p_logging=p_logging)
 
         self._state = State(self._state_space)
+
+        self.get_cycle_limit = Environment.get_cycle_limit
 
         self.reset()
 
@@ -129,7 +132,7 @@ class DoublePendulum(WrEnvMujoco):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
+    def _compute_reward(self, p_state: State, p_state_new: State) -> Reward:
         current_reward = Reward()
         current_reward.set_overall_reward(1)
         return current_reward
