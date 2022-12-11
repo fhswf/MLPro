@@ -20,7 +20,7 @@ from mlpro.rl.models_agents import Policy, Agent
 from mlpro.rl.models_train import RLScenario
 from mlpro.bf.systems import State, Action
 from mlpro.rl.models_env_ada import SARSElement
-from mlpro.rl.pool.envs.mujoco.doublependulum import DoublePendulum
+from mlpro.rl.pool.envs.mujoco.ur5 import UR5
 
 # 1 Implement your own agent policy
 class MyPolicy (Policy):
@@ -58,7 +58,7 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
-        self._env   = DoublePendulum() 
+        self._env   = UR5() 
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),
