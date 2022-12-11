@@ -1,5 +1,5 @@
 ## -------------------------------------------------------------------------------------------------
-## -- Project : FH-SWF Automation Technology - Common Code Base (CCB)
+## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
 ## -- Module  : howto_rl_env_008_run_agent_with_random_policy_on_ur5_mujoco_environment.py
 ## -------------------------------------------------------------------------------------------------
@@ -7,7 +7,15 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-17  0.0.0     MRD       Creation
 ## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
+## -- 2022-12-11  1.0.0     MRD       First Release
 ## -------------------------------------------------------------------------------------------------
+
+
+"""
+Ver. 1.0.0 (2022-12-11)
+
+This module shows how to train double pendulum using on-policy and off-policy RL algorithms from SB3.
+"""
 
 
 import random
