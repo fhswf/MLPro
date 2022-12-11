@@ -44,10 +44,11 @@
 ## --                                - method _run_cycle(): new return value "end_of_data"
 ## --                                - method _setup(): refactoring
 ## -- 2022-11-09  1.8.2     DA       Refactoring and code cleaning
+## -- 2022-11-29  1.8.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.2 (2022-11-09)
+Ver. 1.8.3 (2022-11-29)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -56,14 +57,14 @@ This module provides model classes to define and run rl scenarios and to train a
 from mlpro.bf.data import DataStoring
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
-from mlpro.rl.models_sar import *
+from mlpro.rl.models_env import *
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RLDataStoring(DataStoring):
+class RLDataStoring (DataStoring):
     """
     Derivative of basic class DataStoring that is specialized to store episodic training data in the
     context of reinforcement learning.
@@ -315,7 +316,7 @@ class RLScenario (Scenario):
                  p_logging=Log.C_LOG_ALL):  
 
         # 1 Setup entire scenario
-        self._env = None
+        self._env : Environment = None
 
         super().__init__( p_mode=p_mode, 
                           p_ada=p_ada, 
@@ -369,15 +370,33 @@ class RLScenario (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        super().init_plot(p_figure=p_figure)
-        self._env.init_plot(p_figure=p_figure)
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings: list = [], 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 0, 
+                   **p_kwargs ):
+
+        super().init_plot( p_figure = p_figure, 
+                           p_plot_settings = p_plot_settings, 
+                           p_plot_depth = p_plot_depth, 
+                           p_detail_level = p_detail_level, 
+                           p_step_rate = p_step_rate, 
+                           **p_kwargs )
+
+        self._env.init_plot( p_figure = p_figure, 
+                             p_plot_settings = p_plot_settings, 
+                             p_plot_depth = p_plot_depth, 
+                             p_detail_level = p_detail_level, 
+                             p_step_rate = p_step_rate, 
+                             **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
-        super().update_plot()
-        self._env.update_plot()
+    def update_plot(self, **p_kwargs):
+        super().update_plot( **p_kwargs)
+        self._env.update_plot( **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------

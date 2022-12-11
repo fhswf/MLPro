@@ -1,0 +1,27 @@
+:root{
+  --main-bg-color: #05235e;
+  --link-color: #db041a;
+}
+
+.version{
+    color: var(--link-color) !important;
+}
+.wy-side-nav-search{
+  background-color: var(--main-bg-color);
+}
+
+.codeblock,pre.literal-block,.rst-content .literal-block,.rst-content pre.literal-block,div[class^='highlight'] {
+        background: #f7f5f5;;
+}
+
+.field-list .xref.py.docutils, .field-list code.docutils, .field-list .docutils.literal.notranslate
+{
+  border: None;
+  padding-left: 0;
+  padding-right: 0;
+  color: #0d1c4d;
+}
+
+.wy-nav-content {
+  max-width: none;
+}

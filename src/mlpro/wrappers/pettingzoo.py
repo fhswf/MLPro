@@ -40,10 +40,11 @@
 ## -- 2022-10-06  2.0.0     SY       Major update following PettingZoo version 1.22.0
 ## -- 2022-11-01  2.0.1     DA       Refactoring
 ## -- 2022-11-09  2.0.2     DA       Refactoring
+## -- 2022-11-29  2.0.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.2 (2022-11-09)
+Ver. 2.0.3 (2022-11-29)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -245,12 +246,12 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
         if self._visualize: self._zoo_env.render()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def update_plot(self):
+    def update_plot(self, **p_kwargs):
         if self._visualize: self._zoo_env.render()
 
 

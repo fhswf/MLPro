@@ -17,10 +17,11 @@
 ## -- 2022-11-07  1.3.0     DA       Class WrStreamOpenML: refactoring to make it iterable
 ## -- 2022-11-08  1.3.1     DA       Corrections
 ## -- 2022-11-19  1.4.0     DA       Method WrStreamRiver._get_string(): new parameter p_name
+## -- 2022-12-09  1.4.1     DA       Bugfix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-11-19)
+Ver. 1.4.1 (2022-12-09)
 
 This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
 
@@ -272,7 +273,7 @@ class WrStreamRiver (Stream):
 
         features = next(self._dataset)[0].keys()
         for feature in features:
-            feature_space.add_dim(Feature(p_name_long=str(feature), p_name_short=str(self.C_NAME[0:5])))
+            feature_space.add_dim(Feature(p_name_short=str(feature)))
 
         return feature_space
 
@@ -291,7 +292,7 @@ class WrStreamRiver (Stream):
                 label_space.add_dim(Label(p_name_long=str(label), p_name_short=str(label[0:5])))
 
         else:
-            label_space.add_dim(Label(p_name_long=str(self._label), p_name_short=str(self._label[0:5])))
+            label_space.add_dim(Label(p_name_short=str(self._label)))
 
         return label_space
 

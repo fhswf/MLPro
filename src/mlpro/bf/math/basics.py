@@ -25,10 +25,14 @@
 ## -- 2022-10-08  1.6.0     DA       New method Set.get_dims()
 ## -- 2022-10-21  1.7.0     DA       Class Dimension: extension by optional property symmetry
 ## -- 2022-10-24  1.8.0     DA       Class Element: new method copy()
+## -- 2022-12-05  1.9.0     DA       Class Dimension: new param p_kwargs and method get_kwargs()
+## -- 2022-12-09  2.0.0     DA       Class Set: 
+## --                                - new method get_dim_by_name()
+## --                                - internal optimizations
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2022-10-24)
+Ver. 2.0.0 (2022-12-09)
 
 This module provides basic mathematical classes.
 """
@@ -72,8 +76,11 @@ class Dimension (EventManager):
         Information about the symmetry of the dimension (optional, default is False)
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-
+    p_kwargs : dict
+        Further optional keyword parameters.
     """
+
+    C_TYPE              = 'Dimension'
 
     C_BASE_SET_R        = 'R'           # real numbers
     C_BASE_SET_N        = 'N'           # natural numbers
@@ -93,19 +100,21 @@ class Dimension (EventManager):
                   p_boundaries:list=[], 
                   p_description='',
                   p_symmetrical:bool=False,
-                  p_logging=Log.C_LOG_NOTHING ):
+                  p_logging=Log.C_LOG_NOTHING,
+                  **p_kwargs ):
 
         EventManager.__init__(self, p_logging=p_logging)
 
         self._id = str(uuid.uuid4())
-        self._name_short = p_name_short
-        self._base_set = p_base_set
-        self._name_long = p_name_long
-        self._name_latex = p_name_latex
-        self._unit = p_unit
-        self._unit_latex = p_unit_latex
-        self._description = p_description
-        self._symmetrical = p_symmetrical
+        self._name_short    = self.C_NAME = p_name_short
+        self._base_set      = p_base_set
+        self._name_long     = p_name_long
+        self._name_latex    = p_name_latex
+        self._unit          = p_unit
+        self._unit_latex    = p_unit_latex
+        self._description   = p_description
+        self._symmetrical   = p_symmetrical
+        self._kwargs        = p_kwargs.copy()
 
         self.set_boundaries(p_boundaries=p_boundaries)
 
@@ -185,6 +194,11 @@ class Dimension (EventManager):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_kwargs(self) -> dict:
+        return self._kwargs
+
+
+## -------------------------------------------------------------------------------------------------
     def copy(self):
         return self.__class__( p_name_short=self._name_short,
                                p_base_set=self._base_set,
@@ -209,21 +223,37 @@ class Set:
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self) -> None:
-        self._dim_list = []
-        self._dim_ids = []
+        self._dim_by_id     = {}
+        self._dim_by_name   = {}
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_dim(self, p_dim: Dimension):
+    def add_dim(self, p_dim:Dimension, p_ignore_duplicates:bool=False ):
         """
         Raises the dimensionality of the set by adding a new dimension.
 
-        Parameters:
-            p_dim       Dimension to be added
+        Parameters
+        ----------
+        p_dim : Dimension
+            Dimension to be added.
+        p_ignore_duplicates : bool
+            If True, duplicated short names of dimensions are accepted. Default = False.
         """
 
-        self._dim_ids.append(p_dim.get_id())
-        self._dim_list.append(p_dim)
+        # 1 Check, whether a dimension with same name was already added
+        name_short = p_dim.get_name_short()
+
+        if not p_ignore_duplicates:
+            try:
+                dim = self._dim_by_name[name_short]
+            except:
+                pass
+            else:
+                raise ParamError('Dimension "' + name_short + '" already exists!')
+
+        # 2 Store new dimension under it's id and name
+        self._dim_by_name[name_short]   = p_dim
+        self._dim_by_id[p_dim.get_id()] = p_dim
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -232,7 +262,12 @@ class Set:
         Returns the dimension specified by it's unique id.
         """
 
-        return self._dim_list[self._dim_ids.index(p_id)]
+        return self._dim_by_id[p_id]
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_dim_by_name(self, p_name) -> Dimension:
+        return self._dim_by_name[p_name]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -241,7 +276,7 @@ class Set:
         Returns all dimensions.
         """
 
-        return self._dim_list
+        return list(self._dim_by_id.values())
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -250,7 +285,7 @@ class Set:
         Returns the dimensionality of the set (=number of dimensions of the set).
         """
 
-        return len(self._dim_list)
+        return len(self.get_dims())
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -259,11 +294,11 @@ class Set:
         Returns the unique ids of the related dimensions.
         """
 
-        return self._dim_ids
+        return list(self._dim_by_id.keys())
 
 
 ## -------------------------------------------------------------------------------------------------
-    def spawn(self, p_id_list: list):
+    def spawn(self, p_id_list:list):
         """
         Spawns a new class with same type and a subset of dimensions specified
         by an index list.
@@ -276,34 +311,34 @@ class Set:
         """
 
         new_set = self.__class__()
-        for i in p_id_list:
-            new_set.add_dim(self._dim_list[self._dim_ids.index(i)])
+        for dim_id in p_id_list:
+            new_set.add_dim(self._dim_by_id[dim_id])
 
         return new_set
 
 
 ## -------------------------------------------------------------------------------------------------
-    def copy(self, p_new_dim_ids=True):
+    def copy(self, p_new_dim_ids:bool=True):
         new_set = self.__class__()
 
         if p_new_dim_ids:
-            for dim_id in self.get_dim_ids():
-                new_set.add_dim(self.get_dim(dim_id).copy())
+            for dim in self._dim_by_id.values():
+                new_set.add_dim(p_dim=dim.copy())
         else:
-            for dim_id in self.get_dim_ids():
-                new_set.add_dim(self.get_dim(dim_id))
+            for dim in self._dim_by_id.values():
+                new_set.add_dim(p_dim=dim)
 
         return new_set
 
 
 ## -------------------------------------------------------------------------------------------------
-    def append(self, p_set, p_new_dim_ids=True):
+    def append(self, p_set, p_new_dim_ids:bool=True, p_ignore_duplicates:bool=False):
         if p_new_dim_ids:
-            for dim_id in p_set.get_dim_ids():
-                self.add_dim(p_set.get_dim(dim_id).copy())
+            for dim in p_set.get_dims():
+                self.add_dim(p_dim=dim.copy(), p_ignore_duplicates=p_ignore_duplicates)
         else:
-            for dim_id in p_set.get_dim_ids():
-                self.add_dim(p_set.get_dim(dim_id))
+            for dim in p_set.get_dims():
+                self.add_dim(p_dim=dim, p_ignore_duplicates=p_ignore_duplicates)
 
 
 

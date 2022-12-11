@@ -20,10 +20,13 @@
 ## --                                - Bugfix in method Workflow.init_plot()
 ## -- 2022-11-18  1.3.1     DA       Method Workflow._init_figure: support of different backend types
 ## -- 2022-11-22  1.3.2     DA       Class Async, Task, Workflow: corrections on plotting
+## -- 2022-12-08  1.4.0     DA       - Classes Task, Workflow: bugfixes in plot methods
+## --                                - Class Task: replaced method set_num_predecessors() by 
+## --                                  set_predecessors()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-11-22)
+Ver. 1.4.0 (2022-12-08)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -503,9 +506,12 @@ class Task (Async, EventManager, Plottable):
                   p_logging=Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        self._tid    = uuid.uuid4()
-        self._kwargs = p_kwargs.copy()
-        self.set_num_predecessors(0)
+        self._tid               = uuid.uuid4()
+        self._kwargs            = p_kwargs.copy()
+
+        self._predecessor_ids   = []
+        self._num_predecessors  = 0
+        self._ctr_predecessors  = 0
 
         name = self.get_name()
         if name != '': name = name + ' '
@@ -649,18 +655,19 @@ class Task (Async, EventManager, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_num_predecessors(self, p_num_pred:int):
+    def set_predecessors(self, p_predecessor_ids:list ):
         """
         Used by class Workflow to inform a task about it's number of predecessor tasks. See method
         run_on_event().
 
         Parameters
         ----------
-        p_num_pred : int
-            Number of predecessor tasks in a workflow.
+        p_predecessor_ids : list
+            List of ids of predecessor tasks in a workflow.
         """
-        self._num_predecessors = p_num_pred
-        self._ctr_predecessors = p_num_pred
+
+        self._predecessor_ids  = p_predecessor_ids
+        self._num_predecessors = self._ctr_predecessors = len(p_predecessor_ids)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -693,6 +700,11 @@ class Task (Async, EventManager, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+
         self.log(Log.C_LOG_TYPE_I, 'Init plot')
         return Plottable.init_plot( self,
                                     p_figure=p_figure, 
@@ -768,6 +780,11 @@ class Task (Async, EventManager, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+
         self.log(Log.C_LOG_TYPE_I, 'Update plot')
         Plottable.update_plot(self, **p_kwargs)
 
@@ -812,12 +829,13 @@ class Workflow (Task):
                   p_logging=Log.C_LOG_ALL, 
                   **p_kwargs ):
 
-        self._tasks         = []
-        self._entry_tasks   = []
-        self._final_tasks   = []
-        self._first_run     = True
+        self._tasks             = []
+        self._entry_tasks       = []
+        self._final_tasks       = []
+        self._predecessor_tasks = {}
+        self._first_run         = True
 
-        self._finished      = mt.Event()
+        self._finished          = mt.Event()
         self._finished.clear()
 
         Task.__init__( self, 
@@ -885,11 +903,14 @@ class Workflow (Task):
         self._final_tasks.append(p_task)
 
         if ( p_pred_tasks is None ) or ( len(p_pred_tasks) == 0 ):
-            p_task.set_num_predecessors(0)
             self._entry_tasks.append(p_task)
 
         else:
-            p_task.set_num_predecessors(len(p_pred_tasks))
+            predecessor_ids = [] 
+            for task in p_pred_tasks:
+                predecessor_ids.append(task.get_tid())
+
+            p_task.set_predecessors(p_predecessor_ids=predecessor_ids)
 
             if self._range > self.C_RANGE_THREAD:
                 self.log(Log.C_LOG_TYPE_W, 'Predecessor relations are event-based and not yet supported beyond multithreading. Range is reduced')
@@ -947,6 +968,11 @@ class Workflow (Task):
             Further optional plot parameters.    
         """
 
+        try:
+            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
+        except:
+            return
+
         Task.init_plot( self,
                         p_figure=p_figure, 
                         p_plot_settings=p_plot_settings, 
@@ -954,12 +980,7 @@ class Workflow (Task):
                         p_detail_level=p_detail_level, 
                         p_step_rate=p_step_rate, 
                          **p_kwargs )
-
-        try:
-            if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
-        except:
-            return
-        
+      
         task:Task
         emb_task_pos_x  = 1
         emb_task_pos_y  = 1
