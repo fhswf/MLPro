@@ -61,11 +61,11 @@ class Pendulum(WrEnvMujoco, FctReward):
 
 ## ------------------------------------------------------------------------------------------------------
     def _reset_model(self):
-        qpos = self.init_qpos + np.random.uniform(
-            size=self.model.nq, low=-0.01, high=0.01
+        qpos = self._init_qpos + np.random.uniform(
+            size=self._model.nq, low=-0.01, high=0.01
         )
-        qvel = self.init_qvel + np.random.uniform(
-            size=self.model.nv, low=-0.01, high=0.01
+        qvel = self._init_qpos + np.random.uniform(
+            size=self._model.nv, low=-0.01, high=0.01
         )
         self.set_state(qpos, qvel)
         return self._get_obs()
@@ -73,7 +73,7 @@ class Pendulum(WrEnvMujoco, FctReward):
 
 ## ------------------------------------------------------------------------------------------------------
     def _get_obs(self):
-        return np.concatenate([self.data.qpos, self.data.qvel]).ravel()
+        return np.concatenate([self._data.qpos, self._data.qvel]).ravel()
 
 
 ## ------------------------------------------------------------------------------------------------------

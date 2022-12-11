@@ -271,24 +271,26 @@ class WrEnvMujoco(Wrapper, System):
     Wrap native MLPRo Environment with MuJuCo functionality.
     """
 
+    C_NAME = 'MuJoCo'
     C_TYPE = 'Wrapper MuJoCo -> MLPro'
     C_WRAPPED_PACKAGE   = 'mujoco'
+    C_MINIMUM_VERSION = '2.3.1'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_model_file, p_frame_skip, p_model_path=None, p_logging=False):
+    def __init__(self, p_model_file, p_frame_skip, p_model_path=None, p_logging=Log.C_LOG_ALL ):
 
-        self.viewer = None
-        self.frame_skip = p_frame_skip
+        self._viewer = None
+        self._frame_skip = p_frame_skip
 
         if p_model_path is None:
-            self.model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", p_model_file)
+            self._model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", p_model_file)
         else:
-            self.model_path = os.path.join(p_model_path, p_model_file)
+            self._model_path = os.path.join(p_model_path, p_model_file)
 
         self._initialize_simulation()
 
-        self.init_qpos = self.data.qpos.ravel().copy()
-        self.init_qvel = self.data.qvel.ravel().copy()
+        self._init_qpos = self._data.qpos.ravel().copy()
+        self._init_qvel = self._data.qvel.ravel().copy()
 
         System.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
@@ -297,7 +299,7 @@ class WrEnvMujoco(Wrapper, System):
 ## -------------------------------------------------------------------------------------------------
     def __del__(self):
         try:
-            self.close()
+            self._close()
             self.log(self.C_LOG_TYPE_I, 'Closed')
         except:
             pass
@@ -305,33 +307,33 @@ class WrEnvMujoco(Wrapper, System):
 
 ## -------------------------------------------------------------------------------------------------    
     def set_state(self, qpos, qvel):
-        self.data.qpos[:] = np.copy(qpos)
-        self.data.qvel[:] = np.copy(qvel)
-        if self.model.na == 0:
-            self.data.act[:] = None
-        mujoco.mj_forward(self.model, self.data)
+        self._data.qpos[:] = np.copy(qpos)
+        self._data.qvel[:] = np.copy(qvel)
+        if self._model.na == 0:
+            self._data.act[:] = None
+        mujoco.mj_forward(self._model, self._data)
 
 
 ## -------------------------------------------------------------------------------------------------    
     def _set_action_space(self):
-        bounds = self.model.actuator_ctrlrange.copy().astype(np.float32)
+        bounds = self._model.actuator_ctrlrange.copy().astype(np.float32)
         low, high = bounds.T
         return low, high
 
 
 ## -------------------------------------------------------------------------------------------------    
     def _initialize_simulation(self):
-        self.model = mujoco.MjModel.from_xml_path(self.model_path)
-        self.model.vis.global_.offwidth = 480
-        self.model.vis.global_.offheight = 480
-        self.data = mujoco.MjData(self.model)
+        self._model = mujoco.MjModel.from_xml_path(self._model_path)
+        self._model.vis.global_.offwidth = 480
+        self._model.vis.global_.offheight = 480
+        self._data = mujoco.MjData(self._model)
 
 ## -------------------------------------------------------------------------------------------------    
     def _get_viewer(self):
-        if self.viewer is None:
-            self.viewer = RenderViewer(self.model, self.data)
+        if self._viewer is None:
+            self._viewer = RenderViewer(self._model, self._data)
         
-        return self.viewer
+        return self._viewer
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -364,18 +366,18 @@ class WrEnvMujoco(Wrapper, System):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset_simulation(self):
-        mujoco.mj_resetData(self.model, self.data)
+        mujoco.mj_resetData(self._model, self._data)
         ob =  self._reset_model()
-        self.render()
+        self._render()
         return ob
 
 
 ## -------------------------------------------------------------------------------------------------
     def _step_simulation(self, action):
-        self.data.ctrl[:] = action
-        mujoco.mj_step(self.model, self.data, nstep=self.frame_skip)
-        mujoco.mj_rnePostConstraint(self.model, self.data)
-        self.render()
+        self._data.ctrl[:] = action
+        mujoco.mj_step(self._model, self._data, nstep=self._frame_skip)
+        mujoco.mj_rnePostConstraint(self._model, self._data)
+        self._render()
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -412,12 +414,12 @@ class WrEnvMujoco(Wrapper, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def render(self):
+    def _render(self):
         self._get_viewer().render()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def close(self):
-        if self.viewer is not None:
-            self.viewer.close()
-            self.viewer = None
+    def _close(self):
+        if self._viewer is not None:
+            self._viewer.close()
+            self._viewer = None
