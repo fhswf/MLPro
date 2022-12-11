@@ -1,26 +1,34 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.pool.envs.mujoco
-## -- Module  : doublependulum.py
+## -- Module  : pendulum.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-19  0.0.0     MRD       Creation
 ## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
+## -- 2022-12-11  1.0.0     MRD       First Release
 ## -------------------------------------------------------------------------------------------------
+
+
+"""
+Ver. 1.0.0 (2022-12-11)
+
+This module contains Pendulum system with MuJoCo Simulation functionality.
+"""
 
 
 import numpy as np
 
 from mlpro.rl.models import *
-from mlpro.wrappers.mujoco import WrEnvMujoco
+from mlpro.wrappers.mujoco import WrSysMujoco
 
 
 
 
 ## ---------------------------------------------------------------------------------------------------------------------
 ## ---------------------------------------------------------------------------------------------------------------------
-class Pendulum(WrEnvMujoco, FctReward):
+class Pendulum(WrSysMujoco, FctReward):
     def __init__(self, p_frame_skip=1, p_logging=False):
         p_model_path = None
         p_model_file = "pendulum.xml"

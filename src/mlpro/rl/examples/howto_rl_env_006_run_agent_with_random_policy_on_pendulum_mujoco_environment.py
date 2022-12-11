@@ -14,7 +14,7 @@
 """
 Ver. 1.0.0 (2022-12-11)
 
-This module shows how to train double pendulum using on-policy and off-policy RL algorithms from SB3.
+This module shows how to run a random policy on Pendulum with MuJoCo Simulation.
 """
 
 

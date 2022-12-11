@@ -7,20 +7,28 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-19  0.0.0     MRD       Creation
 ## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
+## -- 2022-12-11  1.0.0     MRD       First Release
 ## -------------------------------------------------------------------------------------------------
+
+
+"""
+Ver. 1.0.0 (2022-12-11)
+
+This module contains Double Pendulum system with MuJoCo Simulation functionality.
+"""
 
 
 import numpy as np
 
 from mlpro.rl.models import *
-from mlpro.wrappers.mujoco import WrEnvMujoco
+from mlpro.wrappers.mujoco import WrSysMujoco
 
 
 
 
 ## ---------------------------------------------------------------------------------------------------------------------
 ## ---------------------------------------------------------------------------------------------------------------------
-class DoublePendulum(WrEnvMujoco, FctReward):
+class DoublePendulum(WrSysMujoco, FctReward):
     def __init__(self, p_frame_skip=1, p_logging=False):
         p_model_path = None
         p_model_file = "doublependulum.xml"

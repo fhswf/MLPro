@@ -7,9 +7,15 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-09-17  0.0.0     MRD       Creation
 ## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
+## -- 2022-12-11  1.0.0     MRD       First Release
 ## -------------------------------------------------------------------------------------------------
 
 
+"""
+Ver. 1.0.0 (2022-12-11)
+
+This module wraps bf.Systems with MuJoCo Simulation functionality.
+"""
 
 
 import time
@@ -266,9 +272,9 @@ class RenderViewer(CallbacksViewer):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrEnvMujoco(Wrapper, System):
+class WrSysMujoco(Wrapper, System):
     """
-    Wrap native MLPRo Environment with MuJuCo functionality.
+    Wrap native MLPRo System with MuJuCo functionality.
     """
 
     C_NAME = 'MuJoCo'
