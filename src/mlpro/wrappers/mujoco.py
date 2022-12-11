@@ -339,9 +339,35 @@ class WrEnvMujoco(Wrapper, System):
         pass
 
 
+## ------------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None) -> None:
+        """
+        This method is used to reset the environment. The environment is reset to the initial position set during
+        the initialization of the environment.
+
+        Parameters
+        ----------
+        p_seed : int, optional
+            The default is None.
+
+        """
+        
+        ob = self._reset_simulation()
+
+        self._state.set_values(ob)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset_model(self):
+        raise NotImplementedError
+
+
 ## -------------------------------------------------------------------------------------------------
     def _reset_simulation(self):
         mujoco.mj_resetData(self.model, self.data)
+        ob =  self._reset_model()
+        self.render()
+        return ob
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -349,6 +375,40 @@ class WrEnvMujoco(Wrapper, System):
         self.data.ctrl[:] = action
         mujoco.mj_step(self.model, self.data, nstep=self.frame_skip)
         mujoco.mj_rnePostConstraint(self.model, self.data)
+        self.render()
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _get_obs(self):
+        raise NotImplementedError
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state:State, p_action:Action):
+        """
+        This method is used to calculate the next states of the system after a set of actions.
+
+        Parameters
+        ----------
+        p_state : State
+            current State.
+            p_action : Action
+                current Action.
+
+        Returns
+        -------
+            _state : State
+                Current states after the simulation of latest action on the environment.
+
+        """
+        action = p_action.get_sorted_values()
+        self._step_simulation(action)
+        ob = self._get_obs()
+
+        current_state = State(self._state_space)
+        current_state.set_values(ob)
+
+        return current_state
 
 
 ## -------------------------------------------------------------------------------------------------

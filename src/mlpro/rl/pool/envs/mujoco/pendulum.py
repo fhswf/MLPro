@@ -60,27 +60,7 @@ class Pendulum(WrEnvMujoco, FctReward):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None) -> None:
-        """
-        This method is used to reset the environment. The environment is reset to the initial position set during
-        the initialization of the environment.
-
-        Parameters
-        ----------
-        p_seed : int, optional
-            The default is None.
-
-        """
-        
-        self._reset_simulation()
-
-        ob = self.reset_model()
-        self.render()
-
-        self._state.set_values(ob)
-
-## ------------------------------------------------------------------------------------------------------
-    def reset_model(self):
+    def _reset_model(self):
         qpos = self.init_qpos + np.random.uniform(
             size=self.model.nq, low=-0.01, high=0.01
         )
@@ -90,39 +70,10 @@ class Pendulum(WrEnvMujoco, FctReward):
         self.set_state(qpos, qvel)
         return self._get_obs()
 
+
 ## ------------------------------------------------------------------------------------------------------
     def _get_obs(self):
         return np.concatenate([self.data.qpos, self.data.qvel]).ravel()
-
-
-## ------------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state:State, p_action:Action):
-        """
-        This method is used to calculate the next states of the system after a set of actions.
-
-        Parameters
-        ----------
-        p_state : State
-            current State.
-            p_action : Action
-                current Action.
-
-        Returns
-        -------
-            _state : State
-                Current states after the simulation of latest action on the environment.
-
-        """
-        action = p_action.get_sorted_values()
-        self._step_simulation(action)
-        self.render()
-        joint_angle = self.data.qpos.flat[:]
-        joint_velocity = self.data.qvel.flat[:]
-
-        current_state = State(self._state_space)
-        current_state.set_values([*joint_angle, *joint_velocity])
-
-        return current_state
 
 
 ## ------------------------------------------------------------------------------------------------------
