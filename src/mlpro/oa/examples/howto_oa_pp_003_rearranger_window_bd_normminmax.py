@@ -77,7 +77,8 @@ class MyAdaptiveScenario (StreamScenario):
         task_bd = BoundaryDetector( p_name='t3', 
                                     p_ada=True, 
                                     p_visualize=False,   #not yet implemented
-                                    p_logging=p_logging )
+                                    p_logging=p_logging,
+                                    p_window=task_window )
 
         workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
