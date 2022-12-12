@@ -22,9 +22,10 @@ You will learn:
 
 """
 
-from mlpro.oa.tasks.normalizers import *
-from mlpro.oa.tasks.boundarydetectors import *
-from mlpro.bf.streams.models import *
+from mlpro.bf.streams import *
+from mlpro.bf.streams.tasks import Window
+from mlpro.oa import *
+from mlpro.oa.tasks import BoundaryDetector, NormalizerMinMax
 from mlpro.wrappers.openml import *
 
 
@@ -62,11 +63,18 @@ class MyAdaptiveScenario (StreamScenario):
         # ...
 
         # 2.2.2 Window
-        # ...
+        task_window = Window( p_buffer_size=50, 
+                              p_delay=False,
+                              p_enable_statistics=True,
+                              p_name='t2',
+                              p_duplicate_data=True,
+                              p_visualize=p_visualize,
+                              p_logging=p_logging )
+        workflow.add_task(p_task=task_window)
 
         # 2.2.3 Boundary detector
         task_bd = BoundaryDetector(p_name='t3', p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
-        workflow.add_task(p_task = task_bd)
+        workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
 
         # 2.2.4 MinMax-Normalizer
