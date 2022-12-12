@@ -9,10 +9,11 @@
 ## -- 2022-10-21  1.0.0     LSB      Release
 ## -- 2022-12-07  1.0.1     LSB      Refactoring for scaler factor
 ## -- 2022-12-08  1.0.2     LSB      Compatibiltty for instance and Element objects
+## -- 2022-12-12  1.0.3     DA       Corrected signature of method _adapt_on_event()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-12-08)
+Ver. 1.0.3 (2022-12-12)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 
@@ -128,7 +129,7 @@ class BoundaryDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_on_event(self, p_event_id:str, p_event_obj:Event):
+    def _adapt_on_event(self, p_event_id:str, p_event_object:Event):
         """
         Event handler for Boundary Detector that adapts if the related event is raised
         Parameters
@@ -144,11 +145,11 @@ class BoundaryDetector(OATask):
                 Returns true if adapted, false otherwise.
         """
         if self._scaler is None:
-            self._scaler = np.ones(len(p_event_obj.get_data()["p_set"].get_dims()))
+            self._scaler = np.ones(len(p_event_object.get_data()["p_set"].get_dims()))
         adapted = False
         try:
-            boundaries = self._scaler*p_event_obj.get_raising_object().get_boundaries()
-            dims = [p_event_obj.get_data()["p_set"].get_dim(i) for i in p_event_obj.get_data()["p_set"].get_dim_ids()]
+            boundaries = self._scaler*p_event_object.get_raising_object().get_boundaries()
+            dims = [p_event_object.get_data()["p_set"].get_dim(i) for i in p_event_object.get_data()["p_set"].get_dim_ids()]
             for i,dim in enumerate(dims):
                 if dim.get_boundaries()[0] != boundaries[i][0] or dim.get_boundaries()[1] != boundaries[i][1]:
                     dim.set_boundaries([boundaries[i]])

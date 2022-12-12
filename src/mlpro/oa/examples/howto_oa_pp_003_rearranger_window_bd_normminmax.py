@@ -70,10 +70,15 @@ class MyAdaptiveScenario (StreamScenario):
                               p_duplicate_data=True,
                               p_visualize=p_visualize,
                               p_logging=p_logging )
+
         workflow.add_task(p_task=task_window)
 
         # 2.2.3 Boundary detector
-        task_bd = BoundaryDetector(p_name='t3', p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
+        task_bd = BoundaryDetector( p_name='t3', 
+                                    p_ada=True, 
+                                    p_visualize=False,   #not yet implemented
+                                    p_logging=p_logging )
+
         workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
 
