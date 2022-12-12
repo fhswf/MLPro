@@ -23,10 +23,12 @@
 ## -- 2022-12-08  1.4.0     DA       - Classes Task, Workflow: bugfixes in plot methods
 ## --                                - Class Task: replaced method set_num_predecessors() by 
 ## --                                  set_predecessors()
+## -- 2022-12-10  1.4.1     DA       - Moved method _init_figure from class Workflow to Task
+## --                                - Method Task._init_figure: added support of backend TkAgg
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2022-12-08)
+Ver. 1.4.1 (2022-12-10)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -44,12 +46,14 @@ from time import sleep
 import uuid
 import threading as mt
 import multiprocess as mp
+import matplotlib
 from matplotlib.figure import Figure
 from multiprocess.managers import BaseManager
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.events import EventManager, Event
 from mlpro.bf.plot import PlotSettings, Plottable
+
 
 
 
@@ -716,6 +720,25 @@ class Task (Async, EventManager, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _init_figure(self) -> Figure:
+        figure = Plottable._init_figure(self)
+
+        title = 'MLPro: ' + self.C_TYPE + ' ' + self.get_name() 
+
+        backend = matplotlib.get_backend()
+
+        if backend == 'TkAgg':
+            figure.canvas.manager.window.title(title)
+        else:
+            try:
+                figure.canvas.setWindowTitle('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
+            except AttributeError:
+                figure.canvas.set_window_title('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
+
+        return figure
+
+
+## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         """
         Extended custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
@@ -919,18 +942,6 @@ class Workflow (Task):
             for t_pred in p_pred_tasks: 
                 t_pred.register_event_handler(p_event_id=self.C_EVENT_FINISHED, p_event_handler=p_task.run_on_event)
                 if t_pred in self._final_tasks: self._final_tasks.remove(t_pred)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_figure(self) -> Figure:
-        figure = Task._init_figure(self)
-
-        try:
-            figure.canvas.setWindowTitle('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
-        except AttributeError:
-            figure.canvas.set_window_title('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
-
-        return figure
 
 
 ## -------------------------------------------------------------------------------------------------
