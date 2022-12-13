@@ -29,10 +29,15 @@
 ## -- 2022-12-09  2.0.0     DA       Class Set: 
 ## --                                - new method get_dim_by_name()
 ## --                                - internal optimizations
+## -- 2022-12-13  2.1.0     DA       Class Element:
+## --                                - new method set_related_set()
+## --                                - internal optimizations
+## --                                Class Set:
+## --                                - new method is_numeric()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2022-12-09)
+Ver. 2.1.0 (2022-12-13)
 
 This module provides basic mathematical classes.
 """
@@ -221,10 +226,13 @@ class Set:
     Objects of this type describe a (multivariate) set in a mathematical sense.
     """
 
+    C_NUMERIC_BASE_SETS     = [ Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z, Dimension.C_BASE_SET_R ]
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self) -> None:
         self._dim_by_id     = {}
         self._dim_by_name   = {}
+        self._is_numeric    = True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -251,9 +259,23 @@ class Set:
             else:
                 raise ParamError('Dimension "' + name_short + '" already exists!')
 
+
         # 2 Store new dimension under it's id and name
         self._dim_by_name[name_short]   = p_dim
         self._dim_by_id[p_dim.get_id()] = p_dim
+
+
+        # 3 Update numeric-flag
+        self._is_numeric = self._is_numeric and ( p_dim.get_base_set() in self.C_NUMERIC_BASE_SETS )
+
+
+## -------------------------------------------------------------------------------------------------
+    def is_numeric(self) -> bool:
+        """
+        Returns True if the set consists of numeric dimensions only.
+        """
+
+        return self._is_numeric
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -383,14 +405,22 @@ class Element:
     """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_set: Set):
-        self._set = p_set
-        self._values = list(repeat(0, self._set.get_num_dim()))
-
+    def __init__(self, p_set:Set):
+        self.set_related_set(p_set=p_set)
+        if p_set.is_numeric():
+            self._values =np.zeros(self._set.get_num_dim())
+        else:
+            self._values = list(repeat(0, self._set.get_num_dim()))
+        
 
 ## -------------------------------------------------------------------------------------------------
     def get_related_set(self) -> Set:
         return self._set
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_related_set(self, p_set:Set):
+        self._set = p_set
 
 
 ## -------------------------------------------------------------------------------------------------

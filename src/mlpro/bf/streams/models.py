@@ -97,9 +97,9 @@ class Instance:
                   **p_kwargs ):
 
         self._feature_data = p_feature_data
-        self._label_data = p_label_data
-        self._time_stamp = p_time_stamp
-        self._kwargs = p_kwargs.copy()
+        self._label_data   = p_label_data
+        self._time_stamp   = p_time_stamp
+        self._kwargs       = p_kwargs.copy()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -108,8 +108,18 @@ class Instance:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def set_feature_data(self, p_feature_data:Element):
+        self._feature_data = p_feature_data
+
+
+## -------------------------------------------------------------------------------------------------
     def get_label_data(self) -> Element:
         return self._label_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_label_data(self, p_label_data:Element):
+        self._label_data = p_label_data
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -695,6 +705,9 @@ class StreamTask (Task):
             except AttributeError:
                 raise ImplementationError('Shared object not compatible to class StreamShared')
         
+        if ( len(inst_new) + len(inst_del) ) == 0: 
+            self.log(Log.C_LOG_TYPE_S, 'No inputs -> SKIP')
+
         Task.run(self, p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
 
         so.set_instances( p_task_id = self.get_tid(), p_inst_new=inst_new, p_inst_del=inst_del )
