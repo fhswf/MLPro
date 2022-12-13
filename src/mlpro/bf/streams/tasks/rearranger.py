@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-12  0.0.0     DA       Creation
+## -- 2022-12-13  1.0.0     DA       First release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-12-12)
+Ver. 1.0.0 (2022-12-13)
 
 This module provides a stream task class Rearranger to rearrange the feature and label space of
 instances.
@@ -19,7 +20,7 @@ instances.
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.mt import Task
-from mlpro.bf.math import Set
+from mlpro.bf.math import Set, Element
 from mlpro.bf.streams import Instance, StreamTask
 
 
@@ -29,7 +30,9 @@ from mlpro.bf.streams import Instance, StreamTask
 ## -------------------------------------------------------------------------------------------------
 class Rearranger (StreamTask):
     """
-    ...
+    This stream task rearrange the feature and/or label data of incoming instances. To this regard,
+    two additional parameters p_features_new and p_labels_new describe the dimensions of the 
+    feature/label space of the resulting instances.
 
     Parameters
     ----------
@@ -42,16 +45,17 @@ class Rearranger (StreamTask):
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_features_new : list
-        List of feature ids.
-    p_labels_new : list
-        List of label ids.
+        List of resulting features that are described as tuples ( 'F' or 'L', list[Dimension] ). The
+        first component specifies the origin ('F' = feature space, 'L' = label space). The second
+        component is a list of dimension objects.
+    p_labels_new : list[Label]
+         List of resulting labels that are described as tuples ( 'F' or 'L', list[Dimension] ).
     p_kwargs : dict
         Further optional named parameters.
     """
 
     C_NAME                  = 'Rearranger'
-
-    C_PLOT_STANDALONE       = False
+    C_PLOT_STANDALONE       = True
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -72,22 +76,96 @@ class Rearranger (StreamTask):
         if ( p_features_new is None or len(p_features_new)==0 ) and ( p_labels_new is None or len(p_labels_new)==0 ):
             raise ParamError('Please provide ids for features and/or labels')
                 
-        self._features_new = p_features_new
-        self._labels_new   = p_labels_new
-        self._prepared     = False
+        self._features_new  = p_features_new
+        self._labels_new    = p_labels_new
+
+        self._feature_space = Set()
+        for f_entry in self._features_new: 
+            for feature in f_entry[1]:
+                self._feature_space.add_dim(p_dim=feature)
+
+        self._label_space   = Set()
+        for l_entry in self._labels_new: 
+            for label in l_entry[1]:
+                self._label_space.add_dim(p_dim=label)
+
+        self._prepared      = False
 
 
 ## -------------------------------------------------------------------------------------------------
     def _prepare_rearrangement(self, p_inst:Instance):
-        raise NotImplementedError
+
+        self._mapping_f2f = []
+        self._mapping_l2f = []
+        self._mapping_f2l = []
+        self._mapping_l2l = []
+
+        features = p_inst.get_feature_data().get_dim_ids()
+        labels   = p_inst.get_label_data().get_dim_ids()
+
+        i_new    = 0
+
+        for f_entry in self._features_new:
+
+            if f_entry[0] == 'F':
+                for feature in f_entry[1]:
+                    self._mapping_f2f.append( ( i_new, features.index(feature.get_id())) )
+                    i_new += 1
+            
+            else:
+                for label in f_entry[1]:
+                    self._mapping_l2f.append( ( i_new, labels.index(label.get_id())) )
+                    i_new += 1
+
+        i_new    = 0
+
+        for l_entry in self._labels_new:
+
+            if l_entry[0] == 'F':
+                for feature in l_entry[1]:
+                    self._mapping_f2l.append( ( i_new, features.index(feature.get_id())) )
+                    i_new += 1
+            
+            else:
+                for label in l_entry[1]:
+                    self._mapping_l2l.append( ( i_new, labels.index(label.get_id())) )
+                    i_new += 1
 
 
 ## -------------------------------------------------------------------------------------------------
     def _rearrange(self, p_inst:Instance):
         
-        # 1 Create new feature and label data structures
-        raise NotImplementedError
+        # 1 Prepare new feature and label element objects
+        f_data_new = Element(p_set=self._feature_space)
+        l_data_new = Element(p_set=self._label_space)
 
+
+        # 2 Collect new feature values
+        f_values_old = p_inst.get_feature_data().get_values()
+        l_values_old = p_inst.get_label_data().get_values()
+
+        f_values_new = f_data_new.get_values()
+
+        for ids in self._mapping_f2f:
+            f_values_new[ids[0]] = f_values_old[ids[1]]
+
+        for ids in self._mapping_l2f:
+            f_values_new[ids[0]] = l_values_old[ids[1]]
+
+
+        # 3 Collect new label values
+        l_values_new = l_data_new.get_values()
+
+        for ids in self._mapping_f2l:
+            l_values_new[ids[0]] = f_values_old[ids[1]]
+
+        for ids in self._mapping_l2l:
+            l_values_new[ids[0]] = l_values_old[ids[1]]
+
+
+        # 4 Replace feature and label data in origin instance
+        p_inst.set_feature_data(p_feature_data=f_data_new)
+        p_inst.set_label_data(p_label_data=l_data_new)
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -96,9 +174,9 @@ class Rearranger (StreamTask):
         # 1 Late preparation based on first incoming instance
         if not self._prepared:
             try:
-                inst = p_inst_new[0]
+                inst = next(iter(p_inst_new))
             except:
-                inst = p_inst_del[0]
+                inst = next(iter(p_inst_del))
 
             self._prepare_rearrangement(p_inst=inst)
             self._prepared = True

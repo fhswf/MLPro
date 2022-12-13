@@ -13,8 +13,8 @@
 Ver. 1.0.0 (2022-11-22)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
-a stream provider is combined with a stream workflow and just one simple stream task within to a
-stream scenario. The latter one is used to process some instances.
+a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
+a standard task Rearranger and a custom task. The stream scenario is used to process some instances.
 
 You will learn:
 
@@ -24,7 +24,7 @@ You will learn:
 
 3) How to set up a stream scenario based on a stream and a processing stream workflow.
 
-4) How to run a stream scenario dark or with default visualization.
+4) How to run a stream scenario dark or with visualization.
 
 """
 
@@ -76,11 +76,11 @@ class MyScenario (StreamScenario):
                                    p_logging=logging )
 
         # 2.1 Set up and add a rearranger task to reduce the feature and label space
-        features     = stream.get_feature_space().get_dim_ids()
-        labels       = stream.get_label_space().get_dim_ids()
+        features     = stream.get_feature_space().get_dims()
+        labels       = stream.get_label_space().get_dims()
 
-        features_new = [ ( 'F', features[0:3] ) ]
-        labels_new   = [ ( 'F', features[4:6] ), ( 'L', labels[0] ) ]
+        features_new = [ ( 'F', features[1:2] ), ( 'L', [labels[0]] ), ( 'F', features[13:14]) ]
+        labels_new   = [ ( 'F', features[4:6] ), ( 'L', [labels[0]] ) ]
 
         task_rearranger = Rearranger( p_name='t1',
                                       p_range_max=Task.C_RANGE_THREAD,
@@ -92,7 +92,7 @@ class MyScenario (StreamScenario):
         workflow.add_task( p_task=task_rearranger )
 
         # 2.2 Set up and add an own custom task
-        task = MyTask( p_name='t1', p_visualize=p_visualize, p_logging=logging )
+        task = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=logging )
         workflow.add_task( p_task=task, p_pred_tasks=[task_rearranger] )
 
 

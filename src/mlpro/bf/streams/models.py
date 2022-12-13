@@ -97,9 +97,9 @@ class Instance:
                   **p_kwargs ):
 
         self._feature_data = p_feature_data
-        self._label_data = p_label_data
-        self._time_stamp = p_time_stamp
-        self._kwargs = p_kwargs.copy()
+        self._label_data   = p_label_data
+        self._time_stamp   = p_time_stamp
+        self._kwargs       = p_kwargs.copy()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -108,8 +108,18 @@ class Instance:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def set_feature_data(self, p_feature_data:Element):
+        self._feature_data = p_feature_data
+
+
+## -------------------------------------------------------------------------------------------------
     def get_label_data(self) -> Element:
         return self._label_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_label_data(self, p_label_data:Element):
+        self._label_data = p_label_data
 
 
 ## -------------------------------------------------------------------------------------------------

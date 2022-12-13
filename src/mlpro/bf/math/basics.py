@@ -407,8 +407,11 @@ class Element:
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_set:Set):
         self.set_related_set(p_set=p_set)
-        self.set_values(p_values=list(repeat(0, self._set.get_num_dim())))
-
+        if p_set.is_numeric():
+            self.set_values(p_values=np.zeros(self._set.get_num_dim()))
+        else:
+            self.set_values(p_values=list(repeat(0, self._set.get_num_dim())))
+        
 
 ## -------------------------------------------------------------------------------------------------
     def get_related_set(self) -> Set:

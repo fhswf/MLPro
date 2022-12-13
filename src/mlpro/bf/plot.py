@@ -35,6 +35,7 @@ try:
     import matplotlib
     matplotlib.use('TkAgg')
 except:
+    print('Please install tkinter for a better plot experience')
     import matplotlib
 
 from matplotlib.figure import Figure
