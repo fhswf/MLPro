@@ -19,7 +19,8 @@ instances.
 from mlpro.bf.exceptions import *
 from mlpro.bf.various import Log
 from mlpro.bf.mt import Task
-from mlpro.bf.streams import Feature, Label, Instance, StreamTask
+from mlpro.bf.math import Set
+from mlpro.bf.streams import Instance, StreamTask
 
 
 
@@ -32,6 +33,20 @@ class Rearranger (StreamTask):
 
     Parameters
     ----------
+    p_name : str
+        Optional name of the task. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_feature_space_new : Set
+        New feature space.
+    p_label_space_new : Set
+        New label space.
+    p_kwargs : dict
+        Further optional named parameters.
     """
 
     C_NAME                  = 'Rearranger'
@@ -44,8 +59,8 @@ class Rearranger (StreamTask):
                   p_range_max = Task.C_RANGE_THREAD, 
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL, 
-                  p_features_new : list = None,
-                  p_labels_new : list = None,
+                  p_feature_space_new : Set = None,
+                  p_label_space_new : Set = None,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name, 
@@ -54,22 +69,31 @@ class Rearranger (StreamTask):
                           p_logging = p_logging, 
                           **p_kwargs )
 
-        if ( p_features_new is None ) and ( p_labels_new is None ):
-            raise ParamError('Please provide at least one new feature or label')
+        if ( p_feature_space_new is None ) and ( p_label_space_new is None ):
+            raise ParamError('Please provide a new feature or label space')
                 
-        self._features_new  = p_features_new
-        self._labels_new    = p_labels_new
-        self._prepared      = False
+        self._feature_space_new = p_feature_space_new
+        self._label_space_new   = p_label_space_new
+        self._prepared          = False
 
 
 ## -------------------------------------------------------------------------------------------------
     def _prepare_rearrangement(self, p_inst:Instance):
-        self._prepared = True
+        raise NotImplementedError
 
+
+## -------------------------------------------------------------------------------------------------
+    def _rearrange(self, p_inst:Instance):
+        
+        # 1 Create new feature and label data structures
+        raise NotImplementedError
+
+        
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: set, p_inst_del: set):
 
+        # 1 Late preparation based on first incoming instance
         if not self._prepared:
             try:
                 inst = p_inst_new[0]
@@ -77,6 +101,14 @@ class Rearranger (StreamTask):
                 inst = p_inst_del[0]
 
             self._prepare_rearrangement(p_inst=inst)
+            self._prepared = True
 
 
+        # 2 Rearrange new instances
+        for inst in p_inst_new:
+            self._rearrange(p_inst=inst)
 
+
+        # 3 Rearrange instances to be deleted
+        for inst in p_inst_del:
+            self._rearrange(p_inst=inst)
