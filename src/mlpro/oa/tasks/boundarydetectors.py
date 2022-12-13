@@ -10,10 +10,11 @@
 ## -- 2022-12-07  1.0.1     LSB      Refactoring for scaler factor
 ## -- 2022-12-08  1.0.2     LSB      Compatibiltty for instance and Element objects
 ## -- 2022-12-12  1.0.3     DA       Corrected signature of method _adapt_on_event()
+## -- 2022-12-13  1.0.4     LSB       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-12-12)
+Ver. 1.0.4 (2022-12-13)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 
@@ -34,10 +35,30 @@ class BoundaryDetector(OATask):
     """
     This is the base class for Boundary Detector object. It raises event when a change in the current boundaries is
     detected based on the new data instances
+
+    Parameters
+    ----------
+    p_name: str, Optional.
+        Name of the task.
+    p_range_max
+        Processing range of the task. Default is thread.
+    p_ada: bool
+        True if the task has adaptivity. Default is True.
+    p_duplicate_data: bool
+        True if duplicate of the original instances are to be processed. False by default.
+    p_visualize: bool
+        True to turn on the visualization.
+    p_logging
+        Logging level for the task, default is Log all.
+    p_window: Window
+        A predecessor window object, if any.
+    p_scaler: float, np.ndarray
+        A scaler vector to scale the detected boundaries.
+
     """
 
     C_NAME = 'Boundary Detector'
-    C_EVENT_BOUNDARY_CHANGED = 'Boundary Changed'
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -108,8 +129,7 @@ class BoundaryDetector(OATask):
                 else:
                     adapted = False or adapted
 
-        if adapted:
-            self._raise_event(self.C_EVENT_BOUNDARY_CHANGED, Event(self, p_inst_new = p_inst_new))
+        return adapted
 
 
 ## -------------------------------------------------------------------------------------------------
