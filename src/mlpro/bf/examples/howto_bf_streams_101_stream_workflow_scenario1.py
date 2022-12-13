@@ -79,7 +79,7 @@ class MyScenario (StreamScenario):
         features     = stream.get_feature_space().get_dims()
         labels       = stream.get_label_space().get_dims()
 
-        features_new = [ ( 'F', features[1:2] ), ( 'L', [labels[0]] ), ( 'F', features[13:14]) ]
+        features_new = [ ( 'F', features[1:2] ), ( 'L', [labels[0]] ), ( 'F', features[9:10]) ]
         labels_new   = [ ( 'F', features[4:6] ), ( 'L', [labels[0]] ) ]
 
         task_rearranger = Rearranger( p_name='t1',
