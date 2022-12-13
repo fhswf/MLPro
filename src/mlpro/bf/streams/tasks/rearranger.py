@@ -41,10 +41,10 @@ class Rearranger (StreamTask):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_feature_space_new : Set
-        New feature space.
-    p_label_space_new : Set
-        New label space.
+    p_features_new : list
+        List of feature ids.
+    p_labels_new : list
+        List of label ids.
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -59,8 +59,8 @@ class Rearranger (StreamTask):
                   p_range_max = Task.C_RANGE_THREAD, 
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL, 
-                  p_feature_space_new : Set = None,
-                  p_label_space_new : Set = None,
+                  p_features_new : list = None,
+                  p_labels_new : list = None,
                   **p_kwargs ):
 
         super().__init__( p_name = p_name, 
@@ -69,12 +69,12 @@ class Rearranger (StreamTask):
                           p_logging = p_logging, 
                           **p_kwargs )
 
-        if ( p_feature_space_new is None ) and ( p_label_space_new is None ):
-            raise ParamError('Please provide a new feature or label space')
+        if ( p_features_new is None or len(p_features_new)==0 ) and ( p_labels_new is None or len(p_labels_new)==0 ):
+            raise ParamError('Please provide ids for features and/or labels')
                 
-        self._feature_space_new = p_feature_space_new
-        self._label_space_new   = p_label_space_new
-        self._prepared          = False
+        self._features_new = p_features_new
+        self._labels_new   = p_labels_new
+        self._prepared     = False
 
 
 ## -------------------------------------------------------------------------------------------------

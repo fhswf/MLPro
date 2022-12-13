@@ -30,6 +30,7 @@ You will learn:
 
 
 from mlpro.bf.streams import *
+from mlpro.bf.streams.tasks import Rearranger
 from mlpro.wrappers.openml import WrStreamProviderOpenML
 
 
@@ -68,19 +69,31 @@ class MyScenario (StreamScenario):
         stream  = openml.get_stream(p_name='BNG(autos,nominal,1000000)', p_mode=p_mode, p_logging=p_logging)
 
 
-        # 2 Set up a stream workflow based on a custom stream task
-
-        # 2.1 Creation of a task
-        task = MyTask( p_name='t1', p_visualize=p_visualize, p_logging=logging )
-
-        # 2.2 Creation of a workflow
+        # 2 Set up a stream workflow 
         workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=StreamWorkflow.C_RANGE_NONE,    #StreamWorkflow.C_RANGE_THREAD, 
+                                   p_range_max=Task.C_RANGE_NONE, 
                                    p_visualize=p_visualize,
                                    p_logging=logging )
 
-        # 2.3 Addition of the task to the workflow
-        workflow.add_task( p_task=task )
+        # 2.1 Set up and add a rearranger task to reduce the feature and label space
+        features     = stream.get_feature_space().get_dim_ids()
+        labels       = stream.get_label_space().get_dim_ids()
+
+        features_new = [ ( 'F', features[0:3] ) ]
+        labels_new   = [ ( 'F', features[4:6] ), ( 'L', labels[0] ) ]
+
+        task_rearranger = Rearranger( p_name='t1',
+                                      p_range_max=Task.C_RANGE_THREAD,
+                                      p_visualize=p_visualize,
+                                      p_logging=p_logging,
+                                      p_features_new=features_new,
+                                      p_labels_new=labels_new )
+
+        workflow.add_task( p_task=task_rearranger )
+
+        # 2.2 Set up and add an own custom task
+        task = MyTask( p_name='t1', p_visualize=p_visualize, p_logging=logging )
+        workflow.add_task( p_task=task, p_pred_tasks=[task_rearranger] )
 
 
         # 3 Return stream and workflow
