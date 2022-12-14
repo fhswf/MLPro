@@ -18,6 +18,7 @@ This module provides native stream classes.
 
 import numpy as np
 from numpy.random import default_rng
+from math import sin, cos, pi
 
 from mlpro.bf.various import Log, ScientificObject
 from mlpro.bf.math import MSpace
@@ -51,7 +52,7 @@ class StreamMLProBase (Stream):
                           p_num_instances = self.C_NUM_INSTANCES, 
                           p_version = self.C_VERSION,
                           p_feature_space = self._setup_feature_space(), 
-                          p_label_space = None, 
+                          p_label_space = self._setup_label_space(), 
                           p_mode=Mode.C_MODE_SIM,
                           p_logging = p_logging )
 
@@ -59,6 +60,29 @@ class StreamMLProBase (Stream):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self):
         self._index = 0
+        self._init_dataset()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_dataset(self):
+        """
+        Custom method to generate stream data as a numpy array named self._dataset.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_next(self) -> Instance:
+
+        if self._index == self.C_NUM_INSTANCES: raise StopIteration
+
+        feature_data = Element(self._feature_space)
+        feature_data.set_values(p_values=self._dataset[self._index])
+
+        self._index += 1
+
+        return Instance( p_feature_data=feature_data )
 
 
 
@@ -68,7 +92,7 @@ class StreamMLProBase (Stream):
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProRnd10D (StreamMLProBase):
     """
-    Demo stream consisting of 1000 instances of 10-dimensional unlabelled real-valued random numbers.
+    Demo stream consisting of 1000 instances with 10-dimensional random feature data and 2-dimensional label data.
     """
 
     C_ID                = 'Rnd10Dx1000'
@@ -76,7 +100,7 @@ class StreamMLProRnd10D (StreamMLProBase):
     C_VERSION           = '1.0.0'
     C_NUM_INSTANCES     = 1000
 
-    C_SCIREF_ABSTRACT   = 'Demo stream of 1000 10-dimensional unlabelled real-valued random numbers.'
+    C_SCIREF_ABSTRACT   = 'Demo stream of 1000 instances with 10-dimensional random feature data and 2-dimensional label data.'
 
     C_BOUNDARIES        = [-10,10]
 
@@ -98,7 +122,24 @@ class StreamMLProRnd10D (StreamMLProBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset(self):
+    def _setup_label_space(self) -> MSpace:
+        label_space : MSpace = MSpace()
+
+        for i in range(2):
+            label_space.add_dim( Label( p_name_short = 'l' + str(i),
+                                        p_base_set = Label.C_BASE_SET_R,
+                                        p_name_long = 'Label #' + str(i),
+                                        p_name_latex = '',
+                                        p_boundaries = self.C_BOUNDARIES,
+                                        p_description = '',
+                                        p_symmetrical = False,
+                                        p_logging=Log.C_LOG_NOTHING ) )
+
+        return label_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_dataset(self):
 
         try:
             seed = self._random_seed
@@ -106,13 +147,14 @@ class StreamMLProRnd10D (StreamMLProBase):
             self.set_random_seed()
             seed = self._random_seed
 
-        num = self.C_NUM_INSTANCES
-        dim = self._feature_space.get_num_dim()
-        f   = self.C_BOUNDARIES[1] - self.C_BOUNDARIES[0]
-        t   = self.C_BOUNDARIES[0]
+        num   = self.C_NUM_INSTANCES
+        dim   = self._feature_space.get_num_dim()
+        dim_l = self._label_space.get_num_dim()
+        f     = self.C_BOUNDARIES[1] - self.C_BOUNDARIES[0]
+        t     = self.C_BOUNDARIES[0]
 
-        self._dataset = np.random.RandomState(seed).rand(num, dim) * f + t
-        super()._reset()
+        self._dataset   = np.random.RandomState(seed).rand(num, dim) * f + t
+        self._dataset_l = np.random.RandomState(seed).rand(num, dim_l) * f + t
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -122,15 +164,79 @@ class StreamMLProRnd10D (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _get_next(self) -> Instance:
+        inst       = super()._get_next()
+        label_data = Element(self._label_space)
+        label_data.set_values(p_values=self._dataset_l[self._index-1])
+        inst.set_label_data(p_label_data=label_data)
+        return inst
 
-        if self._index == self.C_NUM_INSTANCES: raise StopIteration
 
-        feature_data = Element(self._feature_space)
-        feature_data.set_values(p_values=self._dataset[self._index])
 
-        self._index += 1
 
-        return Instance( p_feature_data=feature_data )
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class DoubleSpiral2D (StreamMLProBase):
+    """
+    """
+
+    C_ID                = 'DoubleSpiral2D'
+    C_NAME              = 'Double Spiral 2D x 721'
+    C_VERSION           = '1.0.0'
+    C_NUM_INSTANCES     = 721
+
+    C_SCIREF_ABSTRACT   = 'This benchmark test generates 721 2-dimensional inputs positioned in a double spiral.'
+
+    C_BOUNDARIES        = [-10,10]
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_feature_space(self) -> MSpace:
+        feature_space : MSpace = MSpace()
+
+        for i in range(2):
+            feature_space.add_dim( Feature( p_name_short = 'f' + str(i),
+                                            p_base_set = Feature.C_BASE_SET_R,
+                                            p_name_long = 'Feature #' + str(i),
+                                            p_name_latex = '',
+                                            p_description = '',
+                                            p_symmetrical = False,
+                                            p_logging=Log.C_LOG_NOTHING ) )
+
+        return feature_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_dataset(self):
+        try:
+            self._dataset
+            return
+        except:
+            self._dataset = np.empty( (self.C_NUM_INSTANCES, 2))
+
+        center_x1       = ( (self.C_BOUNDARIES[1] - self.C_BOUNDARIES[0]) / 2 ) + self.C_BOUNDARIES[0]
+        center_x2       = ( (self.C_BOUNDARIES[1] - self.C_BOUNDARIES[0]) / 2 ) + self.C_BOUNDARIES[0]
+        
+        radius_x1       = (self.C_BOUNDARIES[1] - self.C_BOUNDARIES[0]) / 2
+        radius_step_x1  = radius_x1 / 360
+        radius_x2       = (self.C_BOUNDARIES[1] - self.C_BOUNDARIES[0]) / 2
+        radius_step_x2  = radius_x2 / 360
+        
+        radius_sign = 1
+        
+        for i in range(self.C_NUM_INSTANCES):
+            
+            bm = i *2 * pi / 180
+            self._dataset[i][0] = cos(bm) * radius_x1 * radius_sign + center_x1
+            self._dataset[i][1] = sin(bm) * radius_x2 + center_x2
+                       
+            radius_x1 -= radius_step_x1
+            radius_x2 -= radius_step_x2
+            if radius_x1 < 0:
+                radius_x1       = 0
+                radius_step_x1  *= -1
+                radius_x2       = 0
+                radius_step_x2  *= -1
+                radius_sign     = -1        
 
 
 

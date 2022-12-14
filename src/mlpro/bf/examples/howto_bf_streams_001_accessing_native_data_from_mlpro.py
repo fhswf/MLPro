@@ -46,7 +46,12 @@ mlpro = StreamProviderMLPro(p_logging=logging)
 # 2 Determine native data streams provided by MLPro
 for stream in mlpro.get_stream_list( p_logging=logging ):
     stream.switch_logging( p_logging=logging )
-    stream.log(Log.C_LOG_TYPE_W, 'Number of features:', stream.get_feature_space().get_num_dim(), ', Number of instances:', stream.get_num_instances() )
+    try:
+        labels = stream.get_label_space().get_num_dim()
+    except:
+        labels = 0
+
+    stream.log(Log.C_LOG_TYPE_W, 'Features:', stream.get_feature_space().get_num_dim(), ', Labels:', labels, ', Instances:', stream.get_num_instances() )
 
 if __name__ == '__main__':
     input('\nPress ENTER to iterate all streams dark...\n')
@@ -55,7 +60,7 @@ if __name__ == '__main__':
 # 3 Performance test: iterate all data streams dark and measure the time
 for stream in mlpro.get_stream_list( p_logging=logging ):
     stream.switch_logging( p_logging=logging )
-    stream.log(Log.C_LOG_TYPE_W, 'Number of features:', stream.get_feature_space().get_num_dim(), ', Number of instances:', stream.get_num_instances() )
+    stream.log(Log.C_LOG_TYPE_W, 'Number of instances:', stream.get_num_instances() )
     stream.switch_logging( p_logging=Log.C_LOG_NOTHING )
 
     # 3.1 Iterate all instances of the stream

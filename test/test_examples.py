@@ -42,21 +42,38 @@ import importlib
 howto_list = {
 
 # Basic Functions:
+
+    # bf.various
     "bf_001": "mlpro.bf.examples.howto_bf_001_logging",
     "bf_002": "mlpro.bf.examples.howto_bf_002_timer",
     "bf_003": "mlpro.bf.examples.howto_bf_003_store_plot_and_save_variables",
     "bf_004": "mlpro.bf.examples.howto_bf_004_buffers",
+
+    # bf.eh
     "bf_eh_001": "mlpro.bf.examples.howto_bf_eh_001_event_handling",
+
+    # bf.mt
     # "bf_mt_001": "mlpro.bf.examples.howto_bf_mt_001_parallel_algorithms",
     "bf_mt_002": "mlpro.bf.examples.howto_bf_mt_002_tasks_and_workflows",
+
+    # bf.math
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
+
+    # bf.ml
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
+
+    # bf.streams
     "bf_streams_001" : "mlpro.bf.examples.howto_bf_streams_001_accessing_native_data_from_mlpro",
     # "bf_streams_051": "mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml",
     "bf_streams_052": "mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn",
     "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
+    "bf_streams_101": "howto_bf_streams_101_basics",
+    "bf_streams_111": "howto_bf_streams_111_stream_task_rearranger",
+
+    # bf.systems
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
+
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
