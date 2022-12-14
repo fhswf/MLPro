@@ -68,9 +68,9 @@ howto_list = {
     # "bf_streams_051": "mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml",
     "bf_streams_052": "mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn",
     "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
-    "bf_streams_101": "howto_bf_streams_101_basics",
-    "bf_streams_110": "howto_bf_streams_110_stream_task_window",
-    "bf_streams_111": "howto_bf_streams_111_stream_task_rearranger",
+    "bf_streams_101": "mlpro.bf.examples.howto_bf_streams_101_basics",
+    "bf_streams_110": "mlpro.bf.examples.howto_bf_streams_110_stream_task_window",
+    "bf_streams_111": "mlpro.bf.examples.howto_bf_streams_111_stream_task_rearranger",
 
     # bf.systems
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
