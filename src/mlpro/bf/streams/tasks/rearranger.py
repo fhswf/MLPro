@@ -6,11 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-12  0.0.0     DA       Creation
-## -- 2022-12-13  1.0.0     DA       First release
+## -- 2022-12-13  1.0.0     DA       First implementation
+## -- 2022-12-14  1.0.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-12-13)
+Ver. 1.0.1 (2022-12-14)
 
 This module provides a stream task class Rearranger to rearrange the feature and label space of
 instances.
@@ -63,8 +64,8 @@ class Rearranger (StreamTask):
                   p_range_max = Task.C_RANGE_THREAD, 
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL, 
-                  p_features_new : list = None,
-                  p_labels_new : list = None,
+                  p_features_new : list = [],
+                  p_labels_new : list = [],
                   **p_kwargs ):
 
         super().__init__( p_name = p_name, 
@@ -73,18 +74,20 @@ class Rearranger (StreamTask):
                           p_logging = p_logging, 
                           **p_kwargs )
 
-        if ( p_features_new is None or len(p_features_new)==0 ) and ( p_labels_new is None or len(p_labels_new)==0 ):
+        if ( len(p_features_new)==0 ) and ( len(p_labels_new)==0 ):
             raise ParamError('Please provide ids for features and/or labels')
                 
         self._features_new  = p_features_new
         self._labels_new    = p_labels_new
 
         self._feature_space = Set()
+
         for f_entry in self._features_new: 
             for feature in f_entry[1]:
                 self._feature_space.add_dim(p_dim=feature)
 
         self._label_space   = Set()
+
         for l_entry in self._labels_new: 
             for label in l_entry[1]:
                 self._label_space.add_dim(p_dim=label)
@@ -95,14 +98,21 @@ class Rearranger (StreamTask):
 ## -------------------------------------------------------------------------------------------------
     def _prepare_rearrangement(self, p_inst:Instance):
 
+        # 1 Preparation
         self._mapping_f2f = []
         self._mapping_l2f = []
         self._mapping_f2l = []
         self._mapping_l2l = []
 
         features = p_inst.get_feature_data().get_dim_ids()
-        labels   = p_inst.get_label_data().get_dim_ids()
 
+        try:
+            labels = p_inst.get_label_data().get_dim_ids()
+        except:
+            labels = []
+
+
+        # 2 Set up mappings for feature space rearrangement
         i_new    = 0
 
         for f_entry in self._features_new:
@@ -117,6 +127,8 @@ class Rearranger (StreamTask):
                     self._mapping_l2f.append( ( i_new, labels.index(label.get_id())) )
                     i_new += 1
 
+
+        # 3 Set up mappings for label space rearrangement
         i_new    = 0
 
         for l_entry in self._labels_new:
@@ -135,17 +147,22 @@ class Rearranger (StreamTask):
 ## -------------------------------------------------------------------------------------------------
     def _rearrange(self, p_inst:Instance):
         
-        # 1 Prepare new feature and label element objects
-        f_data_new = Element(p_set=self._feature_space)
-        l_data_new = Element(p_set=self._label_space)
-
-
-        # 2 Collect new feature values
+        # 1 Preparation
         f_values_old = p_inst.get_feature_data().get_values()
-        l_values_old = p_inst.get_label_data().get_values()
-
+        f_data_new   = Element(p_set=self._feature_space)
         f_values_new = f_data_new.get_values()
 
+        try:
+            l_values_old = p_inst.get_label_data().get_values()
+            l_data_new   = Element(p_set=self._label_space)
+            l_values_new = l_data_new.get_values()
+        except:
+            l_values_old = []
+            l_data_new   = None
+            l_values_new = []
+  
+
+        # 2 Collect new feature values
         for ids in self._mapping_f2f:
             f_values_new[ids[0]] = f_values_old[ids[1]]
 
@@ -154,8 +171,6 @@ class Rearranger (StreamTask):
 
 
         # 3 Collect new label values
-        l_values_new = l_data_new.get_values()
-
         for ids in self._mapping_f2l:
             l_values_new[ids[0]] = f_values_old[ids[1]]
 
@@ -165,7 +180,9 @@ class Rearranger (StreamTask):
 
         # 4 Replace feature and label data in origin instance
         p_inst.set_feature_data(p_feature_data=f_data_new)
-        p_inst.set_label_data(p_label_data=l_data_new)
+
+        if l_data_new is not None:
+            p_inst.set_label_data(p_label_data=l_data_new)
         
 
 ## -------------------------------------------------------------------------------------------------
