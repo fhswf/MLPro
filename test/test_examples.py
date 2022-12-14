@@ -25,6 +25,7 @@
 ## -- 2022-11-22  1.3.4     DA       Removed howto_bf_streams_051 due to delay caused by OpenML
 ## -- 2022-12-05  1.4.0     DA       Added howto bf_systems_001
 ## -- 2022-12-09  1.4.1     DA       Temporarily removed howto rl_wp_003 due to problems with pettingzoo
+## -- 2022-12-14  1.5.0     DA       Added howto bf_streams_001
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -51,6 +52,7 @@ howto_list = {
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
+    "bf_streams_001" : "mlpro.bf.examples.howto_bf_streams_001_accessing_native_data_from_mlpro",
     # "bf_streams_051": "mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml",
     "bf_streams_052": "mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn",
     "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
