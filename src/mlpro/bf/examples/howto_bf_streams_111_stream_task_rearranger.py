@@ -64,7 +64,7 @@ class MyScenario (StreamScenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize: bool, p_logging):
 
-        # 1 Import a stream from OpenML
+        # 1 Import a native stream from MLPro
         provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
         stream = provider_mlpro.get_stream('Rnd10Dx1000', p_mode=p_mode, p_logging=p_logging)
 
@@ -94,8 +94,8 @@ class MyScenario (StreamScenario):
         workflow.add_task( p_task=task_rearranger )
 
         # 2.2 Set up and add an own custom task
-        task = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=logging )
-        workflow.add_task( p_task=task, p_pred_tasks=[task_rearranger] )
+        task_custom = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=logging )
+        workflow.add_task( p_task=task_custom, p_pred_tasks=[task_rearranger] )
 
 
         # 3 Return stream and workflow
