@@ -5,8 +5,8 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-01-12  0.0.0     DA       Creation 
-## -- 2022-12-14  1.0.0     DA       First draft implementation
+## -- 2022-12-14  0.0.0     DA       Creation 
+## -- 2022-12-14  1.0.0     DA       First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -18,6 +18,7 @@ This module provides the native stream class DoubleSpiral2D. It provides 721 ins
 
 import numpy as np
 from math import sin, cos, pi
+from mlpro.bf.math import MSpace
 from mlpro.bf.streams import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 

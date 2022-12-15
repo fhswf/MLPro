@@ -5,21 +5,18 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-01-12  0.0.0     DA       Creation 
-## -- 2022-12-13  1.0.0     DA       First draft implementation
+## -- 2022-12-13  0.0.0     DA       Creation 
+## -- 2022-12-13  1.0.0     DA       First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-11-08)
+Ver. 1.0.0 (2022-12-13)
 
 This module provides the native stream class StreamMLProRnd10D. This stream provides 1000 instances
 with 10-dimensional random feature data and 2-dimensional random label data.
 """
 
 import numpy as np
-from numpy.random import default_rng
-from math import sin, cos, pi
-
 from mlpro.bf.streams.models import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
