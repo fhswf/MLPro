@@ -25,10 +25,11 @@
 ## --                                  set_predecessors()
 ## -- 2022-12-10  1.4.1     DA       - Moved method _init_figure from class Workflow to Task
 ## --                                - Method Task._init_figure: added support of backend TkAgg
+## -- 2022-12-16  1.5.0     DA       Class Task: new method _get_custom_run_method()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-12-10)
+Ver. 1.5.0 (2022-12-16)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -528,7 +529,14 @@ class Task (Async, EventManager, Plottable):
         EventManager.__init__(self, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
 
+        self._custom_run_method = self._get_custom_run_method()
+
         self._autorun(p_autorun=p_autorun, p_kwargs=self._kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_custom_run_method(self):
+        return self._run
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -611,7 +619,7 @@ class Task (Async, EventManager, Plottable):
             self._so.checkin(p_tid=self._tid)
             self.log(Log.C_LOG_TYPE_I, 'Checked in to shared object')
 
-        self._run(**p_kwargs)
+        self._custom_run_method(**p_kwargs)
 
         if self._so is not None: 
             self._so.checkout(p_tid=self.get_tid())
@@ -627,7 +635,7 @@ class Task (Async, EventManager, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, **p_kwargs):
         """
-        Custom method that is called by method run(). 
+        Custom method that is called (asynchronously) by method run(). 
 
         Parameters
         ----------

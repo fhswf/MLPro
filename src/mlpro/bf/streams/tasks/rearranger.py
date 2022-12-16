@@ -8,10 +8,11 @@
 ## -- 2022-12-12  0.0.0     DA       Creation
 ## -- 2022-12-13  1.0.0     DA       First implementation
 ## -- 2022-12-14  1.0.1     DA       Corrections
+## -- 2022-12-16  1.1.0     DA       Little refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-12-14)
+Ver. 1.1.0 (2022-12-16)
 
 This module provides a stream task class Rearranger to rearrange the feature and label space of
 instances.
@@ -191,9 +192,9 @@ class Rearranger (StreamTask):
         # 1 Late preparation based on first incoming instance
         if not self._prepared:
             try:
-                inst = next(iter(p_inst_new))
+                inst = p_inst_new[0]
             except:
-                inst = next(iter(p_inst_del))
+                inst = p_inst_del[0]
 
             self._prepare_rearrangement(p_inst=inst)
             self._prepared = True

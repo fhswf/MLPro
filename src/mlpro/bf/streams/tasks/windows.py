@@ -13,10 +13,11 @@
 ## -- 2022-12-08  1.0.0     LSB      Release
 ## -- 2022-12-08  1.0.1     LSB      Compatilbility for both Instance and Element object
 ## -- 2022-12-16  1.0.2     LSB      Delay in delivering the buffered data
+## -- 2022-12-16  1.0.3     DA       Refactoring after changes on bf.streams
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-12-16)
+Ver. 1.0.3 (2022-12-16)
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
@@ -99,15 +100,15 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:set, p_inst_del:set ):
+    def _run(self, p_inst_new:list, p_inst_del:list ):
         """
         Method to run the window including adding and deleting of elements
 
         Parameters
         ----------
-        p_inst_new : set
+        p_inst_new : list
             Instance/s to be added to the window
-        p_inst_del : set
+        p_inst_del : list
             Instance/s to be deleted from the window
         """
         # Checking if there are new instances
@@ -138,7 +139,7 @@ class Window (StreamTask):
 
                     self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
                                                                        p_related_set=i.get_related_set()))
-                    p_inst_del.add(self._buffer[self._buffer_pos])
+                    p_inst_del.append(self._buffer[self._buffer_pos])
                     self._buffer[self._buffer_pos] = i
                     if self._statistics_enabled:
                         self._numeric_buffer[self._buffer_pos] = [i.get_value(k) for k in self._numeric_features]
@@ -152,7 +153,7 @@ class Window (StreamTask):
                 # if the buffer is full after adding an element, raises event
                 if len(self._buffer) == self.buffer_size:
                     if self._delay:
-                        p_inst_new = set(self._buffer)
+                        p_inst_new = list(self._buffer)
                     self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
 
             # If delay is true, clear the set p_inst_new for any following tasks
@@ -358,7 +359,7 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
+    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
 
         Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
@@ -385,7 +386,7 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
+    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
 
         Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
@@ -443,7 +444,7 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
+    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
         Default N-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
@@ -492,4 +493,3 @@ class Window (StreamTask):
                 h = boundaries[i][1] - boundaries[i][0]
                 self._plot_nd_plots[feature.get_id()].set_bounds(x,y,w,h)
                 self._plot_nd_plots[feature.get_id()].set_visible(True)
-
