@@ -12,10 +12,12 @@
 ## -- 2022-12-08  0.4.0     DA       Refactoring after changes on bf.streams
 ## -- 2022-12-08  1.0.0     LSB      Release
 ## -- 2022-12-08  1.0.1     LSB      Compatilbility for both Instance and Element object
+## -- 2022-12-16  1.0.2     LSB      Delay in delivering the buffered data
+## -- 2022-12-16  1.0.3     DA       Refactoring after changes on bf.streams
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-12-08)
+Ver. 1.0.3 (2022-12-16)
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
@@ -98,22 +100,26 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:set, p_inst_del:set ):
+    def _run(self, p_inst_new:list, p_inst_del:list ):
         """
         Method to run the window including adding and deleting of elements
 
         Parameters
         ----------
-        p_inst_new : set
+        p_inst_new : list
             Instance/s to be added to the window
-        p_inst_del : set
+        p_inst_del : list
             Instance/s to be deleted from the window
         """
-
+        # Checking if there are new instances
         if p_inst_new:
             for i in p_inst_new:
+
+                # Compatibility with Instance/State
                 if isinstance(i, Instance):
                     i = i.get_feature_data()
+
+                # Checking the numeric dimensions/features in Stream
                 if self._numeric_buffer is None and self._statistics_enabled:
                     for j in i.get_dim_ids():
                         if i.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
@@ -121,8 +127,10 @@ class Window (StreamTask):
                                                                              Dimension.C_BASE_SET_Z]:
                             self._numeric_features.append(j)
 
+                    # Empty numeric buffer
                     self._numeric_buffer = np.zeros((self.buffer_size, len(self._numeric_features)))
 
+                # Increment in buffer position
                 self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
 
                 if len(self._buffer) == self.buffer_size:
@@ -131,20 +139,29 @@ class Window (StreamTask):
 
                     self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
                                                                        p_related_set=i.get_related_set()))
-                    p_inst_del.add(self._buffer[self._buffer_pos])
+                    p_inst_del.append(self._buffer[self._buffer_pos])
                     self._buffer[self._buffer_pos] = i
                     if self._statistics_enabled:
                         self._numeric_buffer[self._buffer_pos] = [i.get_value(k) for k in self._numeric_features]
                     continue
 
-                # adds element to the buffer
+                # adds element to the buffer in this code block only if the buffer is not already full
                 self._buffer[self._buffer_pos] = i
                 if self._statistics_enabled:
                     self._numeric_buffer[self._buffer_pos] = [i.get_value(k) for k in self._numeric_features]
 
                 # if the buffer is full after adding an element, raises event
                 if len(self._buffer) == self.buffer_size:
+                    if self._delay:
+                        p_inst_new = list(self._buffer)
                     self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
+
+            # If delay is true, clear the set p_inst_new for any following tasks
+            if self._delay:
+                if len(self._buffer) < self.buffer_size:
+                    p_inst_new.clear()
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -159,7 +176,8 @@ class Window (StreamTask):
             buffer_pos:int
                 the latest buffer position
         """
-
+        if self._delay:
+            if len(self._buffer) < self.buffer_size: return
         return self._buffer, self._buffer_pos
 
 
@@ -309,8 +327,6 @@ class Window (StreamTask):
 
         self.window_patch3D = Poly3DCollection([])
 
-        # ...
-
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
@@ -325,6 +341,7 @@ class Window (StreamTask):
             PlotSettings objects with specific settings for the plot
 
         """
+
         if p_figure is None:
             p_figure = plt.figure()
 
@@ -342,18 +359,22 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
+    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
+
+        Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
+        for more details.
 
         Parameters
         ----------
-        p_settings
-        p_inst_new
-        p_inst_del
-        p_kwargs
-
-        Returns
-        -------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
 
         """
         boundaries = self.get_boundaries()
@@ -365,7 +386,7 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
+    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
 
         Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
@@ -423,7 +444,7 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
+    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
         Default N-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
@@ -441,7 +462,7 @@ class Window (StreamTask):
         """
 
         # 1. CHeck if there is a new instance to be plotted
-        if p_inst_new is None: return
+        if len(p_inst_new) == 0 : return
 
         # 2. Check if the rectangle patches are already created
         inst_new = list(p_inst_new)
@@ -472,4 +493,3 @@ class Window (StreamTask):
                 h = boundaries[i][1] - boundaries[i][0]
                 self._plot_nd_plots[feature.get_id()].set_bounds(x,y,w,h)
                 self._plot_nd_plots[feature.get_id()].set_visible(True)
-
