@@ -10,7 +10,7 @@
 ## -- 2022-12-07  1.0.1     LSB      Refactoring for scaler factor
 ## -- 2022-12-08  1.0.2     LSB      Compatibiltty for instance and Element objects
 ## -- 2022-12-12  1.0.3     DA       Corrected signature of method _adapt_on_event()
-## -- 2022-12-13  1.0.4     LSB       Refactoring
+## -- 2022-12-13  1.0.4     LSB      Refactoring
 ## -- 2022-12-16  1.0.5     LSB      Refactoring for get_related_set method
 ## -------------------------------------------------------------------------------------------------
 
@@ -80,7 +80,8 @@ class BoundaryDetector(OATask):
                          p_ada = p_ada,
                          p_duplicate_data = p_duplicate_data,
                          p_visualize = p_visualize,
-                         p_logging = p_logging)
+                         p_logging = p_logging
+                         **p_kwargs)
 
         self._window = p_window
         self._scaler = p_scaler
@@ -95,19 +96,18 @@ class BoundaryDetector(OATask):
 
         Parameters
         ----------
-            p_inst_new:list
-                List of new instance/s added to the workflow
+        p_inst_new:list
+            List of new instance/s added to the workflow
 
         Returns
         -------
-            bool
-                Returns true if there is a change of boundaries, false otherwise.
+        adapted : bool
+            Returns true if there is a change of boundaries, false otherwise.
         """
 
         if p_inst_new is None: return
 
         adapted = False
-
 
         for inst in p_inst_new:
             if isinstance(inst, Instance):
@@ -117,7 +117,6 @@ class BoundaryDetector(OATask):
             self._related_set = inst.get_related_set()
 
             dim = inst.get_related_set().get_dims()
-
 
             for i,value in enumerate(inst.get_values()):
                 boundary = dim[i].get_boundaries()
