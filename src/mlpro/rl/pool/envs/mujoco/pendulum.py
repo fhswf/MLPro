@@ -29,10 +29,11 @@ from mlpro.wrappers.mujoco import WrSysMujoco
 ## ---------------------------------------------------------------------------------------------------------------------
 ## ---------------------------------------------------------------------------------------------------------------------
 class Pendulum(WrSysMujoco, FctReward):
-    def __init__(self, p_frame_skip=1, p_logging=False):
+    def __init__(self, p_frame_skip=1, p_visualize=False, p_logging=False):
         p_model_path = None
         p_model_file = "pendulum.xml"
-        super().__init__(p_model_file, p_frame_skip=p_frame_skip, p_model_path=p_model_path, p_logging=p_logging)
+        print(p_visualize)
+        super().__init__(p_model_file, p_frame_skip=p_frame_skip, p_model_path=p_model_path, p_visualize=p_visualize, p_logging=p_logging)
 
         self._state = State(self._state_space)
 
@@ -118,13 +119,3 @@ class Pendulum(WrSysMujoco, FctReward):
         """
 
         return False
-
-
-## ------------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure=None):
-        pass
-
-
-## ------------------------------------------------------------------------------------------------------
-    def update_plot(self):
-        return super().update_plot()

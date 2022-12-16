@@ -66,7 +66,7 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
-        self._env   = DoublePendulum() 
+        self._env   = DoublePendulum(p_visualize=p_visualize) 
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),

@@ -283,7 +283,7 @@ class WrSysMujoco(Wrapper, System):
     C_MINIMUM_VERSION = '2.3.1'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_model_file, p_frame_skip, p_model_path=None, p_logging=Log.C_LOG_ALL ):
+    def __init__(self, p_model_file, p_frame_skip, p_model_path=None, p_visualize=False, p_logging=Log.C_LOG_ALL ):
 
         self._viewer = None
         self._frame_skip = p_frame_skip
@@ -298,7 +298,7 @@ class WrSysMujoco(Wrapper, System):
         self._init_qpos = self._data.qpos.ravel().copy()
         self._init_qvel = self._data.qvel.ravel().copy()
 
-        System.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_logging=p_logging)
+        System.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
 
 
@@ -374,7 +374,9 @@ class WrSysMujoco(Wrapper, System):
     def _reset_simulation(self):
         mujoco.mj_resetData(self._model, self._data)
         ob =  self._reset_model()
-        self._render()
+
+        if self.get_visualization():
+            self._render()
         return ob
 
 
@@ -383,7 +385,9 @@ class WrSysMujoco(Wrapper, System):
         self._data.ctrl[:] = action
         mujoco.mj_step(self._model, self._data, nstep=self._frame_skip)
         mujoco.mj_rnePostConstraint(self._model, self._data)
-        self._render()
+
+        if self.get_visualization():
+            self._render()
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -429,3 +433,13 @@ class WrSysMujoco(Wrapper, System):
         if self._viewer is not None:
             self._viewer.close()
             self._viewer = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
+        if self._visualize: self._render()
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, **p_kwargs):
+        if self._visualize: self._render()
