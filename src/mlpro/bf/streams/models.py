@@ -32,10 +32,11 @@
 ## -- 2022-11-22  0.9.0     DA       Classes StreamWorkflow, StreamScenario: plot functionality
 ## -- 2022-12-08  0.9.1     DA       Classes StreamTask, StreamWorkflow: bugfixes on plotting
 ## -- 2022-12-16  0.9.2     DA       Class StreamTask: new method _run_wrapper()
+## -- 2022-12-18  0.9.3     LSB      Removing obsolete instances from plot data
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.2 (2022-12-16)
+Ver. 0.9.3 (2022-12-18)
 
 This module provides classes for standardized stream processing. 
 """
@@ -920,8 +921,9 @@ class StreamTask (Task):
             Further optional plot parameters.
         """
 
-        # 1 Check for new instances to be plotted
+        # 1 Check for new instances to be plotted and deleted instances to be removed
         inst_new = list(p_inst_new)
+        inst_del = list(p_inst_del)
         if len(inst_new) == 0: return
 
 
@@ -964,14 +966,26 @@ class StreamTask (Task):
                 self._plot_nd_plots[fplot_id][1].append(feature_value)
 
 
-        # 5 Set new plot data of all feature plots
+        # 5 Removing obsolete data from the plots
+        for i, inst in enumerate(inst_del):
+            id_del = 0
+            self._plot_nd_xdata.pop(id_del)
+
+            for i, fplot_id in enumerate(self._plot_nd_plots.keys()):
+                self._plot_nd_plots[fplot_id][1].pop(id_del)
+
+
+
+        # 6 Set new plot data of all feature plots
         for fplot in self._plot_nd_plots.values():
             fplot[2].set_xdata(fplot[0])
             fplot[2].set_ydata(fplot[1])
 
 
-        # 6 Update ax limits
-        p_settings.axes.set_xlim(0, max(1, inst_id-1))
+        # 7 Update ax limits
+        # Getting current number of instances in xdata
+        x_data_len = len(self._plot_nd_xdata)
+        p_settings.axes.set_xlim(inst_id-x_data_len, max(1, inst_id-1))
         p_settings.axes.set_ylim(self._plot_nd_ymin, self._plot_nd_ymax)
                     
 
