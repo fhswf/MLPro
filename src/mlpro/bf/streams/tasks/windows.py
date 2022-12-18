@@ -15,6 +15,9 @@
 ## -- 2022-12-16  1.0.2     LSB      Delay in delivering the buffered data
 ## -- 2022-12-16  1.0.3     DA       Refactoring after changes on bf.streams
 ## -- 2022-12-18  1.0.4     LSB      Bug Fixes
+## -- 2022-12-18  1.1.0     LSB      New plot updates -
+##                                   - single rectangle
+##                                   - transparent patch on obsolete data
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -64,6 +67,9 @@ class Window (StreamTask):
     C_NAME                  = 'Window'
 
     C_PLOT_STANDALONE       = False
+
+    C_PLOT_IN_WINDOW        = 'In Window'
+    C_PLOT_OUTSIDE_WINDOW   = 'Out Window'
 
     C_EVENT_BUFFER_FULL     = 'BUFFER_FULL'
     C_EVENT_DATA_REMOVED    = 'DATA_REMOVED'
@@ -488,26 +494,29 @@ class Window (StreamTask):
         if self._plot_nd_plots is None:
             self._plot_nd_plots = {}
 
-            color_names = list(colors.cnames.values())
-
+            bg = self.axes.get_facecolor()
+            if bg == (1.0,1.0,1.0,1.0):
+                bg= 'grey'
             # If not create new patch objects and add them to the attribute
-            feature_space = inst_new[0].get_feature_data().get_related_set()
-            for i,feature in enumerate(feature_space.get_dims()):
-                if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
-                    feature_window = Rectangle((0,0), 0,0, facecolor = color_names[i], edgecolor=color_names[i],
-                        lw = 1.5, alpha = 0.5)
-                    self.axes.add_patch(feature_window)
-                    self._plot_nd_plots[feature.get_id()] = feature_window
+            window = Rectangle((0,0), 0,0, facecolor = 'none', edgecolor='red', lw = 1)
+            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor='none', lw = 1, alpha = 0.5)
+            self.axes.add_patch(window)
+            self.axes.add_patch(obs_window)
+            self._plot_nd_plots[self.C_PLOT_IN_WINDOW] = window
+            self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW] = obs_window
 
-        # 2. Getting the boundaries
-        boundaries = self.get_boundaries()
 
         # 3. Adding rectangular patches to the plots
-        for i,feature in enumerate(inst_new[0].get_feature_data().get_related_set().get_dims()):
-            if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
-                x = self._plot_num_inst-self.buffer_size+1
-                y = boundaries[i][0]
-                w = self.buffer_size
-                h = boundaries[i][1] - boundaries[i][0]
-                self._plot_nd_plots[feature.get_id()].set_bounds(x,y,w,h)
-                self._plot_nd_plots[feature.get_id()].set_visible(True)
+        x0 = self._plot_num_inst-self.buffer_size+1
+        y0 = self.axes.get_ylim()[0]
+        w0 = self.buffer_size
+        h0 = self.axes.get_ylim()[1] - y0
+        self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_bounds(x0,y0,w0,h0)
+        self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_visible(True)
+
+        x1 = self._plot_num_inst-self.buffer_size+1
+        y1 = self.axes.get_ylim()[0]
+        w1 = -(x1 - self.axes.get_xlim()[0])
+        h1 = self.axes.get_ylim()[1] - y1
+        self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW].set_bounds(x1, y1, w1, h1)
+        self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW].set_visible(True)
