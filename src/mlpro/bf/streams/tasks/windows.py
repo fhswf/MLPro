@@ -18,10 +18,12 @@
 ## -- 2022-12-18  1.1.0     LSB      New plot updates -
 ##                                   - single rectangle
 ##                                   - transparent patch on obsolete data
+## -- 2022-12-19  1.1.1     DA       New parameter p_duplicate_data
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2022-12-18)
+Ver. 1.1.1 (2022-12-19)
+
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
@@ -58,6 +60,8 @@ class Window (StreamTask):
             Name of the Window. Default is None.
         p_range_max     -Optional
             Maximum range of task parallelism for window task. Default is set to multithread.
+        p_duplicate_data : bool
+            If True, instances will be duplicated before processing. Default = False.
         p_ada:bool, optional
             Adaptivity property of object. Default is True.
         p_logging      -Optional
@@ -81,7 +85,7 @@ class Window (StreamTask):
                  p_enable_statistics:bool = False,
                  p_name:str   = None,
                  p_range_max  = StreamTask.C_RANGE_THREAD,
-                 p_duplicate_data:bool = False,
+                 p_duplicate_data : bool = False,
                  p_visualize:bool = False,
                  p_logging    = Log.C_LOG_ALL,
                  **p_kwargs):
@@ -184,8 +188,6 @@ class Window (StreamTask):
             if self._delay:
                 if len(self._buffer) < self.buffer_size:
                     p_inst_new.clear()
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -489,30 +491,28 @@ class Window (StreamTask):
         if len(p_inst_new) == 0 : return
 
         # 2. Check if the rectangle patches are already created
-        inst_new = list(p_inst_new)
-
         if self._plot_nd_plots is None:
             self._plot_nd_plots = {}
 
             bg = self.axes.get_facecolor()
-            if bg == (1.0,1.0,1.0,1.0):
-                bg= 'grey'
+            # if bg == (1.0,1.0,1.0,1.0):
+            #     bg= 'grey'
             # If not create new patch objects and add them to the attribute
-            window = Rectangle((0,0), 0,0, facecolor = 'none', edgecolor='red', lw = 1)
-            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor='none', lw = 1, alpha = 0.5)
-            self.axes.add_patch(window)
+            # window = Rectangle((0,0), 0,0, facecolor = 'none', edgecolor='red', lw = 1)
+            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor='none', lw = 1, zorder=9999, alpha = 0.75 ) # 0.5)
+            # self.axes.add_patch(window)
             self.axes.add_patch(obs_window)
-            self._plot_nd_plots[self.C_PLOT_IN_WINDOW] = window
+            # self._plot_nd_plots[self.C_PLOT_IN_WINDOW] = window
             self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW] = obs_window
 
 
         # 3. Adding rectangular patches to the plots
-        x0 = self._plot_num_inst-self.buffer_size+1
-        y0 = self.axes.get_ylim()[0]
-        w0 = self.buffer_size
-        h0 = self.axes.get_ylim()[1] - y0
-        self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_bounds(x0,y0,w0,h0)
-        self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_visible(True)
+        # x0 = self._plot_num_inst-self.buffer_size+1
+        # y0 = self.axes.get_ylim()[0]
+        # w0 = self.buffer_size
+        # h0 = self.axes.get_ylim()[1] - y0
+        # self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_bounds(x0,y0,w0,h0)
+        # self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_visible(True)
 
         x1 = self._plot_num_inst-self.buffer_size+1
         y1 = self.axes.get_ylim()[0]

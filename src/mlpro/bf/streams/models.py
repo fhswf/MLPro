@@ -33,10 +33,11 @@
 ## -- 2022-12-08  0.9.1     DA       Classes StreamTask, StreamWorkflow: bugfixes on plotting
 ## -- 2022-12-16  0.9.2     DA       Class StreamTask: new method _run_wrapper()
 ## -- 2022-12-18  0.9.3     LSB      Removing obsolete instances from plot data
+## -- 2022-12-19  0.9.4     DA       Class StreamTask: new parameter p_duplicate_data
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.3 (2022-12-18)
+Ver. 0.9.4 (2022-12-19)
 
 This module provides classes for standardized stream processing. 
 """
@@ -632,6 +633,8 @@ class StreamTask (Task):
         Optional name of the task. Default is None.
     p_range_max : int
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
@@ -654,9 +657,10 @@ class StreamTask (Task):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name: str = None, 
-                  p_range_max=Task.C_RANGE_THREAD, 
-                  p_visualize:bool=False,
-                  p_logging=Log.C_LOG_ALL, 
+                  p_range_max = Task.C_RANGE_THREAD, 
+                  p_duplicate_data : bool = False,
+                  p_visualize : bool = False,
+                  p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
 
         Task.__init__( self, 
@@ -667,6 +671,8 @@ class StreamTask (Task):
                        p_visualize=p_visualize,
                        p_logging=p_logging, 
                        **p_kwargs )
+
+        self._duplicate_data = p_duplicate_data
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -703,6 +709,7 @@ class StreamTask (Task):
 
         if p_inst_new is not None:
             inst_new = p_inst_new
+            inst_del = p_inst_del
         else:
             if so is None:
                 raise ImplementationError('Class StreamTask needs instance data as parameters or from a shared object')
@@ -714,6 +721,17 @@ class StreamTask (Task):
         
         if ( len(inst_new) + len(inst_del) ) == 0: 
             self.log(Log.C_LOG_TYPE_S, 'No inputs -> SKIP')
+
+        if self._duplicate_data:
+            inst_new_copy = []
+            inst_del_copy = []
+            for inst in inst_new:
+                inst_new_copy.append(inst.copy())
+            for inst in inst_del:
+                inst_del_copy.append(inst.copy())
+
+            inst_new = inst_new_copy
+            inst_del = inst_del_copy
 
         Task.run(self, p_range=p_range, p_wait=p_wait, p_inst_new=inst_new, p_inst_del=inst_del)
 
