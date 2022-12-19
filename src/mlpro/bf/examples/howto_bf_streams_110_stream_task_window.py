@@ -52,6 +52,8 @@ class MyTask (StreamTask):
 ## -------------------------------------------------------------------------------------------------
 class MyStreamScenario(StreamScenario):
 
+    C_NAME      = 'Demo Window'
+
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 

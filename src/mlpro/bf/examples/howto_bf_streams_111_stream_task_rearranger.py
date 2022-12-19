@@ -59,7 +59,7 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = 'Demo #1'
+    C_NAME      = 'Demo Rearranger'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize: bool, p_logging):
