@@ -227,14 +227,14 @@ class BoundaryDetector(OATask):
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
         """
+        Custom method to initialize plot for Boundary Detectors tasks for N-dimensional plotting.
 
         Parameters
         ----------
-        p_figure
-        p_settings
-
-        Returns
-        -------
+        p_figure:Figure
+            Figure to host the plot
+        p_settings: PlotSettings
+            PlotSettings objects with specific settings for the plot
 
         """
         if p_figure is None:
@@ -304,18 +304,23 @@ class BoundaryDetector(OATask):
                          p_inst_del : list,
                          **p_kwargs ):
         """
+        Default N-dimensional plotting implementation for Boundary Detector tasks. See class mlpro.bf.plot.Plottable
+        for more details.
 
         Parameters
         ----------
-        p_settings
-        p_inst_new
-        p_inst_del
-        p_kwargs
-
-        Returns
-        -------
-
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
         """
+
+        if ((p_inst_new is None) or (len(p_inst_new) == 0)
+                and ((p_inst_del is None) or len(p_inst_del) ==0)) : return
 
         dims = self.get_related_set().get_dims()
 
