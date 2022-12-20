@@ -156,7 +156,7 @@ class BoundaryDetector(OATask):
             p_inst_del:list
                 List of old obsolete instance/s removed from the workflow
         """
-        if p_inst_new and not p_inst_del:
+        if p_inst_new or p_inst_del: #and not p_inst_del
             self.adapt(p_inst_new=p_inst_new, p_inst_del=p_inst_del)
 
 
