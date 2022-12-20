@@ -89,7 +89,7 @@ class MyAdaptiveScenario (StreamScenario):
         # 2.2.3 Boundary detector 
         task_bd = BoundaryDetector( p_name='t3', 
                                     p_ada=True, 
-                                    p_visualize=True,   #not yet implemented
+                                    p_visualize=True,   
                                     p_logging=p_logging,
                                     p_window=task_window )
 
