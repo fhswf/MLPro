@@ -8,11 +8,12 @@
 ## -- 2022-12-12  0.0.0     DA       Creation
 ## -- 2022-12-13  1.0.0     DA       First implementation
 ## -- 2022-12-14  1.0.1     DA       Corrections
-## -- 2022-12-16  1.1.0     DA       Little refactoring
+## -- 2022-12-16  1.0.2     DA       Little refactoring
+## -- 2022-12-19  1.0.3     DA       New parameter p_duplicate_data
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-12-16)
+Ver. 1.0.3 (2022-12-19)
 
 This module provides a stream task class Rearranger to rearrange the feature and label space of
 instances.
@@ -42,6 +43,8 @@ class Rearranger (StreamTask):
         Optional name of the task. Default is None.
     p_range_max : int
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
@@ -63,6 +66,7 @@ class Rearranger (StreamTask):
     def __init__( self, 
                   p_name: str = None, 
                   p_range_max = Task.C_RANGE_THREAD, 
+                  p_duplicate_data : bool = False,
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL, 
                   p_features_new : list = [],
@@ -70,7 +74,8 @@ class Rearranger (StreamTask):
                   **p_kwargs ):
 
         super().__init__( p_name = p_name, 
-                          p_range_max = p_range_max, 
+                          p_range_max = p_range_max,
+                          p_duplicate_data = p_duplicate_data, 
                           p_visualize = p_visualize, 
                           p_logging = p_logging, 
                           **p_kwargs )

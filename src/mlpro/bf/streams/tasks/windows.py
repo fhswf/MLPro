@@ -14,10 +14,16 @@
 ## -- 2022-12-08  1.0.1     LSB      Compatilbility for both Instance and Element object
 ## -- 2022-12-16  1.0.2     LSB      Delay in delivering the buffered data
 ## -- 2022-12-16  1.0.3     DA       Refactoring after changes on bf.streams
+## -- 2022-12-18  1.0.4     LSB      Bug Fixes
+## -- 2022-12-18  1.1.0     LSB      New plot updates -
+##                                   - single rectangle
+##                                   - transparent patch on obsolete data
+## -- 2022-12-19  1.1.1     DA       New parameter p_duplicate_data
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-12-16)
+Ver. 1.1.1 (2022-12-19)
+
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
@@ -54,6 +60,8 @@ class Window (StreamTask):
             Name of the Window. Default is None.
         p_range_max     -Optional
             Maximum range of task parallelism for window task. Default is set to multithread.
+        p_duplicate_data : bool
+            If True, instances will be duplicated before processing. Default = False.
         p_ada:bool, optional
             Adaptivity property of object. Default is True.
         p_logging      -Optional
@@ -63,6 +71,9 @@ class Window (StreamTask):
     C_NAME                  = 'Window'
 
     C_PLOT_STANDALONE       = False
+
+    C_PLOT_IN_WINDOW        = 'In Window'
+    C_PLOT_OUTSIDE_WINDOW   = 'Out Window'
 
     C_EVENT_BUFFER_FULL     = 'BUFFER_FULL'
     C_EVENT_DATA_REMOVED    = 'DATA_REMOVED'
@@ -74,7 +85,7 @@ class Window (StreamTask):
                  p_enable_statistics:bool = False,
                  p_name:str   = None,
                  p_range_max  = StreamTask.C_RANGE_THREAD,
-                 p_duplicate_data:bool = False,
+                 p_duplicate_data : bool = False,
                  p_visualize:bool = False,
                  p_logging    = Log.C_LOG_ALL,
                  **p_kwargs):
@@ -111,57 +122,72 @@ class Window (StreamTask):
         p_inst_del : list
             Instance/s to be deleted from the window
         """
-        # Checking if there are new instances
+
+        # 1 Checking if there are new instances
         if p_inst_new:
-            for i in p_inst_new:
+            new_instances = p_inst_new.copy()
+            num_inst = len(new_instances)
+
+
+            for i in range(num_inst):
+                inst = new_instances[i]
+
 
                 # Compatibility with Instance/State
-                if isinstance(i, Instance):
-                    i = i.get_feature_data()
+                if isinstance(inst, Instance):
+                    feature_value = inst.get_feature_data()
+                else:
+                    feature_value = inst
+
 
                 # Checking the numeric dimensions/features in Stream
                 if self._numeric_buffer is None and self._statistics_enabled:
-                    for j in i.get_dim_ids():
-                        if i.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
-                                                                             Dimension.C_BASE_SET_R,
-                                                                             Dimension.C_BASE_SET_Z]:
+                    for j in feature_value.get_dim_ids():
+                        if feature_value.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
+                                                                                         Dimension.C_BASE_SET_R,
+                                                                                         Dimension.C_BASE_SET_Z]:
                             self._numeric_features.append(j)
 
-                    # Empty numeric buffer
                     self._numeric_buffer = np.zeros((self.buffer_size, len(self._numeric_features)))
+
 
                 # Increment in buffer position
                 self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
 
-                if len(self._buffer) == self.buffer_size:
-                    # Checks if the buffer is already full, implying that obsolete data is going to be deleted and
-                    # raises an event, and stores the new instances and continues the loop
 
+                if len(self._buffer) == self.buffer_size:
+                    # if the buffer is already full,obsolete data is going to be deleted
+                    # raises an event, stores the new instances and skips the iteration
                     self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
-                                                                       p_related_set=i.get_related_set()))
+                                                                       p_related_set=feature_value.get_related_set()))
                     p_inst_del.append(self._buffer[self._buffer_pos])
-                    self._buffer[self._buffer_pos] = i
+                    self._buffer[self._buffer_pos] = inst
                     if self._statistics_enabled:
-                        self._numeric_buffer[self._buffer_pos] = [i.get_value(k) for k in self._numeric_features]
+                        self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in
+                                                                  self._numeric_features]
                     continue
 
+
                 # adds element to the buffer in this code block only if the buffer is not already full
-                self._buffer[self._buffer_pos] = i
+                self._buffer[self._buffer_pos] = inst
                 if self._statistics_enabled:
-                    self._numeric_buffer[self._buffer_pos] = [i.get_value(k) for k in self._numeric_features]
+                    self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in
+                                                              self._numeric_features]
+
 
                 # if the buffer is full after adding an element, raises event
                 if len(self._buffer) == self.buffer_size:
                     if self._delay:
-                        p_inst_new = list(self._buffer)
+                        p_inst_new.clear()
+                        for instance in self._buffer.values():
+                            p_inst_new.append(instance)
                     self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
+
 
             # If delay is true, clear the set p_inst_new for any following tasks
             if self._delay:
                 if len(self._buffer) < self.buffer_size:
                     p_inst_new.clear()
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -465,31 +491,32 @@ class Window (StreamTask):
         if len(p_inst_new) == 0 : return
 
         # 2. Check if the rectangle patches are already created
-        inst_new = list(p_inst_new)
-
         if self._plot_nd_plots is None:
             self._plot_nd_plots = {}
 
-            color_names = list(colors.cnames.values())
+            bg = self.axes.get_facecolor()
+            # if bg == (1.0,1.0,1.0,1.0):
+            #     bg= 'grey'
+            # If not create new patch objects and add them to the attribute
+            # window = Rectangle((0,0), 0,0, facecolor = 'none', edgecolor='red', lw = 1)
+            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor='none', lw = 1, zorder=9999, alpha = 0.75 ) # 0.5)
+            # self.axes.add_patch(window)
+            self.axes.add_patch(obs_window)
+            # self._plot_nd_plots[self.C_PLOT_IN_WINDOW] = window
+            self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW] = obs_window
 
-        # If not create new patch objects and add them to the attribute
-            feature_space = inst_new[0].get_feature_data().get_related_set()
-            for i,feature in enumerate(feature_space.get_dims()):
-                if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
-                    feature_window = Rectangle((0,0), 0,0, facecolor = color_names[i], edgecolor=color_names[i],
-                        lw = 1.5, alpha = 0.5)
-                    self.axes.add_patch(feature_window)
-                    self._plot_nd_plots[feature.get_id()] = feature_window
-
-        # 2. Getting the boundaries
-        boundaries = self.get_boundaries()
 
         # 3. Adding rectangular patches to the plots
-        for i,feature in enumerate(inst_new[0].get_feature_data().get_related_set().get_dims()):
-            if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
-                x = self._plot_num_inst-self.buffer_size+1
-                y = boundaries[i][0]
-                w = self.buffer_size
-                h = boundaries[i][1] - boundaries[i][0]
-                self._plot_nd_plots[feature.get_id()].set_bounds(x,y,w,h)
-                self._plot_nd_plots[feature.get_id()].set_visible(True)
+        # x0 = self._plot_num_inst-self.buffer_size+1
+        # y0 = self.axes.get_ylim()[0]
+        # w0 = self.buffer_size
+        # h0 = self.axes.get_ylim()[1] - y0
+        # self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_bounds(x0,y0,w0,h0)
+        # self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_visible(True)
+
+        x1 = self._plot_num_inst-self.buffer_size+1
+        y1 = self.axes.get_ylim()[0]
+        w1 = -(x1 - self.axes.get_xlim()[0])
+        h1 = self.axes.get_ylim()[1] - y1
+        self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW].set_bounds(x1, y1, w1, h1)
+        self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW].set_visible(True)

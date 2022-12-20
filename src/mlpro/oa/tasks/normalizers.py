@@ -7,10 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-07  1.0.0     LSB      Creation/Release
 ## -- 2022-12-13  1.0.1     LSB      Refactoring
+## -- 2022-12-20  1.0.2     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-12-07)
+Ver. 1.0.2 (2022-12-20)
+
 This module provides implementation for adaptive normalizers for MinMax Normalization and ZTransformation
 """
 
@@ -34,6 +36,8 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
         Processing range of the task, default is a Thread.
     p_ada:
         True if the task has adaptivity, default is true.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
     p_visualize:
         True for visualization, false by default.
     p_logging:
@@ -42,11 +46,13 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
         Additional task parameters
     """
 
+    C_NAME = 'Normalizer MinMax' 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,p_name: str = None,
                   p_range_max = StreamTask.C_RANGE_THREAD,
                   p_ada : bool = True,
+                  p_duplicate_data : bool = False,
                   p_visualize:bool = False,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs):
@@ -55,12 +61,12 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
                         p_name = p_name,
                         p_range_max = p_range_max,
                         p_ada = p_ada,
+                        p_duplicate_data = p_duplicate_data,
                         p_visualize = p_visualize,
                         p_logging=p_logging,
-                        **p_kwargs)
+                        **p_kwargs )
 
         Norm.NormalizerMinMax.__init__(self)
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -75,8 +81,8 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
             List of new instances in the workflow
         p_inst_del: list
             List of deleted instances in the workflow
-
         """
+
         for i,inst in enumerate(p_inst_new):
             normalized_element = self.normalize(inst.get_feature_data())
             inst.get_feature_data().set_values(normalized_element)
@@ -84,7 +90,6 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
         for j, del_inst in enumerate(p_inst_del):
             normalized_element = self.normalize(del_inst.get_feature_data())
             del_inst.get_feature_data().set_values(normalized_element)
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -107,13 +112,11 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
             Returns True, if the task has adapted. False otherwise.
         """
 
-
         inst_new = p_event_object.get_data()['p_inst_new']
         for i in inst_new:
             set = i.get_feature_data().get_related_set()
             break
         self.update_parameters(set)
-
 
         return True
 
@@ -135,6 +138,8 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
         Processing range of the task, default is a Thread.
     p_ada:
         True if the task has adaptivity, default is true.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
     p_visualize:
         True for visualization, false by default.
     p_logging:
@@ -143,11 +148,11 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
         Additional task parameters
     """
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name: str = None,
                  p_range_max=StreamTask.C_RANGE_THREAD,
                  p_ada: bool = True,
+                 p_duplicate_data : bool = False,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
 
@@ -155,6 +160,7 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
             p_name=p_name,
             p_range_max=p_range_max,
             p_ada=p_ada,
+            p_duplicate_data = p_duplicate_data,
             p_logging=p_logging,
             **p_kwargs)
 

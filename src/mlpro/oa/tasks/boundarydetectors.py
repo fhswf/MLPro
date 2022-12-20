@@ -27,9 +27,6 @@ from typing import Union, Iterable, List
 
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class BoundaryDetector(OATask):
@@ -45,8 +42,8 @@ class BoundaryDetector(OATask):
         Processing range of the task. Default is thread.
     p_ada: bool
         True if the task has adaptivity. Default is True.
-    p_duplicate_data: bool
-        True if duplicate of the original instances are to be processed. False by default.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
     p_visualize: bool
         True to turn on the visualization.
     p_logging
