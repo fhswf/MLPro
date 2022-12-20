@@ -26,7 +26,15 @@ from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProRnd10D (StreamMLProBase):
     """
-    Demo stream consisting of 1000 instances with 10-dimensional random feature data and 2-dimensional label data.
+    Demo stream consisting of 1000 instances with 10-dimensional random feature data and 2-dimensional
+    label data. All values are in range defined by attribute C_BOUNDARIES.
+
+    Attributes
+    ----------
+    C_NUM_INSTANCES = 1000
+        Number of instances.
+    C_BOUNDARIES    = [-10,10]
+        Boundaries for all random values.
     """
 
     C_ID                = 'Rnd10Dx1000'
@@ -47,7 +55,7 @@ class StreamMLProRnd10D (StreamMLProBase):
                                             p_base_set = Feature.C_BASE_SET_R,
                                             p_name_long = 'Feature #' + str(i),
                                             p_name_latex = '',
-                                            p_boundaries = self.C_BOUNDARIES,
+                                            #p_boundaries = self.C_BOUNDARIES,
                                             p_description = '',
                                             p_symmetrical = False,
                                             p_logging=Log.C_LOG_NOTHING ) )
@@ -64,7 +72,7 @@ class StreamMLProRnd10D (StreamMLProBase):
                                         p_base_set = Label.C_BASE_SET_R,
                                         p_name_long = 'Label #' + str(i),
                                         p_name_latex = '',
-                                        p_boundaries = self.C_BOUNDARIES,
+                                        #p_boundaries = self.C_BOUNDARIES,
                                         p_description = '',
                                         p_symmetrical = False,
                                         p_logging=Log.C_LOG_NOTHING ) )
