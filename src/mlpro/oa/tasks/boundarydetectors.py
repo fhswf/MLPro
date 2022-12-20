@@ -9,10 +9,13 @@
 ## -- 2022-10-21  1.0.0     LSB      Release
 ## -- 2022-12-07  1.0.1     LSB      Refactoring for scaler factor
 ## -- 2022-12-08  1.0.2     LSB      Compatibiltty for instance and Element objects
+## -- 2022-12-12  1.0.3     DA       Corrected signature of method _adapt_on_event()
+## -- 2022-12-13  1.0.4     LSB       Refactoring
+## -- 2022-12-16  1.0.5     LSB      Refactoring for get_related_set method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-12-08)
+Ver. 1.0.5 (2022-12-16)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 
@@ -33,10 +36,30 @@ class BoundaryDetector(OATask):
     """
     This is the base class for Boundary Detector object. It raises event when a change in the current boundaries is
     detected based on the new data instances
+
+    Parameters
+    ----------
+    p_name: str, Optional.
+        Name of the task.
+    p_range_max
+        Processing range of the task. Default is thread.
+    p_ada: bool
+        True if the task has adaptivity. Default is True.
+    p_duplicate_data: bool
+        True if duplicate of the original instances are to be processed. False by default.
+    p_visualize: bool
+        True to turn on the visualization.
+    p_logging
+        Logging level for the task, default is Log all.
+    p_window: Window
+        A predecessor window object, if any.
+    p_scaler: float, np.ndarray
+        A scaler vector to scale the detected boundaries.
+
     """
 
     C_NAME = 'Boundary Detector'
-    C_EVENT_BOUNDARY_CHANGED = 'Boundary Changed'
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -48,7 +71,7 @@ class BoundaryDetector(OATask):
                  p_visualize : bool = False,
                  p_logging=Log.C_LOG_ALL,
                  p_window: windows.Window = None,
-                 p_scaler:Union[float, Iterable] = None,
+                 p_scaler:Union[float, Iterable] = np.ones([1]),
                  **p_kwargs):
 
 
@@ -61,6 +84,7 @@ class BoundaryDetector(OATask):
 
         self._window = p_window
         self._scaler = p_scaler
+        self._related_set: Set = None
 
 
 
@@ -79,6 +103,7 @@ class BoundaryDetector(OATask):
             bool
                 Returns true if there is a change of boundaries, false otherwise.
         """
+
         if p_inst_new is None: return
 
         adapted = False
@@ -88,10 +113,11 @@ class BoundaryDetector(OATask):
             if isinstance(inst, Instance):
                 inst = inst.get_feature_data()
 
+            # Storing the related set for events
+            self._related_set = inst.get_related_set()
+
             dim = inst.get_related_set().get_dims()
 
-            if self._scaler is None:
-                self._scaler = np.ones(len(inst.get_values()))
 
             for i,value in enumerate(inst.get_values()):
                 boundary = dim[i].get_boundaries()
@@ -107,8 +133,7 @@ class BoundaryDetector(OATask):
                 else:
                     adapted = False or adapted
 
-        if adapted:
-            self._raise_event(self.C_EVENT_BOUNDARY_CHANGED, Event(self, p_inst_new = p_inst_new))
+        return adapted
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -128,7 +153,7 @@ class BoundaryDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_on_event(self, p_event_id:str, p_event_obj:Event):
+    def _adapt_on_event(self, p_event_id:str, p_event_object:Event):
         """
         Event handler for Boundary Detector that adapts if the related event is raised
         Parameters
@@ -143,18 +168,24 @@ class BoundaryDetector(OATask):
             bool
                 Returns true if adapted, false otherwise.
         """
-        if self._scaler is None:
-            self._scaler = np.ones(len(p_event_obj.get_data()["p_set"].get_dims()))
+
         adapted = False
         try:
-            boundaries = self._scaler*p_event_obj.get_raising_object().get_boundaries()
-            dims = [p_event_obj.get_data()["p_set"].get_dim(i) for i in p_event_obj.get_data()["p_set"].get_dim_ids()]
+            boundaries = self._scaler*p_event_object.get_raising_object().get_boundaries()
+            self._related_set = p_event_object.get_data()["p_set"]
+            dims = [p_event_object.get_data()["p_set"].get_dim(i) for i in p_event_object.get_data()["p_set"].get_dim_ids()]
             for i,dim in enumerate(dims):
                 if dim.get_boundaries()[0] != boundaries[i][0] or dim.get_boundaries()[1] != boundaries[i][1]:
                     dim.set_boundaries([boundaries[i]])
                     adapted = True
         except: raise ImplementationError("Event not raised by a window")
         return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_related_set(self):
+
+        return self._related_set
 
 
 ## -------------------------------------------------------------------------------------------------

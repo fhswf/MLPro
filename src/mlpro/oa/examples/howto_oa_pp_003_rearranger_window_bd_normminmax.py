@@ -1,32 +1,31 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.oa.examples.howto_oa_002_normalization_of_streamed_data_minmax
-## -- Module  : howto_oa_002_normalization_of_streamed_data_minmax.py
+## -- Package : mlpro.oa.examples
+## -- Module  : howto_oa_pp_003_rearranger_window_bd_normminmax.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-12-07  0.0.0     LSB      Creation
-## -- 2022-12-09  1.0.0     LSB      Release
-## -- 2022-12-13  1.0.1     LSB      Refctoring
+## -- 2022-12-12  0.0.0     LSB      Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-12-13)
+Ver. 0.0.0 (2022-12-12)
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
 You will learn:
 
-1. Creating tasks and workflows in MLPro-OA.
+1. ...
 
-2. Registering Event handlers for events and tasks.
+2.
 
-3. Normalizing streaming data using MinMax Normalizer, with boundary detector as a predecessor task.
+3.
 
 """
 
-from mlpro.oa.tasks.normalizers import *
-from mlpro.oa.tasks.boundarydetectors import *
-from mlpro.bf.streams.models import *
+from mlpro.bf.streams import *
+from mlpro.bf.streams.tasks import Window
+from mlpro.oa import *
+from mlpro.oa.tasks import BoundaryDetector, NormalizerMinMax
 from mlpro.wrappers.openml import *
 
 
@@ -36,44 +35,67 @@ from mlpro.wrappers.openml import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MyAdaptiveScenario(StreamScenario):
+class MyAdaptiveScenario (StreamScenario):
 
     C_NAME = 'Dummy'
 
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
+
         # 1 Import a stream from OpenML
         openml = WrStreamProviderOpenML(p_logging=p_logging)
         stream = openml.get_stream(p_name='BNG(autos,nominal,1000000)', p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging)
 
+
         # 2 Set up a stream workflow based on a custom stream task
 
-        # 2.1 Creation of a task
-        TaskBoundaryDetector = BoundaryDetector(p_name='Demo Boundary Detector',
-            p_logging=p_logging)
-        TaskNormalizerMinMax = NormalizerMinMax(p_name='Demo MinMax Normalizer', p_ada=True, p_visualize=True,
-            p_logging=p_logging)
-
-        # 2.2 Creation of a workflow
+        # 2.1 Creation of a workflow
         workflow = OAWorkflow(p_name='wf1',
             p_range_max=OAWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
             p_visualize=p_visualize, 
             p_logging=p_logging)
 
-        # 2.3 Addition of the task to the workflow
-        workflow.add_task(p_task = TaskBoundaryDetector)
-        workflow.add_task(p_task = TaskNormalizerMinMax)
+
+        # 2.2 Creation of a task
+
+        # 2.2.1 Rearranger to reduce the number of features
+        # ...
+
+        # 2.2.2 Window
+        task_window = Window( p_buffer_size=50, 
+                              p_delay=False,
+                              p_enable_statistics=True,
+                              p_name='t2',
+                              p_duplicate_data=True,
+                              p_visualize=p_visualize,
+                              p_logging=p_logging )
+
+        workflow.add_task(p_task=task_window)
+
+        # 2.2.3 Boundary detector
+        task_bd = BoundaryDetector( p_name='t3', 
+                                    p_ada=True, 
+                                    p_visualize=False,   #not yet implemented
+                                    p_logging=p_logging,
+                                    p_window=task_window )
+
+        workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
 
-        # 3 Registering event handlers for normalizer on events raised by boundaries
-        TaskBoundaryDetector.register_event_handler(BoundaryDetector.C_EVENT_ADAPTED, TaskNormalizerMinMax.adapt_on_event)
+        # 2.2.4 MinMax-Normalizer
+        task_norm_minmax = NormalizerMinMax(p_name='t4', p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
+        task_bd.register_event_handler(BoundaryDetector.C_EVENT_ADAPTED, task_norm_minmax.adapt_on_event)
+        workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
 
 
         # 3 Return stream and workflow
         return stream, workflow
 
 
+
+
+# 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     cycle_limit = 100
