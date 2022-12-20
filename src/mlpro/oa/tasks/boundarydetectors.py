@@ -15,10 +15,11 @@
 ## -- 2022-12-20  1.0.6     LSB      Bug Fixes
 ## -- 2022-12-20  1.1.0     LSB      ND Visualization
 ## -- 2022-12-20  1.1.1     LSB      Refactoring visualization
+## -- 2022-12-20  1.1.2     LSB      Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.11 (2022-12-20)
+Ver. 1.1.2 (2022-12-20)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 import matplotlib.colors
@@ -132,7 +133,7 @@ class BoundaryDetector(OATask):
                     dim[i].set_boundaries(boundary)
                     adapted = True
                 if value < boundary[0]:
-                    dim[i].set_boundaries([value*self._scaler[i], boundary[i]])
+                    dim[i].set_boundaries([value*self._scaler[i], boundary[1]])
                     adapted = True
                 elif value > boundary[1]:
                     dim[i].set_boundaries([boundary[0],value*self._scaler[i]])
@@ -340,6 +341,7 @@ class BoundaryDetector(OATask):
                 self._plot_nd_plots[dim] = bar
                 self._plot_nd_plots[dim].set_label(str(i)+'. '+dim.get_name_long())
             self.axes.set_xticks(range(len(labels)))
+            self.axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 
 
@@ -363,4 +365,3 @@ class BoundaryDetector(OATask):
                     plot_boundary = [-max(upper_boundary, -(lower_boundary)), max(upper_boundary, -(lower_boundary))]
                 self.axes.set_ylim(plot_boundary)
 
-        self.axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))

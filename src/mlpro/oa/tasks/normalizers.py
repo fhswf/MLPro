@@ -84,6 +84,9 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
             List of deleted instances in the workflow
         """
 
+        if ((p_inst_new is None) or (len(p_inst_new) == 0)
+                and ((p_inst_del is None) or len(p_inst_del) ==0)) : return
+
         for i,inst in enumerate(p_inst_new):
             if self._param is None:
                 self.update_parameters(inst.get_feature_data().get_related_set())
