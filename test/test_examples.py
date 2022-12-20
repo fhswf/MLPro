@@ -26,6 +26,7 @@
 ## -- 2022-12-05  1.4.0     DA       Added howto bf_systems_001
 ## -- 2022-12-09  1.4.1     DA       Temporarily removed howto rl_wp_003 due to problems with pettingzoo
 ## -- 2022-12-14  1.5.0     DA       Added howtos bf_streams_101, bf_streams_110, bf_streams_111
+## -- 2022-12-20  1.6.0     DA       Added howtos bf_streams_112, bf_streams_113
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -70,7 +71,9 @@ howto_list = {
     "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
     "bf_streams_101": "mlpro.bf.examples.howto_bf_streams_101_basics",
     "bf_streams_110": "mlpro.bf.examples.howto_bf_streams_110_stream_task_window",
-    "bf_streams_111": "mlpro.bf.examples.howto_bf_streams_111_stream_task_rearranger",
+    "bf_streams_111": "mlpro.bf.examples.howto_bf_streams_111_stream_task_rearranger_2d",
+    "bf_streams_112": "mlpro.bf.examples.howto_bf_streams_112_stream_task_rearranger_3d",
+    "bf_streams_113": "mlpro.bf.examples.howto_bf_streams_113_stream_task_rearranger_nd",
 
     # bf.systems
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
