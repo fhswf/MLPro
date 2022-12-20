@@ -50,7 +50,7 @@ class MyAdaptiveScenario(StreamScenario):
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a task
-        TaskBoundaryDetector = BoundaryDetector(p_name='Demo Boundary Detector',
+        TaskBoundaryDetector = BoundaryDetector(p_name='Demo Boundary Detector', p_ada=True, p_visualize=True,
             p_logging=p_logging)
         TaskNormalizerMinMax = NormalizerMinMax(p_name='Demo MinMax Normalizer', p_ada=True, p_visualize=True,
             p_logging=p_logging)

@@ -13,13 +13,14 @@
 ## -- 2022-12-13  1.0.4     LSB      Refactoring
 ## -- 2022-12-16  1.0.5     LSB      Refactoring for get_related_set method
 ## -- 2022-12-20  1.0.6     LSB      Bug Fixes
+## -- 2022-12-20  1.1.0     LSB      ND Visualization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.6 (2022-12-20)
+Ver. 1.1.0 (2022-12-20)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
-
+import matplotlib.colors
 
 from mlpro.bf.mt import Task as MLTask
 import mlpro.bf.streams.tasks.windows as windows
@@ -240,10 +241,11 @@ class BoundaryDetector(OATask):
             p_figure = plt.figure()
 
         if not p_settings.axes:
-            self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
-            p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
-            p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
-            p_settings.axes.grid(visible=True)
+            self.axes = p_figure.add_subplot(111)
+            self.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
+            self.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
+            self.axes.grid(visible=True)
+            p_settings.axes = self.axes
 
         else:
             self.axes = p_settings.axes
@@ -315,8 +317,34 @@ class BoundaryDetector(OATask):
 
         """
 
-        if self.get_adapted():
+        dims = self.get_related_set().get_dims()
 
-            boundaries = self.get_related_set().get_dims()
+        if self._plot_nd_plots is None:
+            self._plot_nd_plots = {}
+            heights = list(repeat(0, len(dims)))
+            bottoms = list(repeat(0, len(dims)))
+            labels = [i.get_name_long() for i in self.get_related_set().get_dims()]
+            bars = self.axes.bar(labels, height=heights, bottom=bottoms, color = matplotlib.colors.XKCD_COLORS)
+            for dim,bar in zip(dims, bars):
+                self._plot_nd_plots[dim] = bar
 
-        pass
+
+
+        for dim in self._plot_nd_plots.keys():
+            upper_boundary = dim.get_boundaries()[1]
+            lower_boundary = dim.get_boundaries()[0]
+            self._plot_nd_plots[dim].set_y(lower_boundary)
+            self._plot_nd_plots[dim].set_height(upper_boundary-lower_boundary)
+            self.axes.legend()
+
+            # Setting the plot limits
+            ylim = self.axes.get_ylim()
+
+            if (ylim[0] > lower_boundary) or (ylim[1] < upper_boundary):
+                if lower_boundary >= 0:
+                    plot_boundary = [0, upper_boundary]
+                else:
+                    plot_boundary = [-max(upper_boundary, -(lower_boundary)), max(upper_boundary, -(lower_boundary))]
+                self.axes.set_ylim(plot_boundary)
+
+
