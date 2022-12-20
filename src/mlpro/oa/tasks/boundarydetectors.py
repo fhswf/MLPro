@@ -14,10 +14,11 @@
 ## -- 2022-12-16  1.0.5     LSB      Refactoring for get_related_set method
 ## -- 2022-12-20  1.0.6     LSB      Bug Fixes
 ## -- 2022-12-20  1.1.0     LSB      ND Visualization
+## -- 2022-12-20  1.1.1     LSB      Refactoring visualization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-12-20)
+Ver. 1.1.11 (2022-12-20)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 import matplotlib.colors
@@ -59,6 +60,8 @@ class BoundaryDetector(OATask):
 
     C_NAME = 'Boundary Detector'
 
+    C_PLOT_ND_XLABEL_FEATURE = 'Features'
+    C_PLOT_ND_YLABEL = 'Boundaries'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -241,8 +244,8 @@ class BoundaryDetector(OATask):
             p_figure = plt.figure()
 
         if not p_settings.axes:
-            self.axes = p_figure.add_subplot(111)
-            self.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
+            self.axes = p_figure.add_axes([0.1,0.1,0.7,0.9])
+            self.axes.set_xlabel(self.C_PLOT_ND_XLABEL_FEATURE)
             self.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
             self.axes.grid(visible=True)
             p_settings.axes = self.axes
@@ -325,13 +328,18 @@ class BoundaryDetector(OATask):
         dims = self.get_related_set().get_dims()
 
         if self._plot_nd_plots is None:
+
             self._plot_nd_plots = {}
             heights = list(repeat(0, len(dims)))
             bottoms = list(repeat(0, len(dims)))
             labels = [i.get_name_long() for i in self.get_related_set().get_dims()]
-            bars = self.axes.bar(labels, height=heights, bottom=bottoms, color = matplotlib.colors.XKCD_COLORS)
-            for dim,bar in zip(dims, bars):
+            bars = self.axes.bar(range(len(dims)), height=heights, bottom=bottoms,
+                color = matplotlib.colors.XKCD_COLORS)
+            for i,(dim,bar) in enumerate(zip(dims, bars)):
                 self._plot_nd_plots[dim] = bar
+                self._plot_nd_plots[dim].set_label(str(i)+'. '+dim.get_name_long())
+            self.axes.set_xticks(range(len(labels)))
+
 
 
 
@@ -340,7 +348,9 @@ class BoundaryDetector(OATask):
             lower_boundary = dim.get_boundaries()[0]
             self._plot_nd_plots[dim].set_y(lower_boundary)
             self._plot_nd_plots[dim].set_height(upper_boundary-lower_boundary)
-            self.axes.legend()
+
+
+
 
             # Setting the plot limits
             ylim = self.axes.get_ylim()
@@ -352,4 +362,4 @@ class BoundaryDetector(OATask):
                     plot_boundary = [-max(upper_boundary, -(lower_boundary)), max(upper_boundary, -(lower_boundary))]
                 self.axes.set_ylim(plot_boundary)
 
-
+        self.axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))
