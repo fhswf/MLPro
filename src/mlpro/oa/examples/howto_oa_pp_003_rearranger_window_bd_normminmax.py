@@ -65,7 +65,7 @@ class MyAdaptiveScenario (StreamScenario):
 
         # 2.2.1 Rearranger to reduce the number of features
         features     = stream.get_feature_space().get_dims()
-        features_new = [ ( 'F', features[1:3] ) ]
+        features_new = [ ( 'F', features[1:4] ) ]
 
         task_rearranger = Rearranger( p_name='t1',
                                       p_range_max=Task.C_RANGE_THREAD,
