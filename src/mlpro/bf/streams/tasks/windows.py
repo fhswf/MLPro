@@ -381,7 +381,6 @@ class Window (StreamTask):
             self.axes = p_settings.axes
 
         self._plot_nd_plots = None
-        self._plot_windows = []
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -85,10 +85,14 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
         """
 
         for i,inst in enumerate(p_inst_new):
+            if self._param is None:
+                self.update_parameters(inst.get_feature_data().get_related_set())
             normalized_element = self.normalize(inst.get_feature_data())
             inst.get_feature_data().set_values(normalized_element.get_values())
 
         for j, del_inst in enumerate(p_inst_del):
+            if self._param is None:
+                self.update_parameters(del_inst.get_feature_data().get_related_set())
             normalized_element = self.normalize(del_inst.get_feature_data())
             del_inst.get_feature_data().set_values(normalized_element.get_values())
 

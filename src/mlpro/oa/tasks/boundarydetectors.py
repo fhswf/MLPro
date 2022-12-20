@@ -126,6 +126,7 @@ class BoundaryDetector(OATask):
                 if len(boundary) == 0:
                     boundary = [0,0]
                     dim[i].set_boundaries(boundary)
+                    adapted = True
                 if value < boundary[0]:
                     dim[i].set_boundaries([value*self._scaler[i], boundary[i]])
                     adapted = True
@@ -235,4 +236,87 @@ class BoundaryDetector(OATask):
         -------
 
         """
+        if p_figure is None:
+            p_figure = plt.figure()
+
+        if not p_settings.axes:
+            self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
+            p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
+            p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
+            p_settings.axes.grid(visible=True)
+
+        else:
+            self.axes = p_settings.axes
+
+        self._plot_nd_plots = None
+
+
+## --------------------------------------------------------------------------------------------------
+    def _update_plot_2d( self,
+                         p_settings : PlotSettings,
+                         p_inst_new : list,
+                         p_inst_del : list,
+                         **p_kwargs ):
+        """
+
+        Parameters
+        ----------
+        p_settings
+        p_inst_new
+        p_inst_del
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## --------------------------------------------------------------------------------------------------
+    def _update_plot_3d( self,
+                         p_settings : PlotSettings,
+                         p_inst_new : list,
+                         p_inst_del : list,
+                         **p_kwargs ):
+        """
+
+        Parameters
+        ----------
+        p_settings
+        p_inst_new
+        p_inst_del
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## --------------------------------------------------------------------------------------------------
+    def _update_plot_nd( self,
+                         p_settings : PlotSettings,
+                         p_inst_new : list,
+                         p_inst_del : list,
+                         **p_kwargs ):
+        """
+
+        Parameters
+        ----------
+        p_settings
+        p_inst_new
+        p_inst_del
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+
+        if self.get_adapted():
+
+            boundaries = self.get_related_set().get_dims()
+
         pass
