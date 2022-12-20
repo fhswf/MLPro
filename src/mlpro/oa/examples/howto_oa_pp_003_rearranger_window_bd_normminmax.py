@@ -82,7 +82,7 @@ class MyAdaptiveScenario (StreamScenario):
 
         workflow.add_task( p_task=task_rearranger )
       
-        # 2.2.2 Window
+        # 2.2.2 Window to buffer some data
         task_window = Window( p_buffer_size=50, 
                               p_delay=False,
                               p_enable_statistics=True,
@@ -93,7 +93,7 @@ class MyAdaptiveScenario (StreamScenario):
 
         workflow.add_task(p_task=task_window, p_pred_tasks=[task_rearranger])
 
-        # 2.2.3 Boundary detector
+        # 2.2.3 Boundary detector 
         task_bd = BoundaryDetector( p_name='t3', 
                                     p_ada=True, 
                                     p_visualize=False,   #not yet implemented
@@ -102,10 +102,14 @@ class MyAdaptiveScenario (StreamScenario):
 
         workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
-
         # 2.2.4 MinMax-Normalizer
-        task_norm_minmax = NormalizerMinMax(p_name='t4', p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
-        task_bd.register_event_handler(BoundaryDetector.C_EVENT_ADAPTED, task_norm_minmax.adapt_on_event)
+        task_norm_minmax = NormalizerMinMax( p_name='t4', 
+                                             p_ada=True, 
+                                             p_visualize=p_visualize, 
+                                             p_logging=p_logging )
+
+        task_bd.register_event_handler( p_event_id=BoundaryDetector.C_EVENT_ADAPTED, p_event_handler=task_norm_minmax.adapt_on_event )
+
         workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
 
 
