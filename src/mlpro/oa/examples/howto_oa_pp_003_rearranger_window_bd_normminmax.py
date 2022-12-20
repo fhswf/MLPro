@@ -65,26 +65,19 @@ class MyAdaptiveScenario (StreamScenario):
 
         # 2.2.1 Rearranger to reduce the number of features
         features     = stream.get_feature_space().get_dims()
-        labels       = stream.get_label_space().get_dims()
-
-        features_new = [ ( 'F', [ features[1] ] ), 
-                         ( 'L', [ labels[1] ] ),  
-                         ( 'F', features[5:8] ) ]
-        labels_new   = [ ( 'L', [ labels[0] ] ), 
-                         ( 'F', features[4:6] ) ]
+        features_new = [ ( 'F', features[1:3] ) ]
 
         task_rearranger = Rearranger( p_name='t1',
                                       p_range_max=Task.C_RANGE_THREAD,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
-                                      p_features_new=features_new,
-                                      p_labels_new=labels_new )
+                                      p_features_new=features_new )
 
         workflow.add_task( p_task=task_rearranger )
       
         # 2.2.2 Window to buffer some data
         task_window = Window( p_buffer_size=50, 
-                              p_delay=False,
+                              p_delay=True,
                               p_enable_statistics=True,
                               p_name='t2',
                               p_duplicate_data=True,
