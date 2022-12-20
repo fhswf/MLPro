@@ -128,8 +128,8 @@ class BoundaryDetector(OATask):
 
             for i,value in enumerate(feature_data.get_values()):
                 boundary = dim[i].get_boundaries()
-                if len(boundary) == 0:
-                    boundary = [0,0]
+                if len(boundary) == 0 or boundary is None:
+                    boundary = [ value * self._scaler[i], self._scaler[i] ]
                     dim[i].set_boundaries(boundary)
                     adapted = True
                 if value < boundary[0]:
