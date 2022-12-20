@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_pp_003_rearranger_window_bd_normminmax.py
+## -- Module  : howto_oa_pp_003_rearranger_window_bd_normminmax_nd.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -65,7 +65,7 @@ class MyAdaptiveScenario (StreamScenario):
 
         # 2.2.1 Rearranger to reduce the number of features
         features     = stream.get_feature_space().get_dims()
-        features_new = [ ( 'F', features[1:4] ) ]
+        features_new = [ ( 'F', features[1:7] ) ]
 
         task_rearranger = Rearranger( p_name='t1',
                                       p_range_max=Task.C_RANGE_THREAD,
