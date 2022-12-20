@@ -77,7 +77,7 @@ class MyAdaptiveScenario (StreamScenario):
       
         # 2.2.2 Window to buffer some data
         task_window = Window( p_buffer_size=50, 
-                              p_delay=True,
+                              #p_delay=True,
                               p_enable_statistics=True,
                               p_name='t2',
                               p_duplicate_data=True,
