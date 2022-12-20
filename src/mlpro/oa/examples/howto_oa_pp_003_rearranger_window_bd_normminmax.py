@@ -6,10 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-12  0.0.0     LSB      Creation
+## -- 2022-12-20  0.1.0     DA       Supplements
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-12-12)
+Ver. 0.1.0 (2022-12-20)
+
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
 You will learn:
@@ -22,13 +24,12 @@ You will learn:
 
 """
 
+
 from mlpro.bf.streams import *
-from mlpro.bf.streams.tasks import Window
+from mlpro.bf.streams.streams import *
+from mlpro.bf.streams.tasks import Window, Rearranger
 from mlpro.oa import *
 from mlpro.oa.tasks import BoundaryDetector, NormalizerMinMax
-from mlpro.wrappers.openml import *
-
-
 
 
 
@@ -39,29 +40,48 @@ class MyAdaptiveScenario (StreamScenario):
 
     C_NAME = 'Dummy'
 
-
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
 
-        # 1 Import a stream from OpenML
-        openml = WrStreamProviderOpenML(p_logging=p_logging)
-        stream = openml.get_stream(p_name='BNG(autos,nominal,1000000)', p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging)
+        # 1 Prepare a native stream from MLPro
+        mlpro  = StreamProviderMLPro(p_logging=p_logging)
+        stream = mlpro.get_stream( p_name=StreamMLProRnd10D.C_NAME, 
+                                   p_mode=p_mode, 
+                                   p_visualize=p_visualize, 
+                                   p_logging=p_logging )
 
 
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a workflow
-        workflow = OAWorkflow(p_name='wf1',
-            p_range_max=OAWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
-            p_visualize=p_visualize, 
-            p_logging=p_logging)
+        workflow = OAWorkflow( p_name='wf1',
+                               p_range_max=OAWorkflow.C_RANGE_NONE,
+                               p_ada=True,
+                               p_visualize=p_visualize, 
+                               p_logging=p_logging )
 
 
         # 2.2 Creation of a task
 
         # 2.2.1 Rearranger to reduce the number of features
-        # ...
+        features     = stream.get_feature_space().get_dims()
+        labels       = stream.get_label_space().get_dims()
 
+        features_new = [ ( 'F', [ features[1] ] ), 
+                         ( 'L', [ labels[1] ] ),  
+                         ( 'F', features[5:8] ) ]
+        labels_new   = [ ( 'L', [ labels[0] ] ), 
+                         ( 'F', features[4:6] ) ]
+
+        task_rearranger = Rearranger( p_name='t1',
+                                      p_range_max=Task.C_RANGE_THREAD,
+                                      p_visualize=p_visualize,
+                                      p_logging=p_logging,
+                                      p_features_new=features_new,
+                                      p_labels_new=labels_new )
+
+        workflow.add_task( p_task=task_rearranger )
+      
         # 2.2.2 Window
         task_window = Window( p_buffer_size=50, 
                               p_delay=False,
@@ -71,7 +91,7 @@ class MyAdaptiveScenario (StreamScenario):
                               p_visualize=p_visualize,
                               p_logging=p_logging )
 
-        workflow.add_task(p_task=task_window)
+        workflow.add_task(p_task=task_window, p_pred_tasks=[task_rearranger])
 
         # 2.2.3 Boundary detector
         task_bd = BoundaryDetector( p_name='t3', 

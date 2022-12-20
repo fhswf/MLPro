@@ -46,6 +46,8 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
         Additional task parameters
     """
 
+    C_NAME = 'Normalizer MinMax' 
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,p_name: str = None,
                   p_range_max = StreamTask.C_RANGE_THREAD,
