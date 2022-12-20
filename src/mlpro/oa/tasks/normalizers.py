@@ -8,10 +8,11 @@
 ## -- 2022-12-07  1.0.0     LSB      Creation/Release
 ## -- 2022-12-13  1.0.1     LSB      Refactoring
 ## -- 2022-12-20  1.0.2     DA       Refactoring
+## -- 2022-12-20  1.0.3     LSB      Bug fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-12-20)
+Ver. 1.0.3 (2022-12-20)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization and ZTransformation
 """
@@ -85,11 +86,11 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
 
         for i,inst in enumerate(p_inst_new):
             normalized_element = self.normalize(inst.get_feature_data())
-            inst.get_feature_data().set_values(normalized_element)
+            inst.get_feature_data().set_values(normalized_element.get_values())
 
         for j, del_inst in enumerate(p_inst_del):
             normalized_element = self.normalize(del_inst.get_feature_data())
-            del_inst.get_feature_data().set_values(normalized_element)
+            del_inst.get_feature_data().set_values(normalized_element.get_values())
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -112,10 +113,8 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
             Returns True, if the task has adapted. False otherwise.
         """
 
-        inst_new = p_event_object.get_data()['p_inst_new']
-        for i in inst_new:
-            set = i.get_feature_data().get_related_set()
-            break
+        set = p_event_object.get_raising_object().get_related_set()
+
         self.update_parameters(set)
 
         return True

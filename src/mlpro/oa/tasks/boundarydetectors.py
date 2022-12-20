@@ -12,10 +12,11 @@
 ## -- 2022-12-12  1.0.3     DA       Corrected signature of method _adapt_on_event()
 ## -- 2022-12-13  1.0.4     LSB      Refactoring
 ## -- 2022-12-16  1.0.5     LSB      Refactoring for get_related_set method
+## -- 2022-12-20  1.0.6     LSB      Bug Fixes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-12-16)
+Ver. 1.0.6 (2022-12-20)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 
@@ -77,7 +78,7 @@ class BoundaryDetector(OATask):
                          p_ada = p_ada,
                          p_duplicate_data = p_duplicate_data,
                          p_visualize = p_visualize,
-                         p_logging = p_logging
+                         p_logging = p_logging,
                          **p_kwargs)
 
         self._window = p_window
@@ -108,14 +109,19 @@ class BoundaryDetector(OATask):
 
         for inst in p_inst_new:
             if isinstance(inst, Instance):
-                inst = inst.get_feature_data()
+                feature_data = inst.get_feature_data()
+            else:
+                feature_data = inst
 
             # Storing the related set for events
-            self._related_set = inst.get_related_set()
+            self._related_set = feature_data.get_related_set()
 
-            dim = inst.get_related_set().get_dims()
+            dim = feature_data.get_related_set().get_dims()
 
-            for i,value in enumerate(inst.get_values()):
+            if len(self._scaler) == 1:
+                self._scaler = np.repeat(self._scaler, len(dim), axis=0)
+
+            for i,value in enumerate(feature_data.get_values()):
                 boundary = dim[i].get_boundaries()
                 if len(boundary) == 0:
                     boundary = [0,0]
