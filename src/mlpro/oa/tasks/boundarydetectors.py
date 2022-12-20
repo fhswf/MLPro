@@ -244,11 +244,12 @@ class BoundaryDetector(OATask):
             p_figure = plt.figure()
 
         if not p_settings.axes:
-            self.axes = p_figure.add_axes([0.1,0.1,0.7,0.9])
+            self.axes = p_figure.add_axes([0.1,0.1,0.7,0.8])
             self.axes.set_xlabel(self.C_PLOT_ND_XLABEL_FEATURE)
             self.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
             self.axes.grid(visible=True)
             p_settings.axes = self.axes
+            self.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')
 
         else:
             self.axes = p_settings.axes
