@@ -10,7 +10,7 @@
 ## -- 2022-12-07  1.0.1     LSB      Refactoring for scaler factor
 ## -- 2022-12-08  1.0.2     LSB      Compatibiltty for instance and Element objects
 ## -- 2022-12-12  1.0.3     DA       Corrected signature of method _adapt_on_event()
-## -- 2022-12-13  1.0.4     LSB       Refactoring
+## -- 2022-12-13  1.0.4     LSB      Refactoring
 ## -- 2022-12-16  1.0.5     LSB      Refactoring for get_related_set method
 ## -------------------------------------------------------------------------------------------------
 
@@ -24,9 +24,6 @@ from mlpro.bf.mt import Task as MLTask
 import mlpro.bf.streams.tasks.windows as windows
 from mlpro.oa import *
 from typing import Union, Iterable, List
-
-
-
 
 
 
@@ -45,8 +42,8 @@ class BoundaryDetector(OATask):
         Processing range of the task. Default is thread.
     p_ada: bool
         True if the task has adaptivity. Default is True.
-    p_duplicate_data: bool
-        True if duplicate of the original instances are to be processed. False by default.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
     p_visualize: bool
         True to turn on the visualization.
     p_logging
@@ -60,8 +57,6 @@ class BoundaryDetector(OATask):
 
     C_NAME = 'Boundary Detector'
 
-
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_name:str = None,
@@ -72,20 +67,19 @@ class BoundaryDetector(OATask):
                  p_logging=Log.C_LOG_ALL,
                  p_window: windows.Window = None,
                  p_scaler:Union[float, Iterable] = np.ones([1]),
-                 **p_kwargs):
+                 **p_kwargs ):
 
-
-        super().__init__(p_name = p_name,
-                         p_range_max = p_range_max,
-                         p_ada = p_ada,
-                         p_duplicate_data = p_duplicate_data,
-                         p_visualize = p_visualize,
-                         p_logging = p_logging)
+        super().__init__( p_name = p_name,
+                          p_range_max = p_range_max,
+                          p_ada = p_ada,
+                          p_duplicate_data = p_duplicate_data,
+                          p_visualize = p_visualize,
+                          p_logging = p_logging,
+                          **p_kwargs )
 
         self._window = p_window
         self._scaler = p_scaler
         self._related_set: Set = None
-
 
 
 ## -------------------------------------------------------------------------------------------------
