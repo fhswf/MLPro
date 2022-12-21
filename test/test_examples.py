@@ -25,10 +25,12 @@
 ## -- 2022-11-22  1.3.4     DA       Removed howto_bf_streams_051 due to delay caused by OpenML
 ## -- 2022-12-05  1.4.0     DA       Added howto bf_systems_001
 ## -- 2022-12-09  1.4.1     DA       Temporarily removed howto rl_wp_003 due to problems with pettingzoo
+## -- 2022-12-21  1.4.2     SY       - Reactivate howto rl_wp_003
+## --                                - Temporarily removed howto rl_agent_005 and rl_wp_001
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-12-09)
+Ver. 1.4.2 (2022-12-21)
 
 Unit test for all examples available.
 """
@@ -64,7 +66,7 @@ howto_list = {
     "rl_agent_002": "mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment",
     "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_004": "mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment",
-    "rl_agent_005": "mlpro.rl.examples.howto_rl_agent_005_train_and_reload_single_agent",
+    # "rl_agent_005": "mlpro.rl.examples.howto_rl_agent_005_train_and_reload_single_agent",
     # "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_sb3_policy_on_ur5_environment",
     "rl_env_002": "mlpro.rl.examples.howto_rl_env_002_train_agent_with_SB3_policy_on_robothtm_environment",
     # "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_train_agent_with_sb3_policy_on_multigeo_environment",
@@ -77,9 +79,9 @@ howto_list = {
     # "rl_pp_001": "mlpro.rl.examples.howto_rl_pp_001_train_agent_with_sb3_policy_on_ur5_environment",
     # "rl_pp_002": "mlpro.rl.examples.howto_rl_pp_002_load_and_run_ur5_environment",
     "rl_ui_001": "mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit",
-    "rl_wp_001": "mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment",
+    # "rl_wp_001": "mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment",
     "rl_wp_002": "mlpro.rl.examples.howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment",
-    # "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
+    "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
     "rl_wp_004": "mlpro.rl.examples.howto_rl_wp_004_train_agent_with_sb3_policy",
     "rl_wp_005": "mlpro.rl.examples.howto_rl_wp_005_validation_wrapped_sb3_on_policy",
     "rl_wp_006": "mlpro.rl.examples.howto_rl_wp_006_validation_wrapped_sb3_off_policy",
