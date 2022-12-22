@@ -372,7 +372,8 @@ class Window (StreamTask):
             p_figure = plt.figure()
 
         if not p_settings.axes:
-            self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
+            self.axes = p_figure.add_subplot()
+            p_settings.axes = self.axes
             p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
             p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
             p_settings.axes.grid(visible=True)
