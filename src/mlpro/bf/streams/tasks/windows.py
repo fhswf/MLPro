@@ -496,27 +496,13 @@ class Window (StreamTask):
             self._plot_nd_plots = {}
 
             bg = self.axes.get_facecolor()
-            # ec = self.axes.get_edgecolor()
-            # if bg == (1.0,1.0,1.0,1.0):
-            #     bg= 'grey'
-            # If not create new patch objects and add them to the attribute
-            # window = Rectangle((0,0), 0,0, facecolor = 'none', edgecolor='red', lw = 1)
-            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor='black', lw = 1, zorder=9999, alpha = 0.75 ) #
-            # 0.5)
-            # self.axes.add_patch(window)
+            ec = self.axes.patch.get_edgecolor()
+            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor=ec, lw = 1, zorder=9999, alpha = 0.75 ) #
             self.axes.add_patch(obs_window)
-            # self._plot_nd_plots[self.C_PLOT_IN_WINDOW] = window
             self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW] = obs_window
 
 
-        # 3. Adding rectangular patches to the plots
-        # x0 = self._plot_num_inst-self.buffer_size+1
-        # y0 = self.axes.get_ylim()[0]
-        # w0 = self.buffer_size
-        # h0 = self.axes.get_ylim()[1] - y0
-        # self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_bounds(x0,y0,w0,h0)
-        # self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_visible(True)
-
+        # 3. Add the hiding plot around obsolete data
         x1 = self._plot_num_inst-self.buffer_size+1
         y1 = self.axes.get_ylim()[0]
         w1 = -(x1 - self.axes.get_xlim()[0])
