@@ -495,11 +495,13 @@ class Window (StreamTask):
             self._plot_nd_plots = {}
 
             bg = self.axes.get_facecolor()
+            # ec = self.axes.get_edgecolor()
             # if bg == (1.0,1.0,1.0,1.0):
             #     bg= 'grey'
             # If not create new patch objects and add them to the attribute
             # window = Rectangle((0,0), 0,0, facecolor = 'none', edgecolor='red', lw = 1)
-            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor='none', lw = 1, zorder=9999, alpha = 0.75 ) # 0.5)
+            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor='black', lw = 1, zorder=9999, alpha = 0.75 ) #
+            # 0.5)
             # self.axes.add_patch(window)
             self.axes.add_patch(obs_window)
             # self._plot_nd_plots[self.C_PLOT_IN_WINDOW] = window
