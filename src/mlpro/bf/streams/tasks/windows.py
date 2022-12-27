@@ -325,7 +325,7 @@ class Window (StreamTask):
         else:
             self.axes = p_settings.axes
 
-        self.window_patch2D = Rectangle((0,0),0,0)
+        self._window_patch2D = Rectangle((0, 0),0,0)
 
         pass
 
@@ -351,7 +351,7 @@ class Window (StreamTask):
         else:
             self.axes = p_settings.axes
 
-        self.window_patch3D = Poly3DCollection([])
+        self._window_patch3D = Poly3DCollection([])
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -409,7 +409,7 @@ class Window (StreamTask):
         y = boundaries[1][0]
         w = boundaries[0][1] - boundaries[0][0]
         h = boundaries[1][1] - boundaries[1][0]
-        self.window_patch2D.set_bounds(x,y,w,h)
+        self._window_patch2D.set_bounds(x,y,w,h)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -467,7 +467,7 @@ class Window (StreamTask):
                              [b[0][0], b[1][1], b[2][0]]]])
 
         # 3. Setting the vertices for the cuboid
-        self.window_patch3D.set_verts(verts)
+        self._window_patch3D.set_verts(verts)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -497,7 +497,7 @@ class Window (StreamTask):
 
             bg = self.axes.get_facecolor()
             ec = self.axes.patch.get_edgecolor()
-            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor=ec, lw = 1, zorder=9999, alpha = 0.75 ) #
+            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor=ec, lw = 1, zorder=9999, alpha = 0.75 )
             self.axes.add_patch(obs_window)
             self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW] = obs_window
 
