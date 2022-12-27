@@ -84,13 +84,10 @@ class MyScenario (StreamScenario):
                                       p_logging=p_logging,
                                       p_features_new=features_new )
 
-        task_rearranger.set_plot_settings( p_plot_settings= [ PlotSettings( p_view=PlotSettings.C_VIEW_2D ) ])
-                                    
         workflow.add_task( p_task=task_rearranger )
 
         # 2.2 Set up and add an own custom task
         task_custom = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=logging )
-        task_custom.set_plot_settings( p_plot_settings= [ PlotSettings( p_view=PlotSettings.C_VIEW_2D ) ])
         workflow.add_task( p_task=task_custom, p_pred_tasks=[task_rearranger] )
 
 
@@ -103,7 +100,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 50
+    cycle_limit = 100
     logging     = Log.C_LOG_ALL
     visualize   = True
   
@@ -125,7 +122,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot()
+    myscenario.init_plot( p_plot_settings= [ PlotSettings(p_view = PlotSettings.C_VIEW_2D) ] )
     input('Press ENTER to start stream processing...')
 
 myscenario.run()

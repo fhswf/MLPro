@@ -799,6 +799,11 @@ class StreamTask (Task):
         """
 
         Task._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
+
+        self._plot_2d_plot   = None
+        self._plot_2d_xdata  = []
+        self._plot_2d_ydata  = []
+        self._plot_2d_points = []
  
 
 ## -------------------------------------------------------------------------------------------------
@@ -889,7 +894,50 @@ class StreamTask (Task):
             Further optional plot parameters.
         """
 
-        pass
+        # 1 Check for new instances to be plotted and deleted instances to be removed
+        if len(p_inst_new) > 0: inst_ref = p_inst_new[0]
+        elif len(p_inst_del) > 0: inst_ref = p_inst_del[0]
+        else: return
+
+
+        # 2 Update of plot data
+        for inst in p_inst_new:
+            feature_values = inst.get_feature_data().get_values()
+            self._plot_2d_xdata.append(feature_values[0])
+            self._plot_2d_ydata.append(feature_values[1])
+            self._plot_2d_points.append( feature_values )
+
+        for inst in p_inst_del:
+            feature_values = inst.get_feature_data().get_values()
+
+            try:
+                idx = self._plot_2d_points.index(feature_values)
+                del self._plot_2d_xdata[idx]
+                del self._plot_2d_ydata[idx]
+                del self._plot_2d_points[idx]
+            except:
+                pass
+            
+
+        # 3 Plot current data
+        if self._plot_2d_plot is None:            
+            # 3.1 Late initialization of plot object
+            feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
+            p_settings.axes.set_xlabel(feature_dim[0].get_name_short() )
+            p_settings.axes.set_ylabel(feature_dim[1].get_name_short() )
+
+            self._plot_2d_plot,  = p_settings.axes.plot(self._plot_2d_xdata, self._plot_2d_ydata, 'b+' )
+
+        else:
+            # 3.2 Update of existing scatter plot object
+            self._plot_2d_plot.set_xdata(self._plot_2d_xdata)
+            self._plot_2d_plot.set_ydata(self._plot_2d_ydata)
+
+
+        # 4 Update of ax limits
+        p_settings.axes.set_xlim( min(self._plot_2d_xdata), max(self._plot_2d_xdata))
+        p_settings.axes.set_ylim( min(self._plot_2d_ydata), max(self._plot_2d_ydata))
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -940,21 +988,22 @@ class StreamTask (Task):
         """
 
         # 1 Check for new instances to be plotted and deleted instances to be removed
-        inst_new = list(p_inst_new)
-        inst_del = list(p_inst_del)
-        if len(inst_new) == 0: return
+        if len(p_inst_new) > 0: inst_ref = p_inst_new[0]
+        elif len(p_inst_del) > 0: inst_ref = p_inst_del[0]
+        else: return
 
 
-        # 2 Check whether x label needs to be changed to time index
-        if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( inst_new[0].get_time_stamp() is not None ):
-            p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
-
-
-        # 3 Late initialization of plot object
+        # 2 Late initialization of plot object
         if self._plot_nd_plots is None:
-            self._plot_nd_plots = {}
 
-            feature_space = inst_new[0].get_feature_data().get_related_set()
+            # 2.1 Check whether x label needs to be changed to time index
+            if ( self._plot_nd_xlabel == self.C_PLOT_ND_XLABEL_INST ) and ( inst_ref.get_time_stamp() is not None ):
+                p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
+
+            # 2.2 Add plot for each feature
+            self._plot_nd_plots = {}
+            feature_space       = inst_ref.get_feature_data().get_related_set()
+
             for feature in feature_space.get_dims():
                 if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
                     feature_xdata = self._plot_nd_xdata
@@ -966,7 +1015,7 @@ class StreamTask (Task):
         # 4 Add data of new instances to plot objects
         inst_id = self._plot_num_inst
 
-        for inst in inst_new:
+        for inst in p_inst_new:
             self._plot_nd_xdata.append(inst_id)
             inst_id += 1
 
@@ -985,13 +1034,12 @@ class StreamTask (Task):
 
 
         # 5 Removing obsolete data from the plots
-        for i, inst in enumerate(inst_del):
+        for i, inst in enumerate(p_inst_del):
             id_del = 0
             self._plot_nd_xdata.pop(id_del)
 
             for i, fplot_id in enumerate(self._plot_nd_plots.keys()):
                 self._plot_nd_plots[fplot_id][1].pop(id_del)
-
 
 
         # 6 Set new plot data of all feature plots
