@@ -16,10 +16,13 @@
 ## -- 2022-12-20  1.1.0     LSB      ND Visualization
 ## -- 2022-12-20  1.1.1     LSB      Refactoring visualization
 ## -- 2022-12-20  1.1.2     LSB      Bug Fix
+## -- 2022-12-28  1.1.3     DA       Class BoundaryDetector: 
+## --                                - added constant C_PLOT_VALID_VIEWS
+## --                                - removed methods init_plot_2d/3d, update_plot_2d/3d
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2022-12-20)
+Ver. 1.1.3 (2022-12-28)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 import matplotlib.colors
@@ -28,6 +31,7 @@ from mlpro.bf.mt import Task as MLTask
 import mlpro.bf.streams.tasks.windows as windows
 from mlpro.oa import *
 from typing import Union, Iterable, List
+
 
 
 
@@ -59,11 +63,12 @@ class BoundaryDetector(OATask):
 
     """
 
-    C_NAME = 'Boundary Detector'
+    C_NAME                      = 'Boundary Detector'
 
-    C_PLOT_ND_XLABEL_FEATURE = 'Features'
-    C_PLOT_ND_YLABEL = 'Boundaries'
+    C_PLOT_ND_XLABEL_FEATURE    = 'Features'
+    C_PLOT_ND_YLABEL            = 'Boundaries'
 
+    C_PLOT_VALID_VIEWS          = [ PlotSettings.C_VIEW_ND ]
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -89,7 +94,6 @@ class BoundaryDetector(OATask):
         self._window = p_window
         self._scaler = p_scaler
         self._related_set: Set = None
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -197,38 +201,6 @@ class BoundaryDetector(OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
-        """
-
-        Parameters
-        ----------
-        p_figure
-        p_settings
-
-        Returns
-        -------
-
-        """
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
-        """
-
-        Parameters
-        ----------
-        p_figure
-        p_settings
-
-        Returns
-        -------
-
-        """
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
         """
         Custom method to initialize plot for Boundary Detectors tasks for N-dimensional plotting.
@@ -256,50 +228,6 @@ class BoundaryDetector(OATask):
             self.axes = p_settings.axes
 
         self._plot_nd_plots = None
-
-
-## --------------------------------------------------------------------------------------------------
-    def _update_plot_2d( self,
-                         p_settings : PlotSettings,
-                         p_inst_new : list,
-                         p_inst_del : list,
-                         **p_kwargs ):
-        """
-
-        Parameters
-        ----------
-        p_settings
-        p_inst_new
-        p_inst_del
-        p_kwargs
-
-        Returns
-        -------
-
-        """
-        pass
-
-
-## --------------------------------------------------------------------------------------------------
-    def _update_plot_3d( self,
-                         p_settings : PlotSettings,
-                         p_inst_new : list,
-                         p_inst_del : list,
-                         **p_kwargs ):
-        """
-
-        Parameters
-        ----------
-        p_settings
-        p_inst_new
-        p_inst_del
-        p_kwargs
-
-        Returns
-        -------
-
-        """
-        pass
 
 
 ## --------------------------------------------------------------------------------------------------
@@ -344,15 +272,11 @@ class BoundaryDetector(OATask):
             self.axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
 
-
-
         for dim in self._plot_nd_plots.keys():
             upper_boundary = dim.get_boundaries()[1]
             lower_boundary = dim.get_boundaries()[0]
             self._plot_nd_plots[dim].set_y(lower_boundary)
             self._plot_nd_plots[dim].set_height(upper_boundary-lower_boundary)
-
-
 
 
             # Setting the plot limits
