@@ -515,6 +515,7 @@ class Task (Async, EventManager, Plottable):
         self._tid               = uuid.uuid4()
         self._kwargs            = p_kwargs.copy()
 
+        self._predecessor_tasks = []
         self._predecessor_ids   = []
         self._num_predecessors  = 0
         self._ctr_predecessors  = 0
@@ -668,7 +669,12 @@ class Task (Async, EventManager, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_predecessors(self, p_predecessor_ids:list ):
+    def get_predecessors(self) -> list:
+        return self._predecessor_tasks
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_predecessors(self, p_predecessor_tasks:list ):
         """
         Used by class Workflow to inform a task about it's number of predecessor tasks. See method
         run_on_event().
@@ -679,8 +685,13 @@ class Task (Async, EventManager, Plottable):
             List of ids of predecessor tasks in a workflow.
         """
 
-        self._predecessor_ids  = p_predecessor_ids
-        self._num_predecessors = self._ctr_predecessors = len(p_predecessor_ids)
+        self._predecessor_tasks = p_predecessor_tasks
+        self._predecessor_ids   = []
+
+        for task in self._predecessor_tasks:
+            self._predecessor_ids.append(task.get_tid())
+
+        self._num_predecessors = self._ctr_predecessors = len(self._predecessor_ids)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -870,7 +881,6 @@ class Workflow (Task):
         self._tasks             = []
         self._entry_tasks       = []
         self._final_tasks       = []
-        self._predecessor_tasks = {}
         self._first_run         = True
 
         self._finished          = mt.Event()
@@ -944,11 +954,7 @@ class Workflow (Task):
             self._entry_tasks.append(p_task)
 
         else:
-            predecessor_ids = [] 
-            for task in p_pred_tasks:
-                predecessor_ids.append(task.get_tid())
-
-            p_task.set_predecessors(p_predecessor_ids=predecessor_ids)
+            p_task.set_predecessors( p_predecessor_tasks=p_pred_tasks )
 
             if self._range > self.C_RANGE_THREAD:
                 self.log(Log.C_LOG_TYPE_W, 'Predecessor relations are event-based and not yet supported beyond multithreading. Range is reduced')
@@ -961,7 +967,17 @@ class Workflow (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def _get_plot_host_task(self, p_task : Task) -> Task:
-        return self
+        plot_host = None
+
+        for task in p_task.get_predecessors():
+            if task.C_PLOT_STANDALONE and task.get_visualization:
+                plot_host = task
+                break
+
+        if plot_host is None:
+            return self
+        else:
+            return plot_host
 
 
 ## -------------------------------------------------------------------------------------------------
