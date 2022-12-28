@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_pp_003_rearranger_window_bd_normminmax_nd.py
+## -- Module  : howto_oa_pp_005_rearranger_window_bd_normminmax_nd.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
