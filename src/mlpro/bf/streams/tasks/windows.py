@@ -19,10 +19,11 @@
 ##                                   - single rectangle
 ##                                   - transparent patch on obsolete data
 ## -- 2022-12-19  1.1.1     DA       New parameter p_duplicate_data
+## -- 2022-12-28  1.1.2     DA       Refactoring of plot settings
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-12-19)
+Ver. 1.1.2 (2022-12-28)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
@@ -267,7 +268,7 @@ class Window (StreamTask):
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self,
                       p_figure: Figure = None,
-                      p_plot_settings: list = [],
+                      p_plot_settings : PlotSettings = None,
                       p_plot_depth: int = 0,
                       p_detail_level: int = 0,
                       p_step_rate: int = 0,

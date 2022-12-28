@@ -26,10 +26,11 @@
 ## -- 2022-12-10  1.4.1     DA       - Moved method _init_figure from class Workflow to Task
 ## --                                - Method Task._init_figure: added support of backend TkAgg
 ## -- 2022-12-16  1.5.0     DA       Class Task: new method _get_custom_run_method()
+## -- 2022-12-28  1.6.0     DA       Refactoring of plot settings
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-12-16)
+Ver. 1.6.0 (2022-12-28)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -711,7 +712,13 @@ class Task (Async, EventManager, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
+    def init_plot( self, 
+                   p_figure: Figure = None, 
+                   p_plot_settings : PlotSettings = None, 
+                   p_plot_depth: int = 0, 
+                   p_detail_level: int = 0, 
+                   p_step_rate: int = 0, 
+                   **p_kwargs ):
         try:
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
         except:
@@ -953,9 +960,14 @@ class Workflow (Task):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _get_plot_host_task(self, p_task : Task) -> Task:
+        return self
+
+
+## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure:Figure=None, 
-                   p_plot_settings:list=[], 
+                   p_plot_settings : PlotSettings = None, 
                    p_plot_depth:int=0, 
                    p_detail_level:int=0, 
                    p_step_rate:int=1, 
@@ -971,10 +983,8 @@ class Workflow (Task):
         ----------
         p_figure : Matplotlib.figure.Figure, optional
             Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
-        p_plot_settings : list
-            Optional list of objects of class PlotSettings. All subplots that are addresses in the list
-            are plotted in parallel. If the list is empty the default view is plotted (see attribute 
-            C_PLOT_DEFAULT_VIEW).
+        p_plot_settings : PlotSettings
+            Optional plot settings. If None, the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
         p_plot_depth : int = 0
             Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
             depth is unlimited.
@@ -1001,37 +1011,46 @@ class Workflow (Task):
                          **p_kwargs )
       
         task:Task
+
         emb_task_pos_x  = 1
         emb_task_pos_y  = 1
         emb_task_ax_id  = 1
 
         for task in self._tasks:
             task_plot_settings = []
-            for ps in self._plot_settings.values():
-                if task.C_PLOT_STANDALONE:
-                    # Task plots in a separate figure (=window)
-                    task_figure = None
-                    task_axes   = None
-                    task_pos_x  = 1
-                    task_pos_y  = 1
-                    task_ax_id  = 1
-                else:
-                    # Task plots embedded in the workflow figure/subplot
-                    task_figure = self._figure
-                    task_axes   = ps.axes
-                    task_pos_x  = emb_task_pos_x
-                    task_pos_y  = emb_task_pos_y
-                    task_ax_id  = emb_task_ax_id
-                    emb_task_pos_x += 1
-                    emb_task_pos_y += 1
-                    emb_task_ax_id += 1
 
-                task_plot_settings.append( PlotSettings( p_view=ps.view,
-                                                         p_axes=task_axes,
-                                                         p_pos_x=task_pos_x,
-                                                         p_pos_y=task_pos_y,
-                                                         p_id=task_ax_id,
-                                                         **p_kwargs ) )
+            if not task.C_PLOT_STANDALONE:
+                plot_host = self._get_plot_host_task(p_task=task)
+            else:
+                plot_host = self
+
+            ps = plot_host.get_plot_settings()
+
+            # for ps in plot_host._plot_settings.values():
+            if task.C_PLOT_STANDALONE:
+                # Task plots in a separate figure (=window)
+                task_figure = None
+                task_axes   = None
+                task_pos_x  = 1
+                task_pos_y  = 1
+                task_ax_id  = 1
+            else:
+                # Task plots embedded in the predecessor/workflow figure/subplot
+                task_figure = plot_host._figure
+                task_axes   = ps.axes
+                task_pos_x  = emb_task_pos_x
+                task_pos_y  = emb_task_pos_y
+                task_ax_id  = emb_task_ax_id
+                emb_task_pos_x += 1
+                emb_task_pos_y += 1
+                emb_task_ax_id += 1
+
+            task_plot_settings = PlotSettings( p_view=ps.view,
+                                               p_axes=task_axes,
+                                               p_pos_x=task_pos_x,
+                                               p_pos_y=task_pos_y,
+                                               p_id=task_ax_id,
+                                               **p_kwargs )
                 
             task.init_plot( p_figure=task_figure,
                             p_plot_settings=task_plot_settings,

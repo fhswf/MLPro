@@ -19,11 +19,12 @@
 ## -- 2022-11-17  2.3.0     DA       Classes Plottable, PlotSettings: extensions, corrections
 ## -- 2022-11-18  2.3.1     DA       Classes Plottable, PlotSettings: improvements try/except
 ## -- 2022-12-20  2.4.0     DA       New method Plottable.set_plot_settings()
-## -- 2022-12-28  2.4.1     DA       Corrections in method Plottable.init_plot()
+## -- 2022-12-28  2.5.0     DA       - Corrections in method Plottable.init_plot()
+## --                                - Reduction to one active plot view per task
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.1 (2022-12-28)
+Ver. 2.5.0 (2022-12-28)
 
 This module provides various classes related to data plotting.
 """
@@ -146,15 +147,19 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_plot_settings(self, p_plot_settings:list[PlotSettings]):
+    def get_plot_settings(self) -> PlotSettings:
+        return self._plot_settings
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_plot_settings(self, p_plot_settings : PlotSettings ):
         """
         Sets plot settings in advance (before initialization of plot).
 
         Parameters
         ----------
-        p_plot_settings : list
-            Optional list of objects of class PlotSettings. All subplots that are addresses in the list
-            are plotted in parallel. If the list is empty the default view is plotted (see attribute 
+        p_plot_settings : PlotSettings
+            New PlotSettings to be set. If None, the default view is plotted (see attribute 
             C_PLOT_DEFAULT_VIEW).
         """
 
@@ -163,18 +168,11 @@ class Plottable:
         except:
             pass
 
-        try:
-            if ( len(self._plot_settings) > 0 ) and ( len(p_plot_settings) == 0 ): return
-        except:
-            pass
-
-        self._plot_settings = {}
-        if len(p_plot_settings)!=0:
-            for ps in p_plot_settings:
-                self._plot_settings[ps.view] = ps
+        if p_plot_settings is not None: 
+            self._plot_settings = p_plot_settings
         else:
             try:
-                self._plot_settings[self.C_PLOT_DEFAULT_VIEW] = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
+                self._plot_settings = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
             except ParamError:
                 # Plot functionality turned on but not implemented
                 raise ImplementationError('Please check attribute C_PLOT_DEFAULT_VIEW')               
@@ -182,12 +180,12 @@ class Plottable:
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
-                   p_figure:Figure=None,
-                   p_plot_settings:list[PlotSettings]=[],
-                   p_plot_depth:int=0,
-                   p_detail_level:int=0,
-                   p_step_rate:int=0,
-                   **p_kwargs):
+                   p_figure:Figure = None,
+                   p_plot_settings : PlotSettings = None,
+                   p_plot_depth : int = 0,
+                   p_detail_level : int = 0,
+                   p_step_rate : int = 0,
+                   **p_kwargs ):
         """
         Initializes the plot functionalities of the class.
 
@@ -195,10 +193,8 @@ class Plottable:
         ----------
         p_figure : Matplotlib.figure.Figure, optional
             Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
-        p_plot_settings : list
-            Optional list of objects of class PlotSettings. All subplots that are addresses in the list
-            are plotted in parallel. If the list is empty the default view is plotted (see attribute 
-            C_PLOT_DEFAULT_VIEW).
+        p_plot_settings : PlotSettings
+            Optional plot settings. If None, the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
         p_plot_depth : int 
             Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
             depth is unlimited. Default = 0.
@@ -254,16 +250,16 @@ class Plottable:
 
 
         # 4 Call of all initialization methods of the required views
-        for view in self._plot_settings:
-            try:
-                plot_method = self._plot_methods[view][0]
-            except KeyError:
-                raise ParamError('Parameter p_plot_settings: wrong view "' + str(view) + '"')
+        view = self._plot_settings.view
+        try:
+            plot_method = self._plot_methods[view][0]
+        except KeyError:
+            raise ParamError('Parameter p_plot_settings: wrong view "' + str(view) + '"')
 
-            plot_method(p_figure=self._figure, p_settings=self._plot_settings[view])
+        plot_method(p_figure=self._figure, p_settings=self._plot_settings)
 
-            if self._plot_settings[view].axes is None:
-                raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
+        if self._plot_settings.axes is None:
+            raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
                 
 
         # # 5 In standalone mode: refresh figure
@@ -392,8 +388,8 @@ class Plottable:
             self.init_plot()
 
         # 2 Call of all required plot methods
-        for view in self._plot_settings:
-            self._plot_methods[view][1](p_settings=self._plot_settings[view], **p_kwargs)
+        view = self._plot_settings.view
+        self._plot_methods[view][1](p_settings=self._plot_settings, **p_kwargs)
 
         # 3 Update content of own(!) figure after self._plot_step_rate calls
         if self._plot_own_figure:

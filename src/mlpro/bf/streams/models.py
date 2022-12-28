@@ -868,10 +868,10 @@ class StreamTask (Task):
 
         if view_new not in self.C_PLOT_VALID_VIEWS: return
 
-        view_current = list(self._plot_settings.keys())[0]
+        view_current = self._plot_settings.view
         if view_new == view_current: return
 
-        ps = self._plot_settings[view_current]
+        ps = self._plot_settings
         ps.view = view_new
 
         if ps.axes is not None:
@@ -882,7 +882,7 @@ class StreamTask (Task):
                 pass
             ps.axes = None   
 
-        plot_settings_new      = [ ps ]
+        plot_settings_new      = ps
         self._plot_initialized = False
 
         self.init_plot( p_figure = self._figure, 
@@ -1613,7 +1613,7 @@ class StreamScenario (ScenarioBase):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure: Figure = None, 
-                   p_plot_settings: list = [], 
+                   p_plot_settings : PlotSettings = None, 
                    p_plot_depth: int = 0, 
                    p_detail_level: int = 0, 
                    p_step_rate: int = 0, 
