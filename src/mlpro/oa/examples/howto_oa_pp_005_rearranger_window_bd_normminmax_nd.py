@@ -95,7 +95,7 @@ class MyAdaptiveScenario (StreamScenario):
 
         workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
-        # 2.2.4 MinMax-Normalizer
+        # # 2.2.4 MinMax-Normalizer
         task_norm_minmax = NormalizerMinMax( p_name='t4', 
                                              p_ada=True, 
                                              p_visualize=p_visualize, 
