@@ -874,7 +874,7 @@ class StreamTask (Task):
         ps = self._plot_settings
         ps.view = view_new
 
-        if ps.axes is not None:
+        if self.C_PLOT_STANDALONE and ( ps.axes is not None ):
             try:
                 ps.axes.clear()
                 self._figure.clear()
