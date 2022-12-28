@@ -325,7 +325,7 @@ class Window (StreamTask):
         else:
             self.axes = p_settings.axes
 
-        self.window_patch2D = Rectangle((0,0),0,0)
+        self._window_patch2D = Rectangle((0, 0),0,0)
 
         pass
 
@@ -351,7 +351,7 @@ class Window (StreamTask):
         else:
             self.axes = p_settings.axes
 
-        self.window_patch3D = Poly3DCollection([])
+        self._window_patch3D = Poly3DCollection([])
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -372,7 +372,8 @@ class Window (StreamTask):
             p_figure = plt.figure()
 
         if not p_settings.axes:
-            self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
+            self.axes = p_figure.add_subplot()
+            p_settings.axes = self.axes
             p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
             p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
             p_settings.axes.grid(visible=True)
@@ -407,7 +408,7 @@ class Window (StreamTask):
         y = boundaries[1][0]
         w = boundaries[0][1] - boundaries[0][0]
         h = boundaries[1][1] - boundaries[1][0]
-        self.window_patch2D.set_bounds(x,y,w,h)
+        self._window_patch2D.set_bounds(x,y,w,h)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -465,7 +466,7 @@ class Window (StreamTask):
                              [b[0][0], b[1][1], b[2][0]]]])
 
         # 3. Setting the vertices for the cuboid
-        self.window_patch3D.set_verts(verts)
+        self._window_patch3D.set_verts(verts)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -494,25 +495,13 @@ class Window (StreamTask):
             self._plot_nd_plots = {}
 
             bg = self.axes.get_facecolor()
-            # if bg == (1.0,1.0,1.0,1.0):
-            #     bg= 'grey'
-            # If not create new patch objects and add them to the attribute
-            # window = Rectangle((0,0), 0,0, facecolor = 'none', edgecolor='red', lw = 1)
-            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor='none', lw = 1, zorder=9999, alpha = 0.75 ) # 0.5)
-            # self.axes.add_patch(window)
+            ec = self.axes.patch.get_edgecolor()
+            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor=ec, lw = 1, zorder=9999, alpha = 0.75 )
             self.axes.add_patch(obs_window)
-            # self._plot_nd_plots[self.C_PLOT_IN_WINDOW] = window
             self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW] = obs_window
 
 
-        # 3. Adding rectangular patches to the plots
-        # x0 = self._plot_num_inst-self.buffer_size+1
-        # y0 = self.axes.get_ylim()[0]
-        # w0 = self.buffer_size
-        # h0 = self.axes.get_ylim()[1] - y0
-        # self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_bounds(x0,y0,w0,h0)
-        # self._plot_nd_plots[self.C_PLOT_IN_WINDOW].set_visible(True)
-
+        # 3. Add the hiding plot around obsolete data
         x1 = self._plot_num_inst-self.buffer_size+1
         y1 = self.axes.get_ylim()[0]
         w1 = -(x1 - self.axes.get_xlim()[0])

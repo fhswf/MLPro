@@ -724,7 +724,7 @@ class Task (Async, EventManager, Plottable):
                                     p_plot_depth=p_plot_depth, 
                                     p_detail_level=p_detail_level, 
                                     p_step_rate=p_step_rate, 
-                                    **p_kwargs)
+                                    **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------

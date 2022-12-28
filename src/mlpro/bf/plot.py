@@ -18,10 +18,12 @@
 ## -- 2022-11-09  2.2.1     DA       Classes Plottable, PlotSettings: correction
 ## -- 2022-11-17  2.3.0     DA       Classes Plottable, PlotSettings: extensions, corrections
 ## -- 2022-11-18  2.3.1     DA       Classes Plottable, PlotSettings: improvements try/except
+## -- 2022-12-20  2.4.0     DA       New method Plottable.set_plot_settings()
+## -- 2022-12-28  2.4.1     DA       Corrections in method Plottable.init_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.1 (2022-11-18)
+Ver. 2.4.1 (2022-12-28)
 
 This module provides various classes related to data plotting.
 """
@@ -126,7 +128,7 @@ class Plottable:
     C_PLOT_STANDALONE : bool = True
         Custom attribute to be set to True, if the plot needs a separate subplot or False if the 
         plot can be added to an existing subplot.
-    C_PLOT_VALID_VIEWS : list = []
+    C_PLOT_VALID_VIEWS : list = [PlotSettings]
         Custom list of views that are supported/implemented (see class PlotSettings)
     C_PLOT_DEFAULT_VIEW : str = ''
         Custom attribute for the default view. See class PlotSettings for more details.
@@ -144,9 +146,44 @@ class Plottable:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def set_plot_settings(self, p_plot_settings:list[PlotSettings]):
+        """
+        Sets plot settings in advance (before initialization of plot).
+
+        Parameters
+        ----------
+        p_plot_settings : list
+            Optional list of objects of class PlotSettings. All subplots that are addresses in the list
+            are plotted in parallel. If the list is empty the default view is plotted (see attribute 
+            C_PLOT_DEFAULT_VIEW).
+        """
+
+        try:
+            if self._plot_initialized: return
+        except:
+            pass
+
+        try:
+            if ( len(self._plot_settings) > 0 ) and ( len(p_plot_settings) == 0 ): return
+        except:
+            pass
+
+        self._plot_settings = {}
+        if len(p_plot_settings)!=0:
+            for ps in p_plot_settings:
+                self._plot_settings[ps.view] = ps
+        else:
+            try:
+                self._plot_settings[self.C_PLOT_DEFAULT_VIEW] = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
+            except ParamError:
+                # Plot functionality turned on but not implemented
+                raise ImplementationError('Please check attribute C_PLOT_DEFAULT_VIEW')               
+   
+
+## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure:Figure=None,
-                   p_plot_settings:list=[],
+                   p_plot_settings:list[PlotSettings]=[],
                    p_plot_depth:int=0,
                    p_detail_level:int=0,
                    p_step_rate:int=0,
@@ -181,8 +218,7 @@ class Plottable:
             return
 
         try:
-            self._plot_initialized
-            return
+            if self._plot_initialized: return
         except:
             pass
 
@@ -200,16 +236,7 @@ class Plottable:
         # 2 Prepare internal dictionaries
 
         # 2.1 Dictionary with plot settings per view
-        self._plot_settings = {}
-        if len(p_plot_settings)!=0:
-            for ps in p_plot_settings:
-                self._plot_settings[ps.view] = ps
-        else:
-            try:
-                self._plot_settings[self.C_PLOT_DEFAULT_VIEW] = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
-            except ParamError:
-                # Plot functionality turned on but not implemented
-                raise ImplementationError('Please check attribute C_PLOT_DEFAULT_VIEW')               
+        self.set_plot_settings( p_plot_settings=p_plot_settings )
 
         # 2.2 Dictionary with methods for initialization and update of a plot per view 
         self._plot_methods = { PlotSettings.C_VIEW_2D : [ self._init_plot_2d, self._update_plot_2d ], 
@@ -358,9 +385,9 @@ class Plottable:
         except:
             return
             
-         # 1 Plot already initiated?
+         # 1 Plot already initialized?
         try:
-            self._plot_initialized
+            if not self._plot_initialized: self.init_plot()
         except: 
             self.init_plot()
 
