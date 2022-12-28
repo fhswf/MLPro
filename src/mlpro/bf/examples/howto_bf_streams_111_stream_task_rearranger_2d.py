@@ -122,7 +122,7 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot( p_plot_settings= [ PlotSettings(p_view = PlotSettings.C_VIEW_2D) ] )
+    myscenario.init_plot()
     input('Press ENTER to start stream processing...')
 
 myscenario.run()

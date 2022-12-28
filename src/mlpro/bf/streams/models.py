@@ -15,29 +15,30 @@
 ## -- 2022-06-19  0.1.5     DA       - Class Stream: internal use of self.C_NAME instead of self._name
 ## --                                - Check/completion of doc strings
 ## -- 2022-06-25  0.2.0     LSB      New Label class with modified instance class
-## -- 2022-10-24  0.3.0     DA       Class Instance: new method copy()
-## -- 2022-10-25  0.4.0     DA       New classes StreamTask, StreamWorkfllow, StreamScenario
-## -- 2022-10-29  0.4.1     DA       Refactoring after introduction of module bf.ops
-## -- 2022-10-31  0.4.2     DA       Refactoring after changes on bf.mt
-## -- 2022-11-03  0.5.0     DA       - Class Instance: completion of constructor
+## -- 2022-10-24  0.2.1     DA       Class Instance: new method copy()
+## -- 2022-10-25  0.3.0     DA       New classes StreamTask, StreamWorkfllow, StreamScenario
+## -- 2022-10-29  0.3.1     DA       Refactoring after introduction of module bf.ops
+## -- 2022-10-31  0.3.2     DA       Refactoring after changes on bf.mt
+## -- 2022-11-03  0.4.0     DA       - Class Instance: completion of constructor
 ## --                                - Class Stream: extensions and corrections
 ## --                                - Completion of doc strings 
-## -- 2022-11-04  0.6.0     DA       Classes StreamProvider, Stream: refactoring
-## -- 2022-11-05  0.7.0     DA       Class Stream: refactoring to make it iterable
-## -- 2022-11-07  0.7.1     DA       Class StreamScenario: refactoring 
-## -- 2022-11-13  0.8.0     DA       - Class Stream: new custom method set_options()
+## -- 2022-11-04  0.4.1     DA       Classes StreamProvider, Stream: refactoring
+## -- 2022-11-05  0.5.0     DA       Class Stream: refactoring to make it iterable
+## -- 2022-11-07  0.5.1     DA       Class StreamScenario: refactoring 
+## -- 2022-11-13  0.6.0     DA       - Class Stream: new custom method set_options()
 ## --                                - New class StreamShared
-## -- 2022-11-18  0.8.1     DA       Refactoring of try/except statements
-## -- 2022-11-19  0.8.2     DA       Class Stream: new parameter p_name for methods *get_stream()
-## -- 2022-11-22  0.9.0     DA       Classes StreamWorkflow, StreamScenario: plot functionality
-## -- 2022-12-08  0.9.1     DA       Classes StreamTask, StreamWorkflow: bugfixes on plotting
-## -- 2022-12-16  0.9.2     DA       Class StreamTask: new method _run_wrapper()
-## -- 2022-12-18  0.9.3     LSB      Removing obsolete instances from plot data
-## -- 2022-12-19  0.9.4     DA       Class StreamTask: new parameter p_duplicate_data
+## -- 2022-11-18  0.6.1     DA       Refactoring of try/except statements
+## -- 2022-11-19  0.6.2     DA       Class Stream: new parameter p_name for methods *get_stream()
+## -- 2022-11-22  0.7.0     DA       Classes StreamWorkflow, StreamScenario: plot functionality
+## -- 2022-12-08  0.7.1     DA       Classes StreamTask, StreamWorkflow: bugfixes on plotting
+## -- 2022-12-16  0.7.2     DA       Class StreamTask: new method _run_wrapper()
+## -- 2022-12-18  0.7.3     LSB      Removing obsolete instances from plot data
+## -- 2022-12-19  0.7.4     DA       Class StreamTask: new parameter p_duplicate_data
+## -- 2022-12-28  0.8.0     DA       Class StreamTask: default visualization 2D, 3D
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.4 (2022-12-19)
+Ver. 0.8.0 (2022-12-28)
 
 This module provides classes for standardized stream processing. 
 """
@@ -672,7 +673,7 @@ class StreamTask (Task):
                        p_logging=p_logging, 
                        **p_kwargs )
 
-        self._duplicate_data = p_duplicate_data
+        self._duplicate_data      = p_duplicate_data
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -780,7 +781,7 @@ class StreamTask (Task):
         except:
             return
 
-        self._plot_num_inst = 0
+        self._plot_num_inst       = 0
 
         Task.init_plot( self,
                         p_figure=p_figure, 
@@ -788,7 +789,7 @@ class StreamTask (Task):
                         p_plot_depth=p_plot_depth, 
                         p_detail_level=p_detail_level, 
                         p_step_rate=p_step_rate, 
-                        **p_kwargs)
+                        **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -804,6 +805,10 @@ class StreamTask (Task):
         self._plot_2d_xdata  = []
         self._plot_2d_ydata  = []
         self._plot_2d_points = []
+        self._plot_2d_xmin   = None
+        self._plot_2d_xmax   = None
+        self._plot_2d_ymin   = None
+        self._plot_2d_ymax   = None
  
 
 ## -------------------------------------------------------------------------------------------------
@@ -814,6 +819,18 @@ class StreamTask (Task):
         """
 
         Task._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
+
+        self._plot_3d_plot   = None
+        self._plot_3d_xdata  = []
+        self._plot_3d_ydata  = []
+        self._plot_3d_zdata  = []
+        self._plot_3d_points = []
+        self._plot_3d_xmin   = None
+        self._plot_3d_xmax   = None
+        self._plot_3d_ymin   = None
+        self._plot_3d_ymax   = None
+        self._plot_3d_zmin   = None
+        self._plot_3d_zmax   = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -836,6 +853,43 @@ class StreamTask (Task):
         self._plot_nd_plots  = None
         self._plot_nd_ymin   = None
         self._plot_nd_ymax   = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _finalize_plot_view(self, p_inst_ref : Instance ):
+        num_dim = p_inst_ref.get_feature_data().get_related_set().get_num_dim()
+
+        if num_dim == 2:
+            view_new = PlotSettings.C_VIEW_2D
+        elif num_dim == 3:
+            view_new = PlotSettings.C_VIEW_3D
+        else:
+            view_new = PlotSettings.C_VIEW_ND
+
+        if view_new not in self.C_PLOT_VALID_VIEWS: return
+
+        view_current = list(self._plot_settings.keys())[0]
+        if view_new == view_current: return
+
+        ps = self._plot_settings[view_current]
+        ps.view = view_new
+
+        if ps.axes is not None:
+            try:
+                ps.axes.clear()
+                self._figure.clear()
+            except:
+                pass
+            ps.axes = None   
+
+        plot_settings_new      = [ ps ]
+        self._plot_initialized = False
+
+        self.init_plot( p_figure = self._figure, 
+                        p_plot_settings = plot_settings_new,
+                        p_plot_depth = self._plot_depth,
+                        p_detail_level = self._plot_detail_level,
+                        p_step_rate = self._plot_step_rate )     
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -866,6 +920,20 @@ class StreamTask (Task):
         else:
             inst_new = p_inst_new
             inst_del = p_inst_del
+
+
+        if len(inst_new) > 0:
+            inst_ref = inst_new[0]
+        elif len(inst_del) > 0:
+            inst_ref = inst_del[0]
+        else:
+            return
+
+        try:
+            self._plot_view_finalized
+        except:
+            self._finalize_plot_view(p_inst_ref=inst_ref)
+            self._plot_view_finalized = True
 
         Task.update_plot(self, p_inst_new=inst_new, p_inst_del=inst_del, **p_kwargs)
 
@@ -900,23 +968,77 @@ class StreamTask (Task):
         else: return
 
 
-        # 2 Update of plot data
-        for inst in p_inst_new:
-            feature_values = inst.get_feature_data().get_values()
-            self._plot_2d_xdata.append(feature_values[0])
-            self._plot_2d_ydata.append(feature_values[1])
-            self._plot_2d_points.append( feature_values )
+        # 2 Update of plot data and ax limits
+        ax_limits_changed = False
 
-        for inst in p_inst_del:
-            feature_values = inst.get_feature_data().get_values()
+        if len(p_inst_new) > 0:
+            xdata_new = []
+            ydata_new = []
+
+            for inst in p_inst_new:
+                feature_values = inst.get_feature_data().get_values()
+                xdata_new.append(feature_values[0])
+                ydata_new.append(feature_values[1])
+                self._plot_2d_points.append( feature_values )
+
+            self._plot_2d_xdata.append(xdata_new)
+            self._plot_2d_ydata.append(ydata_new)
+            xmin = min(xdata_new)
+            xmax = max(xdata_new)
+            ymin = min(ydata_new)
+            ymax = max(ydata_new)
 
             try:
-                idx = self._plot_2d_points.index(feature_values)
-                del self._plot_2d_xdata[idx]
-                del self._plot_2d_ydata[idx]
-                del self._plot_2d_points[idx]
+                if xmin < self._plot_2d_xmin:
+                    self._plot_2d_xmin = xmin
+                    ax_limits_changed = True
             except:
-                pass
+                self._plot_2d_xmin = xmin
+                ax_limits_changed = True
+
+            try:
+                if xmax > self._plot_2d_xmax:
+                    self._plot_2d_xmax = xmax
+                    ax_limits_changed = True
+            except:
+                self._plot_2d_xmax = xmax
+                ax_limits_changed = True
+
+            try:
+                if ymin < self._plot_2d_ymin:
+                    self._plot_2d_ymin = ymin
+                    ax_limits_changed = True
+            except:
+                self._plot_2d_ymin = ymin
+                ax_limits_changed = True
+
+            try:
+                if ymax > self._plot_2d_ymax:
+                    self._plot_2d_ymax = ymax
+                    ax_limits_changed = True
+            except:
+                self._plot_2d_ymax = ymax
+                ax_limits_changed = True
+            
+
+        if len(p_inst_del) > 0:
+            for inst in p_inst_del:
+                feature_values = inst.get_feature_data().get_values()
+
+                try:
+                    idx = self._plot_2d_points.index(feature_values)
+                    del self._plot_2d_xdata[idx]
+                    del self._plot_2d_ydata[idx]
+                    del self._plot_2d_points[idx]
+                except:
+                    pass
+
+            self._plot_2d_xmin = min(self._plot_2d_xdata)
+            self._plot_2d_xmax = max(self._plot_2d_xdata)
+            self._plot_2d_ymin = min(self._plot_2d_ydata)
+            self._plot_2d_ymax = max(self._plot_2d_ydata)
+
+            ax_limits_changed = True
             
 
         # 3 Plot current data
@@ -926,18 +1048,23 @@ class StreamTask (Task):
             p_settings.axes.set_xlabel(feature_dim[0].get_name_short() )
             p_settings.axes.set_ylabel(feature_dim[1].get_name_short() )
 
-            self._plot_2d_plot,  = p_settings.axes.plot(self._plot_2d_xdata, self._plot_2d_ydata, 'b+' )
+            self._plot_2d_plot,  = p_settings.axes.plot( self._plot_2d_xdata, 
+                                                         self._plot_2d_ydata, 
+                                                         marker='+', 
+                                                         color='blue', 
+                                                         linestyle='',
+                                                         markersize=3 )
 
         else:
-            # 3.2 Update of existing scatter plot object
+            # 3.2 Update of existing plot object
             self._plot_2d_plot.set_xdata(self._plot_2d_xdata)
             self._plot_2d_plot.set_ydata(self._plot_2d_ydata)
 
 
         # 4 Update of ax limits
-        p_settings.axes.set_xlim( min(self._plot_2d_xdata), max(self._plot_2d_xdata))
-        p_settings.axes.set_ylim( min(self._plot_2d_ydata), max(self._plot_2d_ydata))
-
+        if ax_limits_changed:
+            p_settings.axes.set_xlim( self._plot_2d_xmin, self._plot_2d_xmax )
+            p_settings.axes.set_ylim( self._plot_2d_ymin, self._plot_2d_ymax )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -962,10 +1089,139 @@ class StreamTask (Task):
             Further optional plot parameters.
         """
 
-        pass
+        # 1 Check for new instances to be plotted and deleted instances to be removed
+        if len(p_inst_new) > 0: inst_ref = p_inst_new[0]
+        elif len(p_inst_del) > 0: inst_ref = p_inst_del[0]
+        else: return
+
+
+        # 2 Update of plot data and ax limits
+        ax_limits_changed = False
+
+        if len(p_inst_new) > 0:
+            xdata_new = []
+            ydata_new = []
+            zdata_new = []
+
+            for inst in p_inst_new:
+                feature_values = inst.get_feature_data().get_values()
+                xdata_new.append(feature_values[0])
+                ydata_new.append(feature_values[1])
+                zdata_new.append(feature_values[2])
+                self._plot_3d_points.append( feature_values )
+
+            self._plot_3d_xdata.append(xdata_new)
+            self._plot_3d_ydata.append(ydata_new)
+            self._plot_3d_zdata.append(zdata_new)
+
+            xmin = min(xdata_new)
+            xmax = max(xdata_new)
+            ymin = min(ydata_new)
+            ymax = max(ydata_new)
+            zmin = min(zdata_new)
+            zmax = max(zdata_new)
+
+            try:
+                if xmin < self._plot_3d_xmin:
+                    self._plot_3d_xmin = xmin
+                    ax_limits_changed = True
+            except:
+                self._plot_3d_xmin = xmin
+                ax_limits_changed = True
+
+            try:
+                if xmax > self._plot_3d_xmax:
+                    self._plot_3d_xmax = xmax
+                    ax_limits_changed = True
+            except:
+                self._plot_3d_xmax = xmax
+                ax_limits_changed = True
+
+            try:
+                if ymin < self._plot_3d_ymin:
+                    self._plot_3d_ymin = ymin
+                    ax_limits_changed = True
+            except:
+                self._plot_3d_ymin = ymin
+                ax_limits_changed = True
+
+            try:
+                if ymax > self._plot_3d_ymax:
+                    self._plot_3d_ymax = ymax
+                    ax_limits_changed = True
+            except:
+                self._plot_3d_ymax = ymax
+                ax_limits_changed = True
+
+            try:
+                if zmin < self._plot_3d_zmin:
+                    self._plot_3d_zmin = zmin
+                    ax_limits_changed = True
+            except:
+                self._plot_3d_zmin = zmin
+                ax_limits_changed = True
+
+            try:
+                if zmax > self._plot_3d_zmax:
+                    self._plot_3d_zmax = zmax
+                    ax_limits_changed = True
+            except:
+                self._plot_3d_zmax = zmax
+                ax_limits_changed = True
+
+
+        if len(p_inst_del) > 0:
+            for inst in p_inst_del:
+                feature_values = inst.get_feature_data().get_values()
+
+                try:
+                    idx = self._plot_3d_points.index(feature_values)
+                    del self._plot_3d_xdata[idx]
+                    del self._plot_3d_ydata[idx]
+                    del self._plot_3d_zdata[idx]
+                    del self._plot_3d_points[idx]
+                except:
+                    pass
+
+            self._plot_3d_xmin = min(self._plot_3d_xdata)
+            self._plot_3d_xmax = max(self._plot_3d_xdata)
+            self._plot_3d_ymin = min(self._plot_3d_ydata)
+            self._plot_3d_ymax = max(self._plot_3d_ydata)
+            self._plot_3d_zmin = min(self._plot_3d_zdata)
+            self._plot_3d_zmax = max(self._plot_3d_zdata)
+
+            ax_limits_changed = True
+            
+
+        # 3 Plot current data
+        if self._plot_3d_plot is None:            
+            # 3.1 Late initialization of plot object
+            feature_dim = inst_ref.get_feature_data().get_related_set().get_dims()
+            p_settings.axes.set_xlabel(feature_dim[0].get_name_short() )
+            p_settings.axes.set_ylabel(feature_dim[1].get_name_short() )
+            p_settings.axes.set_zlabel(feature_dim[2].get_name_short() )
+
+        else:
+            self._plot_3d_plot.remove()
+
+        self._plot_3d_plot,  = p_settings.axes.plot( self._plot_3d_xdata, 
+                                                     self._plot_3d_ydata, 
+                                                     self._plot_3d_zdata,
+                                                     marker='+', 
+                                                     color='blue',
+                                                     linestyle='',
+                                                     markersize=4 )                                                        
+
+
+        # 4 Update of ax limits
+        if ax_limits_changed:
+            p_settings.axes.set_xlim( self._plot_3d_xmin, self._plot_3d_xmax )
+            p_settings.axes.set_ylim( self._plot_3d_ymin, self._plot_3d_ymax )
+            p_settings.axes.set_zlim( self._plot_3d_zmin, self._plot_3d_zmax )
 
 
 ## -------------------------------------------------------------------------------------------------
+
     def _update_plot_nd( self, 
                          p_settings : PlotSettings, 
                          p_inst_new : list, 
@@ -1008,7 +1264,10 @@ class StreamTask (Task):
                 if feature.get_base_set() in [ Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z ]:
                     feature_xdata = self._plot_nd_xdata
                     feature_ydata = []
-                    feature_plot, = p_settings.axes.plot( feature_xdata, feature_ydata, lw=1)
+                    feature_plot, = p_settings.axes.plot( feature_xdata, 
+                                                          feature_ydata, 
+                                                          lw=1 )
+
                     self._plot_nd_plots[feature.get_id()] = [ feature_xdata, feature_ydata, feature_plot ]
 
 

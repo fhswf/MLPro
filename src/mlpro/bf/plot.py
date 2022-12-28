@@ -19,10 +19,11 @@
 ## -- 2022-11-17  2.3.0     DA       Classes Plottable, PlotSettings: extensions, corrections
 ## -- 2022-11-18  2.3.1     DA       Classes Plottable, PlotSettings: improvements try/except
 ## -- 2022-12-20  2.4.0     DA       New method Plottable.set_plot_settings()
+## -- 2022-12-28  2.4.1     DA       Corrections in method Plottable.init_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.4.0 (2022-12-20)
+Ver. 2.4.1 (2022-12-28)
 
 This module provides various classes related to data plotting.
 """
@@ -158,8 +159,7 @@ class Plottable:
         """
 
         try:
-            self._plot_initialized
-            return
+            if self._plot_initialized: return
         except:
             pass
 
@@ -218,8 +218,7 @@ class Plottable:
             return
 
         try:
-            self._plot_initialized
-            return
+            if self._plot_initialized: return
         except:
             pass
 
@@ -386,9 +385,9 @@ class Plottable:
         except:
             return
             
-         # 1 Plot already initiated?
+         # 1 Plot already initialized?
         try:
-            self._plot_initialized
+            if not self._plot_initialized: self.init_plot()
         except: 
             self.init_plot()
 

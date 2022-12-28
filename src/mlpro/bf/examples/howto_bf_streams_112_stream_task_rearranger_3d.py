@@ -72,29 +72,22 @@ class MyScenario (StreamScenario):
         workflow = StreamWorkflow( p_name='wf1', 
                                    p_range_max=Task.C_RANGE_NONE, 
                                    p_visualize=p_visualize,
-                                   p_logging=logging )
+                                   p_logging=p_logging )
 
         # 2.1 Set up and add a rearranger task to reduce the feature and label space
         features     = stream.get_feature_space().get_dims()
-        labels       = stream.get_label_space().get_dims()
-
-        features_new = [ ( 'F', [ features[1] ] ), 
-                         ( 'L', [ labels[1] ] ),  
-                         ( 'F', features[5:8] ) ]
-        labels_new   = [ ( 'L', [ labels[0] ] ), 
-                         ( 'F', features[4:6] ) ]
+        features_new = [ ( 'F', features[1:4] ) ]
 
         task_rearranger = Rearranger( p_name='t1',
                                       p_range_max=Task.C_RANGE_THREAD,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
-                                      p_features_new=features_new,
-                                      p_labels_new=labels_new )
+                                      p_features_new=features_new )
 
         workflow.add_task( p_task=task_rearranger )
 
         # 2.2 Set up and add an own custom task
-        task_custom = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=logging )
+        task_custom = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=p_logging )
         workflow.add_task( p_task=task_custom, p_pred_tasks=[task_rearranger] )
 
 
@@ -104,10 +97,11 @@ class MyScenario (StreamScenario):
 
 
 
+
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 50
+    cycle_limit = 100
     logging     = Log.C_LOG_ALL
     visualize   = True
   
