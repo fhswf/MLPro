@@ -35,11 +35,12 @@
 ## -- 2022-12-18  0.7.3     LSB      Removing obsolete instances from plot data
 ## -- 2022-12-19  0.7.4     DA       Class StreamTask: new parameter p_duplicate_data
 ## -- 2022-12-28  0.8.0     DA       Class StreamTask: default visualization 2D, 3D
-## -- 2022-12-29  0.8.1     DA       Bugfixes in methods StreamTask.update_plot2d/3d
+## -- 2022-12-29  0.9.0     DA       - Refactoring of plot settings
+## --                                - Bugfixes in methods StreamTask.update_plot2d/3d
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.1 (2022-12-29)
+Ver. 0.9.0 (2022-12-29)
 
 This module provides classes for standardized stream processing. 
 """
@@ -771,11 +772,7 @@ class StreamTask (Task):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure: Figure = None, 
-                   p_plot_settings: list = [], 
-                   p_plot_depth: int = 0, 
-                   p_detail_level: int = 0, 
-                   p_step_rate: int = 0, 
-                   **p_kwargs ):
+                   p_plot_settings : PlotSettings = None ):
 
         try:
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
@@ -786,11 +783,7 @@ class StreamTask (Task):
 
         Task.init_plot( self,
                         p_figure=p_figure, 
-                        p_plot_settings=p_plot_settings, 
-                        p_plot_depth=p_plot_depth, 
-                        p_detail_level=p_detail_level, 
-                        p_step_rate=p_step_rate, 
-                        **p_kwargs )
+                        p_plot_settings=p_plot_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -887,10 +880,7 @@ class StreamTask (Task):
         self._plot_initialized = False
 
         self.init_plot( p_figure = self._figure, 
-                        p_plot_settings = plot_settings_new,
-                        p_plot_depth = self._plot_depth,
-                        p_detail_level = self._plot_detail_level,
-                        p_step_rate = self._plot_step_rate )     
+                        p_plot_settings = plot_settings_new )     
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1400,11 +1390,7 @@ class StreamWorkflow (StreamTask, Workflow):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure: Figure = None, 
-                   p_plot_settings: list = [], 
-                   p_plot_depth: int = 0, 
-                   p_detail_level: int = 0, 
-                   p_step_rate: int = 0, 
-                   **p_kwargs ):
+                   p_plot_settings : PlotSettings = None ):
 
         try:
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
@@ -1415,11 +1401,7 @@ class StreamWorkflow (StreamTask, Workflow):
 
         return Workflow.init_plot( self, 
                                    p_figure=p_figure, 
-                                   p_plot_settings=p_plot_settings, 
-                                   p_plot_depth=p_plot_depth, 
-                                   p_detail_level=p_detail_level, 
-                                   p_step_rate=p_step_rate, 
-                                   **p_kwargs )
+                                   p_plot_settings=p_plot_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1614,18 +1596,10 @@ class StreamScenario (ScenarioBase):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure: Figure = None, 
-                   p_plot_settings : PlotSettings = None, 
-                   p_plot_depth: int = 0, 
-                   p_detail_level: int = 0, 
-                   p_step_rate: int = 0, 
-                   **p_kwargs ):
+                   p_plot_settings : PlotSettings = None ):
 
         self._workflow.init_plot( p_figure=p_figure, 
-                                  p_plot_settings=p_plot_settings, 
-                                  p_plot_depth=p_plot_depth, 
-                                  p_detail_level=p_detail_level, 
-                                  p_step_rate=p_step_rate, 
-                                  **p_kwargs )
+                                  p_plot_settings=p_plot_settings )
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -21,10 +21,11 @@
 ## -- 2022-12-20  2.4.0     DA       New method Plottable.set_plot_settings()
 ## -- 2022-12-28  2.5.0     DA       - Corrections in method Plottable.init_plot()
 ## --                                - Reduction to one active plot view per task
+## -- 2022-12-29  2.6.0     DA       Refactoring of plot settings
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.5.0 (2022-12-28)
+Ver. 2.6.0 (2022-12-29)
 
 This module provides various classes related to data plotting.
 """
@@ -69,6 +70,18 @@ class PlotSettings:
         Optional x position of a subplot within a Matplotlib figure. Default = 1.
     p_pos_y : int 
         Optional y position of a subplot within a Matplotlib figure. Default = 1.
+    p_size_x : int
+        Relative size factor in x direction. Default = 1.
+    p_size_y : int
+        Relative size factor in y direction. Default = 1.
+    p_step_rate : int 
+        Optional step rate. Decides after how many calls of the update_plot() method the custom 
+        methods _update_plot() carries out an output. Default = 1.
+    p_plot_depth : int 
+        Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
+        depth is unlimited. Default = 0.
+    p_detail_level : int 
+        Optional detail level. Default = 0.
     p_id : int
         Optional unique id of the subplot within the figure. Default = 1.
     p_kwargs : dict
@@ -87,18 +100,28 @@ class PlotSettings:
                   p_axes : Axes = None, 
                   p_pos_x : int = 1, 
                   p_pos_y : int = 1, 
+                  p_size_x : int = 1,
+                  p_size_y : int = 1,
+                  p_step_rate : int = 1,
+                  p_plot_depth : int = 0,
+                  p_detail_level : int = 0,
                   p_id : int = 1,
                   **p_kwargs ):
 
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
-        self.view      = p_view
-        self.axes      = p_axes
-        self.pos_x     = p_pos_x
-        self.pos_y     = p_pos_y
-        self.id        = p_id
-        self.kwargs    = p_kwargs.copy()
+        self.view           = p_view
+        self.axes           = p_axes
+        self.pos_x          = p_pos_x
+        self.pos_y          = p_pos_y
+        self.size_x         = p_size_x
+        self.size_y         = p_size_y
+        self.step_rate      = p_step_rate
+        self.plot_depth     = p_plot_depth
+        self.detail_level   = p_detail_level
+        self.id             = p_id
+        self.kwargs         = p_kwargs.copy()
 
 
 
@@ -143,7 +166,7 @@ class Plottable:
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_visualize:bool=False):
         self._visualize = self.C_PLOT_ACTIVE and p_visualize
-        self.set_plot_step_rate(p_step_rate=1)
+        self._plot_settings : PlotSettings = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -170,22 +193,22 @@ class Plottable:
 
         if p_plot_settings is not None: 
             self._plot_settings = p_plot_settings
-        else:
+        elif self._plot_settings is None:
             try:
                 self._plot_settings = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
             except ParamError:
                 # Plot functionality turned on but not implemented
-                raise ImplementationError('Please check attribute C_PLOT_DEFAULT_VIEW')               
+                raise ImplementationError('Please check attribute C_PLOT_DEFAULT_VIEW')    
+
+        self._plot_step_counter = 0
+        self.set_plot_step_rate(p_step_rate=self._plot_settings.step_rate)
+        self.set_plot_detail_level(p_detail_level=self._plot_settings.detail_level)
    
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure:Figure = None,
-                   p_plot_settings : PlotSettings = None,
-                   p_plot_depth : int = 0,
-                   p_detail_level : int = 0,
-                   p_step_rate : int = 0,
-                   **p_kwargs ):
+                   p_plot_settings : PlotSettings = None ):
         """
         Initializes the plot functionalities of the class.
 
@@ -195,19 +218,9 @@ class Plottable:
             Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
         p_plot_settings : PlotSettings
             Optional plot settings. If None, the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
-        p_plot_depth : int 
-            Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
-            depth is unlimited. Default = 0.
-        p_detail_level : int 
-            Optional detail level.
-        p_step_rate : int 
-            Optional step rate. Decides after how many calls of the update_plot() method the custom 
-            methods _update_plot() carries out an output. Default = 0 (no change).
-        **p_kwargs : dict
-            Further optional plot parameters.    
         """
 
-        # 0 Plot functionality turned on? Initialization already called?
+        # 1 Plot functionality turned on? Initialization already called?
         try:
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
         except:
@@ -221,17 +234,9 @@ class Plottable:
         plt.ion()
 
 
-        # 1 Initialize internal plot attributes
-        self._plot_depth        = p_plot_depth
-        self._plot_step_counter = 0
-        self._plot_kwargs       = p_kwargs.copy()
-        self.set_plot_step_rate(p_step_rate=p_step_rate)
-        self.set_plot_detail_level(p_detail_level=p_detail_level)
+         # 2 Prepare internal data structures
 
-
-        # 2 Prepare internal dictionaries
-
-        # 2.1 Dictionary with plot settings per view
+        # 2.1 Plot settings per view
         self.set_plot_settings( p_plot_settings=p_plot_settings )
 
         # 2.2 Dictionary with methods for initialization and update of a plot per view 
