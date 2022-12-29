@@ -16,11 +16,12 @@
 ## -- 2022-11-03  1.0.7     LSB      Refactoring
 ## -- 2022-12-09  1.0.8     LSB      Handling zero division error
 ## -- 2022-12-09  1.0.9     LSB      Returning same object after normalization and denormalization
+## -- 2022-12-29  1.0.10    LSB      Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.9 (2022-12-09)
-This module provides base class for Normalizers and normalizer objects including MinMax normalization and 
+Ver. 1.0.10 (2022-12-29)
+This module provides base class for Normalizers and normalizer objects including MinMax normalization and
 normalization by Z transformation.
 
 """
@@ -30,9 +31,6 @@ import numpy as np
 from typing import Union
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class Normalizer:
@@ -40,7 +38,7 @@ class Normalizer:
     Base template class for normalizer objects.
     """
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def __init__(self):
 
         self._param = None
@@ -48,7 +46,7 @@ class Normalizer:
         self._param_new = None
 
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def _set_parameters(self, p_param):
         """
         custom method to set the normalization parameters
@@ -66,8 +64,8 @@ class Normalizer:
         self._param = p_param
 
 
-## -------------------------------------------------------------------------------------------------
-    def normalize(self, p_data:Union[Element, np.ndarray]):
+    ## -------------------------------------------------------------------------------------------------
+    def normalize(self, p_data: Union[Element, np.ndarray]):
         """
         Method to normalize a data (Element/ndarray) element based on MinMax or Z-transformation
 
@@ -88,12 +86,13 @@ class Normalizer:
             p_data.set_values(np.multiply(p_data.get_values(), self._param[0]) - self._param[1])
         elif isinstance(p_data, np.ndarray):
             p_data = np.multiply(p_data, self._param[0]) - self._param[1]
-        else: raise ParamError('Wrong data type provided for normalization')
+        else:
+            raise ParamError('Wrong data type provided for normalization')
         return p_data
 
 
-## -------------------------------------------------------------------------------------------------
-    def denormalize(self, p_data:Union[Element, np.ndarray]):
+    ## -------------------------------------------------------------------------------------------------
+    def denormalize(self, p_data: Union[Element, np.ndarray]):
         """
         Method to denormalize a data (Element/ndarray) element based on MinMax or Z-transformation
 
@@ -114,19 +113,19 @@ class Normalizer:
         if isinstance(p_data, Element):
 
             p_data.set_values(np.multiply(p_data.get_values(), 1 / self._param[0]) + (
-                        self._param[1] / self._param[0]))
+                    self._param[1] / self._param[0]))
 
         elif isinstance(p_data, np.ndarray):
             p_data = np.multiply(p_data, 1 / self._param[0]) + \
-                                   (self._param[1] / self._param[0])
+                     (self._param[1] / self._param[0])
         else:
             raise ParamError('Wrong datatype provided for denormalization')
 
         return p_data
 
 
-## -------------------------------------------------------------------------------------------------
-    def renormalize(self, p_data:Union[Element, np.ndarray]):
+    ## -------------------------------------------------------------------------------------------------
+    def renormalize(self, p_data: Union[Element, np.ndarray]):
         """
         Method to denormalize and renormalize an element based on old and current normalization parameters.
 
@@ -141,7 +140,7 @@ class Normalizer:
             Renormalized Data
 
         """
-        
+
         self._set_parameters(self._param_old)
         denormalized_element = self.denormalize(p_data)
         self._set_parameters(self._param_new)
@@ -149,8 +148,8 @@ class Normalizer:
         return renormalized_element
 
 
-## -------------------------------------------------------------------------------------------------
-    def update_parameters(self, p_data:Union[Set, Element, np.ndarray]):
+    ## -------------------------------------------------------------------------------------------------
+    def update_parameters(self, p_data: Union[Set, Element, np.ndarray]):
         """
         Custom method to update normalization parameters.
 
@@ -164,18 +163,15 @@ class Normalizer:
         raise NotImplementedError
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerMinMax (Normalizer):
+class NormalizerMinMax(Normalizer):
     """
     Class to normalize elements based on MinMax normalization.
     """
 
-## -------------------------------------------------------------------------------------------------
-    def update_parameters(self, p_set:Set=None, p_boundaries:Union[list, np.ndarray]=None):
+    ## -------------------------------------------------------------------------------------------------
+    def update_parameters(self, p_set: Set = None, p_boundaries: Union[list, np.ndarray] = None):
         """
         Method to update the normalization parameters of MinMax normalizer.
 
@@ -190,31 +186,29 @@ class NormalizerMinMax (Normalizer):
         if self._param_new is not None: self._param_old = self._param_new.copy()
 
         try:
-            if self._param_new is None: self._param_new = np.zeros([2,len(p_set.get_dim_ids())], dtype=np.float64)
+            if self._param_new is None: self._param_new = np.zeros([2, len(p_set.get_dim_ids())], dtype=np.float64)
             boundaries = [p_set.get_dim(i).get_boundaries() for i in p_set.get_dim_ids()]
 
         except:
             try:
-                if self._param_new is None: self._param_new = np.zeros([(len(p_boundaries)),(len(p_boundaries))])
-                boundaries = p_boundaries.reshape(-1,2)
+                if self._param_new is None: self._param_new = np.zeros([(len(p_boundaries)), (len(p_boundaries))])
+                boundaries = p_boundaries.reshape(-1, 2)
 
             except:
                 raise ParamError("Wrong parameters provided for update. Please provide a set as p_set or boundaries as "
                                  "p_boundaries")
 
-        for i,boundary in enumerate(boundaries):
-            try:
+        for i, boundary in enumerate(boundaries):
+            if (boundary[1] - boundary[0]) == 0:
+                self._param_new[0][i] = 0
+            else:
                 self._param_new[0][i] = (2 / (boundary[1] - boundary[0]))
-            except ZeroDivisionError:
+            if (boundary[1] - boundary[0]) == 0:
                 self._param_new[0][i] = 0
-            try:
+            else:
                 self._param_new[1][i] = (2 * boundary[0] / (boundary[1] - boundary[0]) + 1)
-            except ZeroDivisionError:
-                self._param_new[0][i] = 0
+
         self._param = self._param_new
-
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -224,11 +218,11 @@ class NormalizerZTrans(Normalizer):
     Class for Normalization based on Z transformation.
     """
 
-## -------------------------------------------------------------------------------------------------
+    ## -------------------------------------------------------------------------------------------------
     def update_parameters(self,
-                          p_dataset:np.ndarray = None,
-                          p_data_new:Union[Element, np.ndarray] = None,
-                          p_data_del:Union[Element, np.ndarray] = None):
+                          p_dataset: np.ndarray = None,
+                          p_data_new: Union[Element, np.ndarray] = None,
+                          p_data_del: Union[Element, np.ndarray] = None):
         """
         Method to update the normalization parameters for Z transformer
 
@@ -244,17 +238,21 @@ class NormalizerZTrans(Normalizer):
             Old element that is replaced with the new element.
 
         """
-        try: data_new = p_data_new.get_values()
-        except: data_new = p_data_new
+        try:
+            data_new = p_data_new.get_values()
+        except:
+            data_new = p_data_new
 
-        try: data_del = p_data_del.get_values()
-        except: data_del = p_data_del
+        try:
+            data_del = p_data_del.get_values()
+        except:
+            data_del = p_data_del
 
         if self._param_new is not None: self._param_old = self._param_new.copy()
 
         if data_new is None and data_del is None and isinstance(p_dataset, np.ndarray):
             self._std = np.std(p_dataset, axis=0, dtype=np.float64)
-            self._mean = np.mean(p_dataset, axis = 0, dtype=np.float64)
+            self._mean = np.mean(p_dataset, axis=0, dtype=np.float64)
             self._n = len(p_dataset)
             if self._param_new is None: self._param_new = np.zeros([2, self._std.shape[-1]])
 
@@ -280,15 +278,16 @@ class NormalizerZTrans(Normalizer):
                 old_mean = self._mean.copy()
                 self._mean = old_mean + ((data_new - data_del) / (self._n))
                 self._std = np.sqrt(np.square(self._std) + (
-                ((np.square(data_new) - np.square(data_del)) - self._n * (np.square(
-                    self._mean) - np.square(old_mean)))) / self._n)
+                    ((np.square(data_new) - np.square(data_del)) - self._n * (np.square(
+                        self._mean) - np.square(old_mean)))) / self._n)
 
             except:
                 raise ParamError("Normalization parameters are not initialised prior to updating with replacing a "
                                  "data element")
 
-        else: raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
-                               "or a new data element as p_data ")
+        else:
+            raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
+                             "or a new data element as p_data ")
 
         self._param_new[0] = 1 / self._std
         self._param_new[1] = self._mean / self._std
