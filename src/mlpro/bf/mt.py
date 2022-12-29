@@ -27,11 +27,11 @@
 ## --                                - Method Task._init_figure: added support of backend TkAgg
 ## -- 2022-12-16  1.5.0     DA       Class Task: new method _get_custom_run_method()
 ## -- 2022-12-28  1.6.0     DA       Refactoring of plot settings
-## -- 2022-12-29  1.6.1     DA       Refactoring of plot settings
+## -- 2022-12-29  1.7.0     DA       Refactoring of plot settings
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.1 (2022-12-29)
+Ver. 1.7.0 (2022-12-29)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -755,69 +755,6 @@ class Task (Async, EventManager, Plottable):
                 figure.canvas.set_window_title(title)
 
         return figure
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
-#         """
-#         Extended custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
-#         initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-#         created in the given figure and stored in p_settings.axes.
-
-#         Note: Please call this method in your custom implementation to create a default subplot.
-
-#         Parameters
-#         ----------
-#         p_figure : Matplotlib.figure.Figure
-#             Matplotlib figure object to host the subplot(s).
-#         p_settings : PlotSettings
-#             Object with further plot settings.
-#         """
-
-#         Plottable._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
-#         p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
-#         """
-#         Extended custom method to initialize a 3D plot. If attribute p_settings.axes is not None the 
-#         initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-#         created in the given figure and stored in p_settings.axes.
-
-#         Note: Please call this method in your custom implementation to create a default subplot.
-
-#         Parameters
-#         ----------
-#         p_figure : Matplotlib.figure.Figure
-#             Matplotlib figure object to host the subplot(s).
-#         p_settings : PlotSettings
-#             Object with further plot settings.
-#         """
-
-#         Plottable._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
-#         p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
-#         """
-#         Extended custom method to initialize a nD plot. If attribute p_settings.axes is not None the 
-#         initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-#         created in the given figure and stored in p_settings.axes.
-
-#         Note: Please call this method in your custom implementation to create a default subplot.
-
-#         Parameters
-#         ----------
-#         p_figure : Matplotlib.figure.Figure
-#             Matplotlib figure object to host the subplot(s).
-#         p_settings : PlotSettings
-#             Object with further plot settings.
-#         """
-
-#         Plottable._init_plot_nd( self, p_figure=p_figure, p_settings=p_settings )
-#         p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
 
 
 ## -------------------------------------------------------------------------------------------------
