@@ -27,10 +27,12 @@
 ## -- 2022-12-09  1.4.1     DA       Temporarily removed howto rl_wp_003 due to problems with pettingzoo
 ## -- 2022-12-14  1.5.0     DA       Added howtos bf_streams_101, bf_streams_110, bf_streams_111
 ## -- 2022-12-20  1.6.0     DA       Added howtos bf_streams_112, bf_streams_113
+## -- 2022-12-21  1.6.2     SY       - Reactivate howto rl_wp_003
+## --                                - Temporarily removed howto rl_agent_005 and rl_wp_001
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2022-12-14)
+Ver. 1.6.2 (2022-12-21)
 
 Unit test for all examples available.
 """
@@ -102,7 +104,7 @@ howto_list = {
     "rl_ui_001": "mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit",
     "rl_wp_001": "mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment",
     "rl_wp_002": "mlpro.rl.examples.howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment",
-    # "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
+    "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
     "rl_wp_004": "mlpro.rl.examples.howto_rl_wp_004_train_agent_with_sb3_policy",
     "rl_wp_005": "mlpro.rl.examples.howto_rl_wp_005_validation_wrapped_sb3_on_policy",
     "rl_wp_006": "mlpro.rl.examples.howto_rl_wp_006_validation_wrapped_sb3_off_policy",
