@@ -35,10 +35,11 @@
 ## -- 2022-12-18  0.7.3     LSB      Removing obsolete instances from plot data
 ## -- 2022-12-19  0.7.4     DA       Class StreamTask: new parameter p_duplicate_data
 ## -- 2022-12-28  0.8.0     DA       Class StreamTask: default visualization 2D, 3D
+## -- 2022-12-29  0.8.1     DA       Bugfixes in methods StreamTask.update_plot2d/3d
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.8.0 (2022-12-28)
+Ver. 0.8.1 (2022-12-29)
 
 This module provides classes for standardized stream processing. 
 """
@@ -981,8 +982,8 @@ class StreamTask (Task):
                 ydata_new.append(feature_values[1])
                 self._plot_2d_points.append( feature_values )
 
-            self._plot_2d_xdata.append(xdata_new)
-            self._plot_2d_ydata.append(ydata_new)
+            self._plot_2d_xdata.extend(xdata_new)
+            self._plot_2d_ydata.extend(ydata_new)
             xmin = min(xdata_new)
             xmax = max(xdata_new)
             ymin = min(ydata_new)
@@ -1110,9 +1111,9 @@ class StreamTask (Task):
                 zdata_new.append(feature_values[2])
                 self._plot_3d_points.append( feature_values )
 
-            self._plot_3d_xdata.append(xdata_new)
-            self._plot_3d_ydata.append(ydata_new)
-            self._plot_3d_zdata.append(zdata_new)
+            self._plot_3d_xdata.extend(xdata_new)
+            self._plot_3d_ydata.extend(ydata_new)
+            self._plot_3d_zdata.extend(zdata_new)
 
             xmin = min(xdata_new)
             xmax = max(xdata_new)
