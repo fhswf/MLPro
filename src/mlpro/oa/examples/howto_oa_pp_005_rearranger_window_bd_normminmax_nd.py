@@ -31,7 +31,7 @@ from mlpro.bf.streams.tasks import Window, Rearranger
 from mlpro.oa import *
 from mlpro.oa.tasks import BoundaryDetector, NormalizerMinMax
 
-
+ 
 
 
 ## -------------------------------------------------------------------------------------------------
