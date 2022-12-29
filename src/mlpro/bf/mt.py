@@ -27,10 +27,11 @@
 ## --                                - Method Task._init_figure: added support of backend TkAgg
 ## -- 2022-12-16  1.5.0     DA       Class Task: new method _get_custom_run_method()
 ## -- 2022-12-28  1.6.0     DA       Refactoring of plot settings
+## -- 2022-12-29  1.6.1     DA       Refactoring of plot settings
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2022-12-28)
+Ver. 1.6.1 (2022-12-29)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -725,11 +726,7 @@ class Task (Async, EventManager, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure: Figure = None, 
-                   p_plot_settings : PlotSettings = None, 
-                   p_plot_depth: int = 0, 
-                   p_detail_level: int = 0, 
-                   p_step_rate: int = 0, 
-                   **p_kwargs ):
+                   p_plot_settings : PlotSettings = None ):
         try:
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
         except:
@@ -738,18 +735,14 @@ class Task (Async, EventManager, Plottable):
         self.log(Log.C_LOG_TYPE_I, 'Init plot')
         return Plottable.init_plot( self,
                                     p_figure=p_figure, 
-                                    p_plot_settings=p_plot_settings, 
-                                    p_plot_depth=p_plot_depth, 
-                                    p_detail_level=p_detail_level, 
-                                    p_step_rate=p_step_rate, 
-                                    **p_kwargs )
+                                    p_plot_settings=p_plot_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_figure(self) -> Figure:
         figure = Plottable._init_figure(self)
 
-        title = 'MLPro: ' + self.C_TYPE + ' ' + self.get_name() 
+        title = 'MLPro: ' + self.C_TYPE + ' ' + self.get_name() + ' (' + self._plot_settings.view + ')'
 
         backend = matplotlib.get_backend()
 
@@ -757,74 +750,74 @@ class Task (Async, EventManager, Plottable):
             figure.canvas.manager.window.title(title)
         else:
             try:
-                figure.canvas.setWindowTitle('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
+                figure.canvas.setWindowTitle(title)
             except AttributeError:
-                figure.canvas.set_window_title('MLPro: ' + self.C_TYPE + ' ' + self.get_name() )
+                figure.canvas.set_window_title(title)
 
         return figure
 
 
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
-        """
-        Extended custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
-        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-        created in the given figure and stored in p_settings.axes.
+# ## -------------------------------------------------------------------------------------------------
+#     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+#         """
+#         Extended custom method to initialize a 2D plot. If attribute p_settings.axes is not None the 
+#         initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
+#         created in the given figure and stored in p_settings.axes.
 
-        Note: Please call this method in your custom implementation to create a default subplot.
+#         Note: Please call this method in your custom implementation to create a default subplot.
 
-        Parameters
-        ----------
-        p_figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s).
-        p_settings : PlotSettings
-            Object with further plot settings.
-        """
+#         Parameters
+#         ----------
+#         p_figure : Matplotlib.figure.Figure
+#             Matplotlib figure object to host the subplot(s).
+#         p_settings : PlotSettings
+#             Object with further plot settings.
+#         """
 
-        Plottable._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
-        p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
-        """
-        Extended custom method to initialize a 3D plot. If attribute p_settings.axes is not None the 
-        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-        created in the given figure and stored in p_settings.axes.
-
-        Note: Please call this method in your custom implementation to create a default subplot.
-
-        Parameters
-        ----------
-        p_figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s).
-        p_settings : PlotSettings
-            Object with further plot settings.
-        """
-
-        Plottable._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
-        p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
+#         Plottable._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
+#         p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
 
 
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
-        """
-        Extended custom method to initialize a nD plot. If attribute p_settings.axes is not None the 
-        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
-        created in the given figure and stored in p_settings.axes.
+# ## -------------------------------------------------------------------------------------------------
+#     def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
+#         """
+#         Extended custom method to initialize a 3D plot. If attribute p_settings.axes is not None the 
+#         initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
+#         created in the given figure and stored in p_settings.axes.
 
-        Note: Please call this method in your custom implementation to create a default subplot.
+#         Note: Please call this method in your custom implementation to create a default subplot.
 
-        Parameters
-        ----------
-        p_figure : Matplotlib.figure.Figure
-            Matplotlib figure object to host the subplot(s).
-        p_settings : PlotSettings
-            Object with further plot settings.
-        """
+#         Parameters
+#         ----------
+#         p_figure : Matplotlib.figure.Figure
+#             Matplotlib figure object to host the subplot(s).
+#         p_settings : PlotSettings
+#             Object with further plot settings.
+#         """
 
-        Plottable._init_plot_nd( self, p_figure=p_figure, p_settings=p_settings )
-        p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
+#         Plottable._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
+#         p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
+
+
+# ## -------------------------------------------------------------------------------------------------
+#     def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings):
+#         """
+#         Extended custom method to initialize a nD plot. If attribute p_settings.axes is not None the 
+#         initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be 
+#         created in the given figure and stored in p_settings.axes.
+
+#         Note: Please call this method in your custom implementation to create a default subplot.
+
+#         Parameters
+#         ----------
+#         p_figure : Matplotlib.figure.Figure
+#             Matplotlib figure object to host the subplot(s).
+#         p_settings : PlotSettings
+#             Object with further plot settings.
+#         """
+
+#         Plottable._init_plot_nd( self, p_figure=p_figure, p_settings=p_settings )
+#         p_settings.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')      
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -983,11 +976,7 @@ class Workflow (Task):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure:Figure=None, 
-                   p_plot_settings : PlotSettings = None, 
-                   p_plot_depth:int=0, 
-                   p_detail_level:int=0, 
-                   p_step_rate:int=1, 
-                   **p_kwargs):
+                   p_plot_settings : PlotSettings = None ):
         """
         Initializes the plot of a workflow. The method creates a host figure for all tasks if no 
         external host figure is parameterized. The sub-plots of the tasks are autmatically arranged
@@ -1001,16 +990,6 @@ class Workflow (Task):
             Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
         p_plot_settings : PlotSettings
             Optional plot settings. If None, the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
-        p_plot_depth : int = 0
-            Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
-            depth is unlimited.
-        p_detail_level : int = 0
-            Optional detail level.
-        p_step_rate : int = 1
-            Decides after how many calls of the update_plot() method the custom methods 
-            _update_plot() make an output.
-        **p_kwargs : dict
-            Further optional plot parameters.    
         """
 
         try:
@@ -1020,11 +999,7 @@ class Workflow (Task):
 
         Task.init_plot( self,
                         p_figure=p_figure, 
-                        p_plot_settings=p_plot_settings, 
-                        p_plot_depth=p_plot_depth, 
-                        p_detail_level=p_detail_level, 
-                        p_step_rate=p_step_rate, 
-                         **p_kwargs )
+                        p_plot_settings=p_plot_settings )
       
         task:Task
 
@@ -1065,15 +1040,10 @@ class Workflow (Task):
                                                p_axes=task_axes,
                                                p_pos_x=task_pos_x,
                                                p_pos_y=task_pos_y,
-                                               p_id=task_ax_id,
-                                               **p_kwargs )
+                                               p_id=task_ax_id )
                 
             task.init_plot( p_figure=task_figure,
-                            p_plot_settings=task_plot_settings,
-                            p_plot_depth=p_plot_depth,
-                            p_detail_level=p_detail_level,
-                            p_step_rate=p_step_rate,
-                            **p_kwargs )
+                            p_plot_settings=task_plot_settings )
 
         if self._plot_own_figure:
             self._figure.canvas.draw()

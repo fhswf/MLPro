@@ -20,10 +20,11 @@
 ##                                   - transparent patch on obsolete data
 ## -- 2022-12-19  1.1.1     DA       New parameter p_duplicate_data
 ## -- 2022-12-28  1.1.2     DA       Refactoring of plot settings
+## -- 2022-12-29  1.1.3     DA       Removed method Window.init_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2022-12-28)
+Ver. 1.1.3 (2022-12-29)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
@@ -263,44 +264,6 @@ class Window (StreamTask):
         """
 
         return np.std(self._buffer.values(), axis=0, dtype=np.float64)
-
-
-## -------------------------------------------------------------------------------------------------
-    def init_plot(self,
-                      p_figure: Figure = None,
-                      p_plot_settings : PlotSettings = None,
-                      p_plot_depth: int = 0,
-                      p_detail_level: int = 0,
-                      p_step_rate: int = 0,
-                      **p_kwargs):
-        """
-        Method to initialize the plot for Window task.
-
-        Parameters
-        ----------
-        p_figure:Figure
-            Figure to host the plot.
-        p_plot_settings:PlotSettings
-            Specific plot settings
-        p_plot_depth:
-            Depth of plotting style
-        p_detail_level:
-            Level of details for the plot style
-        p_step_rate:
-            Rate of update for updating the plot
-        p_kwargs:
-            Additional key-worded arguments
-        """
-
-        self._plot_num_inst = 0
-
-        Task.init_plot(self,
-                p_figure=p_figure,
-                p_plot_settings=p_plot_settings,
-                p_plot_depth=p_plot_depth,
-                p_detail_level=p_detail_level,
-                p_step_rate=p_step_rate,
-                **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
