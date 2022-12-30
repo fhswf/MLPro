@@ -17,10 +17,11 @@
 ## -- 2022-12-09  1.0.8     LSB      Handling zero division error
 ## -- 2022-12-09  1.0.9     LSB      Returning same object after normalization and denormalization
 ## -- 2022-12-29  1.0.10    LSB      Bug Fix
+## -- 2022-12-30  1.0.11    LSB      Bug Fix ZTransform
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.10 (2022-12-29)
+Ver. 1.0.11 (2022-12-30)
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and
 normalization by Z transformation.
 
@@ -289,7 +290,7 @@ class NormalizerZTrans(Normalizer):
             raise ParamError("Wrong parameters for update_parameters(). Please either provide a dataset as p_dataset "
                              "or a new data element as p_data ")
 
-        self._param_new[0] = 1 / self._std
-        self._param_new[1] = self._mean / self._std
-
+        self._param_new[0] = np.divide(1, self._std, out = np.zeros_like(self._std), where = self._std!=0)
+        self._param_new[1] = np.divide(self._mean, self._std, out = np.zeros_like(self._std), where = self._std!=0)
+        # self._param_new[1 == np.inf] = 0
         self._param = self._param_new.copy()

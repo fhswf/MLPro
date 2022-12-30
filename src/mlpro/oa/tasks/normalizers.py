@@ -9,10 +9,11 @@
 ## -- 2022-12-13  1.0.1     LSB      Refactoring
 ## -- 2022-12-20  1.0.2     DA       Refactoring
 ## -- 2022-12-20  1.0.3     LSB      Bug fix
+## -- 2022-12-30  1.0.4     LSB      Bug fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-12-20)
+Ver. 1.0.3 (2022-12-30)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization and ZTransformation
 """
@@ -159,6 +160,7 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
                  p_range_max=StreamTask.C_RANGE_THREAD,
                  p_ada: bool = True,
                  p_duplicate_data : bool = False,
+                 p_visualize = False,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
 
@@ -167,6 +169,7 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
             p_range_max=p_range_max,
             p_ada=p_ada,
             p_duplicate_data = p_duplicate_data,
+            p_visualize = p_visualize,
             p_logging=p_logging,
             **p_kwargs)
 
@@ -189,12 +192,16 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
         self.adapt(p_inst_new=p_inst_new, p_inst_del=p_inst_del)
 
         for i, inst in enumerate(p_inst_new):
+            if self._param is None:
+                self.update_parameters(p_data_new=inst.get_feature_data())
             normalized_element = self.normalize(inst.get_feature_data())
-            inst.get_feature_data().set_values(normalized_element)
+            inst.get_feature_data().set_values(normalized_element.get_values())
 
         for i,del_inst in enumerate(p_inst_del):
+            if self._param is None:
+                self.update_parameters(p_data_del=del_inst.get_feature_data())
             normalized_element = self.normalize(del_inst.get_feature_data())
-            del_inst.get_feature_data().set_values(normalized_element)
+            del_inst.get_feature_data().set_values(normalized_element.get_values())
 
 
 ## -------------------------------------------------------------------------------------------------
