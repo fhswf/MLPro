@@ -937,12 +937,6 @@ class Workflow (Task):
                         p_figure=p_figure, 
                         p_plot_settings=p_plot_settings )
       
-        task:Task
-
-        # emb_task_pos_x  = 1
-        # emb_task_pos_y  = 1
-        # emb_task_ax_id  = 1
-
         for task in self._tasks:
             task_plot_settings = []
 
@@ -953,7 +947,6 @@ class Workflow (Task):
 
             ps = plot_host.get_plot_settings()
 
-            # for ps in plot_host._plot_settings.values():
             if task.C_PLOT_STANDALONE:
                 # Task plots in a separate figure (=window)
                 task_figure = None
@@ -962,28 +955,15 @@ class Workflow (Task):
                 task_pos_y  = 1
                 task_ax_id  = 1
                 task_plot_settings = PlotSettings( p_view=ps.view,
-                                                p_axes=task_axes,
-                                                p_pos_x=task_pos_x,
-                                                p_pos_y=task_pos_y,
-                                                p_id=task_ax_id )
+                                                   p_axes=task_axes,
+                                                   p_pos_x=task_pos_x,
+                                                   p_pos_y=task_pos_y,
+                                                   p_id=task_ax_id )
 
             else:
                 # Task plots embedded in the predecessor/workflow figure/subplot
                 task_figure = plot_host._figure
                 task_plot_settings = ps
-                # task_axes   = ps.axes
-                # task_pos_x  = emb_task_pos_x
-                # task_pos_y  = emb_task_pos_y
-                # task_ax_id  = emb_task_ax_id
-                # emb_task_pos_x += 1
-                # emb_task_pos_y += 1
-                # emb_task_ax_id += 1
-
-            # task_plot_settings = PlotSettings( p_view=ps.view,
-            #                                    p_axes=task_axes,
-            #                                    p_pos_x=task_pos_x,
-            #                                    p_pos_y=task_pos_y,
-            #                                    p_id=task_ax_id )
                 
             task.init_plot( p_figure=task_figure,
                             p_plot_settings=task_plot_settings )
