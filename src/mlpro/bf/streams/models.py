@@ -37,10 +37,12 @@
 ## -- 2022-12-28  0.8.0     DA       Class StreamTask: default visualization 2D, 3D
 ## -- 2022-12-29  0.9.0     DA       - Refactoring of plot settings
 ## --                                - Bugfixes in methods StreamTask.update_plot2d/3d
+## -- 2022-12-30  0.9.1     DA/LSB   - Class Instance: new parameter p_id, new metod get_id()
+## --                                - Class StreamTask: optimized removal of deleted instances from plots
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.0 (2022-12-29)
+Ver. 0.9.1 (2022-12-30)
 
 This module provides classes for standardized stream processing. 
 """
@@ -55,7 +57,7 @@ from mlpro.bf.mt import *
 from datetime import datetime
 from matplotlib.figure import Figure
 import random
-
+import uuid
 
 
 
@@ -89,6 +91,8 @@ class Instance:
         Optional label data of the instance.
     p_time_stamp : datetime
         Optional time stamp of the instance.
+    p_id 
+        Optional external instance id. Default is None (id is set internally).
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -100,12 +104,23 @@ class Instance:
                   p_feature_data : Element, 
                   p_label_data : Element = None, 
                   p_time_stamp : datetime = None,
+                  p_id = None,
                   **p_kwargs ):
 
         self._feature_data = p_feature_data
         self._label_data   = p_label_data
         self._time_stamp   = p_time_stamp
         self._kwargs       = p_kwargs.copy()
+
+        if p_id is not None:
+            self._id = p_id
+        else:
+            self._id = str(uuid.uuid4())
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_id(self):
+        return self._id
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -798,7 +813,7 @@ class StreamTask (Task):
         self._plot_2d_plot   = None
         self._plot_2d_xdata  = []
         self._plot_2d_ydata  = []
-        self._plot_2d_points = []
+        self._plot_2d_instances = []
         self._plot_2d_xmin   = None
         self._plot_2d_xmax   = None
         self._plot_2d_ymin   = None
@@ -818,7 +833,7 @@ class StreamTask (Task):
         self._plot_3d_xdata  = []
         self._plot_3d_ydata  = []
         self._plot_3d_zdata  = []
-        self._plot_3d_points = []
+        self._plot_3d_instances = []
         self._plot_3d_xmin   = None
         self._plot_3d_xmax   = None
         self._plot_3d_ymin   = None
@@ -970,7 +985,7 @@ class StreamTask (Task):
                 feature_values = inst.get_feature_data().get_values()
                 xdata_new.append(feature_values[0])
                 ydata_new.append(feature_values[1])
-                self._plot_2d_points.append( feature_values )
+                self._plot_2d_instances.append( inst.get_id() )
 
             self._plot_2d_xdata.extend(xdata_new)
             self._plot_2d_ydata.extend(ydata_new)
@@ -1014,13 +1029,11 @@ class StreamTask (Task):
 
         if len(p_inst_del) > 0:
             for inst in p_inst_del:
-                feature_values = inst.get_feature_data().get_values()
-
                 try:
-                    idx = self._plot_2d_points.index(feature_values)
+                    idx = self._plot_2d_instances.index(inst.ge_id())
                     del self._plot_2d_xdata[idx]
                     del self._plot_2d_ydata[idx]
-                    del self._plot_2d_points[idx]
+                    del self._plot_2d_instances[idx]
                 except:
                     pass
 
@@ -1099,7 +1112,7 @@ class StreamTask (Task):
                 xdata_new.append(feature_values[0])
                 ydata_new.append(feature_values[1])
                 zdata_new.append(feature_values[2])
-                self._plot_3d_points.append( feature_values )
+                self._plot_3d_instances.append( inst.get_id() )
 
             self._plot_3d_xdata.extend(xdata_new)
             self._plot_3d_ydata.extend(ydata_new)
@@ -1163,14 +1176,12 @@ class StreamTask (Task):
 
         if len(p_inst_del) > 0:
             for inst in p_inst_del:
-                feature_values = inst.get_feature_data().get_values()
-
                 try:
-                    idx = self._plot_3d_points.index(feature_values)
+                    idx = self._plot_3d_instances.index(inst.get_id())
                     del self._plot_3d_xdata[idx]
                     del self._plot_3d_ydata[idx]
                     del self._plot_3d_zdata[idx]
-                    del self._plot_3d_points[idx]
+                    del self._plot_3d_instances[idx]
                 except:
                     pass
 
