@@ -19,10 +19,11 @@
 ## -- 2022-12-28  1.1.3     DA       Class BoundaryDetector: 
 ## --                                - added constant C_PLOT_VALID_VIEWS
 ## --                                - removed methods init_plot_2d/3d, update_plot_2d/3d
+## -- 2022-12-30  1.1.4              Removed the plot title
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2022-12-28)
+Ver. 1.1.4 (2022-12-30)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 import matplotlib.colors
@@ -222,7 +223,6 @@ class BoundaryDetector(OATask):
             self.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
             self.axes.grid(visible=True)
             p_settings.axes = self.axes
-            self.axes.set_title(self.C_TYPE + ' ' + self.get_name() + ' (' + p_settings.view + ')')
 
         else:
             self.axes = p_settings.axes
