@@ -154,7 +154,7 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
     p_kwargs:
         Additional task parameters
     """
-
+    C_NAME = 'Normalizer Z Transform'
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name: str = None,
                  p_range_max=StreamTask.C_RANGE_THREAD,
