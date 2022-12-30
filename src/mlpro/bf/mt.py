@@ -28,7 +28,7 @@
 ## -- 2022-12-16  1.5.0     DA       Class Task: new method _get_custom_run_method()
 ## -- 2022-12-28  1.6.0     DA       Refactoring of plot settings
 ## -- 2022-12-29  1.7.0     DA       Refactoring of plot settings
-## -- 2022-12-30  1.7.1     DA       Bugfix in method Task._get_plot_host_tag()
+## -- 2022-12-30  1.7.1     DA       - Bugfix in method Task._get_plot_host_tag()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -733,29 +733,27 @@ class Task (Async, EventManager, Plottable):
         except:
             return
 
+        try:
+            if self._plot_initialized: return
+        except:
+            pass
+
         self.log(Log.C_LOG_TYPE_I, 'Init plot')
-        return Plottable.init_plot( self,
-                                    p_figure=p_figure, 
-                                    p_plot_settings=p_plot_settings )
+        Plottable.init_plot( self,
+                             p_figure=p_figure, 
+                             p_plot_settings=p_plot_settings )
 
+        if self._plot_own_figure:
+            title = 'MLPro: ' + self.C_TYPE + ' ' + self.get_name() + ' (' + self._plot_settings.view + ')'
+            backend = matplotlib.get_backend()
 
-## -------------------------------------------------------------------------------------------------
-    def _init_figure(self) -> Figure:
-        figure = Plottable._init_figure(self)
-
-        title = 'MLPro: ' + self.C_TYPE + ' ' + self.get_name() + ' (' + self._plot_settings.view + ')'
-
-        backend = matplotlib.get_backend()
-
-        if backend == 'TkAgg':
-            figure.canvas.manager.window.title(title)
-        else:
-            try:
-                figure.canvas.setWindowTitle(title)
-            except AttributeError:
-                figure.canvas.set_window_title(title)
-
-        return figure
+            if backend == 'TkAgg':
+                self._figure.canvas.manager.window.title(title)
+            else:
+                try:
+                    self._figure.canvas.setWindowTitle(title)
+                except AttributeError:
+                    self._figure.canvas.set_window_title(title)
 
 
 ## -------------------------------------------------------------------------------------------------

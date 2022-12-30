@@ -229,7 +229,7 @@ class Plottable:
         try:
             if self._plot_initialized: return
         except:
-            pass
+            self._plot_own_figure   = False
 
         plt.ion()
 
@@ -251,7 +251,6 @@ class Plottable:
             self._plot_own_figure   = True
         else:
             self._figure : Figure   = p_figure
-            self._plot_own_figure   = False
 
 
         # 4 Call of all initialization methods of the required views
