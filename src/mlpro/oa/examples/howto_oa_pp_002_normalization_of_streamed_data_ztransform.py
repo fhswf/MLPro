@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples.howto_oa_002_normalization_of_streamed_data_ztransform
-## -- Module  : howto_oa_002_normalization_of_streamed_data_ztransform.py
+## -- Module  : howto_oa_pp_002_normalization_of_streamed_data_ztransform.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
