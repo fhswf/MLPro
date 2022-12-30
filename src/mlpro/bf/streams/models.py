@@ -1030,7 +1030,7 @@ class StreamTask (Task):
         if len(p_inst_del) > 0:
             for inst in p_inst_del:
                 try:
-                    idx = self._plot_2d_instances.index(inst.ge_id())
+                    idx = self._plot_2d_instances.index(inst.get_id())
                     del self._plot_2d_xdata[idx]
                     del self._plot_2d_ydata[idx]
                     del self._plot_2d_instances[idx]
