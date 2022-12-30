@@ -291,8 +291,6 @@ class Window (StreamTask):
 
         self._window_patch2D = Rectangle((0, 0),0,0)
 
-        pass
-
 
 ## -------------------------------------------------------------------------------------------------
     def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings):
