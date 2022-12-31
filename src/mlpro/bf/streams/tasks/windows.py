@@ -21,10 +21,11 @@
 ## -- 2022-12-19  1.1.1     DA       New parameter p_duplicate_data
 ## -- 2022-12-28  1.1.2     DA       Refactoring of plot settings
 ## -- 2022-12-29  1.1.3     DA       Removed method Window.init_plot()
+## -- 2022-12-31  1.1.4     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2022-12-29)
+Ver. 1.1.4 (2022-12-31)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
@@ -288,7 +289,7 @@ class Window (StreamTask):
             self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
         else:
             self.axes = p_settings.axes
-
+        self._patch_windows: dict = None
         self._window_patch2D = Rectangle((0, 0),0,0)
 
 
@@ -313,6 +314,7 @@ class Window (StreamTask):
         else:
             self.axes = p_settings.axes
 
+        self._patch_windows: dict = None
         self._window_patch3D = Poly3DCollection([])
 
 
@@ -343,8 +345,7 @@ class Window (StreamTask):
         else:
             self.axes = p_settings.axes
 
-        self._plot_nd_plots = None
-        self._plot_windows = []
+        self._patch_windows = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -366,12 +367,16 @@ class Window (StreamTask):
             Further optional plot parameters.
 
         """
+        if self._patch_windows is None:
+            self._patch_windows = {}
+            self._patch_windows['2D'] = Rectangle((0, 0),0,0)
+
         boundaries = self.get_boundaries()
         x = boundaries[0][0]
         y = boundaries[1][0]
         w = boundaries[0][1] - boundaries[0][0]
         h = boundaries[1][1] - boundaries[1][0]
-        self._window_patch2D.set_bounds(x,y,w,h)
+        self._patch_windows['2D'].set_bounds(x,y,w,h)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -396,6 +401,10 @@ class Window (StreamTask):
         # 1. Returns if no new instances passed
         if p_inst_new is None: return
         b = self.get_boundaries()
+
+        if self._patch_windows is None:
+            self._patch_windows = {}
+            self._patch_windows['3D'] = Poly3DCollection([])
 
         # 2. Logic for vertices of the cuboid
         verts = np.asarray([[[b[0][0], b[1][0], b[2][1]],
@@ -429,7 +438,7 @@ class Window (StreamTask):
                              [b[0][0], b[1][1], b[2][0]]]])
 
         # 3. Setting the vertices for the cuboid
-        self._window_patch3D.set_verts(verts)
+        self._patch_windows['3D'].set_verts(verts)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -454,14 +463,14 @@ class Window (StreamTask):
         if len(p_inst_new) == 0 : return
 
         # 2. Check if the rectangle patches are already created
-        if self._plot_nd_plots is None:
-            self._plot_nd_plots = {}
+        if self._patch_windows is None:
+            self._patch_windows = {}
 
             bg = self.axes.get_facecolor()
             ec = self.axes.patch.get_edgecolor()
             obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor=ec, lw = 1, zorder=9999, alpha = 0.75 )
             self.axes.add_patch(obs_window)
-            self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW] = obs_window
+            self._patch_windows['nD'] = obs_window
 
 
         # 3. Add the hiding plot around obsolete data
@@ -469,5 +478,5 @@ class Window (StreamTask):
         y1 = self.axes.get_ylim()[0]
         w1 = -(x1 - self.axes.get_xlim()[0])
         h1 = self.axes.get_ylim()[1] - y1
-        self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW].set_bounds(x1, y1, w1, h1)
-        self._plot_nd_plots[self.C_PLOT_OUTSIDE_WINDOW].set_visible(True)
+        self._patch_windows['nD'].set_bounds(x1, y1, w1, h1)
+        self._patch_windows['nD'].set_visible(True)
