@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-30  1.0.0     LSB      Creation/Release
+## -- 2022-12-31  1.0.1     LSB      Using native stream
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-12-30)
+Ver. 1.0.1 (2022-12-31)
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
 You will learn:
@@ -42,9 +43,11 @@ class MyAdaptiveScenario(StreamScenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
         # 1 Import a stream from OpenML
-        openml = WrStreamProviderOpenML(p_logging=p_logging)
-        stream = openml.get_stream(p_name='BNG(autos,nominal,1000000)', p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging)
-
+        mlpro = StreamProviderMLPro(p_logging=p_logging)
+        stream = mlpro.get_stream(p_name=StreamMLProRnd10D.C_NAME,
+            p_mode=p_mode,
+            p_visualize=p_visualize,
+            p_logging=p_logging)
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a task
