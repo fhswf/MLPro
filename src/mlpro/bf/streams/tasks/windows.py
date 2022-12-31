@@ -285,8 +285,12 @@ class Window (StreamTask):
         if p_figure is None:
             p_figure = plt.figure()
 
+        if p_settings:
+            self._plot_settings = p_settings
+
         if not p_settings.axes:
             self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
+
         else:
             self.axes = p_settings.axes
         self._patch_windows: dict = None
@@ -309,8 +313,11 @@ class Window (StreamTask):
         if p_figure is None:
             p_figure = plt.figure()
 
+        if p_settings:
+            self._plot_settings = p_settings
+
         if not p_settings.axes:
-            self.axes = Axes3D(p_figure, (0.05,0.05,0.9,0.9))
+            self.axes = p_figure.add_subplot(projection = '3d')
         else:
             self.axes = p_settings.axes
 
@@ -334,6 +341,9 @@ class Window (StreamTask):
 
         if p_figure is None:
             p_figure = plt.figure()
+
+        if p_settings:
+            self._plot_settings = p_settings
 
         if not p_settings.axes:
             self.axes = p_figure.add_subplot()
@@ -367,9 +377,12 @@ class Window (StreamTask):
             Further optional plot parameters.
 
         """
+        self.axes.grid(True)
         if self._patch_windows is None:
             self._patch_windows = {}
-            self._patch_windows['2D'] = Rectangle((0, 0),0,0)
+            self._patch_windows['2D'] = Rectangle((0, 0),0,0, ec= 'red', facecolor='none', zorder = -999)
+            self._plot_settings.axes.add_patch(self._patch_windows['2D'])
+            self._patch_windows['2D'].set_visible(True)
 
         boundaries = self.get_boundaries()
         x = boundaries[0][0]
@@ -378,6 +391,7 @@ class Window (StreamTask):
         h = boundaries[1][1] - boundaries[1][0]
         self._patch_windows['2D'].set_bounds(x,y,w,h)
 
+        self._patch_windows['2D'].set_visible(True)
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
@@ -404,7 +418,8 @@ class Window (StreamTask):
 
         if self._patch_windows is None:
             self._patch_windows = {}
-            self._patch_windows['3D'] = Poly3DCollection([])
+            self._patch_windows['3D'] = Poly3DCollection(verts= [], edgecolors='red', facecolors='red', alpha = 0)
+            self._plot_settings.axes.add_collection(self._patch_windows['3D'])
 
         # 2. Logic for vertices of the cuboid
         verts = np.asarray([[[b[0][0], b[1][0], b[2][1]],
@@ -469,7 +484,7 @@ class Window (StreamTask):
             bg = self.axes.get_facecolor()
             ec = self.axes.patch.get_edgecolor()
             obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor=ec, lw = 1, zorder=9999, alpha = 0.75 )
-            self.axes.add_patch(obs_window)
+            self._plot_settings.axes.add_patch(obs_window)
             self._patch_windows['nD'] = obs_window
 
 
