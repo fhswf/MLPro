@@ -393,6 +393,7 @@ class Window (StreamTask):
 
         self._patch_windows['2D'].set_visible(True)
 
+
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
