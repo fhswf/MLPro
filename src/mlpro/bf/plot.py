@@ -22,10 +22,11 @@
 ## -- 2022-12-28  2.5.0     DA       - Corrections in method Plottable.init_plot()
 ## --                                - Reduction to one active plot view per task
 ## -- 2022-12-29  2.6.0     DA       Refactoring of plot settings
+## -- 2023-01-01  2.7.0     DA       Class Plottable: introduction of update step rate
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.6.0 (2022-12-29)
+Ver. 2.7.0 (2023-01-01)
 
 This module provides various classes related to data plotting.
 """
@@ -397,7 +398,7 @@ class Plottable:
 
         # 3 Update content of own(!) figure after self._plot_step_rate calls
         if self._plot_own_figure:
-            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_step_rate)
+            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_settings.step_rate)
             if self._plot_step_counter==0: 
                 self._figure.canvas.draw()
                 self._figure.canvas.flush_events()

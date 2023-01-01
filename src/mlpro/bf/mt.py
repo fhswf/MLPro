@@ -28,11 +28,12 @@
 ## -- 2022-12-16  1.5.0     DA       Class Task: new method _get_custom_run_method()
 ## -- 2022-12-28  1.6.0     DA       Refactoring of plot settings
 ## -- 2022-12-29  1.7.0     DA       Refactoring of plot settings
-## -- 2022-12-30  1.7.1     DA       - Bugfix in method Task._get_plot_host_tag()
+## -- 2022-12-30  1.7.1     DA       Bugfix in method Task._get_plot_host_tag()
+## -- 2023-01-01  1.8.0     DA       Refactoring of plot settings
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.1 (2022-12-30)
+Ver. 1.8.0 (2023-01-01)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -954,10 +955,13 @@ class Workflow (Task):
                 task_pos_x  = 1
                 task_pos_y  = 1
                 task_ax_id  = 1
-                task_plot_settings = PlotSettings( p_view=ps.view,
-                                                   p_axes=task_axes,
-                                                   p_pos_x=task_pos_x,
-                                                   p_pos_y=task_pos_y,
+                task_plot_settings = PlotSettings( p_view = ps.view,
+                                                   p_axes = task_axes,
+                                                   p_pos_x = task_pos_x,
+                                                   p_pos_y = task_pos_y,
+                                                   p_step_rate = ps.step_rate,
+                                                   p_plot_depth = ps.plot_depth,
+                                                   p_detail_level = ps.detail_level,
                                                    p_id=task_ax_id )
 
             else:
