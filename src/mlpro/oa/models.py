@@ -12,10 +12,11 @@
 ## -- 2022-11-30  0.4.0     DA       Refactoring after changes on bf.streams design
 ## -- 2022-12-09  0.4.1     DA       Corrections
 ## -- 2022-12-20  0.5.0     DA       Refactoring
+## -- 2023-01-01  0.6.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.5.0 (2022-12-20)
+Ver. 0.6.0 (2023-01-01)
 
 Core classes for online machine learning.
 """
@@ -323,7 +324,7 @@ class OAFunction (sl.AdaptiveFunction):
 
 # -------------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------
-class OAScenario (Scenario): 
+class OAScenario (StreamScenario): 
     """
     ...
     """

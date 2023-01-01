@@ -7,22 +7,27 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-12-12  0.0.0     LSB      Creation
 ## -- 2022-12-20  0.1.0     DA       Supplements
+## -- 2023-01-01  1.0.0     DA       Completion
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2022-12-20)
+Ver. 1.0.0 (2023-01-01)
 
-This module is an example of adaptive normalization of streaming data using MinMax Normalizer
+This module is an example of adaptive normalization of streaming data using MinMax normalizer. To 
+this regard, an online-adadptive custom scenario is set up. It combines a native 10-dimensional 
+sample stream with an online-adaptive workflow. The latter one consists of four tasks: a rearranger
+to reduce the stream data to 3 dimensions, a window that buffers the last 50 instances, a boundary
+detector and finally the MinMax normalizer. 
 
 You will learn:
 
-1. ...
+1. How to set up online-adaptive custom stream scenarios.
 
-2.
+2. How to set up online-adaptive workflows reusing various adaptive/non-adaptive MLPro stream tasks
 
-3.
-
+3. How to run and visualize your own custom stream scenario.
 """
+
 
 
 from mlpro.bf.streams import *
@@ -115,7 +120,7 @@ class MyAdaptiveScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 100
+    cycle_limit = 300
     logging = Log.C_LOG_ALL
     visualize = True
 
@@ -139,7 +144,8 @@ myscenario = MyAdaptiveScenario(p_mode=Mode.C_MODE_REAL,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot()
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
+                                                        p_step_rate = 3 ) )
     input('Press ENTER to start stream processing...')
 
 myscenario.run()
