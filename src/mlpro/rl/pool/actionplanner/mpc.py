@@ -8,9 +8,10 @@
 ## -- 2022-08-15  0.0.0     SY       Creation
 ## -- 2022-08-15  1.0.0     SY       Release of first version
 ## -- 2022-10-08  1.0.1     SY       Bug fixing
+## -- 2023-01-02  1.1.0     SY       Add multiprocessing functionality
 ## -------------------------------------------------------------------------------------------------
 """
-Ver. 1.0.1 (2022-10-08)
+Ver. 1.1.0 (2023-01-02)
 
 This module provides a default implementation of model predictive control (MPC).
 """
