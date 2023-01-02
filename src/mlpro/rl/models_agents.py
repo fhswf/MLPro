@@ -743,6 +743,8 @@ class MultiAgent(Agent, mt.Async):
         Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
+    p_range : int
+        Range of asynchonicity .
     """
 
     C_TYPE      = 'Multi-Agent'
@@ -755,8 +757,7 @@ class MultiAgent(Agent, mt.Async):
                  p_ada=True,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
-                 p_range_max=mt.Async.C_RANGE_NONE, 
-                 p_class_shared=mt.Shared):
+                 p_range_max=mt.Async.C_RANGE_NONE):
         self._agents = []
         self._agent_ids = []
         self.set_name(p_name)
@@ -768,7 +769,7 @@ class MultiAgent(Agent, mt.Async):
         
         mt.Async.__init__(self,
                           p_range_max=p_range_max, 
-                          p_class_shared=p_class_shared,
+                          p_class_shared=mt.Shared,
                           p_logging=p_logging)
 
 
