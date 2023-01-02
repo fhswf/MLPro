@@ -995,12 +995,12 @@ class MultiAgent(Agent, mt.Async):
                 action = Action()
                 self._start_async(p_target=self._async_compute_actions,
                                   p_tid=ids,
-                                  p_state=p_state)
+                                  p_state=p_kwargs['p_state'])
             elif p_type == 1:
                 self._start_async(p_target=self._async_policy_adapt,
                                   p_tid=ids,
-                                  p_state=p_state,
-                                  p_reward=p_reward)
+                                  p_state=p_kwargs['p_state'],
+                                  p_reward=p_kwargs['p_reward'])
 
         self.wait_async_tasks()
         
@@ -1011,7 +1011,8 @@ class MultiAgent(Agent, mt.Async):
                 action.add_elem(self._agents[idx][0].get_id(), result[idx])  
             return action
         elif p_type == 1:
-            adapted = any(a.values())
+            adapted = any(result.values())
+            return adapted
 
 
 ## -------------------------------------------------------------------------------------------------
