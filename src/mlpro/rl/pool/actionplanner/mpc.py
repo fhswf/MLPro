@@ -150,15 +150,11 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
         self.wait_async_tasks()
         
         result = self._so.get_results()
-        best_overall_reward = None
-        idx = 0
-        for reward in list(result.values()):
-            if best_overall_reward is None or reward[0] > best_overall_reward:
-                best_overall_reward = reward[0]
-                best_idx = idx
-            idx += 1
+        result_list = list(zip(*result.values()))
+        best_overall_reward = max(result_list[0])
+        idx = result_list[0].index(best_overall_reward)
         
-        return list(result.values())[best_idx][1]
+        return result_list[1][idx]
 
 
 ## -------------------------------------------------------------------------------------------------
