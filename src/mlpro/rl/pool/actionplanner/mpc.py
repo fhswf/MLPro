@@ -56,7 +56,7 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
         self.C_SCIREF_MONTH         = "05"
         self.C_SCIREF_DOI           = "10.1109/ICRA.2017.7989202"
         
-        ActionPlanner().__init__(self,
+        ActionPlanner.__init__(self,
                                  p_state_thsld=p_state_thsld,
                                  p_logging=p_logging)
         mt.Async.__init__(self,
@@ -135,7 +135,7 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
                     best_path = path
                     best_overall_reward = overall_reward
         else:
-            best_path = self.execute( p_kwargs)
+            best_path = self.execute(p_obs=p_obs)
                 
         return best_path
 
@@ -150,11 +150,19 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
         self.wait_async_tasks()
         
         result = self._so.get_results()
-        return max(result.values())[1]
+        best_overall_reward = None
+        idx = 0
+        for reward in list(result.values()):
+            if best_overall_reward is None or reward[0] > best_overall_reward:
+                best_overall_reward = reward[0]
+                best_idx = idx
+            idx += 1
+        
+        return list(result.values())[best_idx][1]
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _async_subtask(self, p_tid:int, p_obs:p_obs):
+    def _async_subtask(self, p_tid:int, p_obs:State):
         self._so.checkin(p_tid=p_tid)
         
         state = p_obs
@@ -197,5 +205,5 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
             # adjust the current state with next state
             state = next_state
 
-        self._so.add_result(p_tid=p_tid, p_result=[overall_rewar, path])
+        self._so.add_result(p_tid=p_tid, p_result=[overall_reward, path])
         self._so.checkout(p_tid=p_tid)
