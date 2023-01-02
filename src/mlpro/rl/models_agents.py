@@ -744,7 +744,7 @@ class MultiAgent(Agent, mt.Async):
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     p_range : int
-        Range of asynchonicity .
+        Range of asynchonicity.
     """
 
     C_TYPE      = 'Multi-Agent'
