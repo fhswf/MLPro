@@ -23,10 +23,11 @@
 ## --                                - Reduction to one active plot view per task
 ## -- 2022-12-29  2.6.0     DA       Refactoring of plot settings
 ## -- 2023-01-01  2.7.0     DA       Class Plottable: introduction of update step rate
+## -- 2023-01-04  2.8.0     DA       Class PlotSettings: new parameters p_horizon, p_force_fg
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.7.0 (2023-01-01)
+Ver. 2.8.0 (2023-01-04)
 
 This module provides various classes related to data plotting.
 """
@@ -78,11 +79,16 @@ class PlotSettings:
     p_step_rate : int 
         Optional step rate. Decides after how many calls of the update_plot() method the custom 
         methods _update_plot() carries out an output. Default = 1.
+    p_horizon : int
+        Optional plot horizon. A value > 0 limits the number of data entities that are shown in the
+        plot. Default = 0.
     p_plot_depth : int 
         Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
         depth is unlimited. Default = 0.
     p_detail_level : int 
         Optional detail level. Default = 0.
+    p_force_fg : bool
+        Optional boolean flag. If True, the releated window is kept in foreground. Default = True.
     p_id : int
         Optional unique id of the subplot within the figure. Default = 1.
     p_kwargs : dict
@@ -104,8 +110,10 @@ class PlotSettings:
                   p_size_x : int = 1,
                   p_size_y : int = 1,
                   p_step_rate : int = 1,
+                  p_horizon : int = 0,
                   p_plot_depth : int = 0,
                   p_detail_level : int = 0,
+                  p_force_fg : bool = True,
                   p_id : int = 1,
                   **p_kwargs ):
 
@@ -119,8 +127,10 @@ class PlotSettings:
         self.size_x         = p_size_x
         self.size_y         = p_size_y
         self.step_rate      = p_step_rate
+        self.horizon        = p_horizon
         self.plot_depth     = p_plot_depth
         self.detail_level   = p_detail_level
+        self.force_fg       = p_force_fg
         self.id             = p_id
         self.kwargs         = p_kwargs.copy()
 
@@ -232,7 +242,7 @@ class Plottable:
         except:
             self._plot_own_figure   = False
 
-        plt.ion()
+        plt.ioff()
 
 
          # 2 Prepare internal data structures
@@ -293,17 +303,32 @@ class Plottable:
             Matplotlib figure object to host the subplot(s)
         """
 
-        # 1 Create a new figure
-        fig = plt.figure()    
+        fig = plt.figure()   
+        plt.show(block=False)
+        self._force_fg(p_fig=fig)
+        return fig
 
-        # 2 Get active backend
+
+## -------------------------------------------------------------------------------------------------
+    def force_fg(self):
+        """
+        Internal use.
+        """
+        self._force_fg(p_fig = self._figure)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _force_fg(self, p_fig : Figure):
+        """
+        Internal use.
+        """
+
+        if not self._plot_settings.force_fg: return
+
         backend = matplotlib.get_backend()
 
-        # 3 Bring and keep window on top of the screen
         if backend == 'TkAgg':
-            fig.canvas.manager.window.attributes('-topmost', True)
-
-        return fig
+            p_fig.canvas.manager.window.attributes('-topmost', True)        
 
 
 ## -------------------------------------------------------------------------------------------------

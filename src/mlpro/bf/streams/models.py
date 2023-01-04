@@ -38,11 +38,17 @@
 ## -- 2022-12-29  0.9.0     DA       - Refactoring of plot settings
 ## --                                - Bugfixes in methods StreamTask.update_plot2d/3d
 ## -- 2022-12-30  0.9.1     DA/LSB   - Class Instance: new parameter p_id, new metod get_id()
-## --                                - Class StreamTask: optimized removal of deleted instances from plots
+## --                                - Class StreamTask: optimized removal of deleted instances from 
+## --                                  plots
+## -- 2023-01-04  1.0.0     DA       Class Instance: new method set_id()
+## --                                Class Stream: automatic instance id generation and assignment
+## --                                Class StreamTask: 
+## --                                - Refactoring of plotting
+## --                                - incorporation of new plot parameter p_horizon
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.9.1 (2022-12-30)
+Ver. 1.0.0 (2023-01-04)
 
 This module provides classes for standardized stream processing. 
 """
@@ -91,8 +97,6 @@ class Instance:
         Optional label data of the instance.
     p_time_stamp : datetime
         Optional time stamp of the instance.
-    p_id 
-        Optional external instance id. Default is None (id is set internally).
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -104,7 +108,6 @@ class Instance:
                   p_feature_data : Element, 
                   p_label_data : Element = None, 
                   p_time_stamp : datetime = None,
-                  p_id = None,
                   **p_kwargs ):
 
         self._feature_data = p_feature_data
@@ -112,15 +115,15 @@ class Instance:
         self._time_stamp   = p_time_stamp
         self._kwargs       = p_kwargs.copy()
 
-        if p_id is not None:
-            self._id = p_id
-        else:
-            self._id = str(uuid.uuid4())
-
 
 ## -------------------------------------------------------------------------------------------------
     def get_id(self):
         return self._id
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_id(self, p_id:int):
+        self._id = p_id
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -457,6 +460,7 @@ class Stream (Mode, LoadSave, ScientificObject):
         """
 
         self.log(self.C_LOG_TYPE_I, 'Reset')
+        self._next_inst_id = 0
         self._reset()
         return self
 
@@ -481,7 +485,10 @@ class Stream (Mode, LoadSave, ScientificObject):
             Next instance of data stream or None.
         """
 
-        return self._get_next()
+        inst = self._get_next()
+        inst.set_id(self._next_inst_id)
+        self._next_inst_id += 1
+        return inst
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -794,7 +801,7 @@ class StreamTask (Task):
         except:
             return
 
-        self._plot_num_inst       = 0
+        self._plot_num_inst = 0
 
         Task.init_plot( self,
                         p_figure=p_figure, 
@@ -811,9 +818,9 @@ class StreamTask (Task):
         Task._init_plot_2d( self, p_figure=p_figure, p_settings=p_settings )
 
         self._plot_2d_plot   = None
+        self._plot_inst_ids  = []
         self._plot_2d_xdata  = []
         self._plot_2d_ydata  = []
-        self._plot_2d_instances = []
         self._plot_2d_xmin   = None
         self._plot_2d_xmax   = None
         self._plot_2d_ymin   = None
@@ -830,10 +837,10 @@ class StreamTask (Task):
         Task._init_plot_3d( self, p_figure=p_figure, p_settings=p_settings )
 
         self._plot_3d_plot   = None
+        self._plot_inst_ids  = []
         self._plot_3d_xdata  = []
         self._plot_3d_ydata  = []
         self._plot_3d_zdata  = []
-        self._plot_3d_instances = []
         self._plot_3d_xmin   = None
         self._plot_3d_xmax   = None
         self._plot_3d_ymin   = None
@@ -858,6 +865,7 @@ class StreamTask (Task):
         p_settings.axes.set_xlim(0,1)
         p_settings.axes.set_ylim(-1,1)
 
+        self._plot_inst_ids  = []
         self._plot_nd_xdata  = []
         self._plot_nd_plots  = None
         self._plot_nd_ymin   = None
@@ -985,7 +993,7 @@ class StreamTask (Task):
                 feature_values = inst.get_feature_data().get_values()
                 xdata_new.append(feature_values[0])
                 ydata_new.append(feature_values[1])
-                self._plot_2d_instances.append( inst.get_id() )
+                self._plot_inst_ids.append( inst.get_id() )
 
             self._plot_2d_xdata.extend(xdata_new)
             self._plot_2d_ydata.extend(ydata_new)
@@ -1030,10 +1038,10 @@ class StreamTask (Task):
         if len(p_inst_del) > 0:
             for inst in p_inst_del:
                 try:
-                    idx = self._plot_2d_instances.index(inst.get_id())
+                    idx = self._plot_inst_ids.index(inst.get_id())
                     del self._plot_2d_xdata[idx]
                     del self._plot_2d_ydata[idx]
-                    del self._plot_2d_instances[idx]
+                    del self._plot_inst_ids[idx]
                 except:
                     pass
 
@@ -1112,7 +1120,7 @@ class StreamTask (Task):
                 xdata_new.append(feature_values[0])
                 ydata_new.append(feature_values[1])
                 zdata_new.append(feature_values[2])
-                self._plot_3d_instances.append( inst.get_id() )
+                self._plot_inst_ids.append( inst.get_id() )
 
             self._plot_3d_xdata.extend(xdata_new)
             self._plot_3d_ydata.extend(ydata_new)
@@ -1177,11 +1185,11 @@ class StreamTask (Task):
         if len(p_inst_del) > 0:
             for inst in p_inst_del:
                 try:
-                    idx = self._plot_3d_instances.index(inst.get_id())
+                    idx = self._plot_inst_ids.index(inst.get_id())
                     del self._plot_3d_xdata[idx]
                     del self._plot_3d_ydata[idx]
                     del self._plot_3d_zdata[idx]
-                    del self._plot_3d_instances[idx]
+                    del self._plot_inst_ids[idx]
                 except:
                     pass
 
@@ -1259,7 +1267,7 @@ class StreamTask (Task):
                 p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_TIME)
 
             # 2.2 Add plot for each feature
-            self._plot_nd_plots = {}
+            self._plot_nd_plots = []
             feature_space       = inst_ref.get_feature_data().get_related_set()
 
             for feature in feature_space.get_dims():
@@ -1270,19 +1278,18 @@ class StreamTask (Task):
                                                           feature_ydata, 
                                                           lw=1 )
 
-                    self._plot_nd_plots[feature.get_id()] = [ feature_xdata, feature_ydata, feature_plot ]
+                    self._plot_nd_plots.append( [feature_ydata, feature_plot] )
 
 
-        # 4 Add data of new instances to plot objects
-        inst_id = self._plot_num_inst
-
+        # 3 Add data of new instances to plot objects
         for inst in p_inst_new:
+            inst_id = inst.get_id()
+            self._plot_inst_ids.append(inst_id)
             self._plot_nd_xdata.append(inst_id)
-            inst_id += 1
 
             feature_data = inst.get_feature_data().get_values()
 
-            for i, fplot_id in enumerate(self._plot_nd_plots.keys()):
+            for i, fplot in enumerate(self._plot_nd_plots):
                 feature_value = feature_data[i]
 
                 if ( self._plot_nd_ymin is None ) or ( self._plot_nd_ymin > feature_value ):
@@ -1291,28 +1298,28 @@ class StreamTask (Task):
                 if ( self._plot_nd_ymax is None ) or ( self._plot_nd_ymax < feature_value ):
                     self._plot_nd_ymax = feature_value
 
-                self._plot_nd_plots[fplot_id][1].append(feature_value)
+                fplot[0].append(feature_value)
 
 
-        # 5 Removing obsolete data from the plots
-        for i, inst in enumerate(p_inst_del):
-            id_del = 0
-            self._plot_nd_xdata.pop(id_del)
-
-            for i, fplot_id in enumerate(self._plot_nd_plots.keys()):
-                self._plot_nd_plots[fplot_id][1].pop(id_del)
-
-
-        # 6 Set new plot data of all feature plots
-        for fplot in self._plot_nd_plots.values():
-            fplot[2].set_xdata(fplot[0])
-            fplot[2].set_ydata(fplot[1])
+        # 4 Removing obsolete data from the plots
+        for inst in p_inst_del:
+            try:
+                idx = self._plot_inst_ids.index(inst.get_id())
+                del self._plot_inst_ids[idx]
+                del self._plot_nd_xdata[idx]
+                for fplot in self._plot_nd_plots: del fplot[0][idx]
+            except:
+                pass
 
 
-        # 7 Update ax limits
-        # Getting current number of instances in xdata
-        x_data_len = len(self._plot_nd_xdata)
-        p_settings.axes.set_xlim(inst_id-x_data_len, max(1, inst_id-1))
+        # 5 Set new plot data of all feature plots
+        for fplot in self._plot_nd_plots:
+            fplot[1].set_xdata(self._plot_nd_xdata)
+            fplot[1].set_ydata(fplot[0])
+
+
+        # 6 Update ax limits
+        p_settings.axes.set_xlim(self._plot_nd_xdata[0], self._plot_nd_xdata[len(self._plot_nd_xdata)-1])
         p_settings.axes.set_ylim(self._plot_nd_ymin, self._plot_nd_ymax)
                     
 
