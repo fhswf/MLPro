@@ -962,6 +962,7 @@ class Workflow (Task):
                                                    p_step_rate = ps.step_rate,
                                                    p_plot_depth = ps.plot_depth,
                                                    p_detail_level = ps.detail_level,
+                                                   p_force_fg = ps.force_fg,
                                                    p_id=task_ax_id )
 
             else:
@@ -971,6 +972,12 @@ class Workflow (Task):
                 
             task.init_plot( p_figure=task_figure,
                             p_plot_settings=task_plot_settings )
+
+
+        self.force_fg()
+        for task in self._tasks:
+            if task.C_PLOT_STANDALONE: task.force_fg()
+
 
         if self._plot_own_figure:
             self._figure.canvas.draw()
