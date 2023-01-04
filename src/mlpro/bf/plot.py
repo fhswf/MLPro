@@ -23,10 +23,11 @@
 ## --                                - Reduction to one active plot view per task
 ## -- 2022-12-29  2.6.0     DA       Refactoring of plot settings
 ## -- 2023-01-01  2.7.0     DA       Class Plottable: introduction of update step rate
+## -- 2023-01-04  2.8.0     DA       Class PlotSettings: new parameter p_horizon.
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.7.0 (2023-01-01)
+Ver. 2.8.0 (2023-01-04)
 
 This module provides various classes related to data plotting.
 """
@@ -78,6 +79,9 @@ class PlotSettings:
     p_step_rate : int 
         Optional step rate. Decides after how many calls of the update_plot() method the custom 
         methods _update_plot() carries out an output. Default = 1.
+    p_horizon : int
+        Optional plot horizon. A value > 0 limits the number of data entities that are shown in the
+        plot. Default = 0.
     p_plot_depth : int 
         Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
         depth is unlimited. Default = 0.
@@ -104,6 +108,7 @@ class PlotSettings:
                   p_size_x : int = 1,
                   p_size_y : int = 1,
                   p_step_rate : int = 1,
+                  p_horizon : int = 0,
                   p_plot_depth : int = 0,
                   p_detail_level : int = 0,
                   p_id : int = 1,
@@ -119,6 +124,7 @@ class PlotSettings:
         self.size_x         = p_size_x
         self.size_y         = p_size_y
         self.step_rate      = p_step_rate
+        self.horizon        = p_horizon
         self.plot_depth     = p_plot_depth
         self.detail_level   = p_detail_level
         self.id             = p_id
