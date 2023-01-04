@@ -165,6 +165,7 @@ class Instance:
                                     p_label_data=self._label_data,
                                     p_kwargs=self._kwargs )
         duplicate._time_stamp = self._time_stamp
+        duplicate.set_id(self.get_id())
         return duplicate
 
 
