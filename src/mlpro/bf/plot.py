@@ -238,7 +238,7 @@ class Plottable:
         except:
             self._plot_own_figure   = False
 
-        plt.ion()
+        plt.ioff()
 
 
          # 2 Prepare internal data structures
@@ -300,7 +300,8 @@ class Plottable:
         """
 
         # 1 Create a new figure
-        fig = plt.figure()    
+        fig = plt.figure()   
+        plt.show(block=False)
 
         # 2 Get active backend
         backend = matplotlib.get_backend()
