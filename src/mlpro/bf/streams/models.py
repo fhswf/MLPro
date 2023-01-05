@@ -45,10 +45,11 @@
 ## --                                Class StreamTask: 
 ## --                                - Refactoring of plotting
 ## --                                - incorporation of new plot parameter p_horizon
+## -- 2023-01-05  1.0.1     DA       Refactoring of method StreamShared.get_instances()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-01-04)
+Ver. 1.0.1 (2023-01-05)
 
 This module provides classes for standardized stream processing. 
 """
@@ -224,24 +225,51 @@ class StreamShared (Shared):
             List of instances to be deleted of all given task ids.
         """
 
-        inst_new = set()
-        inst_del = set()
+        len_task_ids = len(p_task_ids)
 
-        if len(p_task_ids) > 0:
+        if len_task_ids == 1:
+            # Most likely case: result instances of one predecessor or requested
+            try:
+                instances = self._instances[p_task_ids[0]]
+            except KeyError:
+                # Predecessor is the workflow
+                instances = self._instances['wf']
+
+            inst_new = instances[0].copy()
+            inst_del = instances[1].copy()
+
+        elif len_task_ids > 1:
+            # Result instances of more than one predecessors are requested
+            dict_inst_new = {}
+            dict_inst_del = {}
+
             for task_id in p_task_ids:
                 try:
                     instances = self._instances[task_id]
                 except KeyError:
                     instances = self._instances['wf']
 
-                inst_new.update(instances[0])
-                inst_del.update(instances[1])
-        else:
-            instances = self._instances['wf']
-            inst_new.update(instances[0])
-            inst_del.update(instances[1])
+                for inst in instances[0]:
+                    dict_inst_new[inst.get_id()] = inst
 
-        return list(inst_new), list(inst_del)
+                for inst in instances[1]:
+                    dict_inst_del[inst.get_id()] = inst
+
+            sorted_ids = list( dict_inst_new.keys() )
+            sorted_ids.sort()
+            inst_new = [ dict_inst_new[i] for i in sorted_ids ]
+
+            sorted_ids = list( dict_inst_del.keys() )
+            sorted_ids.sort()
+            inst_del = [ dict_inst_del[i] for i in sorted_ids ]
+
+        else:
+            # No predecessor task id -> origin incoming instances on workflow level are forwarded
+            instances = self._instances['wf']
+            inst_new = instances[0].copy()
+            inst_del = instances[1].copy()
+
+        return inst_new, inst_del
 
 
 ## -------------------------------------------------------------------------------------------------
