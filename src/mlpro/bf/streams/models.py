@@ -1320,8 +1320,7 @@ class StreamTask (Task):
 
 
         # 6 Update ax limits
-        # p_settings.axes.set_xlim(self._plot_nd_xdata[0], self._plot_nd_xdata[len(self._plot_nd_xdata)-1])
-        p_settings.axes.set_xlim(min(self._plot_nd_xdata), max(self._plot_nd_xdata)) 
+        p_settings.axes.set_xlim(self._plot_nd_xdata[0], self._plot_nd_xdata[len(self._plot_nd_xdata)-1])
         p_settings.axes.set_ylim(self._plot_nd_ymin, self._plot_nd_ymax)
                     
 
