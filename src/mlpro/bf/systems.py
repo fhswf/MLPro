@@ -430,7 +430,7 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
 
     C_TYPE          = 'System Base'
 
-    C_LATENCY       = timedelta(0, 1, 0)  # Default latency 1s
+    C_LATENCY       = timedelta(0, 0, 0)  # Default latency 1s
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -638,7 +638,9 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         # 1 State transition
         if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
+            latency = self.get_latency().total_seconds()
             self._set_state(self.simulate_reaction(self.get_state(), p_action))
+            sleep(latency)
 
         elif self._mode == self.C_MODE_REAL:
             # 1.2 Real state transition

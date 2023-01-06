@@ -1,26 +1,27 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : howto_rl_env_006_run_agent_with_random_policy_on_pendulum_mujoco_environment.py
+## -- Module  : howto_rl_env_007_run_agent_with_random_policy_on_double_pendulum_with_mujoco_visualize.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-09-17  0.0.0     MRD       Creation
-## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
-## -- 2022-12-11  1.0.0     MRD       First Release
+## -- 2023-01-06  0.0.0     MRD       Creation
+## -- 2023-01-06  1.0.0     MRD       First Release
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.0 (2022-12-11)
+Ver. 1.0.0 (2023-01-06)
 
-This module shows how to run a random policy on Pendulum with MuJoCo Simulation.
+This module shows how to run a random policy on Double Pendulum with MuJoCo Visualization.
 """
 
 
 import random
 import numpy as np
+import os
 
+import mlpro
 from mlpro.bf.ml import Model
 from mlpro.bf.ops import Mode
 from mlpro.bf.various import Log
@@ -28,7 +29,8 @@ from mlpro.rl.models_agents import Policy, Agent
 from mlpro.rl.models_train import RLScenario
 from mlpro.bf.systems import State, Action
 from mlpro.rl.models_env_ada import SARSElement
-from mlpro.rl.pool.envs.mujoco.pendulum import Pendulum
+from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4
+from mlpro.wrappers.mujoco import WrMujoco
 
 # 1 Implement your own agent policy
 class MyPolicy (Policy):
@@ -66,7 +68,11 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
-        self._env   = Pendulum(p_visualize=p_visualize, p_logging=p_logging) 
+        env   = DoublePendulumS4(p_logging=True, p_init_angles='down', p_max_torque=10, p_visualize=p_visualize)
+
+        # Wrapped env with MuJoCo
+        model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
+        self._env = WrMujoco(env, p_model_file=model_path, p_system_type=WrMujoco.C_VISUALIZE, p_state_name=["th1", "th2"], p_visualize=True)
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),
@@ -84,7 +90,7 @@ class MyScenario (RLScenario):
 # 3 Create scenario and run some cycles
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit = 1
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
   

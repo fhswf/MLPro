@@ -8,11 +8,15 @@
 ## -- 2022-09-17  0.0.0     MRD       Creation
 ## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
 ## -- 2022-12-11  1.0.0     MRD       First Release
+## -- 2023-01-06  1.1.0     MRD       The wrapper now has flexibility. It can now be used for System 
+## --                                 and Environment. Can now be used for visualization only to
+## --                                 visualize current state. The camera configuration now can be
+## --                                 configured by the user.
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.0 (2022-12-11)
+Ver. 1.1.0 (2023-01-06)
 
 This module wraps bf.Systems with MuJoCo Simulation functionality.
 """
@@ -20,12 +24,11 @@ This module wraps bf.Systems with MuJoCo Simulation functionality.
 
 import time
 import glfw
-import os
 import mujoco
 import numpy as np
 from threading import Lock
+from types import MethodType
 
-import mlpro
 from mlpro.rl.models import *
 from mlpro.wrappers.models import Wrapper
 
@@ -137,7 +140,7 @@ class CallbacksViewer():
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class RenderViewer(CallbacksViewer):
-    def __init__(self, model, data) -> None:
+    def __init__(self, model, data, xyz_pos=None, elevation=None, distance=None) -> None:
         super().__init__()
 
         self.model = model
@@ -179,14 +182,33 @@ class RenderViewer(CallbacksViewer):
         self.pert = mujoco.MjvPerturb()
         self.con = mujoco.MjrContext(self.model, mujoco.mjtFontScale.mjFONTSCALE_150)
 
+        self._init_camera(xyz_pos, elevation, distance)
+
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_camera(self):
+    def _init_camera(self, xyz_pos=None, elevation=None, distance=None):
         self.cam.type = mujoco.mjtCamera.mjCAMERA_FREE
         self.cam.fixedcamid = -1
-        for i in range(3):
-            self.cam.lookat[i] = np.median(self.data.geom_xpos[:, i])
-        self.cam.distance = self.model.stat.extent
+        
+        # X Y Z Position of the camera
+        if xyz_pos is None:
+            for i in range(3):
+                self.cam.lookat[i] = np.median(self.data.geom_xpos[:, i])
+            self.cam.lookat[0] = 0
+        else:
+            for i in range(3):
+                self.cam.lookat[i] = xyz_pos[i]
+
+        # Camera Distance
+        if distance is None:
+            self.cam.distance = self.model.stat.extent * 3.0
+        else:
+            self.cam.distance = distance
+
+        if elevation is None:
+            self.cam.elevation = -20
+        else:
+            self.cam.elevation = elevation
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -267,12 +289,9 @@ class RenderViewer(CallbacksViewer):
         glfw.terminate()
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrSysMujoco(Wrapper, System):
+class WrMujoco(Wrapper):
     """
     Wrap native MLPRo System with MuJuCo functionality.
     """
@@ -282,24 +301,162 @@ class WrSysMujoco(Wrapper, System):
     C_WRAPPED_PACKAGE   = 'mujoco'
     C_MINIMUM_VERSION = '2.3.1'
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_model_file, p_frame_skip, p_model_path=None, p_visualize=False, p_logging=Log.C_LOG_ALL ):
+    C_ENVIRONMENT = 0
+    C_SYSTEM = 1
+    C_VISUALIZE = 2
 
+
+## -------------------------------------------------------------------------------------------------
+    def __new__(cls, 
+                p_system, 
+                p_model_file, 
+                p_frame_skip=1, 
+                p_system_type=C_ENVIRONMENT, 
+                p_state_name=None, 
+                p_visualize=False, 
+                p_camera_conf=(None, None, None), 
+                p_logging=Log.C_LOG_ALL
+                ):
+
+        # Create MuJoCo hanlder
+        mujoco_handler = MujocoHanlder(p_model_file, p_frame_skip, p_system_type=p_system_type, p_visualize=p_visualize, p_camera_conf=p_camera_conf)
+
+        # Check Wrapper
+        wrapper_obj = super().__new__(cls)
+        wrapper_obj.__init__(p_logging)
+
+        # Init Handler
+        WrMujoco._init_handler(p_system, mujoco_handler)
+
+        # Wrap the method
+        if p_system_type != WrMujoco.C_VISUALIZE:
+            p_system._reset = MethodType(WrMujoco._reset, p_system)
+            p_system._simulate_reaction = MethodType(WrMujoco._simulate_reaction, p_system)
+            
+            # Set Default Latency to 0.05 for Simulation
+            p_system.set_latency(timedelta(0,0.05,0))
+
+        p_system.init_plot = MethodType(WrMujoco.init_plot, p_system)
+        p_system.update_plot = MethodType(WrMujoco.update_plot, p_system)
+
+        # Map State name with the State for the MuJoCo Visualization
+        p_system._state_name_list = p_state_name
+
+        return p_system
+
+## ------------------------------------------------------------------------------------------------- 
+    def __init__(self, p_logging):
+        Wrapper.__init__(self, p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_handler(self, p_mujoco_handler):
+        self._mujoco_hanlder = p_mujoco_handler
+
+## ------------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None) -> None:
+        """
+        This method is used to reset the environment. The environment is reset to the initial position set during
+        the initialization of the environment.
+
+        Parameters
+        ----------
+        p_seed : int, optional
+            The default is None.
+
+        """
+        
+        ob = self._mujoco_hanlder._reset_simulation()
+
+        self._state.set_values(ob)
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state:State, p_action:Action):
+        """
+        This method is used to calculate the next states of the system after a set of actions.
+
+        Parameters
+        ----------
+        p_state : State
+            current State.
+            p_action : Action
+                current Action.
+
+        Returns
+        -------
+            _state : State
+                Current states after the simulation of latest action on the environment.
+
+        """
+        action = p_action.get_sorted_values()
+
+        self._mujoco_hanlder._step_simulation(action)
+        ob = self._mujoco_hanlder._get_obs()
+
+        current_state = State(self._state_space)
+        current_state.set_values(ob)
+
+        return current_state
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
+        if self._mujoco_hanlder._system_type != WrMujoco.C_VISUALIZE:
+            if self._visualize: 
+                self._mujoco_hanlder._render()
+        elif self._mujoco_hanlder._visualize:
+            # Take the obs
+            state_value = []
+            for state_name in self._state_name_list:
+                state_id = self._state_space.get_dim_by_name(state_name).get_id()
+                state_value.append(self._state.get_value(state_id))
+
+            # Put it on the simulation
+            self._mujoco_hanlder._set_state(state_value, np.zeros(len(state_value)))
+
+            self._mujoco_hanlder._render()
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, **p_kwargs):
+        if self._mujoco_hanlder._system_type != WrMujoco.C_VISUALIZE:
+            if self._visualize: 
+                self._mujoco_hanlder._render()
+        elif self._mujoco_hanlder._visualize:
+            # Take the obs
+            state_value = []
+            for state_name in self._state_name_list:
+                state_id = self._state_space.get_dim_by_name(state_name).get_id()
+                state_value.append(self._state.get_value(state_id))
+
+            # Put it on the simulation
+            self._mujoco_hanlder._set_state(state_value, np.zeros(len(state_value)))
+
+            self._mujoco_hanlder._render()
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MujocoHanlder:
+    """
+    Module provides the functionality of MuJoCo
+    """
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_model_file, p_frame_skip, p_system_type=WrMujoco.C_ENVIRONMENT, p_visualize=False, p_camera_conf=(None, None, None)):
+        
         self._viewer = None
         self._frame_skip = p_frame_skip
+        self._visualize = p_visualize
+        self._system_type = p_system_type
+        self._xyz_camera, self._distance_camera, self._elavation_camera = p_camera_conf
 
-        if p_model_path is None:
-            self._model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", p_model_file)
-        else:
-            self._model_path = os.path.join(p_model_path, p_model_file)
+        self._model_path = p_model_file
 
         self._initialize_simulation()
 
         self._init_qpos = self._data.qpos.ravel().copy()
         self._init_qvel = self._data.qvel.ravel().copy()
-
-        System.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
-        Wrapper.__init__(self, p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -311,8 +468,25 @@ class WrSysMujoco(Wrapper, System):
             pass
 
 
+## ------------------------------------------------------------------------------------------------------
+    def _get_obs(self):
+        return np.concatenate([self._data.qpos, self._data.qvel]).ravel()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset_model(self):
+        qpos = self._init_qpos + np.random.uniform(
+            size=self._model.nq, low=-0.01, high=0.01
+        )
+        qvel = self._init_qpos + np.random.uniform(
+            size=self._model.nv, low=-0.01, high=0.01
+        )
+        self._set_state(qpos, qvel)
+        return self._get_obs()
+
+
 ## -------------------------------------------------------------------------------------------------    
-    def set_state(self, qpos, qvel):
+    def _set_state(self, qpos, qvel):
         self._data.qpos[:] = np.copy(qpos)
         self._data.qvel[:] = np.copy(qvel)
         if self._model.na == 0:
@@ -337,46 +511,15 @@ class WrSysMujoco(Wrapper, System):
 ## -------------------------------------------------------------------------------------------------    
     def _get_viewer(self):
         if self._viewer is None:
-            self._viewer = RenderViewer(self._model, self._data)
+            self._viewer = RenderViewer(self._model, self._data, self._xyz_camera, self._distance_camera, self._elavation_camera)
         
         return self._viewer
-
-
-## -------------------------------------------------------------------------------------------------
-    def _get_simulation_state(self):
-        pass
-
-
-## ------------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None) -> None:
-        """
-        This method is used to reset the environment. The environment is reset to the initial position set during
-        the initialization of the environment.
-
-        Parameters
-        ----------
-        p_seed : int, optional
-            The default is None.
-
-        """
-        
-        ob = self._reset_simulation()
-
-        self._state.set_values(ob)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _reset_model(self):
-        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _reset_simulation(self):
         mujoco.mj_resetData(self._model, self._data)
         ob =  self._reset_model()
-
-        if self.get_visualization():
-            self._render()
         return ob
 
 
@@ -385,42 +528,6 @@ class WrSysMujoco(Wrapper, System):
         self._data.ctrl[:] = action
         mujoco.mj_step(self._model, self._data, nstep=self._frame_skip)
         mujoco.mj_rnePostConstraint(self._model, self._data)
-
-        if self.get_visualization():
-            self._render()
-
-
-## ------------------------------------------------------------------------------------------------------
-    def _get_obs(self):
-        raise NotImplementedError
-
-
-## ------------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state:State, p_action:Action):
-        """
-        This method is used to calculate the next states of the system after a set of actions.
-
-        Parameters
-        ----------
-        p_state : State
-            current State.
-            p_action : Action
-                current Action.
-
-        Returns
-        -------
-            _state : State
-                Current states after the simulation of latest action on the environment.
-
-        """
-        action = p_action.get_sorted_values()
-        self._step_simulation(action)
-        ob = self._get_obs()
-
-        current_state = State(self._state_space)
-        current_state.set_values(ob)
-
-        return current_state
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -433,13 +540,3 @@ class WrSysMujoco(Wrapper, System):
         if self._viewer is not None:
             self._viewer.close()
             self._viewer = None
-
-
-## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
-        if self._visualize: self._render()
-
-
-## -------------------------------------------------------------------------------------------------
-    def update_plot(self, **p_kwargs):
-        if self._visualize: self._render()

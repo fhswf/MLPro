@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : howto_rl_env_007_run_agent_with_random_policy_on_double_pendulum_mujoco_environment.py
+## -- Module  : howto_rl_env_006_run_agent_with_random_policy_on_double_pendulum_mujoco_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -20,7 +20,9 @@ This module shows how to run a random policy on Double Pendulum with MuJoCo Simu
 
 import random
 import numpy as np
+import os
 
+import mlpro
 from mlpro.bf.ml import Model
 from mlpro.bf.ops import Mode
 from mlpro.bf.various import Log
@@ -28,7 +30,8 @@ from mlpro.rl.models_agents import Policy, Agent
 from mlpro.rl.models_train import RLScenario
 from mlpro.bf.systems import State, Action
 from mlpro.rl.models_env_ada import SARSElement
-from mlpro.rl.pool.envs.mujoco.doublependulum import DoublePendulum
+from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4
+from mlpro.wrappers.mujoco import WrMujoco
 
 # 1 Implement your own agent policy
 class MyPolicy (Policy):
@@ -66,7 +69,11 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
-        self._env   = DoublePendulum(p_visualize=p_visualize) 
+        env   = DoublePendulumS4(p_logging=True, p_init_angles='down', p_max_torque=10, p_visualize=p_visualize)
+
+        # Wrapped env with MuJoCo
+        model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
+        self._env = WrMujoco(env, p_model_file=model_path, p_system_type=WrMujoco.C_ENVIRONMENT)
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),
@@ -84,9 +91,9 @@ class MyScenario (RLScenario):
 # 3 Create scenario and run some cycles
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit = 2000
+    cycle_limit = 1
     logging     = Log.C_LOG_ALL
-    visualize   = False
+    visualize   = True
   
 else:
     # 3.2 Parameters for internal unit test
