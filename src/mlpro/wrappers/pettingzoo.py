@@ -41,10 +41,11 @@
 ## -- 2022-11-01  2.0.1     DA       Refactoring
 ## -- 2022-11-09  2.0.2     DA       Refactoring
 ## -- 2022-11-29  2.0.3     DA       Refactoring
+## -- 2022-12-21  2.0.4     SY       Update _recognize_space due to howto_rl_wp_003
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.3 (2022-11-29)
+Ver. 2.0.4 (2022-12-21)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -130,6 +131,7 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
 ## -------------------------------------------------------------------------------------------------
     def _recognize_space(self, p_zoo_space, dict_name) -> ESpace:
         space = ESpace()
+        d_idx = 0
         
         if dict_name == "observation":
             space.add_dim(Dimension(p_name_short='0', p_base_set='DO'))
@@ -143,8 +145,9 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
                         shape_dim = len(p_zoo_space[k].shape)
                         for i in range(shape_dim):
                             for d in range(p_zoo_space[k].shape[i]):
-                                space.add_dim(Dimension(p_name_short=str(d), p_base_set=Dimension.C_BASE_SET_R,
+                                space.add_dim(Dimension(p_name_short=str(d_idx), p_base_set=Dimension.C_BASE_SET_R,
                                                         p_boundaries=[p_zoo_space[k].low[d], p_zoo_space[k].high[d]]))
+                                d_idx += 1
                     except:
                         space.add_dim(Dimension(p_name_short=k, p_base_set='DO'))
                 
