@@ -392,6 +392,9 @@ class WrMujoco(Wrapper):
         action = p_action.get_sorted_values()
 
         self._mujoco_hanlder._step_simulation(action)
+
+        # Delay because of the simulation
+        time.sleep(self.get_latency().total_seconds())
         ob = self._mujoco_hanlder._get_obs()
 
         current_state = State(self._state_space)
