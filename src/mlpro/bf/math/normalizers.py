@@ -210,7 +210,8 @@ class NormalizerMinMax(Normalizer):
             else:
                 self._param_new[1][i] = (2 * boundary[0] / (boundary[1] - boundary[0]) + 1)
 
-        self._param_old = self._param.copy()
+        if self._param is not None:
+            self._param_old = self._param.copy()
         self._param = self._param_new.copy()
 
 
@@ -295,5 +296,6 @@ class NormalizerZTrans(Normalizer):
         self._param_new[0] = np.divide(1, self._std, out = np.zeros_like(self._std), where = self._std!=0)
         self._param_new[1] = np.divide(self._mean, self._std, out = np.zeros_like(self._std), where = self._std!=0)
         # self._param_new[1 == np.inf] = 0
-        self._param_old = self._param.copy()
+        if self._param is not None:
+            self._param_old = self._param.copy()
         self._param = self._param_new.copy()
