@@ -63,7 +63,11 @@ class PendulumSystem (System):
         
         # 1 State space
         state_space = ESpace()
-        state_space.add_dim( p_dim = Dimension( p_name_short='State 1') )
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_pos') )
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_pos') )
+
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_vel') )
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_vel') )
 
         # 2 Action space
         action_space = ESpace()
@@ -71,9 +75,9 @@ class PendulumSystem (System):
 
         return state_space, action_space
 
-
     def _reset(self, p_seed=None) -> None:
         pass
+
 
 
 # 0 Prepare Demo/Unit test mode
@@ -89,7 +93,7 @@ else:
 sys = PendulumSystem(p_latency=latency, p_logging=logging, p_visualize=True)
 
 # 2 Wrapped with MuJoCo with pendulum model
-model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "pendulum.xml")
+model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
 sys = WrMujoco(sys, p_model_file=model_path, p_system_type=WrMujoco.C_SYSTEM)
 
 # 3 Reset system
@@ -99,7 +103,7 @@ sys.reset()
 sys.init_plot()
 
 # 6 Process an action
-for x in range(2000):
+for x in range(1000):
     # Random Action
     action = np.random.uniform(-1, 1, size=(1,))
     sys.process_action( p_action= Action( p_agent_id=0, 

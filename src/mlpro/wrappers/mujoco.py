@@ -12,11 +12,16 @@
 ## --                                 and Environment. Can now be used for visualization only to
 ## --                                 visualize current state. The camera configuration now can be
 ## --                                 configured by the user.
+## -- 2023-01-07  1.1.1     MRD       Wrap original reset to preserve custom reset from the
+## --                                 orignal reset. Add functionality to call a function when
+## --                                 There is different between MuJoCo dimension and Environment
+## --                                 dimension. Add auto mapping state space between MuJoCo and
+## --                                 Environment
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.1.0 (2023-01-06)
+Ver. 1.1.1  (2023-01-07)
 
 This module wraps bf.Systems with MuJoCo Simulation functionality.
 """
@@ -28,6 +33,8 @@ import mujoco
 import numpy as np
 from threading import Lock
 from types import MethodType
+from lxml import etree
+import math
 
 from mlpro.rl.models import *
 from mlpro.wrappers.models import Wrapper
@@ -289,6 +296,27 @@ class RenderViewer(CallbacksViewer):
         glfw.terminate()
 
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrMujocoFunc:
+    """
+    Collection of Function Wrapper for MuJoCo
+    """
+    class wrap_reset:
+        def __init__(self, obj, decorated):
+            self._obj = obj
+            self._decorated = decorated
+        def __call__(self, *args, **kwargs):
+            self._decorated()
+            WrMujoco._reset(self._obj)
+
+
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class WrMujoco(Wrapper):
@@ -312,14 +340,23 @@ class WrMujoco(Wrapper):
                 p_model_file, 
                 p_frame_skip=1, 
                 p_system_type=C_ENVIRONMENT, 
-                p_state_name=None, 
+                p_vis_state_name=None, 
+                p_state_mapping=None,
+                p_use_radian=True,
                 p_visualize=False, 
                 p_camera_conf=(None, None, None), 
                 p_logging=Log.C_LOG_ALL
                 ):
 
         # Create MuJoCo hanlder
-        mujoco_handler = MujocoHanlder(p_model_file, p_frame_skip, p_system_type=p_system_type, p_visualize=p_visualize, p_camera_conf=p_camera_conf)
+        mujoco_handler = MujocoHanlder(p_model_file, 
+                                    p_frame_skip, 
+                                    p_system_type=p_system_type,
+                                    p_system_state_space=p_system.get_state_space(),
+                                    p_state_mapping=p_state_mapping,
+                                    p_use_radian=p_use_radian,
+                                    p_visualize=p_visualize, 
+                                    p_camera_conf=p_camera_conf)
 
         # Check Wrapper
         wrapper_obj = super().__new__(cls)
@@ -330,17 +367,21 @@ class WrMujoco(Wrapper):
 
         # Wrap the method
         if p_system_type != WrMujoco.C_VISUALIZE:
-            p_system._reset = MethodType(WrMujoco._reset, p_system)
+            # Wrap reset to inherit reset functionality from the original reset
+            p_system._reset = WrMujocoFunc.wrap_reset(p_system, p_system._reset)
+
+            # Completely change the simulate reaction so that can work with MuJoCo
             p_system._simulate_reaction = MethodType(WrMujoco._simulate_reaction, p_system)
             
             # Set Default Latency to 0.05 for Simulation
             p_system.set_latency(timedelta(0,0.05,0))
 
+        # Completely change how to visualize
         p_system.init_plot = MethodType(WrMujoco.init_plot, p_system)
         p_system.update_plot = MethodType(WrMujoco.update_plot, p_system)
 
         # Map State name with the State for the MuJoCo Visualization
-        p_system._state_name_list = p_state_name
+        p_system._vis_state_name_list = p_vis_state_name
 
         return p_system
 
@@ -352,6 +393,7 @@ class WrMujoco(Wrapper):
 ## -------------------------------------------------------------------------------------------------
     def _init_handler(self, p_mujoco_handler):
         self._mujoco_hanlder = p_mujoco_handler
+
 
 ## ------------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
@@ -365,8 +407,11 @@ class WrMujoco(Wrapper):
             The default is None.
 
         """
+        current_state = self._state
+        if callable(getattr(self, '_obs_to_mujoco', None)):
+            current_state = self._obs_to_mujoco(current_state)
         
-        ob = self._mujoco_hanlder._reset_simulation()
+        ob = self._mujoco_hanlder._reset_simulation(current_state)
 
         self._state.set_values(ob)
 
@@ -397,6 +442,9 @@ class WrMujoco(Wrapper):
         time.sleep(self.get_latency().total_seconds())
         ob = self._mujoco_hanlder._get_obs()
 
+        if callable(getattr(self, '_obs_from_mujoco', None)):
+            ob = self._obs_from_mujoco(ob)
+
         current_state = State(self._state_space)
         current_state.set_values(ob)
 
@@ -409,13 +457,22 @@ class WrMujoco(Wrapper):
             if self._visualize: 
                 self._mujoco_hanlder._render()
         elif self._mujoco_hanlder._visualize:
-            # Take the obs
             state_value = []
-            for state_name in self._state_name_list:
-                state_id = self._state_space.get_dim_by_name(state_name).get_id()
-                state_value.append(self._state.get_value(state_id))
+            current_state = self._state
 
-            # Put it on the simulation
+            if callable(getattr(self, '_obs_to_mujoco', None)):
+                current_state = self._obs_to_mujoco(current_state)
+
+            try:
+                for state_name in self._vis_state_name_list:
+                    state_id = self._state_space.get_dim_by_name(state_name).get_id()
+                    state_value.append(current_state.get_value(state_id))
+            except:
+                raise Error("Name of the state is not valid")
+
+            if not self._mujoco_hanlder._use_radian:
+                state_value = list(map(math.radians, state_value))
+
             self._mujoco_hanlder._set_state(state_value, np.zeros(len(state_value)))
 
             self._mujoco_hanlder._render()
@@ -427,13 +484,19 @@ class WrMujoco(Wrapper):
             if self._visualize: 
                 self._mujoco_hanlder._render()
         elif self._mujoco_hanlder._visualize:
-            # Take the obs
             state_value = []
-            for state_name in self._state_name_list:
-                state_id = self._state_space.get_dim_by_name(state_name).get_id()
-                state_value.append(self._state.get_value(state_id))
+            current_state = self._state
 
-            # Put it on the simulation
+            if callable(getattr(self, '_obs_to_mujoco', None)):
+                current_state = self._obs_to_mujoco(current_state)
+
+            for state_name in self._vis_state_name_list:
+                state_id = self._state_space.get_dim_by_name(state_name).get_id()
+                state_value.append(current_state.get_value(state_id))
+
+            if not self._mujoco_hanlder._use_radian:
+                state_value = list(map(math.radians, state_value))
+
             self._mujoco_hanlder._set_state(state_value, np.zeros(len(state_value)))
 
             self._mujoco_hanlder._render()
@@ -446,15 +509,30 @@ class MujocoHanlder:
     Module provides the functionality of MuJoCo
     """
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_model_file, p_frame_skip, p_system_type=WrMujoco.C_ENVIRONMENT, p_visualize=False, p_camera_conf=(None, None, None)):
+    def __init__(self, 
+                p_model_file, 
+                p_frame_skip, 
+                p_system_type=WrMujoco.C_ENVIRONMENT, 
+                p_system_state_space=None,
+                p_state_mapping=None,
+                p_use_radian=True, 
+                p_visualize=False, 
+                p_camera_conf=(None, None, None)
+                ):
         
         self._viewer = None
         self._frame_skip = p_frame_skip
         self._visualize = p_visualize
         self._system_type = p_system_type
         self._xyz_camera, self._distance_camera, self._elavation_camera = p_camera_conf
-
         self._model_path = p_model_file
+
+        self._system_state_space = p_system_state_space
+        self._state_mapping = p_state_mapping
+        self._use_radian = p_use_radian
+        self._model_data_list = {}
+        self._sim_obs_list_order = []
+        self._vis_obs_list_order = []
 
         self._initialize_simulation()
 
@@ -471,27 +549,132 @@ class MujocoHanlder:
             pass
 
 
+## -------------------------------------------------------------------------------------------------
+    def _get_model_list_sim(self):
+        parser = etree.XMLParser(remove_blank_text=True)
+        tree = etree.parse(self._model_path, parser=parser)
+        xml_root = tree.getroot()
+        etree.strip_tags(xml_root, etree.Comment)
+        etree.cleanup_namespaces(xml_root)
+        
+        # Body list
+        self._model_data_list = {**self._model_data_list, **dict([(elem.attrib["name"], "body") for elem in xml_root.iter("body")])}
+
+        # Joint list
+        self._model_data_list = {**self._model_data_list, **dict([(elem.attrib["name"], "joint") for elem in xml_root.iter("joint")])}
+
+        # Create tuple in order with the system space
+        if self._state_mapping is not None:
+            state_mapping =  dict((x, y) for x, y in self._state_mapping)
+            try:
+                for dim in self._system_state_space.get_dims():
+                    state_name = state_mapping[dim.get_name_short()].split("_")
+                    self._sim_obs_list_order.append((state_name[0], [self._model_data_list[state_name[0]], state_name[1]]))
+            except:
+                raise Error("Name of the state is not valid")
+        else:
+            # This is when there is no state mapping or the name of the state is already in correct naming
+            try:
+                for dim in self._system_state_space.get_dims():
+                    state_name = dim.get_name_short().split("_")
+                    self._sim_obs_list_order.append((state_name[0], [self._model_data_list[state_name[0]], state_name[1]]))
+            except:
+                raise Error("Name of the state is not valid")
+
+## -------------------------------------------------------------------------------------------------
+    def _get_model_list_vis(self):
+        parser = etree.XMLParser(remove_blank_text=True)
+        tree = etree.parse(self._model_path, parser=parser)
+        xml_root = tree.getroot()
+        etree.strip_tags(xml_root, etree.Comment)
+        etree.cleanup_namespaces(xml_root)
+        
+        # Body list
+        self._model_data_list = {**self._model_data_list, **dict([(elem.attrib["name"], "body") for elem in xml_root.iter("body")])}
+
+        # Joint list
+        self._model_data_list = {**self._model_data_list, **dict([(elem.attrib["name"], "joint") for elem in xml_root.iter("joint")])}
+
+        # Create tuple in order with the system space
+        for dim in self._system_state_space.get_dims():
+            state_name = dim.get_name_short().split("_")
+            self._vis_obs_list_order.append((state_name[0], [self._model_data_list[state_name[0]], state_name[1]]))
+
+
 ## ------------------------------------------------------------------------------------------------------
     def _get_obs(self):
-        return np.concatenate([self._data.qpos, self._data.qvel]).ravel()
+        # Get all the data according to the tuple order
+        state_value = []
+        for state in self._sim_obs_list_order:
+            if state[1][0] == "joint":
+                if state[1][1] == "pos":
+                    if not self._use_radian:
+                        state_value.append(np.radians(self._data.joint(state[0]).qpos))
+                    else:
+                        state_value.append(np.radians(self._data.joint(state[0]).qpos))
+                elif state[1][1] == "vel":
+                    if not self._use_radian:
+                        state_value.append(np.radians(self._data.joint(state[0]).qvel))
+                    else:
+                        state_value.append(np.radians(self._data.joint(state[0]).qvel))
+                else:
+                    raise Error("State name is not compatible")
+
+            elif state[1][0] == "body":
+                if state[1][1] == "pos":
+                    state_value.append(self._data.body(state[0]).xpos)
+                elif state[1][1] == "rot":
+                    state_value.append(self._data.body(state[0]).xquat)
+                else:
+                    raise Error("State name is not compatible")
+
+        return np.concatenate(state_value).ravel()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset_model(self):
-        qpos = self._init_qpos + np.random.uniform(
-            size=self._model.nq, low=-0.01, high=0.01
-        )
-        qvel = self._init_qpos + np.random.uniform(
-            size=self._model.nv, low=-0.01, high=0.01
-        )
-        self._set_state(qpos, qvel)
+    def _reset_model(self, reset_state=None):
+        if reset_state is None:
+            qpos = self._init_qpos
+            qvel = self._init_qpos
+            self._set_state(qpos, qvel)
+        else:
+            if self._state_mapping is not None:
+                state_mapping =  dict((x, y) for x, y in self._state_mapping)
+            for dim in self._system_state_space.get_dims():
+                if self._state_mapping is not None:
+                    state = state_mapping[dim.get_name_short()].split("_")
+                    if state[1] == "pos":
+                        if not self._use_radian:
+                            self._data.joint(state[0]).qpos = np.radians(reset_state.get_value(dim.get_id()))
+                        else:
+                            self._data.joint(state[0]).qpos = reset_state.get_value(dim.get_id())
+                    elif state[1] == "vel":
+                        if not self._use_radian:
+                            self._data.joint(state[0]).qvel = np.radians(reset_state.get_value(dim.get_id()))
+                        else:
+                            self._data.joint(state[0]).qvel = reset_state.get_value(dim.get_id())
+                else:
+                    state = dim.get_name_short().split("_")
+                    if state[1] == "pos":
+                        if not self._use_radian:
+                            self._data.joint(state[0]).qpos = np.radians(reset_state.get_value(dim.get_id()))
+                        else:
+                            self._data.joint(state[0]).qpos = reset_state.get_value(dim.get_id())
+                    elif state[1] == "vel":
+                        if not self._use_radian:
+                            self._data.joint(state[0]).qvel = np.radians(reset_state.get_value(dim.get_id()))
+                        else:
+                            self._data.joint(state[0]).qvel = reset_state.get_value(dim.get_id())
+                
         return self._get_obs()
 
 
 ## -------------------------------------------------------------------------------------------------    
-    def _set_state(self, qpos, qvel):
-        self._data.qpos[:] = np.copy(qpos)
-        self._data.qvel[:] = np.copy(qvel)
+    def _set_state(self, *args):
+        if len(args) == 2:
+            self._data.qpos[:] = np.copy(args[0])
+            self._data.qvel[:] = np.copy(args[1])
+
         if self._model.na == 0:
             self._data.act[:] = None
         mujoco.mj_forward(self._model, self._data)
@@ -510,6 +693,12 @@ class MujocoHanlder:
         self._model.vis.global_.offwidth = 480
         self._model.vis.global_.offheight = 480
         self._data = mujoco.MjData(self._model)
+        
+        if self._system_type == WrMujoco.C_VISUALIZE:
+            # self._get_model_list_vis()
+            pass
+        else:
+            self._get_model_list_sim()
 
 ## -------------------------------------------------------------------------------------------------    
     def _get_viewer(self):
@@ -520,9 +709,9 @@ class MujocoHanlder:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reset_simulation(self):
+    def _reset_simulation(self, reset_state=None):
         mujoco.mj_resetData(self._model, self._data)
-        ob =  self._reset_model()
+        ob = self._reset_model(reset_state)
         return ob
 
 

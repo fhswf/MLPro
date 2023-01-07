@@ -72,7 +72,12 @@ class MyScenario (RLScenario):
 
         # Wrapped env with MuJoCo
         model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
-        self._env = WrMujoco(env, p_model_file=model_path, p_system_type=WrMujoco.C_VISUALIZE, p_state_name=["th1", "th2"], p_visualize=True)
+        self._env = WrMujoco(env, 
+                            p_model_file=model_path, 
+                            p_system_type=WrMujoco.C_VISUALIZE, 
+                            p_vis_state_name=["th1", "th2"], 
+                            p_use_radian=False,
+                            p_visualize=p_visualize)
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),

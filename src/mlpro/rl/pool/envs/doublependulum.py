@@ -54,10 +54,12 @@
 ## -- 2022-09-09  2.0.5     LSB      Updating the boundaries
 ## -- 2022-10-08  2.0.6     LSB      Bug fix
 ## -- 2022-11-09  2.1.0     DA       Refactorung due to changes on the plot systematics
+## -- 2023-01-07  2.1.1     MRD      Add custom function for MuJoCo functionality due to different
+## --                                systematic.
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2022-11-09)
+Ver. 2.1.1 (2023-01-07)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -666,6 +668,13 @@ class DoublePendulumS4 (DoublePendulumRoot):
         return state
 
 
+## ------------------------------------------------------------------------------------------------------
+    def _obs_to_mujoco(self, p_state):
+        state = p_state.get_values().copy()
+        state[2] = state[2] + state[0]
+        mujoco_state = State(self.get_state_space())
+        mujoco_state.set_values(state)
+        return mujoco_state
 
 
 

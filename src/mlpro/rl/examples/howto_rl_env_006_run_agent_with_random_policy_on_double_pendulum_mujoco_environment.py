@@ -8,11 +8,12 @@
 ## -- 2022-09-17  0.0.0     MRD       Creation
 ## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
 ## -- 2022-12-11  1.0.0     MRD       First Release
+## -- 2023-01-07  1.0.1     MRD       Add State Mapping between MuJoCo model and Environment State Space
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.0 (2022-12-11)
+Ver. 1.0.1 (2023-01-07)
 
 This module shows how to run a random policy on Double Pendulum with MuJoCo Simulation.
 """
@@ -69,11 +70,24 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
-        env   = DoublePendulumS4(p_logging=True, p_init_angles='down', p_max_torque=10, p_visualize=p_visualize)
+        env   = DoublePendulumS4(p_logging=True, p_init_angles='up', p_max_torque=10, p_visualize=p_visualize)
 
         # Wrapped env with MuJoCo
         model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
-        self._env = WrMujoco(env, p_model_file=model_path, p_system_type=WrMujoco.C_ENVIRONMENT)
+
+        # Map state with the proper naming according to the MuJoCo model
+        state_mapping = [
+                        ("th1", "pin1_pos"),
+                        ("th2", "pin2_pos"),
+                        ("w1", "pin1_vel"),
+                        ("w2", "pin2_vel")
+                        ]
+
+        self._env = WrMujoco(env, 
+                            p_model_file=model_path, 
+                            p_system_type=WrMujoco.C_ENVIRONMENT,
+                            p_state_mapping=state_mapping,
+                            p_use_radian=False)
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),
@@ -91,7 +105,7 @@ class MyScenario (RLScenario):
 # 3 Create scenario and run some cycles
 if __name__ == "__main__":
     # 3.1 Parameters for demo mode
-    cycle_limit = 1
+    cycle_limit = 2000
     logging     = Log.C_LOG_ALL
     visualize   = True
   
