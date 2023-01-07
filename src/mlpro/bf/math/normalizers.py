@@ -18,10 +18,11 @@
 ## -- 2022-12-09  1.0.9     LSB      Returning same object after normalization and denormalization
 ## -- 2022-12-29  1.0.10    LSB      Bug Fix
 ## -- 2022-12-30  1.0.11    LSB      Bug Fix ZTransform
+## -- 2023-01-07  1.0.12    LSB      Bug fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.11 (2022-12-30)
+Ver. 1.0.12 (2023-01-07)
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and
 normalization by Z transformation.
 
@@ -209,7 +210,8 @@ class NormalizerMinMax(Normalizer):
             else:
                 self._param_new[1][i] = (2 * boundary[0] / (boundary[1] - boundary[0]) + 1)
 
-        self._param = self._param_new
+        self._param_old = self._param.copy()
+        self._param = self._param_new.copy()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -293,4 +295,5 @@ class NormalizerZTrans(Normalizer):
         self._param_new[0] = np.divide(1, self._std, out = np.zeros_like(self._std), where = self._std!=0)
         self._param_new[1] = np.divide(self._mean, self._std, out = np.zeros_like(self._std), where = self._std!=0)
         # self._param_new[1 == np.inf] = 0
+        self._param_old = self._param.copy()
         self._param = self._param_new.copy()
