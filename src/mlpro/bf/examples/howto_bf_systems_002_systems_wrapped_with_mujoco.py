@@ -72,7 +72,7 @@ sys = PendulumSystem(p_latency=latency, p_logging=logging, p_visualize=True)
 
 # 2 Wrapped with MuJoCo with pendulum model
 model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
-sys = WrMujoco(sys, p_model_file=model_path, p_system_type=WrMujoco.C_SYSTEM)
+sys = WrMujoco(sys, p_model_file=model_path, p_system_type=WrMujoco.C_SYSTEM, p_use_radian=False, p_visualize=True)
 
 # 3 Reset system
 sys.reset()

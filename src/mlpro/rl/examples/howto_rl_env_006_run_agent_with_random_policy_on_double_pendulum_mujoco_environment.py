@@ -87,7 +87,8 @@ class MyScenario (RLScenario):
                             p_model_file=model_path, 
                             p_system_type=WrMujoco.C_ENVIRONMENT,
                             p_state_mapping=state_mapping,
-                            p_use_radian=False)
+                            p_use_radian=False,
+                            p_visualize=p_visualize)
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),

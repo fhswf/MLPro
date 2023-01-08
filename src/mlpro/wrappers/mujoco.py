@@ -32,7 +32,6 @@ import glfw
 import mujoco
 import numpy as np
 from threading import Lock
-from types import MethodType
 from lxml import etree
 import math
 
@@ -301,25 +300,7 @@ class RenderViewer(CallbacksViewer):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrMujocoFunc:
-    """
-    Collection of Function Wrapper for MuJoCo
-    """
-    class wrap_reset:
-        def __init__(self, obj, decorated):
-            self._obj = obj
-            self._decorated = decorated
-        def __call__(self, *args, **kwargs):
-            self._decorated()
-            WrMujoco._reset(self._obj)
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class WrMujoco(Wrapper):
+class WrMujocoWrapper(Wrapper):
     """
     Wrap native MLPRo System with MuJuCo functionality.
     """
@@ -329,70 +310,19 @@ class WrMujoco(Wrapper):
     C_WRAPPED_PACKAGE   = 'mujoco'
     C_MINIMUM_VERSION = '2.3.1'
 
-    C_ENVIRONMENT = 0
-    C_SYSTEM = 1
-    C_VISUALIZE = 2
+    C_PLOT_ACTIVE       = True
 
 
-## -------------------------------------------------------------------------------------------------
-    def __new__(cls, 
-                p_system, 
-                p_model_file, 
-                p_frame_skip=1, 
-                p_system_type=C_ENVIRONMENT, 
-                p_vis_state_name=None, 
-                p_state_mapping=None,
-                p_use_radian=True,
-                p_visualize=False, 
-                p_camera_conf=(None, None, None), 
-                p_logging=Log.C_LOG_ALL
-                ):
+## ------------------------------------------------------------------------------------------------------
+    def __init__(self, p_sys_env, p_mujoco_handler, p_vis_state_name, p_logging=Log.C_LOG_ALL):
+        self._sys_env = p_sys_env
+        self._vis_state_name_list = p_vis_state_name
+        Wrapper.__init__(self, p_logging)
+        self._mujoco_handler = p_mujoco_handler
 
-        # Create MuJoCo hanlder
-        mujoco_handler = MujocoHandler(p_model_file, 
-                                    p_frame_skip, 
-                                    p_system_type=p_system_type,
-                                    p_system_state_space=p_system.get_state_space(),
-                                    p_state_mapping=p_state_mapping,
-                                    p_use_radian=p_use_radian,
-                                    p_visualize=p_visualize, 
-                                    p_camera_conf=p_camera_conf)
-
-        # Check Wrapper
-        wrapper_obj = super().__new__(cls)
-        wrapper_obj.__init__(p_logging)
-
-        # Init Handler
-        WrMujoco._init_handler(p_system, mujoco_handler)
-
-        # Wrap the method
-        if p_system_type != WrMujoco.C_VISUALIZE:
-            # Wrap reset to inherit reset functionality from the original reset
-            p_system._reset = WrMujocoFunc.wrap_reset(p_system, p_system._reset)
-
-            # Completely change the simulate reaction so that can work with MuJoCo
-            p_system._simulate_reaction = MethodType(WrMujoco._simulate_reaction, p_system)
-            
-            # Set Default Latency to 0.05 for Simulation
-            p_system.set_latency(timedelta(0,0.05,0))
-
-        # Completely change how to visualize
-        p_system.init_plot = MethodType(WrMujoco.init_plot, p_system)
-        p_system.update_plot = MethodType(WrMujoco.update_plot, p_system)
-
-        # Map State name with the State for the MuJoCo Visualization
-        p_system._vis_state_name_list = p_vis_state_name
-
-        return p_system
-
-## ------------------------------------------------------------------------------------------------- 
-    def __init__(self, p_logging):
-        Wrapper.__init__(self, p_logging=p_logging)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_handler(self, p_mujoco_handler):
-        self._mujoco_hanlder = p_mujoco_handler
+## ------------------------------------------------------------------------------------------------------
+    def setup_spaces(self):
+        return self._sys_env.get_state_space(), self._sys_env.get_action_space()
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -407,13 +337,21 @@ class WrMujoco(Wrapper):
             The default is None.
 
         """
-        current_state = self._state
-        if callable(getattr(self, '_obs_to_mujoco', None)):
-            current_state = self._obs_to_mujoco(current_state)
-        
-        ob = self._mujoco_hanlder._reset_simulation(current_state)
+        # Do the reset from original to detect customized reset by the environment
+        self._sys_env._reset()
 
-        self._state.set_values(ob)
+        if self._mujoco_handler._system_type != WrMujoco.C_VISUALIZE:
+            current_state = self._sys_env.get_state()
+            if callable(getattr(self._sys_env, '_obs_to_mujoco', None)):
+                current_state = self._sys_env._obs_to_mujoco(current_state)
+            
+            ob = self._mujoco_handler._reset_simulation(current_state)
+            
+            self._state = State(self.get_state_space())
+            self._state.set_values(ob)
+        else:
+            self._state = State(self._sys_env.get_state_space())
+            self._state.set_values(self._sys_env.get_state().get_values())
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -434,72 +372,167 @@ class WrMujoco(Wrapper):
                 Current states after the simulation of latest action on the environment.
 
         """
-        action = p_action.get_sorted_values()
+        if self._mujoco_handler._system_type != WrMujoco.C_VISUALIZE:
+            action = p_action.get_sorted_values()
 
-        self._mujoco_hanlder._step_simulation(action)
+            self._mujoco_handler._step_simulation(action)
 
-        # Delay because of the simulation
-        time.sleep(self.get_latency().total_seconds())
-        ob = self._mujoco_hanlder._get_obs()
+            # Delay because of the simulation
+            time.sleep(self.get_latency().total_seconds())
+            ob = self._mujoco_handler._get_obs()
 
-        if callable(getattr(self, '_obs_from_mujoco', None)):
-            ob = self._obs_from_mujoco(ob)
+            if callable(getattr(self._sys_env, '_obs_from_mujoco', None)):
+                ob = self._sys_env._obs_from_mujoco(ob)
 
-        current_state = State(self._state_space)
-        current_state.set_values(ob)
+            current_state = State(self.get_state_space())
+            current_state.set_values(ob)
 
-        return current_state
+            return current_state
+        else:
+            return self._sys_env._simulate_reaction(p_state, p_action)
 
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
-        if self._mujoco_hanlder._system_type != WrMujoco.C_VISUALIZE:
+        if self._mujoco_handler._system_type != WrMujoco.C_VISUALIZE:
             if self._visualize: 
-                self._mujoco_hanlder._render()
-        elif self._mujoco_hanlder._visualize:
+                self._mujoco_handler._render()
+        elif self._mujoco_handler._visualize:
             state_value = []
-            current_state = self._state
+            current_state = self.get_state()
 
-            if callable(getattr(self, '_obs_to_mujoco', None)):
-                current_state = self._obs_to_mujoco(current_state)
+            if callable(getattr(self._sys_env, '_obs_to_mujoco', None)):
+                current_state = self._sys_env._obs_to_mujoco(current_state)
 
             try:
                 for state_name in self._vis_state_name_list:
-                    state_id = self._state_space.get_dim_by_name(state_name).get_id()
+                    state_id = self.get_state_space().get_dim_by_name(state_name).get_id()
                     state_value.append(current_state.get_value(state_id))
             except:
                 raise Error("Name of the state is not valid")
 
-            if not self._mujoco_hanlder._use_radian:
+            if not self._mujoco_handler._use_radian:
                 state_value = list(map(math.radians, state_value))
 
-            self._mujoco_hanlder._set_state(state_value, np.zeros(len(state_value)))
+            self._mujoco_handler._set_state(state_value, np.zeros(len(state_value)))
 
-            self._mujoco_hanlder._render()
+            self._mujoco_handler._render()
 
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
-        if self._mujoco_hanlder._system_type != WrMujoco.C_VISUALIZE:
+        print(self.get_state().get_values())
+        if self._mujoco_handler._system_type != WrMujoco.C_VISUALIZE:
             if self._visualize: 
-                self._mujoco_hanlder._render()
-        elif self._mujoco_hanlder._visualize:
+                self._mujoco_handler._render()
+        elif self._mujoco_handler._visualize:
             state_value = []
-            current_state = self._state
+            current_state = self.get_state()
 
-            if callable(getattr(self, '_obs_to_mujoco', None)):
-                current_state = self._obs_to_mujoco(current_state)
+            if callable(getattr(self._sys_env, '_obs_to_mujoco', None)):
+                current_state = self._sys_env._obs_to_mujoco(current_state)
 
             for state_name in self._vis_state_name_list:
-                state_id = self._state_space.get_dim_by_name(state_name).get_id()
+                state_id = self.get_state_space().get_dim_by_name(state_name).get_id()
                 state_value.append(current_state.get_value(state_id))
 
-            if not self._mujoco_hanlder._use_radian:
+            if not self._mujoco_handler._use_radian:
                 state_value = list(map(math.radians, state_value))
 
-            self._mujoco_hanlder._set_state(state_value, np.zeros(len(state_value)))
+            self._mujoco_handler._set_state(state_value, np.zeros(len(state_value)))
 
-            self._mujoco_hanlder._render()
+            self._mujoco_handler._render()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_reward(self, p_state_old, p_state_new):
+        return self._sys_env._compute_reward(p_state_old, p_state_new)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_success(self, p_state):
+        return self._sys_env._compute_success(p_state)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_broken(self, p_state):
+        return self._sys_env._compute_broken(p_state)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrMujocoClassCreator():
+    def __new__(cls, p_object):
+        if isinstance(p_object, Environment):
+            class MujocoWrapper(WrMujocoWrapper, Environment):
+                C_NAME = "Environment"
+                def __init__(self, p_environment, p_mujoco_handler, p_vis_state_name, p_visualize, p_logging=Log.C_LOG_ALL):
+                    WrMujocoWrapper.__init__(self, p_environment, p_mujoco_handler, p_vis_state_name, p_logging)
+                    Environment.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
+
+            return MujocoWrapper
+        elif isinstance(p_object, System):
+            class MujocoWrapper(WrMujocoWrapper, System):
+                C_NAME = "System"
+                def __init__(self, p_system, p_mujoco_handler, p_vis_state_name, p_visualize, p_logging=Log.C_LOG_ALL):
+                    WrMujocoWrapper.__init__(self, p_system, p_mujoco_handler, p_vis_state_name, p_logging)
+                    System.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
+
+            return MujocoWrapper
+        else:
+            raise Error("Object with this type is not Supported")
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrMujoco():
+
+    C_ENVIRONMENT = 0
+    C_SYSTEM = 1
+    C_VISUALIZE = 2
+
+    def __new__(cls, p_system, 
+                p_model_file, 
+                p_frame_skip=1, 
+                p_system_type=C_ENVIRONMENT, 
+                p_vis_state_name=None, 
+                p_state_mapping=None,
+                p_use_radian=True,
+                p_visualize=False, 
+                p_camera_conf=(None, None, None), 
+                p_logging=Log.C_LOG_ALL
+                ):
+
+        # Instatiate the class creator
+        wr_mujoco_class_creator = WrMujocoClassCreator(p_system)
+
+        # Create MuJoCo hanlder
+        mujoco_handler = MujocoHandler(p_model_file, 
+                                    p_frame_skip, 
+                                    p_system_type=p_system_type,
+                                    p_system_state_space=p_system.get_state_space(),
+                                    p_state_mapping=p_state_mapping,
+                                    p_use_radian=p_use_radian,
+                                    p_visualize=p_visualize, 
+                                    p_camera_conf=p_camera_conf)
+
+        p_wrapped_obj = wr_mujoco_class_creator(p_system, mujoco_handler, p_vis_state_name, p_visualize, p_logging)
+
+        # Set Latency for Simulation
+        # Using this or using method type
+        if p_system_type != WrMujoco.C_VISUALIZE:
+            p_wrapped_obj.set_latency(timedelta(0,0.05,0))
+
+        return p_wrapped_obj
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -609,14 +642,14 @@ class MujocoHandler:
             if state[1][0] == "joint":
                 if state[1][1] == "pos":
                     if not self._use_radian:
-                        state_value.append(np.radians(self._data.joint(state[0]).qpos))
+                        state_value.append(np.degrees(self._data.joint(state[0]).qpos))
                     else:
-                        state_value.append(np.radians(self._data.joint(state[0]).qpos))
+                        state_value.append(self._data.joint(state[0]).qpos)
                 elif state[1][1] == "vel":
                     if not self._use_radian:
-                        state_value.append(np.radians(self._data.joint(state[0]).qvel))
+                        state_value.append(np.degrees(self._data.joint(state[0]).qvel))
                     else:
-                        state_value.append(np.radians(self._data.joint(state[0]).qvel))
+                        state_value.append(self._data.joint(state[0]).qvel)
                 else:
                     raise Error("State name is not compatible")
 
