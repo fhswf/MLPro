@@ -421,7 +421,6 @@ class WrMujocoWrapper(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
-        print(self.get_state().get_values())
         if self._mujoco_handler._system_type != WrMujoco.C_VISUALIZE:
             if self._visualize: 
                 self._mujoco_handler._render()
