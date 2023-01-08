@@ -349,7 +349,7 @@ class WrMujoco(Wrapper):
                 ):
 
         # Create MuJoCo hanlder
-        mujoco_handler = MujocoHanlder(p_model_file, 
+        mujoco_handler = MujocoHandler(p_model_file, 
                                     p_frame_skip, 
                                     p_system_type=p_system_type,
                                     p_system_state_space=p_system.get_state_space(),
@@ -504,7 +504,7 @@ class WrMujoco(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MujocoHanlder:
+class MujocoHandler:
     """
     Module provides the functionality of MuJoCo
     """
