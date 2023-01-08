@@ -392,7 +392,7 @@ class WrMujoco(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_handler(self, p_mujoco_handler):
-        self._mujoco_hanlder = p_mujoco_handler
+        self._mujoco_handler = p_mujoco_handler
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -411,7 +411,7 @@ class WrMujoco(Wrapper):
         if callable(getattr(self, '_obs_to_mujoco', None)):
             current_state = self._obs_to_mujoco(current_state)
         
-        ob = self._mujoco_hanlder._reset_simulation(current_state)
+        ob = self._mujoco_handler._reset_simulation(current_state)
 
         self._state.set_values(ob)
 
@@ -436,11 +436,11 @@ class WrMujoco(Wrapper):
         """
         action = p_action.get_sorted_values()
 
-        self._mujoco_hanlder._step_simulation(action)
+        self._mujoco_handler._step_simulation(action)
 
         # Delay because of the simulation
         time.sleep(self.get_latency().total_seconds())
-        ob = self._mujoco_hanlder._get_obs()
+        ob = self._mujoco_handler._get_obs()
 
         if callable(getattr(self, '_obs_from_mujoco', None)):
             ob = self._obs_from_mujoco(ob)
@@ -453,10 +453,10 @@ class WrMujoco(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
     def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
-        if self._mujoco_hanlder._system_type != WrMujoco.C_VISUALIZE:
+        if self._mujoco_handler._system_type != WrMujoco.C_VISUALIZE:
             if self._visualize: 
-                self._mujoco_hanlder._render()
-        elif self._mujoco_hanlder._visualize:
+                self._mujoco_handler._render()
+        elif self._mujoco_handler._visualize:
             state_value = []
             current_state = self._state
 
@@ -470,20 +470,20 @@ class WrMujoco(Wrapper):
             except:
                 raise Error("Name of the state is not valid")
 
-            if not self._mujoco_hanlder._use_radian:
+            if not self._mujoco_handler._use_radian:
                 state_value = list(map(math.radians, state_value))
 
-            self._mujoco_hanlder._set_state(state_value, np.zeros(len(state_value)))
+            self._mujoco_handler._set_state(state_value, np.zeros(len(state_value)))
 
-            self._mujoco_hanlder._render()
+            self._mujoco_handler._render()
 
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
-        if self._mujoco_hanlder._system_type != WrMujoco.C_VISUALIZE:
+        if self._mujoco_handler._system_type != WrMujoco.C_VISUALIZE:
             if self._visualize: 
-                self._mujoco_hanlder._render()
-        elif self._mujoco_hanlder._visualize:
+                self._mujoco_handler._render()
+        elif self._mujoco_handler._visualize:
             state_value = []
             current_state = self._state
 
@@ -494,12 +494,12 @@ class WrMujoco(Wrapper):
                 state_id = self._state_space.get_dim_by_name(state_name).get_id()
                 state_value.append(current_state.get_value(state_id))
 
-            if not self._mujoco_hanlder._use_radian:
+            if not self._mujoco_handler._use_radian:
                 state_value = list(map(math.radians, state_value))
 
-            self._mujoco_hanlder._set_state(state_value, np.zeros(len(state_value)))
+            self._mujoco_handler._set_state(state_value, np.zeros(len(state_value)))
 
-            self._mujoco_hanlder._render()
+            self._mujoco_handler._render()
 
 
 ## -------------------------------------------------------------------------------------------------
