@@ -25,28 +25,6 @@ import random
 
 
 
-class MyController (Controller):
-
-    C_NAME      = 'Dummy'
-
-    def _reset(self) -> bool:
-        self.log(Log.C_LOG_TYPE_S, 'Pseudo-reset of the controller')
-        return True
-
-
-    def _get_sensor_value(self, p_id):
-        """
-        Pseudo-implementation for getting a sensor value.
-        """
-        self.log(Log.C_LOG_TYPE_S, 'Pseudo-import of a sensor value...')
-        return random.random()
-
-
-    def _set_actuator_value(self, p_id, p_value) -> bool:
-        self.log(Log.C_LOG_TYPE_S, 'Pseudo-export of an actuator value:', str(p_value))
-        return True
-
-
 
 
 class PendulumSystem (System):
