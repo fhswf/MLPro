@@ -524,7 +524,6 @@ class WrMujoco():
         p_wrapped_obj = wr_mujoco_class_creator(p_system, mujoco_handler, p_vis_state_name, p_visualize, p_logging)
 
         # Set Latency for Simulation
-        # Using this or using method type
         if p_system_type != WrMujoco.C_VISUALIZE:
             p_wrapped_obj.set_latency(timedelta(0,0.05,0))
 
