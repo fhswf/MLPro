@@ -71,6 +71,7 @@ class MyAdaptiveScenario (StreamScenario):
         features_new = [ ( 'F', features[1:3] ) ]
 
         task_rearranger = Rearranger( p_name='Chain 2D, Task T1',
+                                      p_duplicate_data=True,
                                       p_range_max=Task.C_RANGE_THREAD,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
@@ -117,6 +118,7 @@ class MyAdaptiveScenario (StreamScenario):
 
         task_rearranger = Rearranger( p_name='Chain 3D, Task T1',
                                       p_range_max=Task.C_RANGE_THREAD,
+                                      p_duplicate_data=True,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
                                       p_features_new=features_new )
@@ -163,6 +165,7 @@ class MyAdaptiveScenario (StreamScenario):
 
         task_rearranger = Rearranger( p_name='Chain nD, Task T1',
                                       p_range_max=Task.C_RANGE_THREAD,
+                                      p_duplicate_data=True,
                                       p_visualize=p_visualize,
                                       p_logging=p_logging,
                                       p_features_new=features_new )
