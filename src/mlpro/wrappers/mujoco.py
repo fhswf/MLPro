@@ -467,7 +467,7 @@ class WrMujocoWrapper(Wrapper):
 class WrMujocoClassCreator():
     def __new__(cls, p_cls):
         class MujocoWrapper(WrMujocoWrapper, p_cls):
-            C_NAME = "Environment"
+            C_NAME = p_cls.__name__
             def __init__(self, p_environment, p_mujoco_handler, p_vis_state_name, p_visualize, p_logging=Log.C_LOG_ALL):
                 WrMujocoWrapper.__init__(self, p_environment, p_mujoco_handler, p_vis_state_name, p_logging)
                 p_cls.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
