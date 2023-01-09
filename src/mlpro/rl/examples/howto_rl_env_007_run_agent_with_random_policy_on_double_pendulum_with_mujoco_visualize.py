@@ -68,7 +68,7 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
-        env   = DoublePendulumS4(p_logging=True, p_init_angles='up', p_max_torque=10, p_visualize=p_visualize)
+        env   = DoublePendulumS4(p_logging=True, p_init_angles='down', p_max_torque=10, p_visualize=p_visualize)
 
         # Wrapped env with MuJoCo
         model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
