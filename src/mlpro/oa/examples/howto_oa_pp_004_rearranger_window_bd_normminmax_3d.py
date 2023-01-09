@@ -8,10 +8,11 @@
 ## -- 2022-12-12  0.0.0     LSB      Creation
 ## -- 2022-12-20  0.1.0     DA       Supplements
 ## -- 2023-01-01  1.0.0     DA       Completion
+## -- 2023-01-09  1.1.0     DA       User input of cycles and visualization step rate
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-01-01)
+Ver. 1.1.0 (2023-01-09)
 
 This module is an example of adaptive normalization of streaming data using MinMax normalizer. To 
 this regard, an online-adadptive custom scenario is set up. It combines a native 10-dimensional 
@@ -26,8 +27,8 @@ You will learn:
 2. How to set up online-adaptive workflows reusing various adaptive/non-adaptive MLPro stream tasks
 
 3. How to run and visualize your own custom stream scenario.
-"""
 
+"""
 
 
 from mlpro.bf.streams import *
@@ -120,15 +121,25 @@ class MyAdaptiveScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    cycle_limit = 300
-    logging = Log.C_LOG_ALL
-    visualize = True
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+
+    try:
+        cycle_limit = min(1000, max(1, int(input('\nPlease enter number of cycles (1 - 1000, default = 200): '))))
+    except:
+        cycle_limit = 200
+
+    try:
+        step_rate   = max(1, int(input('\nPlease enter update step rate for visualization (1 = update after every cycle): ')))
+    except:
+        step_rate = 1
 
 else:
     # 1.2 Parameters for internal unit test
     cycle_limit = 2
-    logging = Log.C_LOG_NOTHING
-    visualize = False
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    step_rate   = 1
 
 
 # 2 Instantiate the stream scenario
@@ -145,10 +156,15 @@ myscenario.reset()
 
 if __name__ == '__main__':
     myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
-                                                        p_step_rate = 3 ) )
-    input('Press ENTER to start stream processing...')
+                                                        p_step_rate = step_rate ) )
+    input('\nPlease arrange all windows and press ENTER to start stream processing...')
 
+tp_before = datetime.now()
 myscenario.run()
+tp_after = datetime.now()
+tp_delta = tp_after - tp_before
+duraction_sec = tp_delta.seconds + tp_delta.microseconds / 1000000
+myscenario.log(Log.C_LOG_TYPE_S, 'Duration [sec]:', round(duraction_sec,2), ', Cycles/sec:', round(cycle_limit/duraction_sec,2))
 
 if __name__ == '__main__':
     input('Press ENTER to exit...')
