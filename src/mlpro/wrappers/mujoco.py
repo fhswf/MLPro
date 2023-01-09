@@ -314,15 +314,20 @@ class WrMujocoWrapper(Wrapper):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def __init__(self, p_sys_env, p_mujoco_handler, p_vis_state_name, p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_sys_env, p_vis_state_name, p_logging=Log.C_LOG_ALL):
         self._sys_env = p_sys_env
         self._vis_state_name_list = p_vis_state_name
         Wrapper.__init__(self, p_logging)
-        self._mujoco_handler = p_mujoco_handler
+        
 
 ## ------------------------------------------------------------------------------------------------------
     def setup_spaces(self):
         return self._sys_env.get_state_space(), self._sys_env.get_action_space()
+
+
+## ------------------------------------------------------------------------------------------------------
+    def set_mujoco_handler(self, p_mujoco_handler):
+        self._mujoco_handler = p_mujoco_handler
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -463,26 +468,23 @@ class WrMujocoWrapper(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrMujocoClassCreator():
-    def __new__(cls, p_object):
-        if isinstance(p_object, Environment):
-            class MujocoWrapper(WrMujocoWrapper, Environment):
-                C_NAME = "Environment"
-                def __init__(self, p_environment, p_mujoco_handler, p_vis_state_name, p_visualize, p_logging=Log.C_LOG_ALL):
-                    WrMujocoWrapper.__init__(self, p_environment, p_mujoco_handler, p_vis_state_name, p_logging)
-                    Environment.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
-
-            return MujocoWrapper
-        elif isinstance(p_object, System):
-            class MujocoWrapper(WrMujocoWrapper, System):
+class MujocoSysWrapper(WrMujocoWrapper, System):
                 C_NAME = "System"
-                def __init__(self, p_system, p_mujoco_handler, p_vis_state_name, p_visualize, p_logging=Log.C_LOG_ALL):
-                    WrMujocoWrapper.__init__(self, p_system, p_mujoco_handler, p_vis_state_name, p_logging)
+                def __init__(self, p_system, p_vis_state_name, p_visualize, p_logging=Log.C_LOG_ALL):
+                    WrMujocoWrapper.__init__(self, p_system, p_vis_state_name, p_logging)
                     System.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
 
-            return MujocoWrapper
-        else:
-            raise Error("Object with this type is not Supported")
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MujocoEnvWrapper(WrMujocoWrapper, Environment):
+                C_NAME = "Environment"
+                def __init__(self, p_environment, p_vis_state_name, p_visualize, p_logging=Log.C_LOG_ALL):
+                    WrMujocoWrapper.__init__(self, p_environment, p_vis_state_name, p_logging)
+                    Environment.__init__(self, p_mode=Mode.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
 
 
 
@@ -496,7 +498,8 @@ class WrMujoco():
     C_SYSTEM = 1
     C_VISUALIZE = 2
 
-    def __new__(cls, p_system, 
+    def __new__(cls, 
+                p_system, 
                 p_model_file, 
                 p_frame_skip=1, 
                 p_system_type=C_ENVIRONMENT, 
@@ -508,8 +511,12 @@ class WrMujoco():
                 p_logging=Log.C_LOG_ALL
                 ):
 
-        # Instatiate the class creator
-        wr_mujoco_class_creator = WrMujocoClassCreator(p_system)
+        if isinstance(p_system, Environment):
+            p_wrapped_obj = MujocoEnvWrapper(p_system, p_vis_state_name, p_visualize, p_logging)
+        elif isinstance(p_system, System):
+            p_wrapped_obj = MujocoSysWrapper(p_system, p_vis_state_name, p_visualize, p_logging)
+        else:
+            raise Error("Type of environment or system is not supported")
 
         # Create MuJoCo hanlder
         mujoco_handler = MujocoHandler(p_model_file, 
@@ -521,7 +528,8 @@ class WrMujoco():
                                     p_visualize=p_visualize, 
                                     p_camera_conf=p_camera_conf)
 
-        p_wrapped_obj = wr_mujoco_class_creator(p_system, mujoco_handler, p_vis_state_name, p_visualize, p_logging)
+        # Set MuJoCo Handler
+        p_wrapped_obj.set_mujoco_handler(mujoco_handler)
 
         # Set Latency for Simulation
         if p_system_type != WrMujoco.C_VISUALIZE:
