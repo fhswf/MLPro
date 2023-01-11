@@ -72,9 +72,9 @@ Stream Task
 
 A StreamTask is a special stream processing task that takes a new instance as an input and delivers the processed
 output. StreamTask class in MLPro also provide provide plotting functionalities in 2D, 3D and nD, that plot the
-streaming instances by default. (A link to know more). Inherit from this class and implement the :code:`_run
-(p_inst_new, p_inst_del)` method to implement custom stream tasks with inbuilt default plotting functionalities. This
-can be imported by including following:
+streaming instances by default. (A link to know more). Inherit from this class and implement the :code:`_run(p_inst_new, p_inst_del)`
+method to implement custom stream tasks with inbuilt default plotting functionalities. This can be imported by
+including following:
 
 
 Currently MLPro provides following stream task implementations:
@@ -90,6 +90,4 @@ Stream Workflow
 A StreamWorkflow in MLPro is a list of StreamTasks arranged hierarchically with pre-defined dependencies on prior
 tasks in the workflow. StreamWorkflow also provides default plotting functionalities in 2D, 3D and nD, that plot all
 the instances in the workflow. (A link to know more about plotting.) StreamWorkflow can be imported as following
-
-
 
