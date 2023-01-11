@@ -69,6 +69,7 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
                         **p_kwargs )
 
         Norm.NormalizerMinMax.__init__(self)
+        self._parameters_updated:bool = True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -126,6 +127,45 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
         self.update_parameters(set)
 
         return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_2d( self,
+                         p_settings : PlotSettings,
+                         p_inst_new : list,
+                         p_inst_del : list,
+                         **p_kwargs ):
+        """
+
+        Parameters
+        ----------
+        p_settings
+        p_inst_new
+        p_inst_del
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+
+        if self._parameters_updated:
+            plot_data = np.zeros((2,len(self._plot_2d_xdata)))
+
+            for i in range(len(self._plot_2d_xdata)):
+                plot_data[0][i] = self._plot_2d_xdata[i]
+                plot_data[0][i] = self._plot_2d_ydata[i]
+
+            plot_data_renormalized = self.renormalize(plot_data)
+
+            self._plot_2d_xdata = list(j for j in plot_data_renormalized[0])
+            self._plot_2d_ydata = list(j for j in plot_data_renormalized[1])
+
+        OATask._update_plot_2d(self, p_settings = p_settings,
+                               p_inst_new = p_inst_new,
+                               p_inst_del = p_inst_del,
+                               **p_kwargs)
+
 
 
 
