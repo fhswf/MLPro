@@ -10,10 +10,11 @@
 ## -- 2022-12-20  1.0.2     DA       Refactoring
 ## -- 2022-12-20  1.0.3     LSB      Bug fix
 ## -- 2022-12-30  1.0.4     LSB      Bug fix
+## -- 2023-01-12  1.1.0     LSB      Renormalizing plot data
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-12-30)
+Ver. 1.1.0 (2022-01-12)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization and ZTransformation
 """
@@ -149,23 +150,109 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
 
         """
 
-        if self._parameters_updated:
-            plot_data = np.zeros((2,len(self._plot_2d_xdata)))
+        if self._parameters_updated and ( len(self._plot_2d_xdata) != 0 ):
+            plot_data = np.zeros((len(self._plot_2d_xdata),2))
 
             for i in range(len(self._plot_2d_xdata)):
-                plot_data[0][i] = self._plot_2d_xdata[i]
-                plot_data[0][i] = self._plot_2d_ydata[i]
+                plot_data[i][0] = self._plot_2d_xdata[i]
+                plot_data[i][1] = self._plot_2d_ydata[i]
 
             plot_data_renormalized = self.renormalize(plot_data)
 
-            self._plot_2d_xdata = list(j for j in plot_data_renormalized[0])
-            self._plot_2d_ydata = list(j for j in plot_data_renormalized[1])
+            self._plot_2d_xdata = list(j[0] for j in plot_data_renormalized)
+            self._plot_2d_ydata = list(j[1] for j in plot_data_renormalized)
+
+            self._parameters_updated = False
 
         OATask._update_plot_2d(self, p_settings = p_settings,
                                p_inst_new = p_inst_new,
                                p_inst_del = p_inst_del,
                                **p_kwargs)
 
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_3d( self,
+                         p_settings : PlotSettings,
+                         p_inst_new : list,
+                         p_inst_del : list,
+                         **p_kwargs ):
+        """
+
+        Parameters
+        ----------
+        p_settings
+        p_inst_new
+        p_inst_del
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+        if self._parameters_updated and ( len(self._plot_3d_xdata) != 0 ):
+            plot_data = np.zeros((len(self._plot_3d_xdata),3))
+
+            for i in range(len(self._plot_3d_xdata)):
+                plot_data[i][0] = self._plot_3d_xdata[i]
+                plot_data[i][1] = self._plot_3d_ydata[i]
+                plot_data[i][2] = self._plot_3d_zdata[i]
+
+
+            plot_data_renormalized = self.renormalize(plot_data)
+
+            self._plot_3d_xdata = list(j[0] for j in plot_data_renormalized)
+            self._plot_3d_ydata = list(j[1] for j in plot_data_renormalized)
+            self._plot_3d_zdata = list(j[2] for j in plot_data_renormalized)
+
+            self._parameters_updated = False
+
+        OATask._update_plot_3d(self, p_settings = p_settings,
+                               p_inst_new = p_inst_new,
+                               p_inst_del = p_inst_del,
+                               **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_plot_nd( self,
+                         p_settings : PlotSettings,
+                         p_inst_new : list,
+                         p_inst_del : list,
+                         **p_kwargs ):
+        """
+
+        Parameters
+        ----------
+        p_settings
+        p_inst_new
+        p_inst_del
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+
+        if self._parameters_updated and self._plot_nd_plots:
+            if (len(self._plot_nd_plots[0][0])) != 0:
+                plot_data = np.zeros((len(self._plot_nd_plots[0][0]),len(self._plot_nd_plots)))
+
+                for j in range(len(self._plot_nd_plots)):
+                    for i in range(len(self._plot_nd_plots[0][0])):
+                        plot_data[i][j] = self._plot_nd_plots[0][0][i]
+
+
+                plot_data_renormalized = self.renormalize(plot_data)
+
+                for j in range(len(self._plot_nd_plots)):
+                    self._plot_nd_plots[j][0] = list(k[0] for k in plot_data_renormalized)
+
+
+                self._parameters_updated = False
+
+        OATask._update_plot_nd(self, p_settings = p_settings,
+                                   p_inst_new = p_inst_new,
+                                   p_inst_del = p_inst_del,
+                                   **p_kwargs)
 
 
 
