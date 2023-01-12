@@ -8,27 +8,94 @@ MLPro - Machine Learning Professional
 
 Welcome to MLPro - the integrative middleware-framework for standardized machine learning in Python!
 
-MLPro is developed by scientists to enable
-   - real world ML projects at a high quality level
-   - comparable and reproducible results in publications
-   - the exchange and reuse of standardized ML code
-
+MLPro is developed by computer scientists and engineers to
+   - support real world ML projects at a high quality level
+   - integrate numerous established ML packages in a consistent process landscape
+   - enable exchange and reuse of standardized ML code
+   - achieve comparable and reproducible results in publications
+   
 For this purpose, MLPro provides advanced models and templates at a scientific level for a constantly growing number of sub-areas of machine learning.
 These are embedded in standard processes for training and real operations. But of course we have not reinvented existing wheels. An integral part of MLPro's philosophy is to seamlessly integrate proven functionalities of relevant 3rd party packages instead of developing them again.
 The scope is rounded off by numerous executable example programs that make it easier to get started in the world of MLPro.
 
+.. |welcome| image:: content/intro/images/welcome.png
+   :scale: 65 %
+   :target: index.html#target-intro
+
+.. |examples| image:: content/intro/images/example_pool.png
+   :scale: 65 %
+   :target: index.html#target-appendix1
+
+.. |project| image:: content/intro/images/project_mlpro.png
+   :scale: 65 %
+   :target: index.html#target-appendix3
+
+.. |mlpro_bf| image:: content/intro/images/mlpro_bf.png
+   :scale: 65 %
+   :target: index.html#target-bf
+
+.. |mlpro_sl| image:: content/intro/images/mlpro_sl.png
+   :scale: 65 %
+   :target: index.html#target-mlpro-sl
+
+.. |mlpro_rl| image:: content/intro/images/mlpro_rl.png
+   :scale: 65 %
+   :target: index.html#target-mlpro-rl
+
+.. |mlpro_gt| image:: content/intro/images/mlpro_gt.png
+   :scale: 65 %
+   :target: index.html#target-mlpro-gt
+
+.. |mlpro_oa| image:: content/intro/images/mlpro_oa.png
+   :scale: 65 %
+   :target: index.html#target-mlpro-oa
+
+.. |mlpro_api| image:: content/intro/images/api_reference.png
+   :scale: 65 %
+   :target: index.html#target-appendix2
+
+
+|welcome| |project| 
+
+Sub-frameworks...
+
+|mlpro_bf| |mlpro_rl| |mlpro_gt| |mlpro_oa| |mlpro_sl|
+
+For developers...
+
+|examples| |mlpro_api| 
+
+
+
+.. |mlpro_pypi| image:: content/intro/images/pypi.svg
+   :scale: 50 %
+
+.. |mlpro_anaconda| image:: content/intro/images/anaconda.svg
+   :scale: 100 %
+
+.. |mlpro_rg| image:: content/intro/images/researchgate.jpeg
+   :scale: 6 %
+
+.. |mlpro_github| image:: content/intro/images/github.png
+   :scale: 2 %
+
+
 MLPro is also present on...
-   - `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
-   - `Python Package Index (PyPI) <https://pypi.org/project/mlpro/>`_
-   - `Anaconda <https://anaconda.org/mlpro/mlpro/>`_
-   - `GitHub <https://github.com/fhswf/MLPro>`_
 
+.. list-table::
 
-Notes on the current version:
-   - MLPro already provides two stable sub-frameworks MLPro-RL for reinforcement learning and MLPro-GT for game theory.
-   - The documentation is not quite complete yet, but we are working hard on it and the numerous sample programs in :ref:`Appendix 1 <target_appendix1>` and the API specification in :ref:`Appendix 2 <target_appendix2>` should help in the meantime. 
-   - Next sub-framework in progress: MLPro-OA for online adaptive systems...
+   * - |mlpro_pypi|
+     - `Python Package Index (PyPI) <https://pypi.org/project/mlpro/>`_
 
+   * - |mlpro_anaconda|
+     - `Anaconda <https://anaconda.org/mlpro/mlpro/>`_
+
+   * - |mlpro_rg|
+     - `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
+
+   * - |mlpro_github|
+     - `GitHub <https://github.com/fhswf/MLPro>`_
+     
 
 
 
@@ -36,6 +103,7 @@ Notes on the current version:
 Table of Content
 ================
 
+.. _target_intro:
 .. toctree::
    :maxdepth: 1
    :caption: 1 Introduction
@@ -45,7 +113,7 @@ Table of Content
    content/intro/architecture
 
 
-
+.. _target_bf:
 .. toctree::
    :maxdepth: 2
    :caption: 2 MLPro-BF – Basic Functions
@@ -55,6 +123,7 @@ Table of Content
 
 
 
+.. _target_mlpro_sl:
 .. toctree::
    :maxdepth: 3
    :caption: 3 MLPro-SL - Supervised Learning
@@ -64,6 +133,7 @@ Table of Content
 
 
 
+.. _target_mlpro_rl:
 .. toctree::
    :maxdepth: 3
    :caption: 4 MLPro-RL - Reinforcement Learning
@@ -73,6 +143,7 @@ Table of Content
 
 
 
+.. _target_mlpro_gt:
 .. toctree::
    :maxdepth: 2
    :caption: 5 MLPro-GT – Game Theory
@@ -81,7 +152,7 @@ Table of Content
    content/gt/*
 
 
-
+.. _target_mlpro_oa:
 .. toctree::
    :maxdepth: 1
    :caption: 6 MLPro-OA – Online Adaptivity
