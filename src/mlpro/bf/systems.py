@@ -24,12 +24,11 @@ This module provides models and templates for state based systems.
 
 
 from time import sleep
-from mlpro.bf.various import TStamp, ScientificObject
+from mlpro.bf.various import TStamp, ScientificObject, Label
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable
 from mlpro.bf.ops import Mode
 from mlpro.bf.math import *
-import matplotlib.pyplot as plt
 
 
 
