@@ -29,6 +29,7 @@ from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable
 from mlpro.bf.ops import Mode
 from mlpro.bf.math import *
+import matplotlib.pyplot as plt
 
 
 

@@ -27,10 +27,11 @@
 ## -- 2022-12-09  1.4.1     DA       Temporarily removed howto rl_wp_003 due to problems with pettingzoo
 ## -- 2022-12-21  1.4.2     SY       - Reactivate howto rl_wp_003
 ## --                                - Temporarily removed howto rl_agent_005 and rl_wp_001
+## -- 2023-01-14  1.4.3     SY       Add howto related to transfer functions
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2022-12-21)
+Ver. 1.4.3 (2023-01-14)
 
 Unit test for all examples available.
 """
@@ -57,6 +58,7 @@ howto_list = {
     "bf_streams_052": "mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn",
     "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
+    "bf_systems_002": "howto_bf_systems_002_set_up_transfer_functions",
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
