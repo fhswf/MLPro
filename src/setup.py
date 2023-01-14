@@ -30,6 +30,6 @@ extras_require={
         "hyperopt==0.2.7",
         "pyglet==1.5.27"
     ],
-}
+},
 
 zip_safe=False)
