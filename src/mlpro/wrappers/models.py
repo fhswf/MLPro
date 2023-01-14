@@ -30,10 +30,11 @@
 ## -- 2021-12-07  1.7.3     SY       Add a new attribute in ScientificObject
 ## -- 2021-12-31  1.7.4     DA       Class Log: udpated docstrings
 ## -- 2022-07-21  1.8.0     DA       New class Wrapper
+## -- 2023-01-14  1.8.1     MRD      Save installed version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-07-27)
+Ver. 1.8.1 (2023-01-14)
 
 This module provides model classes for wrappers in the MLPro project.
 """
@@ -78,6 +79,7 @@ class Wrapper (Log):
         try:
             version = pkg_resources.get_distribution(self.C_WRAPPED_PACKAGE).version
             self.log(Log.C_LOG_TYPE_I, 'Wrapped package ' + self.C_WRAPPED_PACKAGE + ' installed in version ' + version)
+            self.installed_version = version
 
         except:
             raise Error('Package ' + self.C_WRAPPED_PACKAGE + ' not installed')

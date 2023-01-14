@@ -45,10 +45,11 @@
 ## -- 2022-11-01  1.4.5     DA       Refactoring
 ## -- 2022-11-09  1.4.6     DA       Refactoring
 ## -- 2022-11-29  1.4.7     DA       Refactoring
+## -- 2023-01-14  1.4.8     MRD      Separate reset function for gym, reset_old and reset_new
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.7 (2022-11-29)
+Ver. 1.4.8 (2023-01-14)
 
 This module provides wrapper classes for OpenAI Gym environments.
 
@@ -434,6 +435,11 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
         else:
             self.render_mode = None
 
+        if self.installed_version == "0.21.0":
+            self.reset = self.reset_old
+        else:
+            self.reset = self.reset_new
+
         self.new_step_api = p_new_step_api
 
         self.first_refresh = True
@@ -551,11 +557,11 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
             info["TimeLimit.truncated"] = state.get_timeout()
             return obs, reward.get_overall_reward(), terminated, info
 
-    
-## -------------------------------------------------------------------------------------------------
-    def reset(self, seed=None, return_info=False, options=None):
+
+    def reset_new(self, seed=None, return_info=False, options=None):
         """
         Resets the environment to an initial state and returns the initial observation.
+        This is for new gym version.
 
         Parameters
         ----------
@@ -604,6 +610,57 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
             return obs, info
         else:
             return obs
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset_old(self):
+        """
+        Resets the environment to an initial state and returns the initial observation.
+        This is for old gym version.
+
+        Parameters
+        ----------
+        seed : int, optional
+           The seed that is used to initialize the environment's PRNG.
+           If the environment does not already have a PRNG and ``seed=None`` (the default option) is passed,
+           a seed will be chosen from some source of entropy (e.g. timestamp or /dev/urandom).
+           However, if the environment already has a PRNG and ``seed=None`` is passed, the PRNG will *not* be reset.
+           If you pass an integer, the PRNG will be reset even if it already exists.
+           Usually, you want to pass an integer *right after the environment has been initialized and then never again*.
+           Please refer to the minimal example above to see this paradigm in action.
+           The default is None.
+        return_info : bool
+            If true, return additional information along with initial observation.
+            This info should be analogous to the info returned in :meth:`step`.
+            The default is False.
+        options : dict, optional
+            Additional information to specify how the environment is reset (optional,
+            depending on the specific environment). The default is None.
+
+        Returns
+        -------
+        obs : object
+            This will be an element of the environment's :attr:`observation_space`.
+            This may, for instance, be a numpy array containing the positions and velocities of certain objects.
+        info : dict
+            It contains auxiliary diagnostic information (helpful for debugging, learning, and logging).
+            This might, for instance, contain: metrics that describe the agent's performance state, variables that are
+            hidden from observations, or individual reward terms that are combined to produce the total reward.
+            It also can contain information that distinguishes truncation and termination, however this is deprecated in favour
+            of returning two booleans, and will be removed in a future version.
+
+        """
+        # We need the following line to seed self.np_random
+        
+        self._mlpro_env.reset()
+        obs = None
+        if isinstance(self.observation_space, gym.spaces.Box):
+            obs = np.array(self._mlpro_env.get_state().get_values(), dtype=np.float32)
+        else:
+            obs = np.array(self._mlpro_env.get_state().get_values())
+        
+        info = {}
+        return obs
 
     
 ## -------------------------------------------------------------------------------------------------
