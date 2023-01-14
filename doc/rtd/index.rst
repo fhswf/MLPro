@@ -13,7 +13,7 @@ MLPro
    - provides complete process landscapes and powerful ML templates on a scientific level
    - integrates a growing number of :ref:`proven ML packages <target_wrappers>` 
    - enables comparable and reproducible results in publications
-   - is open source and even commercially usable (`Apache 2.0 license <https://github.com/fhswf/MLPro/blob/main/LICENSE>`_)
+   - is open source and even commercially usable (`Apache License 2.0 <https://github.com/fhswf/MLPro/blob/main/LICENSE>`_)
 
 
 .. |welcome| image:: content/intro/images/welcome.png
