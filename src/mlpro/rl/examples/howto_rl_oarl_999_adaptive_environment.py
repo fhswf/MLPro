@@ -22,7 +22,7 @@ You will learn:
 
 """
 
-from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4
+from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4, DoublePendulumRoot
 from mlpro.rl.models_env_adaptive_environment import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
@@ -64,125 +64,6 @@ class ScenarioDoublePendulum(RLScenario):
         )
 
 
-class DPFctSTrans(OAFctSTrans):
+class DPRewardFunction(OAFctReward):
 
-    def __init__(self,
-                 p_mode = Mode.C_MODE_SIM,
-                 p_latency = None,
-                 p_max_torque=20,
-                 p_l1=1.0,
-                 p_l2=1.0,
-                 p_m1=1.0,
-                 p_m2=1.0,
-                 p_init_angles=C_ANGLES_RND,
-                 p_g=9.8,
-                 p_history_length=5,
-                 p_visualize:bool=False,
-                 p_logging=Log.C_LOG_ALL ):
-
-        OAFctSTrans.__init__(self,
-        )
-
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
-
-        """
-                This method is used to calculate the next states of the system after a set of actions.
-
-                Parameters
-                ----------
-                p_state : State
-                    current State.
-                    p_action : Action
-                        current Action.
-
-                Returns
-                -------
-                    _state : State
-                        Current states after the simulation of latest action on the environment.
-
-                """
-
-        state = p_state.get_values()[0:4]
-        for i in [0, 2]:
-            if state[i] == 0:
-                state[i] = 180
-            elif state[i] != 0:
-                sign = 1 if state[i] > 0 else -1
-                state[i] = sign * (abs(state[i]) - 180)
-        torque = p_action.get_sorted_values()[0]
-        # torque = np.clip(torque, -self._max_torque, self._max_torque)
-
-        state = np.radians(state)
-
-        # if self._max_torque != 0:
-        #     self._alpha = abs(torque) / self._max_torque
-        # else:
-        #     self._alpha = 0
-
-        self._y = integrate.odeint(self._derivs, state, np.arange(0, self._t_step, self.C_ANI_STEP), args=(torque,))
-        state = self._y[-1].copy()
-
-        self._action_cw = True if torque > 0 else False
-
-        state = np.degrees(state)
-
-        state_ids = self._state.get_dim_ids()
-
-        for i in [0, 2]:
-            if state[i] % 360 < 180:
-                state[i] = state[i] % 360
-            elif state[i] % 360 > 180:
-                state[i] = state[i] % 360 - 360
-            sign = 1 if state[i] > 0 else -1
-            state[i] = sign * (abs(state[i]) - 180)
-
-        current_state = State(self._state_space)
-
-        current_state.set_values(state)
-
-        return current_state
-
-
-## ------------------------------------------------------------------------------------------------------
-    def _derivs(self, p_state, t,  p_torque):
-        """
-        This method is used to calculate the derivatives of the system, given the
-        current states.
-
-        Parameters
-        ----------
-        state : list
-            list of current state elements [theta 1, omega 1, acc 1, theta 2, omega 2, acc 2]
-        t : list
-            current Timestep
-        torque : float
-            Applied torque of the motor
-
-        Returns
-        -------
-        dydx : list
-            The derivatives of the given state
-
-        """
-
-        dydx = np.zeros_like(p_state)
-        dydx[0] = p_state[1]
-
-        delta = p_state[2] - p_state[0]
-        den1 = (self._m1 + self._m2) * self._l1 - self._m2 * self._l1 * cos(delta) * cos(delta)
-        dydx[1] = ((self._m2 * self._l1 * p_state[1] * p_state[1] * sin(delta) * cos(delta)
-                    + self._m2 * self._g * sin(p_state[2]) * cos(delta)
-                    + self._m2 * self._l2 * p_state[3] * p_state[3] * sin(delta)
-                    - (self._m1 + self._m2) * self._g * sin(p_state[0])-p_torque)
-                   / den1)
-
-        dydx[2] = p_state[3]
-
-        den2 = (self._l2 / self._l1) * den1
-        dydx[3] = ((- self._m2 * self._l2 * p_state[3] * p_state[3] * sin(delta) * cos(delta)
-                    + (self._m1 + self._m2) * self._g * sin(p_state[0]) * cos(delta)
-                    - (self._m1 + self._m2) * self._l1 * p_state[1] * p_state[1] * sin(delta)
-                    - (self._m1 + self._m2) * self._g * sin(p_state[2]))
-                   / den2)
-
-        return dydx
+    pass
