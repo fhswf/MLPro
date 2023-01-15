@@ -100,8 +100,8 @@ Table of Content
    :maxdepth: 1
    :caption: 1 Welcome to MLPro
    
-   content/intro/overview
-   content/intro/getstarted
+   content/intro/introduction
+   content/intro/onboarding
 
 
 .. _target_bf:

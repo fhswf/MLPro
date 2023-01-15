@@ -33,3 +33,5 @@ Architecture
 ------------
 
 ...
+
+.. image:: images/MLPro_Architecture.drawio.png
