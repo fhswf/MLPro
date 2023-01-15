@@ -1,5 +1,5 @@
-1.2 Getting Started
-=====================
+1.2 Onboarding
+==============
 
 .. _Installation:
 .. toctree::
