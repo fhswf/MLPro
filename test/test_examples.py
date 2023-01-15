@@ -28,10 +28,11 @@
 ## -- 2022-12-21  1.4.2     SY       - Reactivate howto rl_wp_003
 ## --                                - Temporarily removed howto rl_agent_005 and rl_wp_001
 ## -- 2023-01-14  1.4.3     SY       Add howto related to transfer functions
+## -- 2023-01-16  1.4.4     SY       Add howto related to unit converters
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.3 (2023-01-14)
+Ver. 1.4.4 (2023-01-16)
 
 Unit test for all examples available.
 """
@@ -59,6 +60,7 @@ howto_list = {
     "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
     "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_set_up_transfer_functions",
+    "bf_systems_003": "mlpro.bf.examples.howto_bf_systems_003_unit_converter",
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
