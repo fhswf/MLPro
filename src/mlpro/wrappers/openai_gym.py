@@ -435,12 +435,14 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
         else:
             self.render_mode = None
 
-        if self.installed_version == "0.21.0":
+        self.new_step_api = p_new_step_api
+
+        if self.installed_version < "0.25.0":
             self.reset = self.reset_old
+            if self.new_step_api:
+                raise Error("Could not use new_step_api on current Gym Version")
         else:
             self.reset = self.reset_new
-
-        self.new_step_api = p_new_step_api
 
         self.first_refresh = True
     
