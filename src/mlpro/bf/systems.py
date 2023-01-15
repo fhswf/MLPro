@@ -1367,6 +1367,7 @@ class TransferFunction(ScientificObject, Log, Label):
                  p_logging=Log.C_LOG_ALL,
                  **p_args) -> None:
 
+        self.C_NAME = p_name
         self.set_type(p_type)
         self.dt = p_dt
         self._unit_in = p_unit_in

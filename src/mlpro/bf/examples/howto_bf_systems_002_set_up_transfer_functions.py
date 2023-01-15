@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro-at-basis.examples
+## -- Package : mlpro.bf.examples
 ## -- Module  : howto_bf_systems_002_set_up_transfer_functions.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -9,10 +9,11 @@
 ## -- 2022-11-22  0.0.1     SY       Shift from mlpro repo to mlpro-mpps repo
 ## -- 2022-11-22  1.0.0     SY/ML    Release of first version
 ## -- 2023-01-14  1.0.1     SY       Shift from mlpro-at_basis.bf to mlpro.bf
+## -- 2023-01-15  1.0.2     SY       Package renaming
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-01-14)
+Ver. 1.0.2 (2023-01-15)
 
 This module provides an example of using the transfer function method in MLPro for both default and
 custom implementation.
