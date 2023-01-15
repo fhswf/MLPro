@@ -13,10 +13,11 @@
 ## -- 2022-10-19  1.0.4     DA       Renamed 
 ## -- 2022-11-01  1.0.5     DA       Refactoring 
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
+## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-11-07)
+Ver. 1.1.1 (2023-01-14)
 
 This module shows how to train with SB3 Wrapper and stagnation detection
 
@@ -45,7 +46,7 @@ class MyScenario(RLScenario):
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
 
         # 1 Setup environment
-        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
+        gym_env = gym.make('CartPole-v1')
         self._env = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging)
 
         # 2 Instantiate PPO Policy from SB3
