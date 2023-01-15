@@ -21,10 +21,11 @@
 ## -- 2022-07-20  1.2.7     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-11-07  1.3.0     DA       Class MultiCartPole: new parameter p_visualize
 ## -- 2022-11-29  1.3.1     DA       Refactoring
+## -- 2023-01-14  1.3.2     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2022-11-29)
+Ver. 1.3.2 (2023-01-14)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -71,7 +72,7 @@ class MultiCartPole (Environment):
             action_space_id  = self._action_space.get_dim_ids()
             state_space_env  = self._state_space.spawn([state_space_id[i*4], state_space_id[i*4+1], state_space_id[i*4+2], state_space_id[i*4+3]])
             action_space_env = self._action_space.spawn([action_space_id[i]])
-            env_make         = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
+            env_make         = gym.make('CartPole-v1')
             env              = WrEnvGYM2MLPro(env_make, state_space_env, action_space_env, p_visualize=p_visualize, p_logging=p_logging)
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)
