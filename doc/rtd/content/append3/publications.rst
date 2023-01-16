@@ -1,3 +1,4 @@
+.. _target_publications:
 Publications
 ============
 

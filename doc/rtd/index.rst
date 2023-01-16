@@ -17,51 +17,49 @@ MLPro
 
 
 .. |welcome| image:: content/images/welcome.png
-   :scale: 60 %
-   :target: index.html#target-intro
-
-.. |examples| image:: content/images/example_pool.png
-   :scale: 60 %
-   :target: index.html#target-appendix1
-
-.. |project| image:: content/images/project_mlpro.png
-   :scale: 60 %
-   :target: index.html#target-appendix3
+   :scale: 65 %
+   :target: /index_01_welcome.html
 
 .. |mlpro_bf| image:: content/images/mlpro_bf.png
-   :scale: 60 %
-   :target: index.html#target-bf
+   :scale: 65 %
+   :target: /index_02_mlpro_bf.html
 
 .. |mlpro_sl| image:: content/images/mlpro_sl.png
-   :scale: 60 %
-   :target: index.html#target-mlpro-sl
+   :scale: 65 %
+   :target: /index_03_mlpro_sl.html
 
 .. |mlpro_rl| image:: content/images/mlpro_rl.png
-   :scale: 60 %
-   :target: index.html#target-mlpro-rl
+   :scale: 65 %
+   :target: /index_04_mlpro_rl.html
 
 .. |mlpro_gt| image:: content/images/mlpro_gt.png
-   :scale: 60 %
-   :target: index.html#target-mlpro-gt
+   :scale: 65 %
+   :target: index_05_mlpro_gt.html
 
 .. |mlpro_oa| image:: content/images/mlpro_oa.png
-   :scale: 60 %
-   :target: index.html#target-mlpro-oa
+   :scale: 65 %
+   :target: index_06_mlpro_oa.html
+
+.. |examples| image:: content/images/example_pool.png
+   :scale: 65 %
+   :target: index_99_appendix1.html
 
 .. |mlpro_api| image:: content/images/api_reference.png
-   :scale: 60 %
-   :target: index.html#target-appendix2
+   :scale: 65 %
+   :target: index_99_appendix2.html
+
+.. |project| image:: content/images/project_mlpro.png
+   :scale: 65 %
+   :target: index_99_appendix3.html
+
+.. |publications| image:: content/images/publications.png
+   :scale: 65 %
+   :target: /content/append3/publications.html
 
 
-|welcome| |project| 
+|welcome| |mlpro_bf| |mlpro_sl| |mlpro_rl| |mlpro_gt|
 
-Sub-frameworks...
-
-|mlpro_bf| |mlpro_rl| |mlpro_gt| |mlpro_oa| |mlpro_sl|
-
-Fast track...
-
-|examples| |mlpro_api| 
+|mlpro_oa| |examples| |mlpro_api| |project| |publications|
 
 
 .. |mlpro_pypi| image:: content/images/pypi.svg
@@ -92,101 +90,95 @@ MLPro is also present on...
 
 
 
-Table of Content
-================
-
-.. _target_intro:
 .. toctree::
-   :maxdepth: 1
+   :hidden:
+   :maxdepth: 3
    :caption: 1 Welcome to MLPro
-   
-   content/intro/introduction
-   content/intro/onboarding
+   :glob:
+
+   index_01_welcome
+
 
 
 .. _target_bf:
 .. toctree::
+   :hidden:
    :maxdepth: 2
    :caption: 2 MLPro-BF – Basic Functions
    :glob:
    
-   content/bf/*
+   index_02_mlpro_bf
 
 
 
 .. _target_mlpro_sl:
 .. toctree::
+   :hidden:
    :maxdepth: 3
    :caption: 3 MLPro-SL - Supervised Learning
    :glob:
    
-   content/sl/*
+   index_03_mlpro_sl
 
 
 
 .. _target_mlpro_rl:
 .. toctree::
+   :hidden:
    :maxdepth: 3
    :caption: 4 MLPro-RL - Reinforcement Learning
    :glob:
 
-   content/rl/*
+   index_04_mlpro_rl
 
 
 
 .. _target_mlpro_gt:
 .. toctree::
+   :hidden:
    :maxdepth: 2
    :caption: 5 MLPro-GT – Game Theory
    :glob:
    
-   content/gt/*
+   index_05_mlpro_gt
+
 
 
 .. _target_mlpro_oa:
 .. toctree::
+   :hidden:
    :maxdepth: 1
    :caption: 6 MLPro-OA – Online Adaptivity
    :glob:
 
-   content/oa/*
+   index_06_mlpro_oa
+
 
 
 .. _target_appendix1:
 .. toctree::
-   :maxdepth: 2
+   :hidden:
+   :maxdepth: 3
    :caption: Appendix 1: Examples
    
-   content/append1/howto.bf
-   content/append1/howto.rl
-   content/append1/howto.gt
-   content/append1/howto.oa
+   index_99_appendix1
 
 
 
 .. _target_appendix2:
 .. toctree::
+   :hidden:
    :maxdepth: 6
    :caption: Appendix 2: API Reference
    
-   content/append2/mlpro.core
-   content/append2/mlpro.wrappers
-   content/append2/mlpro.pool
-   content/append2/mlpro.template
+   index_99_appendix2
+
 
 
 .. _target_appendix3:
 .. toctree::
+   :hidden:
    :maxdepth: 2
    :caption: Appendix 3: Project MLPro
    
-   content/append3/versions
-   content/append3/publications
-   content/append3/cont
-   content/append3/disclaimer
-   
-
-
-Contact Data
-------------------------
-Mail: mlpro@listen.fh-swf.de
+   index_99_appendix3
