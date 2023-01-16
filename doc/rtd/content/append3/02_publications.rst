@@ -11,7 +11,7 @@ Papers
 
 
 
-Code Ocean capsules
+Code Ocean Capsules
 -------------------
 
     - Detlef Arend, Steve Yuwono, Mochammad Rizky Diprasetya, Andreas Schwung: `"MLPro - Reinforcement Learning - Demo of Advanced Training with Stagnation Detection" <https://doi.org/10.24433/CO.9151382.v1>`_, Code Ocean, 2022, doi: 10.24433/CO.9151382.v1

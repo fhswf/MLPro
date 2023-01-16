@@ -54,7 +54,7 @@ MLPro
 
 .. |publications| image:: content/images/publications.png
    :scale: 65 %
-   :target: /content/append3/publications.html
+   :target: /content/append3/02_publications.html
 
 
 |welcome| |mlpro_bf| |mlpro_sl| |mlpro_rl| |mlpro_gt|
@@ -89,96 +89,82 @@ MLPro is also present on...
      - |mlpro_rg| `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
 
 
-
 .. toctree::
    :hidden:
    :maxdepth: 3
    :caption: 1 Welcome to MLPro
    :glob:
 
-   index_01_welcome
+   content/intro/*
 
 
-
-.. _target_bf:
 .. toctree::
    :hidden:
    :maxdepth: 2
    :caption: 2 MLPro-BF – Basic Functions
    :glob:
    
-   index_02_mlpro_bf
+   content/bf/*
 
 
-
-.. _target_mlpro_sl:
 .. toctree::
    :hidden:
    :maxdepth: 3
    :caption: 3 MLPro-SL - Supervised Learning
    :glob:
    
-   index_03_mlpro_sl
+   content/sl/*
 
 
-
-.. _target_mlpro_rl:
 .. toctree::
    :hidden:
    :maxdepth: 3
    :caption: 4 MLPro-RL - Reinforcement Learning
    :glob:
 
-   index_04_mlpro_rl
+   content/rl/*
 
 
-
-.. _target_mlpro_gt:
 .. toctree::
    :hidden:
    :maxdepth: 2
    :caption: 5 MLPro-GT – Game Theory
    :glob:
    
-   index_05_mlpro_gt
+   content/gt/*
 
 
-
-.. _target_mlpro_oa:
 .. toctree::
    :hidden:
    :maxdepth: 1
    :caption: 6 MLPro-OA – Online Adaptivity
    :glob:
 
-   index_06_mlpro_oa
+   content/oa/*
 
 
-
-.. _target_appendix1:
 .. toctree::
    :hidden:
    :maxdepth: 3
    :caption: Appendix 1: Examples
+   :glob:
    
-   index_99_appendix1
+   content/append1/*
 
 
-
-.. _target_appendix2:
 .. toctree::
    :hidden:
    :maxdepth: 6
    :caption: Appendix 2: API Reference
+   :glob:
    
-   index_99_appendix2
+   content/append2/*
 
 
-
-.. _target_appendix3:
 .. toctree::
    :hidden:
    :maxdepth: 2
    :caption: Appendix 3: Project MLPro
+   :glob:
    
-   index_99_appendix3
+   content/append3/*

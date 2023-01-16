@@ -1,7 +1,9 @@
 .. _target_welcome:
+1 Welcome to MLPro
+------------------
+
 .. toctree::
    :maxdepth: 2
-   :caption: 1 Welcome to MLPro
    :glob:
 
    content/intro/*

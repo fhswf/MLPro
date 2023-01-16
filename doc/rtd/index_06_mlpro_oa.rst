@@ -1,7 +1,9 @@
 .. _target_mlpro_oa:
+6 MLPro-OA – Online Adaptivity
+------------------------------
+
 .. toctree::
    :maxdepth: 1
-   :caption: 6 MLPro-OA – Online Adaptivity
    :glob:
 
    content/oa/*

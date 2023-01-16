@@ -1,9 +1,9 @@
 .. _target_appendix1:
+Appendix 1: Examples
+--------------------
+
 .. toctree::
    :maxdepth: 3
-   :caption: Appendix 1: Examples
+   :glob:
    
-   content/append1/howto.bf
-   content/append1/howto.rl
-   content/append1/howto.gt
-   content/append1/howto.oa
+   content/append1/*

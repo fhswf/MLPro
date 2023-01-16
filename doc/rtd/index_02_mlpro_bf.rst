@@ -1,7 +1,9 @@
-.. _target_bf:
+.. _target_mlpro_bf:
+2 MLPro-BF – Basic Functions
+----------------------------
+
 .. toctree::
    :maxdepth: 2
-   :caption: 2 MLPro-BF – Basic Functions
    :glob:
    
    content/bf/*
