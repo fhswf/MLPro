@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-11-08  1.0.0     DA       Creation
+## -- 2022-12-14  1.0.1     DA       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-11-08)
+Ver. 1.0.1 (2022-12-14)
 
 This module demonstrates the use of native generic data streams provided by MLPro. To this regard,
 all data streams of the related provider class will be determined and iterated. 
@@ -26,8 +27,7 @@ You will learn:
 
 
 from datetime import datetime
-from mlpro.bf.streams import Stream
-from mlpro.bf.streams.native import StreamProviderMLPro
+from mlpro.bf.streams.streams import *
 from mlpro.bf.various import Log
 
 
@@ -43,22 +43,24 @@ else:
 mlpro = StreamProviderMLPro(p_logging=logging)
 
 
-# 2 Determine and iterate all native data streams provided by MLPro
+# 2 Determine native data streams provided by MLPro
 for stream in mlpro.get_stream_list( p_logging=logging ):
     stream.switch_logging( p_logging=logging )
-    stream.log(Log.C_LOG_W, 'Number of features:', stream.get_feature_space().get_num_dim(), ', Number of instances:', stream.get_num_instances() )
+    try:
+        labels = stream.get_label_space().get_num_dim()
+    except:
+        labels = 0
 
-    # 2.1 Iterate all instances of the stream
-    myiterator = iter(stream)
-    for i, curr_instance in enumerate(myiterator):
-        curr_data = curr_instance.get_feature_data().get_values()
-        stream.log(Log.C_LOG_I, 'Instance ' + str(i) + ':\n   Data:', curr_data)
+    stream.log(Log.C_LOG_TYPE_W, 'Features:', stream.get_feature_space().get_num_dim(), ', Labels:', labels, ', Instances:', stream.get_num_instances() )
+
+if __name__ == '__main__':
+    input('\nPress ENTER to iterate all streams dark...\n')
 
 
-# 3 Performance test: reset and iterate all data streams dark and measure the time
+# 3 Performance test: iterate all data streams dark and measure the time
 for stream in mlpro.get_stream_list( p_logging=logging ):
     stream.switch_logging( p_logging=logging )
-    stream.log(Log.C_LOG_TYPE_W, 'Number of features:', stream.get_feature_space().get_num_dim(), ', Number of instances:', stream.get_num_instances() )
+    stream.log(Log.C_LOG_TYPE_W, 'Number of instances:', stream.get_num_instances() )
     stream.switch_logging( p_logging=Log.C_LOG_NOTHING )
 
     # 3.1 Iterate all instances of the stream
