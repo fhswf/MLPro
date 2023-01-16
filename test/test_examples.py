@@ -29,6 +29,8 @@
 ## -- 2022-12-20  1.6.0     DA       Added howtos bf_streams_112, bf_streams_113
 ## -- 2022-12-21  1.6.2     SY       - Reactivate howto rl_wp_003
 ## --                                - Temporarily removed howto rl_agent_005 and rl_wp_001
+## -- 2023-01-14  1.4.3     SY       Add howto related to transfer functions
+## -- 2023-01-16  1.4.4     SY       Add howto related to unit converters
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -62,6 +64,7 @@ howto_list = {
     # bf.math
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
+    "bf_math_020": "mlpro.bf.examples.howto_bf_math_020_unit_converter",
 
     # bf.ml
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
@@ -79,6 +82,8 @@ howto_list = {
 
     # bf.systems
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
+    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_set_up_transfer_functions",
+
 
 
 # Reinforcement Learning:

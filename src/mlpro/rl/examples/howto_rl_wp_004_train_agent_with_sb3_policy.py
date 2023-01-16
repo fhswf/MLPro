@@ -17,10 +17,11 @@
 ## -- 2022-07-20  1.0.8     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-14  1.0.9     SY       Refactoring 
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
+## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-11-07)
+Ver. 1.1.1 (2023-01-14)
 
 This module shows how to train agent with SB3 Wrapper for On- and Off-Policy Algorithms
 
@@ -49,7 +50,7 @@ class MyScenario(RLScenario):
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1 Setup environment
         # self._env   = RobotHTM(p_logging=False)
-        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
+        gym_env = gym.make('CartPole-v1')
         self._env = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging)
 
         # 2 Instantiate Policy From SB3
