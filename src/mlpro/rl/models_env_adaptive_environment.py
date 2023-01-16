@@ -79,14 +79,14 @@ class OAFctSTrans(FctSTrans, OAWorkflow):
         self.log(Log.C_LOG_TYPE_I, 'Start simulating a state transition...')
 
         # 1. Check if there exists a list of pre-processing tasks
-        if len(self._tasks) != 0:
-            p_inst_new = [Instance(p_feature_data=p_state)]
-            self.get_so().reset(p_inst_new)
-            self.run(p_inst_new = p_inst_new)
-            p_state = self.get_so().get_result(p_tid=self._tasks[-1])
-            return p_state
-
-        return self._simulate_reaction( p_state = p_state, p_action = p_action )
+        # if len(self._tasks) != 0:
+        #     p_inst_new = [Instance(p_feature_data=p_state)]
+        #     self.get_so().reset(p_inst_new)
+        #     self.run(p_inst_new = p_inst_new)
+        #     p_state = self.get_so().get_result(p_tid=self._tasks[-1])
+        #     return p_state
+        #
+        # return self._simulate_reaction( p_state = p_state, p_action = p_action )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -120,9 +120,9 @@ class OAFctSTrans(FctSTrans, OAWorkflow):
         -------
 
         """
-        for inst in p_inst_new:
-            p_state = inst.get_feature_data()
-            p_state_new = self._simulate_reaction(p_state)
+        # for inst in p_inst_new:
+        #     p_state = inst.get_feature_data()
+        #     p_state_new = self._simulate_reaction(p_state)
 
 
 
@@ -195,8 +195,6 @@ class OAFctReward(FctReward, OAWorkflow):
 
         self.log(Log.C_LOG_TYPE_I, 'Start Computing the Reward....')
 
-        # self._state = p_state
-        # self._state_new = p_state_new
 
         # 1. check if the user has already created a workflow and added to tasks
         if self._processing_wf is None:
@@ -208,7 +206,7 @@ class OAFctReward(FctReward, OAWorkflow):
             self._processing_wf = OAWorkflow(p_name = 'Reward Wf', p_class_shared=self._shared)
 
 
-
+        # 2. Create a reward task
         if self._reward_task is None:
 
             # Create a pseudo reward task
@@ -225,7 +223,7 @@ class OAFctReward(FctReward, OAWorkflow):
 
 
 
-        # Creating task level attributes for states
+        # 4. Creating task level attributes for states
         try:
             self._reward_task._state
         except AttributeError:
@@ -237,7 +235,7 @@ class OAFctReward(FctReward, OAWorkflow):
 
 
 
-        # Creating new and olf instances
+        # 5. Creating new and old instances
         # creating old instance object if this is the first run
         if self._instance_new == None:
             self._instance_old = Instance(p_state)
@@ -250,10 +248,10 @@ class OAFctReward(FctReward, OAWorkflow):
         self._instance_new = Instance(p_state_new)
 
 
-        # Run the workflow
+        # 6. Run the workflow
         self._processing_wf.run(p_inst_new=[self._instance_new, self._instance_old])
 
-        # Return the results
+        # 7. Return the results
         return self._processing_wf.get_so().get_results()[self._reward_task.get_tid()]
 
 
@@ -361,14 +359,14 @@ class OAFctSuccess(FctSuccess, OAWorkflow):
         """
         self.log(Log.C_LOG_TYPE_I, 'Start simulating a state transition...')
 
-        # 1. Check if there exists a list of pre-processing tasks
-        if len(self._tasks) != 0:
-            p_inst_new = [Instance(p_feature_data=p_state)]
-            self.get_so().reset(p_inst_new)
-            self.run(p_inst_new=p_inst_new)
-            p_state = self.get_so().get_result(p_tid=self._tasks[-1])
-
-        return self._compute_success(p_state = p_state)
+        # # 1. Check if there exists a list of pre-processing tasks
+        # if len(self._tasks) != 0:
+        #     p_inst_new = [Instance(p_feature_data=p_state)]
+        #     self.get_so().reset(p_inst_new)
+        #     self.run(p_inst_new=p_inst_new)
+        #     p_state = self.get_so().get_result(p_tid=self._tasks[-1])
+        #
+        # return self._compute_success(p_state = p_state)
 
     ## -------------------------------------------------------------------------------------------------
     def _compute_success(self, p_state: State) -> bool:
@@ -459,14 +457,14 @@ class OAFctBroken(FctBroken, OAWorkflow):
         self.log(Log.C_LOG_TYPE_I, 'Start simulating a state transition...')
 
         # 1. Check if there exists a list of pre-processing tasks
-        if len(self._tasks) != 0:
-            p_inst_new = [Instance(p_feature_data=p_state)]
-            self.get_so().reset(p_inst_new)
-            self.run(p_inst_new=p_inst_new)
-            state_values = self.get_so().get_result(p_tid=self._tasks[-1])
-            state = State(p_state_space=p_state.get_related_set())
+        # if len(self._tasks) != 0:
+        #     p_inst_new = [Instance(p_feature_data=p_state)]
+        #     self.get_so().reset(p_inst_new)
+        #     self.run(p_inst_new=p_inst_new)
+        #     state_values = self.get_so().get_result(p_tid=self._tasks[-1])
+        #     state = State(p_state_space=p_state.get_related_set())
 
-        return self._compute_broken(p_state = p_state)
+        # return self._compute_broken(p_state = p_state)
 
     ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
