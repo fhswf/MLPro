@@ -15,10 +15,11 @@
 ## -- 2022-07-21  2.0.2     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-11-02  2.0.3     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-07  2.0.4     DA       Refactoring: method RLScenario._setup()
+## -- 2023-01-14  2.0.5     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.4 (2022-11-07)
+Ver. 2.0.5 (2023-01-14)
 
 Unit test classes for environment.
 """
@@ -81,7 +82,7 @@ def test_sb3_policy_wrapper(env_cls):
             else:
                 if issubclass(env_cls, DQN):
                     # 1 Setup environment
-                    gym_env = gym.make('CartPole-v1', render_mode=None)
+                    gym_env = gym.make('CartPole-v1')
                     gym_env.seed(2)
                     self._env = CustomWrapperFixedSeed(gym_env, p_logging=False)
                 else:
@@ -205,7 +206,7 @@ def test_sb3_policy_wrapper(env_cls):
     else:
         if issubclass(env_cls, DQN):
             # 1 Setup environment
-            gym_env = gym.make('CartPole-v1', render_mode=None)
+            gym_env = gym.make('CartPole-v1')
             gym_env.seed(2)
         else:
             env = RobotHTM(p_reset_seed=False, p_target_mode="fix", p_logging=False)
