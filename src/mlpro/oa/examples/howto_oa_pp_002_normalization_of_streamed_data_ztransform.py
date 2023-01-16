@@ -1,25 +1,25 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.oa.examples.howto_oa_001_normalizer_minmax
-## -- Module  : howto_oa_001_normalizer_minmax.py
+## -- Package : mlpro.oa.examples.howto_oa_002_normalization_of_streamed_data_ztransform
+## -- Module  : howto_oa_pp_002_normalization_of_streamed_data_ztransform.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-12-07  0.0.0     LSB      Creation
-## -- 2022-12-09  1.0.0     LSB      Release
+## -- 2022-12-30  1.0.0     LSB      Creation/Release
+## -- 2022-12-31  1.0.1     LSB      Using native stream
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2022-12-07)
+Ver. 1.0.1 (2022-12-31)
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
 You will learn:
 
-1. ...
+1. Creating tasks and workflows in MLPro-OA.
 
-2.
+2. Registering Event handlers for events and tasks.
 
-3.
+3. Normalizing streaming data using Z Transformer, with boundary detector as a predecessor task.
 
 """
 
@@ -43,28 +43,25 @@ class MyAdaptiveScenario(StreamScenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
         # 1 Import a stream from OpenML
-        openml = WrStreamProviderOpenML(p_logging=p_logging)
-        stream = openml.get_stream(p_name='BNG(autos,nominal,1000000)', p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging)
-
+        mlpro = StreamProviderMLPro(p_logging=p_logging)
+        stream = mlpro.get_stream(p_name=StreamMLProRnd10D.C_NAME,
+            p_mode=p_mode,
+            p_visualize=p_visualize,
+            p_logging=p_logging)
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a task
-        TaskBoundaryDetector = BoundaryDetector(p_name='Demo Boundary Detector', p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
-        TaskNormalizerMinMax = NormalizerMinMax(p_name='Demo MinMax Normalizer', p_ada=True, p_visualize=p_visualize, p_logging=p_logging)
+        TaskNormalizerZTrans = NormalizerZTransform(p_name='Demo ZTrans Normalizer', p_ada=True, p_visualize=True,
+            p_logging=p_logging)
 
         # 2.2 Creation of a workflow
         workflow = OAWorkflow(p_name='wf1',
             p_range_max=OAWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
-            p_visualize=p_visualize, 
+            p_visualize=p_visualize,
             p_logging=p_logging)
 
         # 2.3 Addition of the task to the workflow
-        workflow.add_task(p_task = TaskBoundaryDetector)
-        workflow.add_task(p_task = TaskNormalizerMinMax)
-
-
-        # 3 Registering event handlers for normalizer on events raised by boundaries
-        TaskBoundaryDetector.register_event_handler(BoundaryDetector.C_EVENT_BOUNDARY_CHANGED, TaskNormalizerMinMax.adapt_on_event)
+        workflow.add_task(p_task = TaskNormalizerZTrans)
 
 
         # 3 Return stream and workflow
