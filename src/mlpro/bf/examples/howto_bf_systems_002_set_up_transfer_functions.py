@@ -10,10 +10,11 @@
 ## -- 2022-11-22  1.0.0     SY/ML    Release of first version
 ## -- 2023-01-14  1.0.1     SY       Shift from mlpro-at_basis.bf to mlpro.bf
 ## -- 2023-01-15  1.0.2     SY       Package renaming
+## -- 2023-01-16  1.0.3     SY       Update due to __call__
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-01-15)
+Ver. 1.0.3 (2023-01-16)
 
 This module provides an example of using the transfer function method in MLPro for both default and
 custom implementation.
@@ -54,13 +55,13 @@ myTF_linear = TransferFunction(p_name='Linear_TF',
 # 1.2. Call the defined transfer function
 # 1.2.1. For a specific point
 p_input = 10
-output = myTF_linear.call(p_input)
+output = myTF_linear(p_input)
 if p_print:
     print(output)
 
 # 1.2.2. Within a specific range
 p_range = 5
-output = myTF_linear.call(p_input, p_range)
+output = myTF_linear(p_input, p_range)
 if p_print:
     print(output)
     
@@ -115,13 +116,13 @@ myFunction = MyTransferFunction(p_name='DGL_solution',
 # 2.3. Call the defined transfer function
 # 2.3.1. For a specific point
 p_input = 0
-output = myFunction.call(p_input)
+output = myFunction(p_input)
 if p_print:
     print(output)
 
 # 2.3.2. Within a specific range
 p_range = 10
-output = myFunction.call(p_input, p_range)
+output = myFunction(p_input, p_range)
 if p_print:
     print(output)
 

@@ -1425,7 +1425,7 @@ class TransferFunction(ScientificObject, Log, Label):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def call(self, p_input, p_range=None):
+    def __call__(self, p_input, p_range=None):
         """
         This method provides a functionality to call the transfer function by giving an input value.
 
@@ -1565,7 +1565,7 @@ class TransferFunction(ScientificObject, Log, Label):
         for x in range(points+1):
             current_input = p_x_init + x * self.dt
             x_value.append(current_input)
-            output.append(self.call(current_input, p_range=None))
+            output.append(self(current_input, p_range=None))
         
         fig, ax = plt.subplots()
         ax.plot(x_value, output, linewidth=2.0)

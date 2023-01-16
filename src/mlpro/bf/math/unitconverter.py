@@ -105,7 +105,7 @@ class UnitConverter(TransferFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def call(self, p_input, p_range=None):
+    def __call__(self, p_input, p_range=None):
         """
         This method provides a functionality to call the unit converter by giving an input value.
 

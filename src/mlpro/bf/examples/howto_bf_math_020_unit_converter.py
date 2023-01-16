@@ -7,7 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-01-15  0.0.0     SY       Creation
 ## -- 2023-01-15  1.0.0     SY       Release of first version
-## -- 2023-01-16  1.0.1     SY       Renaming
+## -- 2023-01-16  1.0.1     SY       Renaming and debugging
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -75,42 +75,17 @@ conv_temperature = UnitConverter(p_name='conv_temperature',
 
 
 # 2. Call the defined unit converters
+conv_set = [conv_length,
+            conv_pressure,
+            conv_current,
+            conv_force,
+            conv_power,
+            conv_mass,
+            conv_time,
+            conv_temperature]
 p_input = 10
-output = conv_length.call(p_input)
-if p_print:
-    print('We convert %.1f%s to %.2f%s'%(p_input, conv_length._unit_in, output, conv_length._unit_out))
-    
-p_input = 10
-output = conv_pressure.call(p_input)
-if p_print:
-    print('We convert %.1f%s to %.1f%s'%(p_input, conv_pressure._unit_in, output, conv_pressure._unit_out))
-    
-p_input = 10
-output = conv_current.call(p_input)
-if p_print:
-    print('We convert %.1f%s to %.2f%s'%(p_input, conv_current._unit_in, output, conv_current._unit_out))
-    
-p_input = 10
-output = conv_force.call(p_input)
-if p_print:
-    print('We convert %.1f%s to %.1f%s'%(p_input, conv_force._unit_in, output, conv_force._unit_out))
-    
-p_input = 10
-output = conv_power.call(p_input)
-if p_print:
-    print('We convert %.1f%s to %.2f%s'%(p_input, conv_power._unit_in, output, conv_power._unit_out))
-    
-p_input = 10
-output = conv_mass.call(p_input)
-if p_print:
-    print('We convert %.1f%s to %.3f%s'%(p_input, conv_mass._unit_in, output, conv_mass._unit_out))
-    
-p_input = 10
-output = conv_time.call(p_input)
-if p_print:
-    print('We convert %.1f%s to %.1f%s'%(p_input, conv_time._unit_in, output, conv_time._unit_out))
-    
-p_input = 10
-output = conv_temperature.call(p_input)
-if p_print:
-    print('We convert %.1f%s to %.2f%s'%(p_input, conv_temperature._unit_in, output, conv_temperature._unit_out))
+
+for conv in conv_set:
+    output = conv(p_input)
+    if p_print:
+        print('We convert %.1f%s to %.2f%s'%(p_input, conv._unit_in, output, conv._unit_out))
