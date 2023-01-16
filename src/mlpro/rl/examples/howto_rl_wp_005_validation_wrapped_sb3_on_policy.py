@@ -17,10 +17,11 @@
 ## -- 2022-07-20  1.0.8     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-14  1.0.9     SY       Refactoring 
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
+## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-11-07)
+Ver. 1.1.1 (2023-01-14)
 
 This module shows comparison between native and wrapped SB3 policy (On-policy).
 """
@@ -80,7 +81,7 @@ class MyScenario(RLScenario):
                 self._set_state(state)
 
         # 1 Setup environment
-        gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
+        gym_env = gym.make('CartPole-v1')
         gym_env.seed(1)
         # self._env   = mlpro_env
         self._env = CustomWrapperFixedSeed(gym_env, p_logging=p_logging)
