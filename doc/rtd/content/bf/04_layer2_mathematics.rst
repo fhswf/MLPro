@@ -2,3 +2,8 @@
 =========================
 
 Further explanations coming soon...
+
+.. toctree::
+   :maxdepth: 1
+
+   layer2_mathematics/normalizers.rst
