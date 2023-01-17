@@ -26,35 +26,35 @@ MLPro
    
 .. |mlpro_sl| image:: content/00_start_page/images/mlpro_sl.png
    :scale: 65 %
-   :target: /index_03_mlpro_sl.html
+   :target: /content/03_machine_learning/mlpro_sl/main.html
 
 .. |mlpro_rl| image:: content/00_start_page/images/mlpro_rl.png
    :scale: 65 %
-   :target: /index_04_mlpro_rl.html
+   :target: /content/03_machine_learning/mlpro_rl/main.html
 
 .. |mlpro_gt| image:: content/00_start_page/images/mlpro_gt.png
    :scale: 65 %
-   :target: index_05_mlpro_gt.html
+   :target: /content/03_machine_learning/mlpro_gt/main.html
 
 .. |mlpro_oa| image:: content/00_start_page/images/mlpro_oa.png
    :scale: 65 %
-   :target: index_06_mlpro_oa.html
+   :target: /content/03_machine_learning/mlpro_oa/main.html
 
 .. |examples| image:: content/00_start_page/images/example_pool.png
    :scale: 65 %
-   :target: index_99_appendix1.html
+   :target: content/04_appendices/appendix1/main.html
 
 .. |mlpro_api| image:: content/00_start_page/images/api_reference.png
    :scale: 65 %
-   :target: index_99_appendix2.html
+   :target: content/04_appendices/appendix2/main.html
 
 .. |project| image:: content/00_start_page/images/project_mlpro.png
    :scale: 65 %
-   :target: index_99_appendix3.html
+   :target: content/04_appendices/appendix3/main.html
 
 .. |publications| image:: content/00_start_page/images/publications.png
    :scale: 65 %
-   :target: /content/append3/02_publications.html
+   :target: /content/04_appendices/appendix3/sub/02_publications.html
 
 
 |welcome| |mlpro_bf| |mlpro_sl| |mlpro_rl| |mlpro_gt|
@@ -89,6 +89,7 @@ MLPro is also present on...
      - |mlpro_rg| `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
 
 
+
 .. toctree::
    :hidden:
    :maxdepth: 3
@@ -107,3 +108,28 @@ MLPro is also present on...
    :numbered:
 
    content/02_basic_functions/mlpro_bf/main   
+
+
+.. toctree::
+   :hidden:
+   :maxdepth: 3
+   :caption: Machine Learning
+   :glob:
+   :numbered:
+
+   content/03_machine_learning/mlpro_sl/main
+   content/03_machine_learning/mlpro_rl/main
+   content/03_machine_learning/mlpro_gt/main   
+   content/03_machine_learning/mlpro_oa/main   
+
+
+.. toctree::
+   :hidden:
+   :maxdepth: 3
+   :caption: Appendices
+   :glob:
+
+   content/04_appendices/appendix1/main
+   content/04_appendices/appendix2/main
+   content/04_appendices/appendix3/main
+
