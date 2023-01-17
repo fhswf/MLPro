@@ -22,8 +22,8 @@ MLPro
 
 .. |mlpro_bf| image:: content/00_start_page/images/mlpro_bf.png
    :scale: 65 %
-   :target: /index_02_mlpro_bf.html
-
+   :target: /content/02_basic_functions/mlpro_bf/main.html
+   
 .. |mlpro_sl| image:: content/00_start_page/images/mlpro_sl.png
    :scale: 65 %
    :target: /index_03_mlpro_sl.html
@@ -104,5 +104,6 @@ MLPro is also present on...
    :maxdepth: 3
    :caption: Basic Functions
    :glob:
+   :numbered:
 
    content/02_basic_functions/mlpro_bf/main   
