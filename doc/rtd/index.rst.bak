@@ -16,43 +16,43 @@ MLPro
    - is open source and even commercially usable (`Apache License 2.0 <https://github.com/fhswf/MLPro/blob/main/LICENSE>`_)
 
 
-.. |welcome| image:: content/00_start_page/images/welcome.png
+.. |welcome| image:: content/images/welcome.png
    :scale: 65 %
-   :target: /content/01_welcome/main.html
+   :target: /index_01_welcome.html
 
-.. |mlpro_bf| image:: content/00_start_page/images/mlpro_bf.png
+.. |mlpro_bf| image:: content/images/mlpro_bf.png
    :scale: 65 %
    :target: /index_02_mlpro_bf.html
 
-.. |mlpro_sl| image:: content/00_start_page/images/mlpro_sl.png
+.. |mlpro_sl| image:: content/images/mlpro_sl.png
    :scale: 65 %
    :target: /index_03_mlpro_sl.html
 
-.. |mlpro_rl| image:: content/00_start_page/images/mlpro_rl.png
+.. |mlpro_rl| image:: content/images/mlpro_rl.png
    :scale: 65 %
    :target: /index_04_mlpro_rl.html
 
-.. |mlpro_gt| image:: content/00_start_page/images/mlpro_gt.png
+.. |mlpro_gt| image:: content/images/mlpro_gt.png
    :scale: 65 %
    :target: index_05_mlpro_gt.html
 
-.. |mlpro_oa| image:: content/00_start_page/images/mlpro_oa.png
+.. |mlpro_oa| image:: content/images/mlpro_oa.png
    :scale: 65 %
    :target: index_06_mlpro_oa.html
 
-.. |examples| image:: content/00_start_page/images/example_pool.png
+.. |examples| image:: content/images/example_pool.png
    :scale: 65 %
    :target: index_99_appendix1.html
 
-.. |mlpro_api| image:: content/00_start_page/images/api_reference.png
+.. |mlpro_api| image:: content/images/api_reference.png
    :scale: 65 %
    :target: index_99_appendix2.html
 
-.. |project| image:: content/00_start_page/images/project_mlpro.png
+.. |project| image:: content/images/project_mlpro.png
    :scale: 65 %
    :target: index_99_appendix3.html
 
-.. |publications| image:: content/00_start_page/images/publications.png
+.. |publications| image:: content/images/publications.png
    :scale: 65 %
    :target: /content/append3/02_publications.html
 
@@ -62,19 +62,19 @@ MLPro
 |mlpro_oa| |examples| |mlpro_api| |project| |publications|
 
 
-.. |mlpro_pypi| image:: content/00_start_page/images/pypi.svg
+.. |mlpro_pypi| image:: content/images/pypi.svg
    :target: https://pypi.org/project/mlpro
    :scale: 50 %
 
-.. |mlpro_anaconda| image:: content/00_start_page/images/anaconda.png
+.. |mlpro_anaconda| image:: content/images/anaconda.png
    :target: https://anaconda.org/mlpro/mlpro
    :scale: 11 %
 
-.. |mlpro_github| image:: content/00_start_page/images/github.png
+.. |mlpro_github| image:: content/images/github.png
    :target: https://github.com/fhswf/MLPro
    :scale: 2 %
 
-.. |mlpro_rg| image:: content/00_start_page/images/researchgate.jpeg
+.. |mlpro_rg| image:: content/images/researchgate.jpeg
    :target: https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python
    :scale: 6 %
 
@@ -94,15 +94,37 @@ MLPro is also present on...
    :maxdepth: 3
    :caption: Welcome to MLPro
    :glob:
-   :numbered:
 
-   content/01_welcome/sub/*
+   content/intro/*
+
+
+.. toctree::
+   :hidden:
+   :maxdepth: 2
+   :caption: Basic Functions
+   :glob:
+   
+   content/bf/*
 
 
 .. toctree::
    :hidden:
    :maxdepth: 3
-   :caption: Basic Functions
+   :caption: Machine Learning
    :glob:
+   
+   content/sl/*
+   content/rl/*
+   content/gt/*
+   content/oa/*
 
-   content/02_basic_functions/mlpro_bf/main   
+
+.. toctree::
+   :hidden:
+   :maxdepth: 3
+   :caption: Appendices
+   :glob:
+   
+   content/append1/*
+   content/append2/*
+   content/append3/*

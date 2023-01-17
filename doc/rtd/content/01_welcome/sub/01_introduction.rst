@@ -1,5 +1,5 @@
-1.1 Introduction
-================
+Introduction
+============
 
 MLPro is a synoptic and standardized Python package to produce a solution for standard Machine Learning (ML) tasks.
 In the first version of MLPro, MLPro provides sub-packages for a subtopic of ML, namely Reinforcement Learning (RL),
@@ -52,22 +52,19 @@ Grundlagen des maschinellen Lernens abgedeckt. Darin liegt auch der Schlüssel f
 Tatsächlich denken wir bei jeder neuen Funktionalität darüber nach, wie tief wir sie in MLPro einsinken lassen können. Je tiefer der Ort,
 desto universeller ist die Verwendbarkeit und damit die Reichweite innerhalb von MLPro. 
 
-
-
-
 .. image:: images/MLPro_Architecture.drawio.png
 
 
 Maschinelles Lernen standardisiert
-""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
 
 Reale Anwendungen im Fokus
-""""""""""""""""""""""""""
-
-
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
 
 Beispielprogramme in Doppelfunktion: Demonstration und Validierung
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Zahlreiche ausführbare Beispielprogramme veranschaulichen die wesentlichen Funktionen. Sie dienen
 darüber hinaus der Validierung und sind daher auch fester Bestandteil unserer automatischen Unit tests. Damit stellen wir zweierlei sicher:

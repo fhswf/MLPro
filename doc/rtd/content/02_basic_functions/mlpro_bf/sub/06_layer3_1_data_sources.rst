@@ -1,5 +1,5 @@
-2.6 Layer 3.1 - Data Sources
-============================
+Layer 3.1 - Data Sources
+------------------------
 
 Further explanation coming soon....
 
