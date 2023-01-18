@@ -7,11 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-01-16  0.0.0     SY       Creation
 ## -- 2023-01-16  1.0.0     SY       Shift UnitConverter from bf.systems
+## -- 2023-01-18  1.0.1     SY       Debugging
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.3.2 (2023-01-16)
+Ver. 1.0.1 (2023-01-18)
 
 This module provides models and templates for state based systems.
 """
@@ -90,7 +91,6 @@ class UnitConverter(TransferFunction):
                  p_type:int=None,
                  p_unit_in:str=None,
                  p_unit_out:str=None,
-                 p_dt:float=0.01,
                  p_logging=Log.C_LOG_ALL,
                  **p_args) -> None:
 
@@ -100,25 +100,25 @@ class UnitConverter(TransferFunction):
                          p_unit_in=p_unit_in,
                          p_unit_out=p_unit_out,
                          p_dt=0,
-                         p_logging=Log.C_LOG_ALL,
+                         p_logging=p_logging,
                          p_args=None)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __call__(self, p_input, p_range=None):
+    def __call__(self, p_input:float, p_range=None) -> float:
         """
         This method provides a functionality to call the unit converter by giving an input value.
 
         Parameters
         ----------
-        p_input :
+        p_input : float
             input value.
         p_range :
             not necessary for a unit converter. Default: None.
 
         Returns
         -------
-        output :
+        output : float
             output value.
         """
         if self.get_type() == self.C_UNIT_CONV_TEMPERATURE:
@@ -337,13 +337,13 @@ class UnitConverter(TransferFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def scalar_conversion(self, p_input):
+    def scalar_conversion(self, p_input:float) -> float:
         """
         This method provides a scalar conversion functionality.
 
         Parameters
         ----------
-        p_input :
+        p_input : float
             input value.
 
         Returns
@@ -355,13 +355,13 @@ class UnitConverter(TransferFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def temperature(self, p_input):
+    def temperature(self, p_input:float) -> float:
         """
         This method provides a temperature conversion functionality.
 
         Parameters
         ----------
-        p_input :
+        p_input : float
             input value.
 
         Returns

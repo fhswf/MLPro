@@ -15,11 +15,12 @@
 ## -- 2023-01-14  1.3.0     SY/ML    New class TransferFunction
 ## -- 2023-01-15  1.3.1     SY       New class UnitConverter
 ## -- 2023-01-16  1.3.2     SY       Shift UnitConverter to bf.math
+## -- 2023-01-18  1.3.3     SY       Debugging on TransferFunction
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.3.2 (2023-01-16)
+Ver. 1.3.3 (2023-01-18)
 
 This module provides models and templates for state based systems.
 """
@@ -1454,7 +1455,7 @@ class TransferFunction(ScientificObject, Log, Label):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_function_parameters(self, p_args) -> bool:
+    def set_function_parameters(self, p_args:dict) -> bool:
         """
         This method provides a functionality to set the parameters of the transfer function.
 
@@ -1489,7 +1490,7 @@ class TransferFunction(ScientificObject, Log, Label):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def linear(self, p_input, p_range=None):
+    def linear(self, p_input:float, p_range=None) -> float:
         """
         This method provides a functionality for linear transfer function.
         
@@ -1501,7 +1502,7 @@ class TransferFunction(ScientificObject, Log, Label):
 
         Parameters
         ----------
-        p_input :
+        p_input : float
             input value.
         p_range :
             range of the calculation. None means 0. Default: None.
@@ -1546,7 +1547,7 @@ class TransferFunction(ScientificObject, Log, Label):
         
 
 ## -------------------------------------------------------------------------------------------------
-    def plot(self, p_x_init, p_x_end):
+    def plot(self, p_x_init:float, p_x_end:float):
         """
         This methods provides functionality to plot the defined function within a range.
 
@@ -1555,7 +1556,7 @@ class TransferFunction(ScientificObject, Log, Label):
         p_x_init : float
             The initial value of the input (x-axis).
         p_x_end : float
-            The initial value of the input (y-axis).
+            The end value of the input (x-axis).
         """
         x_value = []
         output = []
