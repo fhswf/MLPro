@@ -10,7 +10,7 @@ changelog:
         - enhancement
     - title: Corrections
       labels:
-        - bugfix
+        - bug
     - title: Documentation
       labels:
         - documentation
