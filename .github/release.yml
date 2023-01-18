@@ -1,0 +1,16 @@
+# .github/release.yml
+
+changelog:
+  exclude:
+    labels:
+      - admin
+  categories:
+    - title: Enhancements
+      labels:
+        - enhancement
+    - title: Bugfixes
+      labels:
+        - bugfix
+    - title: Other Changes
+      labels:
+        - "*"
