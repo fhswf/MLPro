@@ -55,7 +55,7 @@ class ActionGenerator(Policy):
 
         return Action(self._id, self._action_space, self.user_action)
 
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, **p_kwargs) -> bool:
         self.log(self.C_LOG_TYPE_W, 'Sorry I am not adapting anything')
         return False
 
@@ -66,7 +66,7 @@ class ScenarioDoublePendulum(RLScenario):
 
     C_NAME      = 'Double Pendulum with Random Actions'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada, p_visualize,  p_logging):
         self.user_action_cycles = 0
 
         # 1.1 Setup environment
@@ -106,8 +106,8 @@ class ScenarioDoublePendulum(RLScenario):
             p_cycles = 0
 
         self.user_action_cycles += p_cycles
-        success, error, adapted = super()._run_cycle()
-        return success, error, adapted
+        success, error, adapted, end_of_data = super()._run_cycle()
+        return success, error, adapted, end_of_data
 
 
 # 2 Create scenario and run the scenario
