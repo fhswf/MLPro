@@ -1,22 +1,19 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_env_005_train_agent_with_sb3_policy_on_double_pendulum_environment.py
+## -- Package : experiments
+## -- Module  : DP_001_A2C.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-03-22  0.0.0     WB       Creation
-## -- 2022-08-14  1.0.0     LSB      Training howto released with a lower value of torque
-## -- 2022-09-09  1.0.1     SY       Refactoring and add DDPG algorithm as an option
-## -- 2022-10-13  1.0.2     SY       Refactoring
-## -- 2022-11-18  1.0.3     LSB      Refactoring for new plot style
+## -- 2022-11-18  0.0.0     SY       Creation
+## -- 2022-11-18  1.0.0     SY       Release first version 
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.3 (2022-11-18)
+Ver. 1.0.0 (2022-11-18)
 
-This module shows how to train double pendulum using on-policy and off-policy RL algorithms from SB3.
+This module shows how to train double pendulum using A2C from SB3.
 """
 
 
@@ -25,7 +22,6 @@ from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.doublependulum import *
 from stable_baselines3 import A2C
-from stable_baselines3 import DDPG
 from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM
@@ -42,36 +38,30 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada, p_visualize, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulumS7(p_logging=True, p_init_angles='random', p_max_torque=10, p_visualize=True,
-                                       p_plot_level=DoublePendulumRoot.C_PLOT_DEPTH_ALL, p_reward_window=100)
+        self._env   = DoublePendulumS4(p_logging=True, p_init_angles='random', p_balancing_range=[-70,70], p_max_torque=30, p_visualize=True,
+        p_plot_level=DoublePendulumRoot.C_PLOT_DEPTH_ALL, p_reward_window=100)
 
-        # 1.2 Select an algorithm by uncomment the opted algorithm
+        # 1.2 Select an algorithm
         # On-Policy RL Algorithm: A2C
+        
+        # Parameters, refer to https://stable-baselines3.readthedocs.io/en/master/modules/a2c.html
+        actor_size = 256
+        critic_size = 256
+        learning_rate = 7e-4
+        n_steps = 5
+        gamma = 0.8
+        
         policy_kwargs = dict(activation_fn=torch.nn.ReLU,
-                     net_arch=[dict(pi=[128, 128], vf=[128, 128])])
+                     net_arch=[dict(pi=[actor_size, actor_size], vf=[critic_size, critic_size])])
         policy_sb3 = A2C(
                     policy="MlpPolicy",
-                    n_steps=150, 
                     env=None,
+                    learning_rate=learning_rate,
+                    n_steps=n_steps,
+                    gamma=gamma, 
                     _init_setup_model=False,
                     policy_kwargs=policy_kwargs,
                     seed=1)
-        
-        # Off-Policy RL Algorithm: DDPG
-        # action_space = WrEnvMLPro2GYM.recognize_space(self._env.get_action_space())
-        # n_actions = action_space.shape[-1]
-        # action_noise = NormalActionNoise(mean=np.zeros(n_actions), sigma=0.1 * np.ones(n_actions))
-        # policy_kwargs = dict(net_arch=dict(pi=[128, 128], qf=[128, 128]))
-        # policy_sb3 = DDPG(
-        #     policy="MlpPolicy",
-        #     learning_rate=3e-4,
-        #     buffer_size=10000,
-        #     learning_starts=100,
-        #     action_noise=action_noise,
-        #     policy_kwargs=policy_kwargs,
-        #     env=None,
-        #     _init_setup_model=False,
-        #     device="cpu")
             
         # 1.3 Wrapped the SB3 policy to MLPro compatible policy
         policy_wrapped = WrPolicySB32MLPro(
