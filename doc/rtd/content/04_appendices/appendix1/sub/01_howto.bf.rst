@@ -15,15 +15,25 @@ Elementary Topics
 
 
 
-Event Handling and Multitasking
+Event Handling
 -------------------------------
 
 .. toctree::
    :maxdepth: 1
    :glob:
 
-   bf/eh/howto*
-   bf/mt/howto*   
+   bf/eh/howto*        
+
+
+
+Multitasking
+-------------------------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   bf/mt/howto*  
 
 
 
@@ -56,7 +66,18 @@ Machine Learning
    :maxdepth: 1
    :glob:
 
-   bf/ml/howto*   
+   bf/ml/howto*     
+
+
+
+Systems
+----------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   bf/systems/howto* 
 
 
 
