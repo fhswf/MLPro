@@ -6,21 +6,36 @@ changelog:
       - admin
       - meeting
   categories:
-    - title: Enhancements MLPro-SL
+    - title: MLPro-SL - Supervised Learning
       labels:
         - SL
-    - title: Enhancements MLPro-RL
+      exclude:
+        labels:
+          - documentation
+    - title: MLPro-RL - Reinforcement Learning
       labels:
         - RL
-    - title: Enhancements MLPro-GT
+      exclude:
+        labels:
+          - documentation
+    - title: MLPro-GT - Game Theory
       labels:
         - GT
-    - title: Enhancements MLPro-OA
+      exclude:
+        labels:
+          - documentation
+    - title: MLPro-OA - Online Adaptivity
       labels:
         - OA
-    - title: Enhancements MLPro-BF
+      exclude:
+        labels:
+          - documentation
+    - title: MLPro-BF - Basic Functions
       labels:
         - BF
+      exclude:
+        labels:
+          - documentation
     - title: Documentation
       labels:
         - documentation
