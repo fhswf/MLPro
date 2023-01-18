@@ -4,13 +4,23 @@ changelog:
   exclude:
     labels:
       - admin
+      - meeting
   categories:
-    - title: Enhancements
+    - title: Enhancements MLPro-SL
       labels:
-        - enhancement
-    - title: Corrections
+        - SL
+    - title: Enhancements MLPro-RL
       labels:
-        - bug
+        - RL
+    - title: Enhancements MLPro-GT
+      labels:
+        - GT
+    - title: Enhancements MLPro-OA
+      labels:
+        - OA
+    - title: Enhancements MLPro-BF
+      labels:
+        - BF
     - title: Documentation
       labels:
         - documentation
