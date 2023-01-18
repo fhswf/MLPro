@@ -8,3 +8,4 @@ Further explanation coming soon....
    :maxdepth: 1
 
    layer3_1_data_sources/streams.rst
+   layer3_1_data_sources/streamprocessing.rst
