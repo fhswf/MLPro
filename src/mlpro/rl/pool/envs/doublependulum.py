@@ -54,10 +54,18 @@
 ## -- 2022-09-09  2.0.5     LSB      Updating the boundaries
 ## -- 2022-10-08  2.0.6     LSB      Bug fix
 ## -- 2022-11-09  2.1.0     DA       Refactorung due to changes on the plot systematics
+## -- 2022-11-11  2.1.1     LSB      Bug fix for random seed dependent reproducibility
+## -- 2022-11-17  2.2.0     LSB      New plot systematics
+## -- 2022-11-18  2.2.1     DA       Method DoublePendulumRoot._init_figure(): title
+## -- 2022-11-18  2.2.2     LSB      reward strategies, broken computation, balancing and swinging
+## -- 2022-11-20  2.2.3     LSB      Reward Window, reward trend, reward strategies, balancing
+##                                   and swinging zones
+## -- 2022-12-07  2.2.4     LSB      - updated the reward strategy
+##                                   - removed constructor of S4 class
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2022-11-09)
+Ver. 2.2.4 (2022-12-07)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -66,6 +74,7 @@ connected to a fixed point at one end and to outer pole at other end. The native
 Pendulum consists of an input motor providing the torque in either directions to actuate the system. The figure
 below shows the visualisation of MLPro's Double Pendulum environment.
 """
+import random
 
 from mlpro.rl import *
 from mlpro.bf.various import *
@@ -75,7 +84,7 @@ import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
 from collections import deque
-plt.ion()
+
 
 
 
@@ -113,6 +122,29 @@ class DoublePendulumRoot (Environment):
         Historical trajectory points to display. The default is 5.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
+    p_plot_level : int
+        Types and number of plots to be plotted. Default = ALL
+        C_PLOT_DEPTH_ENV only plots the environment
+        C_PLOT_DEPTH_REWARD only plots the reward
+        C_PLOT_ALL plots both reward and the environment
+    p_rst_balancingL
+        Reward strategy to be used for the balancing region of the environment
+    p_rst_swinging
+        Reward strategy to be used for the swinging region of the environment
+    p_rst_swinging_outer_pole
+        Reward Strategy to be used for swinging up outer pole
+    p_reward_trend:bool
+        Boolean value stating whether to plot reward trend
+    p_reward_window:int
+        The number of latest rewards to be shown in the plot. Default is 0
+    p_random_range:list
+        The boundaries for state space for initialization of environment randomly
+    p_balancing range:list
+        The boundaries for state space of environment in balancing region
+    p_swinging_outer_pole_range
+        The boundaries for state space of environment in swinging of outer pole region
+    p_break_swinging:bool
+        Boolean value stating whether the environment shall be broken outside the balancing region
     p_logging
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
@@ -144,19 +176,42 @@ class DoublePendulumRoot (Environment):
     C_ANI_FRAME         = 30
     C_ANI_STEP          = 0.001
 
+    C_PLOT_DEPTH_ENV    = 0
+    C_PLOT_DEPTH_REWARD = 1
+    C_PLOT_DEPTH_ALL    = 2
+    C_VALID_DEPTH       = [C_PLOT_DEPTH_ENV, C_PLOT_DEPTH_REWARD, C_PLOT_DEPTH_ALL]
+
+    C_RST_BALANCING_001 = 'rst_001'
+    C_RST_BALANCING_002 = 'rst_002'
+    C_RST_SWINGING_001  = 'rst_003'
+    C_RST_SWINGING_OUTER_POLE_001 = 'rst_004'
+    C_VALID_RST_BALANCING = ['rst_001','rst_002']
+    C_VALID_RST_SWINGING = ['rst_003']
+    C_VALID_RST_SWINGING_OUTER_POLE = ['rst_004']
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__ ( self, 
-                   p_mode = Mode.C_MODE_SIM, 
+    def __init__ ( self,
+                   p_mode = Mode.C_MODE_SIM,
                    p_latency = None,
                    p_max_torque=20,
-                   p_l1=1.0, 
-                   p_l2=1.0, 
-                   p_m1=1.0, 
-                   p_m2=1.0, 
+                   p_l1=1.0,
+                   p_l2=1.0,
+                   p_m1=1.0,
+                   p_m2=1.0,
                    p_init_angles=C_ANGLES_RND,
                    p_g=9.8,
-                   p_history_length=5, 
+                   p_history_length=5,
                    p_visualize:bool=False,
+                   p_plot_level:int=2,
+                   p_rst_balancing = C_RST_BALANCING_002,
+                   p_rst_swinging = C_RST_SWINGING_001,
+                   p_rst_swinging_outer_pole = C_RST_SWINGING_OUTER_POLE_001,
+                   p_reward_trend: bool = False,
+                   p_reward_window:int = 0,
+                   p_random_range:list = None,
+                   p_balancing_range:list = (-0.2,0.2),
+                   p_swinging_outer_pole_range = (0.2,0.5),
+                   p_break_swinging:bool = False,
                    p_logging=Log.C_LOG_ALL ):
 
         self._max_torque = p_max_torque
@@ -170,16 +225,38 @@ class DoublePendulumRoot (Environment):
         self._g = p_g
 
         self._init_angles = p_init_angles
+        self._random_range = p_random_range
+        self._balancing_range = p_balancing_range
+        self._swinging_outer_pole_range = p_swinging_outer_pole_range
+        self._swinging = (self._swinging_outer_pole_range, 180)
+        self._break_swinging = p_break_swinging and p_balancing_range
 
         if self._init_angles not in self.C_VALID_ANGLES: raise ParamError("The initial angles are not valid")
 
         self._history_x = deque(maxlen=p_history_length)
         self._history_y = deque(maxlen=p_history_length)
+        self._plot_level = p_plot_level
+
 
         super().__init__(p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging, p_latency=p_latency)
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
+        self._rst_balancing = p_rst_balancing
+        self._rst_swinging = p_rst_swinging
+        self._rst_swinging_outer_pole = p_rst_swinging_outer_pole
+        self._rst_methods = {DoublePendulumRoot.C_RST_BALANCING_001:self.compute_reward_001,
+                             DoublePendulumRoot.C_RST_BALANCING_002:self.compute_reward_002,
+                             DoublePendulumRoot.C_RST_SWINGING_001:self.compute_reward_003,
+                             DoublePendulumRoot.C_RST_SWINGING_OUTER_POLE_001:self.compute_reward_004}
+        if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
+            self._reward_history = []
+            self._reward_trend = p_reward_trend
+            self._reward_window = p_reward_window
+
+
         self._state = State(self._state_space)
+        self._target_state = State(self._state_space)
+        self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
         self.reset()
 
 
@@ -218,7 +295,14 @@ class DoublePendulumRoot (Environment):
 
 ## ------------------------------------------------------------------------------------------------------
     def _init_figure(self) -> Figure:
-        return plt.figure(figsize=(5,4))
+        figure = plt.figure(figsize=(7,6))
+
+        try:
+            figure.canvas.set_window_title('Environment - '+self.C_NAME)
+        except AttributeError:
+            figure.canvas.setWindowTitle('Environment - '+self.C_NAME)
+
+        return figure
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -233,6 +317,8 @@ class DoublePendulumRoot (Environment):
             The default is None.
 
         """
+        if p_seed:
+            random.seed(p_seed)
         if self._init_angles == self.C_ANGLES_UP:
             self._th1 = 0
             self._th2 = 0
@@ -240,8 +326,24 @@ class DoublePendulumRoot (Environment):
             self._th1 = 180
             self._th2 = 180
         elif self._init_angles == self.C_ANGLES_RND:
-            self._th1 = random.random()*180
-            self._th2 = random.random()*180
+            self._th1 = random.uniform(-180, 180)
+            self._th2 = random.uniform(-180, 180)
+            if self._random_range:
+                if len(self._random_range) == 1 or isinstance(self._random_range, int):
+                    self._th1 = random.uniform(-self._random_range,self._random_range)
+                    self._th2 = random.uniform(-self._random_range,self._random_range)
+                elif len(self._random_range) == 2:
+                    self._th1 = random.uniform(self._random_range[0], self._random_range[1])
+                    self._th2 = random.uniform(self._random_range[0], self._random_range[1])
+            if self._balancing_range:
+                if len(self._balancing_range) == 1 or isinstance(self._balancing_range, int):
+                    self._th1 = random.uniform(-self._balancing_range,self._balancing_range)
+                    self._th2 = random.uniform(-self._balancing_range,self._balancing_range)
+                elif len(self._balancing_range) == 2:
+                    self._th1 = random.uniform(self._balancing_range[0], self._balancing_range[1])
+                    self._th2 = random.uniform(self._balancing_range[0], self._balancing_range[1])
+
+
         else:
             raise NotImplementedError("init_angles value must be up or down")
 
@@ -371,7 +473,7 @@ class DoublePendulumRoot (Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old, p_state_new):
+    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
         This method calculates the reward for C_TYPE_OVERALL reward type. The current reward is based on the
         worst possible distance between two states and the best possible minimum distance between current and
@@ -386,15 +488,64 @@ class DoublePendulumRoot (Environment):
 
         Returns
         -------
-        reward : Reward
+        current_reward : Reward
             current calculated Reward values.
         """
 
+        state_new = p_state_new.get_values().copy()
+        p_state_new_normalized = self._normalize(state_new)
+        norm_state_new = State(self.get_state_space())
+        norm_state_new.set_values(p_state_new_normalized)
+
+        state_old = p_state_old.get_values().copy()
+        p_state_old_normalized = self._normalize(state_old)
+        norm_state_old = State(self.get_state_space())
+        norm_state_old.set_values(p_state_old_normalized)
+
+        if (abs(p_state_new_normalized[0]) <= 0.2 and abs(p_state_new_normalized[2] <= 0.2)):
+            if self._rst_balancing in self.C_VALID_RST_BALANCING:
+                current_reward = self._rst_methods[self._rst_balancing](norm_state_old, norm_state_new)
+            else:
+                raise AttributeError('Reward strategy does not exist.')
+
+        elif (0.5 >= abs(p_state_new_normalized[0]) > 0.2):
+            if self._rst_swinging_outer_pole in self.C_VALID_RST_SWINGING_OUTER_POLE:
+                current_reward = self._rst_methods[self._rst_swinging_outer_pole](norm_state_old, norm_state_new)
+            else:
+                raise AttributeError('Reward strategy does not exist.')
+
+        else:
+            if self._rst_swinging in self.C_VALID_RST_SWINGING:
+                current_reward = self._rst_methods[self._rst_swinging](norm_state_old, norm_state_new)
+            else:
+                raise AttributeError('Reward strategy does not exist.')
+
+        if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
+            if self._reward_window != 0 and len(self._reward_history) >= self._reward_window:
+                self._reward_history.pop(0)
+            self._reward_history.append(current_reward.overall_reward)
+        return current_reward
+
+
+## ------------------------------------------------------------------------------------------------------
+    def compute_reward_001(self, p_state_old:State=None, p_state_new:State=None):
+        """
+        Reward strategy with only new normalized state
+
+        Parameters
+        ----------
+        p_state_old : State
+            Normalized old state.
+        p_state_new : State
+            Normalized new state.
+
+        Returns
+        -------
+        current_reward : Reward
+            current calculated Reward values.
+        """
         current_reward = Reward()
-        state = p_state_new.get_values().copy()
-        p_state_normalized = self._normalize(state)
-        norm_state = State(self.get_state_space())
-        norm_state.set_values(p_state_normalized)
+
         goal_state = self._target_state
 
         max_values = []
@@ -411,11 +562,10 @@ class DoublePendulumRoot (Environment):
         min_state = State(self.get_state_space())
         min_state.set_values(min_values)
 
-        # d_max = self.get_state_space().distance(max_state, min_state)
-        d = self.get_state_space().distance(norm_state, goal_state)
-        # value = d_max - d
-        # current_reward.set_overall_reward(value)
-        
+
+        d = self.get_state_space().distance(p_state_new, goal_state)
+
+
         if d <= self.C_THRSH_GOAL:
             current_reward.set_overall_reward(1)
         else:
@@ -425,11 +575,138 @@ class DoublePendulumRoot (Environment):
 
 
 ## ------------------------------------------------------------------------------------------------------
+    def compute_reward_002(self, p_state_old:State=None, p_state_new:State=None):
+        """
+        Reward strategy with both new and old normalized state based on euclidean distance from the goal state
+
+        Parameters
+        ----------
+        p_state_old : State
+            Normalized old state.
+        p_state_new : State
+            Normalized new state.
+
+        Returns
+        -------
+        current_reward : Reward
+            current calculated Reward values.
+        """
+        current_reward = Reward()
+
+        goal_state = self._target_state
+
+        d_old = abs(self.get_state_space().distance(goal_state, p_state_old))
+        d_new = abs(self.get_state_space().distance(goal_state, p_state_new))
+        d = d_old - d_new
+
+        current_reward.set_overall_reward(d)
+
+        return current_reward
+
+
+## ------------------------------------------------------------------------------------------------------
+    def compute_reward_003(self, p_state_old: State = None, p_state_new: State = None):
+        """
+        Reward strategy with both new and old normalized state based on euclidean distance from the goal state,
+        designed for the swinging of outer pole. Both angles and velocity and acceleration of the outer pole are
+        considered for the reward computation.
+
+        Parameters
+        ----------
+        p_state_old : State
+            Normalized old state.
+        p_state_new : State
+            Normalized new state.
+
+        Returns
+        -------
+        current_reward : Reward
+            current calculated Reward values.
+        """
+        current_reward = Reward()
+        state_new = p_state_new.get_values().copy()
+        state_new[1] = 0
+        state_new[4] = 0
+        norm_state_new = State(self.get_state_space())
+        norm_state_new.set_values(state_new)
+
+        state_old = p_state_old.get_values().copy()
+        state_old[1] = 0
+        state_old[4] = 0
+        norm_state_old = State(self.get_state_space())
+        norm_state_old.set_values(state_old)
+        goal_state = self._target_state
+
+        d_old = abs(self.get_state_space().distance(goal_state, norm_state_old))
+        d_new = abs(self.get_state_space().distance(goal_state, norm_state_new))
+        d = d_old - d_new
+
+        current_reward.set_overall_reward(d)
+
+        return current_reward
+
+## ------------------------------------------------------------------------------------------------------
+    def compute_reward_004(self, p_state_old: State = None, p_state_new: State = None):
+        """
+        Reward strategy with both new and old normalized state based on euclidean distance from the goal state,
+        designed for the swinging up region. Both angles and velocity and acceleration of the outer pole are
+        considered for the reward computation.
+
+        The reward strategy is as follows:
+
+        reward = (|old_theta1n| - |new_theta1n|) + (|new_omega1n + new_alpha1n| - |old_omega1n + old_alpha1n|)
+
+        Parameters
+        ----------
+        p_state_old : State
+            Normalized old state.
+        p_state_new : State
+            Normalized new state.
+
+        Returns
+        -------
+        current_reward : Reward
+            current calculated Reward values.
+        """
+        current_reward = Reward()
+        state_new = p_state_new.get_values().copy()
+        p_state_new_normalized = self._normalize(state_new)
+
+
+        state_old = p_state_old.get_values().copy()
+        p_state_old_normalized = self._normalize(state_old)
+
+
+        term_1 = abs(p_state_old_normalized[0] - p_state_new_normalized[0])
+
+        try:
+            term_2 = (abs(p_state_new_normalized[1]+p_state_new_normalized[4])
+                        - abs(p_state_old_normalized[1]+p_state_old_normalized[4]))
+
+        except:
+            term_2 = (abs(p_state_new_normalized[1]) - abs(p_state_old_normalized[1]))
+
+        current_reward.set_overall_reward(term_1+term_2)
+        return current_reward
+
+
+## ------------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
         """
         Custom method to compute broken state. In this case always returns false as the environment doesn't break
         """
-
+        if self._break_swinging:
+            if len(self._balancing_range) == 1 or isinstance(self._balancing_range, int):
+                if -self._balancing_range >= p_state.get_values()[0] >= self._balancing_range:
+                    return True
+                if -self._balancing_range >= p_state.get_values()[2] >= self._balancing_range:
+                    return True
+            elif len(self._balancing_range) == 2:
+                if self._balancing_range[0] >= p_state.get_values()[0] or p_state.get_values()[0] >= \
+                        self._balancing_range[1]:
+                    return True
+                if self._balancing_range[0] >= p_state.get_values()[2] or p_state.get_values()[2] >= self._balancing_range[1]:
+                    return True
         return False
 
 
@@ -468,7 +745,7 @@ class DoublePendulumRoot (Environment):
 
         Returns
         -------
-        state:State
+        state
             Normalized state values
 
         """
@@ -491,78 +768,124 @@ class DoublePendulumRoot (Environment):
             Object with further plot settings.
         """
 
-        p_settings.axes = p_figure.add_subplot(autoscale_on=False,
-                                               xlim=(-self._L * 1.2, self._L * 1.2), ylim=(-self._L * 1.2, self._L * 1.2))
-        p_settings.axes.set_aspect('equal')
-        p_settings.axes.grid()
+        p_settings.axes = []
 
-        self._cw_arc = Arc([0, 0], 0.5 * self._l1, 0.5 * self._l1, angle=0, theta1=0,
-                          theta2=250, color='crimson')
-        endX = (0.5 * self._l1 / 2) * np.cos(np.radians(0))
-        endY = (0.5 * self._l1 / 2) * np.sin(np.radians(0))
-        self._cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(180),
-                                       color='crimson')
+        # Creates a grid space in the figure to use for subplot location
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, self.C_PLOT_DEPTH_REWARD]:
+            grid = p_figure.add_gridspec(1, 1)
+        elif self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ALL:
+            if self._reward_trend:
+                grid = p_figure.add_gridspec(1, 3)
+                p_figure.set_size_inches(17, 5)
+            else:
+                grid = p_figure.add_gridspec(1,2)
+                p_figure.set_size_inches(11, 5)
 
-        self._ccw_arc = Arc([0, 0], 0.5 * self._l1, 0.5 * self._l1, angle=70, theta1=0,
-                           theta2=320, color='crimson')
-        endX = (0.5 * self._l1 / 2) * np.cos(np.radians(70 + 320))
-        endY = (0.5 * self._l1 / 2) * np.sin(np.radians(70 + 320))
-        self._ccw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(70 + 320),
-                                        color='crimson')
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
+            p_settings.axes.append(p_figure.add_subplot(grid[0],autoscale_on=False,xlim=(-self._L * 1.2, self._L * 1.2),
+                                                                                   ylim=(-self._L * 1.2,self._L * 1.2)))
+            p_settings.axes[0].set_aspect('equal')
+            p_settings.axes[0].grid()
+            p_settings.axes[0].set_title(self.C_NAME)
 
-        p_settings.axes.add_patch(self._cw_arc)
-        p_settings.axes.add_patch(self._cw_arrow)
-        p_settings.axes.add_patch(self._ccw_arc)
-        p_settings.axes.add_patch(self._ccw_arrow)
+            self._cw_arc = Arc([0, 0], 0.5 * self._l1, 0.5 * self._l1, angle=0, theta1=0,
+                              theta2=250, color='crimson')
+            endX = (0.5 * self._l1 / 2) * np.cos(np.radians(0))
+            endY = (0.5 * self._l1 / 2) * np.sin(np.radians(0))
+            self._cw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(180),
+                                           color='crimson')
 
-        self._cw_arc.set_visible(False)
-        self._cw_arrow.set_visible(False)
-        self._ccw_arc.set_visible(False)
-        self._ccw_arrow.set_visible(False)
+            self._ccw_arc = Arc([0, 0], 0.5 * self._l1, 0.5 * self._l1, angle=70, theta1=0,
+                               theta2=320, color='crimson')
+            endX = (0.5 * self._l1 / 2) * np.cos(np.radians(70 + 320))
+            endY = (0.5 * self._l1 / 2) * np.sin(np.radians(70 + 320))
+            self._ccw_arrow = RegularPolygon((endX, endY), 3, 0.5 * self._l1 / 9, np.radians(70 + 320),
+                                            color='crimson')
 
-        self._line, = p_settings.axes.plot([], [], 'o-', lw=2)
-        self._trace, = p_settings.axes.plot([], [], '.-', lw=1, ms=2)
+            p_settings.axes[0].add_patch(self._cw_arc)
+            p_settings.axes[0].add_patch(self._cw_arrow)
+            p_settings.axes[0].add_patch(self._ccw_arc)
+            p_settings.axes[0].add_patch(self._ccw_arrow)
+
+            self._cw_arc.set_visible(False)
+            self._cw_arrow.set_visible(False)
+            self._ccw_arc.set_visible(False)
+            self._ccw_arrow.set_visible(False)
+
+            self._line, = p_settings.axes[0].plot([], [], 'o-', lw=2)
+            self._trace, = p_settings.axes[0].plot([], [], '.-', lw=1, ms=2)
 
 
-## ------------------------------------------------------------------------------------------------------
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_REWARD, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
+            if self._reward_trend:
+                p_settings.axes.append(p_figure.add_subplot(grid[1:3]))
+                self._plot_reward_trend, = p_settings.axes[-1].plot(range(len(self._reward_history)),
+                    self._reward_history, 'r--', lw = 2)
+            else:
+                p_settings.axes.append(p_figure.add_subplot(grid[1:3]))
+
+
+            p_settings.axes[-1].set_title('Reward - '+ self.C_NAME)
+            p_settings.axes[-1].autoscale_view()
+            p_settings.axes[-1].grid()
+            p_settings.axes[-1].set_xlabel('Cycle ID')
+            p_settings.axes[-1].set_ylabel('Reward')
+            self._reward_plot,  = p_settings.axes[-1].plot(range(len(self._reward_history)), self._reward_history,'b', lw = 1)
+
+
+    ## ------------------------------------------------------------------------------------------------------
     def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
         """
         This method updates the plot figure of each episode. When the figure is
         detected to be an embedded figure, this method will only set up the
         necessary data of the figure.
         """
-
-        x1 = self._l1 * sin(self._y[:, 0])
-        y1 = -self._l1 * cos(self._y[:, 0])
-
-        x2 = self._l2 * sin(self._y[:, 2]) + x1
-        y2 = -self._l2 * cos(self._y[:, 2]) + y1
-
-        for i in range(len(self._y)):
-            thisx = [0, x1[i], x2[i]]
-            thisy = [0, y1[i], y2[i]]
-
-            if i % self.C_ANI_FRAME == 0:
-                self._history_x.appendleft(thisx[2])
-                self._history_y.appendleft(thisy[2])
-                self._line.set_data(thisx, thisy)
-                self._trace.set_data(self._history_x, self._history_y)
-
-            if self._action_cw:
-                self._cw_arc.set_visible(True)
-                self._cw_arrow.set_visible(True)
-                self._cw_arc.set_alpha(self._alpha)
-                self._cw_arrow.set_alpha(self._alpha)
-                self._ccw_arc.set_visible(False)
-                self._ccw_arrow.set_visible(False)
+        try:
+            if self._reward_window != 0 and len(self._reward_history) >= self._reward_window:
+                self._reward_plot.set_data(list(range(self._reward_window)), self._reward_history)
             else:
-                self._cw_arc.set_visible(False)
-                self._cw_arrow.set_visible(False)
-                self._ccw_arc.set_visible(True)
-                self._ccw_arrow.set_visible(True)
-                self._ccw_arc.set_alpha(self._alpha)
-                self._ccw_arrow.set_alpha(self._alpha)
+                self._reward_plot.set_data(list(range(len(self._reward_history))), self._reward_history)
+            if self._reward_trend:
+                self._plot_reward_trend.set_data(list(range(len(self._reward_history))), np.convolve(
+                self._reward_history, np.ones(len(self._reward_history))/len(self._reward_history), mode = 'same'))
+            p_settings.axes[-1].autoscale_view(False, True, True)
+            p_settings.axes[-1].relim()
 
+
+        except:
+            pass
+        try:
+            x1 = self._l1 * sin(self._y[:, 0])
+            y1 = -self._l1 * cos(self._y[:, 0])
+
+            x2 = self._l2 * sin(self._y[:, 2]) + x1
+            y2 = -self._l2 * cos(self._y[:, 2]) + y1
+
+            for i in range(len(self._y)):
+                thisx = [0, x1[i], x2[i]]
+                thisy = [0, y1[i], y2[i]]
+
+                if i % self.C_ANI_FRAME == 0:
+                    self._history_x.appendleft(thisx[2])
+                    self._history_y.appendleft(thisy[2])
+                    self._line.set_data(thisx, thisy)
+                    self._trace.set_data(self._history_x, self._history_y)
+
+                if self._action_cw:
+                    self._cw_arc.set_visible(True)
+                    self._cw_arrow.set_visible(True)
+                    self._cw_arc.set_alpha(self._alpha)
+                    self._cw_arrow.set_alpha(self._alpha)
+                    self._ccw_arc.set_visible(False)
+                    self._ccw_arrow.set_visible(False)
+                else:
+                    self._cw_arc.set_visible(False)
+                    self._cw_arrow.set_visible(False)
+                    self._ccw_arc.set_visible(True)
+                    self._ccw_arrow.set_visible(True)
+                    self._ccw_arc.set_alpha(self._alpha)
+                    self._ccw_arrow.set_alpha(self._alpha)
+        except: pass
 
 
 
@@ -600,42 +923,30 @@ class DoublePendulumS4 (DoublePendulumRoot):
         Historical trajectory points to display. The default is 5.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
+    p_plot_level : int
+        Types and number of plots to be plotted. Default = ALL
+        C_PLOT_DEPTH_ENV only plots the environment
+        C_PLOT_DEPTH_REWARD only plots the reward
+        C_PLOT_ALL plots both reward and the environment
+    p_rst_balancingL
+        Reward strategy to be used for the balancing region of the environment
+    p_rst_swinging
+        Reward strategy to be used for the swinging region of the environment
+    p_reward_trend:bool
+        Boolean value stating whether to plot reward trend
+    p_reward_window:int
+        The number of latest rewards to be shown in the plot. Default is 0
+    p_random_range:list
+        The boundaries for state space for initialization of environment randomly
+    p_balancing range:list
+        The boundaries for state space of environment in balancing region
+    p_break_swinging:bool
+        Boolean value stating whether the environment shall be broken outside the balancing region
     p_logging
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
 
     C_NAME = 'DoublePendulumS4'
-
-## ------------------------------------------------------------------------------------------------------
-    def __init__ ( self, 
-                   p_mode = Mode.C_MODE_SIM, 
-                   p_latency = None,
-                   p_max_torque=20,
-                   p_l1=1.0, 
-                   p_l2=1.0, 
-                   p_m1=1.0, 
-                   p_m2=1.0, 
-                   p_init_angles=DoublePendulumRoot.C_ANGLES_RND,
-                   p_g=9.8, 
-                   p_history_length=5, 
-                   p_visualize:bool=False,
-                   p_logging=Log.C_LOG_ALL ):
-
-        super().__init__( p_mode=p_mode,
-                          p_latency=p_latency,
-                          p_max_torque=p_max_torque,
-                          p_l1=p_l1,
-                          p_l2=p_l2,
-                          p_m1=p_m1,
-                          p_m2=p_m2,
-                          p_init_angles=p_init_angles,
-                          p_g=p_g,
-                          p_history_length=p_history_length,
-                          p_visualize=p_visualize,
-                          p_logging=p_logging)
-
-        self._target_state = State(self._state_space)
-        self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -646,12 +957,12 @@ class DoublePendulumS4 (DoublePendulumRoot):
 
         Parameters
         ----------
-        p_state:State
+        p_state
             The state to be normalized
 
         Returns
         -------
-        state:State
+        state
             Normalized state values
 
         """
