@@ -89,6 +89,16 @@ Normalizers
    :undoc-members:
    :show-inheritance:
 
+
+Unit Converter
+---------------
+
+.. image:: images/bf/MLPro-BF-Math-UnitConverter_class_diagram.drawio.png
+.. automodule:: mlpro.bf.math.unitconverter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
    
 State-based Systems
 -------------------
