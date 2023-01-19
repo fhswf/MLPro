@@ -12,24 +12,32 @@ changelog:
       exclude:
         labels:
           - documentation
+          - BF
+          - WR
     - title: MLPro-RL - Reinforcement Learning
       labels:
         - RL
       exclude:
         labels:
           - documentation
+          - BF
+          - WR
     - title: MLPro-GT - Game Theory
       labels:
         - GT
       exclude:
         labels:
           - documentation
+          - BF
+          - WR
     - title: MLPro-OA - Online Adaptivity
       labels:
         - OA
       exclude:
         labels:
           - documentation
+          - BF
+          - WR
     - title: MLPro-BF - Basic Functions
       labels:
         - BF
