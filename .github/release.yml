@@ -53,6 +53,9 @@ changelog:
     - title: Documentation
       labels:
         - documentation
+    - title: Quality Assurance
+      labels:
+        - quality
     - title: Other Changes
       labels:
         - "*"
