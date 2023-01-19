@@ -36,6 +36,12 @@ changelog:
       exclude:
         labels:
           - documentation
+    - title: 3rd Party Support / Wrappers
+      labels:
+        - WR
+      exclude:
+        labels:
+          - documentation
     - title: Documentation
       labels:
         - documentation
