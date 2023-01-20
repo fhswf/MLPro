@@ -1,3 +1,4 @@
+.. _target_appendix2_RL:
 Reinforcement Learning
 ========================
 
