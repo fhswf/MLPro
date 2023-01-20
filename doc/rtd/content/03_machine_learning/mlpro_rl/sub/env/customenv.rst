@@ -95,8 +95,7 @@ Custom Environments
     2. **C_TYPE_EVERY_AGENT** is a scalar for every agent
     
     3. **C_TYPE_EVERY_ACTION** is a scalar for every agent and action.
-    
-    To set up state- and action-spaces using our basic functionalities, please refer to our `how-to file <https://mlpro.readthedocs.io/en/latest/content/append1/rl/howto.rl.001.html>`_.
+
 
 - **Environment Creation for Real Hardware Mode**
 
@@ -197,7 +196,7 @@ Custom Environments
 
     Alternatively, if your environment follows Gym or PettingZoo interface, you can apply our
     relevant useful wrappers for the integration between third party packages and MLPro. For more
-    information, please click :ref:`here<target-package>`.
+    information, please click :ref:`here<target-package-third>`.
 
 - **Environment Checker**
 

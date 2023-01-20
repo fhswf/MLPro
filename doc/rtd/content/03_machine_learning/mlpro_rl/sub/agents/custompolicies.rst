@@ -1,3 +1,4 @@
+.. _target_custom_policies_RL:
 Custom Policies
 -------------------
 
@@ -53,12 +54,12 @@ Custom Policies
     
     Hyperparameters of the policy should be stored in the internal object **self._hp_list**, so that they can be tuned from outside.
     The hyperparameter initilization method (**_init_hyperparam**) can be used in this case.
-    To set up a hyperparameter space, please refer to our `how-to file <https://mlpro.readthedocs.io/en/latest/content/append1/bf/howto.bf.005.html>`_.
+    To set up a hyperparameter space, please refer to our :ref:`how-to file <Howto BF ML 001>`.
 
 - **Policy from Third Party Packages**
 
     Alternatively, the user can also apply algorithms from Stable Baselines 3 by using the developed relevant wrapper for the integration between third party packages and MLPro.
-    For more information, please click :ref:`here<target-package>`.
+    For more information, please click :ref:`here<target-package-third>`.
 
 - **Algorithm Checker**
 

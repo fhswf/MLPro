@@ -1,3 +1,4 @@
+.. _target_agents_pool_RL:
 Policy Pool
 -------------------
 
@@ -5,3 +6,4 @@ Policy Pool
    :maxdepth: 1
    
    pool/randomaction
+   pool/mpc

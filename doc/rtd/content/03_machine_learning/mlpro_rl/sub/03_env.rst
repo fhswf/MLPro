@@ -16,7 +16,7 @@ There are four main possibilities to set up an environment in MLPro, such as,
 
 (3) the user can reuse the provided environments by accessing them from the pool of objects, and
 
-(4) the user can reuse available environments from 3rd-party packages via wrapper classes (Available currently: OpenAI Gym or PettingZoo).
+(4) the user can reuse available environments from 3rd-party packages via wrapper classes (currently available: OpenAI Gym or PettingZoo).
 
 .. toctree::
    :maxdepth: 1
@@ -29,7 +29,11 @@ For reusing the 3rd packages, we develop a wrapper technology to transform the e
 Additionally, we also provide the wrapper for the other way around, which is from MLPro Environment to the 3rd-party package.
 At the moment, there are two ready-to-use wrapper classes. The first wrapper class is intended for OpenAI Gym and the second wrapper is intended for PettingZoo.
 The guide to using the wrapper classes is step-by-step explained in our how-to files, as follows:
-(1) `OpenAI Gym to MLPro, <https://mlpro.readthedocs.io/en/latest/content/append1/rl/howto.rl.002.html>`_
-(2) `MLPro to OpenAI Gym, <https://mlpro.readthedocs.io/en/latest/content/append1/rl/howto.rl.008.html>`_
-(3) `PettingZoo to MLPro, <https://mlpro.readthedocs.io/en/latest/content/append1/rl/howto.rl.006.html>`_ and
-(4) `MLPro to PettingZoo. <https://mlpro.readthedocs.io/en/latest/content/append1/rl/howto.rl.009.html>`_
+
+(1) :ref:`OpenAI Gym to MLPro <Howto WP RL 004>`,
+
+(2) :ref:`MLPro to OpenAI Gym <Howto WP RL 001>`,
+
+(3) :ref:`PettingZoo to MLPro <Howto WP RL 003>`, and
+
+(4) :ref:`MLPro to PettingZoo <Howto WP RL 002>`.

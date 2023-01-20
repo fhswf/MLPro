@@ -6,8 +6,8 @@ MLPro-RL supplies a special agent model landscape, which covers different RL sce
 For the multi-agent RL, the structure is constructed by assigning multiple single agents in a group.
 The main component of each single-agent (either single-agent or multi-agent RL) is the policy.
 The basic class of the policy is inherited from the ML Model of basic MLPro functionality and extended by the RL-related function of the action calculation.
-The users can inherit the basic class of the policy to implement their `own custom algorithms <https://mlpro.readthedocs.io/en/latest/content/rl/agents/custompolicies.html>`_ or simply use algorithms from third-party packages via `wrapper classes <https://mlpro.readthedocs.io/en/latest/content/rl/06_wrapper.html>`_.
-The other possibility would be `importing algorithms from the pool object <https://mlpro.readthedocs.io/en/latest/content/rl/agents/pool.html>`_.
+The users can inherit the basic class of the policy to implement their :ref:`own custom algorithms <target_custom_policies_RL>` or simply use algorithms from third-party packages via :ref:`wrapper classes <target-package-third>`.
+The other possibility would be :ref:`importing algorithms from the pool object <target_agents_pool_RL>`.
 For an overview, the simplified class diagram of agents in MLPro is described below.
 
 .. figure:: images/MLPro-RL_agents.png
@@ -15,10 +15,10 @@ For an overview, the simplified class diagram of agents in MLPro is described be
   
   This figure is taken from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
-Moreover, an environment model (known as `EnvModel class <https://mlpro.readthedocs.io/en/latest/content/rl/agents/mbagents.html>`_) can be supplemented to a single-agent, i.e. for model-based RL cases.
+Moreover, an environment model (known as :ref:`EnvModel class <target_agents_MBRL>`) can be supplemented to a single-agent, i.e. for model-based RL cases.
 This class can be used for model-based learning, which learns the behaviour or dynamics of the environment. Another possible extension of the model-based agent is an action planner.
 Action planner uses the environment model (or EnvModel) to plan the next action by predicting the output on a certain horizon.
-An example of action planner algorithms is `Model Predictive Control (MPC) <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/actionplanner/mpc.py>`_, which is also provided in MLPro.
+An example of action planner algorithms is :ref:`Model Predictive Control (MPC) <target_mpc_RL>`, which is also provided in MLPro.
 
 Additionally, you can find the more comprehensive explanations of agents in MLPro-RL including a sample application on controlling a UR5 Robot in this paper:
 `MLPro 1.0 - Standardized Reinforcement Learning and Game Theory in Python <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
