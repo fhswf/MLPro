@@ -1,0 +1,61 @@
+# .github/release.yml
+
+changelog:
+  exclude:
+    labels:
+      - admin
+      - meeting
+  categories:
+    - title: MLPro-SL - Supervised Learning
+      labels:
+        - SL
+      exclude:
+        labels:
+          - documentation
+          - BF
+          - WR
+    - title: MLPro-RL - Reinforcement Learning
+      labels:
+        - RL
+      exclude:
+        labels:
+          - documentation
+          - BF
+          - WR
+    - title: MLPro-GT - Game Theory
+      labels:
+        - GT
+      exclude:
+        labels:
+          - documentation
+          - BF
+          - WR
+    - title: MLPro-OA - Online Adaptivity
+      labels:
+        - OA
+      exclude:
+        labels:
+          - documentation
+          - BF
+          - WR
+    - title: MLPro-BF - Basic Functions
+      labels:
+        - BF
+      exclude:
+        labels:
+          - documentation
+    - title: 3rd Party Support / Wrappers
+      labels:
+        - WR
+      exclude:
+        labels:
+          - documentation
+    - title: Documentation
+      labels:
+        - documentation
+    - title: Quality Assurance
+      labels:
+        - quality
+    - title: Other Changes
+      labels:
+        - "*"
