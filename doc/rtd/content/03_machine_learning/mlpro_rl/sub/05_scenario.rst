@@ -1,5 +1,5 @@
 .. _target_scenario_RL:
-RL-Scenario
+RL-Scenarios
 ------------
 
 Add text here!

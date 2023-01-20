@@ -1,5 +1,5 @@
 .. _target_agents_RL:
-Agent
+Agents
 ------
 
 MLPro-RL supplies a special agent model landscape, which covers different RL scenarios including a simple single-agent RL, a multi-agent RL, and model-based agents with an optional action planner.
