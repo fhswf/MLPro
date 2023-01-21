@@ -1,0 +1,28 @@
+User Interaction
+----------------
+
+MLPro-BF provides a framework called SciUI (Scientific User Interface) for creating and running 
+interactive ML applications for graphical validation, presentation and education purposes.
+
+**Key features are:**
+
+- Platform-indepe ndend framework for creation of own UI scenarios
+- Ready-to-run application „SciUI“ auto-detects and starts own scenarios
+- Focus on real-time visualization and interaction 
+- Based on Python standards Tkinter and MatPlotLib
+
+.. image:: ui/images/SciUI_2D.png
+   :width: 400
+
+.. image:: ui/images/SciUI_3D.png
+   :width: 400
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+
+Cross Reference
+===============
+    + :ref:`Howto BF-UI-001: SciUI - Reuse of interactive 2D/3D Input Space <Howto BF UI 001>`
+    + :ref:`Howto BF-UI-002: SciUI - Reinforcement Learning Cockpit <Howto BF UI 002>`
