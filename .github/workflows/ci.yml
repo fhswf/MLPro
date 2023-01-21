@@ -55,6 +55,7 @@ jobs:
         pip install sphinx
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
+        pip install sphinx_multitoc_numbering
         pip install openml
     - name: Lint with flake8
       run: |
