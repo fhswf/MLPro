@@ -21,4 +21,4 @@ or
     conda install -c mlpro mlpro
 
 
-The easiest way to become familiar with the concepts and functions of MLPro is to browse through the numerous sample programs in :ref:`Appendix 1 <target_appendix1>`.
+The easiest way to become familiar with the concepts and functions of MLPro is to browse through the numerous :ref:`example programs <target_appendix1>`.

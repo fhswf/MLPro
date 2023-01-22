@@ -31,7 +31,6 @@ Key Features
 Brainstorming
 
 a) Development: Intro or Project?
-- test driven development
 - design first
 - clean code
 - test automation
@@ -54,21 +53,47 @@ Tatsächlich denken wir bei jeder neuen Funktionalität darüber nach, wie tief 
 desto universeller ist die Verwendbarkeit und damit die Reichweite innerhalb von MLPro. 
 
 .. image:: images/MLPro_Architecture.drawio.png
+   :scale: 80 %
 
 
-Maschinelles Lernen standardisiert
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Standardized Machine Learning
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+A special feature of MLPro is that machine learning standards are already defined in the basic functions. 
+Templates for adaptive models and their hyperparameters as well as for executable ML scenarios are introduced 
+in the top layer of MLPro-BF. Furthermore, standards for training and hyperparameter tuning are defined. These 
+basic machine learning elements are reused and specifically extended in all higher sub-frameworks. On the one hand, 
+this facilitates the creation of new sub-frameworks and, on the other hand, the recombination of higher functions 
+from MLPro in your own hybrid ML applications.
+
+Learn more: :ref:`Basic Functions, Layer 4: Machine Learning <target_bf_ml>`
+
+
+Real-World Applications in Focus
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+MLPro wurde zur Lösung realer Problemstellungen geschaffen...
+
+- Detailliertes Logging
+- Präzises Zeitmanagement von simulierten und realen Prozessen auf der Ebene von Mikrosekunden
+- Erstellung detaillierter Trainingsdaten in CSV-Dateien
 ...
 
-Reale Anwendungen im Fokus
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-...
 
-Beispielprogramme in Doppelfunktion: Demonstration und Validierung
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Third Party Support
+^^^^^^^^^^^^^^^^^^^
 
-Zahlreiche ausführbare Beispielprogramme veranschaulichen die wesentlichen Funktionen. Sie dienen
-darüber hinaus der Validierung und sind daher auch fester Bestandteil unserer automatischen Unit tests. Damit stellen wir zweierlei sicher:
-die Lauffähigkeit aller howtos und somit auch die Lauffähigkeit der demonstrierten Funktionalitäten (Stichwort: test driven development).
+MLPro integrates an increasing number of selected frameworks into its own process landscapes.
+This is done at different levels of MLPro using so-called wrapper classes that are compatible with the corresponding MLPro classes.
 
-Learn more: link!
+Learn more: :ref:`Wrappers <target_wrappers>`
+
+
+Example programs in double function: self-study and validation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Numerous executable example programs (we call them "howtos") illustrate the essential functions of MLPro.
+They are also used for validation and are therefore an integral part of our automatic unit tests.
+With this we ensure two things: the operability of all howtos and thus also the operability of the 
+demonstrated functionalities (keyword: test driven development).
+
+Learn more: :ref:`Appendix A1 - Example Pool <target_appendix1>`
