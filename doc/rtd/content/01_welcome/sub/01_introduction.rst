@@ -2,47 +2,34 @@
 Introduction
 ============
 
-MLPro ist ein übergreifendes und integratives middleware-framework für standardisierte Anwendungen des Maschinellen Lernens (ML) in Python. 
-
-Die Zielsetzung besteht darin, Prozesse und Vorlagen für ein breites Spektrum relevanter ML-Teilgebiete zur Verfügung zu stellen, ohne dabei
-auf den Einsatz bereits etablierter und bewährter ML-Frameworks wie Scikit-learn, TensorFlow, PyTorch, Optuna, etc. verzichten zu müssen. Letztere
-werden vielmehr nahtlos in die Prozesslandschaft von MLPro integriert. Forscher, Entwickler, Ingenieure, und Studenten können sich 
-durch die Verwendung von MLPro somit auf die wesentlichen Kernaufgaben konzentrieren, ohne sich um das Zusammenspiel verschiedener
-Frameworks kümmern zu müssen oder existente Algorithmen neu implementieren zu müssen.
-
-MLPro ist dabei architektonisch auf beliebige Erweiterbarkeit und Rekombinierbarkeit ausgelegt, was insbesondere die Erstellung hybrider ML-Anwendungen
-über verschiedene Lernparadigmen hinweg ermöglicht.
-
+MLPro is a comprehensive and integrative middleware framework for standardized machine learning (ML) applications in Python.
+The objective is to provide processes and templates for a wide range of relevant ML sub-areas without having to forego the use 
+of already established and proven ML frameworks such as Scikit-learn, TensorFlow, PyTorch, Optuna, etc. Rather, the latter are 
+seamlessly integrated into the process landscapes of MLPro. By using MLPro, researchers, developers, engineers, and students can 
+concentrate on the essential core tasks without having to worry about the integration/interaction of different frameworks or 
+having to re-implement existing algorithms. MLPro is architecturally designed for extensibility and recombinability, which in 
+particular enables the creation of hybrid ML applications across different learning paradigms.
 
 Key Features
 ------------
-   - Continuously growing number of sub-frameworks for relevant ML areas like reinforcement learning, game theory, online machine learning, etc.
-   - Powerful substructure of overarching basic functionalities for mathematics, data management, training and tuning of ML models, and much more
-   - Integration of proven 3rd party packages
-   - Open Source, open design
+The most important key features of MLPro are...
 
+   **1. Sub-Frameworks for various ML topics**
+      - :ref:`MLPro-RL for Reinforcement Learning <target_mlpro_rl>`
+      - :ref:`MLPro-GT for Game Theory <target_mlpro_gt>`
+      - :ref:`MLPro-SL for Supervised Learning <target_mlpro_sl>`
+      - :ref:`MLPro-OA for Online Adaptivity <target_mlpro_oa>`
 
-Development
------------
-MLPro is developed at the `South Westphalia University of Applied Sciences <https://www.fh-swf.de/en/international_3/index.php>`_ in the 
-`Department for Electrical Power Engineering <https://www.fh-swf.de/en/ueber_uns/standorte_4/soest_4/fb_eet/index.php>`_ in the `Lab 
-for Automation Technology and Learning Systems <https://www.fh-swf.de/en/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php>`_ 
-and is therefore freely available to all interested users from research and development as well as industry and economy.
+   **2. Powerful substructure of overarching basic functions** 
+      - :ref:`MLPro-BF for Basic Functions<target_mlpro_bf>`
 
+   **3. Extensive pool of examples**
+      - :ref:`Example Pool <target_appendix1>`
 
-The development team consistently applies the following principles:
+   **4. Integration of proven 3rd party packages**
+      - :ref:`List of Wrappers <target_wrappers>`
 
-   * Quality first
-      Our aim is to provide ML functionalities at the highest level. We put these up for discussion in scientific :ref:`publications <target_publications>`. 
-      Open feedback and suggestions for improvement are always welcome.
-
-   * Design first
-      In MLPro, new functions are not created in the code editor but in a class diagram. We provide the latter in the 
-      :ref:`Appendix A2 - API Reference <target_appendix2>`. A color system documents the respective development status.
-
-   * Clean Code Paradigm
-      We firmly believe that a clearly structured and legible source text has a significant influence on both the acceptance and the life 
-      cycle of a software. Anyone who opens any source code in MLPro knows immediately what we mean :-)
+   **5. Open source, open design**
 
 
 Architecture
@@ -73,7 +60,7 @@ basic ML elements are reused and specifically extended in all higher sub-framewo
 this facilitates the creation of new sub-frameworks and, on the other hand, the recombination of higher functions 
 from MLPro in your own hybrid ML applications.
 
-Learn more: :ref:`Basics of Machine Learning <target_bf_ml>`
+**Learn more:** :ref:`Basics of Machine Learning <target_bf_ml>`
 
 
 Example Pool
@@ -84,7 +71,7 @@ They are also used for validation and are therefore an integral part of our auto
 With this we ensure two things: the operability of all howtos and thus also the operability of the 
 demonstrated functionalities (tdd - test driven development).
 
-Learn more: :ref:`Example Pool <target_appendix1>`
+**Learn more:** :ref:`Example Pool <target_appendix1>`
 
 
 Third Party Support
@@ -94,7 +81,7 @@ MLPro integrates an increasing number of selected frameworks into its own proces
 This is done at different levels of MLPro using so-called wrapper classes that are compatible with 
 the corresponding MLPro classes.
 
-Learn more: :ref:`Wrappers <target_wrappers>`
+**Learn more:** :ref:`Wrappers <target_wrappers>`
 
 
 Real-World Applications in Focus
@@ -115,4 +102,26 @@ learning or game theory. Furthermore, a wrapper for the popular physics engine `
 provided, which can be used for the simulation and visualization of externally designed system models. The MLPro 
 templates are also prepared for connection to industrial components like controllers, sensors, and actuators.
 
-Learn more: :ref:`Elementary Functions <target_bf_elementary>`, :ref:`Computation <target_bf_computation>`, :ref:`State-based Systems <target_bf_systems>`
+**Learn more:** :ref:`Elementary Functions <target_bf_elementary>`, :ref:`Computation <target_bf_computation>`, :ref:`State-based Systems <target_bf_systems>`
+
+
+Development
+-----------
+MLPro is developed at the `South Westphalia University of Applied Sciences <https://www.fh-swf.de/en/international_3/index.php>`_ in the 
+`Department for Electrical Power Engineering <https://www.fh-swf.de/en/ueber_uns/standorte_4/soest_4/fb_eet/index.php>`_ in the `Lab 
+for Automation Technology and Learning Systems <https://www.fh-swf.de/en/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php>`_ 
+and is therefore freely available to all interested users from research and development as well as industry and economy.
+
+The development team consistently applies the following principles:
+
+   * Quality first
+      Our aim is to provide ML functionalities at the highest level. We put these up for discussion in scientific :ref:`publications <target_publications>`. 
+      Open feedback and suggestions for improvement are always welcome.
+
+   * Design first
+      In MLPro, new functions are not created in the code editor but in a class diagram. We provide the latter in the 
+      :ref:`API Reference <target_appendix2>`. A color system documents the respective development status.
+
+   * Clean Code Paradigm
+      We firmly believe that a clearly structured and legible source text has a significant influence on both the acceptance and the life 
+      cycle of a software. Anyone who opens any source code of MLPro knows immediately what we mean :-)
