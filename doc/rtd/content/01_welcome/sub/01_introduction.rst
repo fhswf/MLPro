@@ -2,38 +2,47 @@
 Introduction
 ============
 
-MLPro is a synoptic and standardized Python package to produce a solution for standard Machine Learning (ML) tasks.
-In the first version of MLPro, MLPro provides sub-packages for a subtopic of ML, namely Reinforcement Learning (RL),
-which is developed under a uniform infrastructure of basic and cross-sectional functionalities.
-MLPro supports simulation as well as real-hardware implementations. MLPro team has developed this framework by taking care of
-several main features, such as CI/CD method, clean code, object-oriented programming, ready-to-use functionalities, and clear documentation.
+MLPro ist ein übergreifendes und integratives middleware-framework für standardisierte Anwendungen des Maschinellen Lernens (ML) in Python. 
 
-Additionally, we use established and well-known scientific terminologies in the naming of the development objects.
-Although MLPro is standardized and has a high complexity, we make the implementation of MLPro as easy as possible, understandable, and flexible at the same time.
-One of the properties of being flexible is the possibility to incorporate the widely-used third party packages in MLPro via wrapper classes.
-The comprehensive and clear documentation also helps the user to quickly understand MLPro.
+Die Zielsetzung besteht darin, Prozesse und Vorlagen für ein breites Spektrum relevanter ML-Teilgebiete zur Verfügung zu stellen, ohne dabei
+auf den Einsatz bereits etablierter und bewährter ML-Frameworks wie Scikit-learn, TensorFlow, PyTorch, Optuna, etc. verzichten zu müssen. Letztere
+werden vielmehr nahtlos in die Prozesslandschaft von MLPro integriert. Forscher, Entwickler, Ingenieure, und Studenten können sich 
+durch die Verwendung von MLPro somit auf die wesentlichen Kernaufgaben konzentrieren, ohne sich um das Zusammenspiel verschiedener
+Frameworks kümmern zu müssen oder existente Algorithmen neu implementieren zu müssen.
 
-One of the main advantages of MLPro is the complete structure of MLPro that is not limited to only environments or policy and is not restricted to any dependencies.
-MLPro covers environment, agents, multi-agents, model-based RL, and many more in a sub-framework, including cooperative Game Theoretical approach to solve RL problems.
-
-We are committed to continuously enhancing MLPro, thus it can have more features and be applicable in more ML tasks.
-
-
+MLPro ist dabei architektonisch auf beliebige Erweiterbarkeit und Rekombinierbarkeit ausgelegt, was insbesondere die Erstellung hybrider ML-Anwendungen
+über verschiedene Lernparadigmen hinweg ermöglicht.
 
 
 Key Features
 ------------
-   - Numerous extensive sub-frameworks for relevant ML areas like reinforcement learning, game theory, online machine learning, etc.
+   - Continuously growing number of sub-frameworks for relevant ML areas like reinforcement learning, game theory, online machine learning, etc.
    - Powerful substructure of overarching basic functionalities for mathematics, data management, training and tuning of ML models, and much more
-   - Numerous wrapper classes to integrate 3rd party packages
+   - Integration of proven 3rd party packages
+   - Open Source, open design
 
 
-Brainstorming
+Development
+-----------
+MLPro is developed at the `South Westphalia University of Applied Sciences <https://www.fh-swf.de/en/international_3/index.php>`_ in the 
+`Department for Electrical Power Engineering <https://www.fh-swf.de/en/ueber_uns/standorte_4/soest_4/fb_eet/index.php>`_ in the `Lab 
+for Automation Technology and Learning Systems <https://www.fh-swf.de/en/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php>`_ 
+and is therefore freely available to all interested users from research and development as well as industry and economy.
 
-a) Development: Intro or Project?
-- design first
-- clean code
-- test automation
+
+The development team consistently applies the following principles:
+
+   * Quality first
+      Our aim is to provide ML functionalities at the highest level. We put these up for discussion in scientific :ref:`publications <target_publications>`. 
+      Open feedback and suggestions for improvement are always welcome.
+
+   * Design first
+      In MLPro, new functions are not created in the code editor but in a class diagram. We provide the latter in the 
+      :ref:`Appendix A2 - API Reference <target_appendix2>`. A color system documents the respective development status.
+
+   * Clean Code Paradigm
+      We firmly believe that a clearly structured and legible source text has a significant influence on both the acceptance and the life 
+      cycle of a software. Anyone who opens any source code in MLPro knows immediately what we mean :-)
 
 
 Architecture
@@ -60,20 +69,20 @@ Standardized Machine Learning
 A special feature of MLPro is that machine learning standards are already defined in the basic functions. 
 Templates for adaptive models and their hyperparameters as well as for executable ML scenarios are introduced 
 in the top layer of MLPro-BF. Furthermore, standards for training and hyperparameter tuning are defined. These 
-basic machine learning elements are reused and specifically extended in all higher sub-frameworks. On the one hand, 
+basic ML elements are reused and specifically extended in all higher sub-frameworks. On the one hand, 
 this facilitates the creation of new sub-frameworks and, on the other hand, the recombination of higher functions 
 from MLPro in your own hybrid ML applications.
 
-Learn more: :ref:`Basic Functions, Machine Learning <target_bf_ml>`
+Learn more: :ref:`Basics of Machine Learning <target_bf_ml>`
 
 
-Example programs in double function: self-study and validation
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Example Pool
+^^^^^^^^^^^^
 
 Numerous executable example programs (we call them "howtos") illustrate the essential functions of MLPro.
 They are also used for validation and are therefore an integral part of our automatic unit tests.
 With this we ensure two things: the operability of all howtos and thus also the operability of the 
-demonstrated functionalities (keyword: test driven development).
+demonstrated functionalities (tdd - test driven development).
 
 Learn more: :ref:`Example Pool <target_appendix1>`
 
