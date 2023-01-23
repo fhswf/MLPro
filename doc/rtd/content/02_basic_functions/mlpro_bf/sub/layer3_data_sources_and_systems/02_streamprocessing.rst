@@ -1,5 +1,5 @@
 Stream Processing
-_________________
+=================
 
 Because of the live nature of data streams, mining knowledge and handling such data sources require special types of
 processing tasks. Stream processing operations process new instances as they are available at every step.Along with a

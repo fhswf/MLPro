@@ -1,3 +1,4 @@
+.. _target_bf_elementary:
 Layer 0 - Elementary Functions
 ------------------------------
 

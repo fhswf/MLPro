@@ -39,21 +39,20 @@ a) Development: Intro or Project?
 Architecture
 ------------
 
-MLPro besteht aus einer kontinuierlich wachsenden Zahl sub-frameworks, die verschiedene Teilgebiete des machinellen Lernens abdecken.
-Diese beinhalten ein oder meherere fundamentale Prozessmodelle (z.B. beim Reinforcement Learning den Markovian Decision Process) und dazu
-passende Service- und Template-Klassen. Ferner beinhaltet jedes sub-framework einen spezifischen Pool an wiederverwendbaren Klassen für Algorithmen, Lernbeispielen,
-Datenquellen etc. Zahlreiche Beispielprogramme für das Selbststudium (wir nennen sie "howtos") runden den Umfang ab.
+MLPro consists of a continuously growing number of sub-frameworks covering different areas of machine learning.
+These include one or more fundamental process models (e.g. the Markovian Decision Process in reinforcement learning) and
+appropriate service and template classes. Furthermore, each sub-framework contains a specific pool of reusable classes for 
+algorithms, data sources, training subjects, etc. Numerous sample programs for self-study complete the scope.
 
-Die genannten sub-frameworks setzen wiederum auf einer übergreifenden Schicht von Basisfunktionen auf. Dies ist ein gängiger und naheliegender
-Ansatz. Besonders an MLPro ist jedoch der Umfang und die innere Struktur dieser Basisschicht. In einer Hierarchie aufeinenander aufbauender 
-Unterschichten wird hier ein Spektrum von elementaren Funktionen für Logging und Plotting über Multitasking und Numerik bis hin zu den 
-Grundlagen des maschinellen Lernens abgedeckt. Darin liegt auch der Schlüssel für die weitreichende Rekombinierbeit höherer Funktionen von MLPro begründet.
-
-Tatsächlich denken wir bei jeder neuen Funktionalität darüber nach, wie tief wir sie in MLPro einsinken lassen können. Je tiefer der Ort,
-desto universeller ist die Verwendbarkeit und damit die Reichweite innerhalb von MLPro. 
+The sub-frameworks mentioned are in turn based on an overarching layer of basic functions. This is a common and obvious 
+approach. What is special about MLPro, however, is the scope and internal structure of this base layer. 
+A spectrum of elementary functions for logging and plotting through multitasking and numerics to the basics of machine 
+learning is covered in a hierarchy of sub-layers that build on one another. This is also the key to the far-reaching 
+recombinability of higher functions of MLPro. In fact, with each new feature, we think about how deep we can sink it 
+into MLPro. The deeper the place the more universal is the usability and thus the range within MLPro.
 
 .. image:: images/MLPro_Architecture.drawio.png
-   :scale: 80 %
+   :scale: 85 %
 
 
 Standardized Machine Learning
@@ -65,27 +64,7 @@ basic machine learning elements are reused and specifically extended in all high
 this facilitates the creation of new sub-frameworks and, on the other hand, the recombination of higher functions 
 from MLPro in your own hybrid ML applications.
 
-Learn more: :ref:`Basic Functions, Layer 4: Machine Learning <target_bf_ml>`
-
-
-Real-World Applications in Focus
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-MLPro wurde zur Lösung realer Problemstellungen geschaffen...
-
-- Detailliertes Logging
-- Präzises Zeitmanagement von simulierten und realen Prozessen auf der Ebene von Mikrosekunden
-- Erstellung detaillierter Trainingsdaten in CSV-Dateien
-...
-
-
-Third Party Support
-^^^^^^^^^^^^^^^^^^^
-
-MLPro integrates an increasing number of selected frameworks into its own process landscapes.
-This is done at different levels of MLPro using so-called wrapper classes that are compatible with the corresponding MLPro classes.
-
-Learn more: :ref:`Wrappers <target_wrappers>`
+Learn more: :ref:`Basic Functions, Machine Learning <target_bf_ml>`
 
 
 Example programs in double function: self-study and validation
@@ -96,4 +75,35 @@ They are also used for validation and are therefore an integral part of our auto
 With this we ensure two things: the operability of all howtos and thus also the operability of the 
 demonstrated functionalities (keyword: test driven development).
 
-Learn more: :ref:`Appendix A1 - Example Pool <target_appendix1>`
+Learn more: :ref:`Example Pool <target_appendix1>`
+
+
+Third Party Support
+^^^^^^^^^^^^^^^^^^^
+
+MLPro integrates an increasing number of selected frameworks into its own process landscapes.
+This is done at different levels of MLPro using so-called wrapper classes that are compatible with 
+the corresponding MLPro classes.
+
+Learn more: :ref:`Wrappers <target_wrappers>`
+
+
+Real-World Applications in Focus
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+MLPro was designed not only for simulations but for use in real-world applications. To this end, various 
+basic functions have been implemented that make diagnostics easier and make optimal use of the 
+available system resources. These are for example
+
+- Detailed logging
+- Precise time management of simulated and real processes on a microsecond time scale
+- Creation of detailed training data files (ASCII/CSV)
+- Multithreading/multiprocessing 
+
+In addition, powerful templates for state-based systems are provided. They allow the standardized implementation 
+of your own systems, which can then be controlled, for example, by adaptive controllers based on reinforcement 
+learning or game theory. Furthermore, a wrapper for the popular physics engine `MuJoCo <https://mujoco.org/>`_ is 
+provided, which can be used for the simulation and visualization of externally designed system models. The MLPro 
+templates are also prepared for connection to industrial components like controllers, sensors, and actuators.
+
+Learn more: :ref:`Elementary Functions <target_bf_elementary>`, :ref:`Computation <target_bf_computation>`, :ref:`State-based Systems <target_bf_systems>`
