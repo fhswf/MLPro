@@ -85,3 +85,20 @@ to an existing stream workflow:
 
 Now, the input instances to task 2 are processed instances output from the task 1. Each workflow has shared stream
 object
+
+
+Stream Plotting
+---------------
+Below images show the stream plotting functionalities, further explanation coming soon...
+.. image::
+    images/stream_plot_nd.gif
+    :width: 350 px
+
+
+.. image::
+    images/stream_plot_2d.gif
+    :width: 350 px
+
+.. image::
+    images/stream_plot_3d.gif
+    :width: 350 px
