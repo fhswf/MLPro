@@ -90,15 +90,15 @@ object
 Stream Plotting
 ---------------
 Below images show the stream plotting functionalities, further explanation coming soon...
-.. image::
-    images/stream_plot_nd.gif
-    :width: 350 px
-
 
 .. image::
-    images/stream_plot_2d.gif
+    images/streams_plot_nd.gif
     :width: 350 px
 
 .. image::
-    images/stream_plot_3d.gif
+    images/streams_plot_2d.gif
+    :width: 350 px
+
+.. image::
+    images/streams_plot_3d.gif
     :width: 350 px
