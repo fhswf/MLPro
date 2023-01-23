@@ -19,13 +19,14 @@
 ## -- 2022-12-28  1.1.3     DA       Class BoundaryDetector: 
 ## --                                - added constant C_PLOT_VALID_VIEWS
 ## --                                - removed methods init_plot_2d/3d, update_plot_2d/3d
-## -- 2022-12-30  1.1.4              Removed the plot title
+## -- 2022-12-30  1.1.4     DA       Removed the plot title
 ## -------------------------------------------------------------------------------------------------
 
 """
 Ver. 1.1.4 (2022-12-30)
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
+
 import matplotlib.colors
 
 from mlpro.bf.mt import Task as MLTask

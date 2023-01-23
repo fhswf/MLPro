@@ -42,7 +42,7 @@ from mlpro.oa.tasks import BoundaryDetector, NormalizerMinMax
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MyAdaptiveScenario (StreamScenario):
+class MyAdaptiveScenario (OAScenario):
 
     C_NAME = 'Dummy'
 
