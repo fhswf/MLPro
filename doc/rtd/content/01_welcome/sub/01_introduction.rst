@@ -115,7 +115,7 @@ and is therefore freely available to all interested users from research and deve
 The development team consistently applies the following principles:
 
    * Quality first
-      Our aim is to provide ML functionalities at the highest level. We put these up for discussion in scientific :ref:`publications <target_publications>`. 
+      Our aim is to provide ML functionalities at the highest possible level. We put these up for discussion in scientific :ref:`publications <target_publications>`. 
       Open feedback and suggestions for improvement are always welcome.
 
    * Design first
