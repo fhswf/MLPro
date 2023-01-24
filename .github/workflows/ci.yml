@@ -33,12 +33,7 @@ jobs:
           commit_user_name: Mochammad Rizky Diprasetya
           commit_user_email: diprasetya.rizky@protonmail.com
 
-      - name: No changes detected
-        if: steps.auto-commit-action.outputs.changes_detected == 'false'
-        run: echo "No changes!"
-
-      - name: Changes detected
-        if: steps.auto-commit-action.outputs.changes_detected == 'true'
+      - name: Test here whether executed or not
         run: echo "No changes!"
 
   build:
