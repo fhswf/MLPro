@@ -77,7 +77,7 @@ demonstrated functionalities (tdd - test-driven development).
 Third Party Support
 ^^^^^^^^^^^^^^^^^^^
 
-MLPro integrates an increasing number of selected frameworks into its process landscapes.
+MLPro integrates an increasing number of selected ML packages into its process landscapes.
 This is done at different levels of MLPro using so-called wrapper classes that are compatible with 
 the corresponding MLPro classes.
 
