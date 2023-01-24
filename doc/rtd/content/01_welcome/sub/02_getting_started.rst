@@ -31,7 +31,7 @@ Getting Started
       conda install -c mlpro mlpro
 
 
-**3. Installation using johnnydep**
+**3. Check dependencies with johnnydep package**
 
   The dependencies of MLPro can be checked by using the johnnydep package.
 
@@ -42,46 +42,15 @@ Getting Started
       
 **4. List of dependencies**
 
-  Below are the dependencies list that will be installed:
+   The list of the dependencies can be seen on the table below.
 
-  .. list-table:: Dependencies List
-    :widths: 25 25
-    :header-rows: 1
-
-    * - Package Name
-      - Version
-    * - dill
-      - 0.3.6
-    * - numpy
-      - 1.23.5
-    * - torch
-      - 1.13.1
-    * - transformations
-      - 2022.9.26
-    * - stable-baselines3
-      - 1.7.0
-    * - gym
-      - 0.21.0
-    * - scipy
-      - 1.8.1
-    * - pettingzoo
-      - 1.22.3
-    * - pygame
-      - 2.1.2
-    * - pymunk
-      - 6.4.0
-    * - multiprocess
-      - 0.70.14
-    * - river
-      - 0.14.0
-    * - scikit-learn
-      - 1.2.0
-    * - optuna
-      - 3.0.5
-    * - hyperopt
-      - 0.2.7
-    * - pyglet
-      - 1.5.27
+  .. tabularcolumns:: |p{1cm}|p{7cm}|
+  
+  .. csv-table::
+    :file: deps.txt
+    :class: longtable
+    :widths: 1 1
+    :header: "Package", "Version"
 
       
 **5. Get to know MLPro Functionality**
