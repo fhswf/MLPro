@@ -27,6 +27,7 @@ jobs:
           awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg > deps.txt
 
       - uses: stefanzweifel/git-auto-commit-action@v4
+        id: auto-commit-action
         with:
           commit_message: Dependencies Generation
           branch: ${{ github.head_ref }}
@@ -49,8 +50,28 @@ jobs:
         run: echo "build=false" >> $GITHUB_OUTPUT
 
       - name: "Run if changes have been detected"
-        if: steps.auto-commit-action.outputs.changes_detected == 'true'
+        if: steps.auto-commit-action.changes_detected == 'true'
         id: trigger_build4
+        run: echo "build=false" >> $GITHUB_OUTPUT
+
+      - name: "Run if changes have been detected"
+        if: steps.auto-commit-action.changes_detected == false
+        id: trigger_build5
+        run: echo "build=false" >> $GITHUB_OUTPUT
+
+      - name: "Run if changes have been detected"
+        if: steps.auto-commit-action.changes_detected == true
+        id: trigger_build6
+        run: echo "build=false" >> $GITHUB_OUTPUT
+
+      - name: "Run if changes have been detected"
+        if: steps.auto-commit-action.changes_detected == 'false'
+        id: trigger_build7
+        run: echo "build=false" >> $GITHUB_OUTPUT
+
+      - name: "Run if changes have been detected"
+        if: steps.auto-commit-action.changes_detected == 'true'
+        id: trigger_build8
         run: echo "build=false" >> $GITHUB_OUTPUT
 
   build:
