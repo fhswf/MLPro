@@ -44,8 +44,8 @@ The sub-frameworks mentioned are in turn based on an overarching layer of basic 
 approach. What is special about MLPro, however, is the scope and internal structure of this base layer. 
 A spectrum of elementary functions for logging and plotting through multitasking and numerics to the basics of machine 
 learning is covered in a hierarchy of sub-layers that build on one another. This is also the key to the far-reaching 
-recombinability of higher functions of MLPro. In fact, with each new feature, we think about how deep we can sink it 
-into MLPro. The deeper the place the more universal is the usability and thus the range within MLPro.
+recombinability of higher functions of MLPro. In fact, with each new feature, we consider how deeply we can incorporate 
+it into MLPro. The deeper the level, the more universal the usability, and thus the range within MLPro.
 
 .. image:: images/MLPro_Architecture.drawio.png
    :scale: 85 %
