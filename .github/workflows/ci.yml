@@ -33,11 +33,9 @@ jobs:
           commit_user_name: Mochammad Rizky Diprasetya
           commit_user_email: diprasetya.rizky@protonmail.com
 
-      - name: Trigger Build
+      - name: No changes detected
         if: steps.auto-commit-action.outputs.changes_detected == 'false'
-        id: trigger_build
-        run: |
-          echo '::set-output name=triggered_build::true'
+        run: echo "No changes!"
 
   build:
     runs-on: ubuntu-latest
