@@ -2,9 +2,9 @@
 Introduction
 ============
 
-MLPro is a comprehensive and integrative middleware-framework for standardized machine learning (ML) applications in Python.
+MLPro is a comprehensive and integrative middleware framework for standardized machine learning (ML) applications in Python.
 The objective is to provide processes and templates for a wide range of relevant ML sub-areas without having to forego the use 
-of already established and proven ML frameworks such as Scikit-learn, TensorFlow, PyTorch, Optuna, etc. Rather, the latter are 
+of already established and proven ML frameworks such as Scikit-learn, TensorFlow, PyTorch, Optuna, etc. Rather, the latter is 
 seamlessly integrated into the process landscapes of MLPro. By using MLPro, researchers, developers, engineers, and students can 
 focus on their essential core tasks without having to worry about the integration/interaction of different frameworks or 
 having to re-implement existing algorithms. MLPro is architecturally designed for extensibility and recombinability, which in 
@@ -58,7 +58,7 @@ Templates for adaptive models and their hyperparameters as well as for executabl
 in the top layer of MLPro-BF. Furthermore, standards for training and hyperparameter tuning are defined. These 
 basic ML elements are reused and specifically extended in all higher sub-frameworks. On the one hand, 
 this facilitates the creation of new sub-frameworks and, on the other hand, the recombination of higher functions 
-from MLPro in your own hybrid ML applications.
+from MLPro in your hybrid ML applications.
 
 **Learn more:** :ref:`Basics of Machine Learning <target_bf_ml>`
 
@@ -68,8 +68,8 @@ Example Pool
 
 Numerous executable example programs (we call them "howtos") illustrate the essential functions of MLPro.
 They are also used for validation and are therefore an integral part of our automatic unit tests.
-With this we ensure two things: the operability of all howtos and thus also the operability of the 
-demonstrated functionalities (tdd - test driven development).
+With this, we ensure two things: the operability of all howtos and thus also the operability of the 
+demonstrated functionalities (tdd - test-driven development).
 
 **Learn more:** :ref:`Example Pool <target_appendix1>`
 
@@ -77,7 +77,7 @@ demonstrated functionalities (tdd - test driven development).
 Third Party Support
 ^^^^^^^^^^^^^^^^^^^
 
-MLPro integrates an increasing number of selected frameworks into its own process landscapes.
+MLPro integrates an increasing number of selected frameworks into its process landscapes.
 This is done at different levels of MLPro using so-called wrapper classes that are compatible with 
 the corresponding MLPro classes.
 
@@ -97,7 +97,7 @@ available system resources. These are for example
 - Multithreading/multiprocessing 
 
 In addition, powerful templates for state-based systems are provided. They allow the standardized implementation 
-of your own systems, which can then be controlled, for example, by adaptive controllers based on reinforcement 
+of your systems, which can then be controlled, for example, by adaptive controllers based on reinforcement 
 learning or game theory. Furthermore, a wrapper for the popular physics engine `MuJoCo <https://mujoco.org/>`_ is 
 provided, which can be used for the simulation and visualization of externally designed system models. The MLPro 
 templates are also prepared for connection to industrial components like controllers, sensors, and actuators.
@@ -115,13 +115,13 @@ and is therefore freely available to all interested users from research and deve
 The development team consistently applies the following principles:
 
    * Quality first
-      Our aim is to provide ML functionalities at the highest possible level. We put these up for discussion in scientific :ref:`publications <target_publications>`. 
+      We aim to provide ML functionalities at the highest possible level. We put these up for discussion in scientific :ref:`publications <target_publications>`. 
       Open feedback and suggestions for improvement are always welcome.
 
    * Design first
       In MLPro, new functions are not created in the code editor but in a class diagram. We provide the latter in the 
-      :ref:`API Reference <target_appendix2>`. A color system documents the respective development status.
+      :ref:`API Reference <target_appendix2>`. A colour system documents the respective development status.
 
    * Clean Code Paradigm
       We firmly believe that a clearly structured and legible source text has a significant influence on both the acceptance and the life 
-      cycle of a software. Anyone who opens any source code of MLPro knows immediately what we mean :-)
+      cycle of software. Anyone who opens any source code of MLPro knows immediately what we mean :-)
