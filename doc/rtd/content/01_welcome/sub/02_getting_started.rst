@@ -30,17 +30,8 @@ Getting Started
 
       conda install -c mlpro mlpro
 
-
-**3. Check dependencies with johnnydep package**
-
-  The dependencies of MLPro can be checked by using the johnnydep package.
-
-  .. code-block:: bash
-
-      johnnydep mlpro[full]
-
       
-**4. List of dependencies**
+**3. List of dependencies**
 
    The list of the dependencies can be seen on the table below.
 
@@ -53,7 +44,7 @@ Getting Started
     :header: "Package", "Version"
 
       
-**5. Get to know MLPro Functionality**
+**4. Get to know MLPro Functionality**
 
   The easiest way to become familiar with the concepts and functions of MLPro is to browse through the numerous :ref:`example programs <target_appendix1>`.
   Each sub-package has also an individual getting started page, such as
