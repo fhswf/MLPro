@@ -6,7 +6,7 @@ MLPro is a comprehensive and integrative middleware-framework for standardized m
 The objective is to provide processes and templates for a wide range of relevant ML sub-areas without having to forego the use 
 of already established and proven ML frameworks such as Scikit-learn, TensorFlow, PyTorch, Optuna, etc. Rather, the latter are 
 seamlessly integrated into the process landscapes of MLPro. By using MLPro, researchers, developers, engineers, and students can 
-concentrate on the essential core tasks without having to worry about the integration/interaction of different frameworks or 
+focus on their essential core tasks without having to worry about the integration/interaction of different frameworks or 
 having to re-implement existing algorithms. MLPro is architecturally designed for extensibility and recombinability, which in 
 particular enables the creation of hybrid ML applications across different learning paradigms.
 
