@@ -4,12 +4,8 @@
 name: python
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_run:
-    workflows: ["Autodoc Gen"]
+    workflows: ["Autodoc Gen", "Dependencies List Generation"]
     types:
       - completed
 
@@ -55,6 +51,7 @@ jobs:
         pip install sphinx
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
+        pip install sphinx_multitoc_numbering
         pip install openml
     - name: Lint with flake8
       run: |
@@ -68,3 +65,4 @@ jobs:
     - name: Test with pytest
       run: |
         make pytest
+
