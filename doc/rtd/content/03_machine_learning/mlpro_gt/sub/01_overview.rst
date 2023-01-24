@@ -31,7 +31,7 @@ If you are interested to utilize MLPro-GT, you can easily access the GT modules,
 
     .. code-block:: python
 
-        from mlpro.gt.models import *
+        from mlpro.gt import *
 
 
 MLPro team recommends to visit our :ref:`getting started <target_getstarted_GT>` page to directly learn MLPro-GT in a practical way.
