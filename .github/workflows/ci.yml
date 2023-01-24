@@ -5,13 +5,11 @@ name: python
 
 on:
   workflow_run:
-    workflows: ["Autodoc Gen", "Dependencies List Generation"]
-    types:
-      - completed
+    workflows: ["Dependencies List Generation"]
+    types: [completed]
 
 jobs:
-  build:
-
+  on-success:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -65,3 +63,4 @@ jobs:
     - name: Test with pytest
       run: |
         make pytest
+
