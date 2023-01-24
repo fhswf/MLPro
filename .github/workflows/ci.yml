@@ -35,48 +35,10 @@ jobs:
           commit_user_name: Mochammad Rizky Diprasetya
           commit_user_email: diprasetya.rizky@protonmail.com
 
-      - name: check hash 
-        run: echo ${{ github.head_sha }}
-
-      - name: "Run if changes have been detected"
-        if: steps.auto-commit-action.outputs.changes_detected == false
-        id: trigger_build
-        run: echo "build=false" >> $GITHUB_OUTPUT
-
-      - name: "Run if changes have been detected"
-        if: steps.auto-commit-action.outputs.changes_detected == true
-        id: trigger_build2
-        run: echo "build=false" >> $GITHUB_OUTPUT
-
-      - name: "Run if changes have been detected"
+      - name: "Run if changes not detected"
         if: steps.auto-commit-action.outputs.changes_detected == 'false'
-        id: trigger_build3
-        run: echo "build=false" >> $GITHUB_OUTPUT
-
-      - name: "Run if changes have been detected"
-        if: steps.auto-commit-action.outputs.changes_detected == 'true'
-        id: trigger_build4
-        run: echo "build=false" >> $GITHUB_OUTPUT
-
-      - name: "Run if changes have been detected"
-        if: steps.auto-commit-action.changes_detected == false
-        id: trigger_build5
-        run: echo "build=false" >> $GITHUB_OUTPUT
-
-      - name: "Run if changes have been detected"
-        if: steps.auto-commit-action.changes_detected == true
-        id: trigger_build6
-        run: echo "build=false" >> $GITHUB_OUTPUT
-
-      - name: "Run if changes have been detected"
-        if: steps.auto-commit-action.changes_detected == 'false'
-        id: trigger_build7
-        run: echo "build=false" >> $GITHUB_OUTPUT
-
-      - name: "Run if changes have been detected"
-        if: steps.auto-commit-action.changes_detected == 'true'
-        id: trigger_build8
-        run: echo "build=false" >> $GITHUB_OUTPUT
+        id: trigger_build
+        run: echo "build=true" >> $GITHUB_OUTPUT
 
   build:
     runs-on: ubuntu-latest
