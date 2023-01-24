@@ -2,7 +2,7 @@
 Introduction
 ============
 
-MLPro is a comprehensive and integrative middleware framework for standardized machine learning (ML) applications in Python.
+MLPro is a comprehensive and integrative middleware-framework for standardized machine learning (ML) applications in Python.
 The objective is to provide processes and templates for a wide range of relevant ML sub-areas without having to forego the use 
 of already established and proven ML frameworks such as Scikit-learn, TensorFlow, PyTorch, Optuna, etc. Rather, the latter are 
 seamlessly integrated into the process landscapes of MLPro. By using MLPro, researchers, developers, engineers, and students can 
