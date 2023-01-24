@@ -15,6 +15,7 @@ This module provides templates for cluster analysis to be used in the context of
 """
 
 from mlpro.oa import *
+import random
 
 
 
@@ -64,6 +65,7 @@ class Cluster (Log, Plottable):
         self._sample_buffer_size = p_sample_buffer_size
         self._sample_buffer_step = p_sample_buffer_step
         self._sample_buffer_rnd  = p_sample_buffer_rnd
+        self._sample_buffer_skip = 0
         self._kwargs             = p_kwargs.copy()
 
 
@@ -83,8 +85,36 @@ class Cluster (Log, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def seed(p_seed=None):
+        random.seed(p_seed)
+
+
+## -------------------------------------------------------------------------------------------------
     def _update_sample_buffer(self, p_inst_new: list[Instance], p_inst_del: list[Instance] ):
-        raise NotImplementedError
+        
+        # 1 Remove obsolete instances from the buffer
+        for inst in p_inst_del:
+            try:
+                del self._sample_buffer[inst.get_id()]
+            except:
+                pass
+
+
+        # 2 Add new instances to the buffer
+        for inst in p_inst_new:
+            if self._sample_buffer_skip == 0:
+                if self._sample_buffer_rnd:
+                    self._sample_buffer_skip = random.randint(1,self._sample_buffer_step)
+                else:
+                    self._sample_buffer_skip = self._sample_buffer_step
+
+                self._sample_buffer[inst.get_id()] = inst
+
+                if len(self._sample_buffer) > self._sample_buffer_size:
+                    del self._sample_buffer[ next(iter(self._sample_buffer.keys())) ]
+
+            else:
+                self._sample_buffer_skip -= 1
 
 
 ## -------------------------------------------------------------------------------------------------
