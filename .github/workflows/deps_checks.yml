@@ -33,7 +33,7 @@ jobs:
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Dependencies
+          commit_message: Dependencies Generation
           branch: ${{ github.head_ref }}
           commit_user_name: Mochammad Rizky Diprasetya
           commit_user_email: diprasetya.rizky@protonmail.com
