@@ -1,8 +1,8 @@
 Stream Processing
 =================
 
-Because of the live nature of data streams, mining knowledge and handling such data sources require special types of
-processing tasks. Stream processing operations process new instances as they are available at every step.Along with a
+Because of the live nature of data streams, handling such data sources and mining knowledge require special types of
+processing tasks. Stream processing operations process new instances as they are available at every step. Along with a
 number of external and internal stream resources, MLPro's stream module provides multiple processing functionalities
 like sliding window, rearranger, etc. specialized for streaming data.
 
