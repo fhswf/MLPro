@@ -10,6 +10,7 @@ focus on their essential core tasks without having to worry about the integratio
 having to re-implement existing algorithms. MLPro is architecturally designed for extensibility and recombinability, which in 
 particular enables the creation of hybrid ML applications across different learning paradigms.
 
+.. _target_key_features:
 Key Features
 ------------
 The most important key features of MLPro are...
