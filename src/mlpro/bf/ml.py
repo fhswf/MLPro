@@ -108,7 +108,7 @@ class HyperParamTuple (Element):
     def set_value(self, p_dim_id, p_value):
         super().set_value(p_dim_id, p_value)
 
-        # Event C_EVENT_VALUE_CHANGED of the related dimensionis raised for the related
+        # Event C_EVENT_VALUE_CHANGED of the related dimension is raised for the related hyperparam
         dim_obj   = self._set.get_dim(p_dim_id)
         event_obj = Event( p_raising_object=dim_obj, p_value=p_value)
         dim_obj._raise_event(p_event_id=HyperParam.C_EVENT_VALUE_CHANGED, p_event_object=event_obj)

@@ -25,12 +25,16 @@
 ## -- 2022-11-22  1.3.4     DA       Removed howto_bf_streams_051 due to delay caused by OpenML
 ## -- 2022-12-05  1.4.0     DA       Added howto bf_systems_001
 ## -- 2022-12-09  1.4.1     DA       Temporarily removed howto rl_wp_003 due to problems with pettingzoo
-## -- 2022-12-21  1.4.2     SY       - Reactivate howto rl_wp_003
+## -- 2022-12-14  1.5.0     DA       Added howtos bf_streams_101, bf_streams_110, bf_streams_111
+## -- 2022-12-20  1.6.0     DA       Added howtos bf_streams_112, bf_streams_113
+## -- 2022-12-21  1.6.2     SY       - Reactivate howto rl_wp_003
 ## --                                - Temporarily removed howto rl_agent_005 and rl_wp_001
+## -- 2023-01-14  1.6.3     SY       Add howto related to transfer functions
+## -- 2023-01-16  1.6.4     SY       Add howto related to unit converters
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.2 (2022-12-21)
+Ver. 1.6.4 (2023-01-16)
 
 Unit test for all examples available.
 """
@@ -43,20 +47,44 @@ import importlib
 howto_list = {
 
 # Basic Functions:
+
+    # bf.various
     "bf_001": "mlpro.bf.examples.howto_bf_001_logging",
     "bf_002": "mlpro.bf.examples.howto_bf_002_timer",
     "bf_003": "mlpro.bf.examples.howto_bf_003_store_plot_and_save_variables",
     "bf_004": "mlpro.bf.examples.howto_bf_004_buffers",
+
+    # bf.eh
     "bf_eh_001": "mlpro.bf.examples.howto_bf_eh_001_event_handling",
+
+    # bf.mt
     # "bf_mt_001": "mlpro.bf.examples.howto_bf_mt_001_parallel_algorithms",
     "bf_mt_002": "mlpro.bf.examples.howto_bf_mt_002_tasks_and_workflows",
+
+    # bf.math
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
+    "bf_math_020": "mlpro.bf.examples.howto_bf_math_020_unit_converter",
+
+    # bf.ml
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
+
+    # bf.streams
+    "bf_streams_001" : "mlpro.bf.examples.howto_bf_streams_001_accessing_native_data_from_mlpro",
     # "bf_streams_051": "mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml",
     "bf_streams_052": "mlpro.bf.examples.howto_bf_streams_052_accessing_data_from_scikitlearn",
     "bf_streams_053": "mlpro.bf.examples.howto_bf_streams_053_accessing_data_from_river",
+    "bf_streams_101": "mlpro.bf.examples.howto_bf_streams_101_basics",
+    "bf_streams_110": "mlpro.bf.examples.howto_bf_streams_110_stream_task_window",
+    "bf_streams_111": "mlpro.bf.examples.howto_bf_streams_111_stream_task_rearranger_2d",
+    "bf_streams_112": "mlpro.bf.examples.howto_bf_streams_112_stream_task_rearranger_3d",
+    "bf_streams_113": "mlpro.bf.examples.howto_bf_streams_113_stream_task_rearranger_nd",
+
+    # bf.systems
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
+    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_set_up_transfer_functions",
+
+
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",

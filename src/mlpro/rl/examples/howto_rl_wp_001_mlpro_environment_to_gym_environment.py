@@ -41,7 +41,7 @@ mlpro_env = GridWorld(p_logging=logging)
 env = WrEnvMLPro2GYM(mlpro_env,
                      p_state_space=None,
                      p_action_space=None,
-                     p_new_step_api=True,
+                     p_new_step_api=False,
                      p_logging=logging)
 
 # 3. Check whether the environment is valid

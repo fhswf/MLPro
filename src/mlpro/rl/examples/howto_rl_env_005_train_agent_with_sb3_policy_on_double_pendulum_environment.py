@@ -8,12 +8,13 @@
 ## -- 2022-03-22  0.0.0     WB       Creation
 ## -- 2022-08-14  1.0.0     LSB      Training howto released with a lower value of torque
 ## -- 2022-09-09  1.0.1     SY       Refactoring and add DDPG algorithm as an option
-## -- 2022-10-13  1.0.2     SY       Refactoring 
+## -- 2022-10-13  1.0.2     SY       Refactoring
+## -- 2022-11-18  1.0.3     LSB      Refactoring for new plot style
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.2 (2022-10-13)
+Ver. 1.0.3 (2022-11-18)
 
 This module shows how to train double pendulum using on-policy and off-policy RL algorithms from SB3.
 """
@@ -39,9 +40,10 @@ class ScenarioDoublePendulum(RLScenario):
 
     C_NAME      = 'Matrix'
 
-    def _setup(self, p_mode, p_ada, p_logging):
+    def _setup(self, p_mode, p_ada, p_visualize, p_logging):
         # 1.1 Setup environment
-        self._env   = DoublePendulumS7(p_logging=True, p_init_angles='down', p_max_torque=10)
+        self._env   = DoublePendulumS7(p_logging=True, p_init_angles='random', p_max_torque=10, p_visualize=True,
+                                       p_plot_level=DoublePendulumRoot.C_PLOT_DEPTH_ALL, p_reward_window=100)
 
         # 1.2 Select an algorithm by uncomment the opted algorithm
         # On-Policy RL Algorithm: A2C

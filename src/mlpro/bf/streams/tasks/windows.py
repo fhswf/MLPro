@@ -12,10 +12,21 @@
 ## -- 2022-12-08  0.4.0     DA       Refactoring after changes on bf.streams
 ## -- 2022-12-08  1.0.0     LSB      Release
 ## -- 2022-12-08  1.0.1     LSB      Compatilbility for both Instance and Element object
+## -- 2022-12-16  1.0.2     LSB      Delay in delivering the buffered data
+## -- 2022-12-16  1.0.3     DA       Refactoring after changes on bf.streams
+## -- 2022-12-18  1.0.4     LSB      Bug Fixes
+## -- 2022-12-18  1.1.0     LSB      New plot updates -
+##                                   - single rectangle
+##                                   - transparent patch on obsolete data
+## -- 2022-12-19  1.1.1     DA       New parameter p_duplicate_data
+## -- 2022-12-28  1.1.2     DA       Refactoring of plot settings
+## -- 2022-12-29  1.1.3     DA       Removed method Window.init_plot()
+## -- 2022-12-31  1.1.4     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-12-08)
+Ver. 1.1.4 (2022-12-31)
+
 This module provides pool of window objects further used in the context of online adaptivity.
 """
 
@@ -52,6 +63,8 @@ class Window (StreamTask):
             Name of the Window. Default is None.
         p_range_max     -Optional
             Maximum range of task parallelism for window task. Default is set to multithread.
+        p_duplicate_data : bool
+            If True, instances will be duplicated before processing. Default = False.
         p_ada:bool, optional
             Adaptivity property of object. Default is True.
         p_logging      -Optional
@@ -61,6 +74,9 @@ class Window (StreamTask):
     C_NAME                  = 'Window'
 
     C_PLOT_STANDALONE       = False
+
+    C_PLOT_IN_WINDOW        = 'In Window'
+    C_PLOT_OUTSIDE_WINDOW   = 'Out Window'
 
     C_EVENT_BUFFER_FULL     = 'BUFFER_FULL'
     C_EVENT_DATA_REMOVED    = 'DATA_REMOVED'
@@ -72,7 +88,7 @@ class Window (StreamTask):
                  p_enable_statistics:bool = False,
                  p_name:str   = None,
                  p_range_max  = StreamTask.C_RANGE_THREAD,
-                 p_duplicate_data:bool = False,
+                 p_duplicate_data : bool = False,
                  p_visualize:bool = False,
                  p_logging    = Log.C_LOG_ALL,
                  **p_kwargs):
@@ -98,53 +114,83 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new:set, p_inst_del:set ):
+    def _run(self, p_inst_new:list, p_inst_del:list ):
         """
         Method to run the window including adding and deleting of elements
 
         Parameters
         ----------
-        p_inst_new : set
+        p_inst_new : list
             Instance/s to be added to the window
-        p_inst_del : set
+        p_inst_del : list
             Instance/s to be deleted from the window
         """
 
+        # 1 Checking if there are new instances
         if p_inst_new:
-            for i in p_inst_new:
-                if isinstance(i, Instance):
-                    i = i.get_feature_data()
+            new_instances = p_inst_new.copy()
+            num_inst = len(new_instances)
+
+
+            for i in range(num_inst):
+                inst = new_instances[i]
+
+
+                # Compatibility with Instance/State
+                if isinstance(inst, Instance):
+                    feature_value = inst.get_feature_data()
+                else:
+                    feature_value = inst
+
+
+                # Checking the numeric dimensions/features in Stream
                 if self._numeric_buffer is None and self._statistics_enabled:
-                    for j in i.get_dim_ids():
-                        if i.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
-                                                                             Dimension.C_BASE_SET_R,
-                                                                             Dimension.C_BASE_SET_Z]:
+                    for j in feature_value.get_dim_ids():
+                        if feature_value.get_related_set().get_dim(j).get_base_set() in [Dimension.C_BASE_SET_N,
+                                                                                         Dimension.C_BASE_SET_R,
+                                                                                         Dimension.C_BASE_SET_Z]:
                             self._numeric_features.append(j)
 
                     self._numeric_buffer = np.zeros((self.buffer_size, len(self._numeric_features)))
 
+
+                # Increment in buffer position
                 self._buffer_pos = (self._buffer_pos + 1) % self.buffer_size
 
-                if len(self._buffer) == self.buffer_size:
-                    # Checks if the buffer is already full, implying that obsolete data is going to be deleted and
-                    # raises an event, and stores the new instances and continues the loop
 
+                if len(self._buffer) == self.buffer_size:
+                    # if the buffer is already full,obsolete data is going to be deleted
+                    # raises an event, stores the new instances and skips the iteration
                     self._raise_event(self.C_EVENT_DATA_REMOVED, Event(p_raising_object=self,
-                                                                       p_related_set=i.get_related_set()))
-                    p_inst_del.add(self._buffer[self._buffer_pos])
-                    self._buffer[self._buffer_pos] = i
+                                                                       p_related_set=feature_value.get_related_set()))
+                    p_inst_del.append(self._buffer[self._buffer_pos])
+                    self._buffer[self._buffer_pos] = inst
                     if self._statistics_enabled:
-                        self._numeric_buffer[self._buffer_pos] = [i.get_value(k) for k in self._numeric_features]
+                        self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in
+                                                                  self._numeric_features]
                     continue
 
-                # adds element to the buffer
-                self._buffer[self._buffer_pos] = i
+
+                # adds element to the buffer in this code block only if the buffer is not already full
+                self._buffer[self._buffer_pos] = inst
                 if self._statistics_enabled:
-                    self._numeric_buffer[self._buffer_pos] = [i.get_value(k) for k in self._numeric_features]
+                    self._numeric_buffer[self._buffer_pos] = [feature_value.get_value(k) for k in
+                                                              self._numeric_features]
+
 
                 # if the buffer is full after adding an element, raises event
                 if len(self._buffer) == self.buffer_size:
+                    if self._delay:
+                        p_inst_new.clear()
+                        for instance in self._buffer.values():
+                            p_inst_new.append(instance)
                     self._raise_event(self.C_EVENT_BUFFER_FULL, Event(self))
+
+
+            # If delay is true, clear the set p_inst_new for any following tasks
+            if self._delay:
+                if len(self._buffer) < self.buffer_size:
+                    p_inst_new.clear()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -159,7 +205,8 @@ class Window (StreamTask):
             buffer_pos:int
                 the latest buffer position
         """
-
+        if self._delay:
+            if len(self._buffer) < self.buffer_size: return
         return self._buffer, self._buffer_pos
 
 
@@ -221,44 +268,6 @@ class Window (StreamTask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot(self,
-                      p_figure: Figure = None,
-                      p_plot_settings: list = [],
-                      p_plot_depth: int = 0,
-                      p_detail_level: int = 0,
-                      p_step_rate: int = 0,
-                      **p_kwargs):
-        """
-        Method to initialize the plot for Window task.
-
-        Parameters
-        ----------
-        p_figure:Figure
-            Figure to host the plot.
-        p_plot_settings:PlotSettings
-            Specific plot settings
-        p_plot_depth:
-            Depth of plotting style
-        p_detail_level:
-            Level of details for the plot style
-        p_step_rate:
-            Rate of update for updating the plot
-        p_kwargs:
-            Additional key-worded arguments
-        """
-
-        self._plot_num_inst = 0
-
-        Task.init_plot(self,
-                p_figure=p_figure,
-                p_plot_settings=p_plot_settings,
-                p_plot_depth=p_plot_depth,
-                p_detail_level=p_detail_level,
-                p_step_rate=p_step_rate,
-                **p_kwargs)
-
-
-## -------------------------------------------------------------------------------------------------
     def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
         """
         Custom method to initialize a 2D plot for the window object
@@ -276,14 +285,16 @@ class Window (StreamTask):
         if p_figure is None:
             p_figure = plt.figure()
 
+        if p_settings:
+            self._plot_settings = p_settings
+
         if not p_settings.axes:
             self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
+
         else:
             self.axes = p_settings.axes
-
-        self.window_patch2D = Rectangle((0,0),0,0)
-
-        pass
+        self._patch_windows: dict = None
+        self._window_patch2D = Rectangle((0, 0),0,0)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -302,14 +313,16 @@ class Window (StreamTask):
         if p_figure is None:
             p_figure = plt.figure()
 
+        if p_settings:
+            self._plot_settings = p_settings
+
         if not p_settings.axes:
-            self.axes = Axes3D(p_figure, (0.05,0.05,0.9,0.9))
+            self.axes = p_figure.add_subplot(projection = '3d')
         else:
             self.axes = p_settings.axes
 
-        self.window_patch3D = Poly3DCollection([])
-
-        # ...
+        self._patch_windows: dict = None
+        self._window_patch3D = Poly3DCollection([])
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -325,11 +338,16 @@ class Window (StreamTask):
             PlotSettings objects with specific settings for the plot
 
         """
+
         if p_figure is None:
             p_figure = plt.figure()
 
+        if p_settings:
+            self._plot_settings = p_settings
+
         if not p_settings.axes:
-            self.axes = Axes(p_figure, [0.05,0.05,0.9,0.9])
+            self.axes = p_figure.add_subplot()
+            p_settings.axes = self.axes
             p_settings.axes.set_xlabel(self.C_PLOT_ND_XLABEL_INST)
             p_settings.axes.set_ylabel(self.C_PLOT_ND_YLABEL)
             p_settings.axes.grid(visible=True)
@@ -337,35 +355,47 @@ class Window (StreamTask):
         else:
             self.axes = p_settings.axes
 
-        self._plot_nd_plots = None
-        self._plot_windows = []
+        self._patch_windows = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
+    def _update_plot_2d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
+
+        Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
+        for more details.
 
         Parameters
         ----------
-        p_settings
-        p_inst_new
-        p_inst_del
-        p_kwargs
-
-        Returns
-        -------
+        p_settings : PlotSettings
+            Object with further plot settings.
+        p_inst_new : list
+            List of new stream instances to be plotted.
+        p_inst_del : list
+            List of obsolete stream instances to be removed.
+        p_kwargs : dict
+            Further optional plot parameters.
 
         """
+        self.axes.grid(True)
+        if self._patch_windows is None:
+            self._patch_windows = {}
+            self._patch_windows['2D'] = Rectangle((0, 0),0,0, ec= 'red', facecolor='none', zorder = -999)
+            self._plot_settings.axes.add_patch(self._patch_windows['2D'])
+            self._patch_windows['2D'].set_visible(True)
+
         boundaries = self.get_boundaries()
         x = boundaries[0][0]
         y = boundaries[1][0]
         w = boundaries[0][1] - boundaries[0][0]
         h = boundaries[1][1] - boundaries[1][0]
-        self.window_patch2D.set_bounds(x,y,w,h)
+        self._patch_windows['2D'].set_bounds(x,y,w,h)
+
+        self._patch_windows['2D'].set_visible(True)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
+    def _update_plot_3d(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
 
         Default 3-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
@@ -386,6 +416,11 @@ class Window (StreamTask):
         # 1. Returns if no new instances passed
         if p_inst_new is None: return
         b = self.get_boundaries()
+
+        if self._patch_windows is None:
+            self._patch_windows = {}
+            self._patch_windows['3D'] = Poly3DCollection(verts= [], edgecolors='red', facecolors='red', alpha = 0)
+            self._plot_settings.axes.add_collection(self._patch_windows['3D'])
 
         # 2. Logic for vertices of the cuboid
         verts = np.asarray([[[b[0][0], b[1][0], b[2][1]],
@@ -419,11 +454,11 @@ class Window (StreamTask):
                              [b[0][0], b[1][1], b[2][0]]]])
 
         # 3. Setting the vertices for the cuboid
-        self.window_patch3D.set_verts(verts)
+        self._patch_windows['3D'].set_verts(verts)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:set, p_inst_del:set, **p_kwargs):
+    def _update_plot_nd(self, p_settings:PlotSettings, p_inst_new:list, p_inst_del:list, **p_kwargs):
         """
         Default N-dimensional plotting implementation for window tasks. See class mlpro.bf.plot.Plottable
         for more details.
@@ -441,35 +476,23 @@ class Window (StreamTask):
         """
 
         # 1. CHeck if there is a new instance to be plotted
-        if p_inst_new is None: return
+        if len(p_inst_new) == 0 : return
 
         # 2. Check if the rectangle patches are already created
-        inst_new = list(p_inst_new)
+        if self._patch_windows is None:
+            self._patch_windows = {}
 
-        if self._plot_nd_plots is None:
-            self._plot_nd_plots = {}
+            bg = self.axes.get_facecolor()
+            ec = self.axes.patch.get_edgecolor()
+            obs_window = Rectangle((0,0), 0,0, facecolor = bg, edgecolor=ec, lw = 1, zorder=9999, alpha = 0.75 )
+            self._plot_settings.axes.add_patch(obs_window)
+            self._patch_windows['nD'] = obs_window
 
-            color_names = list(colors.cnames.values())
 
-        # If not create new patch objects and add them to the attribute
-            feature_space = inst_new[0].get_feature_data().get_related_set()
-            for i,feature in enumerate(feature_space.get_dims()):
-                if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
-                    feature_window = Rectangle((0,0), 0,0, facecolor = color_names[i], edgecolor=color_names[i],
-                        lw = 1.5, alpha = 0.5)
-                    self.axes.add_patch(feature_window)
-                    self._plot_nd_plots[feature.get_id()] = feature_window
-
-        # 2. Getting the boundaries
-        boundaries = self.get_boundaries()
-
-        # 3. Adding rectangular patches to the plots
-        for i,feature in enumerate(inst_new[0].get_feature_data().get_related_set().get_dims()):
-            if feature.get_base_set() in [Dimension.C_BASE_SET_R, Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_Z]:
-                x = self._plot_num_inst-self.buffer_size+1
-                y = boundaries[i][0]
-                w = self.buffer_size
-                h = boundaries[i][1] - boundaries[i][0]
-                self._plot_nd_plots[feature.get_id()].set_bounds(x,y,w,h)
-                self._plot_nd_plots[feature.get_id()].set_visible(True)
-
+        # 3. Add the hiding plot around obsolete data
+        x1 = self._plot_num_inst-self.buffer_size+1
+        y1 = self.axes.get_ylim()[0]
+        w1 = -(x1 - self.axes.get_xlim()[0])
+        h1 = self.axes.get_ylim()[1] - y1
+        self._patch_windows['nD'].set_bounds(x1, y1, w1, h1)
+        self._patch_windows['nD'].set_visible(True)

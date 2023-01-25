@@ -18,10 +18,16 @@
 ## -- 2022-11-09  2.2.1     DA       Classes Plottable, PlotSettings: correction
 ## -- 2022-11-17  2.3.0     DA       Classes Plottable, PlotSettings: extensions, corrections
 ## -- 2022-11-18  2.3.1     DA       Classes Plottable, PlotSettings: improvements try/except
+## -- 2022-12-20  2.4.0     DA       New method Plottable.set_plot_settings()
+## -- 2022-12-28  2.5.0     DA       - Corrections in method Plottable.init_plot()
+## --                                - Reduction to one active plot view per task
+## -- 2022-12-29  2.6.0     DA       Refactoring of plot settings
+## -- 2023-01-01  2.7.0     DA       Class Plottable: introduction of update step rate
+## -- 2023-01-04  2.8.0     DA       Class PlotSettings: new parameters p_horizon, p_force_fg
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.1 (2022-11-18)
+Ver. 2.8.0 (2023-01-04)
 
 This module provides various classes related to data plotting.
 """
@@ -29,6 +35,15 @@ This module provides various classes related to data plotting.
 
 from operator import mod
 import numpy as np
+
+try:
+    from tkinter import *
+    import matplotlib
+    matplotlib.use('TkAgg')
+except:
+    print('Please install tkinter for a better plot experience')
+    import matplotlib
+
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 import matplotlib.pyplot as plt
@@ -57,6 +72,23 @@ class PlotSettings:
         Optional x position of a subplot within a Matplotlib figure. Default = 1.
     p_pos_y : int 
         Optional y position of a subplot within a Matplotlib figure. Default = 1.
+    p_size_x : int
+        Relative size factor in x direction. Default = 1.
+    p_size_y : int
+        Relative size factor in y direction. Default = 1.
+    p_step_rate : int 
+        Optional step rate. Decides after how many calls of the update_plot() method the custom 
+        methods _update_plot() carries out an output. Default = 1.
+    p_horizon : int
+        Optional plot horizon. A value > 0 limits the number of data entities that are shown in the
+        plot. Default = 0.
+    p_plot_depth : int 
+        Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
+        depth is unlimited. Default = 0.
+    p_detail_level : int 
+        Optional detail level. Default = 0.
+    p_force_fg : bool
+        Optional boolean flag. If True, the releated window is kept in foreground. Default = True.
     p_id : int
         Optional unique id of the subplot within the figure. Default = 1.
     p_kwargs : dict
@@ -75,18 +107,32 @@ class PlotSettings:
                   p_axes : Axes = None, 
                   p_pos_x : int = 1, 
                   p_pos_y : int = 1, 
+                  p_size_x : int = 1,
+                  p_size_y : int = 1,
+                  p_step_rate : int = 1,
+                  p_horizon : int = 0,
+                  p_plot_depth : int = 0,
+                  p_detail_level : int = 0,
+                  p_force_fg : bool = True,
                   p_id : int = 1,
                   **p_kwargs ):
 
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
-        self.view      = p_view
-        self.axes      = p_axes
-        self.pos_x     = p_pos_x
-        self.pos_y     = p_pos_y
-        self.id        = p_id
-        self.kwargs    = p_kwargs.copy()
+        self.view           = p_view
+        self.axes           = p_axes
+        self.pos_x          = p_pos_x
+        self.pos_y          = p_pos_y
+        self.size_x         = p_size_x
+        self.size_y         = p_size_y
+        self.step_rate      = p_step_rate
+        self.horizon        = p_horizon
+        self.plot_depth     = p_plot_depth
+        self.detail_level   = p_detail_level
+        self.force_fg       = p_force_fg
+        self.id             = p_id
+        self.kwargs         = p_kwargs.copy()
 
 
 
@@ -117,7 +163,7 @@ class Plottable:
     C_PLOT_STANDALONE : bool = True
         Custom attribute to be set to True, if the plot needs a separate subplot or False if the 
         plot can be added to an existing subplot.
-    C_PLOT_VALID_VIEWS : list = []
+    C_PLOT_VALID_VIEWS : list = [PlotSettings]
         Custom list of views that are supported/implemented (see class PlotSettings)
     C_PLOT_DEFAULT_VIEW : str = ''
         Custom attribute for the default view. See class PlotSettings for more details.
@@ -131,17 +177,49 @@ class Plottable:
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_visualize:bool=False):
         self._visualize = self.C_PLOT_ACTIVE and p_visualize
-        self.set_plot_step_rate(p_step_rate=1)
+        self._plot_settings : PlotSettings = None
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_plot_settings(self) -> PlotSettings:
+        return self._plot_settings
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_plot_settings(self, p_plot_settings : PlotSettings ):
+        """
+        Sets plot settings in advance (before initialization of plot).
+
+        Parameters
+        ----------
+        p_plot_settings : PlotSettings
+            New PlotSettings to be set. If None, the default view is plotted (see attribute 
+            C_PLOT_DEFAULT_VIEW).
+        """
+
+        try:
+            if self._plot_initialized: return
+        except:
+            pass
+
+        if p_plot_settings is not None: 
+            self._plot_settings = p_plot_settings
+        elif self._plot_settings is None:
+            try:
+                self._plot_settings = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
+            except ParamError:
+                # Plot functionality turned on but not implemented
+                raise ImplementationError('Please check attribute C_PLOT_DEFAULT_VIEW')    
+
+        self._plot_step_counter = 0
+        self.set_plot_step_rate(p_step_rate=self._plot_settings.step_rate)
+        self.set_plot_detail_level(p_detail_level=self._plot_settings.detail_level)
+   
+
+## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
-                   p_figure:Figure=None,
-                   p_plot_settings:list=[],
-                   p_plot_depth:int=0,
-                   p_detail_level:int=0,
-                   p_step_rate:int=0,
-                   **p_kwargs):
+                   p_figure:Figure = None,
+                   p_plot_settings : PlotSettings = None ):
         """
         Initializes the plot functionalities of the class.
 
@@ -149,58 +227,28 @@ class Plottable:
         ----------
         p_figure : Matplotlib.figure.Figure, optional
             Optional MatPlotLib host figure, where the plot shall be embedded. The default is None.
-        p_plot_settings : list
-            Optional list of objects of class PlotSettings. All subplots that are addresses in the list
-            are plotted in parallel. If the list is empty the default view is plotted (see attribute 
-            C_PLOT_DEFAULT_VIEW).
-        p_plot_depth : int 
-            Optional plot depth in case of hierarchical plotting. A value of 0 means that the plot 
-            depth is unlimited. Default = 0.
-        p_detail_level : int 
-            Optional detail level.
-        p_step_rate : int 
-            Optional step rate. Decides after how many calls of the update_plot() method the custom 
-            methods _update_plot() carries out an output. Default = 0 (no change).
-        **p_kwargs : dict
-            Further optional plot parameters.    
+        p_plot_settings : PlotSettings
+            Optional plot settings. If None, the default view is plotted (see attribute C_PLOT_DEFAULT_VIEW).
         """
 
-        # 0 Plot functionality turned on? Initialization already called?
+        # 1 Plot functionality turned on? Initialization already called?
         try:
             if ( not self.C_PLOT_ACTIVE ) or ( not self._visualize ): return
         except:
             return
 
         try:
-            self._plot_initialized
-            return
+            if self._plot_initialized: return
         except:
-            pass
+            self._plot_own_figure   = False
 
-        plt.ion()
-
-
-        # 1 Initialize internal plot attributes
-        self._plot_depth        = p_plot_depth
-        self._plot_step_counter = 0
-        self._plot_kwargs       = p_kwargs.copy()
-        self.set_plot_step_rate(p_step_rate=p_step_rate)
-        self.set_plot_detail_level(p_detail_level=p_detail_level)
+        plt.ioff()
 
 
-        # 2 Prepare internal dictionaries
+         # 2 Prepare internal data structures
 
-        # 2.1 Dictionary with plot settings per view
-        self._plot_settings = {}
-        if len(p_plot_settings)!=0:
-            for ps in p_plot_settings:
-                self._plot_settings[ps.view] = ps
-        else:
-            try:
-                self._plot_settings[self.C_PLOT_DEFAULT_VIEW] = PlotSettings(p_view=self.C_PLOT_DEFAULT_VIEW)
-            except ParamError:
-                # Plot functionality turned on but not implemented
-                raise ImplementationError('Please check attribute C_PLOT_DEFAULT_VIEW')               
+        # 2.1 Plot settings per view
+        self.set_plot_settings( p_plot_settings=p_plot_settings )
 
         # 2.2 Dictionary with methods for initialization and update of a plot per view 
         self._plot_methods = { PlotSettings.C_VIEW_2D : [ self._init_plot_2d, self._update_plot_2d ], 
@@ -214,20 +262,19 @@ class Plottable:
             self._plot_own_figure   = True
         else:
             self._figure : Figure   = p_figure
-            self._plot_own_figure   = False
 
 
         # 4 Call of all initialization methods of the required views
-        for view in self._plot_settings:
-            try:
-                plot_method = self._plot_methods[view][0]
-            except KeyError:
-                raise ParamError('Parameter p_plot_settings: wrong view "' + str(view) + '"')
+        view = self._plot_settings.view
+        try:
+            plot_method = self._plot_methods[view][0]
+        except KeyError:
+            raise ParamError('Parameter p_plot_settings: wrong view "' + str(view) + '"')
 
-            plot_method(p_figure=self._figure, p_settings=self._plot_settings[view])
+        plot_method(p_figure=self._figure, p_settings=self._plot_settings)
 
-            if self._plot_settings[view].axes is None:
-                raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
+        if self._plot_settings.axes is None:
+            raise ImplementationError('Please set attribute "axes" in your custom _init_plot_' + view + ' method')
                 
 
         # # 5 In standalone mode: refresh figure
@@ -256,7 +303,32 @@ class Plottable:
             Matplotlib figure object to host the subplot(s)
         """
 
-        return plt.figure()     
+        fig = plt.figure()   
+        plt.show(block=False)
+        self._force_fg(p_fig=fig)
+        return fig
+
+
+## -------------------------------------------------------------------------------------------------
+    def force_fg(self):
+        """
+        Internal use.
+        """
+        self._force_fg(p_fig = self._figure)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _force_fg(self, p_fig : Figure):
+        """
+        Internal use.
+        """
+
+        if not self._plot_settings.force_fg: return
+
+        backend = matplotlib.get_backend()
+
+        if backend == 'TkAgg':
+            p_fig.canvas.manager.window.attributes('-topmost', True)        
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -339,19 +411,19 @@ class Plottable:
         except:
             return
             
-         # 1 Plot already initiated?
+         # 1 Plot already initialized?
         try:
-            self._plot_initialized
+            if not self._plot_initialized: self.init_plot()
         except: 
             self.init_plot()
 
         # 2 Call of all required plot methods
-        for view in self._plot_settings:
-            self._plot_methods[view][1](p_settings=self._plot_settings[view], **p_kwargs)
+        view = self._plot_settings.view
+        self._plot_methods[view][1](p_settings=self._plot_settings, **p_kwargs)
 
         # 3 Update content of own(!) figure after self._plot_step_rate calls
         if self._plot_own_figure:
-            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_step_rate)
+            self._plot_step_counter = mod(self._plot_step_counter+1, self._plot_settings.step_rate)
             if self._plot_step_counter==0: 
                 self._figure.canvas.draw()
                 self._figure.canvas.flush_events()

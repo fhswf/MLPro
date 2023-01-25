@@ -37,10 +37,11 @@
 ## -- 2022-10-29  1.8.1     DA       Class Log: removed call of switch_logging() from __init__()
 ## -- 2022-11-04  1.8.2     DA       Class Timer: refactoring
 ## -- 2022-11-07  1.9.0     DA       Class Log: new method get_log_level()
+## -- 2023-01-14  1.9.1     SY       Add class Label
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.0 (2022-11-07)
+Ver. 1.9.1 (2023-01-14)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer...
@@ -51,6 +52,7 @@ from datetime import datetime, timedelta
 from time import sleep
 import dill as pkl
 import os
+import uuid
 from mlpro.bf.exceptions import *
 
 
@@ -469,3 +471,100 @@ class  ScientificObject:
     C_SCIREF_CONFERENCE = None
     C_SCIREF_NOTES = None
     C_SCIREF_EDITOR = None
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+
+class Label:
+    """
+    This class serves as a base class of label to set up a name and id for another class.
+    
+    Parameters
+    ----------
+    p_name : str
+        name of the transfer function.
+    p_id : int
+        unique id of the transfer function. Default: None.
+        
+    Attributes
+    ----------
+    C_NAME : str
+        name of the sensor. Default: ''.
+    """
+
+    C_NAME = ''
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_name:str, p_id:int=None):
+
+        self.C_NAME = p_name
+
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            raise NotImplementedError('Please add a name!')
+        
+        self.set_id(p_id)
+            
+
+## -------------------------------------------------------------------------------------------------
+    def set_id(self, p_id:int=None):
+        """
+        This method provides a functionality to set an unique ID.
+
+        Parameters
+        ----------
+        p_id : int, optional
+            An unique ID. Default: None.
+
+        """
+        if p_id is None:
+            self._id = str(uuid.uuid4())
+        else:
+            self._id = str(p_id)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_id(self) -> str:
+        """
+        This method provides a functionality to get the defined unique ID.
+
+        Returns
+        -------
+        str
+            The unique ID.
+
+        """
+        return self._id
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_name(self, p_name:str):
+        """
+        This method provides a functionality to set an unique name of the related component.
+
+        Parameters
+        ----------
+        p_name : str
+            An unique name of the related component.
+
+        """
+        self._name = p_name
+        self.C_NAME = p_name
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_name(self) -> str:
+        """
+        This method provides a functionality to get the unique name of the related component.
+
+        Returns
+        -------
+        str
+            The unique name of the related component.
+
+        """
+        return self._name

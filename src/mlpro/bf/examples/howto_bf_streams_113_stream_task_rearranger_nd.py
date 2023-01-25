@@ -1,20 +1,20 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_101_stream_workflow_scenario1.py
+## -- Module  : howto_bf_streams_111_stream_task_rearranger_nd.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-27  0.0.0     DA       Creation
-## -- 2022-11-22  1.0.0     DA       First implementation
+## -- 2022-12-14  1.0.0     DA       First implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-11-22)
+Ver. 1.0.0 (2022-12-14)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
-a stream provider is combined with a stream workflow and just one simple stream task within to a
-stream scenario. The latter one is used to process some instances.
+a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
+a standard task Rearranger and a custom task. The stream scenario is used to process some instances.
 
 You will learn:
 
@@ -24,13 +24,14 @@ You will learn:
 
 3) How to set up a stream scenario based on a stream and a processing stream workflow.
 
-4) How to run a stream scenario dark or with default visualization.
+4) How to run a stream scenario dark or with visualization.
 
 """
 
 
 from mlpro.bf.streams import *
-from mlpro.wrappers.openml import WrStreamProviderOpenML
+from mlpro.bf.streams.streams import *
+from mlpro.bf.streams.tasks import Rearranger
 
 
 
@@ -58,29 +59,43 @@ class MyScenario (StreamScenario):
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
     """
 
-    C_NAME      = 'Demo #1'
+    C_NAME      = 'Demo Rearranger'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize: bool, p_logging):
 
-        # 1 Import a stream from OpenML
-        openml  = WrStreamProviderOpenML(p_logging=p_logging)
-        stream  = openml.get_stream(p_name='BNG(autos,nominal,1000000)', p_mode=p_mode, p_logging=p_logging)
+        # 1 Import a native stream from MLPro
+        provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
+        stream = provider_mlpro.get_stream('Rnd10Dx1000', p_mode=p_mode, p_logging=p_logging)
 
-
-        # 2 Set up a stream workflow based on a custom stream task
-
-        # 2.1 Creation of a task
-        task = MyTask( p_name='t1', p_visualize=p_visualize, p_logging=logging )
-
-        # 2.2 Creation of a workflow
+        # 2 Set up a stream workflow 
         workflow = StreamWorkflow( p_name='wf1', 
-                                   p_range_max=StreamWorkflow.C_RANGE_NONE,    #StreamWorkflow.C_RANGE_THREAD, 
+                                   p_range_max=Task.C_RANGE_NONE, 
                                    p_visualize=p_visualize,
                                    p_logging=logging )
 
-        # 2.3 Addition of the task to the workflow
-        workflow.add_task( p_task=task )
+        # 2.1 Set up and add a rearranger task to reduce the feature and label space
+        features     = stream.get_feature_space().get_dims()
+        labels       = stream.get_label_space().get_dims()
+
+        features_new = [ ( 'F', [ features[1] ] ), 
+                         ( 'L', [ labels[1] ] ),  
+                         ( 'F', features[5:8] ) ]
+        labels_new   = [ ( 'L', [ labels[0] ] ), 
+                         ( 'F', features[4:6] ) ]
+
+        task_rearranger = Rearranger( p_name='t1',
+                                      p_range_max=Task.C_RANGE_THREAD,
+                                      p_visualize=p_visualize,
+                                      p_logging=p_logging,
+                                      p_features_new=features_new,
+                                      p_labels_new=labels_new )
+
+        workflow.add_task( p_task=task_rearranger )
+
+        # 2.2 Set up and add an own custom task
+        task_custom = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=logging )
+        workflow.add_task( p_task=task_custom, p_pred_tasks=[task_rearranger] )
 
 
         # 3 Return stream and workflow
@@ -92,7 +107,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 50
+    cycle_limit = 200
     logging     = Log.C_LOG_ALL
     visualize   = True
   
@@ -104,7 +119,7 @@ else:
 
 
 # 2 Instantiate the stream scenario
-myscenario = MyScenario( p_mode=Mode.C_MODE_REAL,
+myscenario = MyScenario( p_mode=Mode.C_MODE_SIM,
                          p_cycle_limit=cycle_limit,
                          p_visualize=visualize,
                          p_logging=logging )
@@ -114,7 +129,8 @@ myscenario = MyScenario( p_mode=Mode.C_MODE_REAL,
 myscenario.reset()
 
 if __name__ == '__main__':
-    myscenario.init_plot()
+    myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
+                                                        p_step_rate = 2 ) )
     input('Press ENTER to start stream processing...')
 
 myscenario.run()
