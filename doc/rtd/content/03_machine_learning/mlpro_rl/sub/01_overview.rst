@@ -34,7 +34,7 @@ If you are interested to utilize MLPro-RL, you can easily access the RL modules,
 
     .. code-block:: python
 
-        from mlpro.rl.models import *
+        from mlpro.rl import *
 
 
 MLPro team recommends to visit our :ref:`getting started <target_getstarted_RL>` page to directly learn MLPro-RL in a practical way.

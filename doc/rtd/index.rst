@@ -6,7 +6,7 @@
 MLPro - Machine Learning Professional
 =====================================
 
-Welcome to MLPro - the integrative middleware-framework for standardized machine learning in Python!
+Welcome to MLPro - the integrative middleware framework for standardized machine learning in Python!
 
 MLPro
    - enables hybrid ML applications in just one framework
