@@ -23,6 +23,6 @@
 	</worldbody>
 
 	<actuator>
-		<motor joint="pin1" name="torque1" gear="1" ctrllimited="true" ctrlrange="-50 50"/>
+		<motor joint="pin1" name="pin1" gear="1" ctrllimited="true" ctrlrange="-50 50"/>
 	</actuator>
 </mujoco>

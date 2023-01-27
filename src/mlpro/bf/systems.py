@@ -443,12 +443,19 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
                   p_fct_strans : FctSTrans = None,
                   p_fct_success : FctSuccess = None,
                   p_fct_broken : FctBroken = None,
+                  p_mujoco_file = None,
+                  p_frame_skip : int = 1,
+                  p_state_mapping = None,
+                  p_action_mapping = None,
+                  p_use_radian : bool = True,
+                  p_camera_conf : tuple = (None, None, None),
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
 
         self._fct_strans            = p_fct_strans
         self._fct_success           = p_fct_success
         self._fct_broken            = p_fct_broken
+        self._mujoco_handler        = None
         self._state_space : MSpace  = None
         self._action_space : MSpace = None
         self._state                 = None
@@ -460,9 +467,27 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         FctBroken.__init__(self, p_logging=p_logging)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
-        self.set_latency(p_latency)
 
         self._state_space, self._action_space = self.setup_spaces()
+
+        if p_mujoco_file is not None:
+            from mlpro.wrappers.mujoco import MujocoHandler
+
+            self._mujoco_handler = MujocoHandler(
+                                        p_mujoco_file=p_mujoco_file, 
+                                        p_frame_skip=p_frame_skip,
+                                        p_system_state_space=self.get_state_space(),
+                                        p_system_action_space=self.get_action_space(),
+                                        p_state_mapping=p_state_mapping,
+                                        p_action_mapping=p_action_mapping,
+                                        p_use_radian=p_use_radian, 
+                                        p_camera_conf=p_camera_conf,
+                                        p_visualize=p_visualize,
+                                        p_logging=p_logging)
+            
+            self.set_latency(timedelta(0,0.05,0))
+        else:
+            self.set_latency(p_latency)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -559,6 +584,18 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         self.log(self.C_LOG_TYPE_I, 'Reset')
         self._num_cycles = 0
         self._reset(p_seed)
+
+        # Put Mujoco here
+        if self._mujoco_handler is not None:
+            current_state = self.get_state()
+            if callable(getattr(self, '_obs_to_mujoco', None)):
+                current_state = self._obs_to_mujoco(current_state)
+
+            ob = self._mujoco_handler._reset_simulation(current_state)
+            
+            self._state = State(self.get_state_space())
+            self._state.set_values(ob)
+
         if self._state is not None:
             self._state.set_initial(True)
 
@@ -693,6 +730,20 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
 
         if self._fct_strans is not None:
             return self._fct_strans.simulate_reaction(p_state, p_action)
+        elif self._mujoco_handler is not None:
+            self._mujoco_handler._step_simulation(p_action)
+
+            # Delay because of the simulation
+            sleep(self.get_latency().total_seconds())
+            ob = self._mujoco_handler._get_obs()
+
+            if callable(getattr(self, '_obs_from_mujoco', None)):
+                ob = self._obs_from_mujoco(ob)
+
+            current_state = State(self.get_state_space())
+            current_state.set_values(ob)
+
+            return current_state
         else:
             return self._simulate_reaction(p_state, p_action)
 
@@ -1124,6 +1175,12 @@ class System (SystemBase):
                   p_fct_strans : FctSTrans = None, 
                   p_fct_success : FctSuccess = None, 
                   p_fct_broken : FctBroken = None, 
+                  p_mujoco_file = None,
+                  p_frame_skip : int = 1,
+                  p_state_mapping = None,
+                  p_action_mapping = None,
+                  p_use_radian : bool = True,
+                  p_camera_conf : tuple = (None, None, None),
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL ):
 
@@ -1133,6 +1190,12 @@ class System (SystemBase):
                              p_fct_strans=p_fct_strans, 
                              p_fct_success=p_fct_success, 
                              p_fct_broken=p_fct_broken, 
+                             p_mujoco_file=p_mujoco_file,
+                             p_frame_skip=p_frame_skip,
+                             p_state_mapping=p_state_mapping,
+                             p_action_mapping=p_action_mapping,
+                             p_use_radian=p_use_radian,
+                             p_camera_conf=p_camera_conf,
                              p_visualize=p_visualize, 
                              p_logging=p_logging )
 

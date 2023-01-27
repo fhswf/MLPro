@@ -19,9 +19,7 @@ the simulation for pre defined model.
 
 import mlpro
 from mlpro.bf.various import Log
-from mlpro.wrappers.mujoco import WrMujoco
 from mlpro.bf.systems import *
-import random
 
 
 
@@ -30,10 +28,27 @@ import random
 class PendulumSystem (System):
 
     C_NAME      = 'PendulumSystem'
-    C_PLOT_ACTIVE       = True
 
-    def __init__(self, p_mode=Mode.C_MODE_SIM, p_latency: timedelta = None, p_fct_strans: FctSTrans = None, p_fct_success: FctSuccess = None, p_fct_broken: FctBroken = None, p_visualize: bool = False, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_mode, p_latency, p_fct_strans, p_fct_success, p_fct_broken, p_visualize, p_logging)
+    def __init__(self, 
+                p_mode=Mode.C_MODE_SIM, 
+                p_mujoco_file=None, 
+                p_frame_skip: int = 1, 
+                p_state_mapping=None, 
+                p_action_mapping=None,
+                p_camera_conf: tuple = (None, None, None), 
+                p_visualize: bool = False, 
+                p_logging=Log.C_LOG_ALL):
+
+        super().__init__(p_mode=p_mode, 
+                        p_mujoco_file=p_mujoco_file, 
+                        p_frame_skip=p_frame_skip, 
+                        p_state_mapping=p_state_mapping, 
+                        p_action_mapping=p_action_mapping,
+                        p_camera_conf=p_camera_conf, 
+                        p_visualize=p_visualize, 
+                        p_logging=p_logging)
+
+        
         self._state = State(self._state_space)
 
     @staticmethod
@@ -41,15 +56,15 @@ class PendulumSystem (System):
         
         # 1 State space
         state_space = ESpace()
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_pos') )
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_pos') )
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_pos', p_name_long="Pin 1 Joint Angle") )
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_pos', p_name_long="Pin 2 Joint Angle") )
 
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_vel') )
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_vel') )
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_vel', p_name_long="Pin 1 Angular Velocity") )
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_vel', p_name_long="Pin 2 Angular Velocity") )
 
         # 2 Action space
         action_space = ESpace()
-        action_space.add_dim( p_dim = Dimension( p_name_short='Action 1') )
+        action_space.add_dim( p_dim = Dimension( p_name_short='pin1') )
 
         return state_space, action_space
 
@@ -61,29 +76,23 @@ class PendulumSystem (System):
 # 0 Prepare Demo/Unit test mode
 if __name__ == '__main__':
     logging     = Log.C_LOG_ALL
-    latency     = timedelta(0,0.01,0)
+    visualize   = True
 else:
     logging     = Log.C_LOG_NOTHING
-    latency     = timedelta(0,0,100000)
+    visualize   = False
 
 
 # 1 Instantiate own system in simulation mode
-sys = PendulumSystem(p_latency=latency, p_logging=logging, p_visualize=True)
+model_file = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
+sys = PendulumSystem(p_logging=logging, p_mujoco_file=model_file, p_visualize=visualize)
 
-# 2 Wrapped with MuJoCo with pendulum model
-model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
-sys = WrMujoco(sys, p_model_file=model_path, p_system_type=WrMujoco.C_SYSTEM, p_use_radian=False, p_visualize=True)
-
-# 3 Reset system
+# 2 Reset system
 sys.reset()
 
-# 4 Init Visualization
-sys.init_plot()
-
-# 6 Process an action
-for x in range(1000):
+# 3 Process an action
+for x in range(1):
     # Random Action
-    action = np.random.uniform(-1, 1, size=(1,))
+    action = np.random.uniform(-1, 1, size=(2,))
     sys.process_action( p_action= Action( p_agent_id=0, 
                                         p_action_space=sys.get_action_space(),
                                         p_values=action ) )
