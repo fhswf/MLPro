@@ -41,6 +41,7 @@ jobs:
           pip install optuna==3.0.5
           pip install hyperopt==0.2.7
           pip install pyglet==1.5.27
+          pip install lxml==4.9.2
           pip install sphinx
           pip install sphinx-rtd-theme
           pip install sphinx-copybutton
