@@ -9,11 +9,13 @@
 ## -- 2022-12-11  0.0.1     MRD       Refactor due to new bf.Systems
 ## -- 2022-12-11  1.0.0     MRD       First Release
 ## -- 2023-01-07  1.0.1     MRD       Add State Mapping between MuJoCo model and Environment State Space
+## -- 2023-01-27  1.1.0     MRD       Implement Pendulum Environment, refactor due to different MuJoCo
+## --                                 mechanism
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.1 (2023-01-07)
+Ver. 1.1.0 (2023-01-27)
 
 This module shows how to run a random policy on Double Pendulum with MuJoCo Simulation.
 """
@@ -31,8 +33,66 @@ from mlpro.rl.models_agents import Policy, Agent
 from mlpro.rl.models_train import RLScenario
 from mlpro.bf.systems import State, Action
 from mlpro.rl.models_env_ada import SARSElement
-from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4
-from mlpro.wrappers.mujoco import WrMujoco
+from mlpro.rl.models_env import Environment
+from mlpro.rl.models_agents import Reward
+from mlpro.bf.systems import *
+
+
+# 1 Implement the Environment
+class PendulumEnvironment (Environment):
+
+    C_NAME          = 'PendulumEnvironment'
+    C_REWARD_TYPE   = Reward.C_TYPE_OVERALL
+
+    def __init__(self, 
+                p_mode=Mode.C_MODE_SIM, 
+                p_mujoco_file=None, 
+                p_frame_skip: int = 1, 
+                p_state_mapping=None, 
+                p_action_mapping=None,
+                p_camera_conf: tuple = (None, None, None), 
+                p_visualize: bool = False, 
+                p_logging=Log.C_LOG_ALL):
+
+        super().__init__(p_mode=p_mode, 
+                        p_mujoco_file=p_mujoco_file, 
+                        p_frame_skip=p_frame_skip, 
+                        p_state_mapping=p_state_mapping, 
+                        p_action_mapping=p_action_mapping,
+                        p_camera_conf=p_camera_conf, 
+                        p_visualize=p_visualize, 
+                        p_logging=p_logging)
+
+        
+        self._state = State(self._state_space)
+        self.reset()
+
+    @staticmethod
+    def setup_spaces():
+        
+        # 1 State space
+        state_space = ESpace()
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_pos', p_name_long="Pin 1 Joint Angle") )
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_pos', p_name_long="Pin 2 Joint Angle") )
+
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_vel', p_name_long="Pin 1 Angular Velocity") )
+        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_vel', p_name_long="Pin 2 Angular Velocity") )
+
+        # 2 Action space
+        action_space = ESpace()
+        action_space.add_dim( p_dim = Dimension( p_name_short='pin1') )
+
+        return state_space, action_space
+
+
+    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+        reward = Reward(self.C_REWARD_TYPE)
+        reward.set_overall_reward(1)
+        return reward
+
+
+    def _reset(self, p_seed=None) -> None:
+        pass
 
 # 1 Implement your own agent policy
 class MyPolicy (Policy):
@@ -70,25 +130,8 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
-        env   = DoublePendulumS4(p_logging=True, p_init_angles='down', p_max_torque=10, p_visualize=p_visualize)
-
-        # Wrapped env with MuJoCo
-        model_path = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
-
-        # Map state with the proper naming according to the MuJoCo model
-        state_mapping = [
-                        ("th1", "pin1_pos"),
-                        ("th2", "pin2_pos"),
-                        ("w1", "pin1_vel"),
-                        ("w2", "pin2_vel")
-                        ]
-
-        self._env = WrMujoco(env, 
-                            p_model_file=model_path, 
-                            p_system_type=WrMujoco.C_ENVIRONMENT,
-                            p_state_mapping=state_mapping,
-                            p_use_radian=False,
-                            p_visualize=p_visualize)
+        model_file = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
+        self._env = PendulumEnvironment(p_logging=logging, p_mujoco_file=model_file, p_visualize=visualize)
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),

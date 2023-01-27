@@ -227,7 +227,7 @@ class FctReward (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state: State = None, p_state_new: State = None) -> Reward:
+    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
         Custom reward method. See method compute_reward() for further details.
         """
@@ -319,7 +319,7 @@ class EnvBase (System, FctReward):
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
 
-        System.__init__( self, 
+        System.__init__( self,
                          p_mode = p_mode,
                          p_latency = p_latency,
                          p_fct_strans = p_fct_strans,
@@ -500,8 +500,7 @@ class Environment (EnvBase):
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
 
-        super().__init__( self, 
-                         p_mode = p_mode,
+        super().__init__(p_mode = p_mode,
                          p_latency = p_latency,
                          p_fct_strans = p_fct_strans,
                          p_fct_reward = p_fct_reward,
@@ -515,8 +514,6 @@ class Environment (EnvBase):
                          p_camera_conf = p_camera_conf,
                          p_visualize = p_visualize,
                          p_logging = p_logging )
-
-        self._state_space, self._action_space = self.setup_spaces()
 
 
 ## -------------------------------------------------------------------------------------------------

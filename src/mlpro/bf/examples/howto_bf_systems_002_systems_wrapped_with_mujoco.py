@@ -96,6 +96,6 @@ for x in range(1000):
     sys.process_action( p_action= Action( p_agent_id=0, 
                                         p_action_space=sys.get_action_space(),
                                         p_values=action ) )
-    sys.update_plot()
+    #sys.update_plot()
 
 
