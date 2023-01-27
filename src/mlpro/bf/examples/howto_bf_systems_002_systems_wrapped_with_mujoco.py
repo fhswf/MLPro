@@ -90,9 +90,9 @@ sys = PendulumSystem(p_logging=logging, p_mujoco_file=model_file, p_visualize=vi
 sys.reset()
 
 # 3 Process an action
-for x in range(1):
+for x in range(1000):
     # Random Action
-    action = np.random.uniform(-1, 1, size=(2,))
+    action = np.random.uniform(-1, 1, size=(1,))
     sys.process_action( p_action= Action( p_agent_id=0, 
                                         p_action_space=sys.get_action_space(),
                                         p_values=action ) )

@@ -737,11 +737,7 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
             sleep(self.get_latency().total_seconds())
             ob = self._mujoco_handler._get_obs()
 
-            if callable(getattr(self, '_obs_from_mujoco', None)):
-                ob = self._obs_from_mujoco(ob)
-
-            current_state = State(self.get_state_space())
-            current_state.set_values(ob)
+            current_state = self.state_from_mujoco(ob)
 
             return current_state
         else:
@@ -757,6 +753,38 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         """
         
         raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
+
+
+## -------------------------------------------------------------------------------------------------    
+    def state_from_mujoco(self, p_mujoco_state):
+        """
+        State conversion method from converting MuJoCo state to MLPro state.
+        """
+        
+        mujoco_state = self._state_from_mujoco(p_mujoco_state)
+        mlpro_state = State(self.get_state_space())
+        mlpro_state.set_values(mujoco_state)
+        return mlpro_state
+
+
+## -------------------------------------------------------------------------------------------------
+    def _state_from_mujoco(self, p_mujoco_state):
+        """
+        Custom method for to do transition between MuJoCo state and MLPro state. Implement this method
+        if the MLPro state has different dimension from MuJoCo state.
+
+        Parameters
+        ----------
+        p_mujoco_state : Numpy
+            MuJoCo state.
+
+        Returns
+        -------
+        Numpy
+            Modified MuJoCo state
+        """
+
+        return p_mujoco_state
 
 
 ## -------------------------------------------------------------------------------------------------
