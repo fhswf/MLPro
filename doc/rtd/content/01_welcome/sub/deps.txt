@@ -16,3 +16,4 @@ optuna,3.0.5
 hyperopt,0.2.7
 pyglet,1.5.27
 mujoco,2.3.1.post1
+lxml,4.9.2
