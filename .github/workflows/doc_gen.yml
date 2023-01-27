@@ -46,6 +46,7 @@ jobs:
           pip install sphinx-copybutton
           pip install sphinx_multitoc_numbering
           pip install openml
+          pip install mujoco
       - name: Build the Documentation
         run: |
           make docu

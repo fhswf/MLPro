@@ -31,10 +31,11 @@
 ## --                                - Temporarily removed howto rl_agent_005 and rl_wp_001
 ## -- 2023-01-14  1.6.3     SY       Add howto related to transfer functions
 ## -- 2023-01-16  1.6.4     SY       Add howto related to unit converters
+## -- 2023-01-27  1.6.5     MRD      Add howto related to mujoco
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.4 (2023-01-16)
+Ver. 1.6.5 (2023-01-27)
 
 Unit test for all examples available.
 """
@@ -83,6 +84,7 @@ howto_list = {
     # bf.systems
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
     "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_set_up_transfer_functions",
+    "bf_systems_003": "howto_bf_systems_003_systems_wrapped_with_mujoco",
 
 
 
@@ -100,6 +102,7 @@ howto_list = {
     # "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_train_agent_with_sb3_policy_on_multigeo_environment",
     "rl_env_004": "mlpro.rl.examples.howto_rl_env_004_run_agent_with_random_actions_on_double_pendulum_environment",
     # "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_train_agent_with_sb3_policy_on_double_pendulum_environment",
+    "rl_env_006": "howto_rl_env_006_run_agent_with_random_policy_on_double_pendulum_mujoco_environment",
     "rl_ht_001": "mlpro.rl.examples.howto_rl_ht_001_hyperopt",
     "rl_ht_002": "mlpro.rl.examples.howto_rl_ht_002_optuna",
     "rl_mb_001": "mlpro.rl.examples.howto_rl_mb_001_robothtm_environment",

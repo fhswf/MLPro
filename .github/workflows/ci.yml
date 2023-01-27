@@ -84,6 +84,7 @@ jobs:
         pip install sphinx-copybutton
         pip install sphinx_multitoc_numbering
         pip install openml
+        pip install mujoco
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
