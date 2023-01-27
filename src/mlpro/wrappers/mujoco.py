@@ -17,11 +17,13 @@
 ## --                                 There is different between MuJoCo dimension and Environment
 ## --                                 dimension. Add auto mapping state space between MuJoCo and
 ## --                                 Environment
+## -- 2023-01-27  1.2.0     MRD       Remove previous implementation and only define the MujocoHandler
+## --                                 as the handler to handle the MuJoCo simulation
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.1.1  (2023-01-07)
+Ver. 1.2.0  (2023-01-27)
 
 This module wraps bf.Systems with MuJoCo Simulation functionality.
 """

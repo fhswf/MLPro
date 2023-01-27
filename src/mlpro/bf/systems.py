@@ -16,11 +16,12 @@
 ## -- 2023-01-15  1.3.1     SY       New class UnitConverter
 ## -- 2023-01-16  1.3.2     SY       Shift UnitConverter to bf.math
 ## -- 2023-01-18  1.3.3     SY       Debugging on TransferFunction
+## -- 2023-01-27  1.4.0     MRD      Integrate MuJoCo as an optional state transition
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.3.3 (2023-01-18)
+Ver. 1.4.0 (2023-01-27)
 
 This module provides models and templates for state based systems.
 """
@@ -409,6 +410,18 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         Optional external function for state evaluation 'success'.
     p_fct_broken : FctBroken
         Optional external function for state evaluation 'broken'.
+    p_mujoco_file
+        Path to XML file for MuJoCo model.
+    p_frame_skip : int
+        Frame to be skipped every step. Default = 1.
+    p_state_mapping
+        State mapping if the MLPro state and MuJoCo state have different naming.
+    p_action_mapping
+        Action mapping if the MLPro action and MuJoCo action have different naming.
+    p_use_radian : bool
+        Use radian if the action and the state based on radian unit. Default = True.
+    p_camera_conf : tuple
+        Default camera configuration on MuJoCo Simulation (xyz position, elevation, distance).
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = False.
     p_logging 
@@ -760,7 +773,7 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         """
         State conversion method from converting MuJoCo state to MLPro state.
         """
-        
+
         mujoco_state = self._state_from_mujoco(p_mujoco_state)
         mlpro_state = State(self.get_state_space())
         mlpro_state.set_values(mujoco_state)

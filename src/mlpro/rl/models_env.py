@@ -39,10 +39,11 @@
 ## -- 2022-11-09  1.6.1     DA       Refactoring due to changes on plot systematics
 ## -- 2022-11-29  1.7.0     DA       - Refactoring due to new underlying module mlpro.bf.systems
 ## --                                - Adaptive parts moved to new module models_env_ada.py 
+## -- 2023-01-27  1.8.0     MRD      Add optional argument for Environment to integrate MuJoCo
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2022-11-29)
+Ver. 1.8.0 (2023-01-27)
 
 This module provides model classes for environments.
 """
@@ -257,6 +258,18 @@ class EnvBase (System, FctReward):
         Optional external function for state evaluation 'success'.
     p_fct_broken : FctBroken
         Optional external function for state evaluation 'broken'.
+    p_mujoco_file
+        Path to XML file for MuJoCo model.
+    p_frame_skip : int
+        Frame to be skipped every step. Default = 1.
+    p_state_mapping
+        State mapping if the MLPro state and MuJoCo state have different naming.
+    p_action_mapping
+        Action mapping if the MLPro action and MuJoCo action have different naming.
+    p_use_radian : bool
+        Use radian if the action and the state based on radian unit. Default = True.
+    p_camera_conf : tuple
+        Default camera configuration on MuJoCo Simulation (xyz position, elevation, distance).
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = False.
     p_logging 
@@ -297,6 +310,12 @@ class EnvBase (System, FctReward):
                   p_fct_reward : FctReward = None,
                   p_fct_success : FctSuccess = None,
                   p_fct_broken : FctBroken = None,
+                  p_mujoco_file = None,
+                  p_frame_skip : int = 1,
+                  p_state_mapping = None,
+                  p_action_mapping = None,
+                  p_use_radian : bool = True,
+                  p_camera_conf : tuple = (None, None, None),
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
 
@@ -306,6 +325,12 @@ class EnvBase (System, FctReward):
                          p_fct_strans = p_fct_strans,
                          p_fct_success = p_fct_success,
                          p_fct_broken = p_fct_broken,
+                         p_mujoco_file = p_mujoco_file,
+                         p_frame_skip = p_frame_skip,
+                         p_state_mapping = p_state_mapping,
+                         p_action_mapping = p_action_mapping,
+                         p_use_radian = p_use_radian,
+                         p_camera_conf = p_camera_conf,
                          p_visualize = p_visualize,
                          p_logging = p_logging )
 
@@ -436,6 +461,18 @@ class Environment (EnvBase):
         Optional external function for state evaluation 'success'.
     p_fct_broken : FctBroken
         Optional external function for state evaluation 'broken'.
+    p_mujoco_file
+        Path to XML file for MuJoCo model.
+    p_frame_skip : int
+        Frame to be skipped every step. Default = 1.
+    p_state_mapping
+        State mapping if the MLPro state and MuJoCo state have different naming.
+    p_action_mapping
+        Action mapping if the MLPro action and MuJoCo action have different naming.
+    p_use_radian : bool
+        Use radian if the action and the state based on radian unit. Default = True.
+    p_camera_conf : tuple
+        Default camera configuration on MuJoCo Simulation (xyz position, elevation, distance).
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = True.
     p_logging 
@@ -447,24 +484,37 @@ class Environment (EnvBase):
     C_CYCLE_LIMIT   = 0  # Recommended cycle limit for training episodes
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_mode = Mode.C_MODE_SIM, 
-                  p_latency : timedelta = None, 
-                  p_fct_strans: FctSTrans = None, 
-                  p_fct_reward: FctReward = None, 
-                  p_fct_success: FctSuccess = None, 
-                  p_fct_broken: FctBroken = None, 
-                  p_visualize: bool = False, 
-                  p_logging=Log.C_LOG_ALL ):
+    def __init__( self,
+                  p_mode = Mode.C_MODE_SIM,
+                  p_latency : timedelta = None,
+                  p_fct_strans : FctSTrans = None,
+                  p_fct_reward : FctReward = None,
+                  p_fct_success : FctSuccess = None,
+                  p_fct_broken : FctBroken = None,
+                  p_mujoco_file = None,
+                  p_frame_skip : int = 1,
+                  p_state_mapping = None,
+                  p_action_mapping = None,
+                  p_use_radian : bool = True,
+                  p_camera_conf : tuple = (None, None, None),
+                  p_visualize : bool = False,
+                  p_logging = Log.C_LOG_ALL ):
 
-        super().__init__( p_mode = p_mode, 
-                          p_latency = p_latency, 
-                          p_fct_strans = p_fct_strans, 
-                          p_fct_reward = p_fct_reward, 
-                          p_fct_success = p_fct_success, 
-                          p_fct_broken = p_fct_broken, 
-                          p_visualize = p_visualize, 
-                          p_logging = p_logging )
+        super().__init__( self, 
+                         p_mode = p_mode,
+                         p_latency = p_latency,
+                         p_fct_strans = p_fct_strans,
+                         p_fct_reward = p_fct_reward,
+                         p_fct_success = p_fct_success,
+                         p_fct_broken = p_fct_broken,
+                         p_mujoco_file = p_mujoco_file,
+                         p_frame_skip = p_frame_skip,
+                         p_state_mapping = p_state_mapping,
+                         p_action_mapping = p_action_mapping,
+                         p_use_radian = p_use_radian,
+                         p_camera_conf = p_camera_conf,
+                         p_visualize = p_visualize,
+                         p_logging = p_logging )
 
         self._state_space, self._action_space = self.setup_spaces()
 
