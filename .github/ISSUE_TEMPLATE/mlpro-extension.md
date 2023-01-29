@@ -2,7 +2,7 @@
 name: MLPro-Extension
 about: New GitHub repo as MLPro extension
 title: 'MLPro-Extension: ...'
-labels: MLPro Extension
+labels: ''
 assignees: detlefarend
 
 ---
