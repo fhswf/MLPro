@@ -2,7 +2,17 @@
 Training
 --------
 
-A class **RLTraining** inherits the functionality from class **Training** in the basic function level, where the **RLTraining** class are used for training and hyperparameter tuning of RL agents.
+In RL, the agent and the environment interact over a sequence of time steps.
+At each time step, the agent receives an observation of the current state of the environment and selects an action.
+The environment then transitions to a new state and returns a reward signal to the agent.
+This process continues until some terminal state is reached.
+
+The agent uses the observed state-action-reward sequences to update its policy,
+either through model-based methods that estimate the underlying dynamics of the environment,
+or model-free methods that directly estimate the value or the policy.
+The policy is used to select actions in subsequent interactions with the environment, allowing the agent to learn from its mistakes and improve over time.
+
+In MLPro-RL, a class **RLTraining** inherits the functionality from class **Training** in the basic function level, where the **RLTraining** class are used for training and hyperparameter tuning of RL agents.
 We implement episodic training algorithms and make the corresponding extended training data and results as well as the trained agents available in the file system.
 In this RL training, we always start with a defined random initial state of the environment and evaluate at each time step whether one of the following three categories is satisfied,
 

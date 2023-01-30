@@ -2,6 +2,15 @@
 Agents
 ------
 
+In RL, an agent is an autonomous entity that interacts with an environment,
+receiving rewards for performing certain actions and updates its behavior based on that feedback.
+The agent's goal is to learn a policy that maximizes its cumulative reward over time.
+
+From a scientific perspective, the agent is typically modeled as a decision-making system that maps states of the environment to actions through a policy.
+The policy can be deterministic or probabilistic and can be learned through various RL algorithms such as Q-Learning, SARSA, or Policy Gradient methods.
+The agent's performance is evaluated using metrics such as reward, cumulative reward, and value functions.
+Overall, an agent in RL provides an algorithm that makes decisions and learns from experience to optimize its performance in a given task.
+
 MLPro-RL supplies a special agent model landscape, which covers different RL scenarios including a simple single-agent RL, a multi-agent RL, and model-based agents with an optional action planner.
 For the multi-agent RL, the structure is constructed by assigning multiple single agents in a group.
 The main component of each single-agent (either single-agent or multi-agent RL) is the policy.

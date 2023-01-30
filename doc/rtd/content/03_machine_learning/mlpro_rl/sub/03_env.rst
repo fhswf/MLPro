@@ -2,6 +2,23 @@
 Environments
 ------------
 
+In RL, the environment refers to the physical, virtual, or abstract system in which the agent interacts and learns.
+The environment is the source of stimuli that the agent perceives and the arena in which it takes actions.
+
+The environment is defined by a set of states, actions, and transition dynamics.
+The state space is the set of all possible states that the agent can observe, and the action space is the set of all possible actions that the agent can take.
+The transition dynamics describe how the environment changes in response to the agent's actions.
+
+The environment also provides the agent with a reward signal that indicates how well it is doing in terms of achieving its goals.
+The reward function is a mapping from states and actions to real-valued scalars that quantifies the desirability of each state-action pair.
+
+The agent interacts with the environment over a sequence of time steps.
+At each time step, the agent observes the current state of the environment and selects an action.
+The environment then transitions to a new state and returns a reward signal to the agent.
+
+Overall, the environment in RL provides the agent with the necessary information to learn a policy that maps states to actions and maximizes the cumulative reward signal.
+The environment can be real-world or simulated, and can be described by a mathematical model or a black box.
+
 MLPro-RL supplies two main classes for an environment to support model-free and model-based RL.
 The first base class is Environment, which has a role as a template for designing environments for both approaches.
 The second base class is EnvModel, which is adaptive and utilized in model-based RL.
