@@ -15,12 +15,12 @@ For an overview, the simplified class diagram of agents in MLPro is described be
   
   This figure is taken from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
-Moreover, an environment model (known as :ref:`EnvModel class <target_agents_MBRL>`) can be supplemented to a single-agent, i.e. for model-based RL cases.
+Moreover, an environment model (known as :ref:`EnvModel class <target_agents_MBRL>`) can be supplemented to a single agent, i.e. for model-based RL cases.
 This class can be used for model-based learning, which learns the behaviour or dynamics of the environment. Another possible extension of the model-based agent is an action planner.
 Action planner uses the environment model (or EnvModel) to plan the next action by predicting the output on a certain horizon.
 An example of action planner algorithms is :ref:`Model Predictive Control (MPC) <target_mpc_RL>`, which is also provided in MLPro.
 
-Additionally, you can find the more comprehensive explanations of agents in MLPro-RL including a sample application on controlling a UR5 Robot in this paper:
+Additionally, you can find more comprehensive explanations of agents in MLPro-RL including a sample application on controlling a UR5 Robot in this paper:
 `MLPro 1.0 - Standardized Reinforcement Learning and Game Theory in Python <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
 Here are some subsections of the agent model landscape of MLPro-RL, which might be interesting for the users:
@@ -34,8 +34,8 @@ Here are some subsections of the agent model landscape of MLPro-RL, which might 
    agents/multiagents
    
 The following flowchart describes the adaptation procedure of an agent. In the beginning, the loop checks whether it is model-based RL or model-free RL.
-If it is a model-free RL, then the loop is jumped to a direct policy adaptation. Then, the current step is ended after the policy adaptation.
-Meanwhile, in the model-based RL, the EnvModel is firstly adapted, and then the loop checks whether the accuracy of the EnvModel exceeds a given threshold.
+If it is a model-free RL, then the loop is jumped to a direct policy adaptation. Then, the current step ended after the policy adaptation.
+Meanwhile, in the model-based RL, the EnvModel is first adapted, and then the loop checks whether the accuracy of the EnvModel exceeds a given threshold.
 This activity is to make sure that the EnvModel is accurate enough for policy adaptation. If the accuracy is higher than the threshold, then the policy adaptation takes place with EnvModel.
 Otherwise, the current step is ended without any policy adaptations.
    

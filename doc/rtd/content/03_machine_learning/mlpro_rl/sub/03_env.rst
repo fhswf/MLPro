@@ -10,20 +10,13 @@ state and action space definition, reset the corresponding environment method, s
 
 There are four main possibilities to set up an environment in MLPro, such as,
 
-(1) the user can develop a custom environment,
+(1) :ref:`develop a custom environment <customEnv>`,
 
-(2) the user can develop a custom environment model (specifically for model-based RL),
+(2) :ref:`develop a custom environment model <customEnvModel>` (specifically for model-based RL),
 
-(3) the user can reuse the provided environments by accessing them from the pool of objects, and
+(3) :ref:`reuse the provided environments by accessing them from the pool of objects <EnvPool>`, and
 
-(4) the user can reuse available environments from 3rd-party packages via wrapper classes (currently available: OpenAI Gym or PettingZoo).
-
-.. toctree::
-   :maxdepth: 1
-   
-   env/customenv
-   env/customenvmodel
-   env/pool
+(4) :ref:`reuse available environments from 3rd-party packages via wrapper classes <target-package-third>` (currently available: OpenAI Gym or PettingZoo).
    
 For reusing the 3rd packages, we develop a wrapper technology to transform the environment from the 3rd-party package to the MLPro-compatible environment.
 Additionally, we also provide the wrapper for the other way around, which is from MLPro Environment to the 3rd-party package.
