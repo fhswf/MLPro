@@ -1,5 +1,5 @@
-Time Management
------------------
+Time Measurement
+----------------
 
 .. code-block:: python
 
