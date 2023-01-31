@@ -8,4 +8,7 @@ We look forward to your contributions to MLPro! Found a problem or have a good i
 
 If you are interested in actively shaping MLPro, then simply contact us at: mlpro@listen.fh-swf.de
 
-We thank all `contributors <https://github.com/fhswf/MLPro/graphs/contributors>`_ for their active support.
+Our `templates <https://github.com/fhswf/MLPro/tree/main/templates>`_ will help you create additional 
+content in MLPro style. Of course, we will assist you in placing your contribution correctly.
+
+We thank all `contributors <https://github.com/fhswf/MLPro/graphs/contributors>`_ for their active support!

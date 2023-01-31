@@ -1,23 +1,25 @@
-Environment name with hyperlink to source
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This environment's short introduction, coupled with a representative figure 
-when possible. 
-      
-This environment can be imported via: 
+Environment name
+================
 
-.. code-block:: python
-
-    import ...
+.. Describe the env in the python module itself and refer to it here
+.. automodule:: mlpro.rl.pool.envs.myenv
     
 
-Prerequisites
-=============
+Screenshots
+-----------
 
-The third party dependencies or steps to prepare the environment should be mentioned here.
+.. Add nice screenshots here. Animated gif files are always a good eye-catcher.
+
+
+Prerequisites
+-------------
+
+.. The third party dependencies or steps to prepare the environment should be mentioned here.
+   
     
     
 General Information
-===================
+-------------------
     
 +------------------------------------+-------------------------------------------------------+
 |         Parameter                  |                         Value                         |
@@ -43,7 +45,7 @@ General Information
   
 
 Action Space
-============
+------------
     
 Description of the action space. 
   
@@ -57,7 +59,7 @@ Description of the action space.
     
 
 State Space
-===========
+-----------
     
 Description of the state space.
   
@@ -71,7 +73,8 @@ Description of the state space.
     
 
 Reward Structure
-================
+----------------
+
 The reward calculation structure. It is possible to include the mathematical background here as well.
 
 
@@ -80,26 +83,15 @@ The reward calculation structure. It is possible to include the mathematical bac
     reward = ...
       
 
-Change Log
-==========
-    
-+--------------------+---------------------------------------------+
-| Version            | Changes                                     |
-+====================+=============================================+
-| 0.0.0              | Description of the change                   |
-+--------------------+---------------------------------------------+
-
-        
 Cross Reference
-===============
-Other documents related to the environment should be referenced here. For example, 
-the respecitve API Reference.
+---------------
+
+Other documents related to the environment should be referenced here. For example, relate howtos and the API Reference.
     
 + :ref:`API Reference <...>`
 
-If you apply this environment in your research or work, please kindly cite the following related paper:
 
-.. code-block:: bibtex
+Citation
+--------
 
- @article{NoName2021
-  }
+If you apply this environment in your research or work, please :ref:`cite <target_publications>` us.

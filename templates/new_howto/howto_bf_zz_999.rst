@@ -1,36 +1,15 @@
-.. _Howto BF ZZ 999:
+.. _Howto_BF_ZZ_999:
 Howto BF-ZZ-999: My high-sophisticated ml sample
 ================================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_mt_001_parallel_algorithms
-
-
-
-Executable code
----------------
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_mt_001_parallel_algorithms.py
-	:language: python
-
-
-
-Results
--------
-
-The howto example logs details of the three runs and in particular the speed factors of multithreading and 
-multiprocessing in comparison to the serial/synchronous execution. On a PC with an AMD Ryzen 7 CPU (8/16 cores)
-running Linux, the system monitor shows an approx. 5x speedup with multithreading and an approx. 18x speedup with multiprocessing.
-
-.. image:: images/howto.bf.mt.001/howto_bf_mt_001_parallel_algorithms.pngTitle with hyperlink to source
------------------
-Ver. 0.0.0 (YYYY-MM-DD) 
-
-This module description ...
+.. Describe the howto in the python module itself and refer to it here
+.. automodule:: mlpro.bf.examples.howto_bf_zz_999_desciption
+    
 
 Prerequisites
-`````````````````
+-------------
 
-Please install the following packages to run this examples properly:
-    - :ref:`MLPro <Installation>`
+.. Please install the following packages to run this examples properly:
   ..
     - `NumPy <https://pypi.org/project/numpy/>`_
   ..
@@ -47,15 +26,17 @@ Please install the following packages to run this examples properly:
     - `Optuna <https://pypi.org/project/optuna/>`_
   ..
     - `Hyperopt <https://pypi.org/project/hyperopt/>`_
-  ..
-    - `ROS <http://wiki.ros.org/noetic/Installation>`_
-    
+
+
+Executable code
+---------------
+
+.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_zz_999_description.py
+	:language: python
+
+
+
 Results
-`````````````````
+-------
+
 Descriptions, plots, images, screenshots of expected results.
-
-Example Code
-`````````````````
-.. literalinclude:: ../../../template.py
-    :language: python
-
