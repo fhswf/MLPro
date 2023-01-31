@@ -86,7 +86,7 @@ The reward calculation structure. It is possible to include the mathematical bac
 Cross Reference
 ---------------
 
-Other documents related to the environment should be referenced here. For example, relate howtos and the API Reference.
+.. Other documents related to the environment should be referenced here. For example, related howtos and the API Reference.
     
 + :ref:`API Reference <...>`
 
