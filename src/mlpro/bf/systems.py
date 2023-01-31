@@ -17,18 +17,18 @@
 ## -- 2023-01-16  1.3.2     SY       Shift UnitConverter to bf.math
 ## -- 2023-01-18  1.3.3     SY       Debugging on TransferFunction
 ## -- 2023-01-24  1.3.4     SY       Quality Assurance on TransferFunction
+## -- 2023-01-31  1.3.5     SY       Renaming class Label to PersonalisedStamp
 ## -------------------------------------------------------------------------------------------------
 
-
 """
-Ver. 1.3.4 (2023-01-24)
+Ver. 1.3.5 (2023-01-31)
 
 This module provides models and templates for state based systems.
 """
 
 
 from time import sleep
-from mlpro.bf.various import TStamp, ScientificObject, Label
+from mlpro.bf.various import TStamp, ScientificObject, PersonalisedStamp
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable
 from mlpro.bf.ops import Mode
@@ -1311,7 +1311,7 @@ class System (SystemBase):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class TransferFunction(ScientificObject, Log, Label):
+class TransferFunction(ScientificObject, Log, PersonalisedStamp):
     """
     This class serves as a base class of transfer functions, which provides the main attributes of
     a transfer function. By default, there are several ready-to-use transfer function types
@@ -1377,7 +1377,7 @@ class TransferFunction(ScientificObject, Log, Label):
         self._unit_out = p_unit_out
 
         Log.__init__(self, p_logging=p_logging)
-        Label.__init__(self, p_name, p_id)
+        PersonalisedStamp.__init__(self, p_name, p_id)
         
         if self.get_type() is not None:
             self._set_function_parameters(p_args)
