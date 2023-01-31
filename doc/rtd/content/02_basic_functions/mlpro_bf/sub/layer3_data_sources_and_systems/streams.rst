@@ -1,5 +1,5 @@
 Streams
-================
+-------
 
 .. toctree::
    :maxdepth: 2

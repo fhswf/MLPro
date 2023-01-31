@@ -1,5 +1,5 @@
 Streams
-=======
+_______
 
 A data stream is a live data source that delivers instances sequentially. Unlike offline datasets, data
 instances cannot be scanned on demand in case of streams. Data instances are only available at the order they
