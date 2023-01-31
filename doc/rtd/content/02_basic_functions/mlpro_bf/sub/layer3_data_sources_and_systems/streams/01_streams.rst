@@ -1,16 +1,16 @@
 Streams
 =======
 
-
 A data stream is a live data source that delivers instances sequentially. Unlike offline datasets, data
 instances cannot be scanned on demand in case of streams. Data instances are only available at the order they
-arrive. For example, a data stream can be thought of as a live signal from RADIO sensors, where new data instances
-are available with time, therefore complete data is not available directly.
+arrive. For example, think of a live RADIO signal that delivers new data with time, however, complete access to entire
+data is not possible.
 
 .. image::
     images/stream_processor.png
     :width: 350 px
     :align: center
+
 
 In industrial scenarios, with more and more complex systems the amount of live data delivered by the systems increases
 rapidly. This high amount of live data can be leveraged to take optimal decisions for processes. This real-time data
@@ -34,7 +34,7 @@ The figure shows a collection of stream provider apis, which in turn, contain a 
 
 Stream
 ------
-A stream is a special iterator object in MLPro that delivers new data instances with each iteration. A stream cannot be
+In MLPro, a stream is a special iterator object that delivers new data instances with each iteration. A stream cannot be
 read directly for all the instances, instead an instance is only available when requested by a workflow. An instance
 in MLPro consists of feature and label data for that specific instance.
 
