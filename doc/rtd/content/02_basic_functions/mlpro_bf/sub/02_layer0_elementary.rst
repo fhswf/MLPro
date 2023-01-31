@@ -2,8 +2,7 @@
 Layer 0 - Elementary Functions
 ------------------------------
 
-This section provides explanations on various classes with elementary 
-functionalities for reuse in higher level classes.
+This lowest layer of MLPro-BF provides elementary functionalities for the following topics:
 
 .. toctree::
    :maxdepth: 1

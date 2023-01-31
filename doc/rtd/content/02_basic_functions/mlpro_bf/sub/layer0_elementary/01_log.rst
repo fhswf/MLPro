@@ -1,6 +1,8 @@
 Logging
-----------------
-This class adds elementary log functionality to inherited classes. The base class of Log can be accessed by the following:
+-------
+
+MLPro makes extensive use of a textual logging mechanism provided by the property class Log. This class centralizes
+and standardizes log outputs by adding appropriate methods to child classes by inheritance. It can be accessed as follows:
 
 .. code-block:: python
 
@@ -8,17 +10,17 @@ This class adds elementary log functionality to inherited classes. The base clas
 
 The log structure is divided into: 
  * Date : Current date in format year-month-day
- * Time : Current time in format hour:minute:second
+ * Time : Current time in format hour:minute:second.microsecond
  * Log Type : The type of logging
  * Log Text : The text that is being logged to the console
 
 .. image:: images/log_structure.png
-   :width: 400
+    :scale: 50 %
 
 An example of logging functionality is shown in the figure below.
 
 .. image:: images/log_example.png
-   :width: 400
+    :scale: 60 %
 
 In the figure above, it is shown that each log type has its own text color. Each log type is assigned to a color.
 

@@ -9,3 +9,9 @@ Executable code
 ---------------
 .. literalinclude:: ../../../../../../../src/mlpro/bf/examples/howto_bf_001_logging.py
 	:language: python
+
+
+Results
+-------
+.. image:: images/log_example.png
+    :scale: 60 %
