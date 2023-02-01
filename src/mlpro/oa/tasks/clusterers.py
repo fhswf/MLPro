@@ -23,9 +23,9 @@ import random
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Cluster (Log, Plottable):
+class Cluster (Model):
     """
-    This is the base class for multivariate clusters. 
+    This is the base class for a multivariate cluster. 
 
     Parameters
     ----------
@@ -85,7 +85,7 @@ class Cluster (Log, Plottable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def seed(p_seed=None):
+    def set_random_seed(p_seed=None):
         random.seed(p_seed)
 
 
@@ -213,19 +213,29 @@ class Cluster (Log, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Clusterer (OATask):
+class ClusterAnalyzer (OATask):
     """
     This is the base class for multivariate online cluster analysis. It raises an event when a cluster
     was added or removed.
     """
 
-    C_NAME                  = 'Clusterer'
+    C_NAME                  = 'Cluster Analyzer'
 
     C_EVENT_CLUSTER_ADDED   = 'CLUSTER_ADDED'
     C_EVENT_CLUSTER_REMOVED = 'CLUSTER_REMOVED'
 
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False
+
+    def __init__( self, 
+                p_name: str = None, p_range_max=StreamTask.C_RANGE_THREAD, p_ada: bool = True, p_duplicate_data: bool = False, p_visualize: bool = False, p_logging=Log.C_LOG_ALL, **p_kwargs):
+        super().__init__(p_name, p_range_max, p_ada, p_duplicate_data, p_visualize, p_logging, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        return super().set_random_seed(p_seed)
+
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
