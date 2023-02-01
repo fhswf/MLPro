@@ -6,6 +6,7 @@ Howto BF-ZZ-999: My high-sophisticated ml sample
 .. automodule:: mlpro.bf.examples.howto_bf_zz_999_desciption
     
 
+
 Prerequisites
 -------------
 
@@ -28,6 +29,7 @@ Prerequisites
     - `Hyperopt <https://pypi.org/project/hyperopt/>`_
 
 
+
 Executable code
 ---------------
 
@@ -40,3 +42,12 @@ Results
 -------
 
 Descriptions, plots, images, screenshots of expected results.
+
+
+
+Cross Reference
+---------------
+
+.. Other documents related to the howto should be referenced here. For example, related environments, documentation, API References, ...
+    
++ :ref:`API Reference <...>`
