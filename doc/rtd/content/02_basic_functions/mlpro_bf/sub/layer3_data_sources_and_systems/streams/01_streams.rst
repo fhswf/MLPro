@@ -8,7 +8,7 @@ data is not possible.
 
 .. image::
     images/stream_processor.png
-    :width: 350 px
+    :width: 700 px
     :align: center
 
 
