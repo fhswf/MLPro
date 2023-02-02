@@ -31,12 +31,12 @@
 ## --                                - Temporarily removed howto rl_agent_005 and rl_wp_001
 ## -- 2023-01-14  1.6.3     SY       Add howto related to transfer functions
 ## -- 2023-01-16  1.6.4     SY       Add howto related to unit converters
-## -- 2023-02-02  1.6.5     DA       Renamed some rl howtos
 ## -- 2023-01-27  1.6.5     MRD      Add howto related to mujoco
+## -- 2023-02-02  1.6.6     DA       Renamed some rl howtos
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.5 (2023-01-16)
+Ver. 1.6.6 (2023-02-02)
 
 Unit test for all examples available.
 """

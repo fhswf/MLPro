@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro
-## -- Module  : howto_rl_env_006_run_agent_with_random_policy_on_double_pendulum_mujoco_environment.py
+## -- Module  : howto_rl_env_007_run_agent_with_random_policy_on_double_pendulum_mujoco_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

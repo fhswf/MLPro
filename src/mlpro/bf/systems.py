@@ -17,12 +17,12 @@
 ## -- 2023-01-16  1.3.2     SY       Shift UnitConverter to bf.math
 ## -- 2023-01-18  1.3.3     SY       Debugging on TransferFunction
 ## -- 2023-01-24  1.3.4     SY       Quality Assurance on TransferFunction
-## -- 2023-01-31  1.3.5     SY       Renaming class Label to PersonalisedStamp
-## -- 2023-01-27  1.4.0     MRD      Integrate MuJoCo as an optional state transition
+## -- 2023-01-27  1.3.5     MRD      Integrate MuJoCo as an optional state transition
+## -- 2023-01-31  1.3.5    SY       Renaming class Label to PersonalisedStamp
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.0 (2023-01-31)
+Ver. 1.3.5 (2023-01-31)
 
 This module provides models and templates for state based systems.
 """

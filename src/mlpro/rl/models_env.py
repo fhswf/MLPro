@@ -39,13 +39,13 @@
 ## -- 2022-11-09  1.6.1     DA       Refactoring due to changes on plot systematics
 ## -- 2022-11-29  1.7.0     DA       - Refactoring due to new underlying module mlpro.bf.systems
 ## --                                - Adaptive parts moved to new module models_env_ada.py 
-## -- 2023-02-02  1.7.1     DA       All methods compute_reward(): unified name of first parameter 
+## -- 2023-01-27  1.7.1     MRD      Add optional argument for Environment to integrate MuJoCo
+## -- 2023-02-02  1.7.2     DA       All methods compute_reward(): unified name of first parameter 
 ## --                                to p_state_old
-## -- 2023-01-27  1.8.0     MRD      Add optional argument for Environment to integrate MuJoCo
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2023-02-02)
+Ver. 1.7.2 (2023-02-02)
 
 This module provides model classes for environments.
 """
