@@ -38,10 +38,10 @@ including following:
 
 Currently MLPro provides following stream task implementations:
 
-1. Window
-2. Rearranger
+1. :ref:`Window <target_bf_streams_tasks_window>`
+2. :ref:`Rearranger <target_bf_streams_tasks_rearranger>`
 
-More StreamTask implementations will be available will later updates.
+More StreamTask implementations will be available with future updates.
 
 Stream Workflow
 ---------------
@@ -80,16 +80,19 @@ to an existing stream workflow:
                                p_logging = Log.C_LOG_ALL)
 
     # add the task to the workflow with task 1 as its predecessor
-    myStreamWorkflow.add_task(p_task = 'Task 2')
+    myStreamWorkflow.add_task(p_task = 'Task 2', p_predecessor = 'Task 1')
 
 
-Now, the input instances to task 2 are processed instances output from the task 1. Each workflow has shared stream
-object
-
+Each workflow has a shared object that stores instances and results of the stream task that can be accessed from
+other tasks in the workflow.
 
 Stream Plotting
 ---------------
-Below images show the stream plotting functionalities, further explanation coming soon...
+MLPro's streams module also provide plotting functionalities by default. The stream workflow and stream tasks can
+plot instances within the workflow and the task respectively. The default plotting functionality is available in 2
+dimensional, 3 dimensional and N dimensional views. The plot view and specific plot properties can be set using a
+PlotSetting object. Below images show an example of the default plotting functionality in ND, 2D, 3D, respectively, in
+MLPro's streams module.
 
 .. image::
     images/streams_plot_nd.gif

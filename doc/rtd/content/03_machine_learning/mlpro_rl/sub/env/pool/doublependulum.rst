@@ -5,7 +5,8 @@
 .. automodule:: mlpro.rl.pool.envs.doublependulum
 
 .. image:: images/doublependulum.gif
-    :width: 800px
+    :width: 650px
+    :align: center
 
 .. note::
  MLPro provides two implementations of Double Pendulum environment named DoublePendulumS4 and DoublePendulumS7. 
