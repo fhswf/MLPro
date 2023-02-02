@@ -14,10 +14,11 @@
 ## --                                 - Utilize MPC from pool of objects
 ## -- 2022-10-13  1.0.5     SY        Refactoring 
 ## -- 2022-11-07  1.1.0     DA        Refactoring 
+## -- 2023-02-02  1.2.0     DA        Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-11-07)
+Ver. 1.2.0 (2023-02-02)
 
 This module demonstrates model-based reinforcement learning (MBRL) with action planner using MPC.
 
@@ -35,12 +36,12 @@ You will learn:
 
 
 import torch
+from mlpro.bf.plot import DataPlotting
 from mlpro.bf.ml import *
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from stable_baselines3 import PPO
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
-from mlpro.rl.pool.envmodels.mlp_robotinhtm import MLPEnvModel
 from mlpro.rl.pool.envmodels.htm_robotinhtm import HTMEnvModel
 from mlpro.rl.pool.actionplanner.mpc import MPC
 from pathlib import Path

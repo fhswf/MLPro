@@ -9,7 +9,7 @@
 ## -- 2022-01-28  1.0.0     MRD      Released first version
 ## -- 2022-05-19  1.0.1     MRD      Re-use the agent not for the re-training process
 ## --                                Remove commenting and numbering
-## -- 2022-05-19  1.0.2     MRD      Re-add the commneting and reformat the numbering in comment
+## -- 2022-05-19  1.0.2     MRD      Re-add the commenting and reformat the numbering in comment
 ## -- 2022-07-20  1.0.3     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-13  1.0.4     SY       Refactoring 
 ## -- 2022-10-17  1.0.5     SY       Debugging 

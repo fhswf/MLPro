@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf
-## -- Module  : ml.py
+## -- Package : mlpro.bf.ml
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -51,20 +51,25 @@
 ## -- 2022-11-07  1.8.1     DA       Class Scenario, method setup(): parameters removed
 ## -- 2022-11-09  1.8.2     DA       Class Scenario: refactoring
 ## -- 2022-11-15  1.9.0     DA       New abstract template class AdaptiveFunction
+## -- 2023-02-01  2.0.0     DA       Class Model:
+## --                                - new parent bf.mt.Task (replaces EventHandler, Plottable )
+## --                                - new methods adapt_on_event(), _adapt_on_event()
+## --                                New class AWorkflow
+## -- 2023-02-02  2.0.1     DA       Class Model: signature of method init_plot() refactored
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.0 (2022-11-15)
+Ver. 2.0.1 (2023-02-02)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
+
 """
 
 
 from mlpro.bf.various import *
 from mlpro.bf.math import *
 from mlpro.bf.data import Buffer
-from mlpro.bf.plot import *
-from mlpro.bf.events import *
+from mlpro.bf.mt import *
 from mlpro.bf.ops import Mode, ScenarioBase
 import random
 
@@ -165,21 +170,33 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Model (EventManager, LoadSave, Plottable, ScientificObject):
+class Model (Task, LoadSave, ScientificObject):
     """
     Fundamental template class for adaptive ML models. Supports in particular
-      - Adaptivity
-      - Data buffering
+      - Adaptivity (explicit and/or event based)
       - Hyperparameter management
+      - Data buffering
+      - Multitasking
       - Plotting
       - Scientific referencing on source code level
 
     Parameters
     ----------
-    p_buffer_size : int
-        Initial size of internal data buffer. Defaut = 0 (no buffering).
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
+    p_name : str
+        Optional name of the model. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_autorun : int
+        On value C_AUTORUN_RUN method run() is called imediately during instantiation.
+        On vaule C_AUTORUN_LOOP method run_loop() is called.
+        Value C_AUTORUN_NONE (default) causes an object instantiation without starting further
+        actions.    
+    p_class_shared
+        Optional class for a shared object (class Shared or a child class of it)
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
@@ -199,14 +216,24 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_buffer_size:int=0, 
-                  p_ada:bool=True, 
-                  p_visualize:bool=False,
+                  p_ada : bool = True, 
+                  p_buffer_size : int = 0, 
+                  p_name: str = None, 
+                  p_range_max: int = Async.C_RANGE_PROCESS, 
+                  p_autorun = Task.C_AUTORUN_NONE, 
+                  p_class_shared=None, 
+                  p_visualize: bool = False, 
                   p_logging=Log.C_LOG_ALL, 
-                  **p_par ):  
+                  **p_par ):
 
-        EventManager.__init__(self, p_logging=p_logging)
-        Plottable.__init__(self, p_visualize=p_visualize)
+        Task.__init__( self, 
+                       p_name = p_name, 
+                       p_range_max = p_range_max, 
+                       p_autorun = p_autorun, 
+                       p_class_shared = p_class_shared, 
+                       p_visualize = p_visualize, 
+                       p_logging = p_logging )
+
         self._adapted           = False
         self.switch_adaptivity(p_ada)
         self._hyperparam_space  = HyperParamSpace()
@@ -342,6 +369,44 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def adapt_on_event(self, p_event_id:str, p_event_object:Event):
+        """
+        Method to be used as event handler for event-based adaptations. Calls custom method 
+        _adapt_on_event() and updates the internal adaptation state.
+
+        Parameters
+        ----------
+        p_event_id : str
+            Event id.
+        p_event_object : Event
+            Object with further context informations about the event.
+        """
+
+        self._set_adapted(p_adapted=self._adapt_on_event(p_event_id=p_event_id, p_event_object=p_event_object))        
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
+        """
+        Custom method to be used for event-based adaptation. See method adapt_on_event().
+
+        Parameters
+        ----------
+        p_event_id : str
+            Event id.
+        p_event_object : Event
+            Object with further context informations about the event.
+
+        Returns
+        -------
+        adapted : bool
+            True, if something was adapted. False otherwise.
+        """
+
+        raise NotImplementedError
+        
+        
+## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         """
         Clears internal buffer (if buffering is active).
@@ -362,6 +427,147 @@ class Model (EventManager, LoadSave, Plottable, ScientificObject):
         """
 
         raise NotImplementedError
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class AWorkflow (Model, Workflow):
+    """
+    Adaptive workflow based on a workflow and an adaptive ml model.
+
+    Parameters
+    ----------
+    p_name : str
+        Optional name of the workflow. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_class_shared
+        Optional class for a shared object (class OAShared or a child class of OAShared)
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : dict
+        Further optional named parameters.
+     """
+
+    C_TYPE      = 'Adaptive Workflow'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_name: str = None, 
+                  p_range_max = Workflow.C_RANGE_THREAD, 
+                  p_class_shared = Shared, 
+                  p_ada : bool = True, 
+                  p_visualize : bool = False,
+                  p_logging = Log.C_LOG_ALL, 
+                  **p_kwargs ):
+
+        Model.__init__( self,
+                        p_ada = p_ada,
+                        p_name = p_name,
+                        p_range_max = p_range_max,
+                        p_autorun = Task.C_AUTORUN_NONE,
+                        p_class_shared = None,
+                        p_buffer_size = 0,
+                        p_visualize = p_visualize,
+                        p_logging = p_logging )    
+
+        Workflow.__init__( self, 
+                           p_name = p_name,
+                           p_range_max = p_range_max,
+                           p_class_shared = p_class_shared,
+                           p_visualize = p_visualize,
+                           p_logging = p_logging,
+                           **p_kwargs )
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_task(self, p_task: Task, p_pred_tasks: list = None):
+        super().add_task(p_task=p_task, p_pred_tasks=p_pred_tasks)
+
+        try:
+            # Set adaptivity of new task
+            p_task.switch_adaptivity(self._adaptivity)
+
+            # Hyperparameter space of workflow is extended by dimensions of hyperparameter space of
+            # the new task
+            task_hp_set = p_task.get_hyperparam().get_related_set()
+
+            for dim_id in task_hp_set.get_dim_ids():
+                self._hyperparam_space.add_dim(p_dim=task_hp_set.get_dim(p_id=dim_id)) 
+
+            # Hyperparameter tuple of workflow is extended by the hyperparameter tuple of the new task
+            if self._hyperparam_tuple is None: 
+                self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+
+            task_hp_tuple = p_task.get_hyperparam()
+            if task_hp_tuple is not None:
+                self._hyperparam_tuple.add_hp_tuple(p_hpt=p_task.get_hyperparam())
+
+        except:
+            pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_adaptivity(self, p_ada: bool):
+        for t in self._tasks:
+            try:
+                t.switch_adaptivity(p_ada=p_ada)
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        for t in self._tasks:
+            try:
+                t.set_random_seed(p_seed=p_seed)
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_adapted(self) -> bool:
+        adapted = False
+
+        for t in self._tasks:
+            try:
+                adapted = adapted or t.get_adapted()
+            except:
+                pass
+
+        return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def clear_buffer(self):
+        for t in self._tasks:
+            try:
+                t.clear_buffer()
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_accuracy(self):
+        accuracy       = 0
+        adaptive_tasks = 0
+
+        for t in self._tasks:
+            try:
+                accuracy       += t.get_accuracy()
+                adaptive_tasks += 1
+            except:
+                pass
+
+        if adaptive_tasks > 0: return accuracy / adaptive_tasks
+        else: return 1
 
 
 
@@ -461,18 +667,10 @@ class Scenario (ScenarioBase):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure: Figure = None, 
-                   p_plot_settings: list = [], 
-                   p_plot_depth: int = 0, 
-                   p_detail_level: int = 0, 
-                   p_step_rate: int = 0, 
-                   **p_kwargs):
+                   p_plot_settings: PlotSettings = None ):
 
         self._model.init_plot( p_figure=p_figure, 
-                               p_plot_settings=p_plot_settings,
-                               p_plot_depth=p_plot_depth, 
-                               p_detail_level=p_detail_level, 
-                               p_step_rate=p_step_rate, 
-                               **p_kwargs )
+                               p_plot_settings=p_plot_settings )
 
 
 ## -------------------------------------------------------------------------------------------------

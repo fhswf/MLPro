@@ -39,11 +39,13 @@
 ## -- 2022-11-09  1.6.1     DA       Refactoring due to changes on plot systematics
 ## -- 2022-11-29  1.7.0     DA       - Refactoring due to new underlying module mlpro.bf.systems
 ## --                                - Adaptive parts moved to new module models_env_ada.py 
+## -- 2023-02-02  1.7.1     DA       All methods compute_reward(): unified name of first parameter 
+## --                                to p_state_old
 ## -- 2023-01-27  1.8.0     MRD      Add optional argument for Environment to integrate MuJoCo
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2023-01-27)
+Ver. 1.8.0 (2023-02-02)
 
 This module provides model classes for environments.
 """
@@ -204,17 +206,17 @@ class FctReward (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state: State = None, p_state_new: State = None) -> Reward:
+    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
         Computes a reward based on a predecessor and successor state. Custom method _compute_reward()
         is called.
 
         Parameters
         ----------
-        p_state : State
+        p_state_old : State
             Predecessor state.
         p_state_new : State
-            Predecessor state.
+            Successor state.
 
         Returns
         -------
@@ -223,7 +225,8 @@ class FctReward (Log):
         """
 
         self.log(Log.C_LOG_TYPE_I, 'Computing reward...')
-        return self._compute_reward( p_state = p_state, p_state_new=p_state_new )
+        return self._compute_reward( p_state_old = p_state_old, 
+                                     p_state_new = p_state_new )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -430,7 +433,7 @@ class EnvBase (System, FctReward):
             return None
 
         if self._fct_reward is not None:
-            self._last_reward = self._fct_reward.compute_reward(p_state=state_old, p_state_new=state_new)
+            self._last_reward = self._fct_reward.compute_reward(p_state_old=state_old, p_state_new=state_new)
         else:
             self._last_reward = self._compute_reward(p_state_old=state_old, p_state_new=state_new)
 

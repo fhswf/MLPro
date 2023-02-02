@@ -62,10 +62,11 @@
 ##                                   and swinging zones
 ## -- 2022-12-07  2.2.4     LSB      - updated the reward strategy
 ##                                   - removed constructor of S4 class
+## -- 2023-02-02  2.2.5     DA       Removed method DoublePendulumRoot._init_figure()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.4 (2022-12-07)
+Ver. 2.2.5 (2023-02-02)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -74,13 +75,13 @@ connected to a fixed point at one end and to outer pole at other end. The native
 Pendulum consists of an input motor providing the torque in either directions to actuate the system. The figure
 below shows the visualisation of MLPro's Double Pendulum environment.
 """
+
 import random
 
 from mlpro.rl import *
 from mlpro.bf.various import *
 import numpy as np
 from numpy import sin, cos
-import matplotlib.pyplot as plt
 from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
 from collections import deque
@@ -291,18 +292,6 @@ class DoublePendulumRoot (Environment):
 
 
         return state_space, action_space
-
-
-## ------------------------------------------------------------------------------------------------------
-    def _init_figure(self) -> Figure:
-        figure = plt.figure(figsize=(7,6))
-
-        try:
-            figure.canvas.set_window_title('Environment - '+self.C_NAME)
-        except AttributeError:
-            figure.canvas.setWindowTitle('Environment - '+self.C_NAME)
-
-        return figure
 
 
 ## ------------------------------------------------------------------------------------------------------

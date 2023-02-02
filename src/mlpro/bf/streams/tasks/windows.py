@@ -22,10 +22,11 @@
 ## -- 2022-12-28  1.1.2     DA       Refactoring of plot settings
 ## -- 2022-12-29  1.1.3     DA       Removed method Window.init_plot()
 ## -- 2022-12-31  1.1.4     LSB      Refactoring
+## -- 2023-02-02  1.1.5     DA       Methods Window._init_plot_*: removed figure creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4 (2022-12-31)
+Ver. 1.1.5 (2023-02-02)
 
 This module provides pool of window objects further used in the context of online adaptivity.
 """
@@ -282,9 +283,6 @@ class Window (StreamTask):
 
         """
 
-        if p_figure is None:
-            p_figure = plt.figure()
-
         if p_settings:
             self._plot_settings = p_settings
 
@@ -310,8 +308,7 @@ class Window (StreamTask):
         p_settings: PlotSettings
             Additional Settings for the plot
         """
-        if p_figure is None:
-            p_figure = plt.figure()
+
 
         if p_settings:
             self._plot_settings = p_settings
@@ -338,9 +335,6 @@ class Window (StreamTask):
             PlotSettings objects with specific settings for the plot
 
         """
-
-        if p_figure is None:
-            p_figure = plt.figure()
 
         if p_settings:
             self._plot_settings = p_settings
