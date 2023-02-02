@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-11-08  1.0.0     DA       Creation
 ## -- 2022-12-14  1.0.1     DA       Corrections
+## -- 2023-02-02  1.0.2     DA       Correction of time measurement
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2022-12-14)
+Ver. 1.0.2 (2023-02-02)
 
 This module demonstrates the use of native generic data streams provided by MLPro. To this regard,
 all data streams of the related provider class will be determined and iterated. 
@@ -71,7 +72,7 @@ for stream in mlpro.get_stream_list( p_logging=logging ):
 
     tp_end       = datetime.now()
     duration     = tp_end - tp_start
-    duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
+    duration_sec = ( duration.seconds * 1000000 + duration.microseconds + 1 ) / 1000000
     rate         = myiterator.get_num_instances() / duration_sec
 
     myiterator.switch_logging( p_logging=logging )

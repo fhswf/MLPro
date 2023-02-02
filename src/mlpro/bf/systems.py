@@ -16,18 +16,19 @@
 ## -- 2023-01-15  1.3.1     SY       New class UnitConverter
 ## -- 2023-01-16  1.3.2     SY       Shift UnitConverter to bf.math
 ## -- 2023-01-18  1.3.3     SY       Debugging on TransferFunction
+## -- 2023-01-24  1.3.4     SY       Quality Assurance on TransferFunction
+## -- 2023-01-31  1.3.5     SY       Renaming class Label to PersonalisedStamp
 ## -------------------------------------------------------------------------------------------------
 
-
 """
-Ver. 1.3.3 (2023-01-18)
+Ver. 1.3.5 (2023-01-31)
 
 This module provides models and templates for state based systems.
 """
 
 
 from time import sleep
-from mlpro.bf.various import TStamp, ScientificObject, Label
+from mlpro.bf.various import TStamp, ScientificObject, PersonalisedStamp
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable
 from mlpro.bf.ops import Mode
@@ -1310,7 +1311,7 @@ class System (SystemBase):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class TransferFunction(ScientificObject, Log, Label):
+class TransferFunction(ScientificObject, Log, PersonalisedStamp):
     """
     This class serves as a base class of transfer functions, which provides the main attributes of
     a transfer function. By default, there are several ready-to-use transfer function types
@@ -1370,16 +1371,16 @@ class TransferFunction(ScientificObject, Log, Label):
                  **p_args) -> None:
 
         self.C_NAME = p_name
-        self.set_type(p_type)
+        self._set_type(p_type)
         self.dt = p_dt
         self._unit_in = p_unit_in
         self._unit_out = p_unit_out
 
         Log.__init__(self, p_logging=p_logging)
-        Label.__init__(self, p_name, p_id)
+        PersonalisedStamp.__init__(self, p_name, p_id)
         
         if self.get_type() is not None:
-            self.set_function_parameters(p_args)
+            self._set_function_parameters(p_args)
         else:
             raise NotImplementedError('Please define p_type!')
 
@@ -1400,7 +1401,7 @@ class TransferFunction(ScientificObject, Log, Label):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_type(self, p_type:int):
+    def _set_type(self, p_type:int):
         """
         This method provides a functionality to set the type of the transfer function.
 
@@ -1443,19 +1444,19 @@ class TransferFunction(ScientificObject, Log, Label):
             output value.
         """
         if self.get_type() == self.C_TRF_FUNC_LINEAR:
-            output = self.linear(p_input, p_range)
+            output = self._linear(p_input, p_range)
         
         elif self.get_type() == self.C_TRF_FUNC_CUSTOM:
-            output = self.custom_function(p_input, p_range)
+            output = self._custom_function(p_input, p_range)
         
         elif self.get_type() == self.C_TRF_FUNC_APPROX:
-            output = self.function_approximation(p_input, p_range)
+            output = self._function_approximation(p_input, p_range)
         
         return output
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_function_parameters(self, p_args:dict) -> bool:
+    def _set_function_parameters(self, p_args:dict) -> bool:
         """
         This method provides a functionality to set the parameters of the transfer function.
 
@@ -1490,7 +1491,7 @@ class TransferFunction(ScientificObject, Log, Label):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def linear(self, p_input:float, p_range=None) -> float:
+    def _linear(self, p_input:float, p_range=None) -> float:
         """
         This method provides a functionality for linear transfer function.
         
@@ -1524,7 +1525,7 @@ class TransferFunction(ScientificObject, Log, Label):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def custom_function(self, p_input, p_range=None):
+    def _custom_function(self, p_input, p_range=None):
         """
         This function represents the template to create a custom function and must be redefined.
 
@@ -1574,7 +1575,7 @@ class TransferFunction(ScientificObject, Log, Label):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def function_approximation(self, p_input, p_range=None):
+    def _function_approximation(self, p_input, p_range=None):
         """
         The function approximation is not yet ready (coming soon).
 

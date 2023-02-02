@@ -1,30 +1,23 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_003_validate_dp.py
+## -- Module  : howto_rl_env_004_manual_validation_of_double_pendulum.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2022-10-10  1.0.0     LSB       Creation/Release
+## -- 2022-10-10  1.0.0     LSB      Creation/Release
+## -- 2023-02-02  1.1.0     DA       Renamed and refactored
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-10-10)
+Ver. 1.1.0 (2023-02-02)
 
 This module is used to validate the dp environment
 """
 
-import torch
 from mlpro.bf.math import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.envs.doublependulum import *
-from stable_baselines3 import A2C
-from stable_baselines3 import DDPG
-from stable_baselines3.common.noise import NormalActionNoise, OrnsteinUhlenbeckActionNoise
-from mlpro.wrappers.sb3 import WrPolicySB32MLPro
-from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM
-from pathlib import Path
-import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -70,7 +63,10 @@ class ScenarioDoublePendulum(RLScenario):
         self.user_action_cycles = 0
 
         # 1.1 Setup environment
-        self._env   = DoublePendulumS7(p_init_angles='up', p_max_torque=10, p_logging=p_logging)
+        self._env   = DoublePendulumS7( p_init_angles='up', 
+                                        p_max_torque=10, 
+                                        p_visualize=p_visualize, 
+                                        p_logging=p_logging )
 
 
         # 1.2 Setup and return random action agent
@@ -118,11 +114,8 @@ if __name__ == "__main__":
     visualize           = True
     plotting            = True
 else:
-    # 2.2 Parameters for unittest
-    cycle_limit         = 20
-    logging             = Log.C_LOG_NOTHING
-    visualize           = False
-    plotting            = False
+    # 2.2 This demo is not suitable for unit test
+    exit(0)
 
 
 
@@ -137,4 +130,3 @@ myscenario  = ScenarioDoublePendulum(
 
 myscenario.reset(p_seed=3)
 myscenario.run()
-

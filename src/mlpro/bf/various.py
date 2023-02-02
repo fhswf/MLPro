@@ -38,10 +38,11 @@
 ## -- 2022-11-04  1.8.2     DA       Class Timer: refactoring
 ## -- 2022-11-07  1.9.0     DA       Class Log: new method get_log_level()
 ## -- 2023-01-14  1.9.1     SY       Add class Label
+## -- 2023-01-31  1.9.2     SY       Renaming class Label to PersonalisedStamp
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.1 (2023-01-14)
+Ver. 1.9.2 (2023-01-31)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, load/save, timer...
@@ -478,21 +479,21 @@ class  ScientificObject:
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-class Label:
+class PersonalisedStamp:
     """
     This class serves as a base class of label to set up a name and id for another class.
     
     Parameters
     ----------
     p_name : str
-        name of the transfer function.
+        name of the created class.
     p_id : int
-        unique id of the transfer function. Default: None.
+        unique id of the created class. Default: None.
         
     Attributes
     ----------
     C_NAME : str
-        name of the sensor. Default: ''.
+        name of the created class. Default: ''.
     """
 
     C_NAME = ''
@@ -544,12 +545,12 @@ class Label:
 ## -------------------------------------------------------------------------------------------------
     def set_name(self, p_name:str):
         """
-        This method provides a functionality to set an unique name of the related component.
+        This method provides a functionality to set an unique name.
 
         Parameters
         ----------
         p_name : str
-            An unique name of the related component.
+            An unique name.
 
         """
         self._name = p_name
@@ -559,7 +560,7 @@ class Label:
 ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
         """
-        This method provides a functionality to get the unique name of the related component.
+        This method provides a functionality to get the unique name.
 
         Returns
         -------
