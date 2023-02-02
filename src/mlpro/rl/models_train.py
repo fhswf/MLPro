@@ -45,10 +45,11 @@
 ## --                                - method _setup(): refactoring
 ## -- 2022-11-09  1.8.2     DA       Refactoring and code cleaning
 ## -- 2022-11-29  1.8.3     DA       Refactoring
+## -- 2023-02-02  1.8.4     DA       Class RLTraining: signature of method init_plot refactored
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.3 (2022-11-29)
+Ver. 1.8.4 (2023-02-02)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -372,25 +373,13 @@ class RLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure: Figure = None, 
-                   p_plot_settings: list = [], 
-                   p_plot_depth: int = 0, 
-                   p_detail_level: int = 0, 
-                   p_step_rate: int = 0, 
-                   **p_kwargs ):
+                   p_plot_settings: PlotSettings = None ):
 
         super().init_plot( p_figure = p_figure, 
-                           p_plot_settings = p_plot_settings, 
-                           p_plot_depth = p_plot_depth, 
-                           p_detail_level = p_detail_level, 
-                           p_step_rate = p_step_rate, 
-                           **p_kwargs )
+                           p_plot_settings = p_plot_settings )
 
         self._env.init_plot( p_figure = p_figure, 
-                             p_plot_settings = p_plot_settings, 
-                             p_plot_depth = p_plot_depth, 
-                             p_detail_level = p_detail_level, 
-                             p_step_rate = p_step_rate, 
-                             **p_kwargs )
+                             p_plot_settings = p_plot_settings )
 
 
 ## -------------------------------------------------------------------------------------------------

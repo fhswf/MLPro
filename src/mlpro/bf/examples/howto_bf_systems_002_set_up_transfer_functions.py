@@ -11,10 +11,12 @@
 ## -- 2023-01-14  1.0.1     SY       Shift from mlpro-at_basis.bf to mlpro.bf
 ## -- 2023-01-15  1.0.2     SY       Package renaming
 ## -- 2023-01-16  1.0.3     SY       Update due to __call__
+## -- 2023-01-24  1.0.4     SY       Quality Assurance on TransferFunction
 ## -------------------------------------------------------------------------------------------------
 
+
 """
-Ver. 1.0.3 (2023-01-16)
+Ver. 1.0.4 (2023-01-24)
 
 This module provides an example of using the transfer function method in MLPro for both default and
 custom implementation.
@@ -76,7 +78,7 @@ if p_visualize:
 class MyTransferFunction(TransferFunction):
     
     # 2.1.1. Set up which parameters required for your transfer function
-    def set_function_parameters(self, p_args) -> bool:
+    def _set_function_parameters(self, p_args) -> bool:
         """
         y(t) = A cos(w * t - phi)
         """
@@ -90,7 +92,7 @@ class MyTransferFunction(TransferFunction):
         return True
     
     # 2.1.2. Set up the mathematical calculation of your transfer function
-    def custom_function(self, p_input, p_range=None):
+    def _custom_function(self, p_input, p_range=None):
         """
         y(t) = A cos(w * t - phi)
         """

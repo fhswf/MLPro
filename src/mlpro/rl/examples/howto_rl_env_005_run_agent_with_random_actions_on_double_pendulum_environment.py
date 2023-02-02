@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_env_004_run_agent_with_random_actions_on_double_pendulum_environment.py
+## -- Module  : howto_rl_env_005_run_agent_with_random_actions_on_double_pendulum_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description

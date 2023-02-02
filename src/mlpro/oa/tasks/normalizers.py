@@ -11,10 +11,11 @@
 ## -- 2022-12-20  1.0.3     LSB      Bug fix
 ## -- 2022-12-30  1.0.4     LSB      Bug fix
 ## -- 2023-01-12  1.1.0     LSB      Renormalizing plot data
+## -- 2023-01-24  1.1.1     LSB      Bug fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-01-12)
+Ver. 1.1.1 (2022-01-24)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization and ZTransformation
 """
@@ -251,13 +252,13 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
 
                 for j in range(len(self._plot_nd_plots)):
                     for i in range(len(self._plot_nd_plots[0][0])):
-                        self.plot_data_nd[i][j] = self._plot_nd_plots[0][0][i]
+                        self.plot_data_nd[i][j] = self._plot_nd_plots[j][0][i]
 
 
                 plot_data_renormalized = self.renormalize(self.plot_data_nd)
 
                 for j in range(len(self._plot_nd_plots)):
-                    self._plot_nd_plots[j][0] = list(k[0] for k in plot_data_renormalized)
+                    self._plot_nd_plots[j][0] = list(k[j] for k in plot_data_renormalized)
 
 
                 self._parameters_updated = False
