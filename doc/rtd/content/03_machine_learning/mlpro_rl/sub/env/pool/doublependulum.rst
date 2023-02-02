@@ -98,7 +98,7 @@ Current implementation of DP environment in MLPro returns success when the curre
 Reward Structure
 ================
 
-The goal state of the environment is to reach a complete vertical position for both the inner and outer pole, i.e.
+The goal of the environment is to reach a complete vertical position for both the inner and outer pole, i.e.
 the goal state is given as vector :math:`S_g = (0,0,0,0,0,0)`. The environment delivers a continuous reward to the
 agent based on the new and old states of the environment. The environment is divided into three zones based on the
 position of the inner and outer pole.
