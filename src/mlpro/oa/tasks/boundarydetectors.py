@@ -20,10 +20,12 @@
 ## --                                - added constant C_PLOT_VALID_VIEWS
 ## --                                - removed methods init_plot_2d/3d, update_plot_2d/3d
 ## -- 2022-12-30  1.1.4     DA       Removed the plot title
+## -- 2023-02-02  1.1.5     DA       Method BoundaryDetector._init_plot_2D: removed figure creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4 (2022-12-30)
+Ver. 1.1.5 (2023-02-02)
+
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
 
@@ -215,8 +217,6 @@ class BoundaryDetector(OATask):
             PlotSettings objects with specific settings for the plot
 
         """
-        if p_figure is None:
-            p_figure = plt.figure()
 
         if not p_settings.axes:
             self.axes = p_figure.add_axes([0.1,0.1,0.7,0.8])
