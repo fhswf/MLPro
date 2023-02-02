@@ -35,7 +35,7 @@ jobs:
           pip install pyglet
           pip install pymunk
           pip install pygame
-          pip install sklearn
+          pip install scikit-learn
           pip install river
           pip install gymnasium
           pip install openml

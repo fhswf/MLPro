@@ -11,10 +11,12 @@
 ## -- 2022-10-29  0.3.0     DA       Refactoring
 ## -- 2022-11-30  0.4.0     DA       Refactoring after changes on bf.streams design
 ## -- 2022-12-09  0.4.1     DA       Corrections
+## -- 2022-12-20  0.5.0     DA       Refactoring
+## -- 2023-01-01  0.6.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.1 (2022-12-09)
+Ver. 0.6.0 (2023-01-01)
 
 Core classes for online machine learning.
 """
@@ -55,6 +57,8 @@ class OATask (StreamTask, Model):
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
+    p_duplicate_data : bool
+        If True, instances will be duplicated before processing. Default = False.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
@@ -75,6 +79,7 @@ class OATask (StreamTask, Model):
                   p_name: str = None, 
                   p_range_max = StreamTask.C_RANGE_THREAD, 
                   p_ada : bool = True, 
+                  p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
@@ -82,6 +87,7 @@ class OATask (StreamTask, Model):
         StreamTask.__init__( self,
                              p_name = p_name,
                              p_range_max = p_range_max,
+                             p_duplicate_data = p_duplicate_data,
                              p_visualize = p_visualize,
                              p_logging = p_logging,
                              **p_kwargs )                             
@@ -318,7 +324,7 @@ class OAFunction (sl.AdaptiveFunction):
 
 # -------------------------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------------------------
-class OAScenario (Scenario): 
+class OAScenario (StreamScenario): 
     """
     ...
     """
