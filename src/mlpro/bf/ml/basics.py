@@ -543,15 +543,6 @@ class AWorkflow (Model, Workflow):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, **p_kwargs) -> bool:
-        """
-        Explicit adaptation is disabled for OA-Workflows.
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         for t in self._tasks:
             try:
