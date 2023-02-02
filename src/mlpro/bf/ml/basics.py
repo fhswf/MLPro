@@ -55,10 +55,11 @@
 ## --                                - new parent bf.mt.Task (replaces EventHandler, Plottable )
 ## --                                - new methods adapt_on_event(), _adapt_on_event()
 ## --                                New class AWorkflow
+## -- 2023-02-02  2.0.1     DA       Class Model: signature of method init_plot() refactored
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2023-02-01)
+Ver. 2.0.1 (2023-02-02)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -672,18 +673,10 @@ class Scenario (ScenarioBase):
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure: Figure = None, 
-                   p_plot_settings: list = [], 
-                   p_plot_depth: int = 0, 
-                   p_detail_level: int = 0, 
-                   p_step_rate: int = 0, 
-                   **p_kwargs):
+                   p_plot_settings: PlotSettings = None ):
 
         self._model.init_plot( p_figure=p_figure, 
-                               p_plot_settings=p_plot_settings,
-                               p_plot_depth=p_plot_depth, 
-                               p_detail_level=p_detail_level, 
-                               p_step_rate=p_step_rate, 
-                               **p_kwargs )
+                               p_plot_settings=p_plot_settings )
 
 
 ## -------------------------------------------------------------------------------------------------
