@@ -25,7 +25,6 @@ jobs:
       - name: Generate dependecies list
         run: |
           awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg > requirements.txt
-          awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg | tr -d "<" | tr -s "==" "," > doc/rtd/content/01_welcome/sub/deps.txt
 
       - name: Commit files
         id: auto-commit-action
