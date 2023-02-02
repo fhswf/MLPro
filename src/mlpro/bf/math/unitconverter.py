@@ -8,11 +8,12 @@
 ## -- 2023-01-16  0.0.0     SY       Creation
 ## -- 2023-01-16  1.0.0     SY       Shift UnitConverter from bf.systems
 ## -- 2023-01-18  1.0.1     SY       Debugging
+## -- 2023-01-24  1.0.2     SY       Quality Assurance on TransferFunction
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.1 (2023-01-18)
+Ver. 1.0.2 (2023-01-24)
 
 This module provides models and templates for state based systems.
 """
@@ -122,15 +123,15 @@ class UnitConverter(TransferFunction):
             output value.
         """
         if self.get_type() == self.C_UNIT_CONV_TEMPERATURE:
-            output = self.temperature(p_input)
+            output = self._temperature(p_input)
         else:
-            output = self.scalar_conversion(p_input)
+            output = self._scalar_conversion(p_input)
         
         return output
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_function_parameters(self, p_args=None) -> bool:
+    def _set_function_parameters(self, p_args=None) -> bool:
         """
         This method provides a functionality to set the parameters of the unit converter.
 
@@ -337,7 +338,7 @@ class UnitConverter(TransferFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def scalar_conversion(self, p_input:float) -> float:
+    def _scalar_conversion(self, p_input:float) -> float:
         """
         This method provides a scalar conversion functionality.
 
@@ -355,7 +356,7 @@ class UnitConverter(TransferFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def temperature(self, p_input:float) -> float:
+    def _temperature(self, p_input:float) -> float:
         """
         This method provides a temperature conversion functionality.
 

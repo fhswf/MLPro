@@ -11,10 +11,11 @@
 ## --                                actual environment
 ## -- 2022-08-22  1.1.0     MRD      Re-structure HTMEnvModel to fix its MRO for EventManager class
 ## -- 2022-09-20  1.1.1     SY       Code cleaning
+## -- 2023-02-02  1.1.2     MRD      Add reset and compute reward
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-09-20)
+Ver. 1.1.2 (2023-02-02)
 
 This module provides Environment Model based on Homogeneous Transformations Matrix 
 Neural Network for robotinhtm environment.
@@ -471,3 +472,13 @@ class HTMEnvModel(EnvModel):
 
         self.reset()
 
+
+    def _reset(self, p_seed=None):
+        self._robot_htm._reset(p_seed)
+        self._state = State(self._state_space)
+        self._state.set_values(self._robot_htm.get_state().get_values())
+        return self._robot_htm._reset(p_seed)
+
+
+    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+        return self._robot_htm._compute_reward(p_state_old, p_state_new)

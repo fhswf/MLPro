@@ -14,10 +14,11 @@
 ## -- 2022-11-05  1.1.0     DA       Refactoring after changes on class Stream
 ## -- 2022-11-08  1.1.1     DA       Minor improvements
 ## -- 2022-11-11  1.1.2     LSB      Refactoring for the new set options method
+## -- 2023-02-02  1.1.3     DA       Bugfix in time measurement
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2022-11-11)
+Ver. 1.1.3 (2023-02-02)
 
 This module demonstrates the use of OpenML datasets as streams in MLPro. To this regard, MLPro
 provides wrapper classes to standardize stream access in own ML applications.
@@ -106,7 +107,7 @@ for i, curr_instance in enumerate(myiterator):
 # 9.1 Some statistics...
 tp_end = datetime.now()
 duration = tp_end - tp_start
-duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
+duration_sec = ( duration.seconds * 1000000 + duration.microseconds + 1 ) / 1000000
 rate = ( myiterator.get_num_instances() - num_inst ) / duration_sec
 
 myiterator.switch_logging(p_logging=logging)

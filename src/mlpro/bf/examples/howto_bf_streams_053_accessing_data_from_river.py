@@ -13,10 +13,11 @@
 ## -- 2022-11-08  1.1.1     DA       Minor improvements
 ## -- 2022-11-19  1.1.2     DA       Get string by name
 ## -- 2022-11-21  1.1.3     DA       Correction on logging
+## -- 2023-02-02  1.1.4     DA       Correction of time measurement
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2022-11-21)
+Ver. 1.1.4 (2023-02-02)
 
 This module demonstrates the use of River datasets as streams in MLPro. To this regard, MLPro
 provides wrapper classes to standardize stream access in own ML applications.
@@ -98,7 +99,7 @@ for i, curr_instance in enumerate(myiterator):
 # 8.1 Some statistics...
 tp_end = datetime.now()
 duration = tp_end - tp_start
-duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
+duration_sec = ( duration.seconds * 1000000 + duration.microseconds + 1 ) / 1000000
 rate = ( myiterator.get_num_instances() - num_inst ) / duration_sec
 
 myiterator.switch_logging(p_logging=logging)

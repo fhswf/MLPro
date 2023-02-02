@@ -10,11 +10,11 @@
 ## -- 2022-10-07  1.0.1     SY       Add plotting
 ## -- 2022-10-13  1.0.2     SY       Refactoring 
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
+## -- 2023-02-02  1.2.0     DA        Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
-
 """
-Ver. 1.1.0 (2022-11-07)
+Ver. 1.2.0 (2023-02-02)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem.
 
@@ -28,8 +28,9 @@ You will learn:
     
 """
 
+from mlpro.bf.plot import DataPlotting
 from mlpro.bf.math import *
-from mlpro.rl.models import *
+from mlpro.rl import *
 from mlpro.rl.pool.envs.gridworld import *
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 from pathlib import Path
