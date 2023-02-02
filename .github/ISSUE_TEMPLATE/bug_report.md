@@ -2,7 +2,7 @@
 name: Bug report
 about: Bug report
 title: 'Bug: ...'
-labels: admin, bug, quality
+labels: bug
 assignees: detlefarend, rizkydiprasetya, steveyuwono
 
 ---
