@@ -11,10 +11,11 @@
 ## -- 2022-06-25  1.0.2     LSB      Refactoring for new label and instance class
 ## -- 2022-10-12  1.0.3     DA       Renaming
 ## -- 2022-11-08  1.1.0     DA       Refactoring after changes on class Stream
+## -- 2023-02-02  1.1.1     DA       Correction of time measurement
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-11-08)
+Ver. 1.1.1 (2023-02-02)
 
 This module demonstrates the use of Scikit-learn datasets as streams in MLPro. To this regard, MLPro
 provides wrapper classes to standardize stream access in own ML applications.
@@ -95,7 +96,7 @@ for i, curr_instance in enumerate(myiterator):
 # 8.1 Some statistics...
 tp_end = datetime.now()
 duration = tp_end - tp_start
-duration_sec = duration.seconds + ( duration.microseconds / 1000000 )
+duration_sec = ( duration.seconds * 1000000 + duration.microseconds + 1 ) / 1000000
 rate = ( mystream.get_num_instances() - num_inst ) / duration_sec
 
 myiterator.switch_logging(p_logging=logging)
