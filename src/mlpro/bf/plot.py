@@ -24,10 +24,11 @@
 ## -- 2022-12-29  2.6.0     DA       Refactoring of plot settings
 ## -- 2023-01-01  2.7.0     DA       Class Plottable: introduction of update step rate
 ## -- 2023-01-04  2.8.0     DA       Class PlotSettings: new parameters p_horizon, p_force_fg
+## -- 2023-02-02  2.8.1     MRD      Disable Tkinter backend for macos https://bugs.python.org/issue46573
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.8.0 (2023-01-04)
+Ver. 2.8.1 (2023-02-02)
 
 This module provides various classes related to data plotting.
 """
@@ -35,11 +36,14 @@ This module provides various classes related to data plotting.
 
 from operator import mod
 import numpy as np
+from sys import platform
 
 try:
     from tkinter import *
     import matplotlib
-    matplotlib.use('TkAgg')
+    # Due to bug in TKinter for macos, disabled for macos https://bugs.python.org/issue46573
+    if platform != 'darwin':
+        matplotlib.use('TkAgg')
 except:
     print('Please install tkinter for a better plot experience')
     import matplotlib
