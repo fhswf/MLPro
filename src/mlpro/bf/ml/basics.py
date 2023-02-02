@@ -480,8 +480,7 @@ class AWorkflow (Model, Workflow):
                         p_ada = p_ada,
                         p_buffer_size = 0,
                         p_visualize = p_visualize,
-                        p_logging = p_logging,
-                        **p_kwargs )    
+                        p_logging = p_logging )    
 
 
 ## -------------------------------------------------------------------------------------------------
