@@ -2,8 +2,8 @@ Stream Processing
 =================
 
 Because of the live nature of data streams, handling such data sources and mining knowledge require special types of
-processing tasks. Stream processing operations process new instances as they are available at every step. Along with a
-number of external and internal stream resources, MLPro's stream module provides multiple processing functionalities
+processing tasks. Stream operations process new instances as they are available at every step. Along with a
+number of external and internal stream resources, MLPro's stream module provides processing functionalities
 like sliding window, rearranger, etc. specialized for streaming data.
 
 .. image::
@@ -12,7 +12,7 @@ like sliding window, rearranger, etc. specialized for streaming data.
     :align: center
 
 
-In MLPro streaming data is processed with a task and workflow architecture. A StreamTask is single operation
+In MLPro, streaming data is processed with a task and workflow architecture. A StreamTask is single operation
 performed on new stream instances and a StreamWorkflow is a list of tasks arranged sequentially with defined
 dependencies. StreamTask and StreamWorkflows are specialized classes inherited from MLPro's multiprocessing module.
 

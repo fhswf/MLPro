@@ -31,7 +31,7 @@ stream handling architecture in MLPro is as shown in the following figure:
 
 .. image::
     images/stream_handling.png
-    :width: 600 px
+    :width: 850 px
     :align: center
 
 The figure shows a collection of stream provider apis, which in turn, contain a list of corresponding stream objects.
