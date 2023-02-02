@@ -44,6 +44,12 @@ except:
     print('Please install tkinter for a better plot experience')
     import matplotlib
 
+# Here is a workaround for MacOS due to https://bugs.python.org/issue46573
+from sys import platform
+if platform == "darwin":
+    from tkinter import Tk
+    _ = Tk()
+
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
 import matplotlib.pyplot as plt
