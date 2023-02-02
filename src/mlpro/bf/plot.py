@@ -35,20 +35,18 @@ This module provides various classes related to data plotting.
 
 from operator import mod
 import numpy as np
+from sys import platform
 
 try:
     from tkinter import *
     import matplotlib
-    matplotlib.use('TkAgg')
+    # due to https://bugs.python.org/issue46573
+    # Use TK backend only in Windows and Linux
+    if platform != "darwin":
+        matplotlib.use('TkAgg')
 except:
     print('Please install tkinter for a better plot experience')
     import matplotlib
-
-# Here is a workaround for MacOS due to https://bugs.python.org/issue46573
-from sys import platform
-if platform == "darwin":
-    from tkinter import Tk
-    _ = Tk()
 
 from matplotlib.figure import Figure
 from matplotlib.axes import Axes
