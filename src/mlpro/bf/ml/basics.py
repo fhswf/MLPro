@@ -468,6 +468,16 @@ class AWorkflow (Model, Workflow):
                   p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
 
+        Model.__init__( self,
+                        p_ada = p_ada,
+                        p_name = p_name,
+                        p_range_max = p_range_max,
+                        p_autorun = Task.C_AUTORUN_NONE,
+                        p_class_shared = None,
+                        p_buffer_size = 0,
+                        p_visualize = p_visualize,
+                        p_logging = p_logging )    
+
         Workflow.__init__( self, 
                            p_name = p_name,
                            p_range_max = p_range_max,
@@ -475,12 +485,6 @@ class AWorkflow (Model, Workflow):
                            p_visualize = p_visualize,
                            p_logging = p_logging,
                            **p_kwargs )
-
-        Model.__init__( self,
-                        p_ada = p_ada,
-                        p_buffer_size = 0,
-                        p_visualize = p_visualize,
-                        p_logging = p_logging )    
 
 
 ## -------------------------------------------------------------------------------------------------
