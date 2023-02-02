@@ -17,7 +17,8 @@
 ## -- 2023-01-16  1.3.2     SY       Shift UnitConverter to bf.math
 ## -- 2023-01-18  1.3.3     SY       Debugging on TransferFunction
 ## -- 2023-01-24  1.3.4     SY       Quality Assurance on TransferFunction
-## -- 2023-01-31  1.3.5     SY       Renaming class Label to PersonalisedStamp
+## -- 2023-01-27  1.3.5     MRD      Integrate MuJoCo as an optional state transition
+## -- 2023-01-31  1.3.5    SY       Renaming class Label to PersonalisedStamp
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -410,6 +411,18 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         Optional external function for state evaluation 'success'.
     p_fct_broken : FctBroken
         Optional external function for state evaluation 'broken'.
+    p_mujoco_file
+        Path to XML file for MuJoCo model.
+    p_frame_skip : int
+        Frame to be skipped every step. Default = 1.
+    p_state_mapping
+        State mapping if the MLPro state and MuJoCo state have different naming.
+    p_action_mapping
+        Action mapping if the MLPro action and MuJoCo action have different naming.
+    p_use_radian : bool
+        Use radian if the action and the state based on radian unit. Default = True.
+    p_camera_conf : tuple
+        Default camera configuration on MuJoCo Simulation (xyz position, elevation, distance).
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = False.
     p_logging 
@@ -444,12 +457,19 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
                   p_fct_strans : FctSTrans = None,
                   p_fct_success : FctSuccess = None,
                   p_fct_broken : FctBroken = None,
+                  p_mujoco_file = None,
+                  p_frame_skip : int = 1,
+                  p_state_mapping = None,
+                  p_action_mapping = None,
+                  p_use_radian : bool = True,
+                  p_camera_conf : tuple = (None, None, None),
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
 
         self._fct_strans            = p_fct_strans
         self._fct_success           = p_fct_success
         self._fct_broken            = p_fct_broken
+        self._mujoco_handler        = None
         self._state_space : MSpace  = None
         self._action_space : MSpace = None
         self._state                 = None
@@ -461,9 +481,27 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         FctBroken.__init__(self, p_logging=p_logging)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
-        self.set_latency(p_latency)
 
         self._state_space, self._action_space = self.setup_spaces()
+
+        if p_mujoco_file is not None:
+            from mlpro.wrappers.mujoco import MujocoHandler
+
+            self._mujoco_handler = MujocoHandler(
+                                        p_mujoco_file=p_mujoco_file, 
+                                        p_frame_skip=p_frame_skip,
+                                        p_system_state_space=self.get_state_space(),
+                                        p_system_action_space=self.get_action_space(),
+                                        p_state_mapping=p_state_mapping,
+                                        p_action_mapping=p_action_mapping,
+                                        p_use_radian=p_use_radian, 
+                                        p_camera_conf=p_camera_conf,
+                                        p_visualize=p_visualize,
+                                        p_logging=p_logging)
+            
+            self.set_latency(timedelta(0,0.05,0))
+        else:
+            self.set_latency(p_latency)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -560,6 +598,18 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         self.log(self.C_LOG_TYPE_I, 'Reset')
         self._num_cycles = 0
         self._reset(p_seed)
+
+        # Put Mujoco here
+        if self._mujoco_handler is not None:
+            current_state = self.get_state()
+            if callable(getattr(self, '_obs_to_mujoco', None)):
+                current_state = self._obs_to_mujoco(current_state)
+
+            ob = self._mujoco_handler._reset_simulation(current_state)
+            
+            self._state = State(self.get_state_space())
+            self._state.set_values(ob)
+
         if self._state is not None:
             self._state.set_initial(True)
 
@@ -694,6 +744,16 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
 
         if self._fct_strans is not None:
             return self._fct_strans.simulate_reaction(p_state, p_action)
+        elif self._mujoco_handler is not None:
+            self._mujoco_handler._step_simulation(p_action)
+
+            # Delay because of the simulation
+            sleep(self.get_latency().total_seconds())
+            ob = self._mujoco_handler._get_obs()
+
+            current_state = self.state_from_mujoco(ob)
+
+            return current_state
         else:
             return self._simulate_reaction(p_state, p_action)
 
@@ -707,6 +767,38 @@ class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificO
         """
         
         raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
+
+
+## -------------------------------------------------------------------------------------------------    
+    def state_from_mujoco(self, p_mujoco_state):
+        """
+        State conversion method from converting MuJoCo state to MLPro state.
+        """
+
+        mujoco_state = self._state_from_mujoco(p_mujoco_state)
+        mlpro_state = State(self.get_state_space())
+        mlpro_state.set_values(mujoco_state)
+        return mlpro_state
+
+
+## -------------------------------------------------------------------------------------------------
+    def _state_from_mujoco(self, p_mujoco_state):
+        """
+        Custom method for to do transition between MuJoCo state and MLPro state. Implement this method
+        if the MLPro state has different dimension from MuJoCo state.
+
+        Parameters
+        ----------
+        p_mujoco_state : Numpy
+            MuJoCo state.
+
+        Returns
+        -------
+        Numpy
+            Modified MuJoCo state
+        """
+
+        return p_mujoco_state
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1125,6 +1217,12 @@ class System (SystemBase):
                   p_fct_strans : FctSTrans = None, 
                   p_fct_success : FctSuccess = None, 
                   p_fct_broken : FctBroken = None, 
+                  p_mujoco_file = None,
+                  p_frame_skip : int = 1,
+                  p_state_mapping = None,
+                  p_action_mapping = None,
+                  p_use_radian : bool = True,
+                  p_camera_conf : tuple = (None, None, None),
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL ):
 
@@ -1134,6 +1232,12 @@ class System (SystemBase):
                              p_fct_strans=p_fct_strans, 
                              p_fct_success=p_fct_success, 
                              p_fct_broken=p_fct_broken, 
+                             p_mujoco_file=p_mujoco_file,
+                             p_frame_skip=p_frame_skip,
+                             p_state_mapping=p_state_mapping,
+                             p_action_mapping=p_action_mapping,
+                             p_use_radian=p_use_radian,
+                             p_camera_conf=p_camera_conf,
                              p_visualize=p_visualize, 
                              p_logging=p_logging )
 

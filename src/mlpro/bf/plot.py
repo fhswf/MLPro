@@ -223,7 +223,8 @@ class Plottable:
 ## -------------------------------------------------------------------------------------------------
     def init_plot( self, 
                    p_figure:Figure = None,
-                   p_plot_settings : PlotSettings = None ):
+                   p_plot_settings : PlotSettings = None, 
+                   **p_kwargs):
         """
         Initializes the plot functionalities of the class.
 
