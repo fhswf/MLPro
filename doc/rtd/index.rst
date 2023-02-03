@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 MLPro - Machine Learning Professional
-=====================================
+#####################################
 
 Welcome to MLPro - the integrative middleware framework for standardized machine learning in Python!
 

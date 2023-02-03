@@ -5,6 +5,5 @@ Welcome to MLPro
 .. toctree::
    :maxdepth: 3
    :glob:
-   :numbered:
 
    sub/*

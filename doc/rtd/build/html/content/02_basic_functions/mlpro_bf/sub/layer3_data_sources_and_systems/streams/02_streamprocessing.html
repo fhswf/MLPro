@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4. Stream Processing &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+  <title>2. Stream Processing &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
@@ -21,8 +21,8 @@
     <script src="../../../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../../search.html" />
-    <link rel="next" title="5. Window" href="03_streamtask_window.html" />
-    <link rel="prev" title="3. Streams" href="01_streams_handling.html" /> 
+    <link rel="next" title="3. Window" href="03_streamtask_window.html" />
+    <link rel="prev" title="1. Streams" href="01_streams_handling.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,8 +42,8 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/01_introduction.html">5. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/02_getting_started.html">6. Getting Started</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Basic Functions</span></p>
 <ul class="current">
@@ -54,10 +54,10 @@
 <li class="toctree-l2"><a class="reference internal" href="../../04_layer2_mathematics.html">7.4. Layer 2 - Mathematics</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../../05_layer3_data_sources_and_systems.html">7.5. Layer 3 - Data Sources and State-based Systems</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="../01_streams.html">Streams</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="01_streams_handling.html">3. Streams</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">4. Stream Processing</a></li>
-<li class="toctree-l4"><a class="reference internal" href="03_streamtask_window.html">5. Window</a></li>
-<li class="toctree-l4"><a class="reference internal" href="04_streamtask_rearranger.html">6. Rearranger</a></li>
+<li class="toctree-l4"><a class="reference internal" href="01_streams_handling.html">1. Streams</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">2. Stream Processing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="03_streamtask_window.html">3. Window</a></li>
+<li class="toctree-l4"><a class="reference internal" href="04_streamtask_rearranger.html">4. Rearranger</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../03_systems.html">7.5.1. State-based Systems</a></li>
@@ -98,7 +98,7 @@
           <li><a href="../../../main.html"><span class="section-number">7. </span>MLPro-BF - Basic Functions</a> &raquo;</li>
           <li><a href="../../05_layer3_data_sources_and_systems.html"><span class="section-number">7.5. </span>Layer 3 - Data Sources and State-based Systems</a> &raquo;</li>
           <li><a href="../01_streams.html">Streams</a> &raquo;</li>
-      <li><span class="section-number">4. </span>Stream Processing</li>
+      <li><span class="section-number">2. </span>Stream Processing</li>
       <li class="wy-breadcrumbs-aside">
               <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/02_basic_functions/mlpro_bf/sub/layer3_data_sources_and_systems/streams/02_streamprocessing.rst" class="fa fa-github"> Edit on GitHub</a>
       </li>
@@ -109,7 +109,7 @@
            <div itemprop="articleBody">
              
   <div class="section" id="stream-processing">
-<h1><span class="section-number">4. </span>Stream Processing<a class="headerlink" href="#stream-processing" title="Permalink to this headline">¶</a></h1>
+<h1><span class="section-number">2. </span>Stream Processing<a class="headerlink" href="#stream-processing" title="Permalink to this headline">¶</a></h1>
 <p>Because of the live nature of data streams, handling such data sources and mining knowledge require special types of
 processing tasks. Stream operations process new instances as they are available at every step. Along with a
 number of external and internal stream resources, MLPro’s stream module provides processing functionalities
@@ -119,7 +119,7 @@ like sliding window, rearranger, etc. specialized for streaming data.</p>
 performed on new stream instances and a StreamWorkflow is a list of tasks arranged sequentially with defined
 dependencies. StreamTask and StreamWorkflows are specialized classes inherited from MLPro’s multiprocessing module.</p>
 <div class="section" id="stream-task">
-<h2><span class="section-number">4.1. </span>Stream Task<a class="headerlink" href="#stream-task" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.1. </span>Stream Task<a class="headerlink" href="#stream-task" title="Permalink to this headline">¶</a></h2>
 <p>A StreamTask is a special stream processing task that takes a new instance as an input and delivers the processed
 output. StreamTask class in MLPro also provide provide plotting functionalities in 2D, 3D and nD, that plot the
 streaming instances by default. (A link to know more). Inherit from this class and implement the <code class="code docutils literal notranslate"><span class="pre">_run(p_inst_new,</span> <span class="pre">p_inst_del)</span></code>
@@ -142,7 +142,7 @@ including following:</p>
 <p>More StreamTask implementations will be available with future updates.</p>
 </div>
 <div class="section" id="stream-workflow">
-<h2><span class="section-number">4.2. </span>Stream Workflow<a class="headerlink" href="#stream-workflow" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.2. </span>Stream Workflow<a class="headerlink" href="#stream-workflow" title="Permalink to this headline">¶</a></h2>
 <p>A StreamWorkflow in MLPro is a list of StreamTasks arranged hierarchically with pre-defined dependencies on prior
 tasks in the workflow. StreamWorkflow also provides default plotting functionalities in 2D, 3D and nD, that plot all
 the instances in the workflow. (A link to know more about plotting.) StreamWorkflow can be imported and used as
@@ -176,7 +176,7 @@ to an existing stream workflow:</p>
 other tasks in the workflow.</p>
 </div>
 <div class="section" id="stream-plotting">
-<h2><span class="section-number">4.3. </span>Stream Plotting<a class="headerlink" href="#stream-plotting" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">2.3. </span>Stream Plotting<a class="headerlink" href="#stream-plotting" title="Permalink to this headline">¶</a></h2>
 <p>MLPro’s streams module also provide plotting functionalities by default. The stream workflow and stream tasks can
 plot instances within the workflow and the task respectively. The default plotting functionality is available in 2
 dimensional, 3 dimensional and N dimensional views. The plot view and specific plot properties can be set using a
@@ -192,8 +192,8 @@ MLPro’s streams module.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="01_streams_handling.html" class="btn btn-neutral float-left" title="3. Streams" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="03_streamtask_window.html" class="btn btn-neutral float-right" title="5. Window" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="01_streams_handling.html" class="btn btn-neutral float-left" title="1. Streams" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="03_streamtask_window.html" class="btn btn-neutral float-right" title="3. Window" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
