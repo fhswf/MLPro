@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf
-## -- Module  : systems.py
+## -- Package : mlpro.bf.systems
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -18,11 +18,11 @@
 ## -- 2023-01-18  1.3.3     SY       Debugging on TransferFunction
 ## -- 2023-01-24  1.3.4     SY       Quality Assurance on TransferFunction
 ## -- 2023-01-27  1.3.5     MRD      Integrate MuJoCo as an optional state transition
-## -- 2023-01-31  1.3.5    SY       Renaming class Label to PersonalisedStamp
+## -- 2023-01-31  1.3.6     SY       Renaming class Label to PersonalisedStamp
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.5 (2023-01-31)
+Ver. 1.3.6 (2023-01-31)
 
 This module provides models and templates for state based systems.
 """
