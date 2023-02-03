@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bulk Good Laboratory Plant (BGLP) &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../../_static/jquery.js"></script>
+        <script src="../../../../../../_static/underscore.js"></script>
+        <script src="../../../../../../_static/doctools.js"></script>
+        <script src="../../../../../../_static/language_data.js"></script>
+        <script src="../../../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix2/main.html">A2 - API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Bulk Good Laboratory Plant (BGLP)</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/03_machine_learning/mlpro_rl/sub/env/pool/bglp.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="id1">
+<h1><a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/bglp.py">Bulk Good Laboratory Plant (BGLP)</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>The BGLP illustrates a smart production system with high flexibility and distributed control to transport bulk raw materials.
+One of the advantages of this laboratory test belt is the modularity in design, as depicted schematically below:</p>
+<a class="reference internal image-reference" href="../../../../../../_images/BGLP_Scheme.jpg"><img alt="../../../../../../_images/BGLP_Scheme.jpg" src="../../../../../../_images/BGLP_Scheme.jpg" style="width: 400px;" /></a>
+<p>The BGLP consists of four modules, which are loading, storing, weighing, and filling stations respectively, and has conveying and dosing units as integral parts of the system.
+The interface between the modules is assembled via a mini hopper placed in the prior module.
+Then, the next module is fed by a vacuum pump, which operates in a discontinuous manner, before the goods are temporarily stored in a silo of the next module.
+The filling station has no silo because the main purpose of the station is to occupy the transport containers.</p>
+<p>We utilize dissimilar actuators in modules 1-3 to transport the goods from the silo to the mini hopper.
+Module 1 utilizes a belt conveyor, that operates between 0 and 1800 rpm.
+Module 2 uses a vibratory conveyor, which can be completely switched on and off.
+Lastly, Module 3 utilizes a rotary feeder, that operates between 0 and 1450 rpm.</p>
+<p>In theRL context, we consider the BGLP as a multi-agent system, where each actuator of the system is pointed as an agent or a player.
+The states information for each agent is the fill level of the prior reservoir and the fill level of the next reservoir.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In this simulation, we assume that the actuator in Module D has a constant flow, which automatically matches the production demand in L/s.
+This parameter can be defined while setting up the BGLP environment.
+Therefore, 5 actuators are involved in this simulation instead of 6 actuators.</p>
+</div>
+<p>This BGLP environment can be imported via:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mlpro.rl.pool.envs.bglp</span>
+</pre></div>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/numpy/">NumPy</a></p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="general-information">
+<h2>General Information<a class="headerlink" href="#general-information" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Agents</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Native Source</p></td>
+<td><p>MLPro</p></td>
+</tr>
+<tr class="row-even"><td><p>Action Space Dimension</p></td>
+<td><p>[5,]</p></td>
+</tr>
+<tr class="row-odd"><td><p>Action Space Base Set</p></td>
+<td><p>Real numbers, except Agent 3 uses Integer</p></td>
+</tr>
+<tr class="row-even"><td><p>Action Space Boundaries</p></td>
+<td><p>[0,1]</p></td>
+</tr>
+<tr class="row-odd"><td><p>State Space Dimension</p></td>
+<td><p>[6,]</p></td>
+</tr>
+<tr class="row-even"><td><p>State Space Base Set</p></td>
+<td><p>Real numbers</p></td>
+</tr>
+<tr class="row-odd"><td><p>State Space Boundaries</p></td>
+<td><p>[0,1]</p></td>
+</tr>
+<tr class="row-even"><td><p>Reward Structure</p></td>
+<td><p>Individual reward for each agent</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can change the configurations of the BGLP simulation, for instance, production demand (L/s), production target for batch operation (L),
+learning rates for reward calculation, and production scenario (batch or continuous).
+Batch production scenario refers to a process to satisfy a specific order in a sequence, thus the production target in L must be set.
+Meanwhile, continuous production scenario refers to a process to control a constant flow within a horizon, thus the production target (L) is not necessary
+and the target is fulfilled the production demand (L/s).
+The detailed explanations are available in the API reference
+section, see <a class="reference internal" href="../../../../../04_appendices/appendix2/sub/pool/rl/mlpro.rl.pool.envs.html#api-ref-bglp"><span class="std std-ref">here</span></a>.</p>
+</div>
+</div>
+<div class="section" id="action-space">
+<h2>Action Space<a class="headerlink" href="#action-space" title="Permalink to this headline">¶</a></h2>
+<p>In this environment, we consider 5 actuators to be controlled.
+Thus, there are 5 agents and 5 joint actions because each agent requires an action.
+Every action is normalized within a range between 0 and 1, except for Agent 3.
+0 means the minimum possible action and 1 means the maximum possible action.
+For Agent 3, the vibratory conveyor has a different character than other actuators, which mostly perform in a continuous manner.
+The vibratory conveyor can only be either fully switched-on or switched-off. Therefore the base set of action for Agent 3 is an integer (0/1).
+0 means off and 1 means on.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 28%" />
+<col style="width: 12%" />
+<col style="width: 28%" />
+<col style="width: 21%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Agent</p></th>
+<th class="head"><p>Actuator</p></th>
+<th class="head"><p>Station</p></th>
+<th class="head"><p>Parameter</p></th>
+<th class="head"><p>Boundaries</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Conveyor Belt</p></td>
+<td><p>A</p></td>
+<td><p>rpm</p></td>
+<td><p>450 … 1800</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Vacuum Pump</p></td>
+<td><p>B</p></td>
+<td><p>on-duration (sec)</p></td>
+<td><p>0 … 4.575</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Vibratory Conveyor</p></td>
+<td><p>B</p></td>
+<td><p>on/off</p></td>
+<td><p>0/1</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Vacuum Pump</p></td>
+<td><p>C</p></td>
+<td><p>on-duration (sec)</p></td>
+<td><p>0 … 9.5</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>Rotary Feeder</p></td>
+<td><p>C</p></td>
+<td><p>rpm</p></td>
+<td><p>450 … 1450</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="state-space">
+<h2>State Space<a class="headerlink" href="#state-space" title="Permalink to this headline">¶</a></h2>
+<p>The state information in the BGLP is the fill levels of the reservoirs.
+Each agent is always placed in between two reservoirs, e.g. between a silo and a hopper or vice versa.
+Therefore, each agent has two state information, which is shared with their neighbours.
+Every state is normalized within a range between 0 and 1.
+0 means the minimum fill-level and 1 means the maximum fill-level.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 21%" />
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 32%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Agent</p></th>
+<th class="head"><p>State No.</p></th>
+<th class="head"><p>Element</p></th>
+<th class="head"><p>Station</p></th>
+<th class="head"><p>Boundaries</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td rowspan="2"><p>1</p></td>
+<td><p>1</p></td>
+<td><p>Silo</p></td>
+<td><p>A</p></td>
+<td><p>0 … 17.42 L</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td rowspan="2"><p>Hopper</p></td>
+<td rowspan="2"><p>A</p></td>
+<td rowspan="2"><p>0 … 9.1 L</p></td>
+</tr>
+<tr class="row-even"><td rowspan="2"><p>2</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td rowspan="2"><p>Silo</p></td>
+<td rowspan="2"><p>B</p></td>
+<td rowspan="2"><p>0 … 17.42 L</p></td>
+</tr>
+<tr class="row-even"><td rowspan="2"><p>3</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td rowspan="2"><p>Hopper</p></td>
+<td rowspan="2"><p>B</p></td>
+<td rowspan="2"><p>0 … 9.1 L</p></td>
+</tr>
+<tr class="row-even"><td rowspan="2"><p>4</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td rowspan="2"><p>Silo</p></td>
+<td rowspan="2"><p>C</p></td>
+<td rowspan="2"><p>0 … 17.42 L</p></td>
+</tr>
+<tr class="row-even"><td rowspan="2"><p>5</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Hopper</p></td>
+<td><p>C</p></td>
+<td><p>0 … 9.1 L</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="reward-structure">
+<h2>Reward Structure<a class="headerlink" href="#reward-structure" title="Permalink to this headline">¶</a></h2>
+<p>The reward structure is implemented according to <a class="reference external" href="https://www.researchgate.net/publication/351939505_Decentralized_Learning_of_Energy_Optimal_Production_Policies_using_PLC-informed_Reinforcement_Learning">this paper</a>.
+You can also find the source code of the reward structure, <a class="reference external" href="https://github.com/fhswf/MLPro/blob/13b7b8a82d90b626f40ea7c268706e43889b9e00/src/mlpro/rl/pool/envs/bglp.py#L971-L982">here</a>.
+The given reward is an individual scalar reward for each agent. To be noted, this reward function is more suitable for a continuous production scenario.</p>
+<p>If you would like to implement a customized reward function, you can follow these lines of codes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyBGLP</span><span class="p">(</span><span class="n">BGLP</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">calc_reward</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Each agent has an individual reward</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_type</span> <span class="o">==</span> <span class="n">Reward</span><span class="o">.</span><span class="n">C_TYPE_EVERY_AGENT</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">actnum</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">acts</span><span class="p">)):</span>
+                <span class="n">acts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">acts</span><span class="p">[</span><span class="n">actnum</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">reward</span><span class="p">[</span><span class="n">actnum</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward</span><span class="p">[:]</span>
+
+        <span class="c1"># Overall reward</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">reward_type</span> <span class="o">==</span> <span class="n">Reward</span><span class="o">.</span><span class="n">C_TYPE_OVERALL</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">overall_reward</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">overall_reward</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="change-log">
+<h2>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Version</p></th>
+<th class="head"><p>Changes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1.0.0</p></td>
+<td><p>Initial version release</p></td>
+</tr>
+<tr class="row-odd"><td><p>1.4.4</p></td>
+<td><p>Enhanchement, debug, refactoring, adding
+batch production scenario</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="cross-reference">
+<h2>Cross Reference<a class="headerlink" href="#cross-reference" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../../04_appendices/appendix2/sub/pool/rl/mlpro.rl.pool.envs.html#module-mlpro.rl.pool.envs.bglp"><span class="std std-ref">API Reference</span></a></p></li>
+</ul>
+<p>If you apply this environment in your research or work, please kindly cite the following related paper:</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@article</span><span class="p">{</span><span class="nl">Schwung2021</span><span class="p">,</span>
+ <span class="na">title</span><span class="p">=</span><span class="s">{Decentralized learning of energy optimal production policies using PLC-informed reinforcement learning}</span><span class="p">,</span>
+ <span class="na">author</span><span class="p">=</span><span class="s">{Dorothea Schwung and Steve Yuwono and Andreas Schwung and Steven X. Ding}</span><span class="p">,</span>
+ <span class="na">journal</span><span class="p">=</span><span class="s">{Comput. Chem. Eng.}</span><span class="p">,</span>
+ <span class="na">year</span><span class="p">=</span><span class="s">{2021}</span><span class="p">,</span>
+ <span class="na">volume</span><span class="p">=</span><span class="s">{152}</span><span class="p">,</span>
+ <span class="na">pages</span><span class="p">=</span><span class="s">{107382}</span><span class="p">,</span>
+ <span class="na">doi</span><span class="p">=</span><span class="s">{10.1016/j.compchemeng.2021.107382}</span>
+ <span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

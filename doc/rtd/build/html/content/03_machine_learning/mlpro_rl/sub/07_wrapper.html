@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>9.7. 3rd Party Support &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script src="../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="10. MLPro-GT - Game Theory" href="../../mlpro_gt/main.html" />
+    <link rel="prev" title="9.6. Training" href="06_train.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../main.html">9. MLPro-RL - Reinforcement Learning</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_overview.html">9.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_getstarted.html">9.2. Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_env.html">9.3. Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_agents.html">9.4. Agents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="05_scenario.html">9.5. Scenarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_train.html">9.6. Training</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">9.7. 3rd Party Support</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#rl-environment-openai-gym-to-mlpro">9.7.1. RL Environment: OpenAI Gym to MLPro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rl-environment-mlpro-to-openai-gym">9.7.2. RL Environment: MLPro to OpenAI Gym</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rl-environment-pettingzoo-to-mlpro">9.7.3. RL Environment: PettingZoo to MLPro</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rl-environment-mlpro-to-pettingzoo">9.7.4. RL Environment: MLPro to PettingZoo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rl-policy-stablebaselines3-to-mlpro">9.7.5. RL Policy: StableBaselines3 to MLPro</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../04_appendices/appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../04_appendices/appendix2/main.html">A2 - API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../04_appendices/appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../main.html"><span class="section-number">9. </span>MLPro-RL - Reinforcement Learning</a> &raquo;</li>
+      <li><span class="section-number">9.7. </span>3rd Party Support</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/03_machine_learning/mlpro_rl/sub/07_wrapper.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="rd-party-support">
+<span id="target-package-third"></span><h1><span class="section-number">9.7. </span>3rd Party Support<a class="headerlink" href="#rd-party-support" title="Permalink to this headline">¶</a></h1>
+<p><a class="reference external" href="https://github.com/fhswf/MLPro.git">MLPro</a> allows the user to reuse widely-used 3rd-party packages and
+integrate them to the MLPro interface and also the other way around via wrapper classes.
+Therefore, the user is free to select an environment and/or a policy from the 3rd-party packages and the native MLPro-RL.
+It is also possible to combine an environment and a policy from different packages.</p>
+<p>At the moment, we have five ready-to-use wrapper classes related to RL from 3rd-party packages to MLPro and two wrapper classes from MLPro to 3rd-party packages, such as:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 6%" />
+<col style="width: 18%" />
+<col style="width: 20%" />
+<col style="width: 19%" />
+<col style="width: 38%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>No</p></th>
+<th class="head"><p>Wrapper Class</p></th>
+<th class="head"><p>Origin</p></th>
+<th class="head"><p>Target</p></th>
+<th class="head"><p>Wrapped RL Components</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>WrEnvGYM2MLPro</p></td>
+<td><p>OpenAI Gym</p></td>
+<td><p>MLPro</p></td>
+<td><p>RL Environments</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>WrEnvMLPro2GYM</p></td>
+<td><p>MLPro</p></td>
+<td><p>OpenAI Gym</p></td>
+<td><p>RL Environments</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>WrEnvPZOO2MLPro</p></td>
+<td><p>PettingZoo</p></td>
+<td><p>MLPro</p></td>
+<td><p>Multi-Agent RL Environments</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>WrEnvMLPro2PZoo</p></td>
+<td><p>MLPro</p></td>
+<td><p>PettingZoo</p></td>
+<td><p>Multi-Agent RL Environments</p></td>
+</tr>
+<tr class="row-even"><td><p>5</p></td>
+<td><p>WrPolicySB32MLPro</p></td>
+<td><p>StableBaselines3</p></td>
+<td><p>MLPro</p></td>
+<td><p>Off-Policy and On-Policy RL Algorithms</p></td>
+</tr>
+</tbody>
+</table>
+<p>Moreover, wrapper classes for hyperparameter tuning by <a class="reference internal" href="../../../04_appendices/appendix1/sub/rl/ht/howto.rl.ht.001.html#howto-ht-rl-001"><span class="std std-ref">Hyperopt</span></a> and <a class="reference internal" href="../../../04_appendices/appendix1/sub/rl/ht/howto.rl.ht.002.html#howto-ht-rl-002"><span class="std std-ref">Optuna</span></a> can also be incorporated to your RL training.</p>
+<div class="section" id="rl-environment-openai-gym-to-mlpro">
+<h2><span class="section-number">9.7.1. </span>RL Environment: OpenAI Gym to MLPro<a class="headerlink" href="#rl-environment-openai-gym-to-mlpro" title="Permalink to this headline">¶</a></h2>
+<p>Here is the wrapper class to convert RL Environment from OpenAI Gym to MLPro.
+The implementation is pretty simple and straightforward.
+The user can call the wrapper class while setting up an environment, as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.wrappers.openai_gym</span> <span class="kn">import</span> <span class="n">WrEnvGYM2MLPro</span>
+<span class="kn">import</span> <span class="nn">gym</span>
+
+<span class="n">p_gym_env</span> <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;CartPole-v1&#39;</span><span class="p">,</span> <span class="n">new_step_api</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">render_mode</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">WrEnvGYM2MLPro</span><span class="p">(</span><span class="n">p_gym_env</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information, please check the <a class="reference internal" href="../../../04_appendices/appendix1/sub/rl/wp/howto.rl.wp.004.html#howto-wp-rl-004"><span class="std std-ref">Howto OpenAI Gym to MLPro</span></a>.</p>
+</div>
+<div class="section" id="rl-environment-mlpro-to-openai-gym">
+<h2><span class="section-number">9.7.2. </span>RL Environment: MLPro to OpenAI Gym<a class="headerlink" href="#rl-environment-mlpro-to-openai-gym" title="Permalink to this headline">¶</a></h2>
+<p>Here is the wrapper class to convert RL Environment from MLPro to OpenAI Gym.
+The implementation is pretty simple and straightforward.
+The user can call the wrapper class while setting up an environment, as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.wrappers.openai_gym</span> <span class="kn">import</span> <span class="n">WrEnvMLPro2GYM</span>
+<span class="kn">from</span> <span class="nn">mlpro.rl.pool.envs.gridworld</span> <span class="kn">import</span> <span class="n">GridWorld</span>
+
+<span class="n">mlpro_env</span> <span class="o">=</span> <span class="n">GridWorld</span><span class="p">(</span><span class="n">p_logging</span><span class="o">=</span><span class="n">Log</span><span class="o">.</span><span class="n">C_LOG_ALL</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">WrEnvMLPro2GYM</span><span class="p">(</span><span class="n">mlpro_env</span><span class="p">,</span> <span class="n">p_state_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_action_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_new_step_api</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information, please check the <a class="reference internal" href="../../../04_appendices/appendix1/sub/rl/wp/howto.rl.wp.001.html#howto-wp-rl-001"><span class="std std-ref">Howto MLPro to OpenAI Gym</span></a>.</p>
+</div>
+<div class="section" id="rl-environment-pettingzoo-to-mlpro">
+<h2><span class="section-number">9.7.3. </span>RL Environment: PettingZoo to MLPro<a class="headerlink" href="#rl-environment-pettingzoo-to-mlpro" title="Permalink to this headline">¶</a></h2>
+<p>Here is the wrapper class to convert RL Environment from PettingZoo to MLPro.
+The implementation is pretty simple and straightforward.
+The user can call the wrapper class while setting up an environment, as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pettingzoo.butterfly</span> <span class="kn">import</span> <span class="n">pistonball_v6</span>
+<span class="kn">from</span> <span class="nn">mlpro.wrappers.pettingzoo</span> <span class="kn">import</span> <span class="n">WrEnvPZOO2MLPro</span>
+
+<span class="n">p_zoo_env</span> <span class="o">=</span> <span class="n">pistonball_v6</span><span class="o">.</span><span class="n">env</span><span class="p">()</span>
+<span class="bp">self</span><span class="o">.</span><span class="n">_env</span> <span class="o">=</span> <span class="n">WrEnvPZOO2MLPro</span><span class="p">(</span><span class="n">p_zoo_env</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information, please check the <a class="reference internal" href="../../../04_appendices/appendix1/sub/rl/wp/howto.rl.wp.003.html#howto-wp-rl-003"><span class="std std-ref">Howto PettingZoo to MLPro</span></a>.</p>
+</div>
+<div class="section" id="rl-environment-mlpro-to-pettingzoo">
+<h2><span class="section-number">9.7.4. </span>RL Environment: MLPro to PettingZoo<a class="headerlink" href="#rl-environment-mlpro-to-pettingzoo" title="Permalink to this headline">¶</a></h2>
+<p>Here is the wrapper class to convert RL Environment from MLPro to PettingZoo.
+The implementation is pretty simple and straightforward.
+The user can call the wrapper class while setting up an environment, as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mlpro.wrappers.pettingzoo</span> <span class="kn">import</span> <span class="n">WrEnvMLPro2PZoo</span>
+<span class="kn">from</span> <span class="nn">mlpro.rl.pool.envs.bglp</span> <span class="kn">import</span> <span class="n">BGLP</span>
+
+<span class="n">mlpro_env</span> <span class="o">=</span> <span class="n">BGLP</span><span class="p">(</span><span class="n">p_logging</span><span class="o">=</span><span class="n">Mode</span><span class="o">.</span><span class="n">C_LOG_ALL</span><span class="p">)</span>
+<span class="n">env</span> <span class="o">=</span> <span class="n">WrEnvMLPro2PZoo</span><span class="p">(</span><span class="n">mlpro_env</span><span class="p">,</span> <span class="n">p_num_agents</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">p_state_space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p_action_space</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">pzoo_env</span>
+</pre></div>
+</div>
+<p>For more information, please check the <a class="reference internal" href="../../../04_appendices/appendix1/sub/rl/wp/howto.rl.wp.002.html#howto-wp-rl-002"><span class="std std-ref">Howto MLPro to PettingZoo</span></a>.</p>
+</div>
+<div class="section" id="rl-policy-stablebaselines3-to-mlpro">
+<h2><span class="section-number">9.7.5. </span>RL Policy: StableBaselines3 to MLPro<a class="headerlink" href="#rl-policy-stablebaselines3-to-mlpro" title="Permalink to this headline">¶</a></h2>
+<p>Here is the wrapper class to convert RL Environment from StableBaselines3 to MLPro.
+The wrapper provides both the On-Policy and Off-Policy from StableBaselines3.
+The implementation is pretty simple and straightforward.
+The user can call the wrapper class while setting up an environment, as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">stable_baselines3</span> <span class="kn">import</span> <span class="n">PPO</span>
+<span class="kn">from</span> <span class="nn">mlpro.rl.wrappers</span> <span class="kn">import</span> <span class="n">WrPolicySB32MLPro</span>
+
+<span class="k">class</span> <span class="nc">MyScenario</span><span class="p">(</span><span class="n">Scenario</span><span class="p">):</span>
+
+    <span class="n">C_NAME</span>      <span class="o">=</span> <span class="s1">&#39;Matrix&#39;</span>
+
+    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_mode</span><span class="p">,</span> <span class="n">p_ada</span><span class="p">,</span> <span class="n">p_logging</span><span class="p">):</span>
+        <span class="n">gym_env</span>     <span class="o">=</span> <span class="n">gym</span><span class="o">.</span><span class="n">make</span><span class="p">(</span><span class="s1">&#39;CartPole-v1&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_env</span>   <span class="o">=</span> <span class="n">WrEnvGYM2MLPro</span><span class="p">(</span><span class="n">gym_env</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">policy_sb3</span> <span class="o">=</span> <span class="n">PPO</span><span class="p">(</span>
+            <span class="n">policy</span><span class="o">=</span><span class="s2">&quot;MlpPolicy&quot;</span><span class="p">,</span>
+            <span class="n">n_steps</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+            <span class="n">env</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">_init_setup_model</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
+
+        <span class="n">policy_wrapped</span> <span class="o">=</span> <span class="n">WrPolicySB32MLPro</span><span class="p">(</span>
+            <span class="n">p_sb3_policy</span><span class="o">=</span><span class="n">policy_sb3</span><span class="p">,</span>
+            <span class="n">p_cycle_limit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cycle_limit</span><span class="p">,</span>
+            <span class="n">p_observation_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="o">.</span><span class="n">get_state_space</span><span class="p">(),</span>
+            <span class="n">p_action_space</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_env</span><span class="o">.</span><span class="n">get_action_space</span><span class="p">(),</span>
+            <span class="n">p_ada</span><span class="o">=</span><span class="n">p_ada</span><span class="p">,</span>
+            <span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Agent</span><span class="p">(</span>
+            <span class="n">p_policy</span><span class="o">=</span><span class="n">policy_wrapped</span><span class="p">,</span>
+            <span class="n">p_envmodel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">p_name</span><span class="o">=</span><span class="s1">&#39;Smith&#39;</span><span class="p">,</span>
+            <span class="n">p_ada</span><span class="o">=</span><span class="n">p_ada</span><span class="p">,</span>
+            <span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>For more information, please check the <a class="reference internal" href="../../../04_appendices/appendix1/sub/rl/wp/howto.rl.wp.004.html#howto-wp-rl-004"><span class="std std-ref">Howto SB3 to MLPro</span></a> and the validations for <a class="reference internal" href="../../../04_appendices/appendix1/sub/rl/wp/howto.rl.wp.005.html#howto-wp-rl-005"><span class="std std-ref">on-policy</span></a> and <a class="reference internal" href="../../../04_appendices/appendix1/sub/rl/wp/howto.rl.wp.006.html#howto-wp-rl-006"><span class="std std-ref">off-policy</span></a>.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="06_train.html" class="btn btn-neutral float-left" title="9.6. Training" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../mlpro_gt/main.html" class="btn btn-neutral float-right" title="10. MLPro-GT - Game Theory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

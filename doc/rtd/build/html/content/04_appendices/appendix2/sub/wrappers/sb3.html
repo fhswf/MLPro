@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stable Baslines3 &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Scikit-learn" href="sklearn.html" />
+    <link rel="prev" title="River" href="river.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_rl/main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../main.html">A2 - API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../01_mlpro.core.html">Core Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../02_mlpro.pool.html">Pool Objects</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../03_mlpro.wrappers.html">Wrappers</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="hyperopt.html">Hyperopt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openai_gym.html">OpenAI Gym</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openml.html">OpenML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optuna.html">Optuna</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pettingzoo.html">PettingZoo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="river.html">River</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Stable Baslines3</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cross-references">Cross References</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="sklearn.html">Scikit-learn</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../main.html">A2 - API Reference</a> &raquo;</li>
+          <li><a href="../03_mlpro.wrappers.html">Wrappers</a> &raquo;</li>
+      <li>Stable Baslines3</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/04_appendices/appendix2/sub/wrappers/sb3.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="stable-baslines3">
+<h1>Stable Baslines3<a class="headerlink" href="#stable-baslines3" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-mlpro.wrappers.sb3"></span><p>Ver. 1.2.5 (2022-11-07)</p>
+<p>This module provides wrapper classes for integrating stable baselines3 policy algorithms.</p>
+<p>See also: <a class="reference external" href="https://pypi.org/project/stable-baselines3/">https://pypi.org/project/stable-baselines3/</a></p>
+<dl class="py class">
+<dt id="mlpro.wrappers.sb3.DummyEnv">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.wrappers.sb3.</code><code class="sig-name descname">DummyEnv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_observation_space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_action_space</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.wrappers.sb3.DummyEnv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">gym.core.Env</span></code></p>
+<p>Dummy class for Environment. This is required due to some of the SB3 Policy Algorithm requires
+to have an Environment. As for now, it only needs the observation space and the action space.</p>
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sb3.DummyEnv.observation_space">
+<code class="sig-name descname">observation_space</code><em class="property"> = None</em><a class="headerlink" href="#mlpro.wrappers.sb3.DummyEnv.observation_space" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sb3.DummyEnv.action_space">
+<code class="sig-name descname">action_space</code><em class="property"> = None</em><a class="headerlink" href="#mlpro.wrappers.sb3.DummyEnv.action_space" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.wrappers.sb3.DummyEnv.compute_reward">
+<code class="sig-name descname">compute_reward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">achieved_goal</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">desired_goal</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">_info</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.float32<a class="headerlink" href="#mlpro.wrappers.sb3.DummyEnv.compute_reward" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.wrappers.sb3.VecExtractDictObs">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.wrappers.sb3.</code><code class="sig-name descname">VecExtractDictObs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">venv</span><span class="p">:</span> <span class="n">stable_baselines3.common.vec_env.base_vec_env.VecEnv</span></em>, <em class="sig-param"><span class="n">observation_space</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>gym.spaces.space.Space<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">action_space</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>gym.spaces.space.Space<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.wrappers.sb3.VecExtractDictObs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">stable_baselines3.common.vec_env.base_vec_env.VecEnvWrapper</span></code></p>
+<p>A vectorized wrapper for filtering a specific key from dictionary observations.
+This is used for HER incorporation on off-policy algorithms.
+Similar to Gym’s FilterObservation wrapper:</p>
+<blockquote>
+<div><p><a class="reference external" href="https://github.com/openai/gym/blob/master/gym/wrappers/filter_observation.py">https://github.com/openai/gym/blob/master/gym/wrappers/filter_observation.py</a></p>
+</div></blockquote>
+<dl class="py method">
+<dt id="mlpro.wrappers.sb3.VecExtractDictObs.reset">
+<code class="sig-name descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mlpro.wrappers.sb3.VecExtractDictObs.reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset all the environments and return an array of
+observations, or a tuple of observation arrays.</p>
+<p>If step_async is still doing work, that work will
+be cancelled and step_wait() should not be called
+until step_async() is invoked again.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>observation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.wrappers.sb3.VecExtractDictObs.step_async">
+<code class="sig-name descname">step_async</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">actions</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mlpro.wrappers.sb3.VecExtractDictObs.step_async" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tell all the environments to start taking a step
+with the given actions.
+Call step_wait() to get the results of the step.</p>
+<p>You should not call this if a step_async run is
+already pending.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.wrappers.sb3.VecExtractDictObs.step_wait">
+<code class="sig-name descname">step_wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Union<span class="p">[</span>numpy.ndarray<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>numpy.ndarray<span class="p">]</span><span class="p">, </span>Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span><span class="p">…</span><span class="p">]</span><span class="p">]</span><span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>List<span class="p">[</span>Dict<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mlpro.wrappers.sb3.VecExtractDictObs.step_wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait for the step taken with step_async().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>observation, reward, done, information</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.wrappers.sb3.WrPolicySB32MLPro">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.wrappers.sb3.</code><code class="sig-name descname">WrPolicySB32MLPro</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_sb3_policy</span></em>, <em class="sig-param"><span class="n">p_cycle_limit</span></em>, <em class="sig-param"><span class="n">p_observation_space</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.math.basics.MSpace" title="mlpro.bf.math.basics.MSpace">mlpro.bf.math.basics.MSpace</a></span></em>, <em class="sig-param"><span class="n">p_action_space</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.math.basics.MSpace" title="mlpro.bf.math.basics.MSpace">mlpro.bf.math.basics.MSpace</a></span></em>, <em class="sig-param"><span class="n">p_ada</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">p_visualize</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">p_num_envs</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">p_desired_goals</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.wrappers.sb3.WrPolicySB32MLPro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.wrappers.models.Wrapper</span></code>, <a class="reference internal" href="../core/mlpro.rl.html#mlpro.rl.models_agents.Policy" title="mlpro.rl.models_agents.Policy"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_agents.Policy</span></code></a></p>
+<p>This class provides a policy wrapper from Standard Baselines 3 (SB3).
+Especially On-Policy Algorithm</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_sb3_policy</strong> – SB3 Policy</p></li>
+<li><p><strong>p_cycle_limit</strong> – Maximum number of cycles</p></li>
+<li><p><strong>p_observation_space</strong> (<a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.math.basics.MSpace" title="mlpro.bf.math.basics.MSpace"><em>MSpace</em></a>) – Observation Space</p></li>
+<li><p><strong>p_action_space</strong> (<a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.math.basics.MSpace" title="mlpro.bf.math.basics.MSpace"><em>MSpace</em></a>) – Environment Action Space</p></li>
+<li><p><strong>p_ada</strong> (<em>bool</em>) – Adaptability. Defaults to True.</p></li>
+<li><p><strong>p_visualize</strong> (<em>bool</em>) – Boolean switch for visualisation. Default = False.</p></li>
+<li><p><strong>p_logging</strong> – Log level (see constants of class Log). Default = Log.C_LOG_ALL.</p></li>
+<li><p><strong>p_num_envs</strong> (<em>int</em>) – Number of environments, specifically for vectorized environment.</p></li>
+<li><p><strong>p_desired_goals</strong> (<em>list</em><em>, </em><em>Optional</em>) – Desired state goals for Hindsight Experience Replay (HER).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sb3.WrPolicySB32MLPro.C_TYPE">
+<code class="sig-name descname">C_TYPE</code><em class="property"> = 'Wrapper SB3 -&gt; MLPro'</em><a class="headerlink" href="#mlpro.wrappers.sb3.WrPolicySB32MLPro.C_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sb3.WrPolicySB32MLPro.C_WRAPPED_PACKAGE">
+<code class="sig-name descname">C_WRAPPED_PACKAGE</code><em class="property"> = 'stable_baselines3'</em><a class="headerlink" href="#mlpro.wrappers.sb3.WrPolicySB32MLPro.C_WRAPPED_PACKAGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sb3.WrPolicySB32MLPro.C_NAME">
+<code class="sig-name descname">C_NAME</code><em class="property"> = 'Policy DQN'</em><a class="headerlink" href="#mlpro.wrappers.sb3.WrPolicySB32MLPro.C_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<div class="section" id="cross-references">
+<h2>Cross References<a class="headerlink" href="#cross-references" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p><span class="xref std std-ref">Howto RL-WP-004: Train an Agent with SB3</span></p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="river.html" class="btn btn-neutral float-left" title="River" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="sklearn.html" class="btn btn-neutral float-right" title="Scikit-learn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

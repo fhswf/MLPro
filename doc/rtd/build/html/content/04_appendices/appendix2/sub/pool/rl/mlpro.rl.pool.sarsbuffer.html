@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>State, Action, Reward Buffers &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../../_static/jquery.js"></script>
+        <script src="../../../../../../_static/underscore.js"></script>
+        <script src="../../../../../../_static/doctools.js"></script>
+        <script src="../../../../../../_static/language_data.js"></script>
+        <script src="../../../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Adaptive Functions" href="mlpro.rl.pool.afunctions.html" />
+    <link rel="prev" title="Pool Objects" href="../../02_mlpro.pool.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../03_machine_learning/mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../03_machine_learning/mlpro_rl/main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../03_machine_learning/mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../03_machine_learning/mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../../appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../../main.html">A2 - API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../01_mlpro.core.html">Core Functions</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../../02_mlpro.pool.html">Pool Objects</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../../02_mlpro.pool.html#reinforcement-learning">Reinforcement Learning</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">State, Action, Reward Buffers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.afunctions.html">Adaptive Functions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.policies.html">Policies</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.actionplanner.html">Action Planners</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.envmodels.html">Environment Models</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.envs.html">Environments</a></li>
+<li class="toctree-l4"><a class="reference internal" href="mlpro.rl.pool.scenarios.html">Scenarios</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../02_mlpro.pool.html#game-theory">Game Theory</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../03_mlpro.wrappers.html">Wrappers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../main.html">A2 - API Reference</a> &raquo;</li>
+          <li><a href="../../02_mlpro.pool.html">Pool Objects</a> &raquo;</li>
+      <li>State, Action, Reward Buffers</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/04_appendices/appendix2/sub/pool/rl/mlpro.rl.pool.sarsbuffer.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="state-action-reward-buffers">
+<h1>State, Action, Reward Buffers<a class="headerlink" href="#state-action-reward-buffers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-mlpro.rl.pool.sarsbuffer.RandomSARSBuffer">
+<span id="random-sar-buffer"></span><h2>Random SAR Buffer<a class="headerlink" href="#module-mlpro.rl.pool.sarsbuffer.RandomSARSBuffer" title="Permalink to this headline">¶</a></h2>
+<p>Ver. 1.0.0 (2021-09-25)</p>
+<p>This module provides implementation of SARBuffer with random sampling.</p>
+<dl class="py class">
+<dt id="mlpro.rl.pool.sarsbuffer.RandomSARSBuffer.RandomSARSBuffer">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.rl.pool.sarsbuffer.RandomSARSBuffer.</code><code class="sig-name descname">RandomSARSBuffer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_size</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.RandomSARSBuffer.RandomSARSBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../core/mlpro.bf.html#mlpro.bf.data.BufferRnd" title="mlpro.bf.data.BufferRnd"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.data.BufferRnd</span></code></a></p>
+<p>Random Sampling SARBuffer.
+This is just renaming class from BufferRnd</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-mlpro.rl.pool.sarsbuffer.PrioritizedBuffer">
+<span id="prioritized-buffer"></span><h2>Prioritized Buffer<a class="headerlink" href="#module-mlpro.rl.pool.sarsbuffer.PrioritizedBuffer" title="Permalink to this headline">¶</a></h2>
+<p>Ver. 1.0.1 (2021-09-26)</p>
+<p>This module provides the Prioritized Buffer based on the reference.</p>
+<dl class="py class">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBufferElement">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.</code><code class="sig-name descname">PrioritizedBufferElement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_state</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../../core/mlpro.bf.html#mlpro.bf.systems.State" title="mlpro.bf.systems.State">mlpro.bf.systems.State</a></span></em>, <em class="sig-param"><span class="n">p_action</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../../core/mlpro.bf.html#mlpro.bf.systems.Action" title="mlpro.bf.systems.Action">mlpro.bf.systems.Action</a></span></em>, <em class="sig-param"><span class="n">p_reward</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_env.Reward" title="mlpro.rl.models_env.Reward">mlpro.rl.models_env.Reward</a></span></em>, <em class="sig-param"><span class="n">p_state_new</span><span class="p">:</span> <span class="n"><a class="reference internal" href="../../core/mlpro.bf.html#mlpro.bf.systems.State" title="mlpro.bf.systems.State">mlpro.bf.systems.State</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBufferElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_env_ada.SARSElement" title="mlpro.rl.models_env_ada.SARSElement"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env_ada.SARSElement</span></code></a></p>
+<p>Element of a State-Action-Reward-Buffer.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBuffer">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.</code><code class="sig-name descname">PrioritizedBuffer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_size</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">alpha</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.3</span></em>, <em class="sig-param"><span class="n">beta</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBuffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../../core/mlpro.rl.html#mlpro.rl.models_env_ada.SARSBuffer" title="mlpro.rl.models_env_ada.SARSBuffer"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env_ada.SARSBuffer</span></code></a></p>
+<p>Prioritized Sampling State-Action-Reward-Buffer in dictionary.</p>
+<dl class="py method">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBuffer.add_element">
+<code class="sig-name descname">add_element</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_elem</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBufferElement" title="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBufferElement">mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBufferElement</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBuffer.add_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add element to the buffer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p_elem</strong> (<a class="reference internal" href="../../core/mlpro.bf.html#mlpro.bf.data.BufferElement" title="mlpro.bf.data.BufferElement"><em>BufferElement</em></a>) – Element of Buffer</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBuffer.get_latest">
+<code class="sig-name descname">get_latest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBuffer.get_latest" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns latest buffered element.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBuffer.get_all">
+<code class="sig-name descname">get_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBuffer.get_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all buffered elements.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBuffer.update_priorities">
+<code class="sig-name descname">update_priorities</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_list_idx</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">priorities</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.PrioritizedBuffer.update_priorities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the priority tree.
+Needs to be called during each training step, utilising the element-wise calculated loss.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.</code><code class="sig-name descname">SegmentTree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">capacity</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">operation</span><span class="p">:</span> <span class="n">Callable</span></em>, <em class="sig-param"><span class="n">init_value</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Reference:
+<a class="reference external" href="https://github.com/openai/baselines/blob/master/baselines/common/segment_tree.py">https://github.com/openai/baselines/blob/master/baselines/common/segment_tree.py</a>
+.. attribute:: capacity</p>
+<blockquote>
+<div><dl class="field-list simple">
+<dt class="field-odd">type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="py attribute">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree.tree">
+<code class="sig-name descname">tree</code><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree.tree" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree.operation">
+<code class="sig-name descname">operation</code><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree.operation" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree.operate">
+<code class="sig-name descname">operate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree.operate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns result of applying ‘self.operation’.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SumSegmentTree">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.</code><code class="sig-name descname">SumSegmentTree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">capacity</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SumSegmentTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree" title="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree</span></code></a></p>
+<p>Reference:
+<a class="reference external" href="https://github.com/openai/baselines/blob/master/baselines/common/segment_tree.py">https://github.com/openai/baselines/blob/master/baselines/common/segment_tree.py</a></p>
+<dl class="py method">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SumSegmentTree.sum">
+<code class="sig-name descname">sum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SumSegmentTree.sum" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns arr[start] + … + arr[end].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SumSegmentTree.retrieve">
+<code class="sig-name descname">retrieve</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">upperbound</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SumSegmentTree.retrieve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the highest index <cite>i</cite> about upper bound in the tree</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.MinSegmentTree">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.</code><code class="sig-name descname">MinSegmentTree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">capacity</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.MinSegmentTree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree" title="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.SegmentTree</span></code></a></p>
+<p>Reference:
+<a class="reference external" href="https://github.com/openai/baselines/blob/master/baselines/common/segment_tree.py">https://github.com/openai/baselines/blob/master/baselines/common/segment_tree.py</a></p>
+<dl class="py method">
+<dt id="mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.MinSegmentTree.min">
+<code class="sig-name descname">min</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mlpro.rl.pool.sarsbuffer.PrioritizedBuffer.MinSegmentTree.min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns min(arr[start], …,  arr[end]).</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../../02_mlpro.pool.html" class="btn btn-neutral float-left" title="Pool Objects" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mlpro.rl.pool.afunctions.html" class="btn btn-neutral float-right" title="Adaptive Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

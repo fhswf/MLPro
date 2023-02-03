@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grid World &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../../_static/jquery.js"></script>
+        <script src="../../../../../../_static/underscore.js"></script>
+        <script src="../../../../../../_static/doctools.js"></script>
+        <script src="../../../../../../_static/language_data.js"></script>
+        <script src="../../../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix2/main.html">A2 - API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Grid World</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/03_machine_learning/mlpro_rl/sub/env/pool/gridworld.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="id1">
+<h1><a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/gridworld.py">Grid World</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>Grid World is a very simple environment and suits to someone who just starts to understand Reinforcement Learning or Markov Decision Process.</p>
+<p>In this Grid World environment, by default, the agent will be placed in a 2 dimensional grid world with the size of 8x8, tasked to reach
+the goal through position increment actions. The user can customize the dimension of the grid and decide
+the maximum number of steps. The agent is represented by number 1 and the goal is represented by number 2, where number 3 means that the agent is reaching the goal.
+In the latest version of Grid World, we provided the possibilities to set your own or random initial and/or goal positions.
+Moreover, there are two possible types of actions, such as continuous actions which can reached the goal in one-shot and discrete actions (only for 2-D grid world).
+The discrete actions consists of ‘up’, ‘right’, ‘down’, and ‘left’ (or ‘north’, ‘east’, ‘south’, and ‘west’) respectively.
+Here is the example of the grid world environment, by default and with random initial and goal states:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">[[</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span><span class="o">]</span>,
+<span class="o">[</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">1</span><span class="o">]</span>,
+<span class="o">[</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span><span class="o">]</span>,
+<span class="o">[</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span><span class="o">]</span>,
+<span class="o">[</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span><span class="o">]</span>,
+<span class="o">[</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span><span class="o">]</span>,
+<span class="o">[</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">2</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span><span class="o">]</span>,
+<span class="o">[</span><span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span>, <span class="m">0</span><span class="o">]]</span>
+</pre></div>
+</div>
+<p>At the moment, we have not incorporated any obstacles or walls, which will be added in the near future.
+The current implementation shows that if an action lead to a state outside the boundaries, then the state is back to the previous state.</p>
+<p>This Grid World environment can be imported via:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mlpro.rl.pool.envs.gridworld</span>
+</pre></div>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/numpy/">NumPy</a></p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="general-information">
+<h2>General Information<a class="headerlink" href="#general-information" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 36%" />
+<col style="width: 64%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Number of agent</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Native Source</p></td>
+<td><p>MLPro</p></td>
+</tr>
+<tr class="row-even"><td><p>Action Space Dimension</p></td>
+<td><p>Depends on the grid size, e.g. (8, 8), (8, 8, 8), etc.</p></td>
+</tr>
+<tr class="row-odd"><td rowspan="2"><p>Action Space Base Set</p></td>
+<td><p>(Type 1) Real number</p></td>
+</tr>
+<tr class="row-even"><td><p>(Type 2) Integer number</p></td>
+</tr>
+<tr class="row-odd"><td rowspan="2"><p>Action Space Boundaries</p></td>
+<td><p>(Type 1) Depends on grid_size</p></td>
+</tr>
+<tr class="row-even"><td><p>(Type 2) 0 to 3</p></td>
+</tr>
+<tr class="row-odd"><td><p>State Space Dimension</p></td>
+<td><p>Depends on the grid size</p></td>
+</tr>
+<tr class="row-even"><td><p>State Space Base Set</p></td>
+<td><p>Integer number</p></td>
+</tr>
+<tr class="row-odd"><td><p>State Space Boundaries</p></td>
+<td><p>0 to 3</p></td>
+</tr>
+<tr class="row-even"><td><p>Reward Structure</p></td>
+<td><p>Overall reward</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="action-space">
+<h2>Action Space<a class="headerlink" href="#action-space" title="Permalink to this headline">¶</a></h2>
+<p>There are two types of actions that can be selected in the beginning of the training, such as continuous actions (‘C_ACTION_TYPE_CONT’) and discrete actions (‘C_ACTION_TYPE_DISC_2D’).
+At the moment, the discrete action is limited to 2-dimensional grid world.</p>
+<p>For continuous action, the action directly affects the location of the agent. The action is
+interpreted as increments towards the current location value. The dimension depends on the grid_size
+parameter. By default, there is a possibility to reach the target in one shot.</p>
+<p>For discrete action, there are four possible actions that represented by number 0 to 3, as follows:
+Number ‘0’ means ‘up’ or ‘north’.
+Number ‘1’ means ‘right’ or ‘east’.
+Number ‘2’ means ‘down’ or ‘south’.
+Number ‘3’ means ‘left’ or ‘west’.</p>
+</div>
+<div class="section" id="state-space">
+<h2>State Space<a class="headerlink" href="#state-space" title="Permalink to this headline">¶</a></h2>
+<p>The state space is initialized from the grid_size parameter, which can be set up to however many dimension
+as needed. For example, the agent can be placed in a two dimensional world with a n x m size, three dimensional world with a n x m x p, or even more,
+for instance by setting
+<code class="code docutils literal notranslate"><span class="pre">grid_size</span> <span class="pre">=</span> <span class="pre">(n,m)</span></code>
+or
+<code class="code docutils literal notranslate"><span class="pre">grid_size</span> <span class="pre">=</span> <span class="pre">(n,m,p)</span></code>.</p>
+<p>Additionally, the initial and goal position can be randomized or predefined.</p>
+</div>
+<div class="section" id="reward-structure">
+<h2>Reward Structure<a class="headerlink" href="#reward-structure" title="Permalink to this headline">¶</a></h2>
+<p>The default reward function is really simple and straight forward, where the reward is 1, if the agent reaches the goal.
+The reward is 1 minus the euclidean distance between goal states and current states, if the agent has not reached the goal yet.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">reward</span> <span class="o">=</span> <span class="n">Reward</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_REWARD_TYPE</span><span class="p">)</span>
+<span class="n">rew</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">euclidean_distance</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">goal_pos</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">agent_pos</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">euclidean_distance</span> <span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+    <span class="n">rew</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="n">euclidean_distance</span>
+<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_step</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_step</span><span class="p">:</span>
+    <span class="n">rew</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_step</span>
+
+<span class="n">reward</span><span class="o">.</span><span class="n">set_overall_reward</span><span class="p">(</span><span class="n">rew</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="change-log">
+<h2>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 73%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Version</p></th>
+<th class="head"><p>Changes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1.0.8</p></td>
+<td><p>First public version</p></td>
+</tr>
+<tr class="row-odd"><td><p>2.0.0</p></td>
+<td><p>Add discrete action and predefined target as options</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="cross-reference">
+<h2>Cross Reference<a class="headerlink" href="#cross-reference" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../../../../../04_appendices/appendix2/sub/pool/rl/mlpro.rl.pool.envs.html#module-mlpro.rl.pool.envs.gridworld"><span class="std std-ref">API Reference</span></a></p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

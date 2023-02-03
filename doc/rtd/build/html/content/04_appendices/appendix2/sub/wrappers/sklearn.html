@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Scikit-learn &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="A3 - Project MLPro" href="../../../appendix3/main.html" />
+    <link rel="prev" title="Stable Baslines3" href="sb3.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_rl/main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../main.html">A2 - API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../01_mlpro.core.html">Core Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../02_mlpro.pool.html">Pool Objects</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../03_mlpro.wrappers.html">Wrappers</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="hyperopt.html">Hyperopt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openai_gym.html">OpenAI Gym</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openml.html">OpenML</a></li>
+<li class="toctree-l3"><a class="reference internal" href="optuna.html">Optuna</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pettingzoo.html">PettingZoo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="river.html">River</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sb3.html">Stable Baslines3</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Scikit-learn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#cross-references">Cross References</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../main.html">A2 - API Reference</a> &raquo;</li>
+          <li><a href="../03_mlpro.wrappers.html">Wrappers</a> &raquo;</li>
+      <li>Scikit-learn</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/04_appendices/appendix2/sub/wrappers/sklearn.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="module-mlpro.wrappers.sklearn">
+<span id="scikit-learn"></span><h1>Scikit-learn<a class="headerlink" href="#module-mlpro.wrappers.sklearn" title="Permalink to this headline">¶</a></h1>
+<p>Ver. 1.3.2 (2022-12-13)</p>
+<p>This module provides wrapper functionalities to incorporate public data sets of the Scikit-learn ecosystem.</p>
+<p>Learn more:
+<a class="reference external" href="https://scikit-learn.org">https://scikit-learn.org</a></p>
+<dl class="py class">
+<dt id="mlpro.wrappers.sklearn.WrStreamProviderSklearn">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.wrappers.sklearn.</code><code class="sig-name descname">WrStreamProviderSklearn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.wrappers.sklearn.WrStreamProviderSklearn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.wrappers.models.Wrapper</span></code>, <a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.streams.models.StreamProvider" title="mlpro.bf.streams.models.StreamProvider"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.streams.models.StreamProvider</span></code></a></p>
+<p>Wrapper class for Sklearn as StreamProvider</p>
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sklearn.WrStreamProviderSklearn.C_NAME">
+<code class="sig-name descname">C_NAME</code><em class="property"> = 'Stream Provider Scikit-learn'</em><a class="headerlink" href="#mlpro.wrappers.sklearn.WrStreamProviderSklearn.C_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sklearn.WrStreamProviderSklearn.C_WRAPPED_PACKAGE">
+<code class="sig-name descname">C_WRAPPED_PACKAGE</code><em class="property"> = 'scikit-learn'</em><a class="headerlink" href="#mlpro.wrappers.sklearn.WrStreamProviderSklearn.C_WRAPPED_PACKAGE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sklearn.WrStreamProviderSklearn.C_SCIREF_TYPE">
+<code class="sig-name descname">C_SCIREF_TYPE</code><em class="property"> = 'Online'</em><a class="headerlink" href="#mlpro.wrappers.sklearn.WrStreamProviderSklearn.C_SCIREF_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sklearn.WrStreamProviderSklearn.C_SCIREF_AUTHOR">
+<code class="sig-name descname">C_SCIREF_AUTHOR</code><em class="property"> = 'Scikit-learn'</em><a class="headerlink" href="#mlpro.wrappers.sklearn.WrStreamProviderSklearn.C_SCIREF_AUTHOR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sklearn.WrStreamProviderSklearn.C_SCIREF_URL">
+<code class="sig-name descname">C_SCIREF_URL</code><em class="property"> = 'https://scikit-learn.org'</em><a class="headerlink" href="#mlpro.wrappers.sklearn.WrStreamProviderSklearn.C_SCIREF_URL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.wrappers.sklearn.WrStreamSklearn">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.wrappers.sklearn.</code><code class="sig-name descname">WrStreamSklearn</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_id</span></em>, <em class="sig-param"><span class="n">p_name</span></em>, <em class="sig-param"><span class="n">p_num_instances</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">p_version</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">''</span></em>, <em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">p_mode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">p_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.wrappers.sklearn.WrStreamSklearn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.streams.models.Stream" title="mlpro.bf.streams.models.Stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.streams.models.Stream</span></code></a></p>
+<p>Wrapper class for Streams from Sklearn</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_id</strong> – Id of the stream.</p></li>
+<li><p><strong>p_name</strong> (<em>str</em>) – Name of the stream.</p></li>
+<li><p><strong>p_num_instances</strong> (<em>int</em>) – Number of instances in the stream.</p></li>
+<li><p><strong>p_version</strong> (<em>str</em>) – Version of the stream. Default = ‘’.</p></li>
+<li><p><strong>p_feature_space</strong> (<a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.math.basics.MSpace" title="mlpro.bf.math.basics.MSpace"><em>MSpace</em></a>) – Optional feature space. Default = None.</p></li>
+<li><p><strong>p_label_space</strong> (<a class="reference internal" href="../core/mlpro.bf.html#mlpro.bf.math.basics.MSpace" title="mlpro.bf.math.basics.MSpace"><em>MSpace</em></a>) – Optional label space. Default = None.</p></li>
+<li><p><strong>p_mode</strong> – Operation mode. Valid values are stored in constant C_VALID_MODES.</p></li>
+<li><p><strong>p_logging</strong> – Log level (see constants of class Log). Default: Log.C_LOG_ALL.</p></li>
+<li><p><strong>p_kwargs</strong> (<em>dict</em>) – Further stream specific parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sklearn.WrStreamSklearn.C_NAME">
+<code class="sig-name descname">C_NAME</code><em class="property"> = 'Sklearn stream'</em><a class="headerlink" href="#mlpro.wrappers.sklearn.WrStreamSklearn.C_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.wrappers.sklearn.WrStreamSklearn.C_SCIREF_TYPE">
+<code class="sig-name descname">C_SCIREF_TYPE</code><em class="property"> = 'Online'</em><a class="headerlink" href="#mlpro.wrappers.sklearn.WrStreamSklearn.C_SCIREF_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<div class="section" id="cross-references">
+<h2>Cross References<a class="headerlink" href="#cross-references" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../../../appendix1/sub/bf/streams/howto.bf.streams.052.html#howto-bf-streams-052"><span class="std std-ref">Howto BF-STREAMS-052: Accessing Data from Scikit-Learn</span></a></p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="sb3.html" class="btn btn-neutral float-left" title="Stable Baslines3" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../../appendix3/main.html" class="btn btn-neutral float-right" title="A3 - Project MLPro" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi-Cartpole &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../../_static/jquery.js"></script>
+        <script src="../../../../../../_static/underscore.js"></script>
+        <script src="../../../../../../_static/doctools.js"></script>
+        <script src="../../../../../../_static/language_data.js"></script>
+        <script src="../../../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix2/main.html">A2 - API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Multi-Cartpole</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/03_machine_learning/mlpro_rl/sub/env/pool/multicartpole.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="id1">
+<h1><a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/multicartpole.py">Multi-Cartpole</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<p>The multicartpole environment is an extension over the <a class="reference external" href="https://gym.openai.com/envs/CartPole-v1/">cartpole-v1</a> environment native to <a class="reference external" href="https://gym.openai.com">OpenAI Gym</a> environments, where a cart is sliding over a flat surface and a pole is attached to the the middle of the cart at one end with frictionless turning joint. With multicartpole environment, we provide you the possibility to simulate multiple cartplole-v1 evrironments from gym. The goal of this environment is to maintain vertical position of the pole on the cart and stopping it from falling over with the aid of pushing the cart to left or right.
+The multicartpole environment is visualized in the image below</p>
+<a class="reference internal image-reference" href="../../../../../../_images/multicartpole_0.gif"><img alt="../../../../../../_images/multicartpole_0.gif" src="../../../../../../_images/multicartpole_0.gif" style="width: 250px;" /></a>
+<a class="reference internal image-reference" href="../../../../../../_images/multicartpole_1.gif"><img alt="../../../../../../_images/multicartpole_1.gif" src="../../../../../../_images/multicartpole_1.gif" style="width: 250px;" /></a>
+<a class="reference internal image-reference" href="../../../../../../_images/multicartpole_2.gif"><img alt="../../../../../../_images/multicartpole_2.gif" src="../../../../../../_images/multicartpole_2.gif" style="width: 250px;" /></a>
+<p>This multicartpole environment can be imported via:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mlpro.rl.pool.envs.multicartpole</span>
+</pre></div>
+</div>
+<p>The multicartpole environment can simulate ‘n’ number of cartpole-v1 environmments simultaneously, where the parameter ‘n’ can be set while instantiating the environment. The multicartpole environment can be instantiated as an mlpro environment class by including</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">env</span>   <span class="o">=</span> <span class="n">MultiCartPole</span><span class="p">(</span><span class="n">p_num_envs</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The multicartpole environment consists of ‘n’ number of internal cartpole-v1 gym environments running simultaneously. The environment starts with random state values and the agent computes actions based on the policy. As there are multiple sub-environments running simultaneously, MLPro offers agent object of type <a class="reference internal" href="../../agents/multiagents.html#multi-agents"><span class="std std-ref">multi-agent</span></a>, where a number of agents simultaneously simulate corresponding sub-environments. The agent computes an action value of 1 or 0 which refers to a left or right push respectively to the cart. These actions computed by the agents are processed in the corresponding gym sub environment through the <span class="xref std std-ref">MLPro to Gym wrapper functionality</span> of MLPro. The output from the gym sub-environments is the set of new state values and the state flags including success, done, error. The new state of the multicartpole environment is a set of states of all internal sub-environments. The terminal state of multicartpole environment reaches when all the sub-environments are at a terminal state. The sub-environemnt which are terminal before the rest of the sub-environemnts the sub-environment is frozen until the rest of the sub-environemnts are frozen. For better understanding of the multi-cartpole environment and its implementation refer to this <span class="xref std std-ref">example implementation</span>. Running this example implementation of multi-cartpole environment will produce visualisation as in the image below</p>
+<a class="reference internal image-reference" href="../../../../../../_images/multicartpole_run.gif"><img alt="../../../../../../_images/multicartpole_run.gif" src="../../../../../../_images/multicartpole_run.gif" style="width: 900px;" /></a>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>For the multicartpole environment to run properly please install the following python packages:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/numpy/">NumPy</a></p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/matplotlib/">Matplotlib</a></p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/gym/">OpenAI Gym</a></p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="general-information">
+<h2>General Information<a class="headerlink" href="#general-information" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Value per sub-environment</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Agents</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Native Source</p></td>
+<td><p>MLPro</p></td>
+</tr>
+<tr class="row-even"><td><p>Action Space Dimension</p></td>
+<td><p>[2,]</p></td>
+</tr>
+<tr class="row-odd"><td><p>Action Space Base Set</p></td>
+<td><p>Integer number</p></td>
+</tr>
+<tr class="row-even"><td><p>Action Space Boundaries</p></td>
+<td><p>[0,1]</p></td>
+</tr>
+<tr class="row-odd"><td><p>State Space Dimension</p></td>
+<td><p>[4,]</p></td>
+</tr>
+<tr class="row-even"><td><p>State Space Base Set</p></td>
+<td><p>Real number</p></td>
+</tr>
+<tr class="row-odd"><td><p>Reward Structure</p></td>
+<td><p>Overall reward</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="action-space">
+<h2>Action Space<a class="headerlink" href="#action-space" title="Permalink to this headline">¶</a></h2>
+<p>Since the goal of the environment is to maintain the upright position of the cart, the cart is pushed to right or left for every run of the scenario. The action space for the multicartpole environment consists of push actions +1 and 0, denoting push towards right and left respectively. The size of the action space however is directly proportional to the number of child cartpole-v1 environments running within the multicartpole environment, for example a multicartpole environment for 3 sub environments has an action space of size 3.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Action</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Push Left</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Push Right</p></td>
+<td><p>1</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The action space for muticartpole environment consists of action spaces for all the sub-environments within the environment. Each of the action space actuates the assigned agent or muti-agent for the subenvironment. To know more about the the multi-agent class functionality native to MLPro refer to the <span class="xref std std-ref">appendix section</span>.</p>
+</div>
+</div>
+<div class="section" id="state-space">
+<h2>State Space<a class="headerlink" href="#state-space" title="Permalink to this headline">¶</a></h2>
+<p>The state space for the muticartpole environment returns state of every subenvironment within the environment including position of cart, velocity of cart, position of angel and the angular velocity of the pole. The states for a single cartpole environment running inside the multicartpole environment can be understood by the table below.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>State</p></th>
+<th class="head"><p>Boundaries</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Cart Position</p></td>
+<td><p>[-2.4,2.4]</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cart Velocity</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Angle of pole</p></td>
+<td><p>[-0.209,0.209]</p></td>
+</tr>
+<tr class="row-odd"><td><p>Angular Velocity of Pole</p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The states of the muticartpole environment also return some flags giving additional information about the environment which includes</p>
+<ul class="simple">
+<li><p>Initial: The flag initial is set to true when an environment has been instantiated or has been reset after a successful or unsuccessful scenario run. The intital flag denotes that there are no adaptations made yet.</p></li>
+<li><p>Success: The success flag returns true whem a multicartpole environment has successfully run a scenario for a specified number of cycles. To run an environment sucessfully, the corresponding states of all the sub environments are within the boundaries as specified in the above table for the number of cycles specified. The scenario ends after the maximum number of cycles specified.</p></li>
+<li><p>Broken: The broken flag return true when the multicartpole environment is unsuccessful to run for the specified number of cycles. The broken state is set to true when the corresponding states of any sub-environments exceeds the state boundaries as mentionaed in the table above.</p></li>
+<li><p>Terminal: The flag terminal state defines end of an episode or end of a successful scenario of the multicartpole environment. The flag terminal is set to true when the either of the flags sucess or broken are true. The terminal flag is also set to true if the cycle extends the latency time or at the timeout. Once, the terminal flag is set to true, the environment terminates or resets based on the type of run and number of cycles.</p></li>
+</ul>
+<p>More information about these state parameters related to the multi-cartpole environment can be found in the <a class="reference internal" href="../../../../../04_appendices/appendix2/sub/pool/rl/mlpro.rl.pool.envs.html#module-mlpro.rl.pool.envs.multicartpole"><span class="std std-ref">module descriptions</span></a>.</p>
+</div>
+<div class="section" id="reward-structure">
+<h2>Reward Structure<a class="headerlink" href="#reward-structure" title="Permalink to this headline">¶</a></h2>
+<p>For multicartpole environment, an overall reward is awarded to the multi-agent. In a single sub-environment of cartpole-v1 a reward value of 1 is returned for every successful cycle run, keeping the states within boundaries. Subsequently, the reward awarded by the multi-cartpole environment is the weighted average of the rewards returned by every internal cartpole-v1 environment.</p>
+</div>
+<div class="section" id="change-log">
+<h2>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 19%" />
+<col style="width: 81%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Version</p></th>
+<th class="head"><p>Changes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1.2.6</p></td>
+<td><p>This is the first version for the multicartpole environment release</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="cross-reference">
+<h2>Cross Reference<a class="headerlink" href="#cross-reference" title="Permalink to this headline">¶</a></h2>
+<p>Refer these documents for further understanding of MLPro Multicartpole environment and other functionalities of MLPro</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../../../04_appendices/appendix2/sub/pool/rl/mlpro.rl.pool.envs.html#module-mlpro.rl.pool.envs.multicartpole"><span class="std std-ref">API Reference</span></a></p></li>
+<li><p><a class="reference internal" href="../../../../../04_appendices/appendix1/sub/rl/agent/howto.rl.agent.003.html#howto-agent-rl-003"><span class="std std-ref">Howto RL-AGENT-003: Run Multi-Agent with Own Policy</span></a></p></li>
+<li><p><a class="reference internal" href="../../../../../04_appendices/appendix1/sub/rl/agent/howto.rl.agent.004.html#howto-agent-rl-004"><span class="std std-ref">Howto RL-AGENT-004: Train Multi-Agent with Own Policy</span></a></p></li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

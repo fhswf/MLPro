@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>9.4. Agents &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script src="../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="9.4.1. Custom Policies" href="agents/custompolicies.html" />
+    <link rel="prev" title="9.3. Environments" href="03_env.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../main.html">9. MLPro-RL - Reinforcement Learning</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_overview.html">9.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_getstarted.html">9.2. Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_env.html">9.3. Environments</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">9.4. Agents</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="agents/custompolicies.html">9.4.1. Custom Policies</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agents/pool.html">9.4.2. Policy Pool</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agents/mbagents.html">9.4.3. Model-Based Agents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="agents/multiagents.html">9.4.4. Multi-Agents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="05_scenario.html">9.5. Scenarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_train.html">9.6. Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_wrapper.html">9.7. 3rd Party Support</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../04_appendices/appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../04_appendices/appendix2/main.html">A2 - API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../04_appendices/appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../main.html"><span class="section-number">9. </span>MLPro-RL - Reinforcement Learning</a> &raquo;</li>
+      <li><span class="section-number">9.4. </span>Agents</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/03_machine_learning/mlpro_rl/sub/04_agents.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="agents">
+<h1><span class="section-number">9.4. </span>Agents<a class="headerlink" href="#agents" title="Permalink to this headline">¶</a></h1>
+<p>In RL, an agent is an autonomous entity that interacts with an environment,
+receiving rewards for performing certain actions and updates its behavior based on that feedback.
+The agent’s goal is to learn a policy that maximizes its cumulative reward over time.</p>
+<p>From a scientific perspective, the agent is typically modeled as a decision-making system that maps states of the environment to actions through a policy.
+The policy can be deterministic or probabilistic and can be learned through various RL algorithms such as Q-Learning, SARSA, or Policy Gradient methods.
+The agent’s performance is evaluated using metrics such as reward, cumulative reward, and value functions.
+Overall, an agent in RL provides an algorithm that makes decisions and learns from experience to optimize its performance in a given task.</p>
+<p>MLPro-RL supplies a special agent model landscape, which covers different RL scenarios including a simple single-agent RL, a multi-agent RL, and model-based agents with an optional action planner.
+For the multi-agent RL, the structure is constructed by assigning multiple single agents in a group.
+The main component of each single-agent (either single-agent or multi-agent RL) is the policy.
+The basic class of the policy is inherited from the ML Model of basic MLPro functionality and extended by the RL-related function of the action calculation.
+The users can inherit the basic class of the policy to implement their <a class="reference internal" href="agents/custompolicies.html#target-custom-policies-rl"><span class="std std-ref">own custom algorithms</span></a> or simply use algorithms from third-party packages via <a class="reference internal" href="07_wrapper.html#target-package-third"><span class="std std-ref">wrapper classes</span></a>.
+The other possibility would be <a class="reference internal" href="agents/pool.html#target-agents-pool-rl"><span class="std std-ref">importing algorithms from the pool object</span></a>.
+For an overview, the simplified class diagram of agents in MLPro is described below.</p>
+<div class="figure align-default" id="id1">
+<a class="reference internal image-reference" href="../../../../_images/MLPro-RL_agents.png"><img alt="../../../../_images/MLPro-RL_agents.png" src="../../../../_images/MLPro-RL_agents.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">This figure is taken from <a class="reference external" href="https://doi.org/10.1016/j.mlwa.2022.100341">MLPro 1.0 paper</a>.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>Moreover, an environment model (known as <a class="reference internal" href="agents/mbagents.html#target-agents-mbrl"><span class="std std-ref">EnvModel class</span></a>) can be supplemented to a single agent, i.e. for model-based RL cases.
+This class can be used for model-based learning, which learns the behaviour or dynamics of the environment. Another possible extension of the model-based agent is an action planner.
+Action planner uses the environment model (or EnvModel) to plan the next action by predicting the output on a certain horizon.
+An example of action planner algorithms is <a class="reference internal" href="agents/pool/mpc.html#target-mpc-rl"><span class="std std-ref">Model Predictive Control (MPC)</span></a>, which is also provided in MLPro.</p>
+<p>Additionally, you can find more comprehensive explanations of agents in MLPro-RL including a sample application on controlling a UR5 Robot in this paper:
+<a class="reference external" href="https://doi.org/10.1016/j.mlwa.2022.100341">MLPro 1.0 - Standardized Reinforcement Learning and Game Theory in Python</a>.</p>
+<p>Here are some subsections of the agent model landscape of MLPro-RL, which might be interesting for the users:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="agents/custompolicies.html">9.4.1. Custom Policies</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agents/pool.html">9.4.2. Policy Pool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agents/mbagents.html">9.4.3. Model-Based Agents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="agents/multiagents.html">9.4.4. Multi-Agents</a></li>
+</ul>
+</div>
+<p>The following flowchart describes the adaptation procedure of an agent. In the beginning, the loop checks whether it is model-based RL or model-free RL.
+If it is a model-free RL, then the loop is jumped to a direct policy adaptation. Then, the current step ended after the policy adaptation.
+Meanwhile, in the model-based RL, the EnvModel is first adapted, and then the loop checks whether the accuracy of the EnvModel exceeds a given threshold.
+This activity is to make sure that the EnvModel is accurate enough for policy adaptation. If the accuracy is higher than the threshold, then the policy adaptation takes place with EnvModel.
+Otherwise, the current step is ended without any policy adaptations.</p>
+<img alt="../../../../_images/MLPro-RL-Agents_flowchart_adaptation.png" src="../../../../_images/MLPro-RL-Agents_flowchart_adaptation.png" />
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="03_env.html" class="btn btn-neutral float-left" title="9.3. Environments" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="agents/custompolicies.html" class="btn btn-neutral float-right" title="9.4.1. Custom Policies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Adaptivity &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Pool Objects" href="../02_mlpro.pool.html" />
+    <link rel="prev" title="Game Theory" href="mlpro.gt.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_rl/main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../main.html">A2 - API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../01_mlpro.core.html">Core Functions</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mlpro.bf.html">Basic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.sl.html">Supervised Learning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.html">Reinforcement Learning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.gt.html">Game Theory</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Online Adaptivity</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#serial-processing">Serial Processing</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../02_mlpro.pool.html">Pool Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../03_mlpro.wrappers.html">Wrappers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../main.html">A2 - API Reference</a> &raquo;</li>
+          <li><a href="../01_mlpro.core.html">Core Functions</a> &raquo;</li>
+      <li>Online Adaptivity</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/04_appendices/appendix2/sub/core/mlpro.oa.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="online-adaptivity">
+<h1>Online Adaptivity<a class="headerlink" href="#online-adaptivity" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="serial-processing">
+<h2>Serial Processing<a class="headerlink" href="#serial-processing" title="Permalink to this headline">¶</a></h2>
+<img alt="../../../../../_images/MLPro-OA-Proc_class_diagram.drawio.png" src="../../../../../_images/MLPro-OA-Proc_class_diagram.drawio.png" />
+<span class="target" id="module-mlpro.oa.models"></span><p>Ver. 0.6.0 (2023-01-01)</p>
+<p>Core classes for online machine learning.</p>
+<dl class="py class">
+<dt id="mlpro.oa.models.OAShared">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.oa.models.</code><code class="sig-name descname">OAShared</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_range</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OAShared" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.streams.models.StreamShared" title="mlpro.bf.streams.models.StreamShared"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.streams.models.StreamShared</span></code></a></p>
+<p>Template class for shared objects in the context of online adaptive stream processing.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.oa.models.OATask">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.oa.models.</code><code class="sig-name descname">OATask</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_range_max</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">p_ada</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">p_duplicate_data</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">p_visualize</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">p_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OATask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.streams.models.StreamTask" title="mlpro.bf.streams.models.StreamTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.streams.models.StreamTask</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.basics.Model</span></code></p>
+<p>Template class for online adaptive ML tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_name</strong> (<em>str</em>) – Optional name of the task. Default is None.</p></li>
+<li><p><strong>p_range_max</strong> (<em>int</em>) – Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.</p></li>
+<li><p><strong>p_ada</strong> (<em>bool</em>) – Boolean switch for adaptivitiy. Default = True.</p></li>
+<li><p><strong>p_duplicate_data</strong> (<em>bool</em>) – If True, instances will be duplicated before processing. Default = False.</p></li>
+<li><p><strong>p_visualize</strong> (<em>bool</em>) – Boolean switch for visualisation. Default = False.</p></li>
+<li><p><strong>p_logging</strong> – Log level (see constants of class Log). Default: Log.C_LOG_ALL</p></li>
+<li><p><strong>p_kwargs</strong> (<em>dict</em>) – Further optional named parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="mlpro.oa.models.OATask.C_TYPE">
+<code class="sig-name descname">C_TYPE</code><em class="property"> = 'OA-Task'</em><a class="headerlink" href="#mlpro.oa.models.OATask.C_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.oa.models.OATask.C_PLOT_ACTIVE">
+<code class="sig-name descname">C_PLOT_ACTIVE</code><em class="property">: bool</em><em class="property"> = True</em><a class="headerlink" href="#mlpro.oa.models.OATask.C_PLOT_ACTIVE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.oa.models.OATask.C_PLOT_STANDALONE">
+<code class="sig-name descname">C_PLOT_STANDALONE</code><em class="property">: bool</em><em class="property"> = True</em><a class="headerlink" href="#mlpro.oa.models.OATask.C_PLOT_STANDALONE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.oa.models.OATask.C_PLOT_VALID_VIEWS">
+<code class="sig-name descname">C_PLOT_VALID_VIEWS</code><em class="property">: list</em><em class="property"> = ['2D', '3D', 'ND']</em><a class="headerlink" href="#mlpro.oa.models.OATask.C_PLOT_VALID_VIEWS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.oa.models.OATask.C_PLOT_DEFAULT_VIEW">
+<code class="sig-name descname">C_PLOT_DEFAULT_VIEW</code><em class="property">: str</em><em class="property"> = 'ND'</em><a class="headerlink" href="#mlpro.oa.models.OATask.C_PLOT_DEFAULT_VIEW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.oa.models.OATask.adapt_on_event">
+<code class="sig-name descname">adapt_on_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_event_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">p_event_object</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.events.Event" title="mlpro.bf.events.Event">mlpro.bf.events.Event</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OATask.adapt_on_event" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to be used as event handler for event-based adaptations. Calls custom method
+_adapt_on_event() and updates the internal adaptation state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_event_id</strong> (<em>str</em>) – Event id.</p></li>
+<li><p><strong>p_event_object</strong> (<a class="reference internal" href="mlpro.bf.html#mlpro.bf.events.Event" title="mlpro.bf.events.Event"><em>Event</em></a>) – Object with further context informations about the event.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.oa.models.OAWorkflow">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.oa.models.</code><code class="sig-name descname">OAWorkflow</code><span class="sig-paren">(</span><em class="sig-param">p_name: str = None</em>, <em class="sig-param">p_range_max=1</em>, <em class="sig-param">p_class_shared=&lt;class 'mlpro.oa.models.OAShared'&gt;</em>, <em class="sig-param">p_ada: bool = True</em>, <em class="sig-param">p_visualize: bool = False</em>, <em class="sig-param">p_logging=True</em>, <em class="sig-param">**p_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OAWorkflow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.streams.models.StreamWorkflow" title="mlpro.bf.streams.models.StreamWorkflow"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.streams.models.StreamWorkflow</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.basics.Model</span></code></p>
+<p>Online adaptive workflow based on a stream-workflow and an ml model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_name</strong> (<em>str</em>) – Optional name of the workflow. Default is None.</p></li>
+<li><p><strong>p_range_max</strong> (<em>int</em>) – Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.</p></li>
+<li><p><strong>p_class_shared</strong> – Optional class for a shared object (class OAShared or a child class of OAShared)</p></li>
+<li><p><strong>p_ada</strong> (<em>bool</em>) – Boolean switch for adaptivitiy. Default = True.</p></li>
+<li><p><strong>p_visualize</strong> (<em>bool</em>) – Boolean switch for visualisation. Default = False.</p></li>
+<li><p><strong>p_logging</strong> – Log level (see constants of class Log). Default: Log.C_LOG_ALL</p></li>
+<li><p><strong>p_kwargs</strong> (<em>dict</em>) – Further optional named parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="mlpro.oa.models.OAWorkflow.C_TYPE">
+<code class="sig-name descname">C_TYPE</code><em class="property"> = 'OA-Workflow'</em><a class="headerlink" href="#mlpro.oa.models.OAWorkflow.C_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.oa.models.OAWorkflow.add_task">
+<code class="sig-name descname">add_task</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_task</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.streams.models.StreamTask" title="mlpro.bf.streams.models.StreamTask">mlpro.bf.streams.models.StreamTask</a></span></em>, <em class="sig-param"><span class="n">p_pred_tasks</span><span class="p">:</span> <span class="n">list</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OAWorkflow.add_task" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a task to the workflow.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_task</strong> (<a class="reference internal" href="mlpro.bf.html#mlpro.bf.mt.Task" title="mlpro.bf.mt.Task"><em>Task</em></a>) – Task object to be added.</p></li>
+<li><p><strong>p_pred_tasks</strong> (<em>list</em>) – Optional list of predecessor task objects</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.oa.models.OAWorkflow.switch_adaptivity">
+<code class="sig-name descname">switch_adaptivity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_ada</span><span class="p">:</span> <span class="n">bool</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OAWorkflow.switch_adaptivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Switches adaption functionality on/off.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p_ada</strong> (<em>bool</em>) – Boolean switch for adaptivity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.oa.models.OAWorkflow.set_random_seed">
+<code class="sig-name descname">set_random_seed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_seed</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OAWorkflow.set_random_seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets the internal random generator using the given seed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.oa.models.OAWorkflow.get_adapted">
+<code class="sig-name descname">get_adapted</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#mlpro.oa.models.OAWorkflow.get_adapted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True, if the model was adapted at least once. False otherwise.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.oa.models.OAWorkflow.clear_buffer">
+<code class="sig-name descname">clear_buffer</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OAWorkflow.clear_buffer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clears internal buffer (if buffering is active).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.oa.models.OAWorkflow.get_accuracy">
+<code class="sig-name descname">get_accuracy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OAWorkflow.get_accuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the accuracy of the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Accuracy of the model as a scalar value in interval [0,1]</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.oa.models.OAFunction">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.oa.models.</code><code class="sig-name descname">OAFunction</code><span class="sig-paren">(</span><em class="sig-param">p_input_space: mlpro.bf.math.basics.MSpace</em>, <em class="sig-param">p_output_space: mlpro.bf.math.basics.MSpace</em>, <em class="sig-param">p_output_elem_cls=&lt;class 'mlpro.bf.math.basics.Element'&gt;</em>, <em class="sig-param">p_buffer_size=0</em>, <em class="sig-param">p_ada: bool = True</em>, <em class="sig-param">p_visualize: bool = False</em>, <em class="sig-param">p_logging=True</em>, <em class="sig-param">**p_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OAFunction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.basics.AdaptiveFunction</span></code></p>
+<p>…</p>
+<dl class="py attribute">
+<dt id="mlpro.oa.models.OAFunction.C_TYPE">
+<code class="sig-name descname">C_TYPE</code><em class="property"> = 'OA-Function'</em><a class="headerlink" href="#mlpro.oa.models.OAFunction.C_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.oa.models.OAScenario">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.oa.models.</code><code class="sig-name descname">OAScenario</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_mode</span></em>, <em class="sig-param"><span class="n">p_cycle_limit</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">p_visualize</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OAScenario" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.bf.html#mlpro.bf.streams.models.StreamScenario" title="mlpro.bf.streams.models.StreamScenario"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.streams.models.StreamScenario</span></code></a></p>
+<p>…</p>
+<dl class="py attribute">
+<dt id="mlpro.oa.models.OAScenario.C_TYPE">
+<code class="sig-name descname">C_TYPE</code><em class="property"> = 'OA-Scenario'</em><a class="headerlink" href="#mlpro.oa.models.OAScenario.C_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.oa.models.OATrainingResults">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.oa.models.</code><code class="sig-name descname">OATrainingResults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_scenario</span><span class="p">:</span> <span class="n">mlpro.bf.ml.basics.Scenario</span></em>, <em class="sig-param"><span class="n">p_run</span></em>, <em class="sig-param"><span class="n">p_cycle_id</span></em>, <em class="sig-param"><span class="n">p_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">'W'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OATrainingResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.basics.TrainingResults</span></code></p>
+<p>…</p>
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.oa.models.OATraining">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.oa.models.</code><code class="sig-name descname">OATraining</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">p_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.oa.models.OATraining" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.bf.ml.basics.Training</span></code></p>
+<p>…</p>
+<dl class="py attribute">
+<dt id="mlpro.oa.models.OATraining.C_NAME">
+<code class="sig-name descname">C_NAME</code><em class="property"> = 'OA'</em><a class="headerlink" href="#mlpro.oa.models.OATraining.C_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mlpro.gt.html" class="btn btn-neutral float-left" title="Game Theory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../02_mlpro.pool.html" class="btn btn-neutral float-right" title="Pool Objects" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

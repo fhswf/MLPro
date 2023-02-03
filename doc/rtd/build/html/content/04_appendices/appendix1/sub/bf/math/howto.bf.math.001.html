@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Howto BF-MATH-001: Dimensions, Spaces and Elements &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../../_static/jquery.js"></script>
+        <script src="../../../../../../_static/underscore.js"></script>
+        <script src="../../../../../../_static/doctools.js"></script>
+        <script src="../../../../../../_static/language_data.js"></script>
+        <script src="../../../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="Howto BF-MATH-010: Normalizers" href="howto.bf.math.010.html" />
+    <link rel="prev" title="Howto BF-MT-002: Multitasking - Tasks and Workflows" href="../mt/howto.bf.mt.002.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../03_machine_learning/mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../03_machine_learning/mlpro_rl/main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../03_machine_learning/mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../03_machine_learning/mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../../../main.html">A1 - Example Pool</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../../01_howto.bf.html">Basic Functions</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../01_howto.bf.html#elementary-topics">Elementary Topics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../01_howto.bf.html#event-handling">Event Handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../01_howto.bf.html#multitasking">Multitasking</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../../01_howto.bf.html#mathematics">Mathematics</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Howto BF-MATH-001: Dimensions, Spaces and Elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="howto.bf.math.010.html">Howto BF-MATH-010: Normalizers</a></li>
+<li class="toctree-l4"><a class="reference internal" href="howto.bf.math.020.html">Howto BF-MATH-020: Unit Converter</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../../01_howto.bf.html#data-stream-processing">Data Stream Processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../01_howto.bf.html#machine-learning">Machine Learning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../01_howto.bf.html#systems">Systems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../01_howto.bf.html#user-interaction">User Interaction</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../02_howto.rl.html">Reinforcement Learning</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../03_howto.gt.html">Game Theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../04_howto.oa.html">Online Adaptivity</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../appendix2/main.html">A2 - API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../../main.html">A1 - Example Pool</a> &raquo;</li>
+          <li><a href="../../01_howto.bf.html">Basic Functions</a> &raquo;</li>
+      <li>Howto BF-MATH-001: Dimensions, Spaces and Elements</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/04_appendices/appendix1/sub/bf/math/howto.bf.math.001.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="howto-bf-math-001-dimensions-spaces-and-elements">
+<h1>Howto BF-MATH-001: Dimensions, Spaces and Elements<a class="headerlink" href="#howto-bf-math-001-dimensions-spaces-and-elements" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-mlpro.bf.examples.howto_bf_math_001_spaces_and_elements"></span><p>Ver. 1.1.0 (2022-12-09)</p>
+<p>This module demonstrates how to create a space and subspaces and to spawn elements.</p>
+<div class="section" id="executable-code">
+<h2>Executable code<a class="headerlink" href="#executable-code" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">## -------------------------------------------------------------------------------------------------</span>
+<span class="c1">## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks</span>
+<span class="c1">## -- Package : mlpro.bf.examples</span>
+<span class="c1">## -- Module  : howto_bf_math_001_spaces_and_elements.py</span>
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+<span class="c1">## -- History :</span>
+<span class="c1">## -- yyyy-mm-dd  Ver.      Auth.    Description</span>
+<span class="c1">## -- 2021-05-28  1.0.0     DA       Creation/Release</span>
+<span class="c1">## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name</span>
+<span class="c1">## -- 2021-09-23  1.0.1     DA       Adaption to changes in class Element</span>
+<span class="c1">## -- 2021-12-03  1.0.2     DA       New method copy_append_spaces()</span>
+<span class="c1">## -- 2022-02-25  1.0.3     SY       Refactoring due to auto generated ID in class Dimension</span>
+<span class="c1">## -- 2022-12-09  1.1.0     DA       Refactoring due to new restrictions in class Set</span>
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Ver. 1.1.0 (2022-12-09)</span>
+
+<span class="sd">This module demonstrates how to create a space and subspaces and to spawn elements.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">mlpro.bf.various</span> <span class="kn">import</span> <span class="n">Log</span>
+<span class="kn">from</span> <span class="nn">mlpro.bf.math</span> <span class="kn">import</span> <span class="o">*</span>
+
+
+
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+<span class="k">class</span> <span class="nc">MathDemo</span><span class="p">(</span><span class="n">Log</span><span class="p">):</span>
+
+    <span class="n">C_TYPE</span>      <span class="o">=</span> <span class="s1">&#39;Demo&#39;</span>
+    <span class="n">C_NAME</span>      <span class="o">=</span> <span class="s1">&#39;Spaces &amp; Elements&#39;</span>
+
+    <span class="c1"># Some constants for dimension indices to make it more understandable </span>
+    <span class="n">C_POS</span>       <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">C_VEL</span>       <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">C_ACC</span>       <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">C_ANG</span>       <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">C_AVEL</span>      <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">C_AACC</span>      <span class="o">=</span> <span class="mi">5</span>
+
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_logging</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">p_logging</span><span class="o">=</span><span class="n">p_logging</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_euclidian_space</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_subspace1</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_subspace2</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_subspace3</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_element</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_elem_values</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_distance</span><span class="p">()</span>
+
+
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">create_euclidian_space</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">espace</span> <span class="o">=</span> <span class="n">ESpace</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">add_dim</span><span class="p">(</span><span class="n">Dimension</span><span class="p">(</span> <span class="n">p_name_short</span><span class="o">=</span><span class="s1">&#39;Pos&#39;</span><span class="p">,</span> <span class="n">p_name_long</span><span class="o">=</span><span class="s1">&#39;Position&#39;</span><span class="p">,</span> <span class="n">p_unit</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">p_unit_latex</span><span class="o">=</span><span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="n">p_boundaries</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">100</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">add_dim</span><span class="p">(</span><span class="n">Dimension</span><span class="p">(</span> <span class="n">p_name_short</span><span class="o">=</span><span class="s1">&#39;Vel&#39;</span><span class="p">,</span> <span class="n">p_name_long</span><span class="o">=</span><span class="s1">&#39;Velocity&#39;</span><span class="p">,</span> <span class="n">p_unit</span><span class="o">=</span><span class="s1">&#39;m/s&#39;</span><span class="p">,</span> <span class="n">p_unit_latex</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\f</span><span class="s1">rac</span><span class="si">{m}{s}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">p_boundaries</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">add_dim</span><span class="p">(</span><span class="n">Dimension</span><span class="p">(</span> <span class="n">p_name_short</span><span class="o">=</span><span class="s1">&#39;Acc&#39;</span><span class="p">,</span> <span class="n">p_name_long</span><span class="o">=</span><span class="s1">&#39;Acceleration&#39;</span><span class="p">,</span> <span class="n">p_unit</span><span class="o">=</span><span class="s1">&#39;m/qs&#39;</span><span class="p">,</span> <span class="n">p_unit_latex</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\f</span><span class="s1">rac</span><span class="si">{m}</span><span class="s1">{s^2}&#39;</span><span class="p">,</span> <span class="n">p_boundaries</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">add_dim</span><span class="p">(</span><span class="n">Dimension</span><span class="p">(</span> <span class="n">p_name_short</span><span class="o">=</span><span class="s1">&#39;Ang&#39;</span><span class="p">,</span> <span class="n">p_name_long</span><span class="o">=</span><span class="s1">&#39;Angle&#39;</span><span class="p">,</span> <span class="n">p_unit</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="n">p_unit_latex</span><span class="o">=</span><span class="s1">&#39;deg&#39;</span><span class="p">,</span> <span class="n">p_boundaries</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">45</span><span class="p">,</span><span class="mi">45</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">add_dim</span><span class="p">(</span><span class="n">Dimension</span><span class="p">(</span> <span class="n">p_name_short</span><span class="o">=</span><span class="s1">&#39;AVel&#39;</span><span class="p">,</span> <span class="n">p_name_long</span><span class="o">=</span><span class="s1">&#39;Angle Velocity&#39;</span><span class="p">,</span> <span class="n">p_unit</span><span class="o">=</span><span class="s1">&#39;deg/s&#39;</span><span class="p">,</span> <span class="n">p_unit_latex</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\f</span><span class="s1">rac</span><span class="si">{deg}{s}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">p_boundaries</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">]))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">add_dim</span><span class="p">(</span><span class="n">Dimension</span><span class="p">(</span> <span class="n">p_name_short</span><span class="o">=</span><span class="s1">&#39;AAcc&#39;</span><span class="p">,</span> <span class="n">p_name_long</span><span class="o">=</span><span class="s1">&#39;Angle Acceleration&#39;</span><span class="p">,</span> <span class="n">p_unit</span><span class="o">=</span><span class="s1">&#39;deg/qs&#39;</span><span class="p">,</span> <span class="n">p_unit_latex</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\f</span><span class="s1">rac</span><span class="si">{deg}</span><span class="s1">{s^2}&#39;</span><span class="p">,</span> <span class="n">p_boundaries</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">]))</span>
+        
+        <span class="n">_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">get_dim_ids</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_POS</span>       <span class="o">=</span> <span class="n">_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_VEL</span>       <span class="o">=</span> <span class="n">_ids</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_ACC</span>       <span class="o">=</span> <span class="n">_ids</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_ANG</span>       <span class="o">=</span> <span class="n">_ids</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_AVEL</span>      <span class="o">=</span> <span class="n">_ids</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_AACC</span>      <span class="o">=</span> <span class="n">_ids</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOG_TYPE_I</span><span class="p">,</span> <span class="s1">&#39;6-dimensional Euclidian space created&#39;</span><span class="p">)</span>
+
+
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">create_subspace1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subspace1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">spawn</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">C_POS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_VEL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_ACC</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOG_TYPE_I</span><span class="p">,</span> <span class="s1">&#39;Subspace 1 - Number of dimensions and short name of second dimension:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subspace1</span><span class="o">.</span><span class="n">get_num_dim</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">subspace1</span><span class="o">.</span><span class="n">get_dim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_VEL</span><span class="p">)</span><span class="o">.</span><span class="n">get_name_short</span><span class="p">())</span>
+
+
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">create_subspace2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subspace2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">spawn</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">C_ANG</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_AVEL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_AACC</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOG_TYPE_I</span><span class="p">,</span> <span class="s1">&#39;Subspace 2 - Number of dimensions and short name of third dimension:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subspace2</span><span class="o">.</span><span class="n">get_num_dim</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">subspace2</span><span class="o">.</span><span class="n">get_dim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_AACC</span><span class="p">)</span><span class="o">.</span><span class="n">get_name_short</span><span class="p">())</span>
+
+
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">create_subspace3</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subspace3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">spawn</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">C_POS</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">C_ANG</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOG_TYPE_I</span><span class="p">,</span> <span class="s1">&#39;Subspace 3 - Number of dimensions and short name of second dimension:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subspace3</span><span class="o">.</span><span class="n">get_num_dim</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">subspace3</span><span class="o">.</span><span class="n">get_dim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_ANG</span><span class="p">)</span><span class="o">.</span><span class="n">get_name_short</span><span class="p">())</span>
+
+
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">create_element</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elem</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOG_TYPE_I</span><span class="p">,</span> <span class="s1">&#39;New element created with dim ids / values:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elem</span><span class="o">.</span><span class="n">get_dim_ids</span><span class="p">(),</span> <span class="s1">&#39; / &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elem</span><span class="o">.</span><span class="n">get_values</span><span class="p">())</span>
+
+
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">change_elem_values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Changing a value indexed by a unique dimension index...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elem</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_POS</span><span class="p">,</span> <span class="mf">4.77</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">elem</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_VEL</span><span class="p">,</span> <span class="o">-</span><span class="mf">8.22</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOG_TYPE_I</span><span class="p">,</span> <span class="s1">&#39;Element changed to &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elem</span><span class="o">.</span><span class="n">get_values</span><span class="p">())</span>
+
+
+<span class="c1">## -------------------------------------------------------------------------------------------------</span>
+    <span class="k">def</span> <span class="nf">calculate_distance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">e1</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="p">)</span>
+        <span class="n">e2</span> <span class="o">=</span> <span class="n">Element</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="p">)</span>
+        <span class="n">e2</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_AACC</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOG_TYPE_I</span><span class="p">,</span> <span class="s1">&#39;New element e1 =&#39;</span><span class="p">,</span> <span class="n">e1</span><span class="o">.</span><span class="n">get_values</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOG_TYPE_I</span><span class="p">,</span> <span class="s1">&#39;New element e2 =&#39;</span><span class="p">,</span> <span class="n">e2</span><span class="o">.</span><span class="n">get_values</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOG_TYPE_I</span><span class="p">,</span> <span class="s1">&#39;Euclidian distance between e1 and e2 =&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">espace</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">e1</span><span class="p">,</span><span class="n">e2</span><span class="p">))</span>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">demo</span> <span class="o">=</span> <span class="n">MathDemo</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../mt/howto.bf.mt.002.html" class="btn btn-neutral float-left" title="Howto BF-MT-002: Multitasking - Tasks and Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="howto.bf.math.010.html" class="btn btn-neutral float-right" title="Howto BF-MATH-010: Normalizers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

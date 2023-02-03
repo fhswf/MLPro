@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. Getting Started &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/language_data.js"></script>
+        <script src="../../../_static/clipboard.min.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="7. MLPro-BF - Basic Functions" href="../../02_basic_functions/mlpro_bf/main.html" />
+    <link rel="prev" title="1. Introduction" href="01_introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation-from-pypi">2.1. Installation from PyPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-from-anaconda">2.2. Installation from Anaconda</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">2.3. Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#first-steps">2.4. First Steps</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../03_machine_learning/mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03_machine_learning/mlpro_rl/main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03_machine_learning/mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../03_machine_learning/mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../04_appendices/appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04_appendices/appendix2/main.html">A2 - API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../04_appendices/appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li><span class="section-number">2. </span>Getting Started</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/01_welcome/sub/02_getting_started.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="getting-started">
+<h1><span class="section-number">2. </span>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation-from-pypi">
+<h2><span class="section-number">2.1. </span>Installation from PyPI<a class="headerlink" href="#installation-from-pypi" title="Permalink to this headline">¶</a></h2>
+<p>MLPro is listed in the <a class="reference external" href="https://pypi.org/project/mlpro/">Python Package Index (PyPI)</a> and can be installed using the package
+installer for Python (pip) in two variants:</p>
+<blockquote>
+<div><ul>
+<li><p><strong>Without any dependencies</strong></p>
+<p>The following command installs the latest version of MLPro.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install mlpro
+</pre></div>
+</div>
+<p>Additional packages may need to be installed manually (depending on the functionalities you intend to use).</p>
+</li>
+<li><p><strong>Full installation with all dependencies</strong></p>
+<p>There is also an option to automatically install MLPro and all depending packages in validated versions
+(see Subsection <em>Dependencies</em> below). This option will ensure that all the functionalities of MLPro, including
+wrappers and examples, work appropriately out of the box.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip install mlpro<span class="o">[</span>full<span class="o">]</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="installation-from-anaconda">
+<h2><span class="section-number">2.2. </span>Installation from Anaconda<a class="headerlink" href="#installation-from-anaconda" title="Permalink to this headline">¶</a></h2>
+<p>MLPro is also available on <a class="reference external" href="https://anaconda.org/mlpro/mlpro/">Anaconda</a> and can be installed
+with the following command:</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda install -c mlpro mlpro
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+<div class="section" id="dependencies">
+<h2><span class="section-number">2.3. </span>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<p>The table below shows all packages that MLPro has dependencies on. Additionally, the versions
+with which MLPro is compatible are listed. Since we cannot influence incompatible changes on
+dependent packages, we unfortunately cannot rule out the possibility of problems occurring
+with different versions. We review and update the list with each new release.</p>
+<p>Which packages are actually required depends on the functionalities of MLPro that are used.</p>
+<table class="colwidths-given longtable docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Package</p></th>
+<th class="head"><p>Version</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>dill</p></td>
+<td><p>0.3.6</p></td>
+</tr>
+<tr class="row-odd"><td><p>numpy</p></td>
+<td><p>1.23.5</p></td>
+</tr>
+<tr class="row-even"><td><p>torch</p></td>
+<td><p>1.13.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>matplotlib</p></td>
+<td><p>3.6.3</p></td>
+</tr>
+<tr class="row-even"><td><p>transformations</p></td>
+<td><p>2022.9.26</p></td>
+</tr>
+<tr class="row-odd"><td><p>stable-baselines3</p></td>
+<td><p>1.7.0</p></td>
+</tr>
+<tr class="row-even"><td><p>gym</p></td>
+<td><p>0.25.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>scipy</p></td>
+<td><p>1.8.1</p></td>
+</tr>
+<tr class="row-even"><td><p>pettingzoo</p></td>
+<td><p>1.22.3</p></td>
+</tr>
+<tr class="row-odd"><td><p>pygame</p></td>
+<td><p>2.1.2</p></td>
+</tr>
+<tr class="row-even"><td><p>pymunk</p></td>
+<td><p>6.4.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>multiprocess</p></td>
+<td><p>0.70.14</p></td>
+</tr>
+<tr class="row-even"><td><p>river</p></td>
+<td><p>0.14.0</p></td>
+</tr>
+<tr class="row-odd"><td><p>scikit-learn</p></td>
+<td><p>1.2.0</p></td>
+</tr>
+<tr class="row-even"><td><p>optuna</p></td>
+<td><p>3.0.5</p></td>
+</tr>
+<tr class="row-odd"><td><p>hyperopt</p></td>
+<td><p>0.2.7</p></td>
+</tr>
+<tr class="row-even"><td><p>pyglet</p></td>
+<td><p>1.5.27</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="first-steps">
+<h2><span class="section-number">2.4. </span>First Steps<a class="headerlink" href="#first-steps" title="Permalink to this headline">¶</a></h2>
+<p>The easiest way to become familiar with the concepts and functions of MLPro is to browse
+through the numerous <a class="reference internal" href="../../04_appendices/appendix1/main.html#target-appendix1"><span class="std std-ref">example programs</span></a>.
+We can also recommend taking a closer look at the <a class="reference internal" href="01_introduction.html#target-key-features"><span class="std std-ref">key features</span></a>
+of MLPro and following the links.</p>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="01_introduction.html" class="btn btn-neutral float-left" title="1. Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../../02_basic_functions/mlpro_bf/main.html" class="btn btn-neutral float-right" title="7. MLPro-BF - Basic Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Theory &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../_static/jquery.js"></script>
+        <script src="../../../../../_static/underscore.js"></script>
+        <script src="../../../../../_static/doctools.js"></script>
+        <script src="../../../../../_static/language_data.js"></script>
+        <script src="../../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="Online Adaptivity" href="mlpro.oa.html" />
+    <link rel="prev" title="Reinforcement Learning" href="mlpro.rl.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_rl/main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../03_machine_learning/mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../main.html">A2 - API Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../01_mlpro.core.html">Core Functions</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="mlpro.bf.html">Basic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.sl.html">Supervised Learning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.rl.html">Reinforcement Learning</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Game Theory</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#models">Models</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="mlpro.oa.html">Online Adaptivity</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../02_mlpro.pool.html">Pool Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../03_mlpro.wrappers.html">Wrappers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../main.html">A2 - API Reference</a> &raquo;</li>
+          <li><a href="../01_mlpro.core.html">Core Functions</a> &raquo;</li>
+      <li>Game Theory</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/04_appendices/appendix2/sub/core/mlpro.gt.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="game-theory">
+<h1>Game Theory<a class="headerlink" href="#game-theory" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="models">
+<h2>Models<a class="headerlink" href="#models" title="Permalink to this headline">¶</a></h2>
+<img alt="../../../../../_images/MLPro-GT_class_diagram1.png" src="../../../../../_images/MLPro-GT_class_diagram1.png" />
+<span class="target" id="module-mlpro.gt.models"></span><p>Ver. 1.2.0 (2022-11-01)</p>
+<p>This module provides model classes for tasks related to cooperative Game Theory.</p>
+<dl class="py class">
+<dt id="mlpro.gt.models.GameBoard">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.gt.models.</code><code class="sig-name descname">GameBoard</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_mode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">p_latency</span><span class="p">:</span> <span class="n">datetime.timedelta</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_fct_strans</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.systems.FctSTrans" title="mlpro.bf.systems.FctSTrans">mlpro.bf.systems.FctSTrans</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_fct_reward</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_env.FctReward" title="mlpro.rl.models_env.FctReward">mlpro.rl.models_env.FctReward</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_fct_success</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.systems.FctSuccess" title="mlpro.bf.systems.FctSuccess">mlpro.bf.systems.FctSuccess</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_fct_broken</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.systems.FctBroken" title="mlpro.bf.systems.FctBroken">mlpro.bf.systems.FctBroken</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_visualize</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.gt.models.GameBoard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_env.Environment" title="mlpro.rl.models_env.Environment"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_env.Environment</span></code></a></p>
+<p>Model class for a game theoretical game board. See super class for more information.</p>
+<dl class="py attribute">
+<dt id="mlpro.gt.models.GameBoard.C_TYPE">
+<code class="sig-name descname">C_TYPE</code><em class="property"> = 'Game Board'</em><a class="headerlink" href="#mlpro.gt.models.GameBoard.C_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="mlpro.gt.models.GameBoard.C_REWARD_TYPE">
+<code class="sig-name descname">C_REWARD_TYPE</code><em class="property"> = 1</em><a class="headerlink" href="#mlpro.gt.models.GameBoard.C_REWARD_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.gt.models.PGameBoard">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.gt.models.</code><code class="sig-name descname">PGameBoard</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_mode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">p_latency</span><span class="p">:</span> <span class="n">datetime.timedelta</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_fct_strans</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.systems.FctSTrans" title="mlpro.bf.systems.FctSTrans">mlpro.bf.systems.FctSTrans</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_fct_reward</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_env.FctReward" title="mlpro.rl.models_env.FctReward">mlpro.rl.models_env.FctReward</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_fct_success</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.systems.FctSuccess" title="mlpro.bf.systems.FctSuccess">mlpro.bf.systems.FctSuccess</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_fct_broken</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.bf.html#mlpro.bf.systems.FctBroken" title="mlpro.bf.systems.FctBroken">mlpro.bf.systems.FctBroken</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_visualize</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.gt.models.PGameBoard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mlpro.gt.models.GameBoard" title="mlpro.gt.models.GameBoard"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.gt.models.GameBoard</span></code></a></p>
+<p>Model class for a potential game theoretical game board. See super class for more information.</p>
+<dl class="py attribute">
+<dt id="mlpro.gt.models.PGameBoard.C_TYPE">
+<code class="sig-name descname">C_TYPE</code><em class="property"> = 'Potential Game Board'</em><a class="headerlink" href="#mlpro.gt.models.PGameBoard.C_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.gt.models.PGameBoard.compute_potential">
+<code class="sig-name descname">compute_potential</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.gt.models.PGameBoard.compute_potential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes (weighted) potential level of the game board.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.gt.models.Player">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.gt.models.</code><code class="sig-name descname">Player</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_policy</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_agents.Policy" title="mlpro.rl.models_agents.Policy">mlpro.rl.models_agents.Policy</a></span></em>, <em class="sig-param"><span class="n">p_envmodel</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_env_ada.EnvModel" title="mlpro.rl.models_env_ada.EnvModel">mlpro.rl.models_env_ada.EnvModel</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_em_acc_thsld</span><span class="o">=</span><span class="default_value">0.9</span></em>, <em class="sig-param"><span class="n">p_action_planner</span><span class="p">:</span> <span class="n"><a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_agents.ActionPlanner" title="mlpro.rl.models_agents.ActionPlanner">mlpro.rl.models_agents.ActionPlanner</a></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">p_predicting_horizon</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">p_controlling_horizon</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">p_planning_width</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">p_name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">p_id</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">p_ada</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">p_visualize</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">p_mb_training_param</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.gt.models.Player" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_agents.Agent" title="mlpro.rl.models_agents.Agent"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_agents.Agent</span></code></a></p>
+<p>This class implements a game theoretical player model. See super class for more information.</p>
+<dl class="py attribute">
+<dt id="mlpro.gt.models.Player.C_TYPE">
+<code class="sig-name descname">C_TYPE</code><em class="property"> = 'Player'</em><a class="headerlink" href="#mlpro.gt.models.Player.C_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.gt.models.MultiPlayer">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.gt.models.</code><code class="sig-name descname">MultiPlayer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_name</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">p_ada</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">p_visualize</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.gt.models.MultiPlayer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_agents.MultiAgent" title="mlpro.rl.models_agents.MultiAgent"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_agents.MultiAgent</span></code></a></p>
+<p>This class implements a game theoretical model for a team of players. See super class for more
+information.</p>
+<dl class="py attribute">
+<dt id="mlpro.gt.models.MultiPlayer.C_TYPE">
+<code class="sig-name descname">C_TYPE</code><em class="property"> = 'Multi-Player'</em><a class="headerlink" href="#mlpro.gt.models.MultiPlayer.C_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="mlpro.gt.models.MultiPlayer.add_player">
+<code class="sig-name descname">add_player</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_player</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mlpro.gt.models.Player" title="mlpro.gt.models.Player">mlpro.gt.models.Player</a></span></em>, <em class="sig-param"><span class="n">p_weight</span><span class="o">=</span><span class="default_value">1.0</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mlpro.gt.models.MultiPlayer.add_player" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.gt.models.Game">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.gt.models.</code><code class="sig-name descname">Game</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p_mode</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">p_ada</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">p_cycle_limit</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">p_visualize</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">p_logging</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.gt.models.Game" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_train.RLScenario" title="mlpro.rl.models_train.RLScenario"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_train.RLScenario</span></code></a></p>
+<p>This class implements a game consisting of a game board and a (multi-)player. See super class for
+more information.</p>
+<dl class="py attribute">
+<dt id="mlpro.gt.models.Game.C_TYPE">
+<code class="sig-name descname">C_TYPE</code><em class="property"> = 'Game'</em><a class="headerlink" href="#mlpro.gt.models.Game.C_TYPE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mlpro.gt.models.GTTraining">
+<em class="property">class </em><code class="sig-prename descclassname">mlpro.gt.models.</code><code class="sig-name descname">GTTraining</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">p_kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mlpro.gt.models.GTTraining" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="mlpro.rl.html#mlpro.rl.models_train.RLTraining" title="mlpro.rl.models_train.RLTraining"><code class="xref py py-class docutils literal notranslate"><span class="pre">mlpro.rl.models_train.RLTraining</span></code></a></p>
+<p>This class implements a standardized episodical training process. See super class for more
+information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p_game_cls</strong> – Name of GT game class, compatible to/inherited from class Game.</p></li>
+<li><p><strong>p_cycle_limit</strong> (<em>int</em>) – Maximum number of training cycles (0=no limit). Default = 0.</p></li>
+<li><p><strong>p_cycles_per_epi_limit</strong> (<em>int</em>) – Optional limit of cycles per episode (0=no limit, -1=get environment limit). Default = -1.</p></li>
+<li><p><strong>p_adaptation_limit</strong> (<em>int</em>) – Maximum number of adaptations (0=no limit). Default = 0.</p></li>
+<li><p><strong>p_stagnation_limit</strong> (<em>int</em>) – Optional limit of consecutive evaluations without training progress. Default = 0.</p></li>
+<li><p><strong>p_eval_frequency</strong> (<em>int</em>) – Optional evaluation frequency (0=no evaluation). Default = 0.</p></li>
+<li><p><strong>p_eval_grp_size</strong> (<em>int</em>) – Number of evaluation episodes (eval group). Default = 0.</p></li>
+<li><p><strong>p_hpt</strong> (<em>HyperParamTuner</em>) – Optional hyperparameter tuner (see class mlpro.bf.ml.HyperParamTuner). Default = None.</p></li>
+<li><p><strong>p_hpt_trials</strong> (<em>int</em>) – Optional number of hyperparameter tuning trials. Default = 0. Must be &gt; 0 if p_hpt is supplied.</p></li>
+<li><p><strong>p_path</strong> (<em>str</em>) – Optional destination path to store training data. Default = None.</p></li>
+<li><p><strong>p_collect_states</strong> (<em>bool</em>) – If True, the environment states will be collected. Default = True.</p></li>
+<li><p><strong>p_collect_actions</strong> (<em>bool</em>) – If True, the agent actions will be collected. Default = True.</p></li>
+<li><p><strong>p_collect_rewards</strong> (<em>bool</em>) – If True, the environment reward will be collected. Default = True.</p></li>
+<li><p><strong>p_collect_training</strong> (<em>bool</em>) – If True, global training data will be collected. Default = True.</p></li>
+<li><p><strong>p_visualize</strong> (<em>bool</em>) – Boolean switch for env/agent visualisation. Default = False.</p></li>
+<li><p><strong>p_logging</strong> – Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="mlpro.gt.models.GTTraining.C_NAME">
+<code class="sig-name descname">C_NAME</code><em class="property"> = 'GT'</em><a class="headerlink" href="#mlpro.gt.models.GTTraining.C_NAME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mlpro.rl.html" class="btn btn-neutral float-left" title="Reinforcement Learning" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="mlpro.oa.html" class="btn btn-neutral float-right" title="Online Adaptivity" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

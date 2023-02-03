@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>9.5. Scenarios &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/language_data.js"></script>
+        <script src="../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="9.6. Training" href="06_train.html" />
+    <link rel="prev" title="9.4.4. Multi-Agents" href="agents/multiagents.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../main.html">9. MLPro-RL - Reinforcement Learning</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="01_overview.html">9.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="02_getstarted.html">9.2. Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="03_env.html">9.3. Environments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="04_agents.html">9.4. Agents</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">9.5. Scenarios</a></li>
+<li class="toctree-l2"><a class="reference internal" href="06_train.html">9.6. Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="07_wrapper.html">9.7. 3rd Party Support</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../04_appendices/appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../04_appendices/appendix2/main.html">A2 - API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../04_appendices/appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../main.html"><span class="section-number">9. </span>MLPro-RL - Reinforcement Learning</a> &raquo;</li>
+      <li><span class="section-number">9.5. </span>Scenarios</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/03_machine_learning/mlpro_rl/sub/05_scenario.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="scenarios">
+<h1><span class="section-number">9.5. </span>Scenarios<a class="headerlink" href="#scenarios" title="Permalink to this headline">¶</a></h1>
+<p>A scenario in reinforcement learning (RL) refers to a specific problem or task that the agent is trying to learn how to solve.
+A scenario defines the environment in which the agent operates, including the state space, the action space, the reward function, and the transition dynamics.</p>
+<p>In RL, the agent interacts with the environment over a sequence of time steps.
+At each time step, the agent receives an observation of the current state of the environment and selects an action.
+The environment then transitions to a new state and returns a reward signal to the agent.</p>
+<p>The scenario provides the agent with a set of goals to be achieved, and the reward function quantifies how well the agent is doing in terms of achieving these goals.
+The reward function can be designed to encourage certain behaviors, such as reaching a specific target state, or penalize certain behaviors, such as taking actions that lead to a state of low reward.</p>
+<p>The scenario also defines the state and action spaces, which are the sets of all possible states and actions that the agent can experience and take, respectively.
+The transition dynamics describe how the environment changes in response to the agent’s actions.</p>
+<p>Overall, a scenario in RL defines the problem that the agent is trying to solve, and provides the necessary information for the agent to learn a policy that maps states to actions and maximizes the cumulative reward signal.</p>
+<p>In MLPro-RL, a class <strong>RLScenario</strong> inherits the functionality from class <strong>Scenario</strong> in the basic function level, where the <strong>RLScenario</strong> class combines RL agents and an environment into an executable unit.</p>
+<p>One of the MLPro’s features is enabling the user to apply a template class for an RL scenario consisting of an environment and agents.
+Moreover, you can create either a single-agent scenario or a multi-agent scenario in a simple manner.
+Here is the commented class diagram for creating a custom scenario in MLPro-RL:</p>
+<img alt="../../../../_images/MLPro-RL-Scenario_Class_Commented.png" src="../../../../_images/MLPro-RL-Scenario_Class_Commented.png" />
+<p>For setting-up a scenarion for single-agent and multi-agent in MLPro-RL, you can refer to <a class="reference internal" href="06_train.html#target-training-rl"><span class="std std-ref">this page</span></a>.</p>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="agents/multiagents.html" class="btn btn-neutral float-left" title="9.4.4. Multi-Agents" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="06_train.html" class="btn btn-neutral float-right" title="9.6. Training" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

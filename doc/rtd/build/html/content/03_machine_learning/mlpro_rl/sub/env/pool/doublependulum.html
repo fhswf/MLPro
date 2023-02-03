@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Double Pendulum &mdash; MLPro Documentations 1.0.0 documentation</title><link rel="stylesheet" href="../../../../../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../../../_static/custom.css" type="text/css" /><link rel="shortcut icon" href="../../../../../../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../../../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../../../../../" src="../../../../../../_static/documentation_options.js"></script>
+        <script src="../../../../../../_static/jquery.js"></script>
+        <script src="../../../../../../_static/underscore.js"></script>
+        <script src="../../../../../../_static/doctools.js"></script>
+        <script src="../../../../../../_static/language_data.js"></script>
+        <script src="../../../../../../_static/clipboard.min.js"></script>
+        <script src="../../../../../../_static/copybutton.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../../../../index.html" class="icon icon-home"> MLPro Documentations<img src="../../../../../../_static/logo_mlpro.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption"><span class="caption-text">Welcome to MLPro</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/01_introduction.html">1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../01_welcome/sub/02_getting_started.html">2. Getting Started</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Basic Functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../02_basic_functions/mlpro_bf/main.html">7. MLPro-BF - Basic Functions</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Machine Learning</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_sl/main.html">8. MLPro-SL - Supervised Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../main.html">9. MLPro-RL - Reinforcement Learning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_gt/main.html">10. MLPro-GT - Game Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../mlpro_oa/main.html">11. MLPro-OA - Online Adaptivity</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendices</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix1/main.html">A1 - Example Pool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix2/main.html">A2 - API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../04_appendices/appendix3/main.html">A3 - Project MLPro</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../../index.html">MLPro Documentations</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Double Pendulum</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://github.com/fhswf/MLPro/blob/main/doc/docs/content/03_machine_learning/mlpro_rl/sub/env/pool/doublependulum.rst" class="fa fa-github"> Edit on GitHub</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="id1">
+<h1><a class="reference external" href="https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/doublependulum.py">Double Pendulum</a><a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-mlpro.rl.pool.envs.doublependulum"></span><p>Ver. 2.2.5 (2023-02-02)</p>
+<p>The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
+dynamics of the system are based on the <a class="reference external" href="https://matplotlib.org/stable/gallery/animation/double_pendulum.html">Double Pendulum</a>  implementation by
+<a class="reference external" href="https://matplotlib.org/">Matplotlib</a>. The double pendulum is a system of two poles, with the inner pole
+connected to a fixed point at one end and to outer pole at other end. The native implementation of Double
+Pendulum consists of an input motor providing the torque in either directions to actuate the system. The figure
+below shows the visualisation of MLPro’s Double Pendulum environment.</p>
+<a class="reference internal image-reference" href="../../../../../../_images/doublependulum.gif"><img alt="../../../../../../_images/doublependulum.gif" class="align-center" src="../../../../../../_images/doublependulum.gif" style="width: 650px;" /></a>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<dl class="simple">
+<dt>MLPro provides two implementations of Double Pendulum environment named DoublePendulumS4 and DoublePendulumS7.</dt><dd><ul class="simple">
+<li><p>The DoublePendulumS4 environment is a basic implementation with four dimensional state space including angles and angular velocities of both the poles.</p></li>
+<li><p>The static 7 dimensional implementation of Double Pendulum environment in MLProis a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and Euclidean Distances of the states.</p></li>
+</ul>
+</dd>
+</dl>
+</div>
+<p>The double pendulum environment can be imported via:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mlpro.rl.pool.envs.doublependulum</span>
+</pre></div>
+</div>
+<p>The environment can be initialised with specifying the initial angles of both poles, masses of both poles, lenghts of poles, maximum torque value and scenario related parameters including step size and actuation step size. The initial positions of the poles refer to the position of the poles at the beginning of each RL episode, which can be set to ‘up’, ‘down’, ‘random’. The default values for length and mass of each pole in the double pendulum are set to 1 and 1 respectively. The environment behaviour can be understood by running How To 20 in MLPro’s sample implementation examples.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>The visualisation of the environment can be turned off by setting the visualize parameter in training/scenario initialisation to false</p></li>
+</ul>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<p>Please install below packages to use the MLPro’s double pendulum environment</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://pypi.org/project/numpy/">NumPy</a></p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/matplotlib/">Matplotlib</a></p></li>
+<li><p><a class="reference external" href="https://pypi.org/project/scipy/">SciPy</a></p></li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="general-information">
+<h2>General Information<a class="headerlink" href="#general-information" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Agents</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Native Source</p></td>
+<td><p>MLPro</p></td>
+</tr>
+<tr class="row-even"><td><p>Action Space Dimension</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Action Space Base Set</p></td>
+<td><p>Real number</p></td>
+</tr>
+<tr class="row-even"><td><p>State Space Dimension</p></td>
+<td><p>4   (for DoublePendulumS4), 7  (for DoublePendulumS7)</p></td>
+</tr>
+<tr class="row-odd"><td><p>State Space Base Set</p></td>
+<td><p>Real number</p></td>
+</tr>
+<tr class="row-even"><td><p>Reward Structure</p></td>
+<td><p>Overall reward</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="action-space">
+<h2>Action Space<a class="headerlink" href="#action-space" title="Permalink to this headline">¶</a></h2>
+<p>The goal of the environment is to maintain the vertical position of both the poles. The inner pole is actuated by a motor, and thus the action space of Double Pendulum environment is a continuous variable ranging between the negative maximum torque and positive maximum torque, where positive torque refers to clockwise torque and vice versa. The max torque can be passed as a <a class="reference internal" href="../../../../../04_appendices/appendix2/sub/pool/rl/mlpro.rl.pool.envs.html#double-pendulum"><span class="std std-ref">parameter</span></a> in the initialisation of environment.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40%" />
+<col style="width: 60%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Range</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Torque</p></td>
+<td><p>[-max_torque, max_torque]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="state-space">
+<h2>State Space<a class="headerlink" href="#state-space" title="Permalink to this headline">¶</a></h2>
+<p>The state space for the double pendulum environment returns state of poles in the system including angles of both poles, velocity of poles, angular acceleration of the poles. The states for double pendulum environment can be understood by the table below.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 17%" />
+<col style="width: 16%" />
+<col style="width: 25%" />
+<col style="width: 14%" />
+<col style="width: 12%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>State</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Range</p></th>
+<th class="head"><p>Unit</p></th>
+<th class="head"><p>DoublePendulumS4</p></th>
+<th class="head"><p>DoublePendulumS7</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Theta 1</p></td>
+<td><p>Angle of the inner pole</p></td>
+<td><p>[-180, 180]</p></td>
+<td><p>degrees</p></td>
+<td><p>X</p></td>
+<td><p>X</p></td>
+</tr>
+<tr class="row-odd"><td><p>Omega 1</p></td>
+<td><p>Angular velocity of inner pole</p></td>
+<td><p>[-800, 800]</p></td>
+<td><p>degrees per second</p></td>
+<td><p>X</p></td>
+<td><p>X</p></td>
+</tr>
+<tr class="row-even"><td><p>Alpha 1</p></td>
+<td><p>Angular Acceleration of outer pole</p></td>
+<td><p>[-6800, 6800]</p></td>
+<td><p>degrees per second squared</p></td>
+<td><p>-</p></td>
+<td><p>X</p></td>
+</tr>
+<tr class="row-odd"><td><p>Theta 2</p></td>
+<td><p>Angle of the outer pole</p></td>
+<td><p>[-180, 180]</p></td>
+<td><p>degrees</p></td>
+<td><p>X</p></td>
+<td><p>X</p></td>
+</tr>
+<tr class="row-even"><td><p>Omega 2</p></td>
+<td><p>Angular velocity of outer pole</p></td>
+<td><p>[-950, 950]</p></td>
+<td><p>degrees per second</p></td>
+<td><p>X</p></td>
+<td><p>X</p></td>
+</tr>
+<tr class="row-odd"><td><p>Alpha 2</p></td>
+<td><p>Angular acceleration of outer pole</p></td>
+<td><p>[-9700, 9700]</p></td>
+<td><p>degrees per second squared</p></td>
+<td><p>-</p></td>
+<td><p>X</p></td>
+</tr>
+<tr class="row-even"><td><p>Torque</p></td>
+<td><p>Input torque to the inner pole</p></td>
+<td><p>[-max torque, max torque]</p></td>
+<td><p>Newton times meter</p></td>
+<td><p>-</p></td>
+<td><p>X</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The boundaries for the velocity and acceleration are highly influenced by the initital position of the arms and the current torque being actuated on the inner pole. These parameters are further dependent on the specific application, scenario or purpose of research.</p>
+</div>
+<p>Current implementation of DP environment in MLPro returns success when the current state of the environment is within a distance lesser than threshold distance from the goal state.</p>
+</div>
+<div class="section" id="reward-structure">
+<h2>Reward Structure<a class="headerlink" href="#reward-structure" title="Permalink to this headline">¶</a></h2>
+<p>The goal of the environment is to reach a complete vertical position for both the inner and outer pole, i.e.
+the goal state is given as vector <span class="math notranslate nohighlight">\(S_g = (0,0,0,0,0,0)\)</span>. The environment delivers a continuous reward to the
+agent based on the new and old states of the environment. The environment is divided into three zones based on the
+position of the inner and outer pole.</p>
+<a class="reference internal image-reference" href="../../../../../../_images/double_pendulum_reward.drawio.png"><img alt="../../../../../../_images/double_pendulum_reward.drawio.png" class="align-center" src="../../../../../../_images/double_pendulum_reward.drawio.png" style="width: 500px;" /></a>
+<p>As shown in the figure above, the three zones and the reward strategies corresponding to the zone are:</p>
+<p>1. <strong>Red Zone</strong> : The swing up zone for angle of inner pole less than <span class="math notranslate nohighlight">\(-90^o\)</span> or more than <span class="math notranslate nohighlight">\(+90^o\)</span>. The
+reward signal in this zone maximizes the motion of the inner pole of the double pendulum.</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(r_a(t) = (|\theta_{1n(t - 1))} - \theta_{1n(t)}|) + (|\theta'_{1n(t)} +\theta^n_{1n(t-1)}| - |\theta'_{1n(t-1)} + \theta^n_{1n(t-1)}|)\)</span></p>
+<dl>
+<dt>where,</dt><dd><p><span class="math notranslate nohighlight">\(r_a(t)\)</span> is reward at time step t,</p>
+<p><span class="math notranslate nohighlight">\(\theta_{1n}\)</span> is normalized angle of inner pole</p>
+<p><span class="math notranslate nohighlight">\(\theta_{2n}\)</span> is normalized angle of outer pole</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>2. <strong>Yellow Zone</strong> : Outer pole swing up zone for angle of inner pole more than <span class="math notranslate nohighlight">\(-90^o\)</span> or less than
+<span class="math notranslate nohighlight">\(+90^o\)</span>. The reward is based on the euclidean distance between new and old states, with 75% weight to the
+states of outer pole and 25% to that of inner pole.</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(r_b(t) = |s_{gb} - s_{b(t-1)}| - |s_{gb} - s{b(t)}|\)</span></p>
+<dl>
+<dt>where,</dt><dd><p><span class="math notranslate nohighlight">\(s_b\)</span> is the state space in yellow zone as <span class="math notranslate nohighlight">\((\theta_{1n}, \theta_{2n}, \theta_{2n}',\theta_{2n}'')\)</span></p>
+<p><span class="math notranslate nohighlight">\(s_{gb}\)</span> is the goal state in Yellow zone, i.e. <span class="math notranslate nohighlight">\((0,0,0,0)\)</span></p>
+</dd>
+</dl>
+</div></blockquote>
+<p>3. <strong>Green Zone</strong> : Balancing zone for angle of either or both inner or outer pole more than <span class="math notranslate nohighlight">\(-36^o\)</span> or less than
+<span class="math notranslate nohighlight">\(+36^o\)</span>. The reward in this zone is proportional to the environments progress towards the goal state.</p>
+<blockquote>
+<div><p><span class="math notranslate nohighlight">\(r_a(t) = |s_{gn} - s_{n(t-1)}| - |s_{gn} - s_{n(t)}|\)</span></p>
+<dl>
+<dt>where,</dt><dd><p><span class="math notranslate nohighlight">\(s_{gn}\)</span> is the normalized goal state of the environment</p>
+<p><span class="math notranslate nohighlight">\(s_n\)</span> is the normalized state</p>
+</dd>
+</dl>
+</div></blockquote>
+</div>
+<div class="section" id="change-log">
+<h2>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 31%" />
+<col style="width: 69%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Version</p></th>
+<th class="head"><p>Changes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1.0.0</p></td>
+<td><p>First public version</p></td>
+</tr>
+<tr class="row-odd"><td><p>1.0.2</p></td>
+<td><p>Cleaning the code</p></td>
+</tr>
+<tr class="row-even"><td><p>1.3.1</p></td>
+<td><p>Current release version</p></td>
+</tr>
+<tr class="row-odd"><td><p>2.0.0</p></td>
+<td><p>Current release with variants S4 and S7</p></td>
+</tr>
+<tr class="row-even"><td><p>2.2.4</p></td>
+<td><ul class="simple">
+<li><p>Latest reward strategy implementation</p></li>
+<li><p>Reward Visualization</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="cross-reference">
+<h2>Cross Reference<a class="headerlink" href="#cross-reference" title="Permalink to this headline">¶</a></h2>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference internal" href="../../../../../04_appendices/appendix1/sub/rl/env/howto.rl.env.005.html#howto-env-rl-005"><span class="std std-ref">Howto RL-ENV-005: SB3 Policy on Double Pendulum Environment</span></a></p></li>
+<li><p><a class="reference internal" href="../../../../../04_appendices/appendix2/sub/pool/rl/mlpro.rl.pool.envs.html#double-pendulum"><span class="std std-ref">API Reference</span></a></p></li>
+</ul>
+</div></blockquote>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022 South Westphalia University of Applied Sciences, Germany.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
