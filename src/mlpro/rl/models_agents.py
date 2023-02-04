@@ -49,10 +49,12 @@
 ## -- 2022-11-07  1.6.1     DA       Classes Policy, Agent, MultiAgent: new parameter p_visualize
 ## -- 2022-11-29  1.6.2     DA       Refactoring
 ## -- 2022-12-09  1.6.3     DA       Refactoring
+## -- 2023-01-02  1.6.4     SY       Add multi-processing on MultiAgent
+## -- 2023-02-04  1.6.5     SY       Temporarily remove multi-processing on MultiAgent
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.3 (2022-12-09) 
+Ver. 1.6.5 (2023-02-04) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
