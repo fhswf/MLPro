@@ -25,8 +25,8 @@ Executable code
 Results
 -------
 
-.. image:: images/doublependulum.gif
-    :width: 400 px
+.. image:: images/doublependulum_randomagent.gif
+    :width: 900 px
     :align: center
 
 Running this howto shall generate visualizations for double endulum environment and the reward, resectively.
