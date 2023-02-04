@@ -17,12 +17,12 @@
 ## -- 2023-01-16  1.3.2     SY       Shift UnitConverter to bf.math
 ## -- 2023-01-18  1.3.3     SY       Debugging on TransferFunction
 ## -- 2023-01-24  1.3.4     SY       Quality Assurance on TransferFunction
-## -- 2023-01-27  1.3.5     MRD      Integrate MuJoCo as an optional state transition
-## -- 2023-01-31  1.3.6     SY       Renaming class Label to PersonalisedStamp
+## -- 2023-01-27  1.4.0     MRD      Integrate MuJoCo as an optional state transition
+## -- 2023-02-04  1.5.0     DA       United classes SystemBase, System to new class System
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.6 (2023-01-31)
+Ver. 1.5.0 (2023-02-04)
 
 This module provides models and templates for state based systems.
 """
@@ -34,6 +34,7 @@ from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable
 from mlpro.bf.ops import Mode
 from mlpro.bf.math import *
+
 
 
 
@@ -394,531 +395,6 @@ class FctBroken (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SystemBase (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObject):
-    """
-    Base class for state based systems.
-
-    Parameters
-    ----------
-    p_mode 
-        Mode of the system. Possible values are Mode.C_MODE_SIM(default) or Mode.C_MODE_REAL.
-    p_latency : timedelta
-        Optional latency of the system. If not provided, the internal value of constant C_LATENCY 
-        is used by default.
-    p_fct_strans : FctSTrans
-        Optional external function for state transition. 
-    p_fct_success : FctSuccess
-        Optional external function for state evaluation 'success'.
-    p_fct_broken : FctBroken
-        Optional external function for state evaluation 'broken'.
-    p_mujoco_file
-        Path to XML file for MuJoCo model.
-    p_frame_skip : int
-        Frame to be skipped every step. Default = 1.
-    p_state_mapping
-        State mapping if the MLPro state and MuJoCo state have different naming.
-    p_action_mapping
-        Action mapping if the MLPro action and MuJoCo action have different naming.
-    p_use_radian : bool
-        Use radian if the action and the state based on radian unit. Default = True.
-    p_camera_conf : tuple
-        Default camera configuration on MuJoCo Simulation (xyz position, elevation, distance).
-    p_visualize : bool
-        Boolean switch for env/agent visualisation. Default = False.
-    p_logging 
-        Log level (see class Log for more details). Default = Log.C_LOG_ALL.
-
-    Attributes
-    ----------
-    _latency : timedelta
-        Latency of the system.
-    _state : State
-        Current state of system.
-    _prev_state : State
-        Previous state of system.
-    _last_action : Action
-        Last action.
-    _fct_strans : FctSTrans
-        Internal state transition function.
-    _fct_success : FctSuccess
-        Internal function for state evaluation 'success'.
-    _fct_broken : FctBroken
-        Internal function for state evaluation 'broken'.
-    """
-
-    C_TYPE          = 'System Base'
-
-    C_LATENCY       = timedelta(0, 1, 0)  # Default latency 1s
-
-## -------------------------------------------------------------------------------------------------
-    def __init__( self,
-                  p_mode = Mode.C_MODE_SIM,
-                  p_latency : timedelta = None,
-                  p_fct_strans : FctSTrans = None,
-                  p_fct_success : FctSuccess = None,
-                  p_fct_broken : FctBroken = None,
-                  p_mujoco_file = None,
-                  p_frame_skip : int = 1,
-                  p_state_mapping = None,
-                  p_action_mapping = None,
-                  p_use_radian : bool = True,
-                  p_camera_conf : tuple = (None, None, None),
-                  p_visualize : bool = False,
-                  p_logging = Log.C_LOG_ALL ):
-
-        self._fct_strans            = p_fct_strans
-        self._fct_success           = p_fct_success
-        self._fct_broken            = p_fct_broken
-        self._mujoco_handler        = None
-        self._state_space : MSpace  = None
-        self._action_space : MSpace = None
-        self._state                 = None
-        self._prev_state            = None
-        self._last_action           = None
-
-        FctSTrans.__init__(self, p_logging=p_logging)
-        FctSuccess.__init__(self, p_logging=p_logging)
-        FctBroken.__init__(self, p_logging=p_logging)
-        Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
-        Plottable.__init__(self, p_visualize=p_visualize)
-
-        self._state_space, self._action_space = self.setup_spaces()
-
-        if p_mujoco_file is not None:
-            from mlpro.wrappers.mujoco import MujocoHandler
-
-            self._mujoco_handler = MujocoHandler(
-                                        p_mujoco_file=p_mujoco_file, 
-                                        p_frame_skip=p_frame_skip,
-                                        p_system_state_space=self.get_state_space(),
-                                        p_system_action_space=self.get_action_space(),
-                                        p_state_mapping=p_state_mapping,
-                                        p_action_mapping=p_action_mapping,
-                                        p_use_radian=p_use_radian, 
-                                        p_camera_conf=p_camera_conf,
-                                        p_visualize=p_visualize,
-                                        p_logging=p_logging)
-            
-            self.set_latency(timedelta(0,0.05,0))
-        else:
-            self.set_latency(p_latency)
-
-
-## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def setup_spaces():
-        """
-        Static template method to set up and return state and action space of environment.
-        
-        Returns
-        -------
-        state_space : MSpace
-            State space object
-        action_space : MSpace
-            Action space object
-
-        """
-
-        return None, None
-
-
-## -------------------------------------------------------------------------------------------------
-    def switch_logging(self, p_logging):
-        Log.switch_logging(self, p_logging)
-        if self._fct_strans is not None:
-            self._fct_strans.switch_logging(p_logging)
-        if self._fct_success is not None:
-            self._fct_success.switch_logging(p_logging)
-        if self._fct_broken is not None:
-            self._fct_broken.switch_logging(p_logging)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_latency(self) -> timedelta:
-        """
-        Returns latency of the system.
-        """
-
-        return self._latency
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_latency(self, p_latency: timedelta = None) -> None:
-        """
-        Sets latency of the system. If p_latency is None latency will be reset to internal value of 
-        attribute C_LATENCY.
-
-        Parameters
-        ----------
-        p_latency : timedelta
-            New latency value 
-        """
-
-        if p_latency is None:
-            self._latency = self.C_LATENCY
-        else:
-            self._latency = p_latency
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_state_space(self) -> MSpace:
-        return self._state_space
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_action_space(self) -> MSpace:
-        return self._action_space
-        
-        
-## -------------------------------------------------------------------------------------------------
-    def set_random_seed(self, p_seed=None):
-        """
-        Resets the internal random generator using the given seed.
-
-        Parameters
-        ----------
-        p_seed : int
-            Seed parameter for an internal random generator
-        """
-
-        random.seed(p_seed)
-
-
-## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed=None) -> None:
-        """
-        Resets the system to an initial state by calling the related custom method _reset().
-
-        Parameters
-        ----------
-        p_seed : int
-            Seed parameter for an internal random generator
-        """
-
-        self.log(self.C_LOG_TYPE_I, 'Reset')
-        self._num_cycles = 0
-        self._reset(p_seed)
-
-        # Put Mujoco here
-        if self._mujoco_handler is not None:
-            current_state = self.get_state()
-            if callable(getattr(self, '_obs_to_mujoco', None)):
-                current_state = self._obs_to_mujoco(current_state)
-
-            ob = self._mujoco_handler._reset_simulation(current_state)
-            
-            self._state = State(self.get_state_space())
-            self._state.set_values(ob)
-
-        if self._state is not None:
-            self._state.set_initial(True)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _reset(self, p_seed=None) -> None:
-        """
-        Custom method to reset the system to an initial/defined state. Use method _set_status() to
-        set the state.
-
-        Parameters
-        ----------
-        p_seed : int
-            Seed parameter for an internal random generator
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_state(self) -> State:
-        """
-        Returns current state of the system.
-        """
-
-        return self._state
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_state(self, p_state: State):
-        """
-        Explicitly sets the current state of the system. Internal use only.
-        """
-
-        self._state = p_state
-
-
-## -------------------------------------------------------------------------------------------------
-    def process_action(self, p_action: Action) -> bool:
-        """
-        Processes a state transition based on the current state and a given action. The state
-        transition itself is implemented in child classes in the custom method _process_action().
-
-        Parameters
-        ----------
-        p_action : Action
-            Action to be processed
-
-        Returns
-        -------
-        success : bool
-            True, if action processing was successfull. False otherwise.
-        """
-
-        self.log(self.C_LOG_TYPE_I, 'Start processing action')
-
-        state = self.get_state()
-        result = self._process_action(p_action)
-        self._prev_state = state
-        self._last_action = p_action
-
-        if result:
-            self.log(self.C_LOG_TYPE_I, 'Action processing finished successfully')
-            return True
-        else:
-            self.log(self.C_LOG_TYPE_E, 'Action processing failed')
-            return False
-
-
-## -------------------------------------------------------------------------------------------------
-    def _process_action(self, p_action: Action) -> bool:
-        """
-        Internal custom method for state transition with default implementation. To be redefined in 
-        a child class on demand. See method process_action() for further details.
-        """
-
-        # 0 Intro
-        for agent in p_action.get_elem_ids():
-            self.log(self.C_LOG_TYPE_I, 'Actions of agent', agent, '=', p_action.get_elem(agent).get_values())
-
-        # 1 State transition
-        if self._mode == self.C_MODE_SIM:
-            # 1.1 Simulated state transition
-            self._set_state(self.simulate_reaction(self.get_state(), p_action))
-
-        elif self._mode == self.C_MODE_REAL:
-            # 1.2 Real state transition
-
-            # 1.2.1 Export action to executing system
-            if not self._export_action(p_action):
-                self.log(self.C_LOG_TYPE_E, 'Action export failed!')
-                return False
-
-            # 1.2.2 Wait for the defined latency
-            latency = self.get_latency().total_seconds()
-            self.log(Log.C_LOG_TYPE_I, 'Waiting the system latency time of', str(latency), 'seconds...')
-            sleep(latency)
-
-            # 1.2.3 Import state from executing system
-            if not self._import_state():
-                self.log(self.C_LOG_TYPE_E, 'State import failed!')
-                return False
-
-        # 2 State evaluation
-        state = self.get_state()
-        state.set_success(self.compute_success(state))
-        state.set_broken(self.compute_broken(state))
-
-        # 3 Outro
-        return True
-
-
-## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State = None, p_action: Action = None) -> State:
-        """
-        Simulates a state transition based on a state and an action. The simulation step itself is
-        carried out either by an internal custom implementation in method _simulate_reaction() or
-        by an embedded external function.
-
-        Parameters
-        ----------
-        p_state : State
-            Current state.
-        p_action : Action
-            Action.
-
-        Returns
-        -------
-        State
-            Subsequent state after transition
-        """
-
-        if self._fct_strans is not None:
-            return self._fct_strans.simulate_reaction(p_state, p_action)
-        elif self._mujoco_handler is not None:
-            self._mujoco_handler._step_simulation(p_action)
-
-            # Delay because of the simulation
-            sleep(self.get_latency().total_seconds())
-            ob = self._mujoco_handler._get_obs()
-
-            current_state = self.state_from_mujoco(ob)
-
-            return current_state
-        else:
-            return self._simulate_reaction(p_state, p_action)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
-        """
-        Custom method for a simulated state transition. Implement this method if no external state
-        transition function is used. See method simulate_reaction() for further
-        details.
-        """
-        
-        raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
-
-
-## -------------------------------------------------------------------------------------------------    
-    def state_from_mujoco(self, p_mujoco_state):
-        """
-        State conversion method from converting MuJoCo state to MLPro state.
-        """
-
-        mujoco_state = self._state_from_mujoco(p_mujoco_state)
-        mlpro_state = State(self.get_state_space())
-        mlpro_state.set_values(mujoco_state)
-        return mlpro_state
-
-
-## -------------------------------------------------------------------------------------------------
-    def _state_from_mujoco(self, p_mujoco_state):
-        """
-        Custom method for to do transition between MuJoCo state and MLPro state. Implement this method
-        if the MLPro state has different dimension from MuJoCo state.
-
-        Parameters
-        ----------
-        p_mujoco_state : Numpy
-            MuJoCo state.
-
-        Returns
-        -------
-        Numpy
-            Modified MuJoCo state
-        """
-
-        return p_mujoco_state
-
-
-## -------------------------------------------------------------------------------------------------
-    def _export_action(self, p_action: Action) -> bool:
-        """
-        Mode C_MODE_REAL only: exports given action to be processed externally (for instance by a 
-        real hardware). Please redefine. 
-
-        Parameters
-        ----------
-        p_action : Action
-            Action to be exported
-
-        Returns
-        -------
-        success : bool
-            True, if action export was successful. False otherwise.
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def _import_state(self) -> bool:
-        """
-        Mode C_MODE_REAL only: imports state from an external system (for instance a real hardware). 
-        Please redefine. Please use method _set_state() for internal update.
-
-        Returns
-        -------
-        success : bool
-            True, if state import was successful. False otherwise.
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def compute_success(self, p_state: State) -> bool:
-        """
-        Assesses the given state whether it is a 'success' state. Assessment is carried out either by
-        a custom implementation in method _compute_success() or by an embedded external function.
-
-        Parameters
-        ----------
-        p_state : State
-            State to be assessed.
-
-        Returns
-        -------
-        success : bool
-            True, if the given state is a 'success' state. False otherwise.
-        """
-
-        if self._fct_success is not None:
-            return self._fct_success.compute_success(p_state)
-        else:
-            return FctSuccess.compute_success(self, p_state)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state: State) -> bool:
-        """
-        Custom method for assessment for success. Implement this method if no external function is 
-        used. See method compute_success() for further details.
-        """
-
-        return False
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_success(self) -> bool:
-        if self._state is None: return False
-        return self._state.get_success()
-
-
-## -------------------------------------------------------------------------------------------------
-    def compute_broken(self, p_state: State) -> bool:
-        """
-        Assesses the given state whether it is a 'broken' state. Assessment is carried out either by
-        a custom implementation in method _compute_broken() or by an embedded external function.
-
-        Parameters
-        ----------
-        p_state : State
-            State to be assessed.
-
-        Returns
-        -------
-        broken : bool
-            True, if the given state is a 'broken' state. False otherwise.
-        """
-
-        if self._fct_broken is not None:
-            return self._fct_broken.compute_broken(p_state)
-        else:
-            return FctBroken.compute_broken(self, p_state)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state: State) -> bool:
-        """
-        Custom method for assessment for breakdown. Implement this method if no external function is 
-        used. See method compute_broken() for further details.
-        """
-
-        return False
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_broken(self) -> bool:
-        if self._state is None: return False
-        return self._state.get_broken()
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
 class Sensor (Dimension):
     """
     Template for a sensor.
@@ -1192,72 +668,257 @@ class Controller (EventManager):
         """
 
         raise NotImplementedError
-
-
-
+        
+        
+        
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class System (SystemBase):
+class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObject):
     """
-    Template for more specific state based systems focussing on hardware control. In addition
-    to class SystemBase a controller management is added to access external hardware in mode
-    C_MODE_REAL.
+    Base class for state based systems.
 
-    See class SystemBase for further detais.
+    Parameters
+    ----------
+    p_mode 
+        Mode of the system. Possible values are Mode.C_MODE_SIM(default) or Mode.C_MODE_REAL.
+    p_latency : timedelta
+        Optional latency of the system. If not provided, the internal value of constant C_LATENCY 
+        is used by default.
+    p_fct_strans : FctSTrans
+        Optional external function for state transition. 
+    p_fct_success : FctSuccess
+        Optional external function for state evaluation 'success'.
+    p_fct_broken : FctBroken
+        Optional external function for state evaluation 'broken'.
+    p_mujoco_file
+        Path to XML file for MuJoCo model.
+    p_frame_skip : int
+        Frame to be skipped every step. Default = 1.
+    p_state_mapping
+        State mapping if the MLPro state and MuJoCo state have different naming.
+    p_action_mapping
+        Action mapping if the MLPro action and MuJoCo action have different naming.
+    p_use_radian : bool
+        Use radian if the action and the state based on radian unit. Default = True.
+    p_camera_conf : tuple
+        Default camera configuration on MuJoCo Simulation (xyz position, elevation, distance).
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
+    p_logging 
+        Log level (see class Log for more details). Default = Log.C_LOG_ALL.
+
+    Attributes
+    ----------
+    _latency : timedelta
+        Latency of the system.
+    _state : State
+        Current state of system.
+    _prev_state : State
+        Previous state of system.
+    _last_action : Action
+        Last action.
+    _fct_strans : FctSTrans
+        Internal state transition function.
+    _fct_success : FctSuccess
+        Internal function for state evaluation 'success'.
+    _fct_broken : FctBroken
+        Internal function for state evaluation 'broken'.
     """
 
-    C_TYPE      = 'System'
+    C_TYPE          = 'System'
+
+    C_LATENCY       = timedelta(0, 1, 0)  # Default latency 1s
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, 
-                  p_mode = Mode.C_MODE_SIM, 
-                  p_latency : timedelta = None, 
-                  p_fct_strans : FctSTrans = None, 
-                  p_fct_success : FctSuccess = None, 
-                  p_fct_broken : FctBroken = None, 
+    def __init__( self,
+                  p_mode = Mode.C_MODE_SIM,
+                  p_latency : timedelta = None,
+                  p_fct_strans : FctSTrans = None,
+                  p_fct_success : FctSuccess = None,
+                  p_fct_broken : FctBroken = None,
                   p_mujoco_file = None,
                   p_frame_skip : int = 1,
                   p_state_mapping = None,
                   p_action_mapping = None,
                   p_use_radian : bool = True,
                   p_camera_conf : tuple = (None, None, None),
-                  p_visualize : bool = False, 
+                  p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
 
-        SystemBase.__init__( self,
-                             p_mode=p_mode, 
-                             p_latency=p_latency, 
-                             p_fct_strans=p_fct_strans, 
-                             p_fct_success=p_fct_success, 
-                             p_fct_broken=p_fct_broken, 
-                             p_mujoco_file=p_mujoco_file,
-                             p_frame_skip=p_frame_skip,
-                             p_state_mapping=p_state_mapping,
-                             p_action_mapping=p_action_mapping,
-                             p_use_radian=p_use_radian,
-                             p_camera_conf=p_camera_conf,
-                             p_visualize=p_visualize, 
-                             p_logging=p_logging )
+        self._fct_strans            = p_fct_strans
+        self._fct_success           = p_fct_success
+        self._fct_broken            = p_fct_broken
+        self._mujoco_handler        = None
+        self._state_space : MSpace  = None
+        self._action_space : MSpace = None
+        self._state                 = None
+        self._prev_state            = None
+        self._last_action           = None
+        self._controllers           = []
+        self._mapping_actions       = {}
+        self._mapping_states        = {}
 
-        self._controllers       = []
-        self._mapping_actions   = {}
-        self._mapping_states    = {}
+        FctSTrans.__init__(self, p_logging=p_logging)
+        FctSuccess.__init__(self, p_logging=p_logging)
+        FctBroken.__init__(self, p_logging=p_logging)
+        Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
 
-    
+        self._state_space, self._action_space = self.setup_spaces()
+
+        if p_mujoco_file is not None:
+            from mlpro.wrappers.mujoco import MujocoHandler
+
+            self._mujoco_handler = MujocoHandler(
+                                        p_mujoco_file=p_mujoco_file, 
+                                        p_frame_skip=p_frame_skip,
+                                        p_system_state_space=self.get_state_space(),
+                                        p_system_action_space=self.get_action_space(),
+                                        p_state_mapping=p_state_mapping,
+                                        p_action_mapping=p_action_mapping,
+                                        p_use_radian=p_use_radian, 
+                                        p_camera_conf=p_camera_conf,
+                                        p_visualize=p_visualize,
+                                        p_logging=p_logging)
+            
+            self.set_latency(timedelta(0,0.05,0))
+        else:
+            self.set_latency(p_latency)
+
+
+ ## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def setup_spaces():
+        """
+        Static template method to set up and return state and action space of environment.
+        
+        Returns
+        -------
+        state_space : MSpace
+            State space object
+        action_space : MSpace
+            Action space object
+
+        """
+
+        return None, None
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging):
+        Log.switch_logging(self, p_logging)
+        if self._fct_strans is not None:
+            self._fct_strans.switch_logging(p_logging)
+        if self._fct_success is not None:
+            self._fct_success.switch_logging(p_logging)
+        if self._fct_broken is not None:
+            self._fct_broken.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self) -> timedelta:
+        """
+        Returns latency of the system.
+        """
+
+        return self._latency
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_latency(self, p_latency: timedelta = None) -> None:
+        """
+        Sets latency of the system. If p_latency is None latency will be reset to internal value of 
+        attribute C_LATENCY.
+
+        Parameters
+        ----------
+        p_latency : timedelta
+            New latency value 
+        """
+
+        if p_latency is None:
+            self._latency = self.C_LATENCY
+        else:
+            self._latency = p_latency
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_state_space(self) -> MSpace:
+        return self._state_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_action_space(self) -> MSpace:
+        return self._action_space
+        
+        
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+        """
+        Resets the internal random generator using the given seed.
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed parameter for an internal random generator
+        """
+
+        random.seed(p_seed)
+
+
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed=None) -> None:
         """
-        Resets the system by calling method SystemBase.reset() and the related custom method _reset().
-        Furthermore, in real operation mode all assigned controllers are reset as well.
+        Resets the system to an initial state. If MuJoCo is not used, the custom method _reset() is
+        called.
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed parameter for an internal random generator
         """
 
-        SystemBase.reset(self, p_seed)
+        self.log(self.C_LOG_TYPE_I, 'Reset')
+        self._num_cycles = 0
+
+        # Put Mujoco here
+        if self._mujoco_handler is not None:
+            current_state = self.get_state()
+            if callable(getattr(self, '_obs_to_mujoco', None)):
+                current_state = self._obs_to_mujoco(current_state)
+
+            ob = self._mujoco_handler._reset_simulation(current_state)
+            
+            self._state = State(self.get_state_space())
+            self._state.set_values(ob)
+
+        else:
+            self._reset(p_seed)
+
+
+        if self._state is not None:
+            self._state.set_initial(True)
 
         if self.get_mode() == Mode.C_MODE_REAL:
             for con in self._controllers: con.reset()
             self._import_state()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None) -> None:
+        """
+        Custom method to reset the system to an initial/defined state. Use method _set_status() to
+        set the state.
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed parameter for an internal random generator
+        """
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1347,6 +1008,178 @@ class System (SystemBase):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def get_state(self) -> State:
+        """
+        Returns current state of the system.
+        """
+
+        return self._state
+
+
+## -------------------------------------------------------------------------------------------------
+    def _set_state(self, p_state: State):
+        """
+        Explicitly sets the current state of the system. Internal use only.
+        """
+
+        self._state = p_state
+
+
+## -------------------------------------------------------------------------------------------------
+    def process_action(self, p_action: Action) -> bool:
+        """
+        Processes a state transition based on the current state and a given action. The state
+        transition itself is implemented in child classes in the custom method _process_action().
+
+        Parameters
+        ----------
+        p_action : Action
+            Action to be processed
+
+        Returns
+        -------
+        success : bool
+            True, if action processing was successfull. False otherwise.
+        """
+
+        self.log(self.C_LOG_TYPE_I, 'Start processing action')
+
+        state = self.get_state()
+        result = self._process_action(p_action)
+        self._prev_state = state
+        self._last_action = p_action
+
+        if result:
+            self.log(self.C_LOG_TYPE_I, 'Action processing finished successfully')
+            return True
+        else:
+            self.log(self.C_LOG_TYPE_E, 'Action processing failed')
+            return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _process_action(self, p_action: Action) -> bool:
+        """
+        Internal custom method for state transition with default implementation. To be redefined in 
+        a child class on demand. See method process_action() for further details.
+        """
+
+        # 0 Intro
+        for agent in p_action.get_elem_ids():
+            self.log(self.C_LOG_TYPE_I, 'Actions of agent', agent, '=', p_action.get_elem(agent).get_values())
+
+        # 1 State transition
+        if self._mode == self.C_MODE_SIM:
+            # 1.1 Simulated state transition
+            self._set_state(self.simulate_reaction(self.get_state(), p_action))
+
+        elif self._mode == self.C_MODE_REAL:
+            # 1.2 Real state transition
+
+            # 1.2.1 Export action to executing system
+            if not self._export_action(p_action):
+                self.log(self.C_LOG_TYPE_E, 'Action export failed!')
+                return False
+
+            # 1.2.2 Wait for the defined latency
+            latency = self.get_latency().total_seconds()
+            self.log(Log.C_LOG_TYPE_I, 'Waiting the system latency time of', str(latency), 'seconds...')
+            sleep(latency)
+
+            # 1.2.3 Import state from executing system
+            if not self._import_state():
+                self.log(self.C_LOG_TYPE_E, 'State import failed!')
+                return False
+
+        # 2 State evaluation
+        state = self.get_state()
+        state.set_success(self.compute_success(state))
+        state.set_broken(self.compute_broken(state))
+
+        # 3 Outro
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def simulate_reaction(self, p_state: State = None, p_action: Action = None) -> State:
+        """
+        Simulates a state transition based on a state and an action. The simulation step itself is
+        carried out either by an internal custom implementation in method _simulate_reaction() or
+        by an embedded external function.
+
+        Parameters
+        ----------
+        p_state : State
+            Current state.
+        p_action : Action
+            Action.
+
+        Returns
+        -------
+        State
+            Subsequent state after transition
+        """
+
+        if self._fct_strans is not None:
+            return self._fct_strans.simulate_reaction(p_state, p_action)
+        elif self._mujoco_handler is not None:
+            self._mujoco_handler._step_simulation(p_action)
+
+            # Delay because of the simulation
+            sleep(self.get_latency().total_seconds())
+            ob = self._mujoco_handler._get_obs()
+
+            current_state = self.state_from_mujoco(ob)
+
+            return current_state
+        else:
+            return self._simulate_reaction(p_state, p_action)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+        """
+        Custom method for a simulated state transition. Implement this method if no external state
+        transition function is used. See method simulate_reaction() for further
+        details.
+        """
+        
+        raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
+
+
+## -------------------------------------------------------------------------------------------------    
+    def state_from_mujoco(self, p_mujoco_state):
+        """
+        State conversion method from converting MuJoCo state to MLPro state.
+        """
+
+        mujoco_state = self._state_from_mujoco(p_mujoco_state)
+        mlpro_state = State(self.get_state_space())
+        mlpro_state.set_values(mujoco_state)
+        return mlpro_state
+
+
+## -------------------------------------------------------------------------------------------------
+    def _state_from_mujoco(self, p_mujoco_state):
+        """
+        Custom method for to do transition between MuJoCo state and MLPro state. Implement this method
+        if the MLPro state has different dimension from MuJoCo state.
+
+        Parameters
+        ----------
+        p_mujoco_state : Numpy
+            MuJoCo state.
+
+        Returns
+        -------
+        Numpy
+            Modified MuJoCo state
+        """
+
+        return p_mujoco_state
+
+
+## -------------------------------------------------------------------------------------------------
     def _import_state(self) -> bool:
 
         # 1 Initialization
@@ -1407,6 +1240,84 @@ class System (SystemBase):
                     successful = successful and mapping[0].set_actuator_value(p_id=mapping[1], p_value=actuator_value)
 
         return successful
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_success(self, p_state: State) -> bool:
+        """
+        Assesses the given state whether it is a 'success' state. Assessment is carried out either by
+        a custom implementation in method _compute_success() or by an embedded external function.
+
+        Parameters
+        ----------
+        p_state : State
+            State to be assessed.
+
+        Returns
+        -------
+        success : bool
+            True, if the given state is a 'success' state. False otherwise.
+        """
+
+        if self._fct_success is not None:
+            return self._fct_success.compute_success(p_state)
+        else:
+            return FctSuccess.compute_success(self, p_state)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_success(self, p_state: State) -> bool:
+        """
+        Custom method for assessment for success. Implement this method if no external function is 
+        used. See method compute_success() for further details.
+        """
+
+        return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_success(self) -> bool:
+        if self._state is None: return False
+        return self._state.get_success()
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state: State) -> bool:
+        """
+        Assesses the given state whether it is a 'broken' state. Assessment is carried out either by
+        a custom implementation in method _compute_broken() or by an embedded external function.
+
+        Parameters
+        ----------
+        p_state : State
+            State to be assessed.
+
+        Returns
+        -------
+        broken : bool
+            True, if the given state is a 'broken' state. False otherwise.
+        """
+
+        if self._fct_broken is not None:
+            return self._fct_broken.compute_broken(p_state)
+        else:
+            return FctBroken.compute_broken(self, p_state)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _compute_broken(self, p_state: State) -> bool:
+        """
+        Custom method for assessment for breakdown. Implement this method if no external function is 
+        used. See method compute_broken() for further details.
+        """
+
+        return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_broken(self) -> bool:
+        if self._state is None: return False
+        return self._state.get_broken()
 
 
 
