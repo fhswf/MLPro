@@ -25,6 +25,8 @@ You will learn:
 2) How to set up model-based RL (MBRL) training
     
 3) How to incorporate MPC into MBRL training
+
+4) How to use multiprocessing on MPC
     
 """
 
@@ -35,6 +37,7 @@ from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 from pathlib import Path
 from mlpro.rl.pool.actionplanner.mpc import MPC
 from mlpro.rl.pool.envmodels.mlp_gridworld import MLPEnvModel
+import mlpro.bf.mt as mt
 
 
 
@@ -71,7 +74,7 @@ class ScenarioGridWorld(RLScenario):
             p_policy=policy_random,  
             p_envmodel=MLPEnvModel(),
             p_em_acc_thsld=0.2,
-            p_action_planner=MPC(),
+            p_action_planner=MPC(p_range_max=mt.Async.C_RANGE_PROCESS),
             p_predicting_horizon=5,
             p_controlling_horizon=1,
             p_planning_width=50,
