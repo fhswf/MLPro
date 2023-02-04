@@ -19,7 +19,7 @@ On top of this, :ref:`Layer 2: Mathematics <target_bf_mathematics>` introduces e
 dimensions, sets and elements, metric spaces, and functions. Furthermore, numeric algorithms for data normalization etc.
 are included.
 
-:ref:`Layer 3: Data Sources and State-based Systems <target_bf_data_sources>` prepares the connection to real 
+:ref:`Layer 3: Application Support <target_bf_application_support>` prepares the connection to real 
 applications. It introduces powerful systematics for stream data processing/visualization and state-based systems that 
 are, in turn, prepared for communication with real hardware components like sensors and actuators.
 
