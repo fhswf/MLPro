@@ -10,11 +10,11 @@
 ## -- 2022-10-07  1.0.1     SY       Add plotting
 ## -- 2022-10-13  1.0.2     SY       Refactoring 
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
+## -- 2023-02-04  1.1.1     SY       Add multiprocessing functionality
 ## -------------------------------------------------------------------------------------------------
 
-
 """
-Ver. 1.1.0 (2022-11-07)
+Ver. 1.1.1 (2023-02-04)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem.
 
