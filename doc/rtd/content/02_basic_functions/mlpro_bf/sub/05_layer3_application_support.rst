@@ -1,4 +1,4 @@
-.. _target_bf_data_sources:
+.. _target_bf_application_support:
 Layer 3 - Application Support
 -----------------------------
 
@@ -9,5 +9,5 @@ Further explanation coming soon...
    :maxdepth: 1
    :glob:
 
-   layer3_data_sources_and_systems/*
+   layer3_application_support/*
 
