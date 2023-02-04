@@ -1,16 +1,18 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_systems_003_systems_wrapped_with_mujoco.py
+## -- Module  : howto_bf_systems_002_systems_wrapped_with_mujoco.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-01-06  0.0.0     MRD       Creation
 ## -- 2023-01-06  1.0.0     MRD       Release
+## -- 2023-02-04  1.0.1     SY        Renaming
 ## -------------------------------------------------------------------------------------------------
 
+
 """
-Ver. 1.0.0 (2023-01-06)
+Ver. 1.0.1 (2023-02-04)
 
 This module demonstrates the principles of using classes System and use MuJoCo wrapper to do
 the simulation for pre defined model.

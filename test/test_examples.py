@@ -33,10 +33,12 @@
 ## -- 2023-01-16  1.6.4     SY       Add howto related to unit converters
 ## -- 2023-01-27  1.6.5     MRD      Add howto related to mujoco
 ## -- 2023-02-02  1.6.6     DA       Renamed some rl howtos
+## -- 2023-02-04  1.6.7     SY       Renaming some bf howtos
 ## -------------------------------------------------------------------------------------------------
 
+
 """
-Ver. 1.6.6 (2023-02-02)
+Ver. 1.6.7 (2023-02-04)
 
 Unit test for all examples available.
 """
@@ -66,7 +68,6 @@ howto_list = {
     # bf.math
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
-    "bf_math_020": "mlpro.bf.examples.howto_bf_math_020_unit_converter",
 
     # bf.ml
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
@@ -84,8 +85,11 @@ howto_list = {
 
     # bf.systems
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
-    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_set_up_transfer_functions",
-    "bf_systems_003": "mlpro.bf.examples.howto_bf_systems_003_systems_wrapped_with_mujoco",
+    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_systems_wrapped_with_mujoco",
+
+    # bf.physics
+    "bf_physics_001": "mlpro.bf.examples.howto_bf_physics_001_set_up_transfer_functions",
+    "bf_physics_002": "mlpro.bf.examples.howto_bf_physics_002_unit_converter",
 
 
 
