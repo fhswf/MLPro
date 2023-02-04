@@ -11,7 +11,7 @@
 ## -- 2022-10-13  1.0.2     SY       Refactoring 
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -- 2023-02-02  1.2.0     DA       Refactoring
-## -- 2023-02-04  1.2.1     SY       Add multiprocessing functionality
+## -- 2023-02-04  1.2.1     SY       Add multiprocessing functionality and refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -76,7 +76,8 @@ class ScenarioGridWorld(RLScenario):
             p_policy=policy_random,  
             p_envmodel=MLPEnvModel(),
             p_em_acc_thsld=0.2,
-            p_action_planner=MPC(p_range_max=mt.Async.C_RANGE_PROCESS),
+            p_action_planner=MPC(p_range_max=mt.Async.C_RANGE_PROCESS,
+                                 p_logging=p_logging),
             p_predicting_horizon=5,
             p_controlling_horizon=1,
             p_planning_width=50,
