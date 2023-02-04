@@ -49,11 +49,12 @@
 ## -- 2022-11-07  1.6.1     DA       Classes Policy, Agent, MultiAgent: new parameter p_visualize
 ## -- 2022-11-29  1.6.2     DA       Refactoring
 ## -- 2022-12-09  1.6.3     DA       Refactoring
-## -- 2023-01-02  1.7.0     SY       Add multi-processing on MultiAgent
+## -- 2023-01-02  1.6.4     SY       Add multi-processing on MultiAgent
+## -- 2023-02-04  1.6.5     SY       Temporarily remove multi-processing on MultiAgent
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2023-01-02) 
+Ver. 1.6.5 (2023-02-04) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -62,7 +63,6 @@ from mlpro.bf.ml import Model
 from mlpro.rl.models_env import *
 from mlpro.rl.models_env_ada import *
 from mlpro.rl.models_train import RLScenario, RLTraining
-import mlpro.bf.mt as mt
 
 
 
@@ -729,7 +729,7 @@ class Agent (Policy):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiAgent(Agent, mt.Async):
+class MultiAgent(Agent):
     """
     Multi-Agent.
 
@@ -743,8 +743,6 @@ class MultiAgent(Agent, mt.Async):
         Boolean switch for env/agent visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
-    p_range : int
-        Range of asynchonicity.
     """
 
     C_TYPE      = 'Multi-Agent'
@@ -752,12 +750,7 @@ class MultiAgent(Agent, mt.Async):
     C_SUFFIX    = '.cfg'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_name='',
-                 p_ada=True,
-                 p_visualize:bool=False,
-                 p_logging=Log.C_LOG_ALL,
-                 p_range_max=mt.Async.C_RANGE_NONE):
+    def __init__(self, p_name='', p_ada=True, p_visualize:bool=False, p_logging=True):
         self._agents = []
         self._agent_ids = []
         self.set_name(p_name)
@@ -766,11 +759,6 @@ class MultiAgent(Agent, mt.Async):
         Plottable.__init__(self, p_visualize=p_visualize)
         self.switch_adaptivity(p_ada)
         self._set_adapted(False)
-        
-        mt.Async.__init__(self,
-                          p_range_max=p_range_max, 
-                          p_class_shared=mt.Shared,
-                          p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -924,15 +912,13 @@ class MultiAgent(Agent, mt.Async):
     def compute_action(self, p_state: State) -> Action:
         self.log(self.C_LOG_TYPE_I, 'Start of action computation for all agents...')
 
-        if self._range == self.C_RANGE_NONE:
-            action = Action()
-            for agent, weight in self._agents:
-                action_agent = agent.compute_action(p_state)
-                action_element = action_agent.get_elem(agent.get_id())
-                action_element.set_weight(weight)
-                action.add_elem(agent.get_id(), action_element)   
-        else:
-            action = self.execute(p_type=0, p_state=p_state)
+        action = Action()
+
+        for agent, weight in self._agents:
+            action_agent = agent.compute_action(p_state)
+            action_element = action_agent.get_elem(agent.get_id())
+            action_element.set_weight(weight)
+            action.add_elem(agent.get_id(), action_element)
 
         self.log(self.C_LOG_TYPE_I, 'End of action computation for all agents...')
         return action
@@ -941,17 +927,14 @@ class MultiAgent(Agent, mt.Async):
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, p_state:State, p_reward:Reward) -> bool:
         self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')
-        
-        if self._range == self.C_RANGE_NONE:        
-            adapted = False
-            for agent_entry in self._agents:
-                agent = agent_entry[0]
-                if (p_reward.get_type() != Reward.C_TYPE_OVERALL) and not p_reward.is_rewarded(agent.get_id()):
-                    continue
-                self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-                adapted = agent.adapt(p_state=p_state, p_reward=p_reward) or adapted
-        else:
-            adapted = self.execute(p_type=1, p_state=p_state, p_reward=p_reward)
+
+        adapted = False
+        for agent_entry in self._agents:
+            agent = agent_entry[0]
+            if (p_reward.get_type() != Reward.C_TYPE_OVERALL) and not p_reward.is_rewarded(agent.get_id()):
+                continue
+            self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
+            adapted = agent.adapt(p_state=p_state, p_reward=p_reward) or adapted
 
         self.log(self.C_LOG_TYPE_I, 'End of adaptation for all agents...')
 
@@ -987,59 +970,3 @@ class MultiAgent(Agent, mt.Async):
 
         for agent_entry in self._agents:
             agent_entry[0].update_plot()
-
-    
-## -------------------------------------------------------------------------------------------------
-    def execute(self, p_type:int, **p_kwargs):
-        for ids in range(len(self._agents)):
-            if p_type == 0:
-                action = Action()
-                self._start_async(p_target=self._async_compute_actions,
-                                  p_tid=ids,
-                                  p_state=p_kwargs['p_state'])
-            elif p_type == 1:
-                self._start_async(p_target=self._async_policy_adapt,
-                                  p_tid=ids,
-                                  p_state=p_kwargs['p_state'],
-                                  p_reward=p_kwargs['p_reward'])
-
-        self.wait_async_tasks()
-        
-        result = self._so.get_results()
-        if p_type == 0:
-            action = Action()
-            for idx in range(len(self._agents)):
-                action.add_elem(self._agents[idx][0].get_id(), result[idx])  
-            return action
-        elif p_type == 1:
-            adapted = any(result.values())
-            return adapted
-
-
-## -------------------------------------------------------------------------------------------------
-    def _async_compute_actions(self, p_tid:int, p_state:State):
-        self._so.checkin(p_tid=p_tid)
-        
-        agent, weight = self._agents[p_tid]
-        action_agent = agent.compute_action(p_state)
-        action_element = action_agent.get_elem(agent.get_id())
-        action_element.set_weight(weight)
-
-        self._so.add_result(p_tid=p_tid, p_result=action_element)
-        self._so.checkout(p_tid=p_tid)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _async_policy_adapt(self, p_tid:int, p_state:State, p_reward:Reward):
-        self._so.checkin(p_tid=p_tid)
-        
-        adapted = False
-        agent = self._agents[p_tid][0]
-        if (p_reward.get_type() != Reward.C_TYPE_OVERALL) and not p_reward.is_rewarded(agent.get_id()):
-            pass
-        else:
-            self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-            adapted = agent.adapt(p_state=p_state, p_reward=p_reward)
-
-        self._so.add_result(p_tid=p_tid, p_result=adapted)
-        self._so.checkout(p_tid=p_tid)
