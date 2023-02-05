@@ -2,4 +2,5 @@
 ML Scenarios
 ============
 
-Further explanation coming soon...
+- combines a model and a related surrounding to something executable
+- mode 
