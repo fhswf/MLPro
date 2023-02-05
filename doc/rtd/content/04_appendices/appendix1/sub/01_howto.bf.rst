@@ -77,7 +77,18 @@ Systems
    :maxdepth: 1
    :glob:
 
-   bf/systems/howto* 
+   bf/systems/howto*     
+
+
+
+Physics
+----------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   bf/physics/howto* 
 
 
 

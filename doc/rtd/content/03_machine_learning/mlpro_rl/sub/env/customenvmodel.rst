@@ -1,3 +1,4 @@
+.. _customEnvModel:
 Custom Environments Model
 -----------------------
 

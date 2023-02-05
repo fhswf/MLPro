@@ -1,8 +1,8 @@
 .. _Howto Env RL 004:
-Howto RL-ENV-004: A Random Agent on Double Pendulum Environment
+Howto RL-ENV-004: Manual Validation of Double Pendulum
 ====================================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_env_004_run_agent_with_random_actions_on_double_pendulum_environment
+.. automodule:: mlpro.rl.examples.howto_rl_env_004_manual_validation_of_double_pendulum
 
 Prerequisites
 -------------
@@ -15,6 +15,6 @@ Please install the following packages to run this examples properly:
 
 Executable code
 ---------------
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_004_run_agent_with_random_actions_on_double_pendulum_environment.py
+.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_004_manual_validation_of_double_pendulum.py
 	:language: python
 
