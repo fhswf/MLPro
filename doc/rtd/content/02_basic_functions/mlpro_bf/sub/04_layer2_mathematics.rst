@@ -1,6 +1,6 @@
 .. _target_bf_mathematics:
 Layer 2 - Mathematics
----------------------
+=====================
 
 Further explanations coming soon...
 
