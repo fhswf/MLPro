@@ -13,4 +13,5 @@ Wrappers
    wrappers/river
    wrappers/sb3
    wrappers/sklearn
+   wrappers/mujoco
 

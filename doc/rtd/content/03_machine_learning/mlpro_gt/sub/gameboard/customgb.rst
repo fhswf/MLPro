@@ -5,9 +5,9 @@ Custom Game boards
 
 - **Game Board Creation for Simulation Mode**
 
-    To create a game board that satisfies MLPro interface is immensly simple and straigtforward.
-    Basically a MLPro game board is a class with several main functions. Each game board must apply the
-    following mlpro functions:
+    Creating a game board that satisfies the MLPro interface is immensely simple and straightforward.
+    Basically, an MLPro game board is a class with several main functions. Each game board must apply the
+    following MLPro functions:
     
     .. code-block:: python
         
@@ -138,9 +138,9 @@ Custom Game boards
                 """
                 ....
                 
-            def _compute_success(self, p_state: State) -> bool:
+            def _compute_broken(self, p_state: State) -> bool:
                 """
-                Custom method for state evaluation 'success'. See method compute_success() for further details.
+                Custom method for state evaluation 'broken'. See method compute_broken() for further details.
 
                 Parameters
                 ----------
@@ -150,7 +150,7 @@ Custom Game boards
                 Returns
                 -------
                 bool
-                    True, if the given state is a 'success' state. False otherwise.
+                    True, if the given state is a 'broken' state. False otherwise.
                 """
                 ....
 
@@ -160,23 +160,21 @@ Custom Game boards
                 """
                 ....
     
-    One of the benefits for MLPro users is the variety of reward structures, which is useful for Multi-Agent GT
-    and Game Theoretical approach. Three types of reward structures are supported in this framework, such as:
+    One of the benefits for MLPro users is the variety of reward structures, which is useful for a multi-player GT approach.
+    Three types of reward structures are supported in this framework, such as:
     
-    1. **C_TYPE_OVERALL** as the default type and is a scalar overall value
+    1. **C_TYPE_OVERALL** is the default type and is a scalar overall value,
     
-    2. **C_TYPE_EVERY_AGENT** is a scalar for every agent
+    2. **C_TYPE_EVERY_AGENT** is a scalar for every player, and
     
-    3. **C_TYPE_EVERY_ACTION** is a scalar for every agent and action.
+    3. **C_TYPE_EVERY_ACTION** is a scalar for every player and action.
     
-    To set up state- and action-spaces using our basic functionalities, please refer to our :ref:`how to File 02<target-howto>`
-    or `here <https://github.com/fhswf/MLPro/blob/main/examples/bf/Howto%2002%20-%20(Math)%20Spaces%2C%20subspaces%20and%20elements.py>`_.
-    Dimension class is currently improved and we will provide the explanation afterwards!
+    To set up state- and action spaces using our basic functionalities, please refer to :ref:`Howto GT-002: Train Multi-Player <Howto GT 002>`.
 
 - **Game Board Creation for Real Hardware Mode**
 
-    In MLPro, we can choose simulation mode or real hardward mode. For real hardware mode, the creation of
-    an environment is very similar to simulation mode. You do not need to define **_simulate_reaction**, but you
+    In MLPro, we can choose simulation mode or real hardware mode. For real hardware mode, the creation of
+    an environment is very similar to thesimulation mode. You do not need to define **_simulate_reaction**, but you
     need to replace it with **_export_action** and **_import_state** as it is shown in the following:
     
     .. code-block:: python
@@ -216,6 +214,6 @@ Custom Game boards
 
 - **Game Board Checker**
 
-    To check whether your developed game board is compatible to MLPro interface, we provide a test script
-    using unittest. At the moment, you can find the source code `here <https://github.com/fhswf/MLPro/blob/main/test/test_environment.py>`_.
-    We will prepare a built-in testing module in MLPro, show you how to excecute the testing soon and provides an example as well.
+    To check whether your developed game board is compatible with the MLPro interface, we provide a test script
+    using Unittest. At the moment, you can find the source code `here <https://github.com/fhswf/MLPro/blob/main/test/test_environment.py>`_.
+    We will prepare a built-in testing module in MLPro, show you how to execute the testing soon and provides an example as well.

@@ -1,3 +1,4 @@
+.. _target_gb_gt:
 Game Boards
 -----------
 
