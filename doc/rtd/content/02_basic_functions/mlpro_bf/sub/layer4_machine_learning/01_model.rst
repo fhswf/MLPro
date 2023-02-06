@@ -3,6 +3,8 @@ The Adaptive Model
 ==================
 
 - Adaptivity
+- Executability
+- Persistency
 - Hyperparameters
 - Data buffering
 - Task, Multitasking, Workflow
