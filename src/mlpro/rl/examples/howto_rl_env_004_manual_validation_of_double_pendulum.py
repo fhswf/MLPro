@@ -9,12 +9,20 @@
 ## -- 2023-02-02  1.1.0     DA       Renamed and refactored
 ## -------------------------------------------------------------------------------------------------
 
-"""
+
+'''
 Ver. 1.1.0 (2023-02-02)
 
-This module is used to validate the dp environment
+This module is used to validate the dp environment. This howto enables:
 
-"""
+1. Setting up a double pendulum environment.
+
+2. Validating the double pendulum environment for user defined actions.
+
+'''
+
+
+
 
 from mlpro.bf.math import *
 from mlpro.rl.models import *
