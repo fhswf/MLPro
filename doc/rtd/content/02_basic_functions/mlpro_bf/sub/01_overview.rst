@@ -23,6 +23,6 @@ are included.
 applications. It introduces powerful systematics for stream data processing/visualization and state-based systems that 
 are, in turn, prepared for communication with real hardware components like sensors and actuators.
 
-The top :ref:`Layer 4: Machine Learning <target_bf_ml>` of MLPro-BF specifies fundamental standards for machine learning in MLPro. 
+The top :ref:`Layer 4: Machine Learning <target_bf_ml>` of MLPro-BF specifies fundamental standards for machine learning. 
 All higher ML-related sub-frameworks reuse and specialize them. Topics like hyperparameters, adaptive models, and their training 
 and tuning in ML scenarios are handled here.
