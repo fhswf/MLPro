@@ -2,8 +2,8 @@
 Layer 4 - Machine Learning
 ==========================
 
-A fundamental idea of MLPro is to anchor universal standards for machine learning in the basic functions. 
-This shall facilitate the creation of higher ML functionalities and ensure their recombinability. The 
+One of the fundamental concepts in MLPro is to anchor universal standards for machine learning already in the basic 
+functions. This shall facilitate the creation of higher ML functionalities and ensure their recombinability. The 
 challenge here is to capture the nature of machine learning on an abstract and general level while 
 establishing concrete templates and processes and solving elementary subtasks. The highest layer 4 
 of the basic functions of MLPro is dedicated to this topic.
