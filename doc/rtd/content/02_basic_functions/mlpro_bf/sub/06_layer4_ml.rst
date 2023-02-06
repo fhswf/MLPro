@@ -43,7 +43,7 @@ on historical data and/or online monitoring. For this purpose, MLPro provides st
 
    layer4_machine_learning/*
 
-s
+
 **Cross Reference**
 
 - :ref:`API Reference MLPro-BF-ML <target_api_bf_ml>`
