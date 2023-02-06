@@ -1,17 +1,19 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_math_020_unit_converter.py
+## -- Module  : howto_bf_physics_002_unit_converter.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-01-15  0.0.0     SY       Creation
 ## -- 2023-01-15  1.0.0     SY       Release of first version
 ## -- 2023-01-16  1.0.1     SY       Renaming and debugging
+## -- 2023-02-04  1.0.2     SY       Shift UnitConverter from bf.math to bf.physics
 ## -------------------------------------------------------------------------------------------------
 
+
 """
-Ver. 1.0.1 (2023-01-16)
+Ver. 1.0.2 (2023-02-04)
 
 This module provides an example of using the unit converter in MLPro.
 
@@ -22,7 +24,7 @@ You will learn:
 """
 
 
-from mlpro.bf.math.unitconverter import UnitConverter
+from mlpro.bf.physics.unitconverter import UnitConverter
 from mlpro.bf.various import Log
 
 

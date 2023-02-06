@@ -1,5 +1,5 @@
 Overview
---------
+========
 
 MLPro has an extensive substructure of comprehensive basic functionalities, which are combined in the sub-framework MLPro-BF. 
 This is organized in a total of five layers that build on one another, as shown in the following figure:

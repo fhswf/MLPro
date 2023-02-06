@@ -12,10 +12,11 @@
 ## -- 2022-08-22  1.1.0     MRD      Re-structure HTMEnvModel to fix its MRO for EventManager class
 ## -- 2022-09-20  1.1.1     SY       Code cleaning
 ## -- 2023-02-02  1.1.2     MRD      Add reset and compute reward
+## -- 2023-02-04  1.1.3     SY       Refactoring to avoid printing during unit test
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2023-02-02)
+Ver. 1.1.3 (2023-02-04)
 
 This module provides Environment Model based on Homogeneous Transformations Matrix 
 Neural Network for robotinhtm environment.
@@ -443,7 +444,11 @@ class HTMEnvModel(EnvModel):
         p_logging=False,
     ):
 
-        self._robot_htm = RobotHTM(p_num_joints=p_num_joints, p_target_mode=p_target_mode)
+        self._robot_htm = RobotHTM(
+            p_num_joints=p_num_joints,
+            p_target_mode=p_target_mode,
+            p_logging=p_logging
+        )
         
         # Setup Adaptive Function
         # HTM Function Here

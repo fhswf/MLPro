@@ -15,10 +15,11 @@
 ## -- 2022-10-13  1.0.5     SY        Refactoring 
 ## -- 2022-11-07  1.1.0     DA        Refactoring 
 ## -- 2023-02-02  1.2.0     DA        Refactoring 
+## -- 2023-02-04  1.2.1     SY        Refactoring to avoid printing during unit test
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-02-02)
+Ver. 1.2.1 (2023-02-04)
 
 This module demonstrates model-based reinforcement learning (MBRL) with action planner using MPC.
 
@@ -59,7 +60,7 @@ class ScenarioRobotHTMActual(RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        self._env = RobotHTM(p_visualize=p_visualize, p_logging=True)
+        self._env = RobotHTM(p_visualize=p_visualize, p_logging=p_logging)
 
         policy_kwargs = dict(activation_fn=torch.nn.Tanh,
                              net_arch=[dict(pi=[128, 128], vf=[128, 128])])
@@ -96,7 +97,7 @@ class ScenarioRobotHTMActual(RLScenario):
             p_policy=policy_wrapped,
             p_envmodel=HTMEnvModel(),
             p_em_acc_thsld=0.5,
-            p_action_planner=MPC(),
+            p_action_planner=MPC(p_logging=p_logging),
             p_predicting_horizon=5,
             p_controlling_horizon=2,
             p_planning_width=5,

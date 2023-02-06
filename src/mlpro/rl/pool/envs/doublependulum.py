@@ -966,6 +966,13 @@ class DoublePendulumS4 (DoublePendulumRoot):
         return state
 
 
+## ------------------------------------------------------------------------------------------------------
+    def _obs_to_mujoco(self, p_state):
+        state = p_state.get_values().copy()
+        state[2] = state[2] + state[0]
+        mujoco_state = State(self.get_state_space())
+        mujoco_state.set_values(state)
+        return mujoco_state
 
 
 

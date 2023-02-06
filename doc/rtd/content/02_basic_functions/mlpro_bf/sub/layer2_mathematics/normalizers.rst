@@ -1,5 +1,6 @@
 Normalizer
-----------
+==========
+
 Normalization is a process of scaling different parameters to common scale. The way the parameters are scaled depends
 on the type of normalization being performed. For e.g. parameters are scaled within a range of -1 to 1 in case of a
 minmax normalization.

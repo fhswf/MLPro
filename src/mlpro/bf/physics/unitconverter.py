@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf.math
+## -- Package : mlpro.bf.physics
 ## -- Module  : unitconverter.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -9,13 +9,14 @@
 ## -- 2023-01-16  1.0.0     SY       Shift UnitConverter from bf.systems
 ## -- 2023-01-18  1.0.1     SY       Debugging
 ## -- 2023-01-24  1.0.2     SY       Quality Assurance on TransferFunction
+## -- 2023-02-04  1.0.3     SY       Shift UnitConverter from bf.math
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.2 (2023-01-24)
+Ver. 1.0.3 (2023-02-04)
 
-This module provides models and templates for state based systems.
+This module provides models for unit conversions.
 """
 
 from mlpro.bf.systems import TransferFunction

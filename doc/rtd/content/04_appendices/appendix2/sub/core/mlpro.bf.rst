@@ -131,6 +131,7 @@ Stream Providers and Streams
    :show-inheritance:
 
 
+.. _target_api_bf_ml:
 Machine Learning
 ----------------
 
