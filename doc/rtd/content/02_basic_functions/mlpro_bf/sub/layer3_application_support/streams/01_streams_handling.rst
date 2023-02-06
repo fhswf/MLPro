@@ -1,3 +1,4 @@
+.. _target_streams_intro:
 Streams
 =======
 
