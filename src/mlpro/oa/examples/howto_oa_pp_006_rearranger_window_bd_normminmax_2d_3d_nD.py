@@ -39,7 +39,7 @@ from mlpro.oa.tasks import BoundaryDetector, NormalizerMinMax
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MyAdaptiveScenario (StreamScenario):
+class MyAdaptiveScenario (OAScenario):
 
     C_NAME = 'Dummy'
 
@@ -254,7 +254,7 @@ tp_before = datetime.now()
 myscenario.run()
 tp_after = datetime.now()
 tp_delta = tp_after - tp_before
-duraction_sec = tp_delta.seconds + tp_delta.microseconds / 1000000
+duraction_sec = ( tp_delta.seconds * 1000000 + tp_delta.microseconds + 1 ) / 1000000
 myscenario.log(Log.C_LOG_TYPE_S, 'Duration [sec]:', round(duraction_sec,2), ', Cycles/sec:', round(cycle_limit/duraction_sec,2))
 
 if __name__ == '__main__':
