@@ -1,3 +1,4 @@
+.. _target_appendix2_SL:
 Supervised Learning
 ===================
 
