@@ -21,4 +21,4 @@ In the current implementation, we set up the basic formula of the derivation, as
 **Cross Reference**
 
 - :ref:`Streams <target_streams_intro>`
-- Tutorial: :ref:`Howto BF-STREAMS-114 <Howto BF STREAMS 114>`
+- Tutorial: :ref:`Howto BF STREAMS 114 <Howto BF STREAMS 114>`
