@@ -23,4 +23,4 @@ In MLPro, there are three possibilities for transfer functions, which are:
 
 - Please refer to :ref:`Howto BF PHYSICS 001 <Howto BF PHYSICS 001>` to know more about transfer functions in MLPro
 - Please refer to :ref:`Howto BF PHYSICS 002 <Howto BF PHYSICS 002>` to know about a sample application of a transfer function as a unit converter
-- Please refer to the class diagram at :ref:`Unit Converter <target_appendix2_BF>`
+- Please refer to the class diagram at :ref:`BF Section Physics <target_appendix2_BF>`

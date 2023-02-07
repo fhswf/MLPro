@@ -18,4 +18,4 @@ MLPro's unit converter is a functionality to convert common units of measurement
 **Cross Reference**
 
 - Please refer to :ref:`Howto BF PHYSICS 002 <Howto BF PHYSICS 002>` to know more about unit converter functionality in MLPro
-- Please refer to the class diagram at :ref:`Unit Converter <target_appendix2_BF>`
+- Please refer to the class diagram at :ref:`BF Section Physics <target_appendix2_BF>`
