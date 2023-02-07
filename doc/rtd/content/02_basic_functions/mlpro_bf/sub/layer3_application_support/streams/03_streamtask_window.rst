@@ -33,5 +33,5 @@ Additionally, MLPro also provides visualization functionality for window, as sho
 **Cross Reference**
 
 - :ref:`Streams <target_streams_intro>`
-- Tutorial: How To 110 : Stream Task Window (Howto to be included in the rtd)
+- Tutorial: :ref:`Howto BF STREAMS 110 <Howto BF STREAMS 110>`
 
