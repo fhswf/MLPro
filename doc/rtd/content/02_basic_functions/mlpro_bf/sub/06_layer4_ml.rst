@@ -8,6 +8,9 @@ challenge here is to capture the nature of machine learning on an abstract and g
 establishing concrete templates and processes and solving elementary subtasks. The highest layer 4 
 of the basic functions of MLPro is dedicated to this topic.
 
+.. image:: layer4_machine_learning/images/MLPro-BF-ML_overview.drawio.png
+    :scale: 75 %
+
 The focus of the consideration is the :ref:`adaptive model <target_bf_ml_model>` with its elementary properties
 
 - Adaptivity
@@ -15,12 +18,13 @@ The focus of the consideration is the :ref:`adaptive model <target_bf_ml_model>`
 - Parameterizability
 - Persistency
 
-This model interacts and adapts in a concrete context. For example, in the case of offline supervised learning, 
-this can be a data set, in the case of online unsupervised learning, a data stream, or in the case of 
-reinforcement learning, a state-based system. Topics like this are covered in MLPro in higher-level ML frameworks.
-On an abstract level, however, we introduce the so-called :ref:`ML scenario <target_bf_ml_scenario>` for this because 
-although we do not yet know anything about the concrete ML application, we know that an adaptive model is involved. 
-Furthermore, we propagate that the application is executable in "simulation" or "real operation" mode.
+Of course, this model does not exist just on its own. Rather, it interacts with a simulated or real object.
+For example, in the case of offline supervised learning, this can be a data set, in the case of online unsupervised 
+learning, a data stream, or in the case of reinforcement learning, a state-based system. Topics like this are 
+covered in MLPro in higher-level ML frameworks. On an abstract level, however, we introduce the so-called 
+:ref:`ML scenario <target_bf_ml_scenario>` for this because although we do not yet know anything about the 
+concrete ML application, we know that an adaptive model is involved. Furthermore, we propagate that the application 
+is executable in "simulation" or "real operation" mode.
 
 In MLPro, a model's :ref:`training and the tuning <target_bf_ml_train_and_tune>`  of its hyperparameters are based 
 on such an ML scenario. For tuning, powerful packages from third parties are already integrated at this low level 
