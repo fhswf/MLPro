@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-02-02  0.0.0     SY       Creation
 ## -- 2023-02-05  1.0.0     SY       First version release
+## -- 2023-02-07  1.1.0     SY       Change the dataset to doublespiral2d
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-02-05)
+Ver. 1.2.0 (2023-02-07)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -33,7 +34,7 @@ You will learn:
 
 from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
-from mlpro.bf.streams.tasks import Deriver
+from mlpro.bf.streams.tasks import Rearranger, Deriver
 
 
 
@@ -68,34 +69,57 @@ class MyScenario (StreamScenario):
 
         # 1 Import a native stream from MLPro
         provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
-        stream = provider_mlpro.get_stream('Rnd10Dx1000', p_mode=p_mode, p_logging=p_logging)
+        stream = provider_mlpro.get_stream('DoubleSpiral2D', p_mode=p_mode, p_logging=p_logging)
 
         # 2 Set up a stream workflow 
         workflow = StreamWorkflow( p_name='wf1', 
                                    p_range_max=Task.C_RANGE_NONE, 
                                    p_visualize=p_visualize,
                                    p_logging=logging )
-
-        # 2.1 Set up and add a deriver task to extend the feature and label space
+        
+        # 2.1 Set up and add a rearranger task to reduce the feature and label space
         features = stream.get_feature_space().get_dims()
+        features_new = [ ( 'F', features[0:1] ) ]
+
+        task_rearranger = Rearranger( p_name='t1',
+                                      p_range_max=Task.C_RANGE_THREAD,
+                                      p_visualize=p_visualize,
+                                      p_logging=p_logging,
+                                      p_features_new=features_new )
+
+        workflow.add_task( p_task=task_rearranger )
+
+        # 2.2 Set up and add a deriver task to extend the feature and label space (1st derivative)
+        features = task_rearranger._feature_space.get_dims()
         derived_feature = features[0]
 
-        task_deriver = Deriver( p_name='t1',
-                                p_range_max=Task.C_RANGE_THREAD,
-                                p_visualize=p_visualize,
-                                p_logging=p_logging,
-                                p_features=features,
-                                p_label=None,
-                                p_derived_feature=derived_feature,
-                                p_derived_label=None,
-                                p_order_derivative=2 )
+        task_deriver_1 = Deriver( p_name='t2',
+                                 p_range_max=Task.C_RANGE_THREAD,
+                                 p_visualize=p_visualize,
+                                 p_logging=p_logging,
+                                 p_features=features,
+                                 p_label=None,
+                                 p_derived_feature=derived_feature,
+                                 p_derived_label=None,
+                                 p_order_derivative=1 )
 
-        workflow.add_task( p_task=task_deriver )
+        workflow.add_task( p_task=task_deriver_1, p_pred_tasks=[task_rearranger] )
 
-        # 2.2 Set up and add an own custom task
-        task_custom = MyTask( p_name='t2', p_visualize=p_visualize, p_logging=logging )
-        workflow.add_task( p_task=task_custom, p_pred_tasks=[task_deriver] )
+        # 2.3 Set up and add a deriver task to extend the feature and label space (2nd derivative)
+        features = task_deriver_1._feature_space.get_dims()
+        derived_feature = features[0]
+        
+        task_deriver_2 = Deriver( p_name='t3',
+                                 p_range_max=Task.C_RANGE_THREAD,
+                                 p_visualize=p_visualize,
+                                 p_logging=p_logging,
+                                 p_features=features,
+                                 p_label=None,
+                                 p_derived_feature=derived_feature,
+                                 p_derived_label=None,
+                                 p_order_derivative=2 )
 
+        workflow.add_task( p_task=task_deriver_2, p_pred_tasks=[task_rearranger, task_deriver_1] )
 
         # 3 Return stream and workflow
         return stream, workflow
