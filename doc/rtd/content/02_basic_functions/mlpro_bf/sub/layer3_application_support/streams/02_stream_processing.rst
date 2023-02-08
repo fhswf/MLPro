@@ -19,7 +19,10 @@ Stream Task
 -----------
 
 A StreamTask is a special stream processing task that takes a new instance as an input and delivers the processed
-output. StreamTask class in MLPro also provide provide plotting functionalities in 2D, 3D and nD, that plot the
+instances as an output. A StreamTask also processes the obsolete/deleted instances from the workflow for following
+tasks.
+
+StreamTask class in MLPro also provide provide plotting functionalities in 2D, 3D and nD, that plot the
 streaming instances by default. (A link to know more). Inherit from this class and implement the :code:`_run(p_inst_new, p_inst_del)`
 method to implement custom stream tasks with inbuilt default plotting functionalities. This can be imported and used by
 including following:
@@ -46,13 +49,13 @@ More StreamTask implementations will be available with future updates.
 Stream Workflow
 ---------------
 
-A StreamWorkflow in MLPro is a list of StreamTasks arranged hierarchically with pre-defined dependencies on prior
+A StreamWorkflow in MLPro is a list of StreamTasks arranged hierarchically with user-defined dependencies on prior
 tasks in the workflow. A stream workflow receives new instance of the stream from the surrounding StreamScenario
 object at every step.
 
 .. note::
-    A stream workflow stores a list of new instances and deleted instances at every run. Both new and deleted
-    instances are forwarded to subsequent instances to be processed.
+    A stream workflow carries a list of new instances and deleted/obsolete instances at every run. Both new and deleted
+    instances are forwarded to subsequent tasks to be processed.
 
 
 A stream workflow takes care of following functionalities:
@@ -76,9 +79,9 @@ A stream workflow takes care of following functionalities:
 
 
 
-A stream workflow consists a list of tasks within in a defined order and instance dependency. The instances of task
-processes instances processed by its predecessor task in the workflow. The code block below shows how to add a task
-to an existing stream workflow:
+A stream workflow consists a list of tasks within in a defined order and instance dependency. The instances processed
+by a task are forwarded to it's following task. The code block below shows how to add a task to an existing stream
+workflow:
 
 .. code-block:: python
 
