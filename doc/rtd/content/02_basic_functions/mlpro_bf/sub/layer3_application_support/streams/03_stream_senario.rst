@@ -11,8 +11,9 @@ A stream scenario consists of two main elements:
         - A stream object
         - A streamtask workflow
 
-To plug these elements into the StreamScenario class, please implement the :code:`_setup(p_mode, p_visualize,
-p_logging)` method of the same
+.. note::
+    To plug these elements into the StreamScenario class, please implement the :code:`_setup(p_mode, p_visualize,
+    p_logging)` method of the same
 
 
 A StreamScenario class takes care of the following tasks in a Stream processing application:

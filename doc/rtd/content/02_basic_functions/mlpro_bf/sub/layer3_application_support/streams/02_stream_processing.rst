@@ -1,8 +1,7 @@
 Stream Processing
 =================
-
-Because of the live nature of data streams, handling such data sources and mining knowledge require special types of
-processing tasks. Stream operations process new instances as they are available at every step. Along with a
+Handling streaming data sources and mining knowledge from them requires special types of processing tasks because of
+their live behaviour. Stream operations process new instances as they are available at every step. Along with a
 number of external and internal stream resources, MLPro's stream module provides processing functionalities
 like sliding window, rearranger, etc. specialized for streaming data.
 
@@ -38,8 +37,9 @@ including following:
 
 Currently MLPro provides following stream task implementations:
 
-1. :ref:`Window <target_bf_streams_tasks_window>`
-2. :ref:`Rearranger <target_bf_streams_tasks_rearranger>`
+    1. :ref:`Window <target_bf_streams_tasks_window>`
+    2. :ref:`Rearranger <target_bf_streams_tasks_rearranger>`
+    3. :ref:`Deriver <target_bf_streams_tasks_deriver>`
 
 More StreamTask implementations will be available with future updates.
 
@@ -47,9 +47,21 @@ Stream Workflow
 ---------------
 
 A StreamWorkflow in MLPro is a list of StreamTasks arranged hierarchically with pre-defined dependencies on prior
-tasks in the workflow. StreamWorkflow also provides default plotting functionalities in 2D, 3D and nD, that plot all
-the instances in the workflow. (A link to know more about plotting.) StreamWorkflow can be imported and used as
-following:
+tasks in the workflow. A stream workflow receives new instance of the stream from the surrounding StreamScenario
+object at every step.
+
+.. note::
+    A stream workflow stores a list of new instances and deleted instances at every run. Both new and deleted
+    instances are forwarded to subsequent instances to be processed.
+
+
+A stream workflow takes care of following functionalities:
+    1. Executing the tasks inside the workflow
+    2. Storing task specific results in the StreamShared Object
+    3. Fetching and delivering new and deleted instances among different tasks as per the defined dependency
+
+
+**StreamWorkflow can be imported and used as following:**
 
 .. code-block:: python
 
@@ -84,7 +96,8 @@ to an existing stream workflow:
 
 
 Each workflow has a shared object that stores instances and results of the stream task that can be accessed from
-other tasks in the workflow.
+other tasks in the workflow. StreamWorkflow also provides default plotting functionalities in 2D, 3D and nD, that plot all
+the instances in the workflow. Know more about MLPro's plotting functionalities.
 
 Stream Plotting
 ---------------
