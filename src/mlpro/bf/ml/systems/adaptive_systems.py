@@ -43,14 +43,17 @@ class ASystem(System, Model):
     p_logging
     """
 
+    C_NAME = 'Adaptive Systems'
 
-    ## -------------------------------------------------------------------------------------------------
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_mode = Mode.C_MODE_SIM,
                  p_latency = None,
                  p_fct_strans: Union[FctSTrans, AFctSTrans] = None,
                  p_fct_success: Union[FctSuccess, AFctSuccess] = None,
                  p_fct_broken: Union[FctBroken, AFctBroken] = None,
+                 p_adaptivity: bool = True,
                  p_visualize: bool = False,
                  p_logging =Log.C_LOG_ALL):
 
@@ -68,6 +71,7 @@ class ASystem(System, Model):
         self._fct_strans  = p_fct_strans
         self._fct_broken  = p_fct_broken
         self._fct_success = p_fct_success
+        self.switch_adaptivity(p_ada = p_adaptivity)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -98,6 +102,9 @@ class ASystem(System, Model):
         -------
 
         """
+        self.log(Log.C_LOG_TYPE_I, 'Switched Adaptivity')
+        self._adaptivity = p_ada
+
         try: self._fct_strans.switch_adaptivity(p_ada=p_ada)
         except: pass
 
