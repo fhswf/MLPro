@@ -121,11 +121,31 @@ class ASystem(System, Model):
 
         """
 
-        try: self._fct_strans.adapt()
+        adapted = False
+
+        try:
+            self._fct_strans.adapt()
+            if self._fct_strans.get_adapted():
+                adapted = True
+
         except: pass
 
-        try: self._fct_broken.adapt()
+
+
+        try:
+            self._fct_broken.adapt()
+            if self._fct_broken.get_adapted():
+                adapted = True
+
         except: pass
 
-        try: self._fct_success.adapt()
+
+
+        try:
+            self._fct_success.adapt()
+            if self._fct_success.adapt():
+                adapted = True
+
         except: pass
+
+        return adapted
