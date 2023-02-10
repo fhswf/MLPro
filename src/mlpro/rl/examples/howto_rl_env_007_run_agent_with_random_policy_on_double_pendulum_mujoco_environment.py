@@ -18,6 +18,17 @@
 Ver. 1.1.0 (2023-01-27)
 
 This module shows how to run a random policy on Double Pendulum with MuJoCo Simulation.
+
+You will learn:
+
+1) How to set up an own agent using MLPro's builtin random actions policy
+
+2) How to set up an own RL scenario including your agent and MLPro's double pendulum environment
+
+3) How to integrate MuJoCo as the Simulation
+
+4) How to reset and run your own scenario
+
 """
 
 
