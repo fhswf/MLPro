@@ -18,8 +18,8 @@ Prerequisites
 
 
 
-General Information
-===================
+Additional Information
+======================
 
 Available soon!
  
