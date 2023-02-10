@@ -49,3 +49,18 @@ Cross Reference
 
 - :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`.
 
+If you apply this environment in your research or work, please kindly cite the following related paper:
+
+.. code-block:: bibtex
+
+@INPROCEEDINGS{Williams2017,
+  author={Williams, Grady and Wagener, Nolan and Goldfain, Brian and Drews, Paul and Rehg, James M. and Boots, Byron and Theodorou, Evangelos A.},
+  booktitle={2017 IEEE International Conference on Robotics and Automation (ICRA)}, 
+  title={Information theoretic MPC for model-based reinforcement learning}, 
+  year={2017},
+  volume={},
+  number={},
+  pages={1714-1721},
+  doi={10.1109/ICRA.2017.7989202}
+  }
+
