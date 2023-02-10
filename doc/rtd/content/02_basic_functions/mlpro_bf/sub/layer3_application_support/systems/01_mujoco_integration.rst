@@ -67,4 +67,5 @@ In order to use the MuJoCo integration in MLPro, the following steps need to be 
 
 **Cross Reference**
 
-- Please refer to :ref:`Howto Howto BF SYSTEMS 002 <Howto BF SYSTEMS 002>` to know more about MuJoCo integration functionality in MLPro
+- Please refer to :ref:`Howto BF SYSTEMS 002 <Howto BF SYSTEMS 002>` to know more about MuJoCo integration functionality in MLPro
+- For further implementation as Environment on Reinforcement Learning, please refer to :ref:`Howto Env RL 007 <Howto Env RL 007>`
