@@ -7,8 +7,7 @@ Howto BF-ZZ-999: My high-sophisticated ml sample
     
 
 
-Prerequisites
--------------
+**Prerequisites**
 
 .. Please install the following packages to run this examples properly:
   ..
@@ -30,23 +29,20 @@ Prerequisites
 
 
 
-Executable code
----------------
+**Executable code**
 
 .. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_zz_999_description.py
 	:language: python
 
 
 
-Results
--------
+**Results**
 
 Descriptions, plots, images, screenshots of expected results.
 
 
 
-Cross Reference
----------------
+**Cross Reference**
 
 .. Other documents related to the howto should be referenced here. For example, related environments, documentation, API References, ...
     
