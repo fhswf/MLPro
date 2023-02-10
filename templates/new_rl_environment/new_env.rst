@@ -1,5 +1,5 @@
 Environment name
-================
+^^^^^^^^^^^^^^^^^^^
 
 .. automodule:: mlpro.rl.pool.envs.myenv
 .. Describe the env in the python module itself and refer to it here
