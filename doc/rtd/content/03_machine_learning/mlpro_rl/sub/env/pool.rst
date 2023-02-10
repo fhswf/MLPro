@@ -1,6 +1,6 @@
 .. _EnvPool:
-Environment Pool
-------------------
+Reuse Environment from the Pool
+------------------------------------
 
 .. toctree::
    :maxdepth: 1

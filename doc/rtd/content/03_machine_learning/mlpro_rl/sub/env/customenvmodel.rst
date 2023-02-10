@@ -1,6 +1,6 @@
 .. _customEnvModel:
-Custom Environments Model
------------------------
+Develop Custom Environment Models
+----------------------------------------
 
 .. image:: images/MLPro-RL-Env_class_EnvModel_commented.png
 

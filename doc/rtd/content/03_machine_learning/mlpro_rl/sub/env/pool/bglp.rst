@@ -25,22 +25,16 @@ The states information for each agent is the fill level of the prior reservoir a
     This parameter can be defined while setting up the BGLP environment.
     Therefore, 5 actuators are involved in this simulation instead of 6 actuators.
     
-This BGLP environment can be imported via:
-
-.. code-block:: python
-
-    import mlpro.rl.pool.envs.bglp
+.. automodule:: mlpro.rl.pool.envs.bglp
 
 
-Prerequisites
-=============
+**Prerequisites**
 
-    - `NumPy <https://pypi.org/project/numpy/>`_
+ - `NumPy <https://pypi.org/project/numpy/>`_
 
 
 
-General Information
-===================
+**General Information**
 
 +------------------------------------+-------------------------------------------------------+
 |         Parameter                  |                         Value                         |
@@ -75,8 +69,7 @@ General Information
     section, see :ref:`here <api-ref-bglp>`.
     
 
-Action Space
-============
+**Action Space**
 
 In this environment, we consider 5 actuators to be controlled. 
 Thus, there are 5 agents and 5 joint actions because each agent requires an action.
@@ -101,8 +94,7 @@ The vibratory conveyor can only be either fully switched-on or switched-off. The
 +-------+-------------------+--------+-------------------+--------------+
   
   
-State Space
-===========
+**State Space**
 
 The state information in the BGLP is the fill levels of the reservoirs.
 Each agent is always placed in between two reservoirs, e.g. between a silo and a hopper or vice versa.
@@ -135,10 +127,9 @@ Every state is normalized within a range between 0 and 1.
 +------+----------+--------+--------+---------------+
   
   
-Reward Structure
-================
+**Reward Structure**
 
-The reward structure is implemented according to `this paper <https://www.researchgate.net/publication/351939505_Decentralized_Learning_of_Energy_Optimal_Production_Policies_using_PLC-informed_Reinforcement_Learning>`_.
+The reward structure is implemented according to `this paper <https://doi.org/10.1016/j.compchemeng.2021.107382>`_.
 You can also find the source code of the reward structure, `here <https://github.com/fhswf/MLPro/blob/13b7b8a82d90b626f40ea7c268706e43889b9e00/src/mlpro/rl/pool/envs/bglp.py#L971-L982>`_.
 The given reward is an individual scalar reward for each agent. To be noted, this reward function is more suitable for a continuous production scenario.
 
@@ -162,35 +153,12 @@ If you would like to implement a customized reward function, you can follow thes
                 self.overall_reward = 0
                 return self.overall_reward
  
-  
-Change Log
-==========
 
-+--------------------+---------------------------------------------+
-| Version            | Changes                                     |
-+====================+=============================================+
-| 1.0.0              | Initial version release                     |
-+--------------------+---------------------------------------------+
-| 1.4.4              | Enhanchement, debug, refactoring, adding    |
-|                    | batch production scenario                   |
-+--------------------+---------------------------------------------+
-
-
-Cross Reference
-===============
+**Cross Reference**
 
 + :ref:`API Reference <Bulk Goods Plant>`
 
-If you apply this environment in your research or work, please kindly cite the following related paper:
 
-.. code-block:: bibtex
+**Citation**
 
- @article{Schwung2021,
-  title={Decentralized learning of energy optimal production policies using PLC-informed reinforcement learning},
-  author={Dorothea Schwung and Steve Yuwono and Andreas Schwung and Steven X. Ding},
-  journal={Comput. Chem. Eng.},
-  year={2021},
-  volume={152},
-  pages={107382},
-  doi={10.1016/j.compchemeng.2021.107382}
-  }
+If you apply this environment in your research or work, please :ref:`cite <target_publications>` us and the `original paper <https://doi.org/10.1016/j.compchemeng.2021.107382>`_.
