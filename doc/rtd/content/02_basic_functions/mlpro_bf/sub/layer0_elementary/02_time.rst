@@ -1,7 +1,7 @@
 Time Measurement
 ----------------
 
-MLPro provides an internal timing mechanism that is introduced by class property Timer.
+MLPro provides an internal timing mechanism that is introduced by class property **Timer**.
 This class uses the built-in python package, namely **datetime**, to deal with the time management system.
 This class also has a simple lap management, in which each time the maximum number of laps ``C_LAP_LIMIT`` is reached, then the lap counter restarts to 0.
 Timer class can be accessed as follows:
