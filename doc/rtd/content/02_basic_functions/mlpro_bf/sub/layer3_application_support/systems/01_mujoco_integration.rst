@@ -2,7 +2,7 @@
 MuJoCo Integration
 ==================
 
-MuJoCo is a one of well-known physics engine for its fast and accurate simulation. The aim is to facilitate research and development in robotics, biomechanis, graphics
+MuJoCo is one of well-known physics engine for its fast and accurate simulation. The aim is to facilitate research and development in robotics, biomechanis, graphics
 and animation, and other areas. More explanation about MuJoCo can be found in `here <https://mujoco.org/>`_.
 
 In order to use the MuJoCo integration in MLPro, the following steps need to be done:
@@ -43,7 +43,8 @@ In order to use the MuJoCo integration in MLPro, the following steps need to be 
 
         The name of the first joint is "pin" (``<joint name="pin" type="hinge" axis = "0 -1 0" pos="0 0 0.5"/>``). A joint consists of position, velocity and acceleration data.
         In the current MuJoCo integration, only position and velocity can be retrieved. This is done by putting an indicator after the short name of a state dimension.
-        ``_vel`` is for velocity and ``_pos`` for position. An example of using the indicator is shown on below code.
+        ``_vel`` is for velocity and ``_pos`` for position. For the actuator, the first actuator is named "pin" (``<motor joint="pin" name="torque1" gear="1" ctrllimited="true" ctrlrange="-50 50"/>``).
+        So, in this case the action dimension muss be named "pin". An example of using the indicator is shown on below code.
 
         .. code-block:: python
 
