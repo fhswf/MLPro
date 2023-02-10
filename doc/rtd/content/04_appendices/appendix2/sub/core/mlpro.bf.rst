@@ -15,6 +15,7 @@ Various
 Data Management
 ---------------
 
+.. image:: images/bf/MLPro-BF-Data_class_diagram.drawio.png
 .. automodule:: mlpro.bf.data
    :members:
    :undoc-members:
