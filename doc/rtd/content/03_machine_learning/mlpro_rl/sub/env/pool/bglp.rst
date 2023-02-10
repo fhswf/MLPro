@@ -1,5 +1,9 @@
-`Bulk Good Laboratory Plant (BGLP) <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/bglp.py>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _BGLP:
+Bulk Good Laboratory Plant (BGLP)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: mlpro.rl.pool.envs.bglp
+
 The BGLP illustrates a smart production system with high flexibility and distributed control to transport bulk raw materials.
 One of the advantages of this laboratory test belt is the modularity in design, as depicted schematically below:
 
@@ -16,7 +20,7 @@ Module 1 utilizes a belt conveyor, that operates between 0 and 1800 rpm.
 Module 2 uses a vibratory conveyor, which can be completely switched on and off. 
 Lastly, Module 3 utilizes a rotary feeder, that operates between 0 and 1450 rpm.
 
-In theRL context, we consider the BGLP as a multi-agent system, where each actuator of the system is pointed as an agent or a player.
+In the RL context, we consider the BGLP as a multi-agent system, where each actuator of the system is pointed as an agent or a player.
 The states information for each agent is the fill level of the prior reservoir and the fill level of the next reservoir.
 
 .. note::
@@ -24,11 +28,16 @@ The states information for each agent is the fill level of the prior reservoir a
     In this simulation, we assume that the actuator in Module D has a constant flow, which automatically matches the production demand in L/s.
     This parameter can be defined while setting up the BGLP environment.
     Therefore, 5 actuators are involved in this simulation instead of 6 actuators.
-    
-.. automodule:: mlpro.rl.pool.envs.bglp
+
+The BGLP environment can be imported via:
+
+.. code-block:: python
+
+    import mlpro.rl.pool.envs.bglp
 
 
 **Prerequisites**
+Please install below package to use the MLPro's BGLP environment
 
  - `NumPy <https://pypi.org/project/numpy/>`_
 
@@ -156,7 +165,7 @@ If you would like to implement a customized reward function, you can follow thes
 
 **Cross Reference**
 
-+ :ref:`API Reference <Bulk Goods Plant>`
+    + :ref:`API Reference <Bulk Goods Plant>`
 
 
 **Citation**

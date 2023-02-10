@@ -38,15 +38,6 @@ Robot Manipulator
    :show-inheritance:
 
 
-UR5 Arm Robot
-----------------
-
-.. automodule:: mlpro.rl.pool.envs.ur5jointcontrol
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
 Double Pendulum
 ---------------------------------------
 

@@ -1,8 +1,8 @@
 Environment name
 ================
 
-.. Describe the env in the python module itself and refer to it here
 .. automodule:: mlpro.rl.pool.envs.myenv
+.. Describe the env in the python module itself and refer to it here
     
 
 **Screenshots**
@@ -13,7 +13,8 @@ Environment name
 **Prerequisites**
 
 .. The third party dependencies or steps to prepare the environment should be mentioned here.
-   
+
+   - `NumPy <https://pypi.org/project/numpy/>`_
     
     
 **General Information**
@@ -81,7 +82,7 @@ The reward calculation structure. It is possible to include the mathematical bac
 
 .. Other documents related to the environment should be referenced here. For example, related howtos and the API Reference.
     
-+ :ref:`API Reference <...>`
+    + :ref:`API Reference <...>`
 
 
 **Citation**

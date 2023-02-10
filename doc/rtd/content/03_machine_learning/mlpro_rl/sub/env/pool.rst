@@ -9,6 +9,4 @@ Reuse Environment from the Pool
    pool/multicartpole
    pool/gridworld
    pool/robotmanipulator
-   pool/ur5jointcontrol
-   pool/multigeorobot
    pool/doublependulum
