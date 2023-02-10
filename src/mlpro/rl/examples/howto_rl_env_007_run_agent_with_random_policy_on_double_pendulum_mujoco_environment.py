@@ -130,7 +130,7 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
-        model_file = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
+        model_file = os.path.join(os.path.dirname(mlpro.__file__), "bf/systems/pool/mujoco/assets", "doublependulum.xml")
         self._env = PendulumEnvironment(p_logging=logging, p_mujoco_file=model_file, p_visualize=visualize)
 
         # 2.2 Setup standard single-agent with own policy

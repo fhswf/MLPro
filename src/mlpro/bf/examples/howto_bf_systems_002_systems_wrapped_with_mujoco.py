@@ -85,7 +85,7 @@ else:
 
 
 # 1 Instantiate own system in simulation mode
-model_file = os.path.join(os.path.dirname(mlpro.__file__), "rl/pool/envs/mujoco/assets", "doublependulum.xml")
+model_file = os.path.join(os.path.dirname(mlpro.__file__), "bf/systems/pool/mujoco/assets", "doublependulum.xml")
 sys = PendulumSystem(p_logging=logging, p_mujoco_file=model_file, p_visualize=visualize)
 
 # 2 Reset system
@@ -98,6 +98,5 @@ for x in range(1000):
     sys.process_action( p_action= Action( p_agent_id=0, 
                                         p_action_space=sys.get_action_space(),
                                         p_values=action ) )
-    #sys.update_plot()
 
 
