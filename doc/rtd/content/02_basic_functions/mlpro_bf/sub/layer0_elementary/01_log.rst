@@ -76,3 +76,8 @@ To log an information, function ``log(p_type, *pargs)`` needs to be called. The 
 
         # Switch the logging level to Log.C_LOG_NOTHING
         my_random_class.switch_logging(Log.C_LOG_NOTHING)
+        
+
+**Cross Reference**
+    + :ref:`API Reference <Various>`
+    + :ref:`Howto BF-001: Logging <Howto BF 001>`
