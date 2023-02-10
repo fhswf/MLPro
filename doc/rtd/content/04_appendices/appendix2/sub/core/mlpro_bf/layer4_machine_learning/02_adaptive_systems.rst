@@ -1,0 +1,10 @@
+.. _target_ap_bf_l4_ml_systems:
+BF-ML-SYSTEMS - Adaptive State-based Systems
+============================================
+
+.. image:: images/MLPro-BF-ML-Systems_class_diagram.drawio.png
+.. automodule:: mlpro.bf.ml.systems
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:

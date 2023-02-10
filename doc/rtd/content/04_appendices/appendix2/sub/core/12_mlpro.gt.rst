@@ -1,9 +1,9 @@
 .. _target_appendix2_GT:
-Game Theory
-================
+MLPro-GT - Game Theory
+======================
 
 Models
------------
+------
 
 .. image:: images/gt/MLPro-GT_class_diagram.png
 

@@ -1,14 +1,10 @@
 Core Functions
 ==============
 
-
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 5
+   :glob:
    
-   core/mlpro.bf
-   core/mlpro.sl
-   core/mlpro.rl
-   core/mlpro.gt
-   core/mlpro.oa
+   core/*
    
 

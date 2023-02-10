@@ -1,6 +1,6 @@
 .. _target_appendix2_OA:
-Online Adaptivity
-================
+MLPro-OA - Online Adaptivity
+============================
 
 Serial Processing
 -----------------
