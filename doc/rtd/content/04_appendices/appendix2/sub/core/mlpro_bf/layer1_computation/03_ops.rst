@@ -3,6 +3,8 @@ BF-OPS - Operations
 ===================
 
 .. image:: images/MLPro-BF-OPS_class_diagram.drawio.png
+   :scale: 50%
+   
 .. automodule:: mlpro.bf.ops
    :members:
    :undoc-members:

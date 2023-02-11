@@ -3,6 +3,8 @@ BF-MATH-NORMALIZERS - Normalizers
 =================================
 
 .. image:: images/MLPro-BF-Math-Normalizers_class_diagram.drawio.png
+   :scale: 50%
+   
 .. automodule:: mlpro.bf.math.normalizers
    :members:
    :undoc-members:

@@ -3,6 +3,8 @@ BF-UI-SCIUI - SciUI Framework
 =============================
 
 .. image:: images/MLPro-SciUI_class_diagram.drawio.png
+   :scale: 50%
+   
 .. automodule:: mlpro.bf.ui.sciui.framework
    :members:
    :undoc-members:
