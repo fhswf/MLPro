@@ -21,7 +21,7 @@ This module provides implementation for adaptive normalizers for MinMax Normaliz
 """
 
 
-from mlpro.oa.models import *
+from mlpro.oa.streams import *
 from mlpro.bf.math import normalizers as Norm
 
 
