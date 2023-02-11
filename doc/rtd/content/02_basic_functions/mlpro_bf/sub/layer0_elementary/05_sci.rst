@@ -21,5 +21,26 @@ MLPro provides various forms of scientific references, which are:
 
 After selecting the type of the reference, the users can add more details, such as authors, title, volume, DOI, and many more.
 
+The type and detail of the related scientific reference in a class can be initialzed, as follows:
+
+.. code-block:: python
+
+    from mlpro.bf.various import ScientificObject
+
+    class MyClass(ScientificObject):
+
+        def __init__(self):
+            self.C_SCIREF_TYPE = self.C_SCIREF_TYPE_ARTICLE
+            self.C_SCIREF_AUTHOR  = "Max Mustermann"
+            self.C_SCIREF_TITLE   = "Analysis of MLPro"
+            self.C_SCIREF_JOURNAL = "My Journal"
+            self.C_SCIREF_YEAR    = "2023"
+            self.C_SCIREF_MONTH   = "01"
+            self.C_SCIREF_DAY     = "01"
+            self.C_SCIREF_VOLUME  = "01"
+            self.C_SCIREF_DOI     = "10.XXXX"
+
+In the near future, MLPro team is planning to add a citing functionality. Therefore, the users can obtain the citation of the specific class in the form of bibtex. 
+
 **Cross Reference**
     + :ref:`API Reference <Various>`
