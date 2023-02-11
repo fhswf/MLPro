@@ -1,4 +1,4 @@
-.. _target_api_bf_l0_ui_sciui:
+.. _target_api_bf_ui_sciui:
 BF-UI-SCIUI - SciUI Framework
 =============================
 

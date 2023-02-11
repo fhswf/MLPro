@@ -2,7 +2,7 @@ Core Functions
 ==============
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 2
    :glob:
    
    core/*

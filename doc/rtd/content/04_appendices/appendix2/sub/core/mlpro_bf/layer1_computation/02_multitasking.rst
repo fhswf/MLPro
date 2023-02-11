@@ -1,4 +1,4 @@
-.. _target_api_bf_l1_mt:
+.. _target_api_bf_mt:
 BF-MT - Multitasking
 ====================
 

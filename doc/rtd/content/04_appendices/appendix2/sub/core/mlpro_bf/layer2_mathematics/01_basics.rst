@@ -1,4 +1,4 @@
-.. _target_ap_bf_l2_math:
+.. _target_ap_bf_math:
 BF-MATH - Basic Mathematics
 ===========================
 

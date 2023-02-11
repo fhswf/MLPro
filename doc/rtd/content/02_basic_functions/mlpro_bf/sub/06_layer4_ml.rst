@@ -40,6 +40,7 @@ influencing factors. In that case, machine learning methods can also be used to 
 on historical data and/or online monitoring. For this purpose, MLPro provides standards for 
 :ref:`adaptive systems <target_bf_ml_asystems>`.
 
+**Learn more**
 
 .. toctree::
    :maxdepth: 1
@@ -50,4 +51,5 @@ on historical data and/or online monitoring. For this purpose, MLPro provides st
 
 **Cross Reference**
 
-- :ref:`API Reference MLPro-BF-ML <target_api_bf_l4_ml>`
+- :ref:`API Reference BF-ML - Machine Learning <target_api_bf_ml>`
+- :ref:`API Reference BF-ML-SYSTEMS - Adaptive Systems <target_api_bf_ml_systems>`

@@ -1,4 +1,4 @@
-.. _target_api_bf_l1_ops:
+.. _target_api_bf_ops:
 BF-OPS - Operations
 ===================
 

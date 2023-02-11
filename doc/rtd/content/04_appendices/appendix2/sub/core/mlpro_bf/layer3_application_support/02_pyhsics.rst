@@ -1,4 +1,4 @@
-.. _target_ap_bf_l3_physics:
+.. _target_ap_bf_physics:
 BF-PHYSICS - Physics
 ====================
 

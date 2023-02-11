@@ -1,4 +1,4 @@
-.. _target_ap_bf_l4_ml_systems:
+.. _target_api_bf_ml_systems:
 BF-ML-SYSTEMS - Adaptive State-based Systems
 ============================================
 

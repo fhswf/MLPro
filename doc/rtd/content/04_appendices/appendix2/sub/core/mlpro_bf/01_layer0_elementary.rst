@@ -3,7 +3,7 @@ Layer 0 - Elementary Functions
 ==============================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :glob:
    
    layer0_elementary/*

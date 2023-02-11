@@ -3,7 +3,7 @@ A2 - API Reference
 ==================
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 2
    :glob:
 
    sub/*

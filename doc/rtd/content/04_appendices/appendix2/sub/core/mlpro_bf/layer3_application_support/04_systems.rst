@@ -1,4 +1,4 @@
-.. _target_ap_bf_l3_systems:
+.. _target_ap_bf_systems:
 BF-SYSTEMS - State-based Systems
 ================================
 

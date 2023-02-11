@@ -1,4 +1,4 @@
-.. _target_api_bf_l0_data:
+.. _target_api_bf_data:
 BF-DATA - Data Management
 =========================
 

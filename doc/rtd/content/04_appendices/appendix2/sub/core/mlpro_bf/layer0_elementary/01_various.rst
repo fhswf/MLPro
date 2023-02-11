@@ -1,4 +1,4 @@
-.. _target_api_bf_l0_various:
+.. _target_api_bf_various:
 BF-VARIOUS - Various Functions
 ==============================
 

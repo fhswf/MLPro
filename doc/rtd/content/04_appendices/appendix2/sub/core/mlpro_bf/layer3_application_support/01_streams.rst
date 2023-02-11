@@ -1,4 +1,4 @@
-.. _target_ap_bf_l3_streams:
+.. _target_ap_bf_streams:
 BF-STREAMS - Stream Processing
 ==============================
 

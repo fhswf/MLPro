@@ -2,6 +2,7 @@
 BF-ML - Machine Learning
 ========================
 
+.. Please store drawio diagram as PNG with zoom factor 200%
 .. image:: images/MLPro-BF-ML_class_diagram.drawio.png
    :scale: 50%
    

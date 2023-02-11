@@ -1,4 +1,4 @@
-.. _target_api_bf_l0_plot:
+.. _target_api_bf_plot:
 BF-PLOT - Plotting and Visualization
 ====================================
 

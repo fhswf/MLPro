@@ -1,4 +1,4 @@
-.. _target_api_bf_l0_exceptions:
+.. _target_api_bf_exceptions:
 BF-EXCEPTIONS - Exceptions
 ==========================
 

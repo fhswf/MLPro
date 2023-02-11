@@ -1,4 +1,4 @@
-.. _target_ap_bf_l2_math_norm:
+.. _target_ap_bf_math_norm:
 BF-MATH-NORMALIZERS - Normalizers
 =================================
 
