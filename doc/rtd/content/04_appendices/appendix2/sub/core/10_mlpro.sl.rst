@@ -1,12 +1,5 @@
-.. _target_appendix2_SL:
+.. _target_api_sl:
 MLPro-SL - Supervised Learning
 ==============================
 
-Models
------------
-
-.. image:: images/sl/MLPro-SL_class_diagram.drawio.png
-.. automodule:: mlpro.sl.models
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Coming soon...

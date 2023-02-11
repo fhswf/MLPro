@@ -1,13 +1,10 @@
-.. _target_appendix2_GT:
+.. _target_api_gt:
 MLPro-GT - Game Theory
 ======================
 
-Models
-------
+.. toctree::
+   :maxdepth: 4
+   :glob:
+   
+   mlpro_gt/*
 
-.. image:: images/gt/MLPro-GT_class_diagram.png
-
-.. automodule:: mlpro.gt.models
-   :members:
-   :undoc-members:
-   :show-inheritance:
