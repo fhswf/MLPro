@@ -10,7 +10,6 @@ OpenML
    
 
 
-Cross References
-----------------
+**Cross References**
 ..
     + :ref:`Howto BF-STREAMS-051: Accessing Data from OpenML<Howto BF STREAMS 051>`
