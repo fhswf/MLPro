@@ -4,7 +4,19 @@ Howto BF-STREAMS-111: Rearranger (2D)
 
 .. automodule:: mlpro.bf.examples.howto_bf_streams_111_stream_task_rearranger_2d
 
-Executable code
----------------
+
+
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_111_stream_task_rearranger_2d.py
 	:language: python
+
+
+**Results**
+
+
+
+
+**Cross Reference**
+
++ :ref:`API Reference: Streams <target_api_bf_streams>`

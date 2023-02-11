@@ -5,7 +5,19 @@ Howto BF-004: Buffers
 .. automodule:: mlpro.bf.examples.howto_bf_004_buffers
 
 
-Executable code
----------------
+**Executable code**
+
+
 .. literalinclude:: ../../../../../../../src/mlpro/bf/examples/howto_bf_004_buffers.py
 	:language: python
+
+**Results**
+
+.. image::
+    images/buffer_example.png
+    :width: 500px
+
+
+**Cross Reference**
+
++ :ref:`API Documentation:Buffers<targe_buffer_api>`
