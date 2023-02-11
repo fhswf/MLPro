@@ -9,6 +9,6 @@ Hyperopt
    
 
 
-Cross References
-----------------
-    + :ref:`Howto BF-007: Hyperparameter Tuning using Hyperopt<Howto BF 007>`
+**Cross References**
+
+- :ref:`Howto RL-HT-001: Hyperparameter Tuning using Hyperopt<Howto HT RL 001>`

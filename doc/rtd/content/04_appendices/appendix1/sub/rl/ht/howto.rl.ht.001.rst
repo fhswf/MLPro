@@ -1,6 +1,6 @@
 .. _Howto HT RL 001:
 Howto RL-HT-001: Hyperopt
-=====================================================
+=========================
 
 .. automodule:: mlpro.rl.examples.howto_rl_ht_001_hyperopt
 

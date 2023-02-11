@@ -1,6 +1,6 @@
 .. _Wrapper MuJoCo:
-Hyperopt
-========
+MuJoCo
+======
 
 .. automodule:: mlpro.wrappers.mujoco
     :members:
@@ -9,5 +9,4 @@ Hyperopt
    
 
 
-Cross References
-----------------
+**Cross References**
