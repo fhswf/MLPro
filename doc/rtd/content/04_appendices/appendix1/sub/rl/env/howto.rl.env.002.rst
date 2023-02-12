@@ -6,8 +6,8 @@ Howto RL-ENV-002: SB3 Policy on RobotHTM Environment
 
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `Pytorch <https://pypi.org/project/torch/>`_
@@ -15,15 +15,15 @@ Please install the following packages to run this examples properly:
   ..
    
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_002_train_agent_with_SB3_policy_on_robothtm_environment.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 
 .. image:: images/howto15.png
 
@@ -63,3 +63,8 @@ The local result folder contains the training result files:
     - evaluation.csv
     - summary.csv
     - trained model.pkl
+
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`

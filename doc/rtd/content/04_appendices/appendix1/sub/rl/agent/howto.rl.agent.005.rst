@@ -6,8 +6,8 @@ Howto RL-AGENT-005: Train and Reload Single Agent
 
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
@@ -15,15 +15,15 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
----------------
+*8Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_agent_005_train_and_reload_single_agent.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 
 The Gym Cartpole environment window appears. Afterwards, the training runs 
 for a few episodes before terminating and printing the result. 
@@ -85,3 +85,8 @@ After termination the local result folders contain the training result files:
     - trained model.pkl
 
 Both training results are from the same agent.
+
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`

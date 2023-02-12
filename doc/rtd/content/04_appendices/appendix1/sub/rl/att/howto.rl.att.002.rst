@@ -6,8 +6,8 @@ Howto RL-ATT-002: SB3 Policy with Stagnation Detection
 
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `Pytorch <https://pypi.org/project/torch/>`_
@@ -16,15 +16,15 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_att_002_train_wrapped_sb3_policy_with_stagnation_detection.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 
 .. image:: images/Cartpole.png
 
@@ -61,3 +61,9 @@ After termination the local result folder contains the training result files:
     - evaluation.csv
     - summary.csv
     - trained model.pkl
+
+
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`

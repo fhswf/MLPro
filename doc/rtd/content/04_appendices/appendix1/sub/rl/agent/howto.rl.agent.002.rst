@@ -6,23 +6,23 @@ Howto RL-AGENT-002: Train an Agent with Own Policy
 
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
 
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 The Gym Cartpole environment window should appear. Afterwards, the training should run 
 for a few episodes before terminating and printing the result. The training log
 is also stored in the location specified. 
@@ -60,4 +60,8 @@ The local result folder contains the training result files:
     - evaluation.csv
     - summary.csv
     - trained model.pkl
-    
+
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`

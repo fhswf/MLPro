@@ -6,23 +6,23 @@ Howto RL-ATT-001: Stagnation Detection
 
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `Pytorch <https://pypi.org/project/torch/>`_
 
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_att_001_advanced_training_with_stagnation_detection.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 
 After the multiple environments are initialised, the training will run for the specified amount of limits.
 When stagnation is detected, the training will be stopped. 
@@ -59,3 +59,9 @@ After termination the local result folder contains the training result files:
     - summary.csv
     - Agent 0 Smith-1(0).pkl
     - Agent 1 Smith-2(1).pkl
+
+
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`
