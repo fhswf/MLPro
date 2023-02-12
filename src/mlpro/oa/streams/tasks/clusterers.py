@@ -14,7 +14,7 @@ Ver. 0.0.0 (2023-01-24)
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
 
-from mlpro.oa import *
+from mlpro.oa.streams import *
 import random
 
 

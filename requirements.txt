@@ -4,7 +4,7 @@ torch==1.13.1
 matplotlib==3.6.3
 transformations==2022.9.26
 stable-baselines3==1.7.0
-gym<=0.25.0
+gym==0.21.0
 scipy==1.8.1
 pettingzoo==1.22.3
 pygame==2.1.2

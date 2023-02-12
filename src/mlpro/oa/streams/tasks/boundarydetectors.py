@@ -31,9 +31,12 @@ This module provides pool of boundary detector object further used in the contex
 
 import matplotlib.colors
 
+from mlpro.bf.various import *
+from mlpro.bf.plot import *
+from mlpro.bf.math import *
 from mlpro.bf.mt import Task as MLTask
 import mlpro.bf.streams.tasks.windows as windows
-from mlpro.oa import *
+from mlpro.oa.streams import *
 from typing import Union, Iterable, List
 
 
@@ -41,7 +44,7 @@ from typing import Union, Iterable, List
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class BoundaryDetector(OATask):
+class BoundaryDetector (OATask):
     """
     This is the base class for Boundary Detector object. It raises event when a change in the current boundaries is
     detected based on the new data instances

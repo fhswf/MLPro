@@ -12,10 +12,11 @@
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -- 2023-02-02  1.2.0     DA       Refactoring
 ## -- 2023-02-04  1.2.1     SY       Add multiprocessing functionality and refactoring
+## -- 2023-02-10  1.2.2     SY       Switch multiprocessing to threading
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-02-04)
+Ver. 1.2.2 (2023-02-10)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem.
 

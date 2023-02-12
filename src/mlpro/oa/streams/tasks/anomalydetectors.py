@@ -13,7 +13,7 @@ Ver. 0.0.0 (2022-11-15)
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
-from mlpro.oa import *
+from mlpro.oa.streams.basics import *
 
 
 
