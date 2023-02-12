@@ -31,10 +31,14 @@
 ## --                                - Temporarily removed howto rl_agent_005 and rl_wp_001
 ## -- 2023-01-14  1.6.3     SY       Add howto related to transfer functions
 ## -- 2023-01-16  1.6.4     SY       Add howto related to unit converters
+## -- 2023-01-27  1.6.5     MRD      Add howto related to mujoco
+## -- 2023-02-02  1.6.6     DA       Renamed some rl howtos
+## -- 2023-02-04  1.6.7     SY       Renaming some bf howtos
 ## -------------------------------------------------------------------------------------------------
 
+
 """
-Ver. 1.6.4 (2023-01-16)
+Ver. 1.6.7 (2023-02-04)
 
 Unit test for all examples available.
 """
@@ -64,7 +68,6 @@ howto_list = {
     # bf.math
     "bf_math_001": "mlpro.bf.examples.howto_bf_math_001_spaces_and_elements",
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
-    "bf_math_020": "mlpro.bf.examples.howto_bf_math_020_unit_converter",
 
     # bf.ml
     "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
@@ -79,10 +82,15 @@ howto_list = {
     "bf_streams_111": "mlpro.bf.examples.howto_bf_streams_111_stream_task_rearranger_2d",
     "bf_streams_112": "mlpro.bf.examples.howto_bf_streams_112_stream_task_rearranger_3d",
     "bf_streams_113": "mlpro.bf.examples.howto_bf_streams_113_stream_task_rearranger_nd",
+    "bf_streams_114": "mlpro.bf.examples.howto_bf_streams_114_stream_task_deriver",
 
     # bf.systems
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
-    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_set_up_transfer_functions",
+    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_systems_wrapped_with_mujoco",
+
+    # bf.physics
+    "bf_physics_001": "mlpro.bf.examples.howto_bf_physics_001_set_up_transfer_functions",
+    "bf_physics_002": "mlpro.bf.examples.howto_bf_physics_002_unit_converter",
 
 
 
@@ -98,8 +106,9 @@ howto_list = {
     # "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_sb3_policy_on_ur5_environment",
     "rl_env_002": "mlpro.rl.examples.howto_rl_env_002_train_agent_with_SB3_policy_on_robothtm_environment",
     # "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_train_agent_with_sb3_policy_on_multigeo_environment",
-    "rl_env_004": "mlpro.rl.examples.howto_rl_env_004_run_agent_with_random_actions_on_double_pendulum_environment",
-    # "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_train_agent_with_sb3_policy_on_double_pendulum_environment",
+    "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_actions_on_double_pendulum_environment",
+    # "rl_env_006": "mlpro.rl.examples.howto_rl_env_006_train_agent_with_sb3_policy_on_double_pendulum_environment",
+    "rl_env_007": "mlpro.rl.examples.howto_rl_env_007_run_agent_with_random_policy_on_double_pendulum_mujoco_environment",
     "rl_ht_001": "mlpro.rl.examples.howto_rl_ht_001_hyperopt",
     "rl_ht_002": "mlpro.rl.examples.howto_rl_ht_002_optuna",
     "rl_mb_001": "mlpro.rl.examples.howto_rl_mb_001_robothtm_environment",

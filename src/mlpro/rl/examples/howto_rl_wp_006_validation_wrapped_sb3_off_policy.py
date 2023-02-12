@@ -12,10 +12,12 @@
 ## -- 2022-10-14  1.0.3     SY       Refactoring 
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
+## -- 2023-02-02  1.2.0     DA       Refactoring 
+## -- 2023-02-04  1.2.1     SY       Refactoring to avoid printing during unit test
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-01-14)
+Ver. 1.2.1 (2023-02-04)
 
 This module shows comparison between native and wrapped SB3 policy (Off-policy).
 """
@@ -26,7 +28,8 @@ import pandas as pd
 import torch
 from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import BaseCallback
-from mlpro.rl.models import *
+from mlpro.bf.plot import DataPlotting
+from mlpro.rl import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
@@ -190,7 +193,8 @@ class CustomCallback(BaseCallback, Log):
     C_TYPE = 'Wrapper'
     C_NAME = 'SB3 Policy'
 
-    def __init__(self, p_verbose=0):
+    def __init__(self, p_verbose=0, p_logging=False):
+        Log.__init__(self, p_logging=p_logging)
         super(CustomCallback, self).__init__(p_verbose)
         reward_space = Set()
         reward_space.add_dim(Dimension("Native"))
@@ -200,6 +204,7 @@ class CustomCallback(BaseCallback, Log):
         self.cycles = 0
         self.plots = None
         self.new_episodes = False
+        Log.__init__(self, p_logging=p_logging)
 
         self.continue_training = True
         self.rewards_cnt = []
@@ -255,7 +260,7 @@ policy_sb3 = DQN(
     device="cpu",
     seed=2)
 
-cus_callback = CustomCallback()
+cus_callback = CustomCallback(p_logging=logging)
 policy_sb3.learn(total_timesteps=1200, callback=cus_callback)
 native_plot = cus_callback.plots
 

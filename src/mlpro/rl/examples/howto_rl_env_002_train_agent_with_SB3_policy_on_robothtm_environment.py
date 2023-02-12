@@ -13,10 +13,11 @@
 ## -- 2022-10-13  1.0.4     SY       Refactoring 
 ## -- 2022-11-01  1.0.5     DA       Refactoring 
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
+## -- 2023-02-02  1.2.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-11-07)
+Ver. 1.2.0 (2023-02-02)
 
 This module shows how to train a wrapped SB3 policy on MLPro's native Robothtm environment.
 
@@ -32,6 +33,7 @@ You will learn:
 
 
 import torch
+from mlpro.bf.plot import DataPlotting
 from mlpro.rl import *
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from stable_baselines3 import PPO
