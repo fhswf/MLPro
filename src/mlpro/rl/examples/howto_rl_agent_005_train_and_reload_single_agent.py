@@ -16,16 +16,18 @@
 ## -- 2022-11-01  1.0.6     DA       Refactoring
 ## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
+## -- 2023-02-12  1.1.2     MRD      Add randomness path for CI test
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-01-14)
+Ver. 1.1.2 (2023-02-12)
 
 This module shows how to train a single agent and load it again to do some extra cycles.
 """
 
 
 import gym
+import string
 from stable_baselines3 import PPO
 from mlpro.rl import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
@@ -94,7 +96,7 @@ else:
     eval_grp_size = 1
     logging = Log.C_LOG_NOTHING
     visualize = False
-    path = str(Path.home())
+    path = str(Path.home()) + str(os.sep) + ''.join(random.choice(string.ascii_lowercase) for i in range(5))
 
 
 # 2 Create scenario and start training
