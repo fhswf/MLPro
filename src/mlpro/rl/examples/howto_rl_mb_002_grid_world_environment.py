@@ -77,7 +77,7 @@ class ScenarioGridWorld(RLScenario):
             p_policy=policy_random,  
             p_envmodel=MLPEnvModel(),
             p_em_acc_thsld=0.2,
-            p_action_planner=MPC(p_range_max=mt.Async.C_RANGE_THREAD,
+            p_action_planner=MPC(p_range_max=mt.Async.C_RANGE_PROCESS,
                                  p_logging=p_logging),
             p_predicting_horizon=5,
             p_controlling_horizon=1,
