@@ -25,10 +25,11 @@
 ## -- 2023-01-01  2.7.0     DA       Class Plottable: introduction of update step rate
 ## -- 2023-01-04  2.8.0     DA       Class PlotSettings: new parameters p_horizon, p_force_fg
 ## -- 2023-02-02  2.8.1     MRD      Disable Tkinter backend for macos https://bugs.python.org/issue46573
+## -- 2023-02-12  2.9.0     DA       Class PlotSettings: new parameter p_view_autoselect
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.8.1 (2023-02-02)
+Ver. 2.9.0 (2023-02-12)
 
 This module provides various classes related to data plotting.
 """
@@ -95,6 +96,8 @@ class PlotSettings:
         Optional boolean flag. If True, the releated window is kept in foreground. Default = True.
     p_id : int
         Optional unique id of the subplot within the figure. Default = 1.
+    p_view_autoselect : bool
+        If True, the final view is automatically selected during runtime. Default = True.
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -119,24 +122,26 @@ class PlotSettings:
                   p_detail_level : int = 0,
                   p_force_fg : bool = True,
                   p_id : int = 1,
+                  p_view_autoselect : bool = True,
                   **p_kwargs ):
 
         if p_view not in self.C_VALID_VIEWS:
             raise ParamError('Wrong value for parameter p_view. See class mlpro.bf.plot.SubPlotSettings for more details.')
 
-        self.view           = p_view
-        self.axes           = p_axes
-        self.pos_x          = p_pos_x
-        self.pos_y          = p_pos_y
-        self.size_x         = p_size_x
-        self.size_y         = p_size_y
-        self.step_rate      = p_step_rate
-        self.horizon        = p_horizon
-        self.plot_depth     = p_plot_depth
-        self.detail_level   = p_detail_level
-        self.force_fg       = p_force_fg
-        self.id             = p_id
-        self.kwargs         = p_kwargs.copy()
+        self.view            = p_view
+        self.axes            = p_axes
+        self.pos_x           = p_pos_x
+        self.pos_y           = p_pos_y
+        self.size_x          = p_size_x
+        self.size_y          = p_size_y
+        self.step_rate       = p_step_rate
+        self.horizon         = p_horizon
+        self.plot_depth      = p_plot_depth
+        self.detail_level    = p_detail_level
+        self.force_fg        = p_force_fg
+        self.id              = p_id
+        self.view_autoselect = p_view_autoselect
+        self.kwargs          = p_kwargs.copy()
 
 
 

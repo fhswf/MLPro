@@ -46,10 +46,11 @@
 ## --                                - Refactoring of plotting
 ## --                                - incorporation of new plot parameter p_horizon
 ## -- 2023-01-05  1.0.1     DA       Refactoring of method StreamShared.get_instances()
+## -- 2023-02-12  1.1.0     DA       Class StreamTask: implementation of plot parameter view_autoselect
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-01-05)
+Ver. 1.1.0 (2023-02-12)
 
 This module provides classes for standardized stream processing. 
 """
@@ -975,7 +976,9 @@ class StreamTask (Task):
         try:
             self._plot_view_finalized
         except:
-            self._finalize_plot_view(p_inst_ref=inst_ref)
+            if self._plot_settings.view_autoselect:
+                self._finalize_plot_view(p_inst_ref=inst_ref)
+
             self._plot_view_finalized = True
 
         Task.update_plot(self, p_inst_new=inst_new, p_inst_del=inst_del, **p_kwargs)

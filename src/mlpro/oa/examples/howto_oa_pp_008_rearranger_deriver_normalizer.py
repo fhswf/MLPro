@@ -1,63 +1,45 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_114_stream_task_deriver.py
+## -- Package : mlpro.oa.examples
+## -- Module  : howto_oa_pp_008_rearranger_deriver_normalizer.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-02-02  0.0.0     SY       Creation
-## -- 2023-02-05  1.0.0     SY       First version release
-## -- 2023-02-07  1.1.0     SY       Change the dataset to doublespiral2d
-## -- 2023-02-12  1.2.0     DA       New plot parameter p_view_autoselect
+## -- 2023-02-12  1.0.0     DA       Adapted from howto_bf_stream_task_deriver
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-02-12)
+Ver. 1.0.0 (2023-02-12)
 
-This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
-a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
-a standard task Deriver and a custom task. The stream scenario is used to process some instances.
+This module was adapted from howto_bf_streams_114_stream_task_deriver. It adds an online adaptive
+boundary detector and min/max normalizer task to the workflow.
 
 You will learn:
 
-1) How to implement an own custom stream task.
+1) How to set up an online adaptive stream workflow based on stream tasks.
 
-2) How to set up a stream workflow based on stream tasks.
+2) How to set up a stream scenario based on a stream and a processing stream workflow.
 
-3) How to set up a stream scenario based on a stream and a processing stream workflow.
+3) How to add a task Deriver and how to extend the features.
 
-4) How to add a task Deriver and how to extend the features.
+4) How to normalize even derived data based on a boundary detector
         
 5) How to run a stream scenario dark or with visualization.
 
 """
 
 
-from mlpro.bf.streams import *
 from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.tasks import Rearranger, Deriver
 
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class MyTask (StreamTask):
-    """
-    Demo implementation of a stream task with custom method _run().
-    """
-
-    # needed for proper logging (see class mlpro.bf.various.Log)
-    C_NAME      = 'Custom'
-
-## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list, p_inst_del: list):
-        pass
+from mlpro.oa.streams import *
+from mlpro.oa.streams.tasks import BoundaryDetector, NormalizerMinMax
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MyScenario (StreamScenario):
+class MyScenario (OAScenario):
     """
     Example of a custom stream scenario including a stream and a stream workflow. See class 
     mlpro.bf.streams.models.StreamScenario for further details and explanations.
@@ -122,6 +104,24 @@ class MyScenario (StreamScenario):
 
         workflow.add_task( p_task=task_deriver_2, p_pred_tasks=[task_rearranger, task_deriver_1] )
 
+        # 2.4 Boundary detector 
+        task_bd = BoundaryDetector( p_name='t4', 
+                                    p_ada=True, 
+                                    p_visualize=True,   
+                                    p_logging=p_logging )
+
+        workflow.add_task( p_task = task_bd, p_pred_tasks=[task_deriver_2])
+
+        # # 2.5 MinMax-Normalizer
+        task_norm_minmax = NormalizerMinMax( p_name='t5', 
+                                             p_ada=True, 
+                                             p_visualize=p_visualize, 
+                                             p_logging=p_logging )
+
+        task_bd.register_event_handler( p_event_id=BoundaryDetector.C_EVENT_ADAPTED, p_event_handler=task_norm_minmax.adapt_on_event )
+
+        workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
+
         # 3 Return stream and workflow
         return stream, workflow
 
@@ -131,7 +131,7 @@ class MyScenario (StreamScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == '__main__':
     # 1.1 Parameters for demo mode
-    cycle_limit = 200
+    cycle_limit = 800
     logging     = Log.C_LOG_ALL
     visualize   = True
   

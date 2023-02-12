@@ -30,10 +30,11 @@
 ## -- 2022-12-29  1.7.0     DA       Refactoring of plot settings
 ## -- 2022-12-30  1.7.1     DA       Bugfix in method Task._get_plot_host_tag()
 ## -- 2023-01-01  1.8.0     DA       Refactoring of plot settings
+## -- 2023-02-12  1.9.0     DA       New plot parameter p_view_autoselect
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2023-01-01)
+Ver. 1.9.0 (2023-02-12)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -963,7 +964,8 @@ class Workflow (Task):
                                                    p_plot_depth = ps.plot_depth,
                                                    p_detail_level = ps.detail_level,
                                                    p_force_fg = ps.force_fg,
-                                                   p_id=task_ax_id )
+                                                   p_id=task_ax_id,
+                                                   p_view_autoselect = ps.view_autoselect )
 
             else:
                 # Task plots embedded in the predecessor/workflow figure/subplot
