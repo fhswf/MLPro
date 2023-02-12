@@ -8,9 +8,9 @@ Howto BF-SYSTEMS-002: Systems wrapped with MuJoCo
 
 
 Please install the following packages to run this examples properly:
-    - `MuJoCo <https://pypi.org/project/mujoco/>`_
-    - `lxml <https://pypi.org/project/lxml/>`_
-    - 'glfw <https://pypi.org/project/glfw/>`_
+    + `MuJoCo <https://pypi.org/project/mujoco/>`_
+    + `lxml <https://pypi.org/project/lxml/>`_
+    + `glfw <https://pypi.org/project/glfw/>`_
 
 
 **Executable code**
@@ -22,8 +22,8 @@ Please install the following packages to run this examples properly:
 
 The MuJoCo windows appears and shows the simulation of a pendulum system.
 
-.. image:: images/MuJoCo.png
+.. image:: images/mujoco.gif
 
 **Cross Reference**
 
-+ :ref:`API Reference: Systems <target_api_bf_systems>`
++ :ref:`API Reference: Systems <target_ap_bf_systems>`

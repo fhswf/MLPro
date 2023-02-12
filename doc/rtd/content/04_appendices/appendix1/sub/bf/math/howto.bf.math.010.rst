@@ -101,4 +101,4 @@ The results will be available as follows
 
 **Cross References**
 
-+ :ref:`API Documentation: Normalizers <target_api_normalizer>`
++ :ref:`API Reference: Normalizers <target_ap_bf_math_norm>`

@@ -27,3 +27,8 @@ multiprocessing in comparison to the serial/synchronous execution. On a PC with 
 running Linux, the system monitor shows an approx. 5x speedup with multithreading and an approx. 18x speedup with multiprocessing.
 
 .. image:: images/howto.bf.mt.001/howto_bf_mt_001_parallel_algorithms.png
+
+
+**Cross Reference**
+
++ :ref:`API Reference: Multitasking <target_api_bf_mt>`

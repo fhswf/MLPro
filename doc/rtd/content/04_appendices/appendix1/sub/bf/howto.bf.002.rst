@@ -15,8 +15,10 @@ Howto BF-002: Timer
 .. image::
     images/timer_example.png
     :align: center
-    :width: 800px
+    :width: 1000px
+
+
 
 **Cross Reference**
 
-+ :ref:`Timer <target_timer_api>`
++ :ref:`API Reference: Various <target_api_bf_various>`

@@ -8,7 +8,9 @@ Howto BF-STREAMS-110: Window
 
 Please install the following packages to run this example properly:
 
-+ `Numpy <https://www.numpy.org>`
++ `Numpy <https://www.numpy.org>`_
++ `Matplotlib <https://pypi.org/project/matplotlib/>`_
+
 
 
 **Executable code**
@@ -25,4 +27,4 @@ Please install the following packages to run this example properly:
 
 **Cross Reference**
 
-+ :ref:`API Reference: Streams <target_api_bf_streams>`
++ :ref:`API Reference: Streams <target_ap_bf_streams>`

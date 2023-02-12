@@ -1,4 +1,4 @@
-.. _target_ap_bf_event:
+.. _target_api_bf_event:
 BF-EVENTS - Event Handling
 ==========================
 

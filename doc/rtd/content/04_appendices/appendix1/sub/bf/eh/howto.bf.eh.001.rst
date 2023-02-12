@@ -16,9 +16,9 @@ Howto BF-EH-001: Event Handling
 
 .. image::
     images/eh_example.png
-    :width: 600 px
+    :width: 900 px
 
 
 **Cross References**
 
-+ :ref:`Event Handling <target_eventhandling_api>`
++ :ref:`API Reference: Event Handling <target_api_bf_event>`

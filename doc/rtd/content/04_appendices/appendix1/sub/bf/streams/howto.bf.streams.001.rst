@@ -1,14 +1,14 @@
 .. _Howto_BF_ZZ_999:
-Howto BF-ZZ-999: My high-sophisticated ml sample
+Howto BF-Streams-001: Accessing Native Data From MLPro
 ================================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_zz_999_desciption
+.. automodule:: mlpro.bf.examples.howto_bf_streams_001_accessing_native_data_from_mlpro
 
 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_zz_999_description.py
+.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_001_accessing_native_data_from_mlpro.py
 	:language: python
 
 
@@ -46,4 +46,4 @@ Howto BF-ZZ-999: My high-sophisticated ml sample
 **Cross Reference**
 
 
-+ :ref:`API Reference: Streams <target_api_bf_streams>`
++ :ref:`API Reference: Streams <target_ap_bf_streams>`

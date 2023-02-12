@@ -20,8 +20,8 @@ Please install following packages to run this howto
 
 .. image::
     images/math_001.png
-    :width: 700 px
+    :width: 1200 px
 
 **Cross Reference**
 
-+ :ref:`API Documentation: Event Handling <target_api_event_handling>`
++ :ref:`API Reference: Math <target_ap_bf_math>`

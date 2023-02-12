@@ -12,9 +12,9 @@ Howto BF-STREAMS-101: Basics of Streams
 **Results**
 
 .. image::
-    iamges/streams_101.gif
+    images/streams_101.gif
 
 
 **Cross Reference**
 
-+ :ref:`API Reference: Streams <target_api_bf_streams>`
++ :ref:`API Reference: Streams <target_ap_bf_streams>`

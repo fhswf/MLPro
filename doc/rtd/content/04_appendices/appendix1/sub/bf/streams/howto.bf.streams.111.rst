@@ -4,6 +4,11 @@ Howto BF-STREAMS-111: Rearranger (2D)
 
 .. automodule:: mlpro.bf.examples.howto_bf_streams_111_stream_task_rearranger_2d
 
+**Prerequisites**
+
+Please install the following packages to run this example properly:
+    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
+    - `Tkinter <https://pypi.org/project/tk/>`_
 
 
 **Executable code**
@@ -14,9 +19,10 @@ Howto BF-STREAMS-111: Rearranger (2D)
 
 **Results**
 
-
+.. image::
+    images/stream_rearranger.gif
 
 
 **Cross Reference**
 
-+ :ref:`API Reference: Streams <target_api_bf_streams>`
++ :ref:`API Reference: Streams <target_ap_bf_streams>`

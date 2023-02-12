@@ -19,4 +19,4 @@ Howto BF-001: Logging
 
 **Cross Reference**
 
-+ :ref:`API Reference: Logging<target_logging_api>`
++ :ref:`API Reference: Various <target_api_bf_various>`

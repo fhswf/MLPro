@@ -104,4 +104,4 @@ Please install the following packages to run this examples properly:
 
 **Cross Reference**
 
-+ :ref:`API Reference: Streams <target_api_bf_streams>`
++ :ref:`API Reference: Streams <target_ap_bf_streams>`

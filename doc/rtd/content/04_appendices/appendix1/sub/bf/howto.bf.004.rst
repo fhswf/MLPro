@@ -20,4 +20,4 @@ Howto BF-004: Buffers
 
 **Cross Reference**
 
-+ :ref:`API Documentation:Buffers<targe_buffer_api>`
++ :ref:`API Reference: Various <target_api_bf_various>`
