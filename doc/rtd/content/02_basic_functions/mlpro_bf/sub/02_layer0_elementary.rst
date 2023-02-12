@@ -1,16 +1,11 @@
 .. _target_bf_elementary:
 Layer 0 - Elementary Functions
-------------------------------
+==============================
 
-This section provides explanations on various classes with elementary 
-functionalities for reuse in higher level classes.
-
+This lowest layer of MLPro-BF provides elementary functionalities for the following topics:
 
 .. toctree::
    :maxdepth: 1
+   :glob:
    
-   layer0_elementary/log
-   layer0_elementary/data
-   layer0_elementary/plot
-   layer0_elementary/time
-   layer0_elementary/sci
+   layer0_elementary/*

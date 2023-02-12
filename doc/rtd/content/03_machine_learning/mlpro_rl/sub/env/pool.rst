@@ -1,3 +1,4 @@
+.. _EnvPool:
 Environment Pool
 ------------------
 

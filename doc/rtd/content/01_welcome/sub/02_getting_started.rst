@@ -3,7 +3,7 @@ Getting Started
 ===============
 
 Installation from PyPI
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 MLPro is listed in the `Python Package Index (PyPI) <https://pypi.org/project/mlpro/>`_ and can be installed using the package
 installer for Python (pip) in two variants:
@@ -30,7 +30,7 @@ installer for Python (pip) in two variants:
 
 
 Installation from Anaconda
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 MLPro is also available on `Anaconda <https://anaconda.org/mlpro/mlpro/>`_ and can be installed 
 with the following command:
@@ -42,7 +42,7 @@ with the following command:
       
 .. _target_dependencies:      
 Dependencies
-^^^^^^^^^^^^
+------------
 
 The table below shows all packages that MLPro has dependencies on. Additionally, the versions 
 with which MLPro is compatible are listed. Since we cannot influence incompatible changes on 
@@ -61,7 +61,7 @@ Which packages are actually required depends on the functionalities of MLPro tha
 
       
 First Steps
-^^^^^^^^^^^
+-----------
 
 The easiest way to become familiar with the concepts and functions of MLPro is to browse 
 through the numerous :ref:`example programs <target_appendix1>`. 

@@ -37,7 +37,7 @@ from mlpro.wrappers.openml import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MyAdaptiveScenario(StreamScenario):
+class MyAdaptiveScenario(OAScenario):
 
     C_NAME = 'Dummy'
 

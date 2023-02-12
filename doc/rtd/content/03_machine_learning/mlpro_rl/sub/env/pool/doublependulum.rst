@@ -5,7 +5,8 @@
 .. automodule:: mlpro.rl.pool.envs.doublependulum
 
 .. image:: images/doublependulum.gif
-    :width: 800px
+    :width: 650px
+    :align: center
 
 .. note::
  MLPro provides two implementations of Double Pendulum environment named DoublePendulumS4 and DoublePendulumS7. 
@@ -98,11 +99,58 @@ Current implementation of DP environment in MLPro returns success when the curre
 Reward Structure
 ================
 
-The current reward structure is a basic reward strategy, with reward value being the difference between the worst possible Euclidean distance between any two states and the actual Euclidean distance between current state and the goal state. The reward calculation takes into consideration the seven dimensional state space including the input torque to the system
+The goal of the environment is to reach a complete vertical position for both the inner and outer pole, i.e.
+the goal state is given as vector :math:`S_g = (0,0,0,0,0,0)`. The environment delivers a continuous reward to the
+agent based on the new and old states of the environment. The environment is divided into three zones based on the
+position of the inner and outer pole.
 
-.. math::
-	CurrentReward = d_{max} - d
-    
+.. image::
+    images/double_pendulum_reward.drawio.png
+    :align: center
+    :width: 500 px
+
+As shown in the figure above, the three zones and the reward strategies corresponding to the zone are:
+
+1. **Red Zone** : The swing up zone for angle of inner pole less than :math:`-90^o` or more than :math:`+90^o`. The
+reward signal in this zone maximizes the motion of the inner pole of the double pendulum.
+
+..
+
+    :math:`r_a(t) = (|\theta_{1n(t - 1))} - \theta_{1n(t)}|) + (|\theta'_{1n(t)} +\theta^n_{1n(t-1)}| - |\theta'_{1n(t-1)} + \theta^n_{1n(t-1)}|)`
+
+    where,
+        :math:`r_a(t)` is reward at time step t,
+
+        :math:`\theta_{1n}` is normalized angle of inner pole
+
+        :math:`\theta_{2n}` is normalized angle of outer pole
+
+
+2. **Yellow Zone** : Outer pole swing up zone for angle of inner pole more than :math:`-90^o` or less than
+:math:`+90^o`. The reward is based on the euclidean distance between new and old states, with 75% weight to the
+states of outer pole and 25% to that of inner pole.
+
+..
+
+    :math:`r_b(t) = |s_{gb} - s_{b(t-1)}| - |s_{gb} - s{b(t)}|`
+
+    where,
+        :math:`s_b` is the state space in yellow zone as :math:`(\theta_{1n}, \theta_{2n}, \theta_{2n}',\theta_{2n}'')`
+
+        :math:`s_{gb}` is the goal state in Yellow zone, i.e. :math:`(0,0,0,0)`
+
+3. **Green Zone** : Balancing zone for angle of either or both inner or outer pole more than :math:`-36^o` or less than
+:math:`+36^o`. The reward in this zone is proportional to the environments progress towards the goal state.
+
+..
+
+    :math:`r_a(t) = |s_{gn} - s_{n(t-1)}| - |s_{gn} - s_{n(t)}|`
+
+    where,
+        :math:`s_{gn}` is the normalized goal state of the environment
+
+        :math:`s_n` is the normalized state
+
 
 Change Log
 ==========
@@ -116,9 +164,12 @@ Change Log
 +--------------------+---------------------------------------------+
 | 1.3.1              | Current release version                     |
 +--------------------+---------------------------------------------+
-| 2.4.11             | Current release with variants S4 and S7     |
+| 2.0.0              | Current release with variants S4 and S7     |
 +--------------------+---------------------------------------------+
-  
+| 2.2.4              | - Latest reward strategy implementation     |
+|                    | - Reward Visualization                      |
++--------------------+---------------------------------------------+
+
 Cross Reference
 ===============
     + :ref:`Howto RL-ENV-005: SB3 Policy on Double Pendulum Environment <Howto Env RL 005>`

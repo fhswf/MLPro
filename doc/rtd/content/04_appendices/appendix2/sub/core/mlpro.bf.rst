@@ -89,12 +89,22 @@ Normalizers
    :undoc-members:
    :show-inheritance:
 
+   
+Physics
+-------------------
+
+.. image:: images/bf/MLPro-BF-Physics_class_diagram.drawio.png
+.. automodule:: mlpro.bf.physics
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 
 Unit Converter
 ---------------
 
-.. image:: images/bf/MLPro-BF-Math-UnitConverter_class_diagram.drawio.png
-.. automodule:: mlpro.bf.math.unitconverter
+.. image:: images/bf/MLPro-BF-Physics-UnitConverter_class_diagram.drawio.png
+.. automodule:: mlpro.bf.physics.unitconverter
    :members:
    :undoc-members:
    :show-inheritance:
@@ -121,6 +131,7 @@ Stream Providers and Streams
    :show-inheritance:
 
 
+.. _target_api_bf_ml:
 Machine Learning
 ----------------
 
