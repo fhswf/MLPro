@@ -150,3 +150,36 @@ jobs:
       run: |
         make pytest
 
+  windows_10_test:
+    runs-on: rizkypc
+    needs: deps_gen
+    if: needs.deps_gen.outputs.trigger_build == 'true'
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, '3.10']
+
+    steps:
+    - name: Checkout Codes
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        pip install -r requirements.txt
+        pip install sphinx
+        pip install sphinx-rtd-theme
+        pip install sphinx-copybutton
+        pip install sphinx_multitoc_numbering
+        pip install openml
+    - name: Test with pytest
+      run: |
+        make pytest
+
