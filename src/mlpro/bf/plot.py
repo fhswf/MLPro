@@ -26,10 +26,12 @@
 ## -- 2023-01-04  2.8.0     DA       Class PlotSettings: new parameters p_horizon, p_force_fg
 ## -- 2023-02-02  2.8.1     MRD      Disable Tkinter backend for macos https://bugs.python.org/issue46573
 ## -- 2023-02-12  2.9.0     DA       Class PlotSettings: new parameter p_view_autoselect
+## -- 2023-02-12  2.9.1     DA/MRD   Reverted the change of 2.8.1 for macOS due to the low effect of
+## --                                the bug mentioned
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.9.0 (2023-02-12)
+Ver. 2.9.1 (2023-02-12)
 
 This module provides various classes related to data plotting.
 """
@@ -42,9 +44,10 @@ from sys import platform
 try:
     from tkinter import *
     import matplotlib
-    # Due to bug in TKinter for macos, disabled for macos https://bugs.python.org/issue46573
-    if platform != 'darwin':
-        matplotlib.use('TkAgg')
+    matplotlib.use('TkAgg')
+    # # Due to bug in TKinter for macos, disabled for macos https://bugs.python.org/issue46573
+    # if platform != 'darwin':
+    #     matplotlib.use('TkAgg')
 except:
     print('Please install tkinter for a better plot experience')
     import matplotlib
