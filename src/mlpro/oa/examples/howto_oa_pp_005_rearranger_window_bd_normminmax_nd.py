@@ -81,7 +81,7 @@ class MyAdaptiveScenario (OAScenario):
         workflow.add_task( p_task=task_rearranger )
       
         # 2.2.2 Window to buffer some data
-        task_window = Window( p_buffer_size=50, 
+        task_window = Window( p_buffer_size=10,
                               p_delay=True,
                               p_enable_statistics=True,
                               p_name='t2',
