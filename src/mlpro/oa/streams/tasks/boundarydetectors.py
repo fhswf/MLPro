@@ -21,10 +21,11 @@
 ## --                                - removed methods init_plot_2d/3d, update_plot_2d/3d
 ## -- 2022-12-30  1.1.4     DA       Removed the plot title
 ## -- 2023-02-02  1.1.5     DA       Method BoundaryDetector._init_plot_2D: removed figure creation
+## -- 2023-02-13  1.1.6     SY       Bug Fix: Solving issue, when the first data is lower than 1
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.5 (2023-02-02)
+Ver. 1.1.6 (2023-02-13)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
@@ -141,6 +142,8 @@ class BoundaryDetector (OATask):
                 boundary = dim[i].get_boundaries()
                 if len(boundary) == 0 or boundary is None:
                     boundary = [ value * self._scaler[i], self._scaler[i] ]
+                    if value < boundary[1]:
+                        boundary[1] = value
                     dim[i].set_boundaries(boundary)
                     adapted = True
                 if value < boundary[0]:
