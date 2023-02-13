@@ -1,9 +1,9 @@
 Scientific Reference
 -----------------------
 
-MLPro integrates scientific referencing in any classes using a class **ScientificObject**.
-This class provides elementary functionality for storing a scientific reference.
-For example, when the users create a custom reinforcement learning policy or a custom environment, then the users can simply inherit ScientificObject class and add scientific reference to the related elements.
+MLPro integrates scientific referencing in any class using a class **ScientificObject**.
+This class provides elementary functionality for storing scientific references.
+For example, when the users create a custom reinforcement learning policy or a custom environment, then the users can simply inherit ScientificObject class and add a scientific reference to the related elements.
 This class can be accessed as follows:
 
 .. code-block:: python
@@ -19,9 +19,9 @@ MLPro provides various forms of scientific references, which are:
     * ``C_SCIREF_TYPE_TECHREPORT`` : Technical Report
     * ``C_SCIREF_TYPE_UNPUBLISHED`` : Unpublished
 
-After selecting the type of the reference, the users can add more details, such as authors, title, volume, DOI, and many more.
+After selecting the type of reference, the users can add more details, such as authors, titles, volume, DOI, and many more.
 
-The type and detail of the related scientific reference in a class can be initialzed, as follows:
+The type and detail of the related scientific reference in a class can be initialized, as follows:
 
 .. code-block:: python
 
@@ -40,7 +40,7 @@ The type and detail of the related scientific reference in a class can be initia
             self.C_SCIREF_VOLUME  = "01"
             self.C_SCIREF_DOI     = "10.XXXX"
 
-In the near future, MLPro team is planning to add a citing functionality. Therefore, the users can obtain the citation of the specific class in the form of bibtex. 
+Shortly, the MLPro team is planning to add a citing functionality. Therefore, the users can obtain the citation of the specific class in the form of BibTeX. 
 
 **Cross Reference**
-    + :ref:`API Reference <Various>`
+    + :ref:`API Reference <target_api_bf_various>`
