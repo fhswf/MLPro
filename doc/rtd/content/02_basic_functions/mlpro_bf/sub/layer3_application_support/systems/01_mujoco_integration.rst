@@ -2,18 +2,18 @@
 MuJoCo Integration
 ==================
 
-MuJoCo is one of well-known physics engine for its fast and accurate simulation. The aim is to facilitate research and development in robotics, biomechanis, graphics
+MuJoCo is a well-known physics engine for its fast and accurate simulation. The aim is to facilitate research and development in robotics, biomechanics, graphics 
 and animation, and other areas. More explanation about MuJoCo can be found in `here <https://mujoco.org/>`_.
 
 In order to use the MuJoCo integration in MLPro, the following steps need to be done:
 
     * **Create a MuJoCo Model**
 
-        Create a MuJoCo model file accordingly to your design. Some of example model are published by MuJoCo and can be accessed `here <https://mujoco.readthedocs.io/en/latest/models.html>`_.
+        Create a MuJoCo model file accordingly to your design. Some example model are published by MuJoCo and can be accessed. `here <https://mujoco.readthedocs.io/en/latest/models.html>`_.
 
     * **Create a System**
 
-        Create your own system inherited from the bf.System class. Define the action and the state space. Make sure the action and the state name are matched with the joints and actuator name on the MuJoCo model file.
+        Create your system inherited from the bf. System class. Define the action and the state space. Ensure the action and state names match the joints and actuator names on the MuJoCo model file. 
         The following is an example of naming the action and state space accordingly.
 
         Here is the MuJoCo model file.
@@ -41,10 +41,10 @@ In order to use the MuJoCo integration in MLPro, the following steps need to be 
               </actuator>
             </mujoco>
 
-        The name of the first joint is "pin" (``<joint name="pin" type="hinge" axis = "0 -1 0" pos="0 0 0.5"/>``). A joint consists of position, velocity and acceleration data.
-        In the current MuJoCo integration, only position and velocity can be retrieved. This is done by putting an indicator after the short name of a state dimension.
-        ``_vel`` is for velocity and ``_pos`` for position. For the actuator, the first actuator is named "pin" (``<motor joint="pin" name="torque1" gear="1" ctrllimited="true" ctrlrange="-50 50"/>``).
-        So, in this case the action dimension muss be named "pin". An example of using the indicator is shown on below code.
+        The name of the first joint is "pin" (``<joint name="pin" type="hinge" axis = "0 -1 0" pos="0 0 0.5"/>``). A joint consists of position, velocity, and acceleration data. 
+        In the current MuJoCo integration, only position and velocity can be retrieved. This is done by putting an indicator after the short name of a state dimension. 
+        ``_vel`` is for velocity and ``_pos`` for position. For the actuator first actuator is named "pin" (``<motor joint="pin" name="torque1" gear="1" ctrllimited="true" ctrlrange="-50 50"/>``).
+        So, in this case, the action dimension must be named "pin". An example of using the indicator is shown below code.
 
         .. code-block:: python
 
