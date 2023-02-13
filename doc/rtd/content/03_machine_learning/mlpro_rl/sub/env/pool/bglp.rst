@@ -165,7 +165,7 @@ If you would like to implement a customized reward function, you can follow thes
 
 **Cross Reference**
 
-    + :ref:`API Reference <Bulk Goods Plant>`
+    + :ref:`API Reference <target_pool_rl_env_bglp>`
 
 
 **Citation**
