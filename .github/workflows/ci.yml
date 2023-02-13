@@ -151,7 +151,7 @@ jobs:
         make pytest
 
   windows_10_test:
-    runs-on: rizkypc
+    runs-on: atlab-win
     needs: deps_gen
     if: needs.deps_gen.outputs.trigger_build == 'true'
     strategy:
