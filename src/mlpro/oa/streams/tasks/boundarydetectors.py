@@ -22,10 +22,11 @@
 ## -- 2022-12-30  1.1.4     DA       Removed the plot title
 ## -- 2023-02-02  1.1.5     DA       Method BoundaryDetector._init_plot_2D: removed figure creation
 ## -- 2023-02-13  1.1.6     SY       Bug Fix: Solving issue, when the first data is lower than 1
+## -- 2023-02-13  1.1.7     LSB      Bug Fix: Setting initial boundaries to [0,0]
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.6 (2023-02-13)
+Ver. 1.1.7 (2023-02-13)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
@@ -141,9 +142,7 @@ class BoundaryDetector (OATask):
             for i,value in enumerate(feature_data.get_values()):
                 boundary = dim[i].get_boundaries()
                 if len(boundary) == 0 or boundary is None:
-                    boundary = [ value * self._scaler[i], self._scaler[i] ]
-                    if value < boundary[1]:
-                        boundary[1] = value
+                    boundary = [ 0,0 ]
                     dim[i].set_boundaries(boundary)
                     adapted = True
                 if value < boundary[0]:
