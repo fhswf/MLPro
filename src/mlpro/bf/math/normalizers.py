@@ -20,10 +20,11 @@
 ## -- 2022-12-30  1.0.11    LSB      Bug Fix ZTransform
 ## -- 2023-01-07  1.0.12    LSB      Bug Fix
 ## -- 2023-01-12  1.0.13    LSB      Bug Fix
+## -- 2023-02-13  1.0.14    LSB      BugFix: Changed the direct reference to p_param to a copy object
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.13 (2023-01-12)
+Ver. 1.0.14 (2023-02-13)
 This module provides base class for Normalizers and normalizer objects including MinMax normalization and
 normalization by Z transformation.
 
@@ -64,7 +65,7 @@ class Normalizer:
         boolean:True
             Returns true after setting the parameters
         """
-        self._param = p_param
+        self._param = p_param.copy()
 
 
     ## -------------------------------------------------------------------------------------------------
@@ -121,6 +122,7 @@ class Normalizer:
         elif isinstance(p_data, np.ndarray):
             p_data = np.multiply(p_data, 1 / self._param[0]) + \
                      (self._param[1] / self._param[0])
+            p_data = np.nan_to_num(p_data)
         else:
             raise ParamError('Wrong datatype provided for denormalization')
 
@@ -216,6 +218,7 @@ class NormalizerMinMax(Normalizer):
         else:
             self._param_old = self._param_new.copy()
         self._param = self._param_new.copy()
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
