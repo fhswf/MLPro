@@ -42,10 +42,11 @@
 ## -- 2023-01-27  1.7.1     MRD      Add optional argument for Environment to integrate MuJoCo
 ## -- 2023-02-02  1.7.2     DA       All methods compute_reward(): unified name of first parameter 
 ## --                                to p_state_old
+## -- 2023-02-13  1.7.3     MRD       Simplify State Space and Action Space generation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.2 (2023-02-02)
+Ver. 1.7.3 (2023-02-13)
 
 This module provides model classes for environments.
 """
@@ -317,7 +318,6 @@ class EnvBase (System, FctReward):
                   p_frame_skip : int = 1,
                   p_state_mapping = None,
                   p_action_mapping = None,
-                  p_use_radian : bool = True,
                   p_camera_conf : tuple = (None, None, None),
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
@@ -332,7 +332,6 @@ class EnvBase (System, FctReward):
                          p_frame_skip = p_frame_skip,
                          p_state_mapping = p_state_mapping,
                          p_action_mapping = p_action_mapping,
-                         p_use_radian = p_use_radian,
                          p_camera_conf = p_camera_conf,
                          p_visualize = p_visualize,
                          p_logging = p_logging )
@@ -498,7 +497,6 @@ class Environment (EnvBase):
                   p_frame_skip : int = 1,
                   p_state_mapping = None,
                   p_action_mapping = None,
-                  p_use_radian : bool = True,
                   p_camera_conf : tuple = (None, None, None),
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
@@ -513,7 +511,6 @@ class Environment (EnvBase):
                          p_frame_skip = p_frame_skip,
                          p_state_mapping = p_state_mapping,
                          p_action_mapping = p_action_mapping,
-                         p_use_radian = p_use_radian,
                          p_camera_conf = p_camera_conf,
                          p_visualize = p_visualize,
                          p_logging = p_logging )

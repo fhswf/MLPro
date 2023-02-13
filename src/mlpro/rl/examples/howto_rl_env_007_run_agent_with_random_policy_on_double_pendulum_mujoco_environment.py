@@ -11,11 +11,12 @@
 ## -- 2023-01-07  1.0.1     MRD       Add State Mapping between MuJoCo model and Environment State Space
 ## -- 2023-01-27  1.1.0     MRD       Implement Pendulum Environment, refactor due to different MuJoCo
 ## --                                 mechanism
+## -- 2023-02-13  1.1.1     MRD       Refactor
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.1.0 (2023-01-27)
+Ver. 1.1.1 (2023-02-13)
 
 This module shows how to run a random policy on Double Pendulum with MuJoCo Simulation.
 """
@@ -66,23 +67,6 @@ class PendulumEnvironment (Environment):
         
         self._state = State(self._state_space)
         self.reset()
-
-    @staticmethod
-    def setup_spaces():
-        
-        # 1 State space
-        state_space = ESpace()
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_pos', p_name_long="Pin 1 Joint Angle") )
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_pos', p_name_long="Pin 2 Joint Angle") )
-
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_vel', p_name_long="Pin 1 Angular Velocity") )
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_vel', p_name_long="Pin 2 Angular Velocity") )
-
-        # 2 Action space
-        action_space = ESpace()
-        action_space.add_dim( p_dim = Dimension( p_name_short='pin1') )
-
-        return state_space, action_space
 
 
     def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
