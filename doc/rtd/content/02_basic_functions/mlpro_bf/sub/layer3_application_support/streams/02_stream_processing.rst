@@ -8,7 +8,6 @@ like sliding window, rearranger, etc. specialized for streaming data.
 .. image::
     images/stream_processing.png
     :width: 700 px
-    :align: center
 
 
 In MLPro, streaming data is processed with a task and workflow architecture. A StreamTask is single operation
