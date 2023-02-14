@@ -1,9 +1,9 @@
 .. _target_stream_tasks_pool:
-Stream Tasks Pool
+Pool Objects
 =================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :glob:
 
-   stream_tasks/*
+   stream_pool_objects/*

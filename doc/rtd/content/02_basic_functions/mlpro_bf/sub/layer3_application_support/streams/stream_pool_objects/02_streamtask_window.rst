@@ -11,7 +11,6 @@ represents the stream behaviour.
 
 .. image::
     images/window.png
-    :align: center
     :width: 800 px
 
 
