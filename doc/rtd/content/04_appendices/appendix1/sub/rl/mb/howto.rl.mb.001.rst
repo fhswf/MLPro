@@ -58,4 +58,4 @@ The expected initial console output can be seen below.
 
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`API Reference: Environment Model <target_api_rl_env_ada>`
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`API Reference: Environment Model <target_api_rl_env_ada>` :ref:`RL Scenario and Training` <target_api_rl_run_train>

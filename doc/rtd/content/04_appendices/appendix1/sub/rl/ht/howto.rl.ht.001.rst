@@ -64,4 +64,4 @@ Please install the following packages to run this examples properly:
 
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Machine Learning <target_api_bf_ml>`
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Machine Learning <target_api_bf_ml>`, :ref:`RL Scenario and Training` <target_api_rl_run_train>

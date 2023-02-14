@@ -62,5 +62,4 @@ The image above shows that the agent in most cases can reach the goal.
 **Cross Reference**
 
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`,
-:ref:`Environment Model <target_api_rl_env_ada>`
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Environment Model <target_api_rl_env_ada>` :ref:`RL Scenario and Training` <target_api_rl_run_train>
