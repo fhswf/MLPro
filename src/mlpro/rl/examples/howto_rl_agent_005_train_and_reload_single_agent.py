@@ -17,10 +17,11 @@
 ## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -- 2023-02-12  1.1.2     MRD      Save to MLPro folder path for CI test
+## -- 2023-02-15  1.1.3     MRD      Adjust parameter
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2023-02-12)
+Ver. 1.1.3 (2023-02-15)
 
 This module shows how to train a single agent and load it again to do some extra cycles.
 """
@@ -48,7 +49,7 @@ class MyScenario (RLScenario):
         # 1.2 Setup Policy From SB3
         policy_sb3 = PPO(
             policy="MlpPolicy",
-            n_steps=5,
+            n_steps=10,
             env=None,
             _init_setup_model=False,
             device="cpu",
@@ -78,11 +79,11 @@ class MyScenario (RLScenario):
 
 if __name__ == "__main__":
     # Parameters for demo mode
-    cycle_limit = 5000
-    adaptation_limit = 50
-    stagnation_limit = 5
-    eval_frequency = 5
-    eval_grp_size = 5
+    cycle_limit = 10000
+    adaptation_limit = 0
+    stagnation_limit = 0
+    eval_frequency = 0
+    eval_grp_size = 0
     logging = Log.C_LOG_WE
     visualize = True
     path = str(Path.home())
