@@ -8,7 +8,7 @@ It can be used to design controllers that regulate the behaviour of the system, 
 Transfer functions play an important role in the design and analysis of control systems, communication systems, and signal processing systems.
 
 .. image:: images/bf_physics_transferlearning.drawio.png
-    :width: 400
+    :width: 500
 
 In MLPro, there are three possibilities for transfer functions, which are:
 
