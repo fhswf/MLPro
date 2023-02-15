@@ -6,8 +6,8 @@ Howto RL-WP-006: Validation SB3 Wrapper (Off-Policy)
   
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `Pytorch <https://pypi.org/project/torch/>`_
@@ -17,16 +17,21 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_wp_006_validation_wrapped_sb3_off_policy.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 
 The result plot shows that MLPro's wrapper for Stable Baselines 3 behaves neutrally.
 
 .. image:: images/howto017.png
+
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper SB3 <Wrapper SB3>

@@ -5,8 +5,8 @@ Howto GT-002: Train Multi-Player
 .. automodule:: mlpro.gt.examples.howto_gt_dp_002_train_own_multi_player_on_multicartpole_game_board
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `NumPy <https://pypi.org/project/numpy/>`_
@@ -14,15 +14,14 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/gt/examples/howto_gt_dp_002_train_own_multi_player_on_multicartpole_game_board.py
 	:language: python
 
 
 
-Results
-`````````````````
+**Results**
 After the multiple game boards are initialised, the console will be filled with training logs
 and the final training result should show up at the end of the script.
 
@@ -48,4 +47,9 @@ and the final training result should show up at the end of the script.
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Evaluations       : 0 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    
+
+
+
+**Cross Reference**
+
++ :ref:`API Reference: Game Theory <target_api_gt>`

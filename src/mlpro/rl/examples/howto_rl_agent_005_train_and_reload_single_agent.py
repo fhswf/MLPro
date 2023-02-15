@@ -96,7 +96,7 @@ else:
     eval_grp_size = 1
     logging = Log.C_LOG_NOTHING
     visualize = False
-    path = os.path.dirname(mlpro.__file__)
+    path = str(Path.home())
 
 
 # 2 Create scenario and start training
@@ -152,3 +152,7 @@ scenario.reset()
 
 # 8 Run Scenario
 scenario.run()
+
+if __name__ != "__main__":
+    from shutil import rmtree
+    rmtree(training._root_path)

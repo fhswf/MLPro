@@ -11,7 +11,7 @@ Timer class can be accessed as follows:
     from mlpro.bf.various import Timer
 
 The time measurement can cover two different modes, such as:
- * **C_MODE_REAL** : real time mode
+ * **C_MODE_REAL** : real-time mode
  * **C_MODE_VIRTUAL** : virtual time mode
 
 
@@ -19,10 +19,10 @@ The following are the functionalities of the timer:
     * ``reset`` : to reset timer
     * ``get_time`` : to get the actual time
     * ``get_lap_time`` : to get the actual lap time
-    * ``get_lap_id`` : to get an id of a actual lap
+    * ``get_lap_id`` : to get an id of an actual lap
     * ``add_time`` : to add actual time, which is specifically for virtual mode
     * ``finish_lap`` : to end the current lap
 
 **Cross Reference**
-    + :ref:`API Reference <Various>`
+    + :ref:`API Reference <target_api_bf_various>`
     + :ref:`Howto BF-002: Timer <Howto BF 002>`

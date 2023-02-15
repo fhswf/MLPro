@@ -5,8 +5,8 @@ Howto RL-ENV-005: Run Agent with random action in Double Pendulum Environment
 .. automodule:: mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_actions_on_double_pendulum_environment
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
 
@@ -15,18 +15,24 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_005_run_agent_with_random_actions_on_double_pendulum_environment.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 
 .. image:: images/doublependulum_randomagent.gif
     :width: 900 px
     :align: center
 
 Running this howto shall generate visualizations for double endulum environment and the reward, resectively.
+
+
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`RL Scenario and Training` <target_api_rl_run_train>

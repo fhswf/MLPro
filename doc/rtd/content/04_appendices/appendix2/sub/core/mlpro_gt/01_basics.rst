@@ -1,4 +1,4 @@
-.. _target_api_sl:
+.. _target_api_gt:
 GT - Basics
 ===========
 

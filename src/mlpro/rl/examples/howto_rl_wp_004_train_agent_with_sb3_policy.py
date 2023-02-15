@@ -18,10 +18,11 @@
 ## -- 2022-10-14  1.0.9     SY       Refactoring 
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
+## -- 2023-02-13  1.1.2     DA       Optimization of dark mode
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-01-14)
+Ver. 1.1.2 (2023-02-13)
 
 This module shows how to train agent with SB3 Wrapper for On- and Off-Policy Algorithms
 
@@ -45,7 +46,7 @@ from pathlib import Path
 
 # 1 Implement your own RL scenario
 class MyScenario(RLScenario):
-    C_NAME = 'Matrix'
+    C_NAME = 'Howto-RL-WP-004'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1 Setup environment
@@ -117,7 +118,6 @@ class MyScenario(RLScenario):
 
 
 # 2 Create scenario and start training
-
 if __name__ == "__main__":
     # 2.1 Parameters for demo mode
     logging = Log.C_LOG_ALL

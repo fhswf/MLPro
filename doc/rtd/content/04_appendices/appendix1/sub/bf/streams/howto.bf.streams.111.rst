@@ -20,7 +20,7 @@ Please install the following packages to run this example properly:
 **Results**
 
 .. image::
-    images/stream_rearranger.gif
+    images/streams_rearranger.gif
 
 
 **Cross Reference**

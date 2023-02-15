@@ -6,8 +6,8 @@ Howto RL-MB-001: MBRL on RobotHTM Environment
   
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `Pytorch <https://pypi.org/project/torch/>`_
@@ -15,15 +15,15 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_mb_001_robothtm_environment.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 
 After the environment is initiated, the training will run for the specified amount of limits.
 The expected initial console output can be seen below.
@@ -54,4 +54,8 @@ The expected initial console output can be seen below.
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Matrix1: Process time 0:00:00 : Scenario reset with seed 0 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Reset 
     ...
-    
+
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`API Reference: Environment Model <target_api_rl_env_ada>` :ref:`RL Scenario and Training` <target_api_rl_run_train>

@@ -1,6 +1,6 @@
 .. _target_streams:
-Streams
-=======
+Stream Processing
+=================
 
 .. toctree::
    :maxdepth: 2

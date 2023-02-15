@@ -127,7 +127,7 @@ For multicartpole environment, an overall reward is awarded to the multi-agent. 
 
 Refer these documents for further understanding of MLPro Multicartpole environment and other functionalities of MLPro
     
-  + :ref:`API Reference <Multi Cartpole>`
+  + :ref:`API Reference <target_pool_rl_env_multi_cartpole>`
   + :ref:`Howto RL-AGENT-003: Run Multi-Agent with Own Policy <Howto Agent RL 003>`
   + :ref:`Howto RL-AGENT-004: Train Multi-Agent with Own Policy <Howto Agent RL 004>`
 

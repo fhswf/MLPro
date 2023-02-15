@@ -23,6 +23,6 @@ Both the normalizers provide following operations:
  * Update Parameters : Upadte the normalization parameters based on data characteristics such as boundaries or statistical properties.
  * Renormalize : MLPro's normalizers also provide the possibility to renormalize the previously normalized data elements on new normalization parameters.
 
-
-* Please refer to :ref:`Howto BF 23 <Howto BF 023>` to know more about normalizers in MLPro
-* Please refer to the class diagram at :ref:`Normalizers <Normalizers>`
+**Cross Reference**
+    + :ref:`Howto BF-MATH-010: Normalizers <Howto BF MATH 010>`
+    + :ref:`API Reference <target_ap_bf_math_norm>`

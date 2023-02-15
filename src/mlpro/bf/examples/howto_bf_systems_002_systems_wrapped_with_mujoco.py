@@ -8,11 +8,12 @@
 ## -- 2023-01-06  0.0.0     MRD       Creation
 ## -- 2023-01-06  1.0.0     MRD       Release
 ## -- 2023-02-04  1.0.1     SY        Renaming
+## -- 2023-02-13  1.0.2     MRD       Refactor
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.1 (2023-02-04)
+Ver. 1.0.2 (2023-02-13)
 
 This module demonstrates the principles of using classes System and use MuJoCo wrapper to do
 the simulation for pre defined model.
@@ -59,23 +60,6 @@ class PendulumSystem (System):
 
         
         self._state = State(self._state_space)
-
-    @staticmethod
-    def setup_spaces():
-        
-        # 1 State space
-        state_space = ESpace()
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_pos', p_name_long="Pin 1 Joint Angle") )
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_pos', p_name_long="Pin 2 Joint Angle") )
-
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin1_vel', p_name_long="Pin 1 Angular Velocity") )
-        state_space.add_dim( p_dim = Dimension( p_name_short='pin2_vel', p_name_long="Pin 2 Angular Velocity") )
-
-        # 2 Action space
-        action_space = ESpace()
-        action_space.add_dim( p_dim = Dimension( p_name_short='pin1') )
-
-        return state_space, action_space
 
     def _reset(self, p_seed=None) -> None:
         pass

@@ -19,11 +19,12 @@
 ## --                                 Environment
 ## -- 2023-01-27  1.2.0     MRD       Remove previous implementation and only define the MujocoHandler
 ## --                                 as the handler to handle the MuJoCo simulation
+## -- 2023-02-13  1.2.1     MRD       Simplify State Space and Action Space generation
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.2.0  (2023-01-27)
+Ver. 1.2.1  (2023-02-13)
 
 This module wraps bf.Systems with MuJoCo Simulation functionality.
 """
@@ -298,57 +299,6 @@ class RenderViewer(CallbacksViewer):
 
 
 
-# ## -------------------------------------------------------------------------------------------------
-#     def init_plot(self, p_figure: Figure = None, p_plot_settings: list = ..., p_plot_depth: int = 0, p_detail_level: int = 0, p_step_rate: int = 0, **p_kwargs):
-#         if self._mujoco_handler._system_type != WrMujoco.C_VISUALIZE:
-#             if self._visualize: 
-#                 self._mujoco_handler._render()
-#         elif self._mujoco_handler._visualize:
-#             state_value = []
-#             current_state = self.get_state()
-
-#             if callable(getattr(self._sys_env, '_obs_to_mujoco', None)):
-#                 current_state = self._sys_env._obs_to_mujoco(current_state)
-
-#             try:
-#                 for state_name in self._vis_state_name_list:
-#                     state_id = self.get_state_space().get_dim_by_name(state_name).get_id()
-#                     state_value.append(current_state.get_value(state_id))
-#             except:
-#                 raise Error("Name of the state is not valid")
-
-#             if not self._mujoco_handler._use_radian:
-#                 state_value = list(map(math.radians, state_value))
-
-#             self._mujoco_handler._set_state(state_value, np.zeros(len(state_value)))
-
-#             self._mujoco_handler._render()
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def update_plot(self, **p_kwargs):
-#         if self._mujoco_handler._system_type != WrMujoco.C_VISUALIZE:
-#             if self._visualize: 
-#                 self._mujoco_handler._render()
-#         elif self._mujoco_handler._visualize:
-#             state_value = []
-#             current_state = self.get_state()
-
-#             if callable(getattr(self._sys_env, '_obs_to_mujoco', None)):
-#                 current_state = self._sys_env._obs_to_mujoco(current_state)
-
-#             for state_name in self._vis_state_name_list:
-#                 state_id = self.get_state_space().get_dim_by_name(state_name).get_id()
-#                 state_value.append(current_state.get_value(state_id))
-
-#             if not self._mujoco_handler._use_radian:
-#                 state_value = list(map(math.radians, state_value))
-
-#             self._mujoco_handler._set_state(state_value, np.zeros(len(state_value)))
-
-#             self._mujoco_handler._render()
-
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -366,12 +316,9 @@ class MujocoHandler(Wrapper):
     ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
                 p_mujoco_file, 
-                p_frame_skip, 
-                p_system_state_space=None,
-                p_system_action_space=None,
+                p_frame_skip,
                 p_state_mapping=None,
                 p_action_mapping=None,
-                p_use_radian=True, 
                 p_camera_conf=(None, None, None),
                 p_visualize=False,
                 p_logging=Log.C_LOG_ALL
@@ -383,11 +330,10 @@ class MujocoHandler(Wrapper):
         self._model_path = p_mujoco_file
         self._visualize = p_visualize
 
-        self._system_state_space = p_system_state_space
-        self._system_action_space = p_system_action_space
+        self._system_state_space = None
+        self._system_action_space = None
         self._state_mapping = p_state_mapping
         self._action_mapping = p_action_mapping
-        self._use_radian = p_use_radian
         self._sim_obs_list_order = []
         self._sim_act_list_order = {}
         self._vis_obs_list_order = []
@@ -396,6 +342,13 @@ class MujocoHandler(Wrapper):
 
         self._init_qpos = self._data.qpos.ravel().copy()
         self._init_qvel = self._data.qvel.ravel().copy()
+        
+        parser = etree.XMLParser(remove_blank_text=True)
+        tree = etree.parse(self._model_path, parser=parser)
+        self._xml_root = tree.getroot()
+        etree.strip_tags(self._xml_root, etree.Comment)
+        etree.cleanup_namespaces(self._xml_root)
+        
         Wrapper.__init__(self, p_logging)
 
 
@@ -406,105 +359,63 @@ class MujocoHandler(Wrapper):
             self.log(self.C_LOG_TYPE_I, 'Closed')
         except:
             pass
-
+        
 
 ## -------------------------------------------------------------------------------------------------
-    def _get_model_list_sim(self):
-        parser = etree.XMLParser(remove_blank_text=True)
-        tree = etree.parse(self._model_path, parser=parser)
-        xml_root = tree.getroot()
-        etree.strip_tags(xml_root, etree.Comment)
-        etree.cleanup_namespaces(xml_root)
-
-        obs_data_list = {}
-        act_data_list = {}
+    def setup_spaces(self):
+        return self._get_state_space(), self._get_action_space()
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def _get_state_space(self):
+        self._system_state_space = ESpace()
         
-        # Body list
-        obs_data_list = {**obs_data_list, **dict([(elem.attrib["name"], "body") for elem in xml_root.iter("body")])}
-
-        # Joint list
-        obs_data_list = {**obs_data_list, **dict([(elem.attrib["name"], "joint") for elem in xml_root.iter("joint")])}
-
+        # Extract Position and Orientation, if a body
+        for elem in self._xml_root.iter("body"):
+            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_pos_body")))
+            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_rot_body")))
+        
+        # Extract Position, Velocity, and Acceleration, if a joint
+        for elem in self._xml_root.iter("joint"):
+            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_pos_joint")))
+            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_vel_joint")))
+            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_acc_joint")))
+        
+        return self._system_state_space
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def _get_action_space(self):
+        self._system_action_space = ESpace()
+        
         # Actuator list
-        idx = 0
-        for elem in xml_root.iter("motor"):
-            act_data_list = {**act_data_list, **dict([(elem.attrib["name"], idx)])}
-            idx += 1
-        
-        for dim in self._system_action_space.get_dims():
-            try:
-                action_name = dim.get_name_short()
-                self._sim_act_list_order[action_name] = act_data_list[action_name]
-            except:
-                raise Error("Name of the action is not valid")
+        for elem in self._xml_root.iter("motor"):
+            self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]))
             
-
-        # Create tuple in order with the system space
-        if self._state_mapping is not None:
-            state_mapping =  dict((x, y) for x, y in self._state_mapping)
-            try:
-                for dim in self._system_state_space.get_dims():
-                    state_name = state_mapping[dim.get_name_short()].split("_")
-                    self._sim_obs_list_order.append((state_name[0], [obs_data_list[state_name[0]], state_name[1]]))
-            except:
-                raise Error("Name of the state is not valid")
-        else:
-            # This is when there is no state mapping or the name of the state is already in correct naming
-            try:
-                for dim in self._system_state_space.get_dims():
-                    state_name = dim.get_name_short().split("_")
-                    self._sim_obs_list_order.append((state_name[0], [obs_data_list[state_name[0]], state_name[1]]))
-            except:
-                raise Error("Name of the state is not valid")
-
-## -------------------------------------------------------------------------------------------------
-    def _get_model_list_vis(self):
-        parser = etree.XMLParser(remove_blank_text=True)
-        tree = etree.parse(self._model_path, parser=parser)
-        xml_root = tree.getroot()
-        etree.strip_tags(xml_root, etree.Comment)
-        etree.cleanup_namespaces(xml_root)
-
-        obs_data_list = {}
-        
-        # Body list
-        obs_data_list = {**obs_data_list, **dict([(elem.attrib["name"], "body") for elem in xml_root.iter("body")])}
-
-        # Joint list
-        obs_data_list = {**obs_data_list, **dict([(elem.attrib["name"], "joint") for elem in xml_root.iter("joint")])}
-
-        # Create tuple in order with the system space
-        for dim in self._system_state_space.get_dims():
-            state_name = dim.get_name_short().split("_")
-            self._vis_obs_list_order.append((state_name[0], [obs_data_list[state_name[0]], state_name[1]]))
+        return self._system_action_space
 
 
 ## ------------------------------------------------------------------------------------------------------
     def _get_obs(self):
-        # Get all the data according to the tuple order
         state_value = []
-        for state in self._sim_obs_list_order:
-            if state[1][0] == "joint":
-                if state[1][1] == "pos":
-                    if not self._use_radian:
-                        state_value.append(np.degrees(self._data.joint(state[0]).qpos))
-                    else:
-                        state_value.append(self._data.joint(state[0]).qpos)
-                elif state[1][1] == "vel":
-                    if not self._use_radian:
-                        state_value.append(np.degrees(self._data.joint(state[0]).qvel))
-                    else:
-                        state_value.append(self._data.joint(state[0]).qvel)
-                else:
-                    raise Error("State name is not compatible")
-
-            elif state[1][0] == "body":
-                if state[1][1] == "pos":
+        for dim in self._system_state_space.get_dims():
+            state = dim.get_name_short().split("_")
+            if state[2] == "body":
+                if state[1] == "pos":
                     state_value.append(self._data.body(state[0]).xpos)
-                elif state[1][1] == "rot":
+                elif state[1] == "rot":
                     state_value.append(self._data.body(state[0]).xquat)
+            elif state[2] == "joint":
+                if state[1] == "pos":
+                    state_value.append(self._data.joint(state[0]).qpos)
+                elif state[1] == "vel":
+                    state_value.append(self._data.joint(state[0]).qvel)
+                elif state[1] == "acc":
+                    state_value.append(self._data.joint(state[0]).qacc)
                 else:
-                    raise Error("State name is not compatible")
+                    raise NotImplementedError
+            else:
+                raise NotImplementedError
 
         return np.concatenate(state_value).ravel()
 
@@ -516,33 +427,25 @@ class MujocoHandler(Wrapper):
             qvel = self._init_qpos
             self._set_state(qpos, qvel)
         else:
-            if self._state_mapping is not None:
-                state_mapping =  dict((x, y) for x, y in self._state_mapping)
             for dim in self._system_state_space.get_dims():
-                if self._state_mapping is not None:
-                    state = state_mapping[dim.get_name_short()].split("_")
+                state = dim.get_name_short().split("_")
+                if state[2] == "body":
+                    pass
+                elif state[2] == "joint":
                     if state[1] == "pos":
-                        if not self._use_radian:
-                            self._data.joint(state[0]).qpos = np.radians(reset_state.get_value(dim.get_id()))
-                        else:
-                            self._data.joint(state[0]).qpos = reset_state.get_value(dim.get_id())
+                        self._data.joint(state[0]).qpos = reset_state.get_value(dim.get_id())
                     elif state[1] == "vel":
-                        if not self._use_radian:
-                            self._data.joint(state[0]).qvel = np.radians(reset_state.get_value(dim.get_id()))
-                        else:
-                            self._data.joint(state[0]).qvel = reset_state.get_value(dim.get_id())
+                        self._data.joint(state[0]).qvel = reset_state.get_value(dim.get_id())
+                    elif state[1] == "acc":
+                        self._data.joint(state[0]).qacc = reset_state.get_value(dim.get_id())
+                    else:
+                        raise NotImplementedError
                 else:
-                    state = dim.get_name_short().split("_")
-                    if state[1] == "pos":
-                        if not self._use_radian:
-                            self._data.joint(state[0]).qpos = np.radians(reset_state.get_value(dim.get_id()))
-                        else:
-                            self._data.joint(state[0]).qpos = reset_state.get_value(dim.get_id())
-                    elif state[1] == "vel":
-                        if not self._use_radian:
-                            self._data.joint(state[0]).qvel = np.radians(reset_state.get_value(dim.get_id()))
-                        else:
-                            self._data.joint(state[0]).qvel = reset_state.get_value(dim.get_id())
+                    raise NotImplementedError
+            
+            if self._model.na == 0:
+                self._data.act[:] = None
+            mujoco.mj_forward(self._model, self._data)
                 
         return self._get_obs()
 
@@ -552,6 +455,11 @@ class MujocoHandler(Wrapper):
         if len(args) == 2:
             self._data.qpos[:] = np.copy(args[0])
             self._data.qvel[:] = np.copy(args[1])
+        
+        if len(args) == 3:
+            self._data.qpos[:] = np.copy(args[0])
+            self._data.qvel[:] = np.copy(args[1])
+            self._data.qacc[:] = np.copy(args[2])
 
         if self._model.na == 0:
             self._data.act[:] = None
@@ -564,8 +472,7 @@ class MujocoHandler(Wrapper):
         self._model.vis.global_.offwidth = 480
         self._model.vis.global_.offheight = 480
         self._data = mujoco.MjData(self._model)
-        
-        self._get_model_list_sim()
+
 
 ## -------------------------------------------------------------------------------------------------    
     def _get_viewer(self):
@@ -584,19 +491,8 @@ class MujocoHandler(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
     def _step_simulation(self, p_action : Action):
-        # Re arrange action
-        old_action = p_action.get_sorted_values()
-        new_action = [0 for _ in range(len(old_action))]
-        
-
-        idx = 0
-        for ids in self._system_action_space.get_dim_ids():
-            action_name = self._system_action_space.get_dim(ids).get_name_short()
-            new_action[self._sim_act_list_order[action_name]] = old_action[idx]
-            idx = idx + 1
-        
-        
-        self._data.ctrl[:] = new_action
+        action = p_action.get_sorted_values()
+        self._data.ctrl[:] = action
         mujoco.mj_step(self._model, self._data, nstep=self._frame_skip)
         mujoco.mj_rnePostConstraint(self._model, self._data)
         if self._visualize:

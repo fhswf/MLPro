@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_ml_001_hyperparameters.py
+## -- Module  : howto_bf_ml_010_hyperparameters.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -11,10 +11,11 @@
 ## -- 2021-12-10  1.0.1     DA       Refactoring, little beautifying
 ## -- 2022-02-25  1.0.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-10-12  1.0.3     DA       Renaming/refactoring
+## -- 2023-02-15  1.1.0     DA       Renaming
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2022-10-12)
+Ver. 1.1.0 (2023-02-15)
 
 This module demonstrates how to set-up hyperparameters using available HyperParamTuple, 
 HyperParamSpace, and HyperParam classes.

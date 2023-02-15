@@ -6,16 +6,16 @@ Howto RL-WP-003: Run Multi-Agent on PettingZoo Environment
 
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `PettingZoo <https://pypi.org/project/PettingZoo/>`_
     
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment.py
 	:language: python
 
@@ -24,8 +24,8 @@ However, in step 3.3 you can also change the environment into `Connect Four <htt
 
 
 
-Results
--------
+**Results**
+
 
 By running the example code, the environment window appears and the runtime log is dumped to the terminal.
 
@@ -58,4 +58,8 @@ By running the example code, the environment window appears and the runtime log 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Agent Connect4_Agents: Init vizualization for all agents... 
     ....
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Agent Connect4_Agents: Start vizualization for all agents... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Connect Four V3: Process time 0:00:12 End of processing 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Connect Four V3: Process time 0:00:12 End of processing
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper PeetingZoo <Wrapper PettingZoo>

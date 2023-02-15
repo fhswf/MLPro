@@ -6,8 +6,7 @@ Howto RL-MB-002: MBRL with MPC on Grid World Environment
 
 
 
-Prerequisites
--------------
+**Prerequisites**
 
 Please install the following packages to run this examples properly:
     - `PyTorch <https://pypi.org/project/torch/>`_
@@ -15,15 +14,15 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_mb_002_grid_world_environment.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 
 After the environment is initiated, the training will run for the specified amount of limits. The expected initial console output can be seen below.
 
@@ -59,3 +58,8 @@ After termination the local result folder contains the training result files:
 .. image:: images/howto23.png
 
 The image above shows that the agent in most cases can reach the goal.
+
+**Cross Reference**
+
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Environment Model <target_api_rl_env_ada>` :ref:`RL Scenario and Training` <target_api_rl_run_train>
