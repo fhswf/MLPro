@@ -56,10 +56,11 @@
 ## --                                - new methods adapt_on_event(), _adapt_on_event()
 ## --                                New class AWorkflow
 ## -- 2023-02-02  2.0.1     DA       Class Model: signature of method init_plot() refactored
+## -- 2023-02-15  2.0.2     DA       Class Model: completed signature of method get_accuracy()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2023-02-02)
+Ver. 2.0.2 (2023-02-15)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -287,9 +288,9 @@ class Model (Task, LoadSave, ScientificObject):
 
         self._adaptivity = p_ada
         if self._adaptivity:
-            self.log(self.C_LOG_TYPE_I, 'Adaptivity switched on')
+            self.log(self.C_LOG_TYPE_S, 'Adaptivity switched on')
         else:
-            self.log(self.C_LOG_TYPE_I, 'Adaptivity switched off')
+            self.log(self.C_LOG_TYPE_S, 'Adaptivity switched off')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -339,7 +340,7 @@ class Model (Task, LoadSave, ScientificObject):
         """
 
         if not self._adaptivity: return False
-        self.log(self.C_LOG_TYPE_I, 'Adaptation started')
+        self.log(self.C_LOG_TYPE_S, 'Adaptation started')
         adapted = self._adapt(**p_kwargs)
         self._set_adapted(adapted)
         return adapted
@@ -416,13 +417,13 @@ class Model (Task, LoadSave, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_accuracy(self):
+    def get_accuracy(self) -> float:
         """
-        Computes the accuracy of the model.
+        Determines the accuracy of the model.
 
         Returns
         -------
-        float
+        accuracy : float
             Accuracy of the model as a scalar value in interval [0,1]
         """
 
