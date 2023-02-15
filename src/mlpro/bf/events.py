@@ -8,10 +8,11 @@
 ## -- 2022-08-21  1.0.0     DA       Creation/release
 ## -- 2022-10-06  1.1.0     DA       Specification of event id as string (for better observation and
 ## --                                to avoid collisions)
+## -- 2023-02-15  1.1.1     DA       Class Task: changed log types
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-10-06)
+Ver. 1.1.1 (2023-02-15)
 
 This module provides classes for event handling. To this regard, the property class Eventmanager is
 provided to add event functionality to child classes by inheritence.
@@ -132,7 +133,7 @@ class EventManager (Log):
         """
 
         # 0 Intro
-        self.log(Log.C_LOG_TYPE_I, 'Event "' + p_event_id + '" fired')
+        self.log(Log.C_LOG_TYPE_S, 'Event "' + p_event_id + '" fired')
 
         # 1 Get list of registered handlers for given event id
         try:
