@@ -157,3 +157,5 @@ scenario.run()
 if __name__ != "__main__":
     from shutil import rmtree
     rmtree(training._root_path)
+else:
+    input( "Press ENTER to finish...")
