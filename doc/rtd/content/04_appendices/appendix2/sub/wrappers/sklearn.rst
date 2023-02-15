@@ -9,6 +9,6 @@ Scikit-learn
    
 
 
-Cross References
-----------------
-    + :ref:`Howto BF-STREAMS-052: Accessing Data from Scikit-Learn<Howto BF STREAMS 052>`
+**Cross References**
+
+- :ref:`Howto BF-STREAMS-052: Accessing Data from Scikit-Learn<Howto BF STREAMS 052>`

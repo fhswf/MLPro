@@ -1,7 +1,10 @@
 .. _Wrapper MuJoCo:
-Hyperopt
-========
+MuJoCo
+======
 
+.. image:: images/MLPro-Wrappers-Mujoco.drawio.png
+   :scale: 50%
+   
 .. automodule:: mlpro.wrappers.mujoco
     :members:
     :undoc-members:
@@ -9,5 +12,4 @@ Hyperopt
    
 
 
-Cross References
-----------------
+**Cross References**

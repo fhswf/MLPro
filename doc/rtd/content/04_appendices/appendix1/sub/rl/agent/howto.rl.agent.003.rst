@@ -6,21 +6,27 @@ Howto RL-AGENT-003: Run Multi-Agent with Own Policy
 
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
 
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 Similar output as in :ref:`Howto RL-AGENT-001 <Howto Agent RL 001>` is displayed. However, there will be multiple windows of the environment open.
+
+
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`RL Scenario and Training` <target_api_rl_run_train>

@@ -1,18 +1,13 @@
 .. _DoublePendulum:
-`Double Pendulum <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/doublependulum.py>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Double Pendulum
+^^^^^^^^^^^^^^^^^^
 
 .. automodule:: mlpro.rl.pool.envs.doublependulum
-
-.. image:: images/doublependulum.gif
-    :width: 650px
-    :align: center
 
 .. note::
  MLPro provides two implementations of Double Pendulum environment named DoublePendulumS4 and DoublePendulumS7. 
     + The DoublePendulumS4 environment is a basic implementation with four dimensional state space including angles and angular velocities of both the poles.
     + The static 7 dimensional implementation of Double Pendulum environment in MLProis a seven dimensional state space with derived angular acceleration values and input torque. MLPro also provides a default reward strategy based on normalized state space and Euclidean Distances of the states.
-
 
 The double pendulum environment can be imported via:
 
@@ -26,9 +21,14 @@ The environment can be initialised with specifying the initial angles of both po
 .. note::
  + The visualisation of the environment can be turned off by setting the visualize parameter in training/scenario initialisation to false
 
+**Screenshots**
+
+.. image:: images/doublependulum.gif
+    :width: 650px
+    :align: center
+
     
-Prerequisites
-=============
+**Prerequisites**
 Please install below packages to use the MLPro's double pendulum environment
 
     - `NumPy <https://pypi.org/project/numpy/>`_
@@ -37,8 +37,7 @@ Please install below packages to use the MLPro's double pendulum environment
 
 
 
-General Information
-===================
+**General Information**
 
 +------------------------------------+-------------------------------------------------------+
 |         Parameter                  |                         Value                         |
@@ -58,8 +57,7 @@ General Information
 | Reward Structure                   | Overall reward                                        |
 +------------------------------------+-------------------------------------------------------+
  
-Action Space
-============
+**Action Space**
 The goal of the environment is to maintain the vertical position of both the poles. The inner pole is actuated by a motor, and thus the action space of Double Pendulum environment is a continuous variable ranging between the negative maximum torque and positive maximum torque, where positive torque refers to clockwise torque and vice versa. The max torque can be passed as a :ref:`parameter <Double Pendulum>` in the initialisation of environment. 
 
 +------------------------------------+-------------------------------------------------------+
@@ -68,8 +66,7 @@ The goal of the environment is to maintain the vertical position of both the pol
 | Torque                             | [-max_torque, max_torque]                             |
 +------------------------------------+-------------------------------------------------------+
 
-State Space
-===========
+**State Space**
 
 The state space for the double pendulum environment returns state of poles in the system including angles of both poles, velocity of poles, angular acceleration of the poles. The states for double pendulum environment can be understood by the table below.
 
@@ -96,8 +93,7 @@ The state space for the double pendulum environment returns state of poles in th
 
 Current implementation of DP environment in MLPro returns success when the current state of the environment is within a distance lesser than threshold distance from the goal state. 
 
-Reward Structure
-================
+**Reward Structure**
 
 The goal of the environment is to reach a complete vertical position for both the inner and outer pole, i.e.
 the goal state is given as vector :math:`S_g = (0,0,0,0,0,0)`. The environment delivers a continuous reward to the
@@ -151,26 +147,11 @@ states of outer pole and 25% to that of inner pole.
 
         :math:`s_n` is the normalized state
 
-
-Change Log
-==========
-    
-+--------------------+---------------------------------------------+
-| Version            | Changes                                     |
-+====================+=============================================+
-| 1.0.0              | First public version                        |
-+--------------------+---------------------------------------------+
-| 1.0.2              | Cleaning the code                           |
-+--------------------+---------------------------------------------+
-| 1.3.1              | Current release version                     |
-+--------------------+---------------------------------------------+
-| 2.0.0              | Current release with variants S4 and S7     |
-+--------------------+---------------------------------------------+
-| 2.2.4              | - Latest reward strategy implementation     |
-|                    | - Reward Visualization                      |
-+--------------------+---------------------------------------------+
-
-Cross Reference
-===============
+**Cross Reference**
     + :ref:`Howto RL-ENV-005: SB3 Policy on Double Pendulum Environment <Howto Env RL 005>`
-    + :ref:`API Reference <Double Pendulum>`
+    + :ref:`API Reference <target_pool_rl_env_double_pendulum>`
+
+
+**Citation**
+
+If you apply this environment in your research or work, please :ref:`cite <target_publications>` us.

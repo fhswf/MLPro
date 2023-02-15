@@ -67,7 +67,7 @@ class MyScenario (StreamScenario):
 
         # 1 Import a stream from OpenML
         provider_mlpro = StreamProviderMLPro(p_logging=p_logging)
-        stream = provider_mlpro.get_stream('DoubleSpiral2D', p_logging=p_logging)
+        stream = provider_mlpro.get_stream('StaticClouds3D', p_logging=p_logging)
 
         # 2 Set up a stream workflow 
         workflow = StreamWorkflow( p_name='wf1', 

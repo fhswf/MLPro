@@ -6,8 +6,8 @@ Howto RL-ENV-003: SB3 Policy on MultiGeo Environment
 
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
@@ -19,15 +19,15 @@ Please install the following packages to run this examples properly:
     
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_003_train_agent_with_sb3_policy_on_multigeo_environment.py
 	:language: python
 
 
 
-Results
--------
+**Results**
+
 
 .. image:: images/multigeosim.gif
 
@@ -38,3 +38,8 @@ When the training is done, the logged rewards will be plotted using the matplotl
 The plotted figure is is not reproducible due to the simulator's nature of simulating real
 world scenario. Although seeds can be set for the random generator, the sampling cannot be 
 done at the exact same time during different runs.
+
+
+**Cross Reference**
+
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`RL Scenario and Training` <target_api_rl_run_train>

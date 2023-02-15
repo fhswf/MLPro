@@ -1,6 +1,6 @@
 .. _EnvPool:
-Environment Pool
-------------------
+Reuse Environment from the Pool
+------------------------------------
 
 .. toctree::
    :maxdepth: 1
@@ -9,6 +9,4 @@ Environment Pool
    pool/multicartpole
    pool/gridworld
    pool/robotmanipulator
-   pool/ur5jointcontrol
-   pool/multigeorobot
    pool/doublependulum

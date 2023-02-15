@@ -17,6 +17,13 @@ Ver. 1.0.2 (2023-02-13)
 
 This module demonstrates the principles of using classes System and use MuJoCo wrapper to do
 the simulation for pre defined model.
+
+You will learn:
+    
+1) How to set up a Pendulum System wrapped with MuJoCo
+
+2) How to run the system
+    
 """
 
 
@@ -63,9 +70,11 @@ class PendulumSystem (System):
 if __name__ == '__main__':
     logging     = Log.C_LOG_ALL
     visualize   = True
+    loop_cycle  = 1000
 else:
     logging     = Log.C_LOG_NOTHING
     visualize   = False
+    loop_cycle  = 100
 
 
 # 1 Instantiate own system in simulation mode
@@ -76,7 +85,7 @@ sys = PendulumSystem(p_logging=logging, p_mujoco_file=model_file, p_visualize=vi
 sys.reset()
 
 # 3 Process an action
-for x in range(1000):
+for x in range(loop_cycle):
     # Random Action
     action = np.random.uniform(-1, 1, size=(1,))
     sys.process_action( p_action= Action( p_agent_id=0, 

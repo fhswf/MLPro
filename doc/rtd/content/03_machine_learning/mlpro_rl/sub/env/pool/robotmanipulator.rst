@@ -1,5 +1,9 @@
-`Robot Manipulator on Homogeneous Matrix <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/robotinhtm.py>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _RobotHMI:
+Robot Manipulator on Homogeneous Matrix
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. automodule:: mlpro.rl.pool.envs.robotinhtm
+
 .. image:: images/3dmanipulator.png
     :width: 400
 
@@ -32,14 +36,13 @@ This robotinhtm environment can be imported via:
     import mlpro.rl.pool.envs.robotinhtm
 
 
-Prerequisites
-=============
+**Prerequisites**
+
     - `NumPy <https://pypi.org/project/numpy/>`_
     - `PyTorch <https://pypi.org/project/torch/>`_
 
 
-General Information
-===================
+**General Information**
 
 +------------------------------------+-------------------------------------------------------+
 |         Parameter                  |                         Value                         |
@@ -64,37 +67,33 @@ General Information
 +------------------------------------+-------------------------------------------------------+
   
   
-Action Space
-============
+**Action Space**
 
 By default, there are 4 action in this environment. The action space represents the angular velocity of
 each joint of the robot manipulator.
   
   
-State Space
-===========
+**State Space**
 
 The state space consists of end-effector positions (x,y,z) of the robot manipulator and target positions (x,y,z).
   
 
-Reward Structure
-================
+**Reward Structure**
 
 By default, the reward structures are shown in the following equation:
 
 .. math::
 
     reward=-1*\frac{distError}{initDist}-stepReward
+
+    
+**Cross Reference**
+    
+  + :ref:`API Reference <target_pool_rl_env_robot_manipulator>`
+  + :ref:`Howto RL-ENV-002: SB3 Policy on RobotHTM Environment <Howto Env RL 002>`
+  + :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`
+
   
-Change Log
-==========
-    
-+--------------------+---------------------------------------------+
-| Version            | Changes                                     |
-+====================+=============================================+
-| 0.0.0              | Description of the change                   |
-+--------------------+---------------------------------------------+
-    
-Cross Reference
-===============
-...
+**Citation**
+
+If you apply this environment in your research or work, please :ref:`cite <target_publications>` us and the `original paper <https://ieeexplore.ieee.org/document/10002834>`_.

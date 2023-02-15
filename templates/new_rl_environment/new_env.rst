@@ -1,25 +1,23 @@
 Environment name
-================
+^^^^^^^^^^^^^^^^^^^
 
-.. Describe the env in the python module itself and refer to it here
 .. automodule:: mlpro.rl.pool.envs.myenv
+.. Describe the env in the python module itself and refer to it here
     
 
-Screenshots
------------
+**Screenshots**
 
 .. Add nice screenshots here. Animated gif files are always a good eye-catcher.
 
 
-Prerequisites
--------------
+**Prerequisites**
 
 .. The third party dependencies or steps to prepare the environment should be mentioned here.
-   
+
+   - `NumPy <https://pypi.org/project/numpy/>`_
     
     
-General Information
--------------------
+**General Information**
     
 +------------------------------------+-------------------------------------------------------+
 |         Parameter                  |                         Value                         |
@@ -44,8 +42,7 @@ General Information
 +------------------------------------+-------------------------------------------------------+
   
 
-Action Space
-------------
+**Action Space**
     
 Description of the action space. 
   
@@ -58,8 +55,7 @@ Description of the action space.
 +--------------------+---------------------+-----------------------+
     
 
-State Space
------------
+**State Space**
     
 Description of the state space.
   
@@ -72,8 +68,7 @@ Description of the state space.
 +--------------------+---------------------------------------------+-----------------------+
     
 
-Reward Structure
-----------------
+**Reward Structure**
 
 The reward calculation structure. It is possible to include the mathematical background here as well.
 
@@ -83,15 +78,13 @@ The reward calculation structure. It is possible to include the mathematical bac
     reward = ...
       
 
-Cross Reference
----------------
+**Cross Reference**
 
 .. Other documents related to the environment should be referenced here. For example, related howtos and the API Reference.
     
-+ :ref:`API Reference <...>`
+    + :ref:`API Reference <...>`
 
 
-Citation
---------
+**Citation**
 
 If you apply this environment in your research or work, please :ref:`cite <target_publications>` us.

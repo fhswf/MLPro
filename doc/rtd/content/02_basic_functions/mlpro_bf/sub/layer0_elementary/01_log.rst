@@ -1,7 +1,7 @@
 Logging
 -------
 
-MLPro makes extensive use of a textual logging mechanism provided by the property class Log. This class centralizes
+MLPro makes extensive use of a textual logging mechanism provided by the property class **Log**. This class centralizes
 and standardizes log outputs by adding appropriate methods to child classes by inheritance. It can be accessed as follows:
 
 .. code-block:: python
@@ -76,3 +76,8 @@ To log an information, function ``log(p_type, *pargs)`` needs to be called. The 
 
         # Switch the logging level to Log.C_LOG_NOTHING
         my_random_class.switch_logging(Log.C_LOG_NOTHING)
+        
+
+**Cross Reference**
+    + :ref:`API Reference <target_api_bf_various>`
+    + :ref:`Howto BF-001: Logging <Howto BF 001>`

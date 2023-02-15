@@ -5,8 +5,8 @@ Howto GT-001: Run Multi-Player with Own Policy
 .. automodule:: mlpro.gt.examples.howto_gt_dp_001_run_multi_player_with_own_policy_on_multicartpole_game_board
 
 
-Prerequisites
--------------
+**Prerequisites**
+
 
 Please install the following packages to run this examples properly:
     - `NumPy <https://pypi.org/project/numpy/>`_
@@ -14,15 +14,15 @@ Please install the following packages to run this examples properly:
 
 
 
-Executable code
----------------
+**Executable code**
+
 .. literalinclude:: ../../../../../../../../src/mlpro/gt/examples/howto_gt_dp_001_run_multi_player_with_own_policy_on_multicartpole_game_board.py
 	:language: python
 
 
   
-Results
--------
+**Results**
+
 .. image:: images/howto.gt.001/Cartpole.png
 
 Three Gym Cartpole game board windows should appear and the following output should be expected in the console.
@@ -95,3 +95,9 @@ Three Gym Cartpole game board windows should appear and the following output sho
     ... 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Player Human Beings: Start vizualization for all agents... 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Game Matrix: Process time 0:00:12 End of processing 
+
+
+
+**Cross Reference**
+
++ :ref:`API Reference: Game Theory <target_api_gt>`

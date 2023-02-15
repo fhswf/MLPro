@@ -4,7 +4,7 @@
 ## -- Module  : howto_bf_003_store_plot_and_save_variables.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
-## -- yyyy-mm-dd  Ver.      Auth.    Description
+## -- yyyy-mm-dd  Ver.      Auth.    DeŚscription
 ## -- 2021-06-16  1.0.0     SY       Creation/Release
 ## -- 2021-06-21  1.1.0     SY       Adjustment to updated DataPlotting class
 ## -- 2021-07-01  1.2.0     SY       Adjustment due to extension in save and load data

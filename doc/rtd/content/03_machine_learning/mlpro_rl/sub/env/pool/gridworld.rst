@@ -1,5 +1,8 @@
-`Grid World <https://github.com/fhswf/MLPro/blob/main/src/mlpro/rl/pool/envs/gridworld.py>`_
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. _GridWorld:
+Grid World
+^^^^^^^^^^^^
+
+.. automodule:: mlpro.rl.pool.envs.gridworld
 
 Grid World is a very simple environment and suits to someone who just starts to understand Reinforcement Learning or Markov Decision Process.
 
@@ -32,14 +35,12 @@ This Grid World environment can be imported via:
 
     import mlpro.rl.pool.envs.gridworld
     
-Prerequisites
-=============
+**Prerequisites**
 
     - `NumPy <https://pypi.org/project/numpy/>`_
 
 
-General Information
-===================
+**General Information**
 
 +------------------------------------+-----------------------------------------------------------------+
 |         Parameter                  |                         Value                                   |
@@ -67,8 +68,7 @@ General Information
 | Reward Structure                   | Overall reward                                                  |
 +------------------------------------+-----------------------------------------------------------------+
  
-Action Space
-============
+**Action Space**
 
 There are two types of actions that can be selected in the beginning of the training, such as continuous actions ('C_ACTION_TYPE_CONT') and discrete actions ('C_ACTION_TYPE_DISC_2D').
 At the moment, the discrete action is limited to 2-dimensional grid world.
@@ -83,8 +83,7 @@ Number '1' means 'right' or 'east'.
 Number '2' means 'down' or 'south'.
 Number '3' means 'left' or 'west'.
 
-State Space
-===========
+**State Space**
 
 The state space is initialized from the grid_size parameter, which can be set up to however many dimension 
 as needed. For example, the agent can be placed in a two dimensional world with a n x m size, three dimensional world with a n x m x p, or even more,
@@ -95,8 +94,7 @@ or
 
 Additionally, the initial and goal position can be randomized or predefined.
   
-Reward Structure
-================
+**Reward Structure**
 
 The default reward function is really simple and straight forward, where the reward is 1, if the agent reaches the goal.
 The reward is 1 minus the euclidean distance between goal states and current states, if the agent has not reached the goal yet.
@@ -112,18 +110,13 @@ The reward is 1 minus the euclidean distance between goal states and current sta
         rew -= self.max_step
     
     reward.set_overall_reward(rew.item())
-    
-Change Log
-==========
-    
-+--------------------+-------------------------------------------------------+
-| Version            | Changes                                               |
-+====================+=======================================================+
-| 1.0.8              | First public version                                  |
-+--------------------+-------------------------------------------------------+
-| 2.0.0              | Add discrete action and predefined target as options  |
-+--------------------+-------------------------------------------------------+
+
   
-Cross Reference
-===============
-    + :ref:`API Reference <Grid World>`
+**Cross Reference**
+    + :ref:`API Reference <target_pool_rl_env_grid_world>`
+    + :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
+
+
+**Citation**
+
+If you apply this environment in your research or work, please :ref:`cite <target_publications>` us.
