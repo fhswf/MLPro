@@ -26,7 +26,7 @@ First, four main components are introduced in MLPro-BF-MATH to define a bunch of
 
       ElementList consists of a list of Element objects.
 
-.. image:: images/bf-math.png
+.. image:: images/MLPro-BF-MATH_Basics.drawio.png
     :width: 800
 
 Second, MLPro also provides two objects to measure the distance between two elements, such as **MSpace** and **ESpace**.
