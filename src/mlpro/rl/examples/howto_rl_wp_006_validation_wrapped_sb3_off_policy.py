@@ -14,10 +14,11 @@
 ## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -- 2023-02-02  1.2.0     DA       Refactoring 
 ## -- 2023-02-04  1.2.1     SY       Refactoring to avoid printing during unit test
+## -- 2023-02-13  1.2.2     DA       Optimization of dark mode
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-02-04)
+Ver. 1.2.2 (2023-02-13)
 
 This module shows comparison between native and wrapped SB3 policy (Off-policy).
 """
@@ -42,14 +43,14 @@ if __name__ == "__main__":
     logging = Log.C_LOG_WE
     visualize = False
     path = str(Path.home())
-    max_episode = 400
+    cycle_limit = 1200
 
 else:
     # 1.2 Parameters for internal unit test
     logging = Log.C_LOG_NOTHING
     visualize = False
     path = None
-    max_episode = 200
+    cycle_limit = 10
 
 mva_window = 1
 buffer_size = 100
@@ -59,7 +60,7 @@ policy_kwargs = dict(activation_fn=torch.nn.ReLU,
 
 # 2 Implement your own RL scenario
 class MyScenario(RLScenario):
-    C_NAME = 'Matrix'
+    C_NAME = 'Howto-RL-WP-006'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
 
@@ -117,7 +118,7 @@ class MyScenario(RLScenario):
 # 3 Instantiate training
 training = RLTraining(
     p_scenario_cls=MyScenario,
-    p_cycle_limit=1200,
+    p_cycle_limit=cycle_limit,
     p_collect_states=True,
     p_collect_actions=True,
     p_collect_rewards=True,

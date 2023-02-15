@@ -19,10 +19,11 @@
 ## -- 2023-01-24  1.3.4     SY       Quality Assurance on TransferFunction
 ## -- 2023-01-27  1.4.0     MRD      Integrate MuJoCo as an optional state transition
 ## -- 2023-02-04  1.5.0     DA       United classes SystemBase, System to new class System
+## -- 2023-02-13  1.5.1     MRD      Simplify State Space and Action Space generation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.0 (2023-02-04)
+Ver. 1.5.1 (2023-02-13)
 
 This module provides models and templates for state based systems.
 """
@@ -742,7 +743,6 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObjec
                   p_frame_skip : int = 1,
                   p_state_mapping = None,
                   p_action_mapping = None,
-                  p_use_radian : bool = True,
                   p_camera_conf : tuple = (None, None, None),
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
@@ -766,25 +766,22 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObjec
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
 
-        self._state_space, self._action_space = self.setup_spaces()
-
         if p_mujoco_file is not None:
             from mlpro.wrappers.mujoco import MujocoHandler
 
             self._mujoco_handler = MujocoHandler(
                                         p_mujoco_file=p_mujoco_file, 
                                         p_frame_skip=p_frame_skip,
-                                        p_system_state_space=self.get_state_space(),
-                                        p_system_action_space=self.get_action_space(),
                                         p_state_mapping=p_state_mapping,
                                         p_action_mapping=p_action_mapping,
-                                        p_use_radian=p_use_radian, 
                                         p_camera_conf=p_camera_conf,
                                         p_visualize=p_visualize,
                                         p_logging=p_logging)
             
+            self._state_space, self._action_space = self._mujoco_handler.setup_spaces()
             self.set_latency(timedelta(0,0.05,0))
         else:
+            self._state_space, self._action_space = self.setup_spaces()
             self.set_latency(p_latency)
 
 

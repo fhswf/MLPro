@@ -30,10 +30,11 @@
 ## -- 2022-12-29  1.7.0     DA       Refactoring of plot settings
 ## -- 2022-12-30  1.7.1     DA       Bugfix in method Task._get_plot_host_tag()
 ## -- 2023-01-01  1.8.0     DA       Refactoring of plot settings
+## -- 2023-02-15  1.8.1     DA       Class Task: changed default range to C_RANGE_THREAD
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2023-01-01)
+Ver. 1.8.1 (2023-02-15)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -481,7 +482,7 @@ class Task (Async, EventManager, Plottable):
     p_name : str
         Optional name of the task. Default is None.
     p_range_max : int
-        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_THREAD.
     p_autorun : int
         On value C_AUTORUN_RUN method run() is called imediately during instantiation.
         On vaule C_AUTORUN_LOOP method run_loop() is called.
@@ -508,7 +509,7 @@ class Task (Async, EventManager, Plottable):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_name:str=None,
-                  p_range_max:int=Async.C_RANGE_PROCESS, 
+                  p_range_max:int=Async.C_RANGE_THREAD, 
                   p_autorun=C_AUTORUN_NONE,
                   p_class_shared=None, 
                   p_visualize:bool=False,
@@ -739,7 +740,7 @@ class Task (Async, EventManager, Plottable):
         except:
             pass
 
-        self.log(Log.C_LOG_TYPE_I, 'Init plot')
+        self.log(Log.C_LOG_TYPE_S, 'Init plot')
         Plottable.init_plot( self,
                              p_figure=p_figure, 
                              p_plot_settings=p_plot_settings )
@@ -764,7 +765,7 @@ class Task (Async, EventManager, Plottable):
         except:
             return
 
-        self.log(Log.C_LOG_TYPE_I, 'Update plot')
+        self.log(Log.C_LOG_TYPE_S, 'Update plot')
         Plottable.update_plot(self, **p_kwargs)
 
 
