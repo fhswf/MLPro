@@ -18,27 +18,27 @@ MLPro
 
 .. |welcome| image:: content/00_start_page/images/welcome.png
    :scale: 65 %
-   :target: /content/01_welcome/main.html
+   :target: content/01_welcome/main.html
 
 .. |mlpro_bf| image:: content/00_start_page/images/mlpro_bf.png
    :scale: 65 %
-   :target: /content/02_basic_functions/mlpro_bf/main.html
+   :target: content/02_basic_functions/mlpro_bf/main.html
    
 .. |mlpro_sl| image:: content/00_start_page/images/mlpro_sl.png
    :scale: 65 %
-   :target: /content/03_machine_learning/mlpro_sl/main.html
+   :target: content/03_machine_learning/mlpro_sl/main.html
 
 .. |mlpro_rl| image:: content/00_start_page/images/mlpro_rl.png
    :scale: 65 %
-   :target: /content/03_machine_learning/mlpro_rl/main.html
+   :target: content/03_machine_learning/mlpro_rl/main.html
 
 .. |mlpro_gt| image:: content/00_start_page/images/mlpro_gt.png
    :scale: 65 %
-   :target: /content/03_machine_learning/mlpro_gt/main.html
+   :target: content/03_machine_learning/mlpro_gt/main.html
 
 .. |mlpro_oa| image:: content/00_start_page/images/mlpro_oa.png
    :scale: 65 %
-   :target: /content/03_machine_learning/mlpro_oa/main.html
+   :target: content/03_machine_learning/mlpro_oa/main.html
 
 .. |examples| image:: content/00_start_page/images/example_pool.png
    :scale: 65 %
@@ -54,7 +54,7 @@ MLPro
 
 .. |publications| image:: content/00_start_page/images/publications.png
    :scale: 65 %
-   :target: /content/04_appendices/appendix3/sub/02_publications.html
+   :target: content/04_appendices/appendix3/sub/02_publications.html
 
 
 |welcome| |mlpro_bf| |mlpro_sl| |mlpro_rl| |mlpro_gt|
