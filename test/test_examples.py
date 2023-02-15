@@ -34,11 +34,12 @@
 ## -- 2023-01-27  1.6.5     MRD      Add howto related to mujoco
 ## -- 2023-02-02  1.6.6     DA       Renamed some rl howtos
 ## -- 2023-02-04  1.6.7     SY       Renaming some bf howtos
+## -- 2023-02-15  1.6.8     DA       Renaming and extension of howtos for bf.ml
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.6.7 (2023-02-04)
+Ver. 1.6.8 (2023-02-15)
 
 Unit test for all examples available.
 """
@@ -70,7 +71,8 @@ howto_list = {
     "bf_math_010": "mlpro.bf.examples.howto_bf_math_010_normalizers",
 
     # bf.ml
-    "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_hyperparameters",
+    "bf_ml_001": "mlpro.bf.examples.howto_bf_ml_001_adaptive_model",
+    "bf_ml_010": "mlpro.bf.examples.howto_bf_ml_010_hyperparameters",
 
     # bf.streams
     "bf_streams_001" : "mlpro.bf.examples.howto_bf_streams_001_accessing_native_data_from_mlpro",
