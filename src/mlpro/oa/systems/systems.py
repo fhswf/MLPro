@@ -562,7 +562,7 @@ class OASystem(ASystem):
 
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
-    def setup_spaces() -> (MSpace, MSpace):
+    def setup_spaces():
 
         return None, None
 
