@@ -7,7 +7,7 @@ Howto BF-ML-010: Hyperparameters
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_ml_010_hyperparameters.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_ml_010_hyperparameters.py
 	:language: python
 
 

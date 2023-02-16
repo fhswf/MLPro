@@ -7,4 +7,5 @@ Adaptive Workflows
 
 **Cross Reference**
 
+- howto : group of custom models in a workflow with random adaptation cascades
 - :ref:`Multitasking <target_bf_mt>`
