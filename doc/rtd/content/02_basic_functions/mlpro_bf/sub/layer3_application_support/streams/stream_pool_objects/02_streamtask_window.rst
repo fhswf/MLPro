@@ -32,5 +32,5 @@ Additionally, MLPro also provides visualization functionality for window, as sho
 **Cross Reference**
 
 - :ref:`Streams <target_streams_intro>`
-- Tutorial: :ref:`Howto BF STREAMS 110 <Howto BF STREAMS 110>`
+- Tutorial: :ref:`Howto BF-Streams 110 <Howto BF STREAMS 110>`
 

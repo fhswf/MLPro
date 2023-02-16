@@ -9,10 +9,12 @@ like sliding window, rearranger, etc. specialized for streaming data.
     images/stream_processing.png
     :width: 800 px
 
-
 In MLPro, streaming data is processed with a task and workflow architecture. A StreamTask is single operation
 performed on new stream instances and a StreamWorkflow is a list of tasks arranged sequentially with defined
 dependencies. StreamTask and StreamWorkflows are specialized classes inherited from MLPro's multiprocessing module.
+As shown in the above figure the scenario fetches new :math:`I_{tn}` instances from the stream object and each task
+then processes a list of new instances :math:`I_{tn}` and deleted/obsolete instances :math:`I_{td}` as shown in the
+figure. The processed instances are stored in the shared object for further accessibility.
 
 Stream Task
 -----------
@@ -157,3 +159,9 @@ MLPro's streams module.
 .. image::
     images/streams_plot_3d.gif
     :width: 350 px
+
+
+**Cross References**
+
++ :ref:`API Reference: Streams <target_api_bf_streams>`
++ :ref:`Tutorial: How To BF-Streams 102 <Howto BF STREAMS 102>`
