@@ -34,4 +34,4 @@ The result plot shows that MLPro's wrapper for Stable Baselines 3 behaves neutra
 
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper SB3 <Wrapper SB3>
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper SB3 <Wrapper SB3>`
