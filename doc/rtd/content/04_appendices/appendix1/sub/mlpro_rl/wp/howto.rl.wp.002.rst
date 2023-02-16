@@ -42,4 +42,4 @@ There are several lines of action processing logs due to the API tests. When the
 
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper PettingZoo <Wrapper PettingZoo>
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper PettingZoo <Wrapper PettingZoo>`
