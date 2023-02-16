@@ -6,7 +6,7 @@ Howto BF-MT-002: Multitasking - Tasks and Workflows
 
 **Prerequisites**
 
-To run this how to please install the following packages
+To run this howto please install the following packages
 
 + `Multiprocess <https://pypi.org/project/multiprocess/>`_
 

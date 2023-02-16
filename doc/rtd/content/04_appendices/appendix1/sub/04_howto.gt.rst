@@ -1,14 +1,11 @@
-Game Theory
-===========
+.. _target_appendix1_GT:
+MLPro-GT - Game Theory
+======================
 
 The following examples demonstrate various functionalities of MLPro-GT: 
-
-
-Dynamic Programming
----------------------
 
 .. toctree::
    :maxdepth: 1
    :glob:
    
-   gt/dp/howto.*
+   mlpro_gt/*
