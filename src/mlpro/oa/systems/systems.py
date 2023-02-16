@@ -27,13 +27,35 @@ from mlpro.bf.streams import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAFctSTrans(FctSTrans, Model):
+class OAFctSTrans(AFctSTrans, Model):
+    """
 
+    Parameters
+    ----------
+    p_name
+    p_range_max
+    p_class_shared
+    p_visualize
+    p_logging
+    p_kwargs
+    """
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
+    def __init__(self,
+              p_name:str=None,
+              p_range_max=Async.C_RANGE_THREAD,
+              p_class_shared=None,
+              p_visualize:bool=False,
+              p_logging=Log.C_LOG_ALL,
+              **p_kwargs):
 
-        FctSTrans.__init__()
+        AFctSTrans.__init__(self,
+              p_name=p_name,
+              p_range_max=p_range_max,
+              p_class_shared=p_class_shared,
+              p_visualize=p_visualize,
+              p_logging=p_logging,
+              **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -119,12 +141,36 @@ class OAFctSTrans(FctSTrans, Model):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class OAFctSuccess(FctSuccess, Model):
+    """
+
+    Parameters
+    ----------
+    p_name
+    p_range_max
+    p_class_shared
+    p_visualize
+    p_logging
+    p_kwargs
+    """
 
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self):
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+              p_name:str=None,
+              p_range_max=Async.C_RANGE_THREAD,
+              p_class_shared=None,
+              p_visualize:bool=False,
+              p_logging=Log.C_LOG_ALL,
+              **p_kwargs):
 
-        FctSuccess.__init__()
+        AFctSuccess.__init__(self,
+              p_name=p_name,
+              p_range_max=p_range_max,
+              p_class_shared=p_class_shared,
+              p_visualize=p_visualize,
+              p_logging=p_logging,
+              **p_kwargs)
+
         Model.__init__()
 
 
@@ -210,12 +256,36 @@ class OAFctSuccess(FctSuccess, Model):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class OAFCtBroken(FctBroken, Model):
+    """
+
+    Parameters
+    ----------
+    p_name
+    p_range_max
+    p_class_shared
+    p_visualize
+    p_logging
+    p_kwargs
+    """
 
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self):
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+              p_name:str=None,
+              p_range_max=Async.C_RANGE_THREAD,
+              p_class_shared=None,
+              p_visualize:bool=False,
+              p_logging=Log.C_LOG_ALL,
+              **p_kwargs):
 
-        FctBroken.__init__()
+        AFctBroken.__init__(self,
+              p_name=p_name,
+              p_range_max=p_range_max,
+              p_class_shared=p_class_shared,
+              p_visualize=p_visualize,
+              p_logging=p_logging,
+              **p_kwargs)
+
         Model.__init__()
 
 
@@ -300,12 +370,43 @@ class OAFCtBroken(FctBroken, Model):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class OASystem(ASystem):
+    """
+
+    Parameters
+    ----------
+    p_mode
+    p_latency
+    p_fct_strans
+    p_fct_success
+    p_fct_broken
+    p_processing_wf
+    p_visualize
+    p_logging
+    """
 
 
-## -------------------------------------------------------------------------------------------------
-    def __init__(self):
+    ## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+               p_mode = Mode.C_MODE_SIM,
+               p_latency = None,
+               p_fct_strans : FctSTrans = None,
+               p_fct_success : FctSuccess = None,
+               p_fct_broken : FctBroken = None,
+               p_processing_wf : StreamWorkflow = None,
+               p_visualize : bool = False,
+               p_logging = Log.C_LOG_ALL):
 
-        ASystem.__init__()
+        ASystem.__init__(self,
+               p_mode = p_mode,
+               p_latency = p_latency,
+               p_fct_strans = p_fct_strans,
+               p_fct_success = p_fct_success,
+               p_fct_broken = p_fct_broken,
+               p_visualize = p_visualize,
+               p_logging = p_logging)
+
+        self._processing_wf = p_processing_wf
+
 
 
 ## -------------------------------------------------------------------------------------------------
