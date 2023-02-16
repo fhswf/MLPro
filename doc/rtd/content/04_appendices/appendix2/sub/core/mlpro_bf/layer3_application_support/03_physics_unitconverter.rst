@@ -1,4 +1,4 @@
-.. _target_ap_bf_physics:
+.. _target_ap_bf_physics_unit:
 BF-PHYSICS-UNITCONVERTER - Unit Converters
 ==========================================
 
