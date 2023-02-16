@@ -163,5 +163,5 @@ MLPro's streams module.
 
 **Cross References**
 
-+ :ref:`API Reference: Streams <target_api_bf_streams>`
++ :ref:`API Reference: Streams <target_ap_bf_streams>`
 + :ref:`Tutorial: How To BF-Streams 102 <Howto BF STREAMS 102>`

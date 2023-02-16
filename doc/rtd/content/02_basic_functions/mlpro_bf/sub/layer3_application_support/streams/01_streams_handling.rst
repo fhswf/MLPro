@@ -132,5 +132,5 @@ a unique id, feature data and label data.
 
 **Cross Reference**
 
-+ :ref:`API Reference: Streams <target_api_bf_streams>`
++ :ref:`API Reference: Streams <target_ap_bf_streams>`
 + :ref:`Tutorial: How To Bf - Streams 101 <Howto BF STREAMS 101>`
