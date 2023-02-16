@@ -1,5 +1,5 @@
 .. _Howto_BF_ZZ_999:
-Howto BF-Streams-001: Accessing Native Data From MLPro
+Howto BF-STREAMS-001: Accessing Native Data From MLPro
 ================================================
 
 .. automodule:: mlpro.bf.examples.howto_bf_streams_001_accessing_native_data_from_mlpro

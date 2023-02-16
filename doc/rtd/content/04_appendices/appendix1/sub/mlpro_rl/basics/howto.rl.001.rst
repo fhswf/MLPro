@@ -1,6 +1,6 @@
 .. _Howto RL 001:
 Howto RL-001: Reward
-=============================
+====================
 
 .. automodule:: mlpro.rl.examples.howto_rl_001_reward
 
@@ -8,7 +8,7 @@ Howto RL-001: Reward
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../src/mlpro/rl/examples/howto_rl_001_reward.py
+.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_001_reward.py
 	:language: python
 
 

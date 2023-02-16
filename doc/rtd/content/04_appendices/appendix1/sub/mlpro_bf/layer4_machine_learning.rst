@@ -1,9 +1,8 @@
-.. _target_api_bf:
-MLPro-BF - Basic Functions
+Layer 4 - Machine Learning
 ==========================
 
 .. toctree::
    :maxdepth: 2
    :glob:
-   
-   mlpro_bf/*
+
+   layer4_machine_learning/*      

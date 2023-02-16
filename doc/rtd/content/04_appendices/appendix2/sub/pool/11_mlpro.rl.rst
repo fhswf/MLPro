@@ -3,7 +3,7 @@ MLPro-RL - Reinforcement Learning
 =================================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 3
    :glob:
    
    mlpro_rl/*
