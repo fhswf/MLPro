@@ -136,7 +136,9 @@ class Saveable:
         try:
             if not os.path.exists(p_path):
                 os.makedirs(p_path)
-            pkl.dump(self, open(p_path + os.sep + self.filename, "wb"))
+            pkl.dump( obj=self, 
+                      file=open(p_path + os.sep + self.filename, "wb"),
+                      protocol=pkl.HIGHEST_PROTOCOL )
             return True
         except:
             return False
