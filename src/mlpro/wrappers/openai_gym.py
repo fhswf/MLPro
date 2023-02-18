@@ -46,10 +46,11 @@
 ## -- 2022-11-09  1.4.6     DA       Refactoring
 ## -- 2022-11-29  1.4.7     DA       Refactoring
 ## -- 2023-01-14  1.4.8     MRD      Separate reset function for gym, reset_old and reset_new
+## -- 2023-02-18  1.5.0     DA       Added minimum version 0.21.0
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.8 (2023-01-14)
+Ver. 1.5.0 (2023-02-18)
 
 This module provides wrapper classes for OpenAI Gym environments.
 
@@ -89,6 +90,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
     C_TYPE              = 'Wrapper OpenAI Gym -> MLPro'
     C_WRAPPED_PACKAGE   = 'gym'
+    C_MINIMUM_VERSION   = '0.21.0'
     C_PLOT_ACTIVE: bool = True
 
 ## -------------------------------------------------------------------------------------------------
@@ -248,7 +250,6 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
                     observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
         except:
             # For gym version below than 0.25 (This will be removed soon)
-            self.log(self.C_LOG_TYPE_W, 'Please upgrade your gym version to 0.25.0 or above. This behaviour will be removed in near future.')
             try:
                 observation, reward_gym, done, info = self._gym_env.step(action_gym)
             except:
@@ -405,6 +406,7 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
 
     C_TYPE              = 'Wrapper MLPro -> OpenAI Gym'
     C_WRAPPED_PACKAGE   = 'gym'
+    C_MINIMUM_VERSION   = '0.21.0'
     metadata            = {'render.modes': ['human']}
 
 ## -------------------------------------------------------------------------------------------------

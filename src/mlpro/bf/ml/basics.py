@@ -57,10 +57,13 @@
 ## --                                New class AWorkflow
 ## -- 2023-02-02  2.0.1     DA       Class Model: signature of method init_plot() refactored
 ## -- 2023-02-15  2.0.2     DA       Class Model: completed signature of method get_accuracy()
+## -- 2023-02-18  2.1.0     DA       Class Training: 
+## --                                - Method run_cycle(): scenario is now also saved after training
+## --                                - New method get_training_path()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.2 (2023-02-15)
+Ver. 2.1.0 (2023-02-18)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -1182,6 +1185,7 @@ class Training (Log):
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR, '\n')
 
+            self._scenario.save(self._current_path, 'scenario.pkl')
             self._scenario.get_model().save(self._current_path, 'trained model.pkl')
             self._close_results(self._results)
             self._results.log_results()
@@ -1247,6 +1251,11 @@ class Training (Log):
 ## -------------------------------------------------------------------------------------------------
     def get_results(self) -> TrainingResults:
         return self._results
+
+    
+## -------------------------------------------------------------------------------------------------
+    def get_training_path(self) -> str:
+        return self._root_path
 
 
 
