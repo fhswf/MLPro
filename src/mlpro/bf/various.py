@@ -133,15 +133,15 @@ class Saveable:
         if self.filename is None:
             return False
 
-        try:
-            if not os.path.exists(p_path):
-                os.makedirs(p_path)
-            pkl.dump( obj=self, 
-                      file=open(p_path + os.sep + self.filename, "wb"),
-                      protocol=pkl.HIGHEST_PROTOCOL )
-            return True
-        except:
-            return False
+        # try:
+        if not os.path.exists(p_path):
+            os.makedirs(p_path)
+        pkl.dump( obj=self, 
+                  file=open(p_path + os.sep + self.filename, "wb"),
+                  protocol=pkl.HIGHEST_PROTOCOL )
+        return True
+        # except:
+            # return False
 
 
 

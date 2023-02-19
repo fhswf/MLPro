@@ -18,17 +18,17 @@
 ## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -- 2023-02-12  1.1.2     MRD      Save to MLPro folder path for CI test
 ## -- 2023-02-15  1.1.3     MRD      Adjust parameter
+## -- 2023-02-18  1.2.0     DA       Simplification after changes on class bf.ml.Training
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.3 (2023-02-15)
+Ver. 1.2.0 (2023-02-18)
 
 This module shows how to train a single agent and load it again to do some extra cycles.
 """
 
 
 import gym
-import mlpro
 from stable_baselines3 import PPO
 from mlpro.rl import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
@@ -77,9 +77,9 @@ class MyScenario (RLScenario):
 
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     # Parameters for demo mode
-    cycle_limit = 10000
+    cycle_limit = 100 #00
     adaptation_limit = 0
     stagnation_limit = 0
     eval_frequency = 0
@@ -113,49 +113,28 @@ training = RLTraining(
     p_logging=logging )
 
 
-# 3 Create scenario and start training
+
+# 3 Training
 training.run()
 
 
-# 4 Save the training path for loading the agent model file
-training_path = training._root_path
+
+# 4 Reload the scenario
+if __name__ == '__main__':
+    input( '\nTraining finished. Press ENTER to reload and run the scenario...\n')
+
+scenario = MyScenario.load( p_path = training.get_training_path(), p_filename='scenario.pkl' )
 
 
-# 
-# Now we start from the beginning. This time we load an existing model.
-#
-
-# 5 Implement your own RL scenario with an existing model
-class MyNdScenario(RLScenario):
-    C_NAME = 'Matrix2'
-
-    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
-        # 5.1 Setup environment
-        gym_env = gym.make('CartPole-v1')
-        self._env = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging)
-
-        # 5.2 In this example we use previous training from the same file
-        # To make easier, we retrieve the save path from the previous training
-        return self.load(training_path, "trained model.pkl")
-
-
-# 6 Instatiate new scenario
-scenario = MyNdScenario(p_mode=Mode.C_MODE_SIM, 
-                        p_ada=False,
-                        p_cycle_limit=cycle_limit,
-                        p_visualize=visualize,
-                        p_logging=logging)
-
-
-# 7 Reset Scenario
+# 5 Reset Scenario
 scenario.reset()  
 
 
-# 8 Run Scenario
+# 6 Run Scenario
 scenario.run()
 
-if __name__ != "__main__":
+if __name__ != '__main__':
     from shutil import rmtree
-    rmtree(training._root_path)
+    rmtree(training.get_training_path())
 else:
-    input( "Press ENTER to finish...")
+    input( '\nPress ENTER to finish...')
