@@ -613,7 +613,8 @@ class Scenario (ScenarioBase):
     def __init__(self, 
                  p_mode=Mode.C_MODE_SIM,       
                  p_ada:bool=True,               
-                 p_cycle_limit:int=0,              
+                 p_cycle_limit:int=0,  
+                 p_auto_setup : bool = True,            
                  p_visualize:bool=True,              
                  p_logging=Log.C_LOG_ALL ):  
 
@@ -621,7 +622,7 @@ class Scenario (ScenarioBase):
 
         super().__init__( p_mode=p_mode,
                           p_cycle_limit=p_cycle_limit,
-                          p_auto_setup=True,
+                          p_auto_setup=p_auto_setup,
                           p_visualize=p_visualize,
                           p_logging=p_logging )  
 
@@ -712,6 +713,11 @@ class Scenario (ScenarioBase):
         self._model.set_random_seed(p_seed)
         if self._visualize: self._model.init_plot()
 
+
+## -------------------------------------------------------------------------------------------------
+    def _save(self, p_path, p_filename=None) -> bool:
+        self._path_scenario = p_path + os.sep + 'scenario'
+        return self._model.save(p_path=self._path_scenario, p_filename='model.pkl')
 
 
 
@@ -1185,8 +1191,7 @@ class Training (Log):
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR, '\n')
 
-            self._scenario.save(self._current_path, 'scenario.pkl')
-            self._scenario.get_model().save(self._current_path, 'trained model.pkl')
+            self._scenario.save(self._current_path, 'scenario')
             self._close_results(self._results)
             self._results.log_results()
 
