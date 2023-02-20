@@ -63,6 +63,8 @@ class OAFctSTrans(AFctSTrans, Model):
         self._strans_task:StreamTask = None
         self._instance: Instance = None
         self._shared = p_class_shared
+        self._state:State = None
+        self._action:Action = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -138,6 +140,7 @@ class OAFctSTrans(AFctSTrans, Model):
         -------
 
         """
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -186,6 +189,24 @@ class OAFctSTrans(AFctSTrans, Model):
         pass
 
 
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst_new, p_inst_del):
+        """
+
+        Parameters
+        ----------
+        p_inst_new
+        p_inst_del
+
+        Returns
+        -------
+
+        """
+        self._state.set_values(p_inst_new.get_feature_data().get_values())
+
+        return self._simulate_reaction(p_state=self._state, p_action=self._action)
+
+
 
 
 
@@ -229,6 +250,7 @@ class OAFctSuccess(FctSuccess, Model):
         self._processing_wf = p_processing_wf
         self._success_task = None
         self._instance:Instance = None
+        self._state:State = None
 
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
@@ -301,7 +323,7 @@ class OAFctSuccess(FctSuccess, Model):
         -------
 
         """
-        pass
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -350,6 +372,25 @@ class OAFctSuccess(FctSuccess, Model):
         pass
 
 
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst_new, p_inst_del):
+        """
+
+        Parameters
+        ----------
+        p_inst_new
+        p_inst_del
+
+        Returns
+        -------
+
+        """
+        self._state.set_values(p_inst_new.get_feature_data().get_values())
+
+        return self._compute_success(p_state=self._state)
+
+
+
 
 
 
@@ -393,6 +434,7 @@ class OAFCtBroken(FctBroken, Model):
         self._broken_task:StreamTask = None
         self._shared = p_class_shared
         self._instance:Instance = None
+        self._state:State = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -467,7 +509,7 @@ class OAFCtBroken(FctBroken, Model):
         -------
 
         """
-        pass
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -513,6 +555,25 @@ class OAFCtBroken(FctBroken, Model):
 
         """
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_inst_new, p_inst_del):
+        """
+
+        Parameters
+        ----------
+        p_inst_new
+        p_inst_del
+
+        Returns
+        -------
+
+        """
+        self._state.set_values(p_inst_new.get_feature_data().get_values())
+
+        return self._compute_broken(p_state=self._state)
+
 
 
 
