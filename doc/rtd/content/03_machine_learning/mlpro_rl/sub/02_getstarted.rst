@@ -6,7 +6,7 @@ Here is a concise series to introduce all users to the MLPro-RL in a practical w
 
 If you are a first-timer, then you can begin with **Section (1) What is MLPro?**.
 If you have understood MLPro but not reinforcement learning, then you can jump to **Section (2) What is Reinforcement Learning?**.
-If you have experience in both MLPro and reinforcement learning, then you can directly start with Section **(3) What is MLPro-RL?**.
+If you have experience in both MLPro and reinforcement learning, then you can directly start with **Section (3) What is MLPro-RL?**.
 After following this step-by-step guideline, we expect the user understands the MLPro-RL in practice and starts using MLPro-RL.
 
 **1. What is MLPro?**
