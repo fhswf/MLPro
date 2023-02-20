@@ -9,11 +9,11 @@ The decision-making of the player is in the form of the next action.
 
 The three main tasks of the player are as follows,
 
-(1) Compute new action based on the current state.
+   (1) Compute new action based on the current state.
 
-(2) Calculate local utility value based on the previous state and next state.
+   (2) Calculate local utility value based on the previous state and next state.
 
-(3) Optimize their policy based on the state and the selected action.
+   (3) Optimize their policy based on the state and the selected action.
 
 In MLPro, you can customize your GT-based policy or import the provided policies in the pool of objects (unavailable at the moment).
 

@@ -36,6 +36,6 @@ If you are interested to utilize MLPro-GT, you can easily access the GT modules,
         from mlpro.gt import *
 
 
-MLPro team recommends to visit our :ref:`getting started <target_getstarted_GT>` page to directly learn MLPro-GT in a practical way.
+MLPro team recommends visiting our :ref:`getting started <target_getstarted_GT>` page to directly learn MLPro-GT in a practical way.
 You can also check out numerous ready-to-run examples on our :ref:`how to files <target_appendix1>`.
 Moreover, technical API documentation can be found in :ref:`appendix 2 <target_appendix2>`.
