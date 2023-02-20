@@ -1186,7 +1186,9 @@ class Training (Log):
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR, '\n')
 
-            self._scenario.save(self._current_path, 'scenario')
+            if self._current_path is not None:
+                self._scenario.save(self._current_path, 'scenario')
+                
             self._close_results(self._results)
             self._results.log_results()
 
