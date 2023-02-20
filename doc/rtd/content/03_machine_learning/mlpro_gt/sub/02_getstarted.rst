@@ -6,7 +6,7 @@ Here is a concise series to introduce all users to the MLPro-GT in a practical w
 
 If you are a first-timer, then you can begin with **Section (1) What is MLPro?**.
 If you have understood MLPro but not game theoretical approach in engineering field, then you can jump to **Section (2) What is Game Theory?**.
-If you have experience in both MLPro and game theory, then you can directly start with Section **(3) What is MLPro-GT?**.
+If you have experience in both MLPro and game theory, then you can directly start with **Section (3) What is MLPro-GT?**.
 After following this step-by-step guideline, we expect the user understands the MLPro-GT in practice and starts using MLPro-GT.
 
 **1. What is MLPro?**
@@ -47,7 +47,7 @@ After following this step-by-step guideline, we expect the user understands the 
 
    (b) :ref:`Howto GT-002: Train Multi-Player <Howto GT 002>`, and
 
-   (c) sample application of GT on a Bulk Good Laboratory Plant, see `Section 6.2 of MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
+   (c) `Section 6.2 of MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_ for a sample application of GT on a Bulk Good Laboratory Plant.
 
 **5. Additional Guidance**
    After following the previous steps, we hope that you could practice MLPro-GT and start using this subpackage for your GT-related activities.
