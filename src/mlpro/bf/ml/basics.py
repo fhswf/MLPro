@@ -57,13 +57,13 @@
 ## --                                New class AWorkflow
 ## -- 2023-02-02  2.0.1     DA       Class Model: signature of method init_plot() refactored
 ## -- 2023-02-15  2.0.2     DA       Class Model: completed signature of method get_accuracy()
-## -- 2023-02-18  2.1.0     DA       Class Training: 
-## --                                - Method run_cycle(): scenario is now also saved after training
-## --                                - New method get_training_path()
+## -- 2023-02-20  2.1.0     DA       Class Training: 
+## --                                - Method run_cycle(): scenario is now saved after training
+## --                                - New methods get_training_path()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-02-18)
+Ver. 2.1.0 (2023-02-20)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -713,11 +713,6 @@ class Scenario (ScenarioBase):
         self._model.set_random_seed(p_seed)
         if self._visualize: self._model.init_plot()
 
-
-## -------------------------------------------------------------------------------------------------
-    def _save(self, p_path, p_filename=None) -> bool:
-        self._path_scenario = p_path + os.sep + 'scenario'
-        return self._model.save(p_path=self._path_scenario, p_filename='model.pkl')
 
 
 

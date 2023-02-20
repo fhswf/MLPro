@@ -46,10 +46,11 @@
 ## -- 2022-11-09  1.8.2     DA       Refactoring and code cleaning
 ## -- 2022-11-29  1.8.3     DA       Refactoring
 ## -- 2023-02-02  1.8.4     DA       Class RLTraining: signature of method init_plot refactored
+## -- 2023-02-20  1.9.0     DA       Class RLScenario: new methods load(), _save()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.4 (2023-02-02)
+Ver. 1.9.0 (2023-02-20)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -330,12 +331,52 @@ class RLScenario (Scenario):
 
         self._agent = self._model
 
+        self._model_class = self._model.__class__ 
+        self._env_class   = self._env.__class__
+
         # 2 Finalize cycle limit
         if self._cycle_limit == -1:
             self._cycle_limit = self._env.get_cycle_limit()
 
         # 3 Init data logging
         self.connect_data_logger()
+
+
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def load(p_path):
+        scenario = pkl.load(open(p_path + os.sep + 'scenario', 'rb'))
+        scenario._model = scenario._model_class.load(p_path, 'model')
+        scenario._agent = scenario._model
+        scenario._env   = scenario._env_class.load(p_path, 'environment')
+        return scenario
+
+
+## -------------------------------------------------------------------------------------------------
+    def _save(self, p_path, p_filename=None) -> bool:
+
+        # 1 Create new subfolder for scenario files
+        scenario_path = p_path + os.sep + 'scenario'
+        os.makedirs(scenario_path)
+
+        # 2 Save model and environment
+        self._model.save(scenario_path, 'model')
+        self._env.save(scenario_path, 'environment')
+
+        # 3 Save scenario w/o model and env
+        self._model = None 
+        self._agent = None
+        self._env   = None
+        pkl.dump( obj=self, 
+                  file=open(scenario_path + os.sep + 'scenario', "wb"),
+                  protocol=pkl.HIGHEST_PROTOCOL )        
+
+        # 4 Reload model and env
+        self._model = self._model_class.load(scenario_path, 'model')
+        self._agent = self._model
+        self._env   = self._env_class.load(scenario_path, 'environment')
+
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -123,7 +123,7 @@ training.run()
 if __name__ == '__main__':
     input( '\nTraining finished. Press ENTER to reload and run the scenario...\n')
 
-scenario = MyScenario.load( p_path = training.get_training_path(), p_filename='scenario.pkl' )
+scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario' )
 
 
 # 5 Reset Scenario
