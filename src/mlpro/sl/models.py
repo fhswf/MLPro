@@ -10,16 +10,20 @@
 ## -- 2022-08-15  0.1.1     SY       Renaming maturity to accuracy
 ## -- 2022-11-02  0.2.0     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-15  0.3.0     DA       Class SLAdaptiveFunction: new parent class AdaptiveFunction
+## -- 2023-02-21  0.4.0     SY       - Introduce Class FeedforwardNN
+## --                                - Update Class SLAdaptiveFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2022-11-15)
+Ver. 0.4.0 (2023-02-21)
 
 This module provides model classes for supervised learning tasks. 
 """
 
 
 from mlpro.bf.ml import *
+
+
 
 
 
@@ -55,6 +59,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
     C_TYPE = 'Adaptive Function (SL)'
     C_NAME = '????'
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -158,6 +163,80 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class FeedforwardNN (SLAdaptiveFunction):
+
+    def __init__(self):
+        pass
+
+    def forward(self):
+        pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class FNN_AdaptiveFunction (SLAdaptiveFunction):
+    """
+    This class provides the base class of feed forward neural network for an adapative function in 
+    supervised learning.
+
+    Parameters
+    ----------
+    p_input_space : MSpace
+        Input space of function
+    p_output_space : MSpace
+        Output space of function
+    p_output_elem_cls 
+        Output element class (compatible to/inherited from class Element)
+    p_threshold : float
+        Threshold for the difference between a setpoint and a computed output. Computed outputs with 
+        a difference less than this threshold will be assessed as 'good' outputs. Default = 0.
+    p_buffer_size : int
+        Initial size of internal data buffer. Default = 0 (no buffering).
+    p_ada : bool
+        Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : Dict
+        Further model specific parameters (to be specified in child class).
+     """
+
+    C_TYPE = 'Feedforward Neural Network for SLAdaptiveFunction'
+    C_NAME = '????'
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self,
+                  p_input_space: MSpace,
+                  p_output_space:MSpace,
+                  p_output_elem_cls=Element,
+                  p_threshold=0,
+                  p_buffer_size=0,
+                  p_ada:bool=True,
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs ):
+
+        super().__init__( p_input_space=p_input_space,
+                          p_output_space=p_output_space,
+                          p_output_elem_cls=p_output_elem_cls,
+                          p_threshold=p_threshold,
+                          p_buffer_size=p_buffer_size,
+                          p_ada=p_ada,
+                          p_visualize=p_visualize,
+                          p_logging=p_logging,
+                          **p_kwargs )
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class SLScenario (Scenario):
     """
     To be designed.
@@ -166,7 +245,12 @@ class SLScenario (Scenario):
     C_TYPE = 'SL-Scenario'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode=Mode.C_MODE_SIM, p_ada: bool = True, p_cycle_limit: int = 0, p_visualize: bool = True, p_logging=Log.C_LOG_ALL):
+    def __init__(self,
+                 p_mode=Mode.C_MODE_SIM,
+                 p_ada: bool = True,
+                 p_cycle_limit: int = 0,
+                 p_visualize: bool = True, 
+                 _logging=Log.C_LOG_ALL):
         raise NotImplementedError
 
 
@@ -175,7 +259,7 @@ class SLScenario (Scenario):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SLTraining(Training):
+class SLTraining (Training):
     """
     To be designed.
     """
