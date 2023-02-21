@@ -10,7 +10,7 @@
 ## -- 2022-08-15  0.1.1     SY       Renaming maturity to accuracy
 ## -- 2022-11-02  0.2.0     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-15  0.3.0     DA       Class SLAdaptiveFunction: new parent class AdaptiveFunction
-## -- 2023-02-21  0.4.0     SY       - Introduce Class SLNetwork, FNN_AdaptiveFunction
+## -- 2023-02-21  0.4.0     SY       - Introduce Class SLNetwork
 ## --                                - Update Class SLAdaptiveFunction
 ## -------------------------------------------------------------------------------------------------
 
@@ -22,6 +22,63 @@ This module provides model classes for supervised learning tasks.
 
 
 from mlpro.bf.ml import *
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SLNetwork:
+    """
+    This class provides the base class of a supervised learning network.
+
+    Parameters
+    ----------
+    p_input_size : int
+        Input size of the network. Default = None
+    p_output_size : int
+        Output size of the network. Default = None
+    p_hyperparameter : HyperParamTuple
+        Related hyperparameter tuple of the network. Default = None
+    p_kwargs : Dict
+        Further model specific parameters.
+     """
+
+    C_TYPE = 'SLNetwork'
+    C_NAME = '????'
+
+    def __init__(self,
+                 p_input_size:int=None,
+                 p_output_size:int=None,
+                 p_hyperparameter:HyperParamTuple=None,
+                 **p_kwargs):
+        
+        self._input_size            = p_input_size
+        self._output_size           = p_output_size
+        self._hyperparamter_tuple   = p_hyperparameter
+        self._kwargs                = p_kwargs
+
+        if ( self._input_size is None ) or ( self._output_size is None ):
+            raise ParamError('Input size and/or output size of the network are not defined.')
+
+    def forward(self, p_input:Element) -> Element:
+        """
+        Custom forward propagation in neural networks to generate some output that can be called by
+        an external method. Please redefine.
+
+        Parameters
+        ----------
+        p_input : Element
+            Input data
+
+        Returns
+        ----------
+        output : Element
+            Output data
+        """
+
+        raise NotImplementedError
 
 
 
@@ -85,6 +142,23 @@ class SLAdaptiveFunction (AdaptiveFunction):
         self._threshold      = p_threshold
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
+        self._net_model      = self._setup_model()
+
+        if self._net_model is None:
+            raise ParamError("Please assign your network model to self._net_model")
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_model(self) -> SLNetwork:
+        """
+        A method to set up a supervised learning network.
+        Please redefine this method according to the type of network.
+        
+        Returns
+        ----------
+        Set up model under SLNetwork type
+        """
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -159,123 +233,6 @@ class SLAdaptiveFunction (AdaptiveFunction):
         if self._mappings_total == 0:
             return 0
         return self._mappings_good / self._mappings_total
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class SLNetwork:
-    """
-    This class provides the base class of a supervised learning network.
-
-    Parameters
-    ----------
-    p_input_size : int
-        Input size of the network. Default = None
-    p_output_size : int
-        Output size of the network. Default = None
-    p_hyperparameter : HyperParamTuple
-        Related hyperparameter tuple of the network. Default = None
-    p_kwargs : Dict
-        Further model specific parameters.
-     """
-
-    C_TYPE = 'SLNetwork'
-    C_NAME = '????'
-
-    def __init__(self,
-                 p_input_size:int=None,
-                 p_output_size:int=None,
-                 p_hyperparameter:HyperParamTuple=None,
-                 **p_kwargs):
-        
-        self._input_size            = p_input_size
-        self._output_size           = p_output_size
-        self._hyperparamter_tuple   = p_hyperparameter
-        self._kwargs                = p_kwargs
-
-        if ( self._input_size is None ) or ( self._output_size is None ):
-            raise ParamError('Input size and/or output size of the network are not defined.')
-
-    def forward(self, p_input:Element) -> Element:
-        """
-        Custom forward propagation in neural networks to generate some output that can be called by
-        an external method. Please redefine.
-
-        Parameters
-        ----------
-        p_input : Element
-            Input data
-
-        Returns
-        ----------
-        output : Element
-            Output data
-        """
-
-        raise NotImplementedError
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class FNN_AdaptiveFunction (SLAdaptiveFunction):
-    """
-    This class provides the base class of feed forward neural network for an adapative function in 
-    supervised learning.
-
-    Parameters
-    ----------
-    p_input_space : MSpace
-        Input space of function
-    p_output_space : MSpace
-        Output space of function
-    p_output_elem_cls 
-        Output element class (compatible to/inherited from class Element)
-    p_threshold : float
-        Threshold for the difference between a setpoint and a computed output. Computed outputs with 
-        a difference less than this threshold will be assessed as 'good' outputs. Default = 0.
-    p_buffer_size : int
-        Initial size of internal data buffer. Default = 0 (no buffering).
-    p_ada : bool
-        Boolean switch for adaptivity. Default = True.
-    p_visualize : bool
-        Boolean switch for visualisation. Default = False.
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_kwargs : Dict
-        Further model specific parameters (to be specified in child class).
-     """
-
-    C_TYPE = 'Feedforward Neural Network for SLAdaptiveFunction'
-    C_NAME = '????'
-
-
-## -------------------------------------------------------------------------------------------------
-    def __init__( self,
-                  p_input_space: MSpace,
-                  p_output_space:MSpace,
-                  p_output_elem_cls=Element,
-                  p_threshold=0,
-                  p_buffer_size=0,
-                  p_ada:bool=True,
-                  p_visualize:bool=False,
-                  p_logging=Log.C_LOG_ALL,
-                  **p_kwargs ):
-
-        super().__init__( p_input_space=p_input_space,
-                          p_output_space=p_output_space,
-                          p_output_elem_cls=p_output_elem_cls,
-                          p_threshold=p_threshold,
-                          p_buffer_size=p_buffer_size,
-                          p_ada=p_ada,
-                          p_visualize=p_visualize,
-                          p_logging=p_logging,
-                          **p_kwargs )
 
 
 
