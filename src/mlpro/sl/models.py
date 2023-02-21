@@ -48,6 +48,8 @@ class SLNetwork:
     C_TYPE = 'SLNetwork'
     C_NAME = '????'
 
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_input_size:int=None,
                  p_output_size:int=None,
@@ -56,12 +58,48 @@ class SLNetwork:
         
         self._input_size            = p_input_size
         self._output_size           = p_output_size
-        self._hyperparamter_tuple   = p_hyperparameter
-        self._kwargs                = p_kwargs
+        self._hyperparameter_tuple  = p_hyperparameter
+        if p_kwargs is not None:
+            self._parameters        = p_kwargs
+        else:
+            self._parameters        = {}
+
+        hp = self._hyperparameter_tuple.get_hyperparam()
+        for idx in hp.get_dim_ids():
+            par_name = hp.get_related_set().get_dim(idx).get_name_short()
+            par_val  = hp.get_value(idx)
+            self._parameters[par_name] = par_val
 
         if ( self._input_size is None ) or ( self._output_size is None ):
             raise ParamError('Input size and/or output size of the network are not defined.')
+        
+        self._sl_model = self._setup_model()
 
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_model(self):
+        """
+        A method to set up a network. Additionally, the hyperparameters are stored in self._parameters.
+        Please redefine this method.
+
+        What is mandatory to be set up?
+        1) The structure of the model
+        2) Set up optimizer
+        3) Set up loss functions
+
+        Optionally, more advanced settings related to the network can be added, e.g. weight
+        initialization, gradient monitoring, noises incorporation, etc.
+
+        Returns
+        ----------
+        output : Element
+            Output data
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
     def forward(self, p_input:Element) -> Element:
         """
         Custom forward propagation in neural networks to generate some output that can be called by
@@ -146,6 +184,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
         if self._net_model is None:
             raise ParamError("Please assign your network model to self._net_model")
+
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_model(self) -> SLNetwork:
@@ -247,6 +286,7 @@ class SLScenario (Scenario):
 
     C_TYPE = 'SL-Scenario'
 
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_mode=Mode.C_MODE_SIM,
@@ -268,6 +308,7 @@ class SLTraining (Training):
     """
 
     C_NAME = 'SL'
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
