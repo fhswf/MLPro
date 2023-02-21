@@ -10,7 +10,7 @@
 ## -- 2022-08-15  0.1.1     SY       Renaming maturity to accuracy
 ## -- 2022-11-02  0.2.0     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-15  0.3.0     DA       Class SLAdaptiveFunction: new parent class AdaptiveFunction
-## -- 2023-02-21  0.4.0     SY       - Introduce Class FeedforwardNN
+## -- 2023-02-21  0.4.0     SY       - Introduce Class SLNetwork, FNN_AdaptiveFunction
 ## --                                - Update Class SLAdaptiveFunction
 ## -------------------------------------------------------------------------------------------------
 
@@ -140,6 +140,9 @@ class SLAdaptiveFunction (AdaptiveFunction):
         p_output : Element
             Setpoint ordinate/output element (type Element)
 
+        Returns
+        ----------
+            bool
         """
 
         raise NotImplementedError
@@ -163,13 +166,56 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class FeedforwardNN (SLAdaptiveFunction):
+class SLNetwork:
+    """
+    This class provides the base class of a supervised learning network.
 
-    def __init__(self):
-        pass
+    Parameters
+    ----------
+    p_input_size : int
+        Input size of the network. Default = None
+    p_output_size : int
+        Output size of the network. Default = None
+    p_hyperparameter : HyperParamTuple
+        Related hyperparameter tuple of the network. Default = None
+    p_kwargs : Dict
+        Further model specific parameters.
+     """
 
-    def forward(self):
-        pass
+    C_TYPE = 'SLNetwork'
+    C_NAME = '????'
+
+    def __init__(self,
+                 p_input_size:int=None,
+                 p_output_size:int=None,
+                 p_hyperparameter:HyperParamTuple=None,
+                 **p_kwargs):
+        
+        self._input_size            = p_input_size
+        self._output_size           = p_output_size
+        self._hyperparamter_tuple   = p_hyperparameter
+        self._kwargs                = p_kwargs
+
+        if ( self._input_size is None ) or ( self._output_size is None ):
+            raise ParamError('Input size and/or output size of the network are not defined.')
+
+    def forward(self, p_input:Element) -> Element:
+        """
+        Custom forward propagation in neural networks to generate some output that can be called by
+        an external method. Please redefine.
+
+        Parameters
+        ----------
+        p_input : Element
+            Input data
+
+        Returns
+        ----------
+        output : Element
+            Output data
+        """
+
+        raise NotImplementedError
 
 
 
