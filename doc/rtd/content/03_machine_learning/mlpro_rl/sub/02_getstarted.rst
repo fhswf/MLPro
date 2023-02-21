@@ -6,7 +6,7 @@ Here is a concise series to introduce all users to the MLPro-RL in a practical w
 
 If you are a first-timer, then you can begin with **Section (1) What is MLPro?**.
 If you have understood MLPro but not reinforcement learning, then you can jump to **Section (2) What is Reinforcement Learning?**.
-If you have experience in both MLPro and reinforcement learning, then you can directly start with Section **(3) What is MLPro-RL?**.
+If you have experience in both MLPro and reinforcement learning, then you can directly start with **Section (3) What is MLPro-RL?**.
 After following this step-by-step guideline, we expect the user understands the MLPro-RL in practice and starts using MLPro-RL.
 
 **1. What is MLPro?**
@@ -63,11 +63,9 @@ After following this step-by-step guideline, we expect the user understands the 
 
       (a) `A sample application video of MLPro-RL on a UR5 robot <https://ars.els-cdn.com/content/image/1-s2.0-S2665963822001051-mmc2.mp4>`_,
 
-      (b) :ref:`Howto RL-AGENT-002: Train an Agent with Own Policy <Howto Agent RL 002>`,
+      (b) :ref:`Howto RL-AGENT-002: Train an Agent with Own Policy <Howto Agent RL 002>`, and
 
-      (c) :ref:`Howto RL-AGENT-004: Train Multi-Agent with Own Policy <Howto Agent RL 004>`, and
-
-      (d) :ref:`Howto RL-PP-001: SB3 Policy on UR5 Environment <Howto PP RL 001>`.
+      (c) :ref:`Howto RL-AGENT-004: Train Multi-Agent with Own Policy <Howto Agent RL 004>`.
    
    * Model-Based Reinforcement Learning
 

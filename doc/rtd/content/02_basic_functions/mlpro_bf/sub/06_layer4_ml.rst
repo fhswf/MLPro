@@ -51,5 +51,6 @@ on historical data and/or online monitoring. For this purpose, MLPro provides st
 
 **Cross Reference**
 
+- :ref:`Related Howtos <target_howtos_bf_ml>`
 - :ref:`API Reference BF-ML - Machine Learning <target_api_bf_ml>`
 - :ref:`API Reference BF-ML-SYSTEMS - Adaptive Systems <target_api_bf_ml_systems>`

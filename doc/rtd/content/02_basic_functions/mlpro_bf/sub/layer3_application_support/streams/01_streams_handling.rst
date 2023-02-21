@@ -128,3 +128,9 @@ a unique id, feature data and label data.
 .. note::
     - The ids of the stream instances are managed internally by a Stream Workflow, and are also used for stream plotting functionalities. Changing instance ids might affect the performance of stream functionalities of MLPro.
 
+
+
+**Cross Reference**
+
++ :ref:`API Reference: Streams <target_ap_bf_streams>`
++ :ref:`Tutorial: How To Bf - Streams 101 <Howto BF STREAMS 101>`
