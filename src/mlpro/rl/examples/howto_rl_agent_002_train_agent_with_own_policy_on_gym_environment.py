@@ -47,7 +47,6 @@ You will learn:
 """
 
 
-from sys import path
 from mlpro.bf.math import *
 from mlpro.rl import *
 from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro

@@ -42,10 +42,11 @@
 ## -- 2022-11-09  2.0.2     DA       Refactoring
 ## -- 2022-11-29  2.0.3     DA       Refactoring
 ## -- 2022-12-21  2.0.4     SY       Update _recognize_space due to howto_rl_wp_003
+## -- 2023-02-21  2.1.0     DA       Class WrEnvPZOO2MLPro: specific implementations for load(), _save()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.4 (2022-12-21)
+Ver. 2.1.0 (2023-02-21)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -55,6 +56,7 @@ See also: https://pypi.org/project/PettingZoo/
 
 
 import gymnasium
+from pydoc import locate
 import numpy as np
 from mlpro.wrappers.models import Wrapper
 from mlpro.rl import *
@@ -93,6 +95,12 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
     C_MINIMUM_VERSION   = '1.20.0'
     C_PLOT_ACTIVE: bool = True
 
+    C_SUPPORTED_MODULES = [ 'pettingzoo.classic',
+                            'pettingzoo.butterfly',
+                            'pettingzoo.atari',
+                            'pettingzoo.mpe',
+                            'pettingzoo.sisl' ]
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_zoo_env, 
@@ -101,7 +109,20 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
                   p_visualize:bool=True,
                   p_logging=Log.C_LOG_ALL):
 
-        self._zoo_env     = p_zoo_env
+        self._zoo_env          = p_zoo_env
+        self._zoo_env_cls      = None
+        self._zoo_env_cls_name = self._zoo_env.metadata['name']
+
+        for mod in self.C_SUPPORTED_MODULES:
+            try:
+                self._zoo_env_cls = locate( mod + '.' + self._zoo_env_cls_name )
+                break
+            except:
+                pass
+
+        if self._zoo_env_cls is None:
+            raise ParamError('PettingZoo environment class "' + self._zoo_env_cls_name + '" not supported!')
+
         self.C_NAME       = 'Env "' + self._zoo_env.metadata['name'] + '"'
 
         Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_visualize=p_visualize, p_logging=p_logging)
@@ -126,6 +147,62 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
             pass
         
         self.log(self.C_LOG_TYPE_I, 'Closed')
+
+
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def load(p_path, p_filename):
+        mlpro_env = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
+
+        if mlpro_env.get_visualization():
+            render_mode = 'human'
+        else:
+            render_mode = 'ansi'
+
+        for mod in WrEnvPZOO2MLPro.C_SUPPORTED_MODULES:
+            try:
+                mlpro_env._zoo_env_cls = locate( mod + '.' + mlpro_env._zoo_env_cls_name )
+                break
+            except:
+                pass
+
+        mlpro_env._zoo_env = mlpro_env._zoo_env_cls.env(render_mode=render_mode)
+
+        return mlpro_env
+
+
+## -------------------------------------------------------------------------------------------------
+    def _save(self, p_path, p_filename) -> bool:
+        """
+        The embedded PettingZoo env itself can't be pickled due to it's dependencies on Pygame. That's 
+        why the current env instance needs to be removed before pickling the object. After that a fresh
+        PettingZoo env with same id is instantiated. Current inner state informations get lost.
+
+        See also: https://stackoverflow.com/questions/52336196/how-to-save-object-using-pygame-surfaces-to-file-using-pickle
+        """
+
+        self._zoo_env     = None 
+        self._zoo_env_cls = None
+
+        pkl.dump( obj=self, 
+                  file=open(p_path + os.sep + self.filename, "wb"),
+                  protocol=pkl.HIGHEST_PROTOCOL )
+
+        for mod in self.C_SUPPORTED_MODULES:
+            try:
+                self._zoo_env_cls = locate( mod + '.' + self._zoo_env_cls_name )
+                break
+            except:
+                pass
+
+        if self.get_visualization():
+            render_mode = 'human'
+        else:
+            render_mode = 'ansi'
+
+        self._zoo_env = self._zoo_env_cls.env(render_mode=render_mode)
+
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------
