@@ -46,10 +46,12 @@
 ## -- 2022-11-09  1.4.6     DA       Refactoring
 ## -- 2022-11-29  1.4.7     DA       Refactoring
 ## -- 2023-01-14  1.4.8     MRD      Separate reset function for gym, reset_old and reset_new
+## -- 2023-02-18  1.5.0     DA       Added minimum version 0.21.0
+## -- 2023-02-20  1.6.0     DA       Class WrEnvGym2MLPro: specific implementations for load(), _save()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.8 (2023-01-14)
+Ver. 1.6.0 (2023-02-20)
 
 This module provides wrapper classes for OpenAI Gym environments.
 
@@ -58,6 +60,7 @@ See also: https://pypi.org/project/gym
 """
 
 import gym
+import dill as pkl
 from gym.core import Env
 from mlpro.wrappers.models import Wrapper
 from mlpro.rl import *
@@ -69,9 +72,9 @@ from mlpro.rl import *
 ## -------------------------------------------------------------------------------------------------
 class WrEnvGYM2MLPro(Wrapper, Environment):
     """
-    This class is a ready to use wrapper class for OpenAI Gym environments. 
-    Objects of this type can be treated as an environment object. Encapsulated 
-    gym environment must be compatible to class gym.Env.
+    This class is a ready to use wrapper class for OpenAI Gym environments. Objects of this type 
+    can be treated as an environment object. Encapsulated gym environment must be compatible to 
+    class gym.Env.
 
     Parameters
     ----------
@@ -89,6 +92,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
     C_TYPE              = 'Wrapper OpenAI Gym -> MLPro'
     C_WRAPPED_PACKAGE   = 'gym'
+    C_MINIMUM_VERSION   = '0.21.0'
     C_PLOT_ACTIVE: bool = True
 
 ## -------------------------------------------------------------------------------------------------
@@ -99,8 +103,9 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
                  p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL):
 
-        self._gym_env = p_gym_env
-        self.C_NAME = 'Env "' + self._gym_env.spec.id + '"'
+        self._gym_env    = p_gym_env
+        self._gym_env_id = self._gym_env.env.spec.id
+        self.C_NAME      = 'Env "' + self._gym_env_id + '"'
 
         Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
@@ -129,6 +134,32 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
             self.log(self.C_LOG_TYPE_I, 'Closed')
         except:
             pass
+
+
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def load(p_path, p_filename):
+        mlpro_env = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
+        mlpro_env._gym_env = gym.make(mlpro_env._gym_env_id)
+        return mlpro_env
+
+
+## -------------------------------------------------------------------------------------------------
+    def _save(self, p_path, p_filename) -> bool:
+        """
+        The embedded Gym env itself can't be pickled due to it's dependencies on Pygame. That's why
+        the current env instance needs to be removed before pickling the object. After that a fresh
+        Gym env with same id is instantiated. Current inner state informations get lost.
+
+        See also: https://stackoverflow.com/questions/52336196/how-to-save-object-using-pygame-surfaces-to-file-using-pickle
+        """
+
+        self._gym_env = None 
+        pkl.dump( obj=self, 
+                  file=open(p_path + os.sep + self.filename, "wb"),
+                  protocol=pkl.HIGHEST_PROTOCOL )
+        self._gym_env = gym.make(self._gym_env_id)
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -248,7 +279,6 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
                     observation, reward_gym, done, info = self._gym_env.step(np.atleast_1d(action_gym))
         except:
             # For gym version below than 0.25 (This will be removed soon)
-            self.log(self.C_LOG_TYPE_W, 'Please upgrade your gym version to 0.25.0 or above. This behaviour will be removed in near future.')
             try:
                 observation, reward_gym, done, info = self._gym_env.step(action_gym)
             except:
@@ -405,6 +435,7 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
 
     C_TYPE              = 'Wrapper MLPro -> OpenAI Gym'
     C_WRAPPED_PACKAGE   = 'gym'
+    C_MINIMUM_VERSION   = '0.21.0'
     metadata            = {'render.modes': ['human']}
 
 ## -------------------------------------------------------------------------------------------------
