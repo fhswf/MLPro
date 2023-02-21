@@ -19,6 +19,7 @@ This module provides model classes for supervised learning tasks using PyTorch.
 import torch
 from mlpro.sl.models import *
 from mlpro.bf.ml import *
+from mlpro.bf.data import BufferElement
 
 
 
@@ -72,6 +73,7 @@ class PyTorchSLNetwork (SLNetwork):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PyTorchIOElement(BufferElement):
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_input: torch.Tensor, p_output: torch.Tensor):
