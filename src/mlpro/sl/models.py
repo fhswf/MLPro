@@ -162,7 +162,6 @@ class SLAdaptiveFunction (AdaptiveFunction):
                   p_input_space: MSpace,
                   p_output_space:MSpace,
                   p_output_elem_cls=Element,
-                  p_net_model:SLNetwork=None,
                   p_threshold=0,
                   p_buffer_size=0,
                   p_ada:bool=True,
@@ -183,10 +182,10 @@ class SLAdaptiveFunction (AdaptiveFunction):
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
         
-        if p_net_model is None:
-            self._net_model  = self._setup_model()
+        if p_kwargs.get('p_net_model') in p_kwargs:
+            self._net_model  = p_kwargs['p_net_model']
         else:
-            self._net_model  = p_net_model
+            self._net_model  = self._setup_model()
 
         if self._net_model is None:
             raise ParamError("Please assign your network model to self._net_model")

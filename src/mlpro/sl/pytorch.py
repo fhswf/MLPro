@@ -140,15 +140,86 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PyTorchAFct(SLAdaptiveFunction):
+    """
+    Template class for an adaptive bi-multivariate mathematical function that adapts by supervised
+    learning using PyTorch.
+
+    Parameters
+    ----------
+    p_input_space : MSpace
+        Input space of function
+    p_output_space : MSpace
+        Output space of function
+    p_output_elem_cls 
+        Output element class (compatible to/inherited from class Element)
+    p_threshold : float
+        Threshold for the difference between a setpoint and a computed output. Computed outputs with 
+        a difference less than this threshold will be assessed as 'good' outputs. Default = 0.
+    p_buffer_size : int
+        Initial size of internal data buffer. Default = 0 (no buffering).
+    p_ada : bool
+        Boolean switch for adaptivity. Default = True.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_kwargs : Dict
+        Further model specific parameters (to be specified in child class).
+    """
+
     C_NAME          = "PyTorch-based Adaptive Function"
     C_BUFFER_CLS    = PyTorchBuffer
 
 
-    # def __init__(self):
-    #     if p_buffer_size > 0:
-    #         self._buffer = self.C_BUFFER_CLS(p_size=p_buffer_size, ....)
-    #     else:
-    #         self._buffer = None
+## -------------------------------------------------------------------------------------------------
+    def __init__( self,
+                  p_input_space: MSpace,
+                  p_output_space:MSpace,
+                  p_output_elem_cls=Element,
+                  p_threshold=0,
+                  p_buffer_size=0,
+                  p_ada:bool=True,
+                  p_visualize:bool=False,
+                  p_logging=Log.C_LOG_ALL,
+                  **p_kwargs ):
+
+        super().__init__( p_input_space=p_input_space,
+                          p_output_space=p_output_space,
+                          p_output_elem_cls=p_output_elem_cls,
+                          p_threshold=p_threshold,
+                          p_buffer_size=p_buffer_size,
+                          p_ada=p_ada,
+                          p_visualize=p_visualize,
+                          p_logging=p_logging,
+                          **p_kwargs )
+        
+        if p_kwargs.get('p_test_data') is None:
+            raise ParamError("p_test_data is not defined.")
+        
+        if p_kwargs.get('p_batch_size') is None:
+            raise ParamError("p_batch_size is not defined.")
+        
+        if p_kwargs.get('p_seed_buffer') is None:
+            raise ParamError("p_seed_buffer is not defined.")
+        
+        if p_kwargs.get('p_update_rate') is None:
+            raise ParamError("p_update_rate is not defined.")
+        else:
+            self._update_rate = p_kwargs['p_update_rate']
+        
+        try:
+            self._net_model._optimizer
+            self._net_model._loss_function
+        except:
+            raise ParamError("The optimizer and/or loss function of the model are not defined.")
+
+        if p_buffer_size > 0:
+            self._buffer = self.C_BUFFER_CLS(p_size=p_buffer_size,
+                                             p_test_data=p_kwargs['p_test_data'],
+                                             p_batch_size=p_kwargs['p_batch_size'],
+                                             p_seed=p_kwargs['p_seed_buffer'])
+        else:
+            self._buffer = None
 
 ## -------------------------------------------------------------------------------------------------
     def input_preproc(self, p_input:Element) -> torch.Tensor:
