@@ -79,6 +79,16 @@ class PyTorchSLNetwork(SLNetwork):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PyTorchIOElement(BufferElement):
+    """
+    This class provides a buffer element for PyTorch based SLNetwork.
+
+    Parameters
+    ----------
+    p_input : Element
+        Abscissa/input element object (type Element)
+    p_output : Element
+        Setpoint ordinate/output element (type Element)
+    """
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -92,6 +102,21 @@ class PyTorchIOElement(BufferElement):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
+    """
+    This class provides buffer functionalities for PyTorch based SLNetwork and also using several
+    built-in PyTorch functionalities.
+
+    Parameters
+    ----------
+    p_size : int
+        the buffer size. Default = 1.
+    p_test_data : float
+        the proportion of testing data within the sampled data. Default = 0.3.
+    p_batch_size : int
+        the batch size for a sample. Default = 100.
+    p_seed : int
+        the seeding for randomizer in the buffer, optional. Default = 1.
+    """
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -105,22 +130,45 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
 
 ## -------------------------------------------------------------------------------------------------
     def add_element(self, p_elem:BufferElement):
+        """
+        This method has a functionality to add an element to the buffer.
+
+        Parameters
+        ----------
+        p_elem : BufferElement
+            an element of the buffer
+        """
         Buffer.add_element(self, p_elem)
         self._internal_counter += 1
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_internal_counter(self):
+        """
+        This method has a functionality to get the number of elements being added to the buffer.
+        """
         return self._internal_counter
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __getitem__(self, idx):
+    def __getitem__(self, idx:int):
+        """
+        This method has a functionality to get an item from the buffer with a specific index.
+
+        Parameters
+        ----------
+        idx : int
+            an index of the buffer
+        """
         return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
 
 
 ## -------------------------------------------------------------------------------------------------
     def sampling(self):
+        """
+        This method has a functionality to sample from the buffer using built-in PyTorch
+        functionalities.
+        """
         dataset_size    = len(self._data_buffer)
         indices         = list(range(dataset_size))
         split           = int(np.floor(self._testing_data*dataset_size))
@@ -135,7 +183,6 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
         tester          = torch.utils.data.DataLoader(self._data_buffer,
                                                       batch_size=self._batch_size,
                                                       sampler=test_sampler)
-        
         return trainer, tester
     
 
@@ -230,6 +277,20 @@ class PyTorchAFct(SLAdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
     def input_preproc(self, p_input:Element) -> torch.Tensor:
+        """
+        This method has a functionality to transform input data in the form of Element to
+        torch.Tensor for pre-processing.
+
+        Parameters
+        ----------
+        p_input : Element
+            Input data in the form of Element.
+
+        Returns
+        ----------
+        input : torch.Tensor
+            Input data in the form of torch.Tensor.
+        """
         # Convert p_input from Element to Tensor
         input = torch.Tensor([p_input.get_values()])
 
@@ -243,7 +304,21 @@ class PyTorchAFct(SLAdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
     def output_preproc(self, p_output:Element) -> torch.Tensor:
-        # Convert p_input from Element to Tensor
+        """
+        This method has a functionality to transform output data in the form of Element to
+        torch.Tensor for pre-processing.
+
+        Parameters
+        ----------
+        p_output : Element
+            Output data in the form of Element.
+
+        Returns
+        ----------
+        output : torch.Tensor
+            Output data in the form of torch.Tensor.
+        """
+        # Convert p_output from Element to Tensor
         output = torch.Tensor([p_output.get_values()])
 
         # Preprocessing Data if needed
@@ -257,6 +332,20 @@ class PyTorchAFct(SLAdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
     def output_postproc(self, p_output:torch.Tensor) -> list:
+        """
+        This method has a functionality to transform output data in the form of torch.Tensor to
+        a list for post-processing.
+
+        Parameters
+        ----------
+        p_output : torch.Tensor
+            Output data in the form of torch.Tensor.
+
+        Returns
+        ----------
+        output : list
+            Output data in the form of list.
+        """
         # Output Post Processing if needed
         try:
             output = self._output_postproc(p_output)
@@ -271,21 +360,70 @@ class PyTorchAFct(SLAdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
     def _input_preproc(self, p_input:torch.Tensor) -> torch.Tensor:
+        """
+        Additional process of input_preproc. This is optional. Please redefine if you need it.
+
+        Parameters
+        ----------
+        p_input : torch.Tensor
+            Input data in the form of torch.Tensor.
+
+        Returns
+        ----------
+        input : torch.Tensor
+            Processed input data in the form of torch.Tensor.
+        """
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _output_preproc(self, p_output:torch.Tensor) -> torch.Tensor:
+        """
+        Additional process of output_preproc. This is optional. Please redefine if you need it.
+
+        Parameters
+        ----------
+        p_output : torch.Tensor
+            Output data in the form of torch.Tensor.
+
+        Returns
+        ----------
+        output : torch.Tensor
+            Processed output data in the form of torch.Tensor.
+        """
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _output_postproc(self, p_output:torch.Tensor) -> torch.Tensor:
+        """
+        Additional process of output_postproc. This is optional. Please redefine if you need it.
+
+        Parameters
+        ----------
+        p_output : torch.Tensor
+            Output data in the form of torch.Tensor.
+
+        Returns
+        ----------
+        output : torch.Tensor
+            Processed output data in the form of torch.Tensor.
+        """
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _map(self, p_input:Element, p_output:Element):
+        """
+        Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
+
+        Parameters
+        ----------
+        p_input : Element
+            Abscissa/input element object (type Element)
+        p_output : Element
+            Setpoint ordinate/output element (type Element)
+        """
         # Input pre processing
         input = self.input_preproc(p_input)
 
@@ -301,12 +439,29 @@ class PyTorchAFct(SLAdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
     def _add_buffer(self, p_buffer_element:PyTorchIOElement):
+        """
+        This method has a functionality to add data into the buffer.
+
+        Parameters
+        ----------
+        p_buffer_element : PyTorchIOElement
+            An element of PyTorchBuffer.
+        """
         self._buffer.add_element(p_buffer_element)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _evaluation(self, p_act_output:Element, p_pred_output:Element) -> float:
+        """
+        This method has a functionality to evaluate the adapted SL model. 
 
+        Parameters
+        ----------
+        p_act_output : Element
+            Actual output from the buffer.
+        p_pred_output : Element
+            Predicted output by the SL model.
+        """
         model_act_output  = self.output_preproc(p_act_output)
         model_pred_output = self.output_preproc(p_pred_output)
 
@@ -346,3 +501,4 @@ class PyTorchAFct(SLAdaptiveFunction):
             self._net_model._optimizer.zero_grad()
             loss.backward()
             self._net_model._optimizer.step()
+        return True
