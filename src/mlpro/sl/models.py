@@ -206,7 +206,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, p_input:Element, p_output:Element) -> bool:
+    def adapt(self, p_input:Element, p_output:Element, p_dataset) -> bool:
         """
         Adaption by supervised learning.
         
@@ -216,6 +216,8 @@ class SLAdaptiveFunction (AdaptiveFunction):
             Abscissa/input element object (type Element)
         p_output : Element
             Setpoint ordinate/output element (type Element)
+        p_dataset
+            A set of data for offline learning
         """
 
         if not self._adaptivity:
@@ -230,7 +232,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
         else:
             # Quality of function not ok. Adaptation is to be triggered.
-            self._set_adapted(self._adapt(p_input, p_output))
+            self._set_adapted(self._adapt(p_input, p_output, p_dataset))
             if self.get_adapted():
                 self._mappings_total = 1
 
@@ -247,9 +249,39 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_input: Element, p_output: Element) -> bool:
+    def _adapt(self, p_input:Element, p_output:Element, p_dataset) -> bool:
         """
-        Custom adaptation algorithm that is called by public adaptation method. Please redefine.
+        Adaptation algorithm that is called by public adaptation method. This covers online and
+        offline supervised learning. Online learning means that the data set is dynamic according to
+        the input data, meanwhile offline learning means that the learning procedure is based on a
+        static data set.
+
+        Parameters
+        ----------
+        p_input : Element
+            Abscissa/input element object (type Element) for online learning
+        p_output : Element
+            Setpoint ordinate/output element (type Element) for online learning
+        p_dataset
+            A set of data for offline learning
+
+        Returns
+        ----------
+            bool
+        """
+
+        if ( p_input is not None ) and ( p_output is not None ):
+            adapted = self._adapt_online(p_input, p_output)
+        else:
+            adapted = self._adapt_offline(p_dataset)
+
+        return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_online(self, p_input:Element, p_output:Element) -> bool:
+        """
+        Custom adaptation algorithm for online learning. Please redefine.
 
         Parameters
         ----------
@@ -257,6 +289,24 @@ class SLAdaptiveFunction (AdaptiveFunction):
             Abscissa/input element object (type Element)
         p_output : Element
             Setpoint ordinate/output element (type Element)
+
+        Returns
+        ----------
+            bool
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_offline(self, p_dataset) -> bool:
+        """
+        Custom adaptation algorithm for offline learning. Please redefine.
+
+        Parameters
+        ----------
+        p_dataset
+            A set of data for offline learning
 
         Returns
         ----------

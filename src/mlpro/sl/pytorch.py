@@ -198,6 +198,8 @@ class PyTorchAFct(SLAdaptiveFunction):
                           p_logging=p_logging,
                           **p_kwargs )
         
+        self._output_space.distance = self._evaluation
+
         if p_kwargs.get('p_test_data') is None:
             raise ParamError("p_test_data is not defined.")
         
@@ -303,9 +305,18 @@ class PyTorchAFct(SLAdaptiveFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_input: Element, p_output: Element) -> bool:
+    def _evaluation(self, p_act_output:Element, p_pred_output:Element) -> float:
+
+        model_act_output  = self.output_preproc(p_act_output)
+        model_pred_output = self.output_preproc(p_pred_output)
+
+        return self._net_model._loss_function(model_act_output, model_pred_output).items()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_online(self, p_input: Element, p_output: Element) -> bool:
         """
-        Adaptation mechanism for PyTorch based model.
+        Adaptation mechanism for PyTorch based model for online learning.
 
         Parameters
         ----------
