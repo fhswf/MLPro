@@ -90,7 +90,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
-    C_TYPE              = 'Wrapper OpenAI Gym -> MLPro'
+    C_TYPE              = 'Wrapper Gym2MLPro'
     C_WRAPPED_PACKAGE   = 'gym'
     C_MINIMUM_VERSION   = '0.21.0'
     C_PLOT_ACTIVE: bool = True
@@ -105,7 +105,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
         self._gym_env    = p_gym_env
         self._gym_env_id = self._gym_env.env.spec.id
-        self.C_NAME      = 'Env "' + self._gym_env_id + '"'
+        self.C_NAME      = '(' + self._gym_env_id + ')'
 
         Environment.__init__(self, p_mode=Environment.C_MODE_SIM, p_latency=None, p_visualize=p_visualize, p_logging=p_logging)
         Wrapper.__init__(self, p_logging=p_logging)
@@ -154,11 +154,22 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
         See also: https://stackoverflow.com/questions/52336196/how-to-save-object-using-pygame-surfaces-to-file-using-pickle
         """
 
+        # 1 Try to pickle/dill the entire environment...
+        try:
+            pkl.dump( obj=self, 
+                      file=open(p_path + os.sep + p_filename, "wb"),
+                      protocol=pkl.HIGHEST_PROTOCOL )
+            self.log(Log.C_LOG_TYPE_I, 'Env successfully stored')
+        except:
+            pass
+
+        # 2 Store the empty wrapper object without embedded env and re-initialize 
         self._gym_env = None 
         pkl.dump( obj=self, 
-                  file=open(p_path + os.sep + self.filename, "wb"),
+                  file=open(p_path + os.sep + p_filename, "wb"),
                   protocol=pkl.HIGHEST_PROTOCOL )
         self._gym_env = gym.make(self._gym_env_id)
+        self.log(Log.C_LOG_TYPE_W, 'Wrapper stored without env. Env is recovered, but state was lost.')
         return True
 
 
@@ -433,7 +444,7 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
             Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
-    C_TYPE              = 'Wrapper MLPro -> OpenAI Gym'
+    C_TYPE              = 'Wrapper MLPro2Gym'
     C_WRAPPED_PACKAGE   = 'gym'
     C_MINIMUM_VERSION   = '0.21.0'
     metadata            = {'render.modes': ['human']}

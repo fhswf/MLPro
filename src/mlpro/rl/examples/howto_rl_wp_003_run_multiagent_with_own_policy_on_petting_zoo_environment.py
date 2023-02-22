@@ -188,3 +188,4 @@ if __name__ == '__main__':
     myscenario = PBScenario.load(path + os.sep + 'scenario')
     myscenario.reset(1)
     myscenario.run() 
+

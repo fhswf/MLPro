@@ -90,7 +90,7 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
         Log level (see constants of class Log). Default = Log.C_LOG_ALL.
     """
 
-    C_TYPE              = 'Wrapper PettingZoo -> MLPro'
+    C_TYPE              = 'Wrapper PettingZoo2MLPro'
     C_WRAPPED_PACKAGE   = 'pettingzoo'
     C_MINIMUM_VERSION   = '1.20.0'
     C_PLOT_ACTIVE: bool = True
@@ -367,7 +367,7 @@ class WrEnvMLPro2PZoo(Wrapper):
         Optional external action space object that meets the action space of the MLPro environment
     """
 
-    C_TYPE              = 'Wrapper MLPro -> PettingZoo'
+    C_TYPE              = 'Wrapper MLPro2PettingZoo'
     C_WRAPPED_PACKAGE   = 'pettingzoo'
     C_MINIMUM_VERSION   = '1.20.0'
 
