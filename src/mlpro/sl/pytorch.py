@@ -234,6 +234,19 @@ class PyTorchAFct(SLAdaptiveFunction):
 
         return input
 
+## -------------------------------------------------------------------------------------------------
+    def output_preproc(self, p_output:Element) -> torch.Tensor:
+        # Convert p_input from Element to Tensor
+        output = torch.Tensor([p_output.get_values()])
+
+        # Preprocessing Data if needed
+        try:
+            output = self._output_preproc(output)
+        except:
+            pass
+
+        return output
+
 
 ## -------------------------------------------------------------------------------------------------
     def output_postproc(self, p_output:torch.Tensor) -> list:
@@ -251,6 +264,11 @@ class PyTorchAFct(SLAdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
     def _input_preproc(self, p_input:torch.Tensor) -> torch.Tensor:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _output_preproc(self, p_output:torch.Tensor) -> torch.Tensor:
         raise NotImplementedError
 
 
@@ -295,4 +313,20 @@ class PyTorchAFct(SLAdaptiveFunction):
         ----------
             bool
         """
-        raise NotImplementedError
+
+        model_input = self.input_preproc(p_input)
+        model_output = self.output_preproc(p_output)
+
+        self._add_buffer(PyTorchIOElement(model_input, model_output))
+
+        if ( not self._buffer.is_full() ) and ( self._buffer.get_internal_counter()%self._update_rate != 0 ):
+            return False
+
+        trainer, _ = self._buffer.sampling()
+        self._net_model.train()
+        for i, (In, Label) in enumerate(trainer):
+            outputs = self._net_model(In)
+            loss = self._net_model._loss_function(outputs, Label)
+            self._net_model._optimizer.zero_grad()
+            loss.backward()
+            self._net_model._optimizer.step()
