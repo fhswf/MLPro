@@ -17,6 +17,7 @@ This module provides model classes for supervised learning tasks using PyTorch.
 
 
 import torch
+from torch.utils.data.sampler import SubsetRandomSampler
 from mlpro.sl.models import *
 from mlpro.bf.ml import *
 from mlpro.bf.data import BufferElement
@@ -89,9 +90,12 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_size:int=1):
+    def __init__(self, p_size:int=1, p_test_data:float=0.3, p_batch_size:int=100, p_seed:int=1):
         Buffer.__init__(self, p_size=p_size)
         self._internal_counter = 0
+        self._testing_data     = p_test_data
+        self._batch_size       = p_batch_size
+        np.random.seed(p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -108,6 +112,26 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
 ## -------------------------------------------------------------------------------------------------
     def __getitem__(self, idx):
         return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
+
+
+## -------------------------------------------------------------------------------------------------
+    def sampling(self):
+        dataset_size    = len(self._data_buffer)
+        indices         = list(range(dataset_size))
+        split           = int(np.floor(self._testing_data*dataset_size))
+        np.random.shuffle(indices)
+        train_indices, test_indices = indices[split:], indices[:split]
+
+        train_sampler   = SubsetRandomSampler(train_indices)
+        test_sampler    = SubsetRandomSampler(test_indices)
+        trainer         = torch.utils.data.DataLoader(self._data_buffer,
+                                                      batch_size=self._batch_size,
+                                                      sampler=train_sampler)
+        tester          = torch.utils.data.DataLoader(self._data_buffer,
+                                                      batch_size=self._batch_size,
+                                                      sampler=test_sampler)
+        
+        return trainer, tester
     
 
 
@@ -116,9 +140,15 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class PyTorchAFct(SLAdaptiveFunction):
-    C_NAME = "PyTorch-based Adaptive Function"
+    C_NAME          = "PyTorch-based Adaptive Function"
+    C_BUFFER_CLS    = PyTorchBuffer
 
 
+    # def __init__(self):
+    #     if p_buffer_size > 0:
+    #         self._buffer = self.C_BUFFER_CLS(p_size=p_buffer_size, ....)
+    #     else:
+    #         self._buffer = None
 
 ## -------------------------------------------------------------------------------------------------
     def input_preproc(self, p_input:Element) -> torch.Tensor:
@@ -171,3 +201,27 @@ class PyTorchAFct(SLAdaptiveFunction):
 
         # Set list to Element
         p_output.set_values(output)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _add_buffer(self, p_buffer_element:PyTorchIOElement):
+        self._buffer.add_element(p_buffer_element)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, p_input: Element, p_output: Element) -> bool:
+        """
+        Adaptation mechanism for PyTorch based model.
+
+        Parameters
+        ----------
+        p_input : Element
+            Abscissa/input element object (type Element)
+        p_output : Element
+            Setpoint ordinate/output element (type Element)
+
+        Returns
+        ----------
+            bool
+        """
+        raise NotImplementedError

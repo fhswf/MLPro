@@ -12,10 +12,11 @@
 ## -- 2022-11-15  0.3.0     DA       Class SLAdaptiveFunction: new parent class AdaptiveFunction
 ## -- 2023-02-21  0.4.0     SY       - Introduce Class SLNetwork
 ## --                                - Update Class SLAdaptiveFunction
+## -- 2023-02-22  0.4.1     SY       Update Class SLAdaptiveFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.0 (2023-02-21)
+Ver. 0.4.1 (2023-02-22)
 
 This module provides model classes for supervised learning tasks. 
 """
@@ -161,6 +162,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
                   p_input_space: MSpace,
                   p_output_space:MSpace,
                   p_output_elem_cls=Element,
+                  p_net_model:SLNetwork=None,
                   p_threshold=0,
                   p_buffer_size=0,
                   p_ada:bool=True,
@@ -180,7 +182,11 @@ class SLAdaptiveFunction (AdaptiveFunction):
         self._threshold      = p_threshold
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
-        self._net_model      = self._setup_model()
+        
+        if p_net_model is None:
+            self._net_model  = self._setup_model()
+        else:
+            self._net_model  = p_net_model
 
         if self._net_model is None:
             raise ParamError("Please assign your network model to self._net_model")
