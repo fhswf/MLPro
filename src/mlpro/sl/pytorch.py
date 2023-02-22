@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-02-21  0.0.0     SY       Creation 
-## -- 2023-02-21  0.1.0     SY       Introduction torch-related base classes for adaptive function
+## -- 2023-02-22  0.1.0     SY       Pre-release version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2023-02-21)
+Ver. 0.1.0 (2023-02-22)
 
 This module provides model classes for supervised learning tasks using PyTorch. 
 """
@@ -27,7 +27,7 @@ from mlpro.bf.data import BufferElement
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PyTorchSLNetwork (SLNetwork):
+class PyTorchSLNetwork(SLNetwork):
     """
     This class provides the base class of a supervised learning network using PyTorch.
 
@@ -76,7 +76,7 @@ class PyTorchIOElement(BufferElement):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_input: torch.Tensor, p_output: torch.Tensor):
+    def __init__(self, p_input:torch.Tensor, p_output:torch.Tensor):
         super().__init__({"input": p_input, "output": p_output})
 
 
@@ -89,13 +89,13 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_size=1):
+    def __init__(self, p_size:int=1):
         Buffer.__init__(self, p_size=p_size)
         self._internal_counter = 0
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_element(self, p_elem: BufferElement):
+    def add_element(self, p_elem:BufferElement):
         Buffer.add_element(self, p_elem)
         self._internal_counter += 1
 
@@ -106,5 +106,68 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __getitem__(self,idx):
+    def __getitem__(self, idx):
         return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
+    
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class PyTorchAFct(SLAdaptiveFunction):
+    C_NAME = "PyTorch-based Adaptive Function"
+
+
+
+## -------------------------------------------------------------------------------------------------
+    def input_preproc(self, p_input:Element) -> torch.Tensor:
+        # Convert p_input from Element to Tensor
+        input = torch.Tensor([p_input.get_values()])
+
+        # Preprocessing Data if needed
+        try:
+            input = self._input_preproc(input)
+        except:
+            pass
+
+        return input
+
+
+## -------------------------------------------------------------------------------------------------
+    def output_postproc(self, p_output:torch.Tensor) -> list:
+        # Output Post Processing if needed
+        try:
+            output = self._output_postproc(p_output)
+        except:
+            output = p_output
+
+        # Convert output from Tensor to a list
+        output = output.detach().flatten().tolist()
+
+        return output
+
+
+## -------------------------------------------------------------------------------------------------
+    def _input_preproc(self, p_input:torch.Tensor) -> torch.Tensor:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _output_postproc(self, p_output:torch.Tensor) -> torch.Tensor:
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map(self, p_input:Element, p_output:Element):
+        # Input pre processing
+        input = self.input_preproc(p_input)
+
+        # Make prediction
+        output = self._net_model(input)
+
+        # Output post processing
+        output = self.output_postproc(output)
+
+        # Set list to Element
+        p_output.set_values(output)
