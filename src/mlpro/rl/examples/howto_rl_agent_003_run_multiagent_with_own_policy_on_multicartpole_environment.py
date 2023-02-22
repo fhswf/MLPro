@@ -19,10 +19,11 @@
 ## -- 2022-11-01  1.2.3     DA       Refactoring 
 ## -- 2022-11-02  1.2.4     DA       Refactoring 
 ## -- 2022-11-07  1.3.0     DA       Refactoring 
+## -- 2023-02-22  1.4.0     DA       User can now arrange the three gym windows before the demo run
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2022-11-07)
+Ver. 1.4.0 (2023-02-22)
 
 This module shows how to run an own multi-agent with the enhanced multi-action environment 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -145,7 +146,7 @@ class MyScenario (RLScenario):
 
 
 # 3 Create scenario and run some cycles
-if __name__ == "__main__":
+if __name__ == '__main__':
     # 3.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
     visualize   = True
@@ -165,4 +166,8 @@ myscenario  = MyScenario(
 )
 
 myscenario.reset()
+
+if __name__ == '__main__':
+    input('\nPlease arrange the three cartpole windows and press ENTER...\n')
+
 myscenario.run() 
