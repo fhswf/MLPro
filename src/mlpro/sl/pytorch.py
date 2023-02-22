@@ -5,12 +5,17 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-02-21  0.0.0     SY       Creation 
-## -- 2023-02-22  0.1.0     SY       Pre-release version
+## -- 2021-12-17  0.0.0     MRD       Creation
+## -- 2021-12-17  1.0.0     MRD       Released first version
+## -- 2022-01-02  2.0.0     MRD       Re-released afct for pytorch
+## -- 2022-05-22  2.0.1     MRD       Renamed Class to TorchAFct
+## -- 2022-11-15  2.0.2     DA        Class TorchAFct: new parent class SLAdaptiveFunction
+## -- 2023-02-22  3.0.0     SY        - Shifted from mlpro.sl.afct
+## --                                 - Release the third version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2023-02-22)
+Ver. 3.0.0 (2023-02-22)
 
 This module provides model classes for supervised learning tasks using PyTorch. 
 """
