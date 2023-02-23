@@ -85,7 +85,7 @@ sys.reset()
 # 3 Process an action
 for x in range(loop_cycle):
     # Random Action
-    action = np.random.uniform(0, 50, size=(1,))
+    action = np.random.uniform(-50, 50, size=(1,))
     sys.process_action( p_action= Action( p_agent_id=0, 
                                         p_action_space=sys.get_action_space(),
                                         p_values=action ) )
