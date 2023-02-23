@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_env_006_train_agent_with_sb3_policy_on_double_pendulum_environment.py
+## -- Module  : howto_rl_env_004_train_agent_with_sb3_policy_on_double_pendulum_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -10,11 +10,12 @@
 ## -- 2022-09-09  1.0.1     SY       Refactoring and add DDPG algorithm as an option
 ## -- 2022-10-13  1.0.2     SY       Refactoring
 ## -- 2022-11-18  1.0.3     LSB      Refactoring for new plot style
+## -- 2023-02-23  1.1.0     DA       Renamed
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.3 (2022-11-18)
+Ver. 1.1.0 (2023-02-23)
 
 This module shows how to train double pendulum using on-policy and off-policy RL algorithms from SB3.
 """

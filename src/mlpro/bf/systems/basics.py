@@ -20,10 +20,11 @@
 ## -- 2023-01-27  1.4.0     MRD      Integrate MuJoCo as an optional state transition
 ## -- 2023-02-04  1.5.0     DA       United classes SystemBase, System to new class System
 ## -- 2023-02-13  1.5.1     MRD      Simplify State Space and Action Space generation
+## -- 2023-02-20  1.6.0     DA       Class System: new parent class LoadSave to enable persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.5.1 (2023-02-13)
+Ver. 1.6.0 (2023-02-20)
 
 This module provides models and templates for state based systems.
 """
@@ -676,7 +677,7 @@ class Controller (EventManager):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, ScientificObject):
+class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, ScientificObject):
     """
     Base class for state based systems.
 

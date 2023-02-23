@@ -150,7 +150,7 @@ class MyScenario (RLScenario):
 
 
 # 3 Create scenario and start training
-if __name__ == "__main__":
+if __name__ == '__main__':
     # 3.1 Parameters for demo mode
     cycle_limit = 200
     logging     = Log.C_LOG_WE
