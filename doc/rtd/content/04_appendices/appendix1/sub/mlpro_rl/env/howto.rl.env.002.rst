@@ -1,68 +1,30 @@
 .. _Howto Env RL 002:
-Howto RL-ENV-002: SB3 Policy on RobotHTM Environment
-=============================================================================================
+Howto RL-ENV-002: Manual Validation of Double Pendulum
+======================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_env_002_train_agent_with_SB3_policy_on_robothtm_environment
-
-
+.. automodule:: src.mlpro.rl.examples.howto_rl_env_002_manual_validation_of_double_pendulum
 
 **Prerequisites**
 
 
 Please install the following packages to run this examples properly:
-    - `Pytorch <https://pypi.org/project/torch/>`_
-    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
-  ..
-   
+    - `NumPy <https://pypi.org/project/numpy/>`_
+    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
+
+
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_002_train_agent_with_SB3_policy_on_robothtm_environment.py
+.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_002_manual_validation_of_double_pendulum.py
 	:language: python
-
 
 
 **Results**
 
 
-.. image:: images/howto15.png
+Executing the above script will ask the user to input the agent's action and the number cycles for the which the
+action shall be simulated.
 
-After the environment is initiated, the training will run for the specified amount of limits.
-However, it is noted that there is no visualization available for this environment.
-The training log is stored in the location specified and a figure plot similar to the figure 
-above will be produced.
-
-
-.. code-block:: bash
-
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training Results of run 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Scenario          : RL-Scenario Matrix 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Model             : Agent Smith 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Start time stamp  : YYYY-MM-DD HH:MM:SS.SSSSSS 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- End time stamp    : YYYY-MM-DD HH:MM:SS.SSSSSS 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Duration          : 0:00:59.209252 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Start cycle id    : 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- End cycle id      : 11999 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training cycles   : 12000 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Evaluation cycles : 12500 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Adaptations       : 120 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- High score        : -83.8038799825578 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Results stored in : "C:\Users\%username%\YYYY-MM-DD  HH:MM:SS Training RL" 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training Episodes : 120 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Evaluations       : 25 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    
-The local result folder contains the training result files:
-    - agent_actions.csv
-    - env_rewards.csv
-    - env_states.csv
-    - evaluation.csv
-    - summary.csv
-    - trained model.pkl
 
 
 **Cross Reference**
