@@ -58,6 +58,8 @@ class MLP(PyTorchSLNetwork):
         except:
             if not isinstance(self._parameters['p_hidden_size'], int):
                 raise ParamError("length of p_hidden_size list must be equal to p_num_hidden_layers or an integer.")
+            else:
+                self._parameters['p_hidden_size'] = [self._parameters['p_hidden_size']] * self._parameters['p_num_hidden_layers']
         
         if self._parameters.get('p_activation_fct') not in self._parameters:
             raise ParamError("p_activation_fct is not defined.")
@@ -67,14 +69,46 @@ class MLP(PyTorchSLNetwork):
         except:
             if not isinstance(self._parameters['p_activation_fct'], int):
                 raise ParamError("length of p_activation_fct list must be equal to p_num_hidden_layers or a single activation function.")
+            else:
+                self._parameters['p_activation_fct'] = [self._parameters['p_activation_fct']] * self._parameters['p_num_hidden_layers']
+        
+        if self._parameters.get('p_output_activation_fct') not in self._parameters:
+            raise ParamError("p_output_activation_fct is not defined.")
         
         if self._parameters.get('p_optimizer') not in self._parameters:
             raise ParamError("p_optimizer is not defined.")
+        else:
+            self._optimizer = self._parameters['p_optimizer']
         
         if self._parameters.get('p_loss_fct') not in self._parameters:
             raise ParamError("p_loss_fct is not defined.")
+        else:
+            self._loss_function = self._parameters['p_loss_fct']
 
-        model = None
+        init_ = lambda mod: self._default_weight_bias_init(mod,
+                                                           torch.nn.init.orthogonal_,
+                                                           lambda x: torch.nn.init.constant_(x, 0),
+                                                           np.sqrt(2))
+
+        modules = []
+        for hd in range(self._parameters['p_num_hidden_layers']+1):
+            if hd == 0:
+                act_input_size = self._input_size
+                output_size = self._parameters['p_hidden_size'][hd]
+                act_fct = self._parameters['p_activation_fct'][hd]
+            elif hd == self._parameters['p_num_hidden_layers']:
+                act_input_size = self._parameters['p_hidden_size'][hd-1]
+                output_size = self._output_size
+                act_fct = self._parameters['p_output_activation_fct']
+            else:
+                act_input_size = self._parameters['p_hidden_size'][hd-1]
+                output_size = self._parameters['p_hidden_size'][hd]
+                act_fct = self._parameters['p_activation_fct'][hd]
+            
+            modules.append(init_(torch.nn.Linear(act_input_size, output_size)))
+            modules.append(act_fct)
+
+        model = torch.nn.Sequential(*modules)
 
         try:
             model = self._add_init(model)
@@ -102,45 +136,16 @@ class MLP(PyTorchSLNetwork):
         raise NotImplementedError
 
 
-    ## -------------------------------------------------------------------------------------------------
-    def _default_weight_bias_init(module, weight_init, bias_init, gain=1):
+## -------------------------------------------------------------------------------------------------
+    def _default_weight_bias_init(self, module, weight_init, bias_init, gain=1):
         weight_init(module.weight.data, gain=gain)
         bias_init(module.bias.data)
         return module
 
 
-
-
 ## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class RobotMLPModel(torch.nn.Module):
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, n_joint, timeStep):
-        super(RobotMLPModel, self).__init__()
-        self.n_joint = n_joint
-        self.timeStep = timeStep
-        self.hidden = 128
-
-        init_ = lambda m: init(m, torch.nn.init.orthogonal_, lambda x: torch.nn.init.
-                               constant_(x, 0), np.sqrt(2))
-
-        self.model1 = torch.nn.Sequential(
-            init_(torch.nn.Linear(self.n_joint,self.hidden)),
-            torch.nn.Tanh(),
-            init_(torch.nn.Linear(self.hidden,self.hidden)),
-            torch.nn.Tanh(),
-            init_(torch.nn.Linear(self.hidden,self.hidden)),
-            torch.nn.Tanh(),
-            init_(torch.nn.Linear(self.hidden,7*(self.n_joint+1))),
-            torch.nn.Tanh()
-            )
-
-## -------------------------------------------------------------------------------------------------
-    def forward(self, I):
-        BatchSize=I.shape[0]
-        newI = I.reshape(BatchSize,2,self.n_joint) * torch.cat([torch.Tensor([self.timeStep]).repeat(1,self.n_joint), torch.ones(1,self.n_joint)])
-        newI = torch.sum(newI,dim=1)
-        out2 = self.model1(newI)   
-        out2 = out2.reshape(BatchSize,self.n_joint+1,7)
-        return out2
+    def forward(self, p_input:torch.Tensor) -> torch.Tensor:
+        BatchSize   = p_input.shape[0]
+        output      = self._sl_model(p_input)   
+        output      = output.reshape(BatchSize, self._output_size)
+        return output
