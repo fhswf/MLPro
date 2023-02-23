@@ -202,14 +202,14 @@ class MLP(PyTorchSLNetwork):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _add_init(self, model):
+    def _add_init(self, p_model):
         """
         This method is optional and is intended for additional initialization process of the
         _setup_model.
 
         Parameters
         ----------
-        model :
+        p_model :
             model network
 
         Returns
