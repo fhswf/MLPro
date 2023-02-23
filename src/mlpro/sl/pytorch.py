@@ -33,7 +33,7 @@ from mlpro.bf.data import BufferElement, Buffer
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PyTorchSLNetwork(SLNetwork):
+class PyTorchSLNetwork(SLNetwork, torch.nn.Module):
     """
     This class provides the base class of a supervised learning network using PyTorch.
 
