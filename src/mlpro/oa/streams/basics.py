@@ -13,12 +13,13 @@
 ## -- 2022-12-09  0.4.1     DA       Corrections
 ## -- 2022-12-20  0.5.0     DA       Refactoring
 ## -- 2023-01-01  0.6.0     DA       Refactoring
+## -- 2023-02-23  0.6.1     DA       Removed class OAFunction
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2023-01-01)
+Ver. 0.6.1 (2023-02-23)
 
-Core classes for online machine learning.
+Core classes for online adaptive stream processing.
 """
 
 
@@ -184,19 +185,6 @@ class OAWorkflow (StreamWorkflow, AWorkflow):
 ## -------------------------------------------------------------------------------------------------
     def add_task(self, p_task : StreamTask, p_pred_tasks: list = None):
         AWorkflow.add_task( self, p_task=p_task, p_pred_tasks=p_pred_tasks )
-
-
-
-
-
-# -------------------------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------------------------
-class OAFunction (sl.AdaptiveFunction):
-    """
-    ...
-    """
-
-    C_TYPE      = 'OA-Function'
 
 
 
