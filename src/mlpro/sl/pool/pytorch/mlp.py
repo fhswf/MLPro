@@ -130,7 +130,7 @@ class MLP(PyTorchSLNetwork):
                 output_size = self._parameters['p_hidden_size'][hd]
                 act_fct = self._parameters['p_activation_fct'][hd]
             
-            if self._parameters['p_custom_layers'] is None
+            if self._parameters['p_custom_layers'] is None:
                 modules.append(init_(torch.nn.Linear(act_input_size, output_size)))
             else:
                 modules.append(init_(self._parameters['p_custom_layers'](act_input_size, output_size)))
