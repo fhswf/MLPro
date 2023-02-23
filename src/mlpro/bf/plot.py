@@ -26,12 +26,11 @@
 ## -- 2023-01-04  2.8.0     DA       Class PlotSettings: new parameters p_horizon, p_force_fg
 ## -- 2023-02-02  2.8.1     MRD      Disable Tkinter backend for macos https://bugs.python.org/issue46573
 ## -- 2023-02-17  2.8.2     SY       Add p_window_type in DataPlotting
-## -- 2023-02-12  2.9.0     DA       Class PlotSettings: new parameter p_view_autoselect
+## -- 2023-02-23  2.9.0     DA       Class PlotSettings: new parameter p_view_autoselect
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.9.0 (2023-02-12)
-Ver. 2.8.2 (2023-02-17)
+Ver. 2.9.0 (2023-02-23)
 
 This module provides various classes related to data plotting.
 """
