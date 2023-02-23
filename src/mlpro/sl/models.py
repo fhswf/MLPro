@@ -195,7 +195,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
     def _setup_model(self) -> SLNetwork:
         """
         A method to set up a supervised learning network.
-        Please redefine this method according to the type of network.
+        Please redefine this method according to the type of network, if not provided yet.
         
         Returns
         ----------
