@@ -25,10 +25,11 @@
 ## -- 2022-10-08  1.2.3     SY       Bug fixing
 ## -- 2022-11-02  1.2.4     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-07  1.2.5     DA       Class WrPolicySB32MLPro: new parameter p_visualize
+## -- 2023-02-16  1.2.6     SY       Bug fixing: observation_space recognization for integer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.5 (2022-11-07)
+Ver. 1.2.6 (2023-02-16)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
@@ -197,7 +198,7 @@ class WrPolicySB32MLPro (Wrapper, Policy):
             low_limit = self.get_observation_space().get_dim(id_dim).get_boundaries()[0]
             up_limit = self.get_observation_space().get_dim(id_dim).get_boundaries()[1]
             num_discrete = int(up_limit-low_limit+1)
-            action_space = gym.spaces.Discrete(num_discrete)
+            observation_space = gym.spaces.Discrete(num_discrete)
         else:
             lows = []
             highs = []

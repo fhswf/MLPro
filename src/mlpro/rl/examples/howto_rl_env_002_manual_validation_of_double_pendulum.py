@@ -1,17 +1,18 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_env_004_manual_validation_of_double_pendulum.py
+## -- Module  : howto_rl_env_002_manual_validation_of_double_pendulum.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-10-10  1.0.0     LSB      Creation/Release
 ## -- 2023-02-02  1.1.0     DA       Renamed and refactored
+## -- 2023-02-23  1.2.0     DA       Renamed
 ## -------------------------------------------------------------------------------------------------
 
 
 '''
-Ver. 1.1.0 (2023-02-02)
+Ver. 1.2.0 (2023-02-23)
 
 This module is used to validate the dp environment. This howto enables:
 

@@ -25,11 +25,13 @@
 ## -- 2023-01-01  2.7.0     DA       Class Plottable: introduction of update step rate
 ## -- 2023-01-04  2.8.0     DA       Class PlotSettings: new parameters p_horizon, p_force_fg
 ## -- 2023-02-02  2.8.1     MRD      Disable Tkinter backend for macos https://bugs.python.org/issue46573
+## -- 2023-02-17  2.8.2     SY       Add p_window_type in DataPlotting
 ## -- 2023-02-12  2.9.0     DA       Class PlotSettings: new parameter p_view_autoselect
 ## -------------------------------------------------------------------------------------------------
 
 """
 Ver. 2.9.0 (2023-02-12)
+Ver. 2.8.2 (2023-02-17)
 
 This module provides various classes related to data plotting.
 """
@@ -528,6 +530,8 @@ class DataPlotting(LoadSave):
         Frame size. The default is (7,7).
     p_color : str, optional
         Line colors. The default is "darkblue".
+    p_window_type : str, optional
+        Plotting type for moving average. The default is 'same'. Options: 'same', 'full', 'valid'
         
     Attributes
     ----------
@@ -546,7 +550,8 @@ class DataPlotting(LoadSave):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_data: DataStoring, p_type=C_PLOT_TYPE_EP, p_window=100,
-                 p_showing=True, p_printing=None, p_figsize=(7, 7), p_color="darkblue"):
+                 p_showing=True, p_printing=None, p_figsize=(7, 7), p_color="darkblue",
+                 p_window_type='same'):
         self.data = p_data
         self.type = p_type
         self.window = p_window
@@ -555,6 +560,7 @@ class DataPlotting(LoadSave):
         self.printing = p_printing
         self.figsize = p_figsize
         self.color = p_color
+        self.window_type = p_window_type
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -700,10 +706,10 @@ class DataPlotting(LoadSave):
         inputs = np.array(p_inputs)
         outputs = np.zeros_like(inputs)
         if len(inputs.shape) == 1:
-            outputs = np.convolve(inputs, np.ones((p_window,)) / p_window, mode='same')
+            outputs = np.convolve(inputs, np.ones((p_window,)) / p_window, mode=self.window_type)
         else:
             for col in range(inputs.shape[1]):
-                outputs[:, col] = np.convolve(inputs[:, col], np.ones((p_window,)) / p_window, mode='same')
+                outputs[:, col] = np.convolve(inputs[:, col], np.ones((p_window,)) / p_window, mode=self.window_type)
         return outputs
 
 

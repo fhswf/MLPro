@@ -62,4 +62,4 @@ By running the example code, the environment window appears and the runtime log 
 
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper PeetingZoo <Wrapper PettingZoo>
++ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper PeetingZoo <Wrapper PettingZoo>`

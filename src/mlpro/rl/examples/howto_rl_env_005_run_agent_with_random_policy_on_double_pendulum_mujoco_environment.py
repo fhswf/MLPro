@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro
-## -- Module  : howto_rl_env_007_run_agent_with_random_policy_on_double_pendulum_mujoco_environment.py
+## -- Package : mlpro.rl.examples
+## -- Module  : howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,11 +12,12 @@
 ## -- 2023-01-27  1.1.0     MRD       Implement Pendulum Environment, refactor due to different MuJoCo
 ## --                                 mechanism
 ## -- 2023-02-13  1.1.1     MRD       Refactor
+## -- 2023-02-23  1.2.0     DA        Renamed
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.1.1 (2023-02-13)
+Ver. 1.2.0 (2023-02-23)
 
 This module shows how to run a random policy on Double Pendulum with MuJoCo Simulation.
 
