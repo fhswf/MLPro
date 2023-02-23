@@ -20,11 +20,14 @@
 ## -- 2023-01-27  1.2.0     MRD       Remove previous implementation and only define the MujocoHandler
 ## --                                 as the handler to handle the MuJoCo simulation
 ## -- 2023-02-13  1.2.1     MRD       Simplify State Space and Action Space generation
+## -- 2023-02-23  1.2.2     MRD       Disable auto detect body position and orientation
+## --                                 Detect Joint boundaries, default inf
+## --                                 Disable custom reset from MLPro, now reset only from MuJoCo
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.2.1  (2023-02-13)
+Ver. 1.2.2  (2023-02-23)
 
 This module wraps bf.Systems with MuJoCo Simulation functionality.
 """
@@ -371,15 +374,20 @@ class MujocoHandler(Wrapper):
         self._system_state_space = ESpace()
         
         # Extract Position and Orientation, if a body
-        for elem in self._xml_root.iter("body"):
-            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_pos_body")))
-            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_rot_body")))
+        # for elem in self._xml_root.iter("body"):
+        #     self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_pos_body")))
+        #     self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_rot_body")))
         
         # Extract Position, Velocity, and Acceleration, if a joint
         for elem in self._xml_root.iter("joint"):
-            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_pos_joint")))
-            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_vel_joint")))
-            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_acc_joint")))
+            try:
+                bound = elem.attrib["range"].split(" ")
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_pos_joint"), p_boundaries=[float(bound[0]), float(bound[1])]))
+            except KeyError as e:
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_pos_joint"), p_boundaries=[float('inf'), float('inf')]))
+            
+            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_vel_joint"), p_boundaries=[float('inf'), float('inf')]))
+            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_acc_joint"), p_boundaries=[float('inf'), float('inf')]))
         
         return self._system_state_space
     
@@ -390,7 +398,11 @@ class MujocoHandler(Wrapper):
         
         # Actuator list
         for elem in self._xml_root.iter("motor"):
-            self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]))
+            try:
+                bound = elem.attrib["ctrlrange"].split(" ")
+                self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float(bound[0]), float(bound[1])]))
+            except KeyError as e:
+                self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float('inf'), float('inf')]))
             
         return self._system_action_space
 
@@ -422,30 +434,33 @@ class MujocoHandler(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset_model(self, reset_state=None):
-        if reset_state is None:
-            qpos = self._init_qpos
-            qvel = self._init_qpos
-            self._set_state(qpos, qvel)
-        else:
-            for dim in self._system_state_space.get_dims():
-                state = dim.get_name_short().split("_")
-                if state[2] == "body":
-                    pass
-                elif state[2] == "joint":
-                    if state[1] == "pos":
-                        self._data.joint(state[0]).qpos = reset_state.get_value(dim.get_id())
-                    elif state[1] == "vel":
-                        self._data.joint(state[0]).qvel = reset_state.get_value(dim.get_id())
-                    elif state[1] == "acc":
-                        self._data.joint(state[0]).qacc = reset_state.get_value(dim.get_id())
-                    else:
-                        raise NotImplementedError
-                else:
-                    raise NotImplementedError
+        qpos = self._init_qpos
+        qvel = self._init_qpos
+        self._set_state(qpos, qvel)
+        # if reset_state is None:
+        #     qpos = self._init_qpos
+        #     qvel = self._init_qpos
+        #     self._set_state(qpos, qvel)
+        # else:
+        #     for dim in self._system_state_space.get_dims():
+        #         state = dim.get_name_short().split("_")
+        #         if state[2] == "body":
+        #             pass
+        #         elif state[2] == "joint":
+        #             if state[1] == "pos":
+        #                 self._data.joint(state[0]).qpos = reset_state.get_value(dim.get_id())
+        #             elif state[1] == "vel":
+        #                 self._data.joint(state[0]).qvel = reset_state.get_value(dim.get_id())
+        #             elif state[1] == "acc":
+        #                 self._data.joint(state[0]).qacc = reset_state.get_value(dim.get_id())
+        #             else:
+        #                 raise NotImplementedError
+        #         else:
+        #             raise NotImplementedError
             
-            if self._model.na == 0:
-                self._data.act[:] = None
-            mujoco.mj_forward(self._model, self._data)
+        #     if self._model.na == 0:
+        #         self._data.act[:] = None
+        #     mujoco.mj_forward(self._model, self._data)
                 
         return self._get_obs()
 

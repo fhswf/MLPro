@@ -76,7 +76,7 @@ else:
 
 
 # 1 Instantiate own system in simulation mode
-model_file = os.path.join(os.path.dirname(mlpro.__file__), "bf/systems/pool/mujoco", "cart_pole.xml")
+model_file = os.path.join(os.path.dirname(mlpro.__file__), "bf/systems/pool/mujoco", "cartpole.xml")
 sys = CartpoleSystem(p_logging=logging, p_mujoco_file=model_file, p_visualize=visualize)
 
 # 2 Reset system
