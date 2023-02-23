@@ -25,10 +25,12 @@
 ## -- 2022-11-01  1.2.2     DA       Refactoring 
 ## -- 2022-11-02  1.2.3     SY       Unable logging in unit test model and bug fixing
 ## -- 2022-11-07  1.3.0     DA       Refactoring
+## -- 2023-02-21  1.4.0     DA       Added save + reload + rerun steps to demonstrate/validate
+## --                                persistence of pettingzoo scenarios
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2022-11-07)
+Ver. 1.4.0 (2023-02-21)
 
 This module shows how to run an own policy inside the MLPro standard agent model with a wrapped
 Petting Zoo environment.
@@ -38,16 +40,21 @@ You will learn:
 1) How to set up a scenario for a Petting Zoo environment in MLPro
 
 2) How to run the scenario
+
+3) How to save, reload and rerun a scenario
     
 """
 
 
+from pathlib import Path
 from pettingzoo.butterfly import pistonball_v6
 from pettingzoo.classic import connect_four_v3
 from mlpro.bf.math import *
 from mlpro.rl import *
 from mlpro.wrappers.pettingzoo import WrEnvPZOO2MLPro
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
+
+
 
 
 
@@ -104,9 +111,9 @@ class C4Scenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         if p_visualize:
-            zoo_env         = connect_four_v3.env(render_mode="ansi")
-        else:
             zoo_env         = connect_four_v3.env(render_mode="human")
+        else:
+            zoo_env         = connect_four_v3.env(render_mode="ansi")
         self._env           = WrEnvPZOO2MLPro(zoo_env, p_visualize=p_visualize, p_logging=p_logging)
         
         multi_agent         = MultiAgent(p_name='Connect4_Agents', p_ada=1, p_visualize=p_visualize, p_logging=p_logging)
@@ -142,11 +149,13 @@ if __name__ == "__main__":
     # 3.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
     visualize   = True 
-  
+    now         = datetime.now()
+    path        = str(Path.home()) + os.sep + '%04d-%02d-%02d  %02d.%02d.%02d Howto RL WP 003' % (now.year, now.month, now.day, now.hour, now.minute, now.second)
 else:
     # 3.2 Parameters for internal unit test
     logging     = Log.C_LOG_NOTHING
     visualize   = False
+    path        = None
  
 
 # 3.3 Instantiate one of two prepared demo scenarios
@@ -170,3 +179,13 @@ myscenario  = PBScenario(
 # 3.4 Reset and run the scenario
 myscenario.reset(1)
 myscenario.run() 
+
+
+if __name__ == '__main__':
+    # 3.5 In demo mode we save, reload and rerun the entire scenario to demonstrate persistence
+    myscenario.save(path, 'dummy')
+    input('\nPress ENTER to reload and run again...\n')
+    myscenario = PBScenario.load(path + os.sep + 'scenario')
+    myscenario.reset(1)
+    myscenario.run() 
+

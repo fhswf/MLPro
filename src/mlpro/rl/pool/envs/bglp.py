@@ -32,10 +32,11 @@
 ## -- 2022-06-14  2.2.5     SY       Add termination condition for batch production scenario
 ## -- 2022-08-24  2.2.6     SY       Update state calculation function
 ## -- 2022-11-09  2.2.7     DA       Refactoring due to changes on plot systematics
+## -- 2023-02-22  2.3.0     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.7 (2022-11-09)
+Ver. 2.3.0 (2023-02-22)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -965,7 +966,8 @@ class BGLP (Environment):
         self.power_t            = np.zeros((len(self.acts),1))
         self.transport_t        = np.zeros((len(self.acts),1))
         self.margin_t           = np.zeros((len(self.ress),1))
-        
+            
+        self.set_actions(action)
         x = 0
         while x < (self.t_set//self.t_step):
             overflow_diff, demand_diff, power_diff, transport_diff, margin_diff = self.get_status(self.t, self._demand)
@@ -977,7 +979,6 @@ class BGLP (Environment):
             self.t              += self.t_step
             x += 1
             
-        self.set_actions(action)
         self._state.set_success(False)
         self._state.set_broken(False)
         self._state = self.collect_substates()

@@ -22,10 +22,11 @@
 ## -- 2022-11-07  1.3.0     DA       Class MultiCartPole: new parameter p_visualize
 ## -- 2022-11-29  1.3.1     DA       Refactoring
 ## -- 2023-01-14  1.3.2     MRD      Removing default parameter new_step_api and render_mode for gym
+## -- 2023-02-22  1.3.3     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2023-01-14)
+Ver. 1.3.3 (2023-02-22)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -50,9 +51,11 @@ class MultiCartPole (Environment):
     sub-enironments can be parameterized.
     """
 
-    C_NAME      = 'MultiCartPole'
-    C_LATENCY   = timedelta(0,1,0)
-    C_INFINITY  = np.finfo(np.float32).max      
+    C_NAME          = 'MultiCartPole'
+    C_LATENCY       = timedelta(0,1,0)
+    C_INFINITY      = np.finfo(np.float32).max     
+
+    C_PLOT_ACTIVE   = True 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
@@ -67,17 +70,42 @@ class MultiCartPole (Environment):
         super().__init__(p_mode=Mode.C_MODE_SIM, p_visualize=p_visualize, p_logging=p_logging)
         self._state_space, self._action_space = self._setup_spaces()
 
+        self._init_cartpoles()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_cartpoles(self):
         for i in range(self._num_envs): 
             state_space_id   = self._state_space.get_dim_ids()
             action_space_id  = self._action_space.get_dim_ids()
             state_space_env  = self._state_space.spawn([state_space_id[i*4], state_space_id[i*4+1], state_space_id[i*4+2], state_space_id[i*4+3]])
             action_space_env = self._action_space.spawn([action_space_id[i]])
             env_make         = gym.make('CartPole-v1')
-            env              = WrEnvGYM2MLPro(env_make, state_space_env, action_space_env, p_visualize=p_visualize, p_logging=p_logging)
+            env              = WrEnvGYM2MLPro(env_make, state_space_env, action_space_env, p_visualize=self.get_visualization(), p_logging=self.get_log_level())
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)
         
         self.reset()
+
+
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def load(p_path, p_filename):
+        mcp = LoadSave.load(p_path, p_filename)
+        mcp._init_cartpoles()
+        return mcp
+
+
+## -------------------------------------------------------------------------------------------------
+    def _save(self, p_path, p_filename) -> bool:
+        self._envs.clear()
+
+        pkl.dump( obj=self, 
+                  file=open(p_path + os.sep + p_filename, "wb"),
+                  protocol=pkl.HIGHEST_PROTOCOL )
+
+        self._init_cartpoles()
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------

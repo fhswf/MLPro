@@ -1,8 +1,8 @@
 .. _Howto Env RL 005:
-Howto RL-ENV-005: Run Agent with random action in Double Pendulum Environment
+Howto RL-ENV-005: Run Agent with random policy on double pendulum mujoco environment
 ====================================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_actions_on_double_pendulum_environment
+.. automodule:: mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment
 
 
 **Prerequisites**
@@ -11,13 +11,14 @@ Howto RL-ENV-005: Run Agent with random action in Double Pendulum Environment
 Please install the following packages to run this examples properly:
 
     - `NumPy <https://pypi.org/project/numpy/>`_
-    - `Matplotlib <https://pypi.org/project/matplotlib/>`_
+    - `MuJoCo <https://pypi.org/project/mujoco/>`_
+    - `lxml <https://pypi.org/project/lxml/>`_
 
 
 
-**Executable code**
+Executable code
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_005_run_agent_with_random_actions_on_double_pendulum_environment.py
+.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment.py
 	:language: python
 
 
@@ -25,11 +26,9 @@ Please install the following packages to run this examples properly:
 **Results**
 
 
-.. image:: images/doublependulum_randomagent.gif
-    :width: 900 px
+.. image:: images/MuJoCo.gif
+    :width: 500 px
     :align: center
-
-Running this howto shall generate visualizations for double endulum environment and the reward, resectively.
 
 
 

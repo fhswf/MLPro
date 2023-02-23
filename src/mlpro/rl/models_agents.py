@@ -51,10 +51,11 @@
 ## -- 2022-12-09  1.6.3     DA       Refactoring
 ## -- 2023-01-02  1.6.4     SY       Add multi-processing on MultiAgent
 ## -- 2023-02-04  1.6.5     SY       Temporarily remove multi-processing on MultiAgent
+## -- 2023-02-21  1.6.6     DA       Class MultiAgent: removed methods load(), save()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.5 (2023-02-04) 
+Ver. 1.6.6 (2023-02-21) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -785,41 +786,41 @@ class MultiAgent(Agent):
             agent_entry[0].set_log_level(p_level)
 
 
-## -------------------------------------------------------------------------------------------------
-    def get_filename(self) -> str:
-        return self.C_TYPE + ' ' + self.C_NAME + self.C_SUFFIX
+# ## -------------------------------------------------------------------------------------------------
+#     def get_filename(self) -> str:
+#         return self.C_TYPE + ' ' + self.C_NAME + self.C_SUFFIX
 
 
-## -------------------------------------------------------------------------------------------------
-    def load(self, p_path, p_filename=None) -> bool:
-        # load all subagents
-        for i, agent_entry in enumerate(self._agents):
-            agent = agent_entry[0]
-            agent_name = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
+# ## -------------------------------------------------------------------------------------------------
+#     def load(self, p_path, p_filename=None) -> bool:
+#         # load all subagents
+#         for i, agent_entry in enumerate(self._agents):
+#             agent = agent_entry[0]
+#             agent_name = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
 
-            if agent.load(p_path, agent_name + agent.C_SUFFIX):
-                self.log(Log.C_LOG_TYPE_I, agent_name + ' loaded')
-            else:
-                self.log(Log.C_LOG_TYPE_E, agent_name + ' not loaded')
-                return False
+#             if agent.load(p_path, agent_name + agent.C_SUFFIX):
+#                 self.log(Log.C_LOG_TYPE_I, agent_name + ' loaded')
+#             else:
+#                 self.log(Log.C_LOG_TYPE_E, agent_name + ' not loaded')
+#                 return False
 
-        return True
+#         return True
 
 
-## -------------------------------------------------------------------------------------------------
-    def save(self, p_path, p_filename=None) -> bool:
-        # save all subagents
-        for i, agent_entry in enumerate(self._agents):
-            agent = agent_entry[0]
-            agent_name = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
+# ## -------------------------------------------------------------------------------------------------
+#     def save(self, p_path, p_filename=None) -> bool:
+#         # save all subagents
+#         for i, agent_entry in enumerate(self._agents):
+#             agent = agent_entry[0]
+#             agent_name = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
 
-            if agent.save(p_path, agent_name + agent.C_SUFFIX):
-                self.log(Log.C_LOG_TYPE_I, agent_name + ' saved')
-            else:
-                self.log(Log.C_LOG_TYPE_E, agent_name + ' not saved')
-                return False
+#             if agent.save(p_path, agent_name + agent.C_SUFFIX):
+#                 self.log(Log.C_LOG_TYPE_I, agent_name + ' saved')
+#             else:
+#                 self.log(Log.C_LOG_TYPE_E, agent_name + ' not saved')
+#                 return False
 
-        return True
+#         return True
 
 
 ## -------------------------------------------------------------------------------------------------

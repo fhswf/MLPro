@@ -35,11 +35,12 @@
 ## -- 2023-02-02  1.6.6     DA       Renamed some rl howtos
 ## -- 2023-02-04  1.6.7     SY       Renaming some bf howtos
 ## -- 2023-02-15  1.6.8     DA       Renaming and extension of howtos for bf.ml
+## -- 2023-02-23  1.6.9     DA       Renamed some rl howtos
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.6.8 (2023-02-15)
+Ver. 1.6.9 (2023-02-23)
 
 Unit test for all examples available.
 """
@@ -105,12 +106,9 @@ howto_list = {
     "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_004": "mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_005": "mlpro.rl.examples.howto_rl_agent_005_train_and_reload_single_agent",
-    # "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_sb3_policy_on_ur5_environment",
-    "rl_env_002": "mlpro.rl.examples.howto_rl_env_002_train_agent_with_SB3_policy_on_robothtm_environment",
-    # "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_train_agent_with_sb3_policy_on_multigeo_environment",
-    "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_actions_on_double_pendulum_environment",
-    # "rl_env_006": "mlpro.rl.examples.howto_rl_env_006_train_agent_with_sb3_policy_on_double_pendulum_environment",
-    "rl_env_007": "mlpro.rl.examples.howto_rl_env_007_run_agent_with_random_policy_on_double_pendulum_mujoco_environment",
+    "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment",
+    "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_run_agent_with_random_actions_on_double_pendulum_environment",
+    "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment",
     "rl_ht_001": "mlpro.rl.examples.howto_rl_ht_001_hyperopt",
     "rl_ht_002": "mlpro.rl.examples.howto_rl_ht_002_optuna",
     # "rl_mb_001": "mlpro.rl.examples.howto_rl_mb_001_robothtm_environment",

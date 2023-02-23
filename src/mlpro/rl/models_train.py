@@ -56,6 +56,7 @@ This module provides model classes to define and run rl scenarios and to train a
 """
 
 
+import dill as pkl
 from mlpro.bf.data import DataStoring
 from mlpro.bf.math import *
 from mlpro.bf.ml import *
@@ -369,7 +370,7 @@ class RLScenario (Scenario):
         self._env   = None
         pkl.dump( obj=self, 
                   file=open(scenario_path + os.sep + 'scenario', "wb"),
-                  protocol=pkl.HIGHEST_PROTOCOL )        
+                  protocol=pkl.HIGHEST_PROTOCOL )
 
         # 4 Reload model and env
         self._model = self._model_class.load(scenario_path, 'model')
