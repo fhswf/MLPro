@@ -21,10 +21,11 @@
 ## -- 2023-02-04  1.5.0     DA       United classes SystemBase, System to new class System
 ## -- 2023-02-13  1.5.1     MRD      Simplify State Space and Action Space generation
 ## -- 2023-02-20  1.6.0     DA       Class System: new parent class LoadSave to enable persistence
+## -- 2023-02-23  1.6.1     MRD      Add the posibility to customize the action between MLPro and MuJoCo
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2023-02-20)
+Ver. 1.6.1 (2023-02-23)
 
 This module provides models and templates for state based systems.
 """
@@ -883,12 +884,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
 
         # Put Mujoco here
         if self._mujoco_handler is not None:
-            current_state = self.get_state()
-            if callable(getattr(self, '_obs_to_mujoco', None)):
-                current_state = self._obs_to_mujoco(current_state)
-
-            ob = self._mujoco_handler._reset_simulation(current_state)
-            
+            ob = self._mujoco_handler._reset_simulation()
             self._state = State(self.get_state_space())
             self._state.set_values(ob)
 
@@ -1121,7 +1117,9 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         if self._fct_strans is not None:
             return self._fct_strans.simulate_reaction(p_state, p_action)
         elif self._mujoco_handler is not None:
-            self._mujoco_handler._step_simulation(p_action)
+            # Check if there is changing in action
+            action = self.action_to_mujoco(p_action)
+            self._mujoco_handler._step_simulation(action)
 
             # Delay because of the simulation
             sleep(self.get_latency().total_seconds())
@@ -1143,6 +1141,35 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         """
         
         raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def action_to_mujoco(self, p_mlpro_action):
+        """
+        Action conversion method from converting MLPro action to MuJoCo action.
+        """
+        
+        return self._action_to_mujoco(p_mlpro_action)
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def _action_to_mujoco(self, p_mlpro_action):
+        """
+        Custom method for to do transition between MuJoCo state and MLPro state. Implement this method
+        if the MLPro state has different dimension from MuJoCo state.
+
+        Parameters
+        ----------
+        p_mujoco_state : Numpy
+            MLPro action.
+
+        Returns
+        -------
+        Numpy
+            Modified MLPro action
+        """
+        
+        return p_mlpro_action
 
 
 ## -------------------------------------------------------------------------------------------------    
