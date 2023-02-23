@@ -3,7 +3,7 @@ MLPro-BF - Basic Functions
 ==========================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
    :glob:
    
    mlpro_bf/*

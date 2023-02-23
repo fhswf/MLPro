@@ -3,7 +3,7 @@ A1 - Example Pool
 =================
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 5
    :glob:
 
    sub/*

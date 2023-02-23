@@ -46,7 +46,6 @@ Model class. These, in turn, take up the concepts of **Dimension**, **Set/Space*
 **Cross Reference**
 
 - :ref:`Howto BF-ML-001: Adaptive Model <Howto BF ML 001>`
-- howto 2: group of custom models in a workflow with random adaptation cascades
 - :ref:`Howto BF-ML-010: Hyperparameters <Howto BF ML 010>`
 - :ref:`Models in Reinforcement Learning: Policy, Agent, MultiAgent <target_agents_RL>`
 - :ref:`Models in Game Theory: Player, MultiPlayer <target_players_GT>`

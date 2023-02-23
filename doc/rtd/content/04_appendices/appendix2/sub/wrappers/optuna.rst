@@ -11,4 +11,4 @@ Optuna
 
 **Cross References**
 
-- :ref:`Howto BF-008: Hyperparameter Tuning using Optuna<Howto BF 008>`
+- :ref:`Howto BF-008: Hyperparameter Tuning using Optuna <Howto BF 008>`

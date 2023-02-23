@@ -3,7 +3,7 @@ MLPro-GT - Game Theory
 ======================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
    :glob:
    
    mlpro_gt/*

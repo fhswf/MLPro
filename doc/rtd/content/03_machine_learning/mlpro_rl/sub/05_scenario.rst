@@ -24,5 +24,6 @@ Moreover, you can create either a single-agent scenario or a multi-agent scenari
 Here is the commented class diagram for creating a custom scenario in MLPro-RL:
 
 .. image:: images/MLPro-RL-Scenario_Class_Commented.png
+    :width: 1000
 
 For setting-up a scenarion for single-agent and multi-agent in MLPro-RL, you can refer to :ref:`this page<target_training_RL>`.

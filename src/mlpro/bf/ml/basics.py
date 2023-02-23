@@ -57,10 +57,13 @@
 ## --                                New class AWorkflow
 ## -- 2023-02-02  2.0.1     DA       Class Model: signature of method init_plot() refactored
 ## -- 2023-02-15  2.0.2     DA       Class Model: completed signature of method get_accuracy()
+## -- 2023-02-20  2.1.0     DA       Class Training: 
+## --                                - Method run_cycle(): scenario is now saved after training
+## --                                - New methods get_training_path()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.2 (2023-02-15)
+Ver. 2.1.0 (2023-02-20)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -610,7 +613,8 @@ class Scenario (ScenarioBase):
     def __init__(self, 
                  p_mode=Mode.C_MODE_SIM,       
                  p_ada:bool=True,               
-                 p_cycle_limit:int=0,              
+                 p_cycle_limit:int=0,  
+                 p_auto_setup : bool = True,            
                  p_visualize:bool=True,              
                  p_logging=Log.C_LOG_ALL ):  
 
@@ -618,7 +622,7 @@ class Scenario (ScenarioBase):
 
         super().__init__( p_mode=p_mode,
                           p_cycle_limit=p_cycle_limit,
-                          p_auto_setup=True,
+                          p_auto_setup=p_auto_setup,
                           p_visualize=p_visualize,
                           p_logging=p_logging )  
 
@@ -1182,7 +1186,9 @@ class Training (Log):
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR, '\n')
 
-            self._scenario.get_model().save(self._current_path, 'trained model.pkl')
+            if self._current_path is not None:
+                self._scenario.save(self._current_path, 'scenario')
+                
             self._close_results(self._results)
             self._results.log_results()
 
@@ -1247,6 +1253,11 @@ class Training (Log):
 ## -------------------------------------------------------------------------------------------------
     def get_results(self) -> TrainingResults:
         return self._results
+
+    
+## -------------------------------------------------------------------------------------------------
+    def get_training_path(self) -> str:
+        return self._root_path
 
 
 
