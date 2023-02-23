@@ -38,7 +38,7 @@ class MLP(PyTorchSLNetwork):
         Related hyperparameter tuple of the network. Default = None
     p_kwargs : Dict
         Further model specific parameters.
-     """
+    """
 
     C_TYPE = 'MLP using PyTorch'
     C_NAME = '????'
@@ -46,6 +46,49 @@ class MLP(PyTorchSLNetwork):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_model(self):
+        """
+        Here are the list of parameters that are essentials to be stored in self._parameters:
+
+        Parameters
+        ----------
+        p_num_hidden_layers : int
+            number of hidden layers.
+        p_hidden_size : int or list
+            number of hidden neurons. There are two possibilities to set up the hidden size:
+            1) if p_hidden_size is an integer, then the number of neurons in all hidden layers are
+            exactly the same.
+            2) if p_hidden_size is in a list, then the user can define the number of neurons in
+            each hidden layer, but make sure that the length of the list must be equal to the
+            number of hidden layers.
+        p_activation_fct : torch.nn or list
+            activation function. There are two possibilities to set up the activation function:
+            1) if p_activation_fct is a single activation function, then the activation function after all
+            hidden layers are exactly the same.
+            2) if p_activation_fct is in a list, then the user can define the activation function after
+            each hidden layer, but make sure that the length of the list must be equal to the
+            number of hidden layers.
+        p_custom_layers : torch.nn or list, optional
+            customization of processed layers. There are three possibilities to set up the layers:
+            1) if p_custom_layers is empty or None, then all of the layers use torch.nn.Linear
+            2) if p_custom_layers is a single instance, then all layers apply the same structure
+            3) if p_custom_layers is in a list, then the user can define the layers of each hidden layer,
+            but make sure that the length of the list must be equal to the number of hidden layers plus
+            one.
+        p_output_activation_fct : torch.nn
+            the activation function of the output layer.
+        p_optimizer : torch.nn
+            PyTorch-based optimizer.
+        p_loss_fct : torch.nn
+            PyTorch-based loss function.
+        p_weight_bias_init : bool, optional
+            weight and bias initialization. Default : True
+        p_weight_init : torch.nn, optional
+            weight initialization function. Default : torch.nn.init.orthogonal_
+        p_bias_init : torch.nn, optional
+            bias initilization function. Default : lambda x: torch.nn.init.constant_(x, 0)
+        p_gain_init : int, optional
+            gain parameter of the weight and bias initialization. Default : np.sqrt(2)
+        """
 
         # parameters checking
 
@@ -99,6 +142,9 @@ class MLP(PyTorchSLNetwork):
         else:
             self._loss_function = self._parameters['p_loss_fct']
         
+        if self._parameters.get('p_weight_bias_init') not in self._parameters:
+            self._parameters['p_weight_bias_init'] = True
+        
         if self._parameters.get('p_weight_init') not in self._parameters:
             self._parameters['p_weight_init'] = torch.nn.init.orthogonal_
         
@@ -110,10 +156,11 @@ class MLP(PyTorchSLNetwork):
         
         # setting up model
 
-        init_ = lambda mod: self._default_weight_bias_init(mod,
-                                                           self._parameters['p_weight_init'],
-                                                           self._parameters['p_bias_init'],
-                                                           self._parameters['p_gain_init'])
+        if self._parameters['p_weight_bias_init']:
+            init_ = lambda mod: self._default_weight_bias_init(mod,
+                                                            self._parameters['p_weight_init'],
+                                                            self._parameters['p_bias_init'],
+                                                            self._parameters['p_gain_init'])
 
         modules = []
         for hd in range(self._parameters['p_num_hidden_layers']+1):
@@ -130,10 +177,16 @@ class MLP(PyTorchSLNetwork):
                 output_size = self._parameters['p_hidden_size'][hd]
                 act_fct = self._parameters['p_activation_fct'][hd]
             
-            if self._parameters['p_custom_layers'] is None:
-                modules.append(init_(torch.nn.Linear(act_input_size, output_size)))
+            if self._parameters['p_weight_bias_init']:
+                if self._parameters['p_custom_layers'] is None:
+                    modules.append(init_(torch.nn.Linear(act_input_size, output_size)))
+                else:
+                    modules.append(init_(self._parameters['p_custom_layers'](act_input_size, output_size)))
             else:
-                modules.append(init_(self._parameters['p_custom_layers'](act_input_size, output_size)))
+                if self._parameters['p_custom_layers'] is None:
+                    modules.append(torch.nn.Linear(act_input_size, output_size))
+                else:
+                    modules.append(self._parameters['p_custom_layers'](act_input_size, output_size))
             modules.append(act_fct)
 
         model = torch.nn.Sequential(*modules)
@@ -163,11 +216,16 @@ class MLP(PyTorchSLNetwork):
         ----------
             updated model network
         """
+
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def _default_weight_bias_init(self, module, weight_init, bias_init, gain=1):
+        """
+        Weight and bias initialization method.
+        """
+
         weight_init(module.weight.data, gain=gain)
         bias_init(module.bias.data)
         return module
@@ -175,6 +233,20 @@ class MLP(PyTorchSLNetwork):
 
 ## -------------------------------------------------------------------------------------------------
     def forward(self, p_input:torch.Tensor) -> torch.Tensor:
+        """
+        Forward propagation in neural networks to generate some output using PyTorch.
+
+        Parameters
+        ----------
+        p_input : Element
+            Input data
+
+        Returns
+        ----------
+        output : Element
+            Output data
+        """
+
         BatchSize   = p_input.shape[0]
         output      = self._sl_model(p_input)   
         output      = output.reshape(BatchSize, self._output_size)
