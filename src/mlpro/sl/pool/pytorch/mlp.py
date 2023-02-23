@@ -46,7 +46,9 @@ class MLP(PyTorchSLNetwork):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_model(self):
+
         # parameters checking
+
         if self._parameters.get('p_num_hidden_layers') not in self._parameters:
             raise ParamError("p_num_hidden_layers is not defined.")
         
@@ -67,10 +69,22 @@ class MLP(PyTorchSLNetwork):
             if len(self._parameters['p_activation_fct']) != self._parameters['p_num_hidden_layers']:
                 raise ParamError("length of p_activation_fct list must be equal to p_num_hidden_layers or a single activation function.")
         except:
-            if not isinstance(self._parameters['p_activation_fct'], int):
+            if isinstance(self._parameters['p_activation_fct'], list):
                 raise ParamError("length of p_activation_fct list must be equal to p_num_hidden_layers or a single activation function.")
             else:
                 self._parameters['p_activation_fct'] = [self._parameters['p_activation_fct']] * self._parameters['p_num_hidden_layers']
+        
+        if self._parameters.get('p_custom_layers') in self._parameters and self._parameters['p_custom_layers'] is not None:
+            try:
+                if len(self._parameters['p_custom_layers']) != self._parameters['p_num_hidden_layers']+1:
+                    raise ParamError("length of p_custom_layers list must be equal to p_num_hidden_layers or a single custom layer.")
+            except:
+                if isinstance(self._parameters['p_custom_layers'], list):
+                    raise ParamError("length of p_custom_layers list must be equal to p_num_hidden_layers or a single custom layer.")
+                else:
+                    self._parameters['p_custom_layers'] = [self._parameters['p_custom_layers']] * (self._parameters['p_num_hidden_layers']+1)
+        else:
+            self._parameters['p_custom_layers'] = None
         
         if self._parameters.get('p_output_activation_fct') not in self._parameters:
             raise ParamError("p_output_activation_fct is not defined.")
@@ -84,11 +98,22 @@ class MLP(PyTorchSLNetwork):
             raise ParamError("p_loss_fct is not defined.")
         else:
             self._loss_function = self._parameters['p_loss_fct']
+        
+        if self._parameters.get('p_weight_init') not in self._parameters:
+            self._parameters['p_weight_init'] = torch.nn.init.orthogonal_
+        
+        if self._parameters.get('p_bias_init') not in self._parameters:
+            self._parameters['p_bias_init'] = lambda x: torch.nn.init.constant_(x, 0)
+        
+        if self._parameters.get('p_gain_init') not in self._parameters:
+            self._parameters['p_gain_init'] = np.sqrt(2)
+        
+        # setting up model
 
         init_ = lambda mod: self._default_weight_bias_init(mod,
-                                                           torch.nn.init.orthogonal_,
-                                                           lambda x: torch.nn.init.constant_(x, 0),
-                                                           np.sqrt(2))
+                                                           self._parameters['p_weight_init'],
+                                                           self._parameters['p_bias_init'],
+                                                           self._parameters['p_gain_init'])
 
         modules = []
         for hd in range(self._parameters['p_num_hidden_layers']+1):
@@ -105,10 +130,15 @@ class MLP(PyTorchSLNetwork):
                 output_size = self._parameters['p_hidden_size'][hd]
                 act_fct = self._parameters['p_activation_fct'][hd]
             
-            modules.append(init_(torch.nn.Linear(act_input_size, output_size)))
+            if self._parameters['p_custom_layers'] is None
+                modules.append(init_(torch.nn.Linear(act_input_size, output_size)))
+            else:
+                modules.append(init_(self._parameters['p_custom_layers'](act_input_size, output_size)))
             modules.append(act_fct)
 
         model = torch.nn.Sequential(*modules)
+
+        # add process to the model
 
         try:
             model = self._add_init(model)
