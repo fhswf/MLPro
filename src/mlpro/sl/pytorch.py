@@ -138,6 +138,7 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
         p_elem : BufferElement
             an element of the buffer
         """
+
         Buffer.add_element(self, p_elem)
         self._internal_counter += 1
 
@@ -147,6 +148,7 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
         """
         This method has a functionality to get the number of elements being added to the buffer.
         """
+
         return self._internal_counter
 
 
@@ -160,6 +162,7 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
         idx : int
             an index of the buffer
         """
+
         return self._data_buffer["input"][idx], self._data_buffer["output"][idx]
 
 
@@ -169,6 +172,7 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
         This method has a functionality to sample from the buffer using built-in PyTorch
         functionalities.
         """
+
         dataset_size    = len(self._data_buffer)
         indices         = list(range(dataset_size))
         split           = int(np.floor(self._testing_data*dataset_size))
@@ -291,6 +295,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         input : torch.Tensor
             Input data in the form of torch.Tensor.
         """
+
         # Convert p_input from Element to Tensor
         input = torch.Tensor([p_input.get_values()])
 
@@ -318,6 +323,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         output : torch.Tensor
             Output data in the form of torch.Tensor.
         """
+
         # Convert p_output from Element to Tensor
         output = torch.Tensor([p_output.get_values()])
 
@@ -346,6 +352,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         output : list
             Output data in the form of list.
         """
+
         # Output Post Processing if needed
         try:
             output = self._output_postproc(p_output)
@@ -373,6 +380,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         input : torch.Tensor
             Processed input data in the form of torch.Tensor.
         """
+
         raise NotImplementedError
 
 
@@ -391,6 +399,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         output : torch.Tensor
             Processed output data in the form of torch.Tensor.
         """
+
         raise NotImplementedError
 
 
@@ -409,6 +418,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         output : torch.Tensor
             Processed output data in the form of torch.Tensor.
         """
+
         raise NotImplementedError
 
 
@@ -424,6 +434,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         p_output : Element
             Setpoint ordinate/output element (type Element)
         """
+
         # Input pre processing
         input = self.input_preproc(p_input)
 
@@ -447,6 +458,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         p_buffer_element : PyTorchIOElement
             An element of PyTorchBuffer.
         """
+
         self._buffer.add_element(p_buffer_element)
 
 
@@ -462,6 +474,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         p_pred_output : Element
             Predicted output by the SL model.
         """
+        
         model_act_output  = self.output_preproc(p_act_output)
         model_pred_output = self.output_preproc(p_pred_output)
 

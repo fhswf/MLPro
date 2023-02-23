@@ -93,8 +93,7 @@ class SLNetwork:
 
         Returns
         ----------
-        output : Element
-            Output data
+            Network model
         """
 
         raise NotImplementedError
