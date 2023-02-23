@@ -506,8 +506,7 @@ class MujocoHandler(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
     def _step_simulation(self, p_action : Action):
-        action = p_action.get_sorted_values()
-        self._data.ctrl[:] = action
+        self._data.ctrl[:] = p_action
         mujoco.mj_step(self._model, self._data, nstep=self._frame_skip)
         mujoco.mj_rnePostConstraint(self._model, self._data)
         if self._visualize:

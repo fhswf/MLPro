@@ -1148,8 +1148,8 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         """
         Action conversion method from converting MLPro action to MuJoCo action.
         """
-        
-        return self._action_to_mujoco(p_mlpro_action)
+        action = p_mlpro_action.get_sorted_values()
+        return self._action_to_mujoco(action)
     
     
 ## -------------------------------------------------------------------------------------------------
