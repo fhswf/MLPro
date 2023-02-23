@@ -25,7 +25,7 @@ import torch
 from torch.utils.data.sampler import SubsetRandomSampler
 from mlpro.sl.models import *
 from mlpro.bf.ml import *
-from mlpro.bf.data import BufferElement
+from mlpro.bf.data import BufferElement, Buffer
 
 
 
@@ -143,7 +143,7 @@ class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_internal_counter(self):
+    def get_internal_counter(self) -> int:
         """
         This method has a functionality to get the number of elements being added to the buffer.
         """
@@ -219,7 +219,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         Further model specific parameters (to be specified in child class).
     """
 
-    C_NAME          = "PyTorch-based Adaptive Function"
+    C_TYPE          = "PyTorch-based Adaptive Function"
     C_BUFFER_CLS    = PyTorchBuffer
 
 
