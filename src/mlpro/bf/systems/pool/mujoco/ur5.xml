@@ -1,5 +1,5 @@
 <mujoco model="ur5">
-    <compiler angle="radian" inertiafromgeom="true" meshdir="mesh/"/>
+    <compiler angle="radian" inertiafromgeom="true" meshdir="assets/mesh/"/>
     <option gravity="0 0 0" timestep="0.05" impratio="20" tolerance="1e-10"/>
     <size njmax="600" nconmax="150" nstack="300000"/>
 

@@ -1,40 +1,28 @@
 <mujoco>
+    <default>
+        <geom contype='0' friction='1 0.1 0.1'/>
+    </default>
     <worldbody>
         <body name="cart" pos="0 0 0.75">
             <geom name="cart" type="box" size="0.2 0.1 0.1" rgba="0.9 0.9 0.9 1"/>
             <joint name="slide" type="slide" axis="1 0 0"/>
-        </body>
-        <body name="pole" pos="0 0 1.5">
-            <geom name="pole" type="capsule" size="0.1 0.6" rgba="0.9 0.9 0.9 1"/>
-            <joint name="hinge" type="hinge" axis="0 1 0"/>
+            <body name="pole" pos="0 0 0.9">
+                <geom name="pole" type="capsule" size="0.045 0.6" rgba="0.9 0.9 0.9 1"/>
+                <joint name="hinge" type="hinge" pos="0 0 -0.6" axis="0 1 0"/>
+            </body>
         </body>
     </worldbody>
-
     <actuator>
-        <motor name="force" joint="slide" ctrlrange="-50 50"/>
+        <motor name="force" joint="slide" ctrllimited="true" ctrlrange="-50 50"/>
     </actuator>
-
-    <sensor>
-        <touch name="touch" site="pole"/>
-        <accelerometer name="accel" site="cart" />
-    </sensor>
-
     <visual>
-        <map fogstart="3" fogend="5" force="true"/>
+        <map fogstart="3" fogend="5" znear="0.05"/>
     </visual>
-
-    <option>
-        <integrator accuracy="0.001" />
-        <flag warmstart="false" />
-    </option>
-
     <asset>
         <texture name="texplane" type="2d" builtin="checker" rgb1="1 1 1" rgb2="0.2 0.2 0.2" width="512" height="512" mark="cross" markrgb="1 0 0" />
         <material name="matplane" reflectance="0.5" texture="texplane" />
     </asset>
-
     <worldbody>
         <geom name="ground" pos="0 0 0" size="50 50 0.125" type="plane" material="matplane" />
     </worldbody>
-
 </mujoco>
