@@ -1,4 +1,7 @@
 <mujoco>
+    <option timestep="0.05" gravity="0 0 -9.81" integrator="RK4">
+		<flag sensornoise="enable" energy="enable"/>
+	</option>
     <default>
         <geom contype='0' friction='1 0.1 0.1'/>
     </default>
