@@ -474,7 +474,7 @@ class PyTorchAFct(SLAdaptiveFunction):
         p_pred_output : Element
             Predicted output by the SL model.
         """
-        
+
         model_act_output  = self.output_preproc(p_act_output)
         model_pred_output = self.output_preproc(p_pred_output)
 
@@ -515,3 +515,12 @@ class PyTorchAFct(SLAdaptiveFunction):
             loss.backward()
             self._net_model._optimizer.step()
         return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_offline(self, p_dataset) -> bool:
+        """
+        To be designed. Since it depends on the data type of p_dataset as the input.
+        """
+
+        raise NotImplementedError
