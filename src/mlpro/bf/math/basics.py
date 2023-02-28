@@ -34,10 +34,11 @@
 ## --                                - internal optimizations
 ## --                                Class Set:
 ## --                                - new method is_numeric()
+## -- 2023-02-28  2.2.0     DA       Class Function: new method __call__()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2022-12-13)
+Ver. 2.2.0 (2023-02-28)
 
 This module provides basic mathematical classes.
 """
@@ -557,12 +558,24 @@ class Function:
         self._input_space = p_input_space
         self._output_space = p_output_space
         self._output_elem_cls = p_output_elem_cls
+        self.map = self.__call__
 
 
 ## -------------------------------------------------------------------------------------------------
-    def map(self, p_input: Element) -> Element:
+    def __call__(self, p_input:Element) -> Element:
         """
-        Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
+        Maps a multivariate abscissa/input element to a multivariate ordinate/output element by 
+        calling the custom method _map().
+
+        Parameters
+        ----------
+        p_input : Element
+            Input element to be mapped.
+        
+        Returns
+        -------
+        output : Element
+            Output element.
         """
 
         output = self._output_elem_cls(self._output_space)
@@ -571,5 +584,20 @@ class Function:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def map(self, p_input: Element) -> Element:
+        """
+        Alternative method to map an input to an output. Actually, it refers to method __call__().
+        Redefining this method has no effect. See method __call__() and constructor for further
+        details.
+        """
+
+        return self.__call__(p_input=p_input)
+
+
+## -------------------------------------------------------------------------------------------------
     def _map(self, p_input: Element, p_output: Element):
+        """
+        Custom method for own mapping algorithm. See methods __call__() and map() for further details.
+        """
+        
         raise NotImplementedError
