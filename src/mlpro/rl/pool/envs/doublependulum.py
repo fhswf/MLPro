@@ -243,7 +243,7 @@ class DoublePendulumRoot (Environment):
         self._plot_level = p_plot_level
 
 
-        super().__init__(p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging, p_latency=p_latency)
+        Environment.__init__(p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging, p_latency=p_latency)
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
         self._rst_balancing = p_rst_balancing
