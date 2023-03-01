@@ -12,12 +12,13 @@
 # ## -- 2022-11-15  2.0.2     DA        Class TorchAFct: new parent class SLAdaptiveFunction
 # ## -- 2023-02-22  3.0.0     SY        - Shifted from mlpro.sl.afct
 # ## --                                 - Release the third version
+# ## -- 2023-03-01  3.0.1     SY        Updating and shifting from mlpro.sl.models
 # ## -------------------------------------------------------------------------------------------------
 
 # """
-# Ver. 3.0.0 (2023-02-22)
+# Ver. 3.0.1 (2023-03-01)
 
-# This module provides model classes for supervised learning tasks using PyTorch. 
+# This a helper module for supervised learning models using PyTorch. 
 # """
 
 
@@ -26,51 +27,6 @@
 # from mlpro.sl.models import *
 # from mlpro.bf.ml import *
 # from mlpro.bf.data import BufferElement, Buffer
-
-
-
-
-
-# ## -------------------------------------------------------------------------------------------------
-# ## -------------------------------------------------------------------------------------------------
-# class PyTorchSLNetwork(SLNetwork, torch.nn.Module):
-#     """
-#     This class provides the base class of a supervised learning network using PyTorch.
-
-#     Parameters
-#     ----------
-#     p_input_size : int
-#         Input size of the network. Default = None
-#     p_output_size : int
-#         Output size of the network. Default = None
-#     p_hyperparameter : HyperParamTuple
-#         Related hyperparameter tuple of the network. Default = None
-#     p_kwargs : Dict
-#         Further model specific parameters.
-#      """
-
-#     C_TYPE = 'PyTorchSLNetwork'
-#     C_NAME = '????'
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def forward(self, p_input:torch.Tensor) -> torch.Tensor:
-#         """
-#         Custom forward propagation in neural networks to generate some output that can be called by
-#         an external method. Please redefine.
-
-#         Parameters
-#         ----------
-#         p_input : torch.Tensor
-#             Input data
-
-#         Returns
-#         ----------
-#         output : torch.Tensor
-#             Output data
-#         """
-
-#         raise NotImplementedError
 
 
 
@@ -521,6 +477,26 @@
 #     def _adapt_offline(self, p_dataset) -> bool:
 #         """
 #         To be designed. Since it depends on the data type of p_dataset as the input.
+#         """
+
+#         raise NotImplementedError
+
+
+# ## -------------------------------------------------------------------------------------------------
+#     def forward(self, p_input:torch.Tensor) -> torch.Tensor:
+#         """
+#         Custom forward propagation in neural networks to generate some output that can be called by
+#         an external method. Please redefine.
+
+#         Parameters
+#         ----------
+#         p_input : torch.Tensor
+#             Input data
+
+#         Returns
+#         ----------
+#         output : torch.Tensor
+#             Output data
 #         """
 
 #         raise NotImplementedError
