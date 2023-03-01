@@ -16,7 +16,7 @@ This module provides a template ready-to-use MLP model using PyTorch.
 """
 
 
-from mlpro.sl.pytorch import *
+from mlpro.sl.pool.afct.pytorch import *
 
 
 
