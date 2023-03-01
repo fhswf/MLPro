@@ -27,7 +27,6 @@ from mlpro.sl import *
 class FeedforwardNN(SLAdaptiveFunction):
     """
     This class provides the base class of feedforward neural networks.
-
     """
 
     C_TYPE = 'Feedforward NN'
@@ -76,7 +75,7 @@ class FeedforwardNN(SLAdaptiveFunction):
         This method provides provide a funtionality to call the optimizer of the feedforward network.
         """
         
-        raise NotImplementedError
+        self._parameters['optimizer']()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -93,7 +92,7 @@ class FeedforwardNN(SLAdaptiveFunction):
             Predicted output by the SL model.
         """
         
-        raise NotImplementedError
+        return self._parameters['loss_fct'](p_act_output.get_values(), p_pred_output.get_values())
 
 
 
@@ -102,107 +101,72 @@ class FeedforwardNN(SLAdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SLNetwork:
+class MLP(FeedforwardNN):
     """
-    This class provides the base class of a supervised learning network.
+    This class provides the base class of multilayer perceptron.
+    """
 
-    Parameters
-    ----------
-    p_input_size : int
-        Input size of the network. Default = None
-    p_output_size : int
-        Output size of the network. Default = None
-    p_hyperparameter : HyperParamTuple
-        Related hyperparameter tuple of the network. Default = None
-    p_kwargs : Dict
-        Further model specific parameters.
-     """
-
-    C_TYPE = 'SLNetwork'
-    C_NAME = '????'
+    C_TYPE = 'Multilayer Perceptron'
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_input_size:int=None,
-                 p_output_size:int=None,
-                 p_hyperparameter:HyperParamTuple=None,
-                 **p_kwargs):
-        
-        self._input_size            = p_input_size
-        self._output_size           = p_output_size
-        self._hyperparameter_tuple  = p_hyperparameter
-        if p_kwargs is not None:
-            self._parameters        = p_kwargs
-        else:
-            self._parameters        = {}
+    def _hyperparameters_check(self) -> bool:
+        """
+        A method to check the hyperparameters related to the MLP model.
 
-        hp = self._hyperparameter_tuple.get_hyperparam()
+        Hyperparameters
+        ----------
+        num_hidden_layers :
+            number of hidden layers.
+        hidden_size :
+            number of hidden neurons.
+        activation_fct :
+            activation function.
+        output_activation_fct :
+            extra activation function for the output layer.
+        optimizer :
+            optimizer.
+        loss_fct :
+            loss function.
+        
+        Returns
+        ----------
+        dict
+            A dictionary includes the name of the hyperparameters and their values.
+        """
+
+        _param = {}
+
+        hp = self.get_hyperparam()
         for idx in hp.get_dim_ids():
             par_name = hp.get_related_set().get_dim(idx).get_name_short()
             par_val  = hp.get_value(idx)
-            self._parameters[par_name] = par_val
+            _param[par_name] = par_val
 
-        if ( self._input_size is None ) or ( self._output_size is None ):
+        if (' input_size' not in _param ) or ( 'output_size' not in _param ):
             raise ParamError('Input size and/or output size of the network are not defined.')
         
-        self._sl_model = self._setup_model()
+        if 'update_rate' not in _param:
+            _param['update_rate'] = 1
+        elif _param.get('update_rate') < 1:
+            raise ParamError("update_rate must be equal or higher than 1.")
 
-
-## -------------------------------------------------------------------------------------------------
-    def _setup_model(self):
-        """
-        A method to set up a network. Additionally, the hyperparameters are stored in self._parameters.
-        Please redefine this method.
-
-        What is mandatory to be set up?
-        1) The structure of the model
-        2) Set up optimizer
-        3) Set up loss functions
-
-        Optionally, more advanced settings related to the network can be added, e.g. weight
-        initialization, gradient monitoring, noises incorporation, etc.
-
-        Returns
-        ----------
-            Network model
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def forward(self, p_input:Element) -> Element:
-        """
-        Custom forward propagation in neural networks to generate some output that can be called by
-        an external method. Please redefine.
-
-        Parameters
-        ----------
-        p_input : Element
-            Input data
-
-        Returns
-        ----------
-        output : Element
-            Output data
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def _map(self, p_input: Element, p_output: Element):
-        """
-        Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
-
-        Parameters
-        ----------
-        p_input : Element
-            Abscissa/input element object (type Element)
-        p_output : Element
-            Setpoint ordinate/output element (type Element)
-        """
+        if 'num_hidden_layers' not in _param:
+            raise ParamError("num_hidden_layers is not defined.")
         
-        output = self._sl_model.forward(input)
-        p_output.set_values(output)
+        if 'hidden_size' not in _param:
+            raise ParamError("hidden_size is not defined.") 
+        
+        if 'activation_fct' not in _param:
+            raise ParamError("activation_fct is not defined.")
+
+        if 'output_activation_fct' not in _param:
+            _param['output_activation_fct'] = None
+        
+        if 'optimizer' not in _param:
+            raise ParamError("optimizer is not defined.")
+        
+        if 'loss_fct' not in _param:
+            raise ParamError("loss_fct is not defined.")
+        
+        return _param

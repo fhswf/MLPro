@@ -88,7 +88,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
         self._threshold      = p_threshold
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
-        self._hyperparameters_check()
+        self._parameters     = self._hyperparameters_check()
         self._setup_model()
 
 
@@ -107,14 +107,14 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _hyperparameters_check(self) -> bool:
+    def _hyperparameters_check(self) -> dict:
         """
-        A method to check the hyperparameters related to the SL mode.
+        A method to check the hyperparameters related to the SL model.
         
         Returns
         ----------
-        bool
-            True if all required parameters are fulfilled, otherwise Error
+        dict
+            A dictionary includes the name of the hyperparameters and their values.
         """
 
         raise NotImplementedError
