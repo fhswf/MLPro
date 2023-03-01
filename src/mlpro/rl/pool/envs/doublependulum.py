@@ -63,6 +63,7 @@
 ## -- 2022-12-07  2.2.4     LSB      - updated the reward strategy
 ##                                   - removed constructor of S4 class
 ## -- 2023-02-02  2.2.5     DA       Removed method DoublePendulumRoot._init_figure()
+## -- 2023-03-01  2.2.6     LSB      Weight components for state space
 ## -------------------------------------------------------------------------------------------------
 
 """
