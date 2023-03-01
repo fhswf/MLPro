@@ -36,11 +36,12 @@
 ## -- 2023-02-04  1.6.7     SY       Renaming some bf howtos
 ## -- 2023-02-15  1.6.8     DA       Renaming and extension of howtos for bf.ml
 ## -- 2023-02-23  1.6.9     DA       Renamed some rl howtos
+## -- 2023-02-23  1.7.0     MRD      new Howto RL Agent 006, Howto BF System 002 and 003
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.6.9 (2023-02-23)
+Ver. 1.7.0 (2023-02-23)
 
 Unit test for all examples available.
 """
@@ -89,7 +90,8 @@ howto_list = {
 
     # bf.systems
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
-    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_systems_wrapped_with_mujoco",
+    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_doublependulum_systems_wrapped_with_mujoco",
+    "bf_systems_003": "mlpro.bf.examples.howto_bf_systems_003_cartpole_systems_wrapped_with_mujoco",
 
     # bf.physics
     "bf_physics_001": "mlpro.bf.examples.howto_bf_physics_001_set_up_transfer_functions",
@@ -106,6 +108,7 @@ howto_list = {
     "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_004": "mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_005": "mlpro.rl.examples.howto_rl_agent_005_train_and_reload_single_agent",
+    "rl_agent_006": "mlpro.rl.examples.howto_rl_agent_006_train_agent_with_SB3_policy_on_cartpole_mujoco_environment",
     "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment",
     "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_run_agent_with_random_actions_on_double_pendulum_environment",
     "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment",
