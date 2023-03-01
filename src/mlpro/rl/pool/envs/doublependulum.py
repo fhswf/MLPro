@@ -134,6 +134,8 @@ class DoublePendulumRoot (Environment):
         Reward strategy to be used for the swinging region of the environment
     p_rst_swinging_outer_pole
         Reward Strategy to be used for swinging up outer pole
+    p_reward_weights:list
+        List of weights to be added to the dimensions of the state space for reward computation
     p_reward_trend:bool
         Boolean value stating whether to plot reward trend
     p_reward_window:int
@@ -207,6 +209,7 @@ class DoublePendulumRoot (Environment):
                    p_rst_balancing = C_RST_BALANCING_002,
                    p_rst_swinging = C_RST_SWINGING_001,
                    p_rst_swinging_outer_pole = C_RST_SWINGING_OUTER_POLE_001,
+                   p_reward_weights: list = None,
                    p_reward_trend: bool = False,
                    p_reward_window:int = 0,
                    p_random_range:list = None,
@@ -258,6 +261,8 @@ class DoublePendulumRoot (Environment):
         self._state = State(self._state_space)
         self._target_state = State(self._state_space)
         self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
+        if p_reward_weights is None:
+            self._reward_weights = [1 for i in range(len(self.get_state_space().get_dims()))]
         self.reset()
 
 
@@ -566,7 +571,8 @@ class DoublePendulumRoot (Environment):
 ## ------------------------------------------------------------------------------------------------------
     def compute_reward_002(self, p_state_old:State=None, p_state_new:State=None):
         """
-        Reward strategy with both new and old normalized state based on euclidean distance from the goal state
+        Reward strategy with both new and old normalized state based on euclidean distance from the goal state.
+        Designed the balancing zone.
 
         Parameters
         ----------
@@ -921,6 +927,8 @@ class DoublePendulumS4 (DoublePendulumRoot):
         Reward strategy to be used for the balancing region of the environment
     p_rst_swinging
         Reward strategy to be used for the swinging region of the environment
+    p_reward_weights:list
+        List of weights to be added to the dimensions of the state space for reward computation
     p_reward_trend:bool
         Boolean value stating whether to plot reward trend
     p_reward_window:int
@@ -959,7 +967,7 @@ class DoublePendulumS4 (DoublePendulumRoot):
         state = p_state
         for i,j in enumerate(self.get_state_space().get_dim_ids()):
             boundaries = self._state_space.get_dim(j).get_boundaries()
-            state[i] = (2 * ((state[i] - min(boundaries))
+            state[i] = self._reward_weights[i]*(2 * ((state[i] - min(boundaries))
                              / (max(boundaries) - min(boundaries))) - 1)
 
 
@@ -1008,9 +1016,31 @@ class DoublePendulumS7 (DoublePendulumS4):
         Gravitational acceleration. The default is 9.8
     p_history_length : int, optional
         Historical trajectory points to display. The default is 5.
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_plot_level : int
+        Types and number of plots to be plotted. Default = ALL
+        C_PLOT_DEPTH_ENV only plots the environment
+        C_PLOT_DEPTH_REWARD only plots the reward
+        C_PLOT_ALL plots both reward and the environment
+    p_rst_balancingL
+        Reward strategy to be used for the balancing region of the environment
+    p_rst_swinging
+        Reward strategy to be used for the swinging region of the environment
+    p_reward_weights:list
+        List of weights to be added to the dimensions of the state space for reward computation
+    p_reward_trend:bool
+        Boolean value stating whether to plot reward trend
+    p_reward_window:int
+        The number of latest rewards to be shown in the plot. Default is 0
+    p_random_range:list
+        The boundaries for state space for initialization of environment randomly
+    p_balancing range:list
+        The boundaries for state space of environment in balancing region
+    p_break_swinging:bool
+        Boolean value stating whether the environment shall be broken outside the balancing region
     p_logging
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
-
     """
 
     C_NAME = 'DoublePendulumS7'
