@@ -83,10 +83,10 @@ MLPro is also present on...
 
 .. list-table::
 
-   * - |mlpro_pypi| `Python Package Index (PyPI) <https://pypi.org/project/mlpro>`_
+   * - |mlpro_pypi| `Python Package Index <https://pypi.org/project/mlpro>`_
      - |mlpro_anaconda| `Anaconda.org <https://anaconda.org/mlpro/mlpro>`_
      - |mlpro_github| `GitHub <https://github.com/fhswf/MLPro>`_
-     - |mlpro_rg| `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
+..     - |mlpro_rg| `ResearchGate <https://www.researchgate.net/project/MLPro-A-Synoptic-Framework-for-Standardized-Machine-Learning-Tasks-in-Python>`_
 
 
 
