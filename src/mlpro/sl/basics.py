@@ -29,6 +29,7 @@ from mlpro.bf.ml import *
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SLAdaptiveFunction (AdaptiveFunction):
@@ -87,25 +88,33 @@ class SLAdaptiveFunction (AdaptiveFunction):
         self._threshold      = p_threshold
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
-        
-        if p_kwargs.get('p_net_model') in p_kwargs:
-            self._net_model  = p_kwargs['p_net_model']
-        else:
-            self._net_model  = self._setup_model()
-
-        if self._net_model is None:
-            raise ParamError("Please assign your network model to self._net_model")
+        self._hyperparameters_check()
+        self._setup_model()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_model(self) -> SLNetwork:
+    def _setup_model(self):
         """
         A method to set up a supervised learning network.
         Please redefine this method according to the type of network, if not provided yet.
         
         Returns
         ----------
-        Set up model under SLNetwork type
+            A set up supervised learning model
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _hyperparameters_check(self) -> bool:
+        """
+        A method to check the hyperparameters related to the SL mode.
+        
+        Returns
+        ----------
+        bool
+            True if all required parameters are fulfilled, otherwise Error
         """
 
         raise NotImplementedError

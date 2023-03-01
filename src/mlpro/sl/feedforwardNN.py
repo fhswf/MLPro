@@ -16,7 +16,85 @@ This module provides model classes of feedforward neural networks for supervised
 """
 
 
-from mlpro.bf.ml import *
+from mlpro.sl import *
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class FeedforwardNN(SLAdaptiveFunction):
+    """
+    This class provides the base class of feedforward neural networks.
+
+    """
+
+    C_TYPE = 'Feedforward NN'
+
+
+## -------------------------------------------------------------------------------------------------
+    def forward(self, p_input:Element) -> Element:
+        """
+        Custom forward propagation in neural networks to generate some output that can be called by
+        an external method. Please redefine.
+
+        Parameters
+        ----------
+        p_input : Element
+            Input data
+
+        Returns
+        ----------
+        output : Element
+            Output data
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map(self, p_input: Element, p_output: Element):
+        """
+        Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
+
+        Parameters
+        ----------
+        p_input : Element
+            Abscissa/input element object (type Element)
+        p_output : Element
+            Setpoint ordinate/output element (type Element)
+        """
+        
+        output = self.forward(input)
+        p_output.set_values(output)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _optimize(self):
+        """
+        This method provides provide a funtionality to call the optimizer of the feedforward network.
+        """
+        
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _calc_loss(self, p_act_output:Element, p_pred_output:Element):
+        """
+        This method provides provide a funtionality to call the loss function of the feedforward
+        network.
+
+        Parameters
+        ----------
+        p_act_output : Element
+            Actual output from the buffer.
+        p_pred_output : Element
+            Predicted output by the SL model.
+        """
+        
+        raise NotImplementedError
+
 
 
 
@@ -111,3 +189,20 @@ class SLNetwork:
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map(self, p_input: Element, p_output: Element):
+        """
+        Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
+
+        Parameters
+        ----------
+        p_input : Element
+            Abscissa/input element object (type Element)
+        p_output : Element
+            Setpoint ordinate/output element (type Element)
+        """
+        
+        output = self._sl_model.forward(input)
+        p_output.set_values(output)
