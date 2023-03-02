@@ -89,7 +89,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
         self._parameters     = self._hyperparameters_check()
-        self._setup_model()
+        self._sl_model       = self._setup_model()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -104,6 +104,19 @@ class SLAdaptiveFunction (AdaptiveFunction):
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_model(self):
+        """
+        A method to get the supervised learning network.
+        
+        Returns
+        ----------
+            A set up supervised learning model
+        """
+
+        return self._sl_model
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -75,7 +75,7 @@ class FeedforwardNN(SLAdaptiveFunction):
         This method provides provide a funtionality to call the optimizer of the feedforward network.
         """
         
-        self._parameters['optimizer']()
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -110,7 +110,7 @@ class MLP(FeedforwardNN):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _hyperparameters_check(self) -> bool:
+    def _hyperparameters_check(self) -> dict:
         """
         A method to check the hyperparameters related to the MLP model.
 
@@ -136,7 +136,6 @@ class MLP(FeedforwardNN):
         """
 
         _param = {}
-
         hp = self.get_hyperparam()
         for idx in hp.get_dim_ids():
             par_name = hp.get_related_set().get_dim(idx).get_name_short()
