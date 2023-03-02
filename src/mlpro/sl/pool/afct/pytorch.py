@@ -156,8 +156,6 @@ class PyTorchHelperFunctions():
     PyTorch Helper Functions in MLPro-SL.
     """
 
-    C_TYPE          = "PyTorch Helper Functions"
-
 
 ## -------------------------------------------------------------------------------------------------
     def input_preproc(self, p_input:Element) -> torch.Tensor:

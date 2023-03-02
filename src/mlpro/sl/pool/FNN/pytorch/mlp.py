@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.sl.pool.pytorch
+## -- Package : mlpro.sl.pool.FNN.pytorch
 ## -- Module  : mlp.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -17,7 +17,7 @@ This module provides a template ready-to-use MLP model using PyTorch.
 
 
 from mlpro.sl.pool.afct.pytorch import *
-from mlpro.sl.feedforwardNN.mlp import *
+from mlpro.sl.FNN.mlp import *
 
 
 
@@ -79,7 +79,7 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
                           p_logging=p_logging,
                           **p_kwargs )
         
-        self._output_space.distance = self._evaluation
+        self._output_space.distance = self._calc_loss
         
         if p_buffer_size > 0:
             self._buffer = self.C_BUFFER_CLS(p_size=p_buffer_size,
@@ -91,7 +91,7 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_model(self):
+    def _setup_model(self) -> torch.nn.Sequential:
         """
         A method to set up a supervised learning network.
         
@@ -331,13 +331,13 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _optimize(self, loss):
+    def _optimize(self, p_loss):
         """
         This method provides provide a funtionality to call the optimizer of the feedforward network.
         """
         
         self._parameters['optimizer'].zero_grad()
-        loss.backward()
+        p_loss.backward()
         self._parameters['optimizer'].step()
 
 
