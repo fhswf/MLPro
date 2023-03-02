@@ -8,7 +8,7 @@ Howto BF-004: Buffers
 **Executable code**
 
 
-.. literalinclude:: ../../../../../../../src/mlpro/bf/examples/howto_bf_004_buffers.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_004_buffers.py
 	:language: python
 
 **Results**

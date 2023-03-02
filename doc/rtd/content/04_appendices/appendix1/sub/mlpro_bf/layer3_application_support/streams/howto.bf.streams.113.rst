@@ -14,7 +14,7 @@ Please install the following packages to run this example properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_113_stream_task_rearranger_nd.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_113_stream_task_rearranger_nd.py
 	:language: python
 
 **Results**

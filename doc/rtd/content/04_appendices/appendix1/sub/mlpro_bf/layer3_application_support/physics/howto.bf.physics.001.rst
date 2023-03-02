@@ -13,7 +13,7 @@ Please install following packages to run this how to
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_physics_001_set_up_transfer_functions.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_physics_001_set_up_transfer_functions.py
 	:language: python
 
 **Results**

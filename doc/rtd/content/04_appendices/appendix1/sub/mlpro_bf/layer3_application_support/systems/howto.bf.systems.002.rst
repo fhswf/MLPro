@@ -2,7 +2,7 @@
 Howto BF-SYSTEMS-002: Systems wrapped with MuJoCo
 ====================================================================
 
-.. automodule:: mlpro.bf.examples.howto_bf_systems_002_systems_wrapped_with_mujoco
+.. automodule:: mlpro.bf.examples.howto_bf_systems_002_doublependulum_systems_wrapped_with_mujoco
 
 **Prerequisites**
 
@@ -15,7 +15,7 @@ Please install the following packages to run this examples properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_systems_002_systems_wrapped_with_mujoco.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_systems_002_doublependulum_systems_wrapped_with_mujoco.py
 	:language: python
 
 **Results**

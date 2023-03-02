@@ -20,6 +20,7 @@ Please install the following packages to run this examples properly:
 	:language: python
 
 **Results**
+
 .. code-block:: bashh
 
     2023-02-12  16:44:58.495569  I  HyperParam Tuner "Hyperopt": Instantiated
@@ -61,6 +62,7 @@ Please install the following packages to run this examples properly:
     2023-02-12  16:45:02.056566
     I  HyperParam Tuner "Hyperopt":
     ------------------------------------------------------------------------------
+
 
 **Cross Reference**
 
