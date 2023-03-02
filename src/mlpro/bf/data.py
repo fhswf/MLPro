@@ -19,10 +19,11 @@
 ## -- 2021-09-22  1.3.0     MRD      New classes BufferElement, Buffer, BufferRnd
 ## -- 2021-09-25  1.3.1     MRD      Add __len__ functionality for SARBuffer
 ## -- 2023-02-09  1.3.2     MRD      Beautify
+## -- 2023-03-02  1.3.3     SY       Update load_data in DataStoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2023-02-09)
+Ver. 1.3.3 (2023-03-02)
 
 This module provides various elementary data management classes.
 """
@@ -153,7 +154,12 @@ class DataStoring(LoadSave):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def load_data(self, p_path, p_filename, p_delimiter="\t") -> bool:
+    def load_data(self,
+                  p_path,
+                  p_filename,
+                  p_delimiter="\t",
+                  p_frame=True,
+                  p_header=True) -> bool:
         """
         To load data from a readable file format and store them into the DataStoring class format
         """
@@ -161,20 +167,48 @@ class DataStoring(LoadSave):
         try:
             path_load = p_path + os.sep + p_filename
             with open(path_load, "r") as read_file:
-                reader = csv.reader(read_file, delimiter=p_delimiter)
-                header = True
+                reader       = csv.reader(read_file, delimiter=p_delimiter)
+                names        = False
+                str_memorize = False
                 for row in reader:
-                    if header:
-                        del row[0:1]
-                        self.__init__(row)
-                        header = False
+                    if names is False:
+                        if p_header:
+                            if p_frame:
+                                del row[0:1]
+                            self.__init__(row)
+                        else:
+                            if p_frame:
+                                del row[0:1]
+                            row_title = []
+                            for i in range(len(row)):
+                                row_title.append('Data_%i'%(i+1))
+                            self.__init__(row_title)
+                            str_memorize = True
+                        names = True
                     else:
-                        column = 1
-                        for name in self.names:
-                            if row[0] not in self.frame_id[name]:
-                                self.add_frame(row[0])
-                            self.memorize(name, row[0], float(row[column]))
-                            column += 1
+                        str_memorize = True
+                        
+                    if str_memorize:
+                        if p_frame:
+                            column = 1
+                            for name in self.names:
+                                if row[0] not in self.frame_id[name]:
+                                    self.add_frame(row[0])
+                                try:
+                                    self.memorize(name, row[0], float(row[column]))
+                                except:
+                                    self.memorize(name, row[0],(row[column]))
+                                column += 1
+                        else:
+                            column = 0
+                            for name in self.names:
+                                if 'Frame_0' not in self.frame_id[name]:
+                                    self.add_frame('Frame_0')
+                                try:
+                                    self.memorize(name, 'Frame_0', float(row[column]))
+                                except:
+                                    self.memorize(name, 'Frame_0',(row[column]))
+                                column += 1
             return True
         except:
             return False
