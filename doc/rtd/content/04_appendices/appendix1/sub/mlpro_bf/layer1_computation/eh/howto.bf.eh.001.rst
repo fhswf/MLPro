@@ -8,7 +8,7 @@ Howto BF-EH-001: Event Handling
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_eh_001_event_handling.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_eh_001_event_handling.py
 	:language: python
 
 
