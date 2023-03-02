@@ -11,12 +11,25 @@
 ## -- 2021-12-03  1.0.2     DA       New method copy_append_spaces()
 ## -- 2022-02-25  1.0.3     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-12-09  1.1.0     DA       Refactoring due to new restrictions in class Set
+## -- 2023-03-02  1.1.1     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-12-09)
+Ver. 1.1.1 (2023-03-02)
 
 This module demonstrates how to create a space and subspaces and to spawn elements.
+
+You will learn:
+
+1. How to use the space, subspace, dimension and elements classes of MLPro in native and custom implementations.
+
+2. How to create a Space object and how to add dimensions to the Space.
+
+3. How to create an Element in a defined space, i.e. element with values for number of dimensions for the related space.
+
+4. How to change values of an Element object.
+
+5. How to calculate the euclidean distance between two elements of given Space.
 """
 
 

@@ -11,13 +11,23 @@
 ## -- 2022-10-13  1.0.2     SY       Refactoring
 ## -- 2022-11-18  1.0.3     LSB      Refactoring for new plot style
 ## -- 2023-02-23  1.1.0     DA       Renamed
+## -- 2023-03-02  1.1.1     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
-
 """
-Ver. 1.1.0 (2023-02-23)
+Ver. 1.1.1 (2023-03-02)
 
 This module shows how to train double pendulum using on-policy and off-policy RL algorithms from SB3.
+
+You will learn:
+
+1. How to use MLPro's native Double Pendulum Environment for S7 variant.
+
+2. How to create on-policy and off-policy objects for respective SP3 policies.
+
+3. How to wrap the SB3 policies in MLPro.
+
+4. How to setup and run RLTraining.
 """
 
 

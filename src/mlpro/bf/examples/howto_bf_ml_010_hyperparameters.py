@@ -12,13 +12,22 @@
 ## -- 2022-02-25  1.0.2     SY       Refactoring due to auto generated ID in class Dimension
 ## -- 2022-10-12  1.0.3     DA       Renaming/refactoring
 ## -- 2023-02-15  1.1.0     DA       Renaming
+## -- 2023-03-02  1.1.1     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-02-15)
+Ver. 1.1.1 (2023-03-02)
 
 This module demonstrates how to set-up hyperparameters using available HyperParamTuple, 
 HyperParamSpace, and HyperParam classes.
+
+You will learn:
+
+1. How to use the Hyperparameter class of MLPro and its functionalities in Native and custom implementations.
+
+2. How to create hyperparameter space and add dimensions to the space.
+
+3. How to create and set values for a hyperparameter tuple.
 """
 
 

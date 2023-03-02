@@ -11,12 +11,23 @@
 ## -- 2021-09-11  1.2.1     MRD      Change Header information to match our new library name
 ## -- 2021-10-25  1.2.2     SY       Adjustment due to improvement in DataPlotting
 ## -- 2021-10-26  1.2.3     SY       Rename module
+## -- 2023-03-02  1.2.4     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2021-10-26)
+Ver. 1.2.4 (2023-03-02)
 
 This module demonstrates how to store, plot, save and load variables.
+
+You will learn:
+
+1. How to use the DataStoring class of MLPro and its functionalities.
+
+2. How to add frames and data names in the data storing object.
+
+3. How to memorize data using the DataStoring class.
+
+4. How to plot the memorized frame from DataStoring object.
 """
 
 

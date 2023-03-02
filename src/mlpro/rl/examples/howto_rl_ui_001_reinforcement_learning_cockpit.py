@@ -9,12 +9,17 @@
 ## -- 2021-10-07  0.1.0     SY       Release of first draft
 ## -- 2022-10-12  0.1.1     DA       Renaming and shift to sub-framework mlpro-rl
 ## -- 2022-10-14  0.1.2     SY       Refactoring 
+## -- 2023-03-02  0.1.3     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.2 (2022-10-14)
+Ver. 0.1.3 (2023-03-02)
 
 SciUI template for a Reinforcement Learning simulation.
+
+You will learn:
+
+1. How to use MLPro's SciUI RL extension for reinforcement learning.
 """
 
 

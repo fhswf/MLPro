@@ -8,12 +8,23 @@
 ## -- 2023-02-23  0.0.0     MRD      Creation
 ## -- 2023-02-23  1.0.0     MRD      Released first version
 ## -- 2023-02-23  1.0.1     MRD      Refactor
+## -- 2023-03-02  1.0.2     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-02-23)
+Ver. 1.0.2 (2023-03-02)
 
 This module shows how to train a single agent with SB3 Policy on Cartpole MuJoCo Environment.
+
+You will learn:
+
+1. How to use MLPro's RLScenario class.
+
+2. How to create sb3 policy object.
+
+3. How to create SB3 policy in MLPro.
+
+4. How to setup and run RLTraining in MLPro.
 """
 
 

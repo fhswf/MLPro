@@ -19,12 +19,21 @@
 ## -- 2023-02-12  1.1.2     MRD      Save to MLPro folder path for CI test
 ## -- 2023-02-15  1.1.3     MRD      Adjust parameter
 ## -- 2023-02-20  1.2.0     DA       Simplification after changes on class bf.ml.Training
+## -- 2023-03-02  1.2.1     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-02-20)
+Ver. 1.2.1 (2023-03-02)
 
 This module shows how to train a single agent and load it again to do some extra cycles.
+
+You will learn:
+
+1. How to use the RLScenario class of MLPro.
+
+2. How to save a scenario after some run.
+
+3. How to reload the saved scenario and re-run for additional cycles.
 """
 
 
