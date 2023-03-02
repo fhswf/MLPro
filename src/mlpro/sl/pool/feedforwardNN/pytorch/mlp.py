@@ -149,7 +149,34 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
 
         Hyperparameters
         ----------
-        ????
+        test_data : float
+            the proportion of test data during the sampling process. Default = 0.3.
+        batch_size : int
+            batch size of the buffer. Default = 100.
+        seed_buffer : int
+            seeding of the buffer. Default = 1.
+        hidden_size : int or list
+            number of hidden neurons. There are two possibilities to set up the hidden size:
+            1) if hidden_size is an integer, then the number of neurons in all hidden layers are
+            exactly the same.
+            2) if hidden_size is in a list, then the user can define the number of neurons in
+            each hidden layer, but make sure that the length of the list must be equal to the
+            number of hidden layers.
+        activation_fct : torch.nn or list
+            activation function. There are two possibilities to set up the activation function:
+            1) if activation_fct is a single activation function, then the activation function after all
+            hidden layers are exactly the same.
+            2) if activation_fct is in a list, then the user can define the activation function after
+            each hidden layer, but make sure that the length of the list must be equal to the
+            number of hidden layers.
+        weight_bias_init : bool, optional
+            weight and bias initialization. Default : True
+        weight_init : torch.nn, optional
+            weight initialization function. Default : torch.nn.init.orthogonal_
+        bias_init : torch.nn, optional
+            bias initilization function. Default : lambda x: torch.nn.init.constant_(x, 0)
+        gain_init : int, optional
+            gain parameter of the weight and bias initialization. Default : np.sqrt(2)
         
         Returns
         ----------
@@ -189,6 +216,17 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
                 raise ParamError("length of hidden_size list must be equal to num_hidden_layers or an integer.")
             else:
                 self._parameters['hidden_size'] = [self._parameters['hidden_size']] * self._parameters['num_hidden_layers']
+        
+        if self._parameters.get('activation_fct') not in self._parameters:
+            raise ParamError("activation_fct is not defined.")
+        try:
+            if len(self._parameters['activation_fct']) != self._parameters['num_hidden_layers']:
+                raise ParamError("length of p_activation_fct list must be equal to p_num_hidden_layers or a single activation function.")
+        except:
+            if isinstance(self._parameters['activation_fct'], list):
+                raise ParamError("length of activation_fct list must be equal to num_hidden_layers or a single activation function.")
+            else:
+                self._parameters['activation_fct'] = [self._parameters['activation_fct']] * self._parameters['num_hidden_layers']
         
         if 'weight_bias_init' not in _param:
             self._parameters['weight_bias_init'] = True
