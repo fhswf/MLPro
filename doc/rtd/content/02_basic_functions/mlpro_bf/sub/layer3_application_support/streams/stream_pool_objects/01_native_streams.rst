@@ -1,4 +1,4 @@
-.. _target_stream_tasks_pool:
+.. _target_native_streams_pool:
 Native Streams
 ==============
 

@@ -4,7 +4,7 @@ Streams
 
 A data stream is a live data source that delivers instances sequentially. Unlike offline datasets, data
 instances cannot be scanned on demand in case of streams. Data instances are only available at the order they
-arrive. For example, think of a live RADIO signal that delivers new data with time, however, complete access to entire
+arrive. For example, think of a live RADIO signal that delivers new data with time, where complete access to entire
 data is not possible.
 
 .. image::
@@ -16,7 +16,7 @@ As shown in the figure above, at every timestep, new information is available. H
 delivered at each instance and availability of historical instances depends on the type of stream and the processing
 task respectively.
 
-In industrial scenarios, with more and more complex systems the amount of live data delivered by the systems increases
+In industrial scenarios, with more and more complex systems, the amount of live data delivered by the systems increases
 rapidly. This high amount of live data can be leveraged to take optimal decisions for processes. This real-time data
 is a data stream because of its live nature and processing such real-time data is a relevant field of data-mining
 and machine learning known as Stream Processing and Online Machine Learning respectively.
@@ -35,11 +35,11 @@ stream handling architecture in MLPro is as shown in the following figure:
 
 
 The figure shows a collection of stream provider apis, which in turn, contain a list of corresponding stream objects.
-Currently, MLPro supports stream provider api for MLPro's native streams and three external data providers:
+Currently, MLPro supports stream provider api for :ref:`MLPro's native streams <target_native_streams_pool>` and three external data providers:
 
-    - OpenML
-    - River
-    - Scikit-Learn
+    - `OpenML <https://www.openml.org>`_
+    - `River <https://riverml.xyz/>`_
+    - `Scikit-Learn <https://scikit-learn.org/>`_
 
 
 
