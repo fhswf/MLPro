@@ -40,25 +40,40 @@ class StreamMLProCSV(StreamMLProBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_path_load=None,
-                 p_csv_filename=None,
-                 p_delimiter="\t",
-                 p_frame=True,
-                 p_header=True,
-                 p_list_features:list=None,
-                 p_list_labels:list=None,
-                 p_logging=Log.C_LOG_ALL):
+    def __init__(self, p_logging=Log.C_LOG_ALL, **p_kwargs):
         
-        self._list_features = p_list_features
-        self._list_labels   = p_list_labels
+        if 'p_path_load' not in p_kwargs:
+            p_kwargs['p_path_load'] = None
+            
+        if 'p_csv_filename' not in p_kwargs:
+            p_kwargs['p_csv_filename'] = None
+            
+        if 'p_delimiter' not in p_kwargs:
+            p_kwargs['p_delimiter'] = "\t"
+            
+        if 'p_frame' not in p_kwargs:
+            p_kwargs['p_frame'] = True
+            
+        if 'p_header' not in p_kwargs:
+            p_kwargs['p_header'] = True
+            
+        if 'p_list_features' not in p_kwargs:
+            self._list_features = None
+        else:
+            self._list_features = p_kwargs['p_list_features']
+            
+        if 'p_list_labels' not in p_kwargs:
+            self._list_labels = None
+        else:
+            self._list_labels = p_kwargs['p_list_labels']
+        
         p_variable          = []
         self._from_csv      = DataStoring(p_variable)
-        self._from_csv.load_data(p_path_load,
-                                 p_csv_filename,
-                                 p_delimiter,
-                                 p_frame,
-                                 p_header)
+        self._from_csv.load_data(p_kwargs['p_path_load'],
+                                 p_kwargs['p_csv_filename'],
+                                 p_kwargs['p_delimiter'],
+                                 p_kwargs['p_frame'],
+                                 p_kwargs['p_header'])
 
         super().__init__(p_logging = p_logging)
     
@@ -115,8 +130,8 @@ class StreamMLProCSV(StreamMLProBase):
         for id_ in ids:
             ft_name = self._feature_space.get_dim(id_).get_name_short()
             extended_data[ft_name] = []
-            for fr in self._from_csv[ft_name]:
-                extended_data[ft_name].extend(self._from_csv[ft_name][fr])
+            for fr in self._from_csv.memory_dict[ft_name]:
+                extended_data[ft_name].extend(self._from_csv.memory_dict[ft_name][fr])
             np.append(self._dataset[:,x], extended_data[ft_name])
             x += 1
         
@@ -125,7 +140,7 @@ class StreamMLProCSV(StreamMLProBase):
         for id_ in ids:
             lbl_name = self._label_space.get_dim(id_).get_name_short()
             extended_data[lbl_name] = []
-            for fr in self._from_csv[lbl_name]:
-                extended_data[lbl_name].extend(self._from_csv[lbl_name][fr])
+            for fr in self._from_csv.memory_dict[lbl_name]:
+                extended_data[lbl_name].extend(self._from_csv.memory_dict[lbl_name][fr])
             np.append(self._dataset[:,x], extended_data[lbl_name])
             x += 1
