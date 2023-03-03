@@ -64,10 +64,11 @@
 ##                                   - removed constructor of S4 class
 ## -- 2023-02-02  2.2.5     DA       Removed method DoublePendulumRoot._init_figure()
 ## -- 2023-03-01  2.2.6     LSB      Weight components for state space
+## -- 2023-03-03  2.2.7     LSB      Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.5 (2023-02-02)
+Ver. 2.2.6 (2023-03-03)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -243,7 +244,7 @@ class DoublePendulumRoot (Environment):
         self._plot_level = p_plot_level
 
 
-        Environment.__init__(p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging, p_latency=p_latency)
+        Environment.__init__(self,p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging, p_latency=p_latency)
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
         self._rst_balancing = p_rst_balancing
