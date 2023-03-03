@@ -66,7 +66,7 @@ class MyScenario(RLScenario):
 # 3 Create scenario and run some cycles
 if __name__ == "__main__":
     # Parameters for demo mode
-    cycle_limit = 10000
+    cycle_limit = 10 #000
     adaptation_limit = 0
     stagnation_limit = 0
     eval_frequency = 0
@@ -103,3 +103,24 @@ training = RLTraining(
 
 # 3 Training
 training.run()
+
+
+# 4 Reload the scenario
+if __name__ == '__main__':
+    input( '\nTraining finished. Press ENTER to reload and run the scenario...\n')
+
+scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario' )
+
+
+# 5 Reset Scenario
+scenario.reset()  
+
+
+# 6 Run Scenario
+scenario.run()
+
+if __name__ != '__main__':
+    from shutil import rmtree
+    rmtree(training.get_training_path())
+else:
+    input( '\nPress ENTER to finish...')

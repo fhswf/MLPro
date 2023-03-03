@@ -22,10 +22,11 @@
 ## -- 2023-02-13  1.5.1     MRD      Simplify State Space and Action Space generation
 ## -- 2023-02-20  1.6.0     DA       Class System: new parent class LoadSave to enable persistence
 ## -- 2023-02-23  1.6.1     MRD      Add the posibility to customize the action between MLPro and MuJoCo
+## -- 2023-03-03  1.6.2     DA       Class System: redefinition of method _save()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.1 (2023-02-23)
+Ver. 1.6.2 (2023-03-03)
 
 This module provides models and templates for state based systems.
 """
@@ -771,12 +772,18 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         if p_mujoco_file is not None:
             from mlpro.wrappers.mujoco import MujocoHandler
 
+            self._mujoco_file    = p_mujoco_file
+            self._frame_skip     = p_frame_skip
+            self._state_mapping  = p_state_mapping
+            self._action_mapping = p_action_mapping
+            self._camera_conf    = p_camera_conf
+
             self._mujoco_handler = MujocoHandler(
-                                        p_mujoco_file=p_mujoco_file, 
-                                        p_frame_skip=p_frame_skip,
-                                        p_state_mapping=p_state_mapping,
-                                        p_action_mapping=p_action_mapping,
-                                        p_camera_conf=p_camera_conf,
+                                        p_mujoco_file=self._mujoco_file, 
+                                        p_frame_skip=self._frame_skip,
+                                        p_state_mapping=self._state_mapping,
+                                        p_action_mapping=self._action_mapping,
+                                        p_camera_conf=self._camera_conf,
                                         p_visualize=p_visualize,
                                         p_logging=p_logging)
             
@@ -803,6 +810,48 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         """
 
         return None, None
+
+
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def load(p_path, p_filename):
+        system = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
+
+        if system._mujoco_file is not None:
+            from mlpro.wrappers.mujoco import MujocoHandler
+
+            system._mujoco_handler = MujocoHandler(
+                                        p_mujoco_file=system._mujoco_file, 
+                                        p_frame_skip=system._frame_skip,
+                                        p_state_mapping=system._state_mapping,
+                                        p_action_mapping=system._action_mapping,
+                                        p_camera_conf=system._camera_conf,
+                                        p_visualize=system.get_visualization(),
+                                        p_logging=system.get_log_level() )
+
+        return system
+
+
+## -------------------------------------------------------------------------------------------------
+    def _save(self, p_path, p_filename) -> bool:
+
+        if self._mujoco_handler is not None:
+            self._mujoco_handler = None
+
+        pkl.dump( obj=self, 
+                  file=open(p_path + os.sep + p_filename, "wb"),
+                  protocol=pkl.HIGHEST_PROTOCOL )
+
+        from mlpro.wrappers.mujoco import MujocoHandler
+
+        self._mujoco_handler = MujocoHandler(
+                                    p_mujoco_file=self._mujoco_file, 
+                                    p_frame_skip=self._frame_skip,
+                                    p_state_mapping=self._state_mapping,
+                                    p_action_mapping=self._action_mapping,
+                                    p_camera_conf=self._camera_conf,
+                                    p_visualize=self.get_visualization(),
+                                    p_logging=self.get_log_level() )
 
 
 ## -------------------------------------------------------------------------------------------------
