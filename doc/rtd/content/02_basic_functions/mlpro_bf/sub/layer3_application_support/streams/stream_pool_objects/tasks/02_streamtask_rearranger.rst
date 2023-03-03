@@ -9,6 +9,9 @@ particular task.
 
 **Cross Reference**
 
+- :ref:`Howto BF-STREAMS-111: Rearranger (2D) <Howto BF STREAMS 111>`
+- :ref:`Howto BF-STREAMS-111: Rearranger (3D) <Howto BF STREAMS 112>`
+- :ref:`Howto BF-STREAMS-111: Rearranger (nD) <Howto BF STREAMS 113>`
 - :ref:`API Reference: Streams <target_ap_bf_streams>`
 - :ref:`Streams <target_streams_intro>`
-- :ref:`Tutorial : Howto To BF-Streams 111 <Howto BF STREAMS 111>`
+
