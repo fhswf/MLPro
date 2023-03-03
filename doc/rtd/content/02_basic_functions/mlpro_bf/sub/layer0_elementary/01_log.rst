@@ -79,5 +79,5 @@ To log an information, function ``log(p_type, *pargs)`` needs to be called. The 
         
 
 **Cross Reference**
-    + :ref:`API Reference <target_api_bf_various>`
     + :ref:`Howto BF-001: Logging <Howto BF 001>`
+    + :ref:`API Reference <target_api_bf_various>`
