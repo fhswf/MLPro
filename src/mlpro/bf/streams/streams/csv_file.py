@@ -6,19 +6,23 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-02  0.0.0     SY       Creation 
-## -- 2023-03-??  1.0.0     SY       First implementation
+## -- 2023-03-03  1.0.0     SY       First release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-??)
+Ver. 1.0.0 (2023-03-03)
 
 This module provides the native stream class  StreamMLProCSV.
 This stream provides a functionality to convert csv file to a MLPro compatible stream data.
 """
 
+
 import numpy as np
+from mlpro.bf.data import *
 from mlpro.bf.streams.models import *
 from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
+
+
 
 
 
@@ -26,73 +30,102 @@ from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProCSV(StreamMLProBase):
 
-    C_ID                = 'CSV2MLPro'
-    C_NAME              = 'CSV Format to MLPro Stream'
-    C_VERSION           = '1.0.0'
+    C_ID        = 'CSV2MLPro'
+    C_NAME      = 'CSV Format to MLPro Stream'
+    C_VERSION   = '1.0.0'
+
+    C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_SCIREF_AUTHOR = 'MLPro'
+    C_SCIREF_URL    = 'https://mlpro.readthedocs.io'
+
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, p_logging=Log.C_LOG_ALL ):
+    def __init__(self,
+                 p_path_load=None,
+                 p_csv_filename=None,
+                 p_delimiter="\t",
+                 p_frame=True,
+                 p_header=True,
+                 p_list_features:list=None,
+                 p_list_labels:list=None,
+                 p_logging=Log.C_LOG_ALL):
         
-        # 1. load data from csv files , using bf.data.DataStoring?
-        
-            # DataStoring (Update Header)
-            
-            # features and labels selection
-            
-            # dict keys / csv file headers as features or labels names
-        
-        # 2. update feature space and label space according to the loaded data
+        self._list_features = p_list_features
+        self._list_labels   = p_list_labels
+        p_variable          = []
+        self._from_csv      = DataStoring(p_variable)
+        self._from_csv.load_data(p_path_load,
+                                 p_csv_filename,
+                                 p_delimiter,
+                                 p_frame,
+                                 p_header)
 
-        super().__init__( p_id = self.C_ID, 
-                          p_name = self.C_NAME, 
-                          p_num_instances = self.C_NUM_INSTANCES, 
-                          p_version = self.C_VERSION,
-                          p_feature_space = self._setup_feature_space(), 
-                          p_label_space = self._setup_label_space(), 
-                          p_mode=Mode.C_MODE_SIM,
-                          p_logging = p_logging )
+        super().__init__(p_logging = p_logging)
+    
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
-        # feature_space : MSpace = MSpace()
-
-        # for i in range(10):
-        #     feature_space.add_dim( Feature( p_name_short = 'f' + str(i),
-        #                                     p_base_set = Feature.C_BASE_SET_R,
-        #                                     p_name_long = 'Feature #' + str(i),
-        #                                     p_name_latex = '',
-        #                                     #p_boundaries = self.C_BOUNDARIES,
-        #                                     p_description = '',
-        #                                     p_symmetrical = False,
-        #                                     p_logging=Log.C_LOG_NOTHING ) )
-
-        # return feature_space
-        pass
+        
+        feature_space : MSpace = MSpace()
+        
+        if self._list_features is not None:
+            for ftrs in self._list_features:
+                if ftrs in self._from_csv.names:
+                    feature_space.add_dim(Feature(p_name_short = ftrs,
+                                                  p_base_set = Feature.C_BASE_SET_R,
+                                                  p_name_long = ftrs,
+                                                  p_name_latex = '',
+                                                  p_description = '',
+                                                  p_symmetrical = False,
+                                                  p_logging=Log.C_LOG_NOTHING)
+                                          )            
+        return feature_space
 
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_label_space(self) -> MSpace:
-        # label_space : MSpace = MSpace()
-
-        # for i in range(2):
-        #     label_space.add_dim( Label( p_name_short = 'l' + str(i),
-        #                                 p_base_set = Label.C_BASE_SET_R,
-        #                                 p_name_long = 'Label #' + str(i),
-        #                                 p_name_latex = '',
-        #                                 #p_boundaries = self.C_BOUNDARIES,
-        #                                 p_description = '',
-        #                                 p_symmetrical = False,
-        #                                 p_logging=Log.C_LOG_NOTHING ) )
-
-        # return label_space
-        pass
+        
+        label_space : MSpace = MSpace()
+        
+        if self._list_labels is not None:
+            for ftrs in self._list_labels:
+                if ftrs in self._from_csv.names:
+                    label_space.add_dim(Label(p_name_short = ftrs,
+                                              p_base_set = Feature.C_BASE_SET_R,
+                                              p_name_long = ftrs,
+                                              p_name_latex = '',
+                                              p_description = '',
+                                              p_symmetrical = False,
+                                              p_logging=Log.C_LOG_NOTHING)
+                                        )
+        return label_space
 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_dataset(self):
         
-        # 1. transform dict to numpy.array
+        dim             = self._feature_space.get_num_dim()
+        dim_l           = self._label_space.get_num_dim()
+        self._dataset   = np.zeros((0,dim))
+        self._dataset_l = np.zeros((0,dim_l))
+        extended_data   = {}
+        ids             = self._feature_space.get_dim_ids()
         
-        # 2. assign numpy array to self._dataset and self.dataset_l
+        x = 0
+        for id_ in ids:
+            ft_name = self._feature_space.get_dim(id_).get_name_short()
+            extended_data[ft_name] = []
+            for fr in self._from_csv[ft_name]:
+                extended_data[ft_name].extend(self._from_csv[ft_name][fr])
+            np.append(self._dataset[:,x], extended_data[ft_name])
+            x += 1
         
-        pass
+        x = 0        
+        ids = self._label_space.get_dim_ids()    
+        for id_ in ids:
+            lbl_name = self._label_space.get_dim(id_).get_name_short()
+            extended_data[lbl_name] = []
+            for fr in self._from_csv[lbl_name]:
+                extended_data[lbl_name].extend(self._from_csv[lbl_name][fr])
+            np.append(self._dataset[:,x], extended_data[lbl_name])
+            x += 1
