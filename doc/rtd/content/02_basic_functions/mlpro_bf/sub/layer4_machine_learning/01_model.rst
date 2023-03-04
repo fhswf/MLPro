@@ -31,7 +31,7 @@ this lower level.
 **Adaptivity**
 
 The Model class itself adds the ability to adapt. To this end, two mechanisms are introduced that support 
-explicit adaptation based on external data and event-oriented adaptation. In both cases, the event 
+**explicit adaptation** based on external data and **event-oriented adaptation**. In both cases, the event 
 **C_EVENT_ADAPTED** is raised, which can also be optionally handled as part of event handling. In this way, 
 adaptation cascades can be triggered in a group of cooperating models.
 

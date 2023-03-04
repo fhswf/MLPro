@@ -2,24 +2,21 @@
 ML Scenarios
 ============
 
-Wie eingangs bereits erwähnt, werden adaptive Modelle in MLPro zusammen mit ihrem konkreten Kontext zu einem ML Szenario
-zusammengefasst. Hierfür stellt MLPro die abstrakte Template-Klasse **bf.ml.Scenario** zur Verfügung. Diese ist auf dieser 
-Ebene noch nicht für die Verwendung in eigenen Kundenanwendungen gedacht sondern dient hier lediglich der Standardisierung 
-der grundlegenden Eigenschaften eines ML-Szenarios. Von der Wurzelklasse aller Szenarien in MLPro 
-:ref:`bf.ops.ScenarioBase <target_bf_ops>` erbt sie die folgenden Eigenschaften
+As already mentioned, adaptive models in MLPro are combined with their concrete context to form an ML scenario.
+MLPro provides the abstract template class **bf.ml.Scenario** for this. At this level, this is not yet intended for use in 
+your own customer applications, but is only used here to standardize the basic properties of an ML scenario.
 
-- ein Betriebsmodus (Simulation oder Realbetrieb)
-- Ausführung von Zyklen
-- Persistierbarkeit
-- Visualiserung
+.. image:: images/MLPro-BF-ML-Scenario.drawio.png
+   :scale: 50%
 
-und fügt auf dieser Ebene das Management eines internen adaptiven Modells hinzu.
+From the root class of all scenarios in MLPro :ref:`bf.ops.ScenarioBase <target_bf_ops>` it inherits the following properties
 
-[ Klassen-Image ]
+- Operation mode (simulation or real operation)
+- Execution of cycles
+- Persistence
+- Visualization
 
-...
-
-
+and adds at this level the management of an internal adaptive model.
 
 **Cross Reference**
 
