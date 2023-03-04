@@ -108,7 +108,7 @@ howto_list = {
     "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_004": "mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_011": "mlpro.rl.examples.howto_rl_agent_011_train_and_reload_single_agent",
-    "rl_agent_020": "mlpro.rl.examples.howto_rl_agent_020_train_agent_with_SB3_policy_on_cartpole_mujoco_environment",
+    "rl_agent_021": "mlpro.rl.examples.howto_rl_agent_021_train_agent_with_SB3_policy_on_cartpole_mujoco_environment",
     "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment",
     "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_run_agent_with_random_actions_on_double_pendulum_environment",
     "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment",
