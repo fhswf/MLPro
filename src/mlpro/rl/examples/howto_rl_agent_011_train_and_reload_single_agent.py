@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_agent_005_train_and_reload_single_agent.py
+## -- Module  : howto_rl_agent_011_train_and_reload_single_agent.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -20,10 +20,11 @@
 ## -- 2023-02-15  1.1.3     MRD      Adjust parameter
 ## -- 2023-02-20  1.2.0     DA       Simplification after changes on class bf.ml.Training
 ## -- 2023-03-02  1.2.1     LSB      Refactoring
+## -- 2023-03-04  1.3.0     DA       Renamed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-03-02)
+Ver. 1.3.0 (2023-03-04)
 
 This module shows how to train a single agent and load it again to do some extra cycles.
 

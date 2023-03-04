@@ -37,11 +37,12 @@
 ## -- 2023-02-15  1.6.8     DA       Renaming and extension of howtos for bf.ml
 ## -- 2023-02-23  1.6.9     DA       Renamed some rl howtos
 ## -- 2023-02-23  1.7.0     MRD      new Howto RL Agent 006, Howto BF System 002 and 003
+## -- 2023-03-04  1.7.1     DA       Renamed some rl howtos
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.7.0 (2023-02-23)
+Ver. 1.7.1 (2023-03-04)
 
 Unit test for all examples available.
 """
@@ -101,14 +102,13 @@ howto_list = {
 
 # Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
-    "rl_att_001": "mlpro.rl.examples.howto_rl_att_001_advanced_training_with_stagnation_detection",
-    "rl_att_002": "mlpro.rl.examples.howto_rl_att_002_train_wrapped_sb3_policy_with_stagnation_detection",
+    "rl_att_01": "mlpro.rl.examples.howto_rl_att_001_train_and_reload_single_agent_stagnation_detection",
     "rl_agent_001": "mlpro.rl.examples.howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment",
     "rl_agent_002": "mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment",
     "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_004": "mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment",
-    "rl_agent_005": "mlpro.rl.examples.howto_rl_agent_005_train_and_reload_single_agent",
-    "rl_agent_006": "mlpro.rl.examples.howto_rl_agent_006_train_agent_with_SB3_policy_on_cartpole_mujoco_environment",
+    "rl_agent_011": "mlpro.rl.examples.howto_rl_agent_011_train_and_reload_single_agent",
+    "rl_agent_020": "mlpro.rl.examples.howto_rl_agent_020_train_agent_with_SB3_policy_on_cartpole_mujoco_environment",
     "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment",
     "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_run_agent_with_random_actions_on_double_pendulum_environment",
     "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment",

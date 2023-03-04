@@ -1,50 +1,59 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_agent_006_train_agent_with_SB3_policy_on_cartpole_mujoco_environment.py
+## -- Module  : howto_rl_att_001_train_and_reload_single_agent_stagnation_detection.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-02-23  0.0.0     MRD      Creation
-## -- 2023-02-23  1.0.0     MRD      Released first version
-## -- 2023-02-23  1.0.1     MRD      Refactor
-## -- 2023-03-02  1.0.2     LSB      Refactoring
+## -- 2023-03-04  1.0.0     DA       Creation as derivate of howto_ro_agent_010
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-03-02)
+Ver. 1.0.0 (2023-03-04)
 
-This module shows how to train a single agent with SB3 Policy on Cartpole MuJoCo Environment.
+As in Howto RL AGENT 011, this module shows how to train a single agent and load it again to do some
+extra cycles. In opposite to howto 010, stagnation detection is used to automatically end the
+training if no further progress can be made.
 
 You will learn:
 
-1. How to use MLPro's RLScenario class.
+1. How to use the RLScenario class of MLPro.
 
-2. How to create sb3 policy object.
+2. How to save a scenario after some run.
 
-3. How to create SB3 policy in MLPro.
+3. How to reload the saved scenario and re-run for additional cycles.
 
-4. How to setup and run RLTraining in MLPro.
+4. How to use stagnation detection to end the training automatically if there is no progress.
+
 """
 
 
-import mlpro
+import gym
 from stable_baselines3 import PPO
 from mlpro.rl import *
+from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
-from mlpro.rl.pool.envs.cartpole import CartpoleMujocoDiscrete
 from pathlib import Path
 
 
-class MyScenario(RLScenario):
-    C_NAME = "Matrix"
+
+# 1 Implement your own RL scenario
+class MyScenario (RLScenario):
+    C_NAME = 'Matrix'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        self._env = CartpoleMujocoDiscrete(p_logging=logging, p_visualize=visualize)
+        gym_env = gym.make('CartPole-v1')
+        self._env = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging)
 
         # 1.2 Setup Policy From SB3
-        policy_sb3 = PPO(policy="MlpPolicy", n_steps=10, env=None, _init_setup_model=False, device="cpu", seed=1)
+        policy_sb3 = PPO(
+            policy="MlpPolicy",
+            n_steps=10,
+            env=None,
+            _init_setup_model=False,
+            device="cpu",
+            seed=1)
 
         # 1.3 Wrap the policy
         policy_wrapped = WrPolicySB32MLPro(
@@ -54,23 +63,27 @@ class MyScenario(RLScenario):
             p_action_space=self._env.get_action_space(),
             p_ada=p_ada,
             p_visualize=p_visualize,
-            p_logging=p_logging,
-        )
+            p_logging=p_logging)
 
         # 1.4 Setup standard single-agent with own policy
         return Agent(
-            p_policy=policy_wrapped, p_envmodel=None, p_name="Smith", p_ada=p_ada, p_visualize=p_visualize, p_logging=p_logging
+            p_policy=policy_wrapped,
+            p_envmodel=None,
+            p_name='Smith',
+            p_ada=p_ada,
+            p_visualize=p_visualize,
+            p_logging=p_logging
         )
 
 
-# 3 Create scenario and run some cycles
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     # Parameters for demo mode
-    cycle_limit = 10000
+    cycle_limit = 20000
     adaptation_limit = 0
-    stagnation_limit = 0
-    eval_frequency = 0
-    eval_grp_size = 0
+    stagnation_limit = 5
+    eval_frequency = 10
+    eval_grp_size = 5
     logging = Log.C_LOG_WE
     visualize = True
     path = str(Path.home())
@@ -97,12 +110,13 @@ training = RLTraining(
     p_eval_grp_size=eval_grp_size,
     p_path=path,
     p_visualize=visualize,
-    p_logging=logging,
-)
+    p_logging=logging )
+
 
 
 # 3 Training
 training.run()
+
 
 
 # 4 Reload the scenario
