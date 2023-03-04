@@ -22,11 +22,12 @@
 ## -- 2023-02-13  1.5.1     MRD      Simplify State Space and Action Space generation
 ## -- 2023-02-20  1.6.0     DA       Class System: new parent class LoadSave to enable persistence
 ## -- 2023-02-23  1.6.1     MRD      Add the posibility to customize the action between MLPro and MuJoCo
-## -- 2023-03-03  1.6.2     DA       Class System: redefinition of method _save()
+## -- 2023-03-04  1.7.0     DA       Class System: redefinition of methods load(), _save(), init_plot(),
+## --                                update_plot()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.2 (2023-03-03)
+Ver. 1.7.0 (2023-03-04)
 
 This module provides models and templates for state based systems.
 """
@@ -35,7 +36,8 @@ This module provides models and templates for state based systems.
 from time import sleep
 from mlpro.bf.various import TStamp, ScientificObject, PersonalisedStamp
 from mlpro.bf.data import *
-from mlpro.bf.plot import Plottable
+from mlpro.bf.plot import Plottable, PlotSettings
+from matplotlib.figure import Figure
 from mlpro.bf.ops import Mode
 from mlpro.bf.math import *
 
@@ -735,6 +737,8 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
 
     C_LATENCY       = timedelta(0, 1, 0)  # Default latency 1s
 
+    C_PLOT_ACTIVE   = True
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_mode = Mode.C_MODE_SIM,
@@ -828,6 +832,9 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
                                         p_camera_conf=system._camera_conf,
                                         p_visualize=system.get_visualization(),
                                         p_logging=system.get_log_level() )
+            
+            system._mujoco_handler._system_state_space = system.get_state_space()
+            system._mujoco_handler._system_action_space = system.get_action_space()
 
         return system
 
@@ -1392,6 +1399,22 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
     def get_broken(self) -> bool:
         if self._state is None: return False
         return self._state.get_broken()
+    
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot( self, 
+                   p_figure:Figure = None,
+                   p_plot_settings : PlotSettings = None, 
+                   **p_kwargs):
+        
+        if self._mujoco_handler is not None: return
+        super().init_plot(p_figure=p_figure, p_plot_settings=p_plot_settings, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, **p_kwargs):
+        if self._mujoco_handler is not None: return
+        super().update_plot(**p_kwargs)
 
 
 
