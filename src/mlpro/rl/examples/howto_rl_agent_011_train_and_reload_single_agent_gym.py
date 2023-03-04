@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_agent_011_train_and_reload_single_agent.py
+## -- Module  : howto_rl_agent_011_train_and_reload_single_agent_gym.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -35,6 +35,7 @@ You will learn:
 2. How to save a scenario after some run.
 
 3. How to reload the saved scenario and re-run for additional cycles.
+
 """
 
 

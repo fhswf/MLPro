@@ -1,59 +1,49 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_att_001_train_and_reload_single_agent_stagnation_detection.py
+## -- Module  : howto_rl_att_002_train_and_reload_single_agent_mujoco_sd.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-03-04  1.0.0     DA       Creation as derivate of howto_ro_agent_010
+## -- 2023-03-04  1.0.0     DA       Creation as derivate of howto_rl_agent_021 
 ## -------------------------------------------------------------------------------------------------
 
 """
 Ver. 1.0.0 (2023-03-04)
 
-As in Howto RL AGENT 011, this module shows how to train a single agent and load it again to do some
-extra cycles. In opposite to howto 010, stagnation detection is used to automatically end the
+As in Howto RL AGENT 021, this module shows how to train a single agent with SB3 Policy on Cartpole 
+MuJoCo Environment. In opposite to howto 021, stagnation detection is used to automatically end the
 training if no further progress can be made.
 
 You will learn:
 
-1. How to use the RLScenario class of MLPro.
+1. How to use MLPro's RLScenario class.
 
-2. How to save a scenario after some run.
+2. How to create sb3 policy object.
 
-3. How to reload the saved scenario and re-run for additional cycles.
+3. How to create SB3 policy in MLPro.
 
-4. How to use stagnation detection to end the training automatically if there is no progress.
+4. How to setup and run RLTraining in MLPro.
 
 """
 
 
-import gym
 from stable_baselines3 import PPO
 from mlpro.rl import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
+from mlpro.rl.pool.envs.cartpole import CartpoleMujocoDiscrete
 from pathlib import Path
 
 
-
-# 1 Implement your own RL scenario
-class MyScenario (RLScenario):
-    C_NAME = 'Matrix'
+class MyScenario(RLScenario):
+    C_NAME = "Matrix"
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        gym_env = gym.make('CartPole-v1')
-        self._env = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging)
+        self._env = CartpoleMujocoDiscrete(p_logging=logging, p_visualize=visualize)
 
         # 1.2 Setup Policy From SB3
-        policy_sb3 = PPO(
-            policy="MlpPolicy",
-            n_steps=10,
-            env=None,
-            _init_setup_model=False,
-            device="cpu",
-            seed=1)
+        policy_sb3 = PPO(policy="MlpPolicy", n_steps=10, env=None, _init_setup_model=False, device="cpu", seed=1)
 
         # 1.3 Wrap the policy
         policy_wrapped = WrPolicySB32MLPro(
@@ -63,21 +53,17 @@ class MyScenario (RLScenario):
             p_action_space=self._env.get_action_space(),
             p_ada=p_ada,
             p_visualize=p_visualize,
-            p_logging=p_logging)
+            p_logging=p_logging,
+        )
 
         # 1.4 Setup standard single-agent with own policy
         return Agent(
-            p_policy=policy_wrapped,
-            p_envmodel=None,
-            p_name='Smith',
-            p_ada=p_ada,
-            p_visualize=p_visualize,
-            p_logging=p_logging
+            p_policy=policy_wrapped, p_envmodel=None, p_name="Smith", p_ada=p_ada, p_visualize=p_visualize, p_logging=p_logging
         )
 
 
-
-if __name__ == '__main__':
+# 3 Create scenario and run some cycles
+if __name__ == "__main__":
     # Parameters for demo mode
     cycle_limit = 20000
     adaptation_limit = 0
@@ -110,13 +96,12 @@ training = RLTraining(
     p_eval_grp_size=eval_grp_size,
     p_path=path,
     p_visualize=visualize,
-    p_logging=logging )
-
+    p_logging=logging,
+)
 
 
 # 3 Training
 training.run()
-
 
 
 # 4 Reload the scenario
