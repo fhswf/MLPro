@@ -1,6 +1,6 @@
-.. _Howto HT RL 001:
-Howto RL-HT-001: Hyperopt
-=========================
+.. _Howto RL HT 001:
+Howto RL-HT-001: Hyperparameter Tuning using Hyperopt
+=====================================================
 
 .. automodule:: mlpro.rl.examples.howto_rl_ht_001_hyperopt
 

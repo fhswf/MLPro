@@ -13,7 +13,7 @@ and possibilities for application-specific adjustments to them.
 
 **Performant Execution**
 
-As shown above, the Model class is made up of numerous base classes of the lower levels through 
+As shown in the simplified class diagram above, the Model class is made up of numerous base classes of the lower levels through 
 inheritance. So, from :ref:`Layer 1 - Computation <target_bf_computation>`, it inherits the executability 
 and asynchronous processing capabilities of class **Task**. In this way, it can also be combined in 
 workflows to (parallel/asynchronously) executable groups of models. From class **EventHandler** of the 

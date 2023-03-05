@@ -1,5 +1,5 @@
-.. _Howto HT RL 002:
-Howto RL-HT-002: Optuna
+.. _Howto RL HT 002:
+Howto RL-HT-002: Hyperparameter Tuning using Optuna
 ===================================================
 
 .. automodule:: mlpro.bf.examples.howto_rl_ht_002_optuna
@@ -7,7 +7,6 @@ Howto RL-HT-002: Optuna
 
 
 **Prerequisites**
-
 
 Please install the following packages to run this examples properly:
     - `Optuna <https://pypi.org/project/optuna/>`_

@@ -11,4 +11,4 @@ Hyperopt
 
 **Cross References**
 
-- :ref:`Howto RL-HT-001: Hyperparameter Tuning using Hyperopt<Howto HT RL 001>`
+- :ref:`Howto RL-HT-001: Hyperparameter Tuning using Hyperopt <Howto RL HT 001>`
