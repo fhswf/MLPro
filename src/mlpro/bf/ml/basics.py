@@ -732,7 +732,7 @@ class TrainingResults (Log, Saveable):
     p_cycle_id : int
         Id of first cycle of this run.
     p_path : str
-        Optional estination path to store the results.
+        Optional destination path to store the results.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
 
@@ -817,7 +817,7 @@ class TrainingResults (Log, Saveable):
         ----------
         p_path : str
             Destination folder
-        p_filename  :string
+        p_filename : string
             Name of summary file. Default = 'summary.csv'
 
         Returns
@@ -1124,11 +1124,11 @@ class Training (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_results(self) -> TrainingResults:
-        return self.C_CLS_RESULTS(self._scenario, 
-                                  self._current_run, 
-                                  self._scenario.get_cycle_id(), 
-                                  p_path=self._current_path,
-                                  p_logging=self._level)
+        return self.C_CLS_RESULTS( p_scenario = self._scenario, 
+                                   p_run = self._current_run, 
+                                   p_cycle_id = self._scenario.get_cycle_id(), 
+                                   p_path = self._current_path,
+                                   p_logging = self._level )
 
 
 ## -------------------------------------------------------------------------------------------------
