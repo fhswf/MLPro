@@ -27,18 +27,25 @@ MLPro can be reused to define any custom system with default methods to handle s
 
 The system's module provides following objects and templates:
 
-1. System
-2. FctStrans
-3. FctSuccess
-4. FctBroken
-5. State
-6. Action
+    1. System: This is the base template class to implement custom System objects.
+
+    2. FctStrans: A custom template for State Transition functions, FctStrans is used to provide custom
+implementations for state transition dynamics of a system.
+
+    3. FctSuccess: The success function, FctSuccess is a template class to implement functions to determine if the
+system has reached to a goal state.
+
+    4. FctBroken: The broken function, FctBroken is a template class to implement functions to determine if the
+system has reached to a terminating broken state.
+
+    5. State: The state object represents the current state of the system with respect to time. State object contains
+information about the system corresponding all the dimensions of the State Space of the system.
+
+    6. Action: The action object represents the current Action to be simulated on the system.
 
 MLPro also provides the possibility to integrate real world hardware, such as controllers and hardwares to the System
 object. Furthermore, Systems module integrates optional visualization and simulation functionalities from MuJoCo into
 MLPro for re-usability. Check out following sections to know more:
-
-- basic objects: state, action, fct-strans, fct-done, fct-broken, system
 
 
 .. toctree::
