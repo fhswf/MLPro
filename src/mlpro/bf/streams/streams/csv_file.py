@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-02  0.0.0     SY       Creation 
-## -- 2023-03-03  1.0.0     SY       First release
+## -- 2023-03-06  1.0.0     SY       First release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-03)
+Ver. 1.0.0 (2023-03-06)
 
 This module provides the native stream class  StreamMLProCSV.
 This stream provides a functionality to convert csv file to a MLPro compatible stream data.
@@ -74,6 +74,15 @@ class StreamMLProCSV(StreamMLProBase):
                                  p_kwargs['p_delimiter'],
                                  p_kwargs['p_frame'],
                                  p_kwargs['p_header'])
+        
+        try:
+            extended_data       = []
+            key_0               = list(self._from_csv.memory_dict.keys())[0]
+            for fr in self._from_csv.memory_dict[key_0]:
+                extended_data.extend(self._from_csv.memory_dict[key_0][fr])
+            self.C_NUM_INSTANCES = len(extended_data)
+        except:
+            self.C_NUM_INSTANCES = 0
 
         super().__init__(p_logging = p_logging)
     
@@ -121,8 +130,8 @@ class StreamMLProCSV(StreamMLProBase):
         
         dim             = self._feature_space.get_num_dim()
         dim_l           = self._label_space.get_num_dim()
-        self._dataset   = np.zeros((0,dim))
-        self._dataset_l = np.zeros((0,dim_l))
+        self._dataset   = np.zeros((self.C_NUM_INSTANCES,dim))
+        self._dataset_l = np.zeros((self.C_NUM_INSTANCES,dim_l))
         extended_data   = {}
         ids             = self._feature_space.get_dim_ids()
         
@@ -132,7 +141,7 @@ class StreamMLProCSV(StreamMLProBase):
             extended_data[ft_name] = []
             for fr in self._from_csv.memory_dict[ft_name]:
                 extended_data[ft_name].extend(self._from_csv.memory_dict[ft_name][fr])
-            np.append(self._dataset[:,x], extended_data[ft_name])
+            self._dataset[:,x] = np.array(extended_data[ft_name])
             x += 1
         
         x = 0        
@@ -142,5 +151,5 @@ class StreamMLProCSV(StreamMLProBase):
             extended_data[lbl_name] = []
             for fr in self._from_csv.memory_dict[lbl_name]:
                 extended_data[lbl_name].extend(self._from_csv.memory_dict[lbl_name][fr])
-            np.append(self._dataset[:,x], extended_data[lbl_name])
+            self._dataset_l[:,x] = np.array(extended_data[lbl_name])
             x += 1
