@@ -25,10 +25,18 @@ MLPro can be reused to define any custom system with default methods to handle s
     images/systems.drawio.png
     :width: 650 px
 
+The system's module provides following objects and templates:
+
+1. System
+2. FctStrans
+3. FctSuccess
+4. FctBroken
+5. State
+6. Action
 
 MLPro also provides the possibility to integrate real world hardware, such as controllers and hardwares to the System
 object. Furthermore, Systems module integrates optional visualization and simulation functionalities from MuJoCo into
-MLPro for reusability. Check out following sections to know more:
+MLPro for re-usability. Check out following sections to know more:
 
 - basic objects: state, action, fct-strans, fct-done, fct-broken, system
 
