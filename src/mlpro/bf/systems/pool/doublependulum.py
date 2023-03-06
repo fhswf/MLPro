@@ -6,7 +6,7 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-05  0.0.0     LSB       Creation
-## -- 2023-03-05  1.0.0     LSB       Release
+## -- 2023-03-dd  1.0.0     LSB       Release
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -150,12 +150,6 @@ class DoublePendulumSystemRoot (System):
                    p_history_length=5,
                    p_visualize:bool=False,
                    p_plot_level:int=2,
-                   p_rst_balancing = C_RST_BALANCING_002,
-                   p_rst_swinging = C_RST_SWINGING_001,
-                   p_rst_swinging_outer_pole = C_RST_SWINGING_OUTER_POLE_001,
-                   p_reward_weights: list = None,
-                   p_reward_trend: bool = False,
-                   p_reward_window:int = 0,
                    p_random_range:list = None,
                    p_balancing_range:list = (-0.2,0.2),
                    p_swinging_outer_pole_range = (0.2,0.5),
@@ -189,24 +183,11 @@ class DoublePendulumSystemRoot (System):
         System.__init__(self,p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging, p_latency=p_latency)
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
-        self._rst_balancing = p_rst_balancing
-        self._rst_swinging = p_rst_swinging
-        self._rst_swinging_outer_pole = p_rst_swinging_outer_pole
-        self._rst_methods = {DoublePendulumSystemRoot.C_RST_BALANCING_001:self.compute_reward_001,
-                             DoublePendulumSystemRoot.C_RST_BALANCING_002:self.compute_reward_002,
-                             DoublePendulumSystemRoot.C_RST_SWINGING_001:self.compute_reward_003,
-                             DoublePendulumSystemRoot.C_RST_SWINGING_OUTER_POLE_001:self.compute_reward_004}
-        if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
-            self._reward_history = []
-            self._reward_trend = p_reward_trend
-            self._reward_window = p_reward_window
-
 
         self._state = State(self._state_space)
         self._target_state = State(self._state_space)
         self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
-        if p_reward_weights is None:
-            self._reward_weights = [1 for i in range(len(self.get_state_space().get_dims()))]
+
         self.reset()
 
 
@@ -707,7 +688,7 @@ class DoublePendulumSystemS4 (DoublePendulumSystemRoot):
         mujoco_state = State(self.get_state_space())
         mujoco_state.set_values(state)
         return mujoco_state
-System
+
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -808,7 +789,7 @@ class DoublePendulumSystemS7 (DoublePendulumSystemS4):
             The default is None.
 
         """
-        super()._reset(p_seed=p_seed)
+        DoublePendulumSystemS4._reset(self, p_seed=p_seed)
         self._alpha1 = 0
         self._alpha2 = 0
         for i in self._state_space.get_dim_ids()[-2:-4:-1]:

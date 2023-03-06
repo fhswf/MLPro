@@ -206,6 +206,15 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
                    p_init_angles=C_ANGLES_RND,
                    p_g=9.8,
                    p_history_length=5,
+                   p_fct_strans:FctSTrans=None,
+                   p_fct_success:FctSuccess=None,
+                   p_fct_broken:FctBroken=None,
+                   p_fct_reward:FctReward=None,
+                   p_mujoco_file=None,
+                   p_frame_skip=None,
+                   p_state_mapping=None,
+                   p_action_mapping=None,
+                   p_camera_conf=None,
                    p_visualize:bool=False,
                    p_plot_level:int=2,
                    p_rst_balancing = C_RST_BALANCING_002,
@@ -220,32 +229,47 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
                    p_break_swinging:bool = False,
                    p_logging=Log.C_LOG_ALL ):
 
-        self._max_torque = p_max_torque
 
-        self._l1 = p_l1
-        self._l2 = p_l2
-        self._L = p_l1 + p_l2
-        self._m1 = p_m1
-        self._m2 = p_m2
-        self._M = p_m1 + p_m2
-        self._g = p_g
-
-        self._init_angles = p_init_angles
-        self._random_range = p_random_range
-        self._balancing_range = p_balancing_range
-        self._swinging_outer_pole_range = p_swinging_outer_pole_range
-        self._swinging = (self._swinging_outer_pole_range, 180)
-        self._break_swinging = p_break_swinging and p_balancing_range
-
-        if self._init_angles not in self.C_VALID_ANGLES: raise ParamError("The initial angles are not valid")
-
-        self._history_x = deque(maxlen=p_history_length)
-        self._history_y = deque(maxlen=p_history_length)
-        self._plot_level = p_plot_level
+        DoublePendulumSystemRoot.__init__(self,
+                         p_mode = p_mode,
+                         p_latency = p_latency,
+                         p_max_torque=p_max_torque,
+                         p_l1=p_l1,
+                         p_l2=p_l2,
+                         p_m1=p_m1,
+                         p_m2=p_m2,
+                         p_init_angles=p_init_angles,
+                         p_g=p_g,
+                         p_history_length=p_history_length,
+                         p_random_range = p_random_range,
+                         p_balancing_range = p_balancing_range,
+                         p_swinging_outer_pole_range = p_swinging_outer_pole_range,
+                         p_break_swinging = p_break_swinging,
+                         p_visualize = p_visualize,
+                         p_plot_level = p_plot_level,
+                         p_logging = p_logging)
 
 
-        Environment.__init__(self,p_mode=p_mode, p_visualize=p_visualize, p_logging=p_logging, p_latency=p_latency)
-        self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
+        Environment.__init__(self,
+                             p_mode = p_mode,
+                             p_latency = p_latency,
+                             p_fct_strans = p_fct_strans,
+                             p_fct_reward = p_fct_reward,
+                             p_fct_success = p_fct_success,
+                             p_fct_broken = p_fct_broken,
+                             p_mujoco_file = p_mujoco_file,
+                             p_frame_skip = p_frame_skip,
+                             p_state_mapping = p_state_mapping,
+                             p_action_mapping = p_action_mapping,
+                             p_camera_conf = p_camera_conf,
+                             p_visualize = p_visualize,
+                             p_logging = p_logging)
+
+
+
+        self._state = State(self._state_space)
+        self._target_state = State(self._state_space)
+        self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
 
         self._rst_balancing = p_rst_balancing
         self._rst_swinging = p_rst_swinging
@@ -259,10 +283,6 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
             self._reward_trend = p_reward_trend
             self._reward_window = p_reward_window
 
-
-        self._state = State(self._state_space)
-        self._target_state = State(self._state_space)
-        self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
         if p_reward_weights is None:
             self._reward_weights = [1 for i in range(len(self.get_state_space().get_dims()))]
         self.reset()
@@ -650,4 +670,3 @@ class DoublePendulumS7 (DoublePendulumSystemS7, DoublePendulumS4):
 
     C_NAME = 'DoublePendulumS7'
 
-## -----------------------------------------------------------------------------------------------------
