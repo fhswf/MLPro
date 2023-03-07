@@ -5,21 +5,22 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2021-12-17  0.0.0     MRD       Creation
-## -- 2021-12-17  1.0.0     MRD       Released first version
-## -- 2022-01-01  1.0.1     MRD       Refactoring due to new model implementation
-## -- 2022-05-20  1.0.2     MRD       Add HTMEnvModel
-## -- 2022-08-09  1.0.3     SY        Update due to introduction of ActionPlanner
-## -- 2022-08-15  1.0.4     SY        - Renaming maturity to accuracy
-## --                                 - Utilize MPC from pool of objects
-## -- 2022-10-13  1.0.5     SY        Refactoring 
-## -- 2022-11-07  1.1.0     DA        Refactoring 
-## -- 2023-02-02  1.2.0     DA        Refactoring 
-## -- 2023-02-04  1.2.1     SY        Refactoring to avoid printing during unit test
+## -- 2021-12-17  0.0.0     MRD      Creation
+## -- 2021-12-17  1.0.0     MRD      Released first version
+## -- 2022-01-01  1.0.1     MRD      Refactoring due to new model implementation
+## -- 2022-05-20  1.0.2     MRD      Add HTMEnvModel
+## -- 2022-08-09  1.0.3     SY       Update due to introduction of ActionPlanner
+## -- 2022-08-15  1.0.4     SY       - Renaming maturity to accuracy
+## --                                - Utilize MPC from pool of objects
+## -- 2022-10-13  1.0.5     SY       Refactoring 
+## -- 2022-11-07  1.1.0     DA       Refactoring 
+## -- 2023-02-02  1.2.0     DA       Refactoring 
+## -- 2023-02-04  1.2.1     SY       Refactoring to avoid printing during unit test
+## -- 2023-03-07  2.0.0     SY       Update due to MLPro-SL
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-02-04)
+Ver. 2.0.0 (2023-03-07)
 
 This module demonstrates model-based reinforcement learning (MBRL) with action planner using MPC.
 
