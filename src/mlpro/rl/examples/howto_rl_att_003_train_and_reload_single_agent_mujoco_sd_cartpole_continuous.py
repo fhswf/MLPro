@@ -1,21 +1,19 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_agent_021_train_and_reload_single_agent_mujoco.py
+## -- Module  : howto_rl_att_003_train_and_reload_single_agent_mujoco_sd_cartpole_continuous.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-02-23  0.0.0     MRD      Creation
-## -- 2023-02-23  1.0.0     MRD      Released first version
-## -- 2023-02-23  1.0.1     MRD      Refactor
-## -- 2023-03-02  1.0.2     LSB      Refactoring
-## -- 2023-03-04  1.1.0     DA       Renamed
+## -- 2023-03-07  1.0.0     MRD       Creation as derivate of howto_rl_agent_022 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-03-04)
+Ver. 1.0.0 (2023-03-07)
 
-This module shows how to train a single agent with SB3 Policy on Cartpole MuJoCo Environment.
+As in Howto RL AGENT 022, this module shows how to train a single agent with SB3 Policy on Continuous 
+Cartpole MuJoCo Environment. In opposite to howto 022, stagnation detection is used to automatically 
+end the training if no further progress can be made.
 
 You will learn:
 
@@ -67,11 +65,11 @@ class MyScenario(RLScenario):
 # 3 Create scenario and run some cycles
 if __name__ == "__main__":
     # Parameters for demo mode
-    cycle_limit = 10000
+    cycle_limit = 20000
     adaptation_limit = 0
-    stagnation_limit = 0
-    eval_frequency = 0
-    eval_grp_size = 0
+    stagnation_limit = 5
+    eval_frequency = 10
+    eval_grp_size = 5
     logging = Log.C_LOG_WE
     visualize = True
     path = str(Path.home())
