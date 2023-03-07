@@ -8,7 +8,7 @@ challenge here is to capture the nature of machine learning on an abstract and g
 establishing concrete templates and processes and solving elementary subtasks. The highest layer 4 
 of the basic functions of MLPro is dedicated to this topic.
 
-.. image:: layer4_machine_learning/images/MLPro-BF-ML_overview.drawio.png
+.. image:: layer4_machine_learning/images/MLPro-BF-ML_Overview.drawio.png
     :scale: 45 %
 
 The focus of the consideration is the :ref:`adaptive model <target_bf_ml_model>` with its elementary properties

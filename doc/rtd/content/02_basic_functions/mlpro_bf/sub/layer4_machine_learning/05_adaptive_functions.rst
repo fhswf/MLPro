@@ -2,17 +2,20 @@
 Adaptive Functions
 ==================
 
-Eine spezielle Art von adaptiven Modellen sind die **adaptiven Funktionen**. Sie kombinieren die Eigenschaften
-einer mathematischen Funktion mit denen eines adaptiven Modells. Die **Klasse AdaptiveFunction** manifestiert
-und standardisiert diese Funktionen, ohne jedoch konkrete Lernparadigmen umzusetzen. Letzteres geschieht in
-höheren ML-Frameworks von MLPro, bespielsweise in MLPro-SL für supervised learning.
+A special kind of adaptive models are the **adaptive functions**. They combine the properties of a mathematical 
+function with those of an adaptive model. The **class AdaptiveFunction** manifests and standardizes these functions 
+without implementing concrete learning paradigms. The latter happens in higher MLPro frameworks, for example in 
+MLPro-SL for offline/online supervised learning.
 
-Adaptive Funktionen haben eine hohe praktische Relevanz. Sie werden innerhalb von MLPro z.B. im Zusammenhang mit
-Modellbasierten Agenten wiederverwendet.
+.. image:: images/MLPro-BF-ML-AFct.drawio.png
+   :scale: 50%
+
+Adaptive functions have a high practical relevance. They are reused within MLPro, e.g. in connection with model-based 
+agents. But they can also be used in general for predictions.
 
 
 **Cross Reference**
 
 - :ref:`BF-Math: Mathematics <target_bf_mathematics>`
-- :ref:`MLPro-SL: Adaptive Functions for Supervised Learning <target_bf_sl_afct>`
-- :ref:`MLPro-RL: Model-based Agents <target_agents_MBRL>`
+- :ref:`SL: Adaptive Functions for Supervised Learning <target_bf_sl_afct>`
+- :ref:`RL: Model-based Agents <target_agents_MBRL>`
