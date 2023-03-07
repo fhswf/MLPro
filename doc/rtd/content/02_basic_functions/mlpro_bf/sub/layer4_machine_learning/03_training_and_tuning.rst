@@ -32,6 +32,6 @@ wrappers for :ref:`Optuna <Wrapper Optuna>` and :ref:`Hyperopt <Wrapper Hyperopt
 
 **Cross Reference**
 
-- :ref:`API Reference MLPro-BF-ML <target_api_bf_ml>`
+- :ref:`API Reference BF-ML <target_api_bf_ml>`
 - :ref:`Wrapper for Optuna <Wrapper Optuna>`
 - :ref:`Wrapper for Hyperopt <Wrapper Hyperopt>`

@@ -21,4 +21,4 @@ and adds at this level the management of an internal adaptive model.
 **Cross Reference**
 
 - :ref:`Class bf.ops.ScenarioBase <target_bf_ops>`
-- :ref:`API Reference MLPro-BF-ML <target_api_bf_ml>`
+- :ref:`API Reference BF-ML <target_api_bf_ml>`
