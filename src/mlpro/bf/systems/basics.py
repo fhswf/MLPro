@@ -25,10 +25,11 @@
 ## -- 2023-03-04  1.7.0     DA       Class System: redefinition of methods load(), _save(), init_plot(),
 ## --                                update_plot()
 ## -- 2023-03-07  1.7.1     SY       Remove TransferFunction from bf.systems
+## -- 2023-03-07  1.7.2     DA       Bugfix in method System._save()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.1 (2023-03-07)
+Ver. 1.7.2 (2023-03-07)
 
 This module provides models and templates for state based systems.
 """
@@ -795,6 +796,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
             self._state_space, self._action_space = self._mujoco_handler.setup_spaces()
             self.set_latency(timedelta(0,0.05,0))
         else:
+            self._mujoco_file = None
             self._state_space, self._action_space = self.setup_spaces()
             self.set_latency(p_latency)
 
@@ -850,16 +852,17 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
                   file=open(p_path + os.sep + p_filename, "wb"),
                   protocol=pkl.HIGHEST_PROTOCOL )
 
-        from mlpro.wrappers.mujoco import MujocoHandler
+        if self._mujoco_file is not None:
+            from mlpro.wrappers.mujoco import MujocoHandler
 
-        self._mujoco_handler = MujocoHandler(
-                                    p_mujoco_file=self._mujoco_file, 
-                                    p_frame_skip=self._frame_skip,
-                                    p_state_mapping=self._state_mapping,
-                                    p_action_mapping=self._action_mapping,
-                                    p_camera_conf=self._camera_conf,
-                                    p_visualize=self.get_visualization(),
-                                    p_logging=self.get_log_level() )
+            self._mujoco_handler = MujocoHandler(
+                                        p_mujoco_file=self._mujoco_file, 
+                                        p_frame_skip=self._frame_skip,
+                                        p_state_mapping=self._state_mapping,
+                                        p_action_mapping=self._action_mapping,
+                                        p_camera_conf=self._camera_conf,
+                                        p_visualize=self.get_visualization(),
+                                        p_logging=self.get_log_level() )
 
 
 ## -------------------------------------------------------------------------------------------------
