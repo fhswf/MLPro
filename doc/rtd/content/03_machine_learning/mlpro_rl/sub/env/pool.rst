@@ -1,5 +1,5 @@
 .. _EnvPool:
-Reuse Environment from the Pool
+Reusing Environment from the Pool
 ------------------------------------
 
 .. toctree::

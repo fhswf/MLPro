@@ -1,6 +1,6 @@
 .. _customEnv:
-Develop Custom Environments
------------------------------
+Developing Custom Environments
+--------------------------------
 
 .. image:: images/MLPro-RL-Env_class_Environment_commented.png
 

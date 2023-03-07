@@ -25,13 +25,12 @@ The second base class is EnvModel, which is adaptive and utilized in model-based
 Both Environment and EnvModel classes inherit a common base class EnvBase and its fundamental properties, e.g.
 state and action space definition, reset the corresponding environment method, state transition method, etc.
 
-There are three main possibilities to set up an environment in MLPro, such as,
+There are two main possibilities to set up an environment in MLPro, such as,
 
 .. toctree::
    :maxdepth: 1
    
    env/customenv
-   env/customenvmodel
    env/pool
 
 Alternatively, you can also :ref:`reuse available environments from 3rd-party packages via wrapper classes <target-package-third>` (currently available: OpenAI Gym or PettingZoo).
