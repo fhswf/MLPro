@@ -21,7 +21,7 @@ The focus of the consideration is the :ref:`adaptive model <target_bf_ml_model>`
 Of course, this model does not exist just on its own. Rather, it interacts with a simulated or real object.
 For example, in the case of offline supervised learning, this can be a data set, in the case of online unsupervised 
 learning, a data stream, or in the case of reinforcement learning, a state-based system. Topics like this are 
-covered in MLPro in higher-level ML frameworks. On an abstract level, however, we introduce the so-called 
+covered in MLPro in higher-level ML frameworks. On an abstract level, however, we introduce the  
 :ref:`ML scenario <target_bf_ml_scenario>` for this because although we do not yet know anything about the 
 concrete ML application, we know that an adaptive model is involved. Furthermore, we propagate that the application 
 is executable in "simulation" or "real operation" mode.
@@ -32,7 +32,7 @@ using wrapper technology.
 
 In more complex applications, it can be helpful to group multiple models and allow communication between them. 
 It would be desirable here to optimally utilize the system resources through parallel processing. For this purpose, 
-MLPro provides the so-called :ref:`adaptive workflows <target_bf_ml_workflows>`.
+MLPro provides :ref:`adaptive workflows <target_bf_ml_workflows>`.
 
 In the field of systems engineering, the creation of suitable simulations or digital twins is an essential aspect.
 However, suppose a system cannot be described mathematically precisely enough due to its complexity or unknown 

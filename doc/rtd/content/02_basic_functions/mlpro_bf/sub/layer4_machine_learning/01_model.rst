@@ -13,11 +13,11 @@ and possibilities for application-specific adjustments to them.
 
 **Performant Execution**
 
-As shown in the simplified class diagram above, the Model class is made up of numerous base classes of the lower levels through 
-inheritance. So, from :ref:`Layer 1 - Computation <target_bf_computation>`, it inherits the executability 
-and asynchronous processing capabilities of class **Task**. In this way, it can also be combined in 
-workflows to (parallelly/asynchronously) executable groups of models. From class **EventHandler** of the 
-same level, it inherits the ability to raise events and forward them to registered event handlers. 
+As shown in the simplified class diagram above, the Model class is made up of numerous base classes of the 
+lower levels through inheritance. So, from :ref:`Layer 1 - Computation <target_bf_computation>`, it inherits
+the executability and asynchronous processing capabilities of class **Task**. In this way, it can also be 
+combined in workflows to (parallelly/asynchronously) executable groups of models. From class **EventHandler** 
+of the same level, it inherits the ability to raise events and forward them to registered event handlers. 
 
 
 **Persistence**
