@@ -46,7 +46,6 @@ from mlpro.sl.pool.afct.fnn.pytorch.mlp import PyTorchMLP
 from pathlib import Path
 from mlpro.rl.pool.actionplanner.mpc import MPC
 from mlpro.rl.pool.envs.gridworld import *
-from mlpro.rl.pool.envmodels.mlp_gridworld import MLPEnvModel
 import mlpro.bf.mt as mt
               
 
