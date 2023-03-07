@@ -40,5 +40,5 @@ Both training results are from the same agent.
 
 **Cross Reference**
 
-- :ref:`MLPro-RL, Training <target_training_RL>`
+- :ref:`MLPro-RL: Training <target_training_RL>`
 - :ref:`API Reference <target_api_rl_run_train>`

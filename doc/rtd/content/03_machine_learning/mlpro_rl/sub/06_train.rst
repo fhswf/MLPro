@@ -124,13 +124,13 @@ In MLPro-RL, we simplify the process of setting up an RL scenario and training f
 
 **Cross Reference**
 
-- `A sample application video of MLPro-RL on a UR5 robot <https://ars.els-cdn.com/content/image/1-s2.0-S2665963822001051-mmc2.mp4>`_
-- :ref:`Howto RL-AGENT-002: Train an Agent with Own Policy <Howto Agent RL 002>`
-- :ref:`Howto RL-AGENT-004: Train Multi-Agent with Own Policy <Howto Agent RL 004>`
-- :ref:`Howto RL-AGENT-011: Train and Reload Single Agent (Gym) <Howto Agent RL 011>`
-- :ref:`Howto RL-AGENT-021: Train and Reload Single Agent (MuJoCo) <Howto Agent RL 021>`
-- :ref:`Howto RL-ATT-001: Train and Reload Single Agent using Stagnation Detection (Gym) <Howto RL ATT 001>`
-- :ref:`Howto RL-ATT-002: Train and Reload Single Agent using Stagnation Detection (MuJoCo) <Howto RL ATT 002>`
-- :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`
-- :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
-- :ref:`MLPro-BF-ML: Training and Tuning <target_bf_ml_train_and_tune>`
+    - `A sample application video of MLPro-RL on a UR5 robot <https://ars.els-cdn.com/content/image/1-s2.0-S2665963822001051-mmc2.mp4>`_
+    - :ref:`Howto RL-AGENT-002: Train an Agent with Own Policy <Howto Agent RL 002>`
+    - :ref:`Howto RL-AGENT-004: Train Multi-Agent with Own Policy <Howto Agent RL 004>`
+    - :ref:`Howto RL-AGENT-011: Train and Reload Single Agent (Gym) <Howto Agent RL 011>`
+    - :ref:`Howto RL-AGENT-021: Train and Reload Single Agent (MuJoCo) <Howto Agent RL 021>`
+    - :ref:`Howto RL-ATT-001: Train and Reload Single Agent using Stagnation Detection (Gym) <Howto RL ATT 001>`
+    - :ref:`Howto RL-ATT-002: Train and Reload Single Agent using Stagnation Detection (MuJoCo) <Howto RL ATT 002>`
+    - :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`
+    - :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
+    - :ref:`MLPro-BF-ML: Training and Tuning <target_bf_ml_train_and_tune>`

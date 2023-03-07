@@ -40,6 +40,9 @@ The Bulk Good Laboratory Plant (BGLP) environment will be wrapped to a PettingZo
     
 There are several lines of action processing logs due to the API tests. When there is no detected failure, the environment is successfully wrapped.
 
+
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper PettingZoo <Wrapper PettingZoo>`
+    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    + :ref:`API Reference - RL Environments <target_api_rl_env>`
+    + :ref:`API Reference - Wrapper PettingZoo <Wrapper PettingZoo>`

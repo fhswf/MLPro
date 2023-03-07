@@ -46,6 +46,6 @@ After termination the local result folder contains the training result files:
 
 **Cross Reference**
 
-- :ref:`MLPro-RL, Training <target_training_RL>`
+- :ref:`MLPro-RL: Training <target_training_RL>`
 - :ref:`Howto RL-AGENT-011: Train and Reload Single Agent (Gym) <Howto Agent RL 011>`
 - :ref:`API Reference <target_api_rl_run_train>`
