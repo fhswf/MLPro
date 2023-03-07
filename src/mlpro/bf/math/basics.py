@@ -34,10 +34,11 @@
 ## --                                - internal optimizations
 ## --                                Class Set:
 ## --                                - new method is_numeric()
+## -- 2023-03-07  2.1.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2022-12-13)
+Ver. 2.1.1 (2023-03-07)
 
 This module provides basic mathematical classes.
 """
@@ -408,7 +409,7 @@ class Element:
     def __init__(self, p_set:Set):
         self.set_related_set(p_set=p_set)
         if p_set.is_numeric():
-            self._values =np.zeros(self._set.get_num_dim())
+            self._values = np.zeros(self._set.get_num_dim(), dtype='O')
         else:
             self._values = list(repeat(0, self._set.get_num_dim()))
         
@@ -453,6 +454,7 @@ class Element:
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
         self._values[self._set.get_dim_ids().index(p_dim_id)] = p_value
+            
 
 
 ## -------------------------------------------------------------------------------------------------

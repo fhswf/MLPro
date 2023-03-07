@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-01  0.0.0     SY       Creation 
 ## -- 2023-03-01  0.1.0     SY       Initial design of FNN for MLPro v1.0.0
+## -- 2023-03-07  1.0.0     SY       Release first version 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2023-03-01)
+Ver. 1.0.0 (2023-03-07)
 
 This module provides model classes of feedforward neural networks for supervised learning tasks. 
 """
@@ -142,7 +143,7 @@ class MLP(FNN):
             par_val  = hp.get_value(idx)
             _param[par_name] = par_val
 
-        if (' input_size' not in _param ) or ( 'output_size' not in _param ):
+        if ( 'input_size' not in _param ) or ( 'output_size' not in _param ):
             raise ParamError('Input size and/or output size of the network are not defined.')
         
         if 'update_rate' not in _param:
