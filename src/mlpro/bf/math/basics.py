@@ -409,7 +409,7 @@ class Element:
     def __init__(self, p_set:Set):
         self.set_related_set(p_set=p_set)
         if p_set.is_numeric():
-            self._values = np.zeros(self._set.get_num_dim(), dtype='O')
+            self._values = np.zeros(self._set.get_num_dim())
         else:
             self._values = list(repeat(0, self._set.get_num_dim()))
         
@@ -453,9 +453,13 @@ class Element:
 
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
-        self._values[self._set.get_dim_ids().index(p_dim_id)] = p_value
+        try:
+            self._values[self._set.get_dim_ids().index(p_dim_id)] = p_value
+        except:
+            self._values = self._values.tolist()
+            self._values[self._set.get_dim_ids().index(p_dim_id)] = p_value
+            self._values = np.array(self._values)
             
-
 
 ## -------------------------------------------------------------------------------------------------
     def copy(self):

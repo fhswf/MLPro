@@ -111,7 +111,7 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
                                                                self._parameters['gain_init'])
 
         modules = []
-        for hd in range(self._parameters['num_hidden_layers']+1):
+        for hd in range(int(self._parameters['num_hidden_layers'])+1):
             if hd == 0:
                 act_input_size  = self._parameters['input_size']
                 output_size     = self._parameters['hidden_size'][hd]
@@ -126,9 +126,9 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
                 act_fct         = self._parameters['activation_fct'][hd]()
             
             if self._parameters['weight_bias_init']:
-                modules.append(init_(torch.nn.Linear(act_input_size, output_size)))
+                modules.append(init_(torch.nn.Linear(int(act_input_size), int(output_size))))
             else:
-                modules.append(torch.nn.Linear(act_input_size, output_size))
+                modules.append(torch.nn.Linear(int(act_input_size), int(output_size)))
             modules.append(act_fct)
 
         model = torch.nn.Sequential(*modules)
@@ -222,10 +222,7 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
             if len(self._parameters['hidden_size']) != self._parameters['num_hidden_layers']:
                 raise ParamError("length of hidden_size list must be equal to num_hidden_layers or an integer.")
         except:
-            if not isinstance(self._parameters['hidden_size'], int):
-                raise ParamError("length of hidden_size list must be equal to num_hidden_layers or an integer.")
-            else:
-                self._parameters['hidden_size'] = [self._parameters['hidden_size']] * self._parameters['num_hidden_layers']
+            self._parameters['hidden_size'] = [int(self._parameters['hidden_size'])] * int(self._parameters['num_hidden_layers'])
         
         if 'activation_fct' not in self._parameters:
             raise ParamError("activation_fct is not defined.")
@@ -236,7 +233,7 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
             if isinstance(self._parameters['activation_fct'], list):
                 raise ParamError("length of activation_fct list must be equal to num_hidden_layers or a single activation function.")
             else:
-                self._parameters['activation_fct'] = [self._parameters['activation_fct']] * self._parameters['num_hidden_layers']
+                self._parameters['activation_fct'] = [self._parameters['activation_fct']] * int(self._parameters['num_hidden_layers'])
         
         if 'weight_bias_init' not in _param:
             self._parameters['weight_bias_init'] = True
@@ -413,5 +410,5 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
 
         BatchSize   = p_input.shape[0]
         output      = self._sl_model(p_input)   
-        output      = output.reshape(BatchSize, self._parameters['output_size'])
+        output      = output.reshape(BatchSize, int(self._parameters['output_size']))
         return output
