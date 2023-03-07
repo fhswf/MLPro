@@ -31,7 +31,7 @@ You will learn:
 from stable_baselines3 import PPO
 from mlpro.rl import *
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
-from mlpro.rl.pool.envs.cartpole import CartpoleMujocoDiscrete
+from mlpro.rl.pool.envs.cartpole import CartpoleMujocoContinuous
 from pathlib import Path
 
 
@@ -40,7 +40,7 @@ class MyScenario(RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        self._env = CartpoleMujocoDiscrete(p_logging=logging, p_visualize=visualize)
+        self._env = CartpoleMujocoContinuous(p_logging=logging, p_visualize=visualize)
 
         # 1.2 Setup Policy From SB3
         policy_sb3 = PPO(policy="MlpPolicy", n_steps=10, env=None, _init_setup_model=False, device="cpu", seed=1)
