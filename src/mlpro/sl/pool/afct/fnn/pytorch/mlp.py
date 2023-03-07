@@ -115,15 +115,15 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
             if hd == 0:
                 act_input_size  = self._parameters['input_size']
                 output_size     = self._parameters['hidden_size'][hd]
-                act_fct         = self._parameters['activation_fct'][hd]
+                act_fct         = self._parameters['activation_fct'][hd]()
             elif hd == self._parameters['num_hidden_layers']:
                 act_input_size  = self._parameters['hidden_size'][hd-1]
                 output_size     = self._parameters['output_size']
-                act_fct         = self._parameters['output_activation_fct']
+                act_fct         = self._parameters['output_activation_fct']()
             else:
                 act_input_size  = self._parameters['hidden_size'][hd-1]
                 output_size     = self._parameters['hidden_size'][hd]
-                act_fct         = self._parameters['activation_fct'][hd]
+                act_fct         = self._parameters['activation_fct'][hd]()
             
             if self._parameters['weight_bias_init']:
                 modules.append(init_(torch.nn.Linear(act_input_size, output_size)))
@@ -138,6 +138,9 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
             model = self._add_init(model)
         except:
             pass 
+        
+        self._parameters['loss_fct'] = self._parameters['loss_fct']()
+        self.optimizer = self._parameters['optimizer'](model.parameters(), lr=self._parameters['learning_rate'])
 
         return model
 
@@ -155,6 +158,8 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
             batch size of the buffer. Default = 100.
         seed_buffer : int
             seeding of the buffer. Default = 1.
+        learning_rate : float
+            learning rate of the optimizer. Default = 3e-4.
         hidden_size : int or list
             number of hidden neurons. There are two possibilities to set up the hidden size:
             1) if hidden_size is an integer, then the number of neurons in all hidden layers are
@@ -205,8 +210,13 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
             self._parameters['seed_buffer'] = 1
         else:
             self._parameters['seed_buffer'] = _param['seed_buffer']
+
+        if 'learning_rate' not in _param:
+            self._parameters['learning_rate'] = 3e-4
+        else:
+            self._parameters['learning_rate'] = _param['learning_rate']
         
-        if self._parameters.get('hidden_size') not in self._parameters:
+        if 'hidden_size' not in self._parameters:
             raise ParamError("hidden_size is not defined.")
         try:
             if len(self._parameters['hidden_size']) != self._parameters['num_hidden_layers']:
@@ -217,7 +227,7 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
             else:
                 self._parameters['hidden_size'] = [self._parameters['hidden_size']] * self._parameters['num_hidden_layers']
         
-        if self._parameters.get('activation_fct') not in self._parameters:
+        if 'activation_fct' not in self._parameters:
             raise ParamError("activation_fct is not defined.")
         try:
             if len(self._parameters['activation_fct']) != self._parameters['num_hidden_layers']:
@@ -327,7 +337,7 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
         model_act_output  = self.output_preproc(p_act_output)
         model_pred_output = self.output_preproc(p_pred_output)
 
-        return self._parameters['loss_fct'](model_act_output, model_pred_output).items()
+        return self._parameters['loss_fct'](model_act_output, model_pred_output)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -336,9 +346,9 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
         This method provides provide a funtionality to call the optimizer of the feedforward network.
         """
         
-        self._parameters['optimizer'].zero_grad()
+        self._optimizer.zero_grad()
         p_loss.backward()
-        self._parameters['optimizer'].step()
+        self._optimizer.step()
 
 
 ## -------------------------------------------------------------------------------------------------
