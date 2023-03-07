@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-02-23  0.0.0     SY       Creation
-## -- 2023-03-02  1.0.0     SY       Released first version
+## -- 2023-03-07  1.0.0     SY       Released first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-02)
+Ver. 1.0.0 (2023-03-07)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
@@ -367,21 +367,22 @@ class PyTorchMLP(MLP, PyTorchHelperFunctions):
             return False
 
         trainer, _  = self._buffer.sampling()
-        self._sl_model.train()
-        for i, (In, Label) in enumerate(trainer):
-            outputs = self.forward(In)
-            loss    = self._calc_loss(outputs, Label)
-            self._optimize(loss)
+        self._adapt_offline(trainer)
         return True
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_offline(self, p_dataset) -> bool:
+    def _adapt_offline(self, p_dataset:torch.Tensor) -> bool:
         """
-        To be designed. Since it depends on the data type of p_dataset as the input.
+        Adaptation mechanism for PyTorch based model for offline learning.
         """
 
-        raise NotImplementedError
+        self._sl_model.train()
+        for i, (In, Label) in enumerate(p_dataset):
+            outputs = self.forward(In)
+            loss    = self._calc_loss(outputs, Label)
+            self._optimize(loss)
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------

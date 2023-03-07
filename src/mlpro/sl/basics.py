@@ -177,7 +177,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_input:Element, p_output:Element, p_dataset) -> bool:
+    def _adapt(self, p_input:Element, p_output:Element, p_dataset : Buffer) -> bool:
         """
         Adaptation algorithm that is called by public adaptation method. This covers online and
         offline supervised learning. Online learning means that the data set is dynamic according to
@@ -190,7 +190,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
             Abscissa/input element object (type Element) for online learning
         p_output : Element
             Setpoint ordinate/output element (type Element) for online learning
-        p_dataset
+        p_dataset : Buffer
             A set of data for offline learning
 
         Returns
@@ -227,13 +227,13 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_offline(self, p_dataset) -> bool:
+    def _adapt_offline(self, p_dataset:Buffer) -> bool:
         """
         Custom adaptation algorithm for offline learning. Please redefine.
 
         Parameters
         ----------
-        p_dataset
+        p_dataset : Buffer
             A set of data for offline learning
 
         Returns
