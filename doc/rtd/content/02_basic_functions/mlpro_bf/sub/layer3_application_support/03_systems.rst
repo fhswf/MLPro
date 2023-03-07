@@ -12,7 +12,7 @@ completely defines the condition. A system transits from a state to next state a
 state transition dynamics. However, this state transition is triggered by an external source of action, for example
 an Actuator.
 
-In real application of state-based systems, such as controlled systems, it is highly interested to maintain a desired
+In real application of state-based systems, such as controlled systems, it is highly interesting to maintain a desired
 system state, reach a system state or maximize system output, through optimum state transitions. Additionally, it is
 also a important concern to verify if the system is performing within the objective of the application or if the
 system has failed.
@@ -24,24 +24,56 @@ MLPro can be reused to define any custom system with default methods to handle s
 .. image::
     images/systems.drawio.png
     :width: 650 px
-
 The system's module provides following objects and templates:
 
-    1. System: This is the base template class to implement custom System objects.
+    1. **System**:
+    The System class standardizes and provides the base template for any State-based System along with standard MLPro
+functionalities such as Logging, Timer, Cycle Management, Persistence, Real/Simulated mode and Reset. The System
+class additionally provides room for custom functionalities such as Reaction Simulation, Terminal State Monitoring
+such as Success and Broken. These custom functionalities can be incorporated by implementing the
+:code:`_simulate_reaction()`, :code:`_compute_success()`, :code:`_compute_broken()` methods on Systems class or
+corresponding function classes (described below), which are then passed as a parameter to the system.
 
-    2. FctStrans: A custom template for State Transition functions, FctStrans is used to provide custom
-implementations for state transition dynamics of a system.
+.. note::
+    The System class of also supports operation in modes: Real and Simulated, based on which it enables working with
+a real hardware or a simulated system respectively.
 
-    3. FctSuccess: The success function, FctSuccess is a template class to implement functions to determine if the
-system has reached to a goal state.
+    2. **FctStrans**:
+    The FctStrans (State Transition Function) standardizes the process of simulating the primary State Transition
+process of a System. The :code:`simulate_reaction(p_state, p_action)` method of this class takes the current state of
+the environment and the action from the corresponding actuator as a parameter, and maps it to the next state of the
+system, based on the inherent dynamics.
 
-    4. FctBroken: The broken function, FctBroken is a template class to implement functions to determine if the
-system has reached to a terminating broken state.
+.. note::
+    Please implement the :code:`_simulate_reaction()` method of FctStrans, in order to re-use in a custom
+implementation.
 
-    5. State: The state object represents the current state of the system with respect to time. State object contains
-information about the system corresponding all the dimensions of the State Space of the system.
+    3. **FctSuccess**:
+    A System state can be monitored through FctSuccess (Success Function) to determine if the system has reached the
+expected objective state/output. It maps the current state of the system to a boolean value indicating the success of
+a system.
 
-    6. Action: The action object represents the current Action to be simulated on the system.
+.. note::
+    Please implement :code:`_compute_success()` method of FctSuccess, in order to re-use it in a custom implementation.
+
+
+    4. **FctBroken**:
+    Similar to FctSuccess class, the FctBroken class standardizes the process of monitoring whether the system has
+reached a broken terminal state, by mapping the current state to a boolean value indicating the broken state.
+
+.. note::
+    Please implement :code:`_compute_broken()` method of FctBroken, in order to re-use it in custom implementation.
+
+    5. **State**:
+    The state object represents the current state of the system with respect to time. A state object inherits from
+the Element class of MLPro, which represents an element in a Multi-dimensional Set object, a State-Space in this case.
+The state consists information about the System for corresponding dimension of the related State-Space.
+
+    6. **Action**:
+    The Action object standardizes external input to the system. For example, input from a controller, input from an
+actuator or an agent in case of Reinforcement Learning. The standard Action object consists of an ActionElement or a
+list of ActionElements, in case of more than one action sources. The action element is similar to a state object,
+consisting corresponding values for all the dimension in the related action-space.
 
 MLPro also provides the possibility to integrate real world hardware, such as controllers and hardwares to the System
 object. Furthermore, Systems module integrates optional visualization and simulation functionalities from MuJoCo into
