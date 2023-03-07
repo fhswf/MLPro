@@ -17,13 +17,14 @@ system state, reach a system state or maximize system output, through optimum st
 also a important concern to verify if the system is performing within the objective of the application or if the
 system has failed.
 
-MLPro's Systems module encapsulates the aforementioned functionalities into a standard template. The System object of
-MLPro can be reused to define any custom system with default methods to handle surrounding standard operations.
-
 
 .. image::
     images/systems.drawio.png
-    :width: 650 px
+    :width: 550 px
+
+As shown in the figure above, MLPro's Systems module encapsulates the aforementioned functionalities into a standard
+template. The System object of MLPro can be reused to define any custom system with default methods to handle surrounding standard operations.
+
 The system's module provides following objects and templates:
 
     1. **System**:
@@ -87,4 +88,8 @@ MLPro for re-usability. Check out following sections to know more:
    systems/*
 
 
-- cross references: api
+**Cross References**
+
+- :ref:`BF-SYSTEMS - State-based Systems <target_ap_bf_systems>`
+- :ref:`Howto BF-SYSTEMS-001: System, Controller, Actuator, Sensor <Howto BF SYSTEMS 001>`
+- :ref:`Howto BF-SYSTEMS-002: Systems wrapped with MuJoCo <Howto BF SYSTEMS 002>`
