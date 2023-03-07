@@ -25,7 +25,7 @@ from mlpro.sl import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PyTorchMLP(MLP, PyTorchHelperFunctions):
+class PyTorchMLP (MLP, PyTorchHelperFunctions):
     """
     Template class for an adaptive bi-multivariate mathematical function that adapts by
     supervised learning using PyTorch-based MLP.

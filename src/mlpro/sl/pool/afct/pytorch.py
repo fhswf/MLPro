@@ -34,7 +34,7 @@ from mlpro.bf.data import BufferElement, Buffer
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PyTorchIOElement(BufferElement):
+class PyTorchIOElement (BufferElement):
     """
     This class provides a buffer element for PyTorch based SLNetwork.
 
@@ -57,7 +57,7 @@ class PyTorchIOElement(BufferElement):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PyTorchBuffer(Buffer, torch.utils.data.Dataset):
+class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
     """
     This class provides buffer functionalities for PyTorch based SLNetwork and also using several
     built-in PyTorch functionalities.

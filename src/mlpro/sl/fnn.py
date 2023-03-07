@@ -25,7 +25,7 @@ from mlpro.sl.basics import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class FNN(SLAdaptiveFunction):
+class FNN (SLAdaptiveFunction):
     """
     This class provides the base class of feedforward neural networks.
     """
@@ -101,7 +101,7 @@ class FNN(SLAdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MLP(FNN):
+class MLP (FNN):
     """
     This class provides the base class of multilayer perceptron.
     """
