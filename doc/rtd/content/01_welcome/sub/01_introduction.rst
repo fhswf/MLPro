@@ -124,5 +124,5 @@ The development team consistently applies the following principles:
       :ref:`API Reference <target_appendix2>`. A colour system documents the respective development status.
 
    * Clean Code Paradigm
-      We firmly believe that a clearly structured and legible source text has a significant influence on both the acceptance and the life 
+      We firmly believe that a clearly structured and legible source code has a significant influence on both the acceptance and the life 
       cycle of software. Anyone who opens any source code of MLPro knows immediately what we mean :-)
