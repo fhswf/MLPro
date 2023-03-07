@@ -8,7 +8,6 @@ Hyperopt
     :show-inheritance:
    
 
-
 **Cross References**
 
 - :ref:`Howto RL-HT-001: Hyperparameter Tuning using Hyperopt <Howto RL HT 001>`

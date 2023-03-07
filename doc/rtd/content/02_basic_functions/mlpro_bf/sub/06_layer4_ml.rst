@@ -16,7 +16,7 @@ The focus of the consideration is the :ref:`adaptive model <target_bf_ml_model>`
 - Adaptivity
 - Executability
 - Parameterizability
-- Persistency
+- Persistence
 
 Of course, this model does not exist just on its own. Rather, it interacts with a simulated or real object.
 For example, in the case of offline supervised learning, this can be a data set, in the case of online unsupervised 

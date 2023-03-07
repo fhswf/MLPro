@@ -6,7 +6,6 @@ Optuna
     :members:
     :undoc-members:
     :show-inheritance:
-   
 
 
 **Cross Reference**
