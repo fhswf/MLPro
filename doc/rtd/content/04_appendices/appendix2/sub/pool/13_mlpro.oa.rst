@@ -1,4 +1,4 @@
-.. _target_api_oa:
+.. _target_api_pool_oa:
 MLPro-OA - Online Adaptivity
 ============================
 

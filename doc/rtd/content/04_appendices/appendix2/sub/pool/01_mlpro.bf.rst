@@ -1,4 +1,4 @@
-.. _target_api_bf:
+.. _target_api_pool_bf:
 MLPro-BF - Basic Functions
 ==========================
 

@@ -1,4 +1,4 @@
-.. _target_api_gt:
+.. _target_api_pool_gt:
 MLPro-GT - Game Theory
 ======================
 

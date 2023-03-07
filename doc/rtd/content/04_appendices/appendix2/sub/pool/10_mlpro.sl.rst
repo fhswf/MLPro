@@ -1,4 +1,4 @@
-.. _target_api_sl:
+.. _target_api_pool_sl:
 MLPro-SL - Supervised Learning
 ==============================
 

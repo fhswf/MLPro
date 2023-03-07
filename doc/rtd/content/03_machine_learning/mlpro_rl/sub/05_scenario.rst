@@ -2,7 +2,7 @@
 Scenarios
 ------------
 
-A scenario in reinforcement learning (RL) refers to a specific problem or task that the agent is trying to learn how to solve.
+A scenario in reinforcement learning refers to a specific problem or task that the agent is trying to learn how to solve.
 A scenario defines the environment in which the agent operates, including the state space, the action space, the reward function, and the transition dynamics.
 
 In RL, the agent interacts with the environment over a sequence of time steps.
@@ -20,10 +20,11 @@ Overall, a scenario in RL defines the problem that the agent is trying to solve,
 In MLPro-RL, a class **RLScenario** inherits the functionality from class **Scenario** in the basic function level, where the **RLScenario** class combines RL agents and an environment into an executable unit.
 
 One of the MLPro's features is enabling the user to apply a template class for an RL scenario consisting of an environment and agents.
-Moreover, you can create either a single-agent scenario or a multi-agent scenario in a simple manner.
-Here is the commented class diagram for creating a custom scenario in MLPro-RL:
+Moreover, the users can create either a single-agent scenario or a multi-agent scenario in a simple manner by inheriting **RLScenario** base class and redefining its **_setup** function.
 
-.. image:: images/MLPro-RL-Scenario_Class_Commented.png
-    :width: 1000
 
-For setting-up a scenarion for single-agent and multi-agent in MLPro-RL, you can refer to :ref:`this page<target_training_RL>`.
+**Cross Reference**
+
+  - :ref:`MLPro-RL: Training <target_training_RL>`
+  - :ref:`Howto RL-AGENT-001: Run an Agent with Own Policy <Howto Agent RL 001>`
+  - :ref:`Howto RL-AGENT-003: Run Multi-Agent with Own Policy <Howto Agent RL 003>`
