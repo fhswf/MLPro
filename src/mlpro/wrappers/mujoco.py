@@ -373,21 +373,22 @@ class MujocoHandler(Wrapper):
     def _get_state_space(self):
         self._system_state_space = ESpace()
         
-        # Extract Position and Orientation, if a body
+        # # Extract Position and Orientation, if a body
         # for elem in self._xml_root.iter("body"):
-        #     self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_pos_body")))
-        #     self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_rot_body")))
+        #     self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body")))
+        #     self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body")))
         
         # Extract Position, Velocity, and Acceleration, if a joint
-        for elem in self._xml_root.iter("joint"):
-            try:
-                bound = elem.attrib["range"].split(" ")
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_pos_joint"), p_boundaries=[float(bound[0]), float(bound[1])]))
-            except KeyError as e:
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_pos_joint"), p_boundaries=[float('inf'), float('inf')]))
-            
-            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_vel_joint"), p_boundaries=[float('inf'), float('inf')]))
-            self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str("_acc_joint"), p_boundaries=[float('inf'), float('inf')]))
+        for world_body_elem in self._xml_root.iter("worldbody"):
+            for elem in world_body_elem.iter("joint"):
+                try:
+                    bound = elem.attrib["range"].split(" ")
+                    self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.joint"), p_boundaries=[float(bound[0]), float(bound[1])]))
+                except KeyError as e:
+                    self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.joint"), p_boundaries=[float('inf'), float('inf')]))
+                
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".vel.joint"), p_boundaries=[float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".acc.joint"), p_boundaries=[float('inf'), float('inf')]))
         
         return self._system_state_space
     
@@ -411,7 +412,7 @@ class MujocoHandler(Wrapper):
     def _get_obs(self):
         state_value = []
         for dim in self._system_state_space.get_dims():
-            state = dim.get_name_short().split("_")
+            state = dim.get_name_short().split(".")
             if state[2] == "body":
                 if state[1] == "pos":
                     state_value.append(self._data.body(state[0]).xpos)

@@ -123,3 +123,13 @@ class CartpoleMujocoDiscrete(CartpoleMujoco):
     def _action_to_mujoco(self, p_mlpro_action):
         action = self._max_action if p_mlpro_action == 1 else -self._max_action
         return action
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class CartpoleMujocoContinuous(CartpoleMujoco):
+
+    C_NAME = "CartpoleMujocoContinuous"
