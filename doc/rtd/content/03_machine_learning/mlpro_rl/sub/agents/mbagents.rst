@@ -1,6 +1,6 @@
 .. _target_agents_MBRL:
 Model-Based Agents
----------------------
+==================
 
 Model-Based Agents have a dissimilar learning target as Model-Free Agents, whereas learning the environment model is not required in the model-free RL.
 An environment model can be incorporated into a single agent, see :ref:`EnvModel <customEnvModel>` for an overview.
@@ -50,8 +50,9 @@ In MLPro-RL, we have also provided a base class for ActionPlanner, where only th
             raise NotImplementedError
 
 
-For better understanding of Model-Based Agents, we provide some examples, as follows:
+**Cross Reference**
 
-(a) :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`, and 
+- :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`
+- :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
+- :ref:`BF-SL: Adaptive Functions <target_bf_sl_afct>`
 
-(b) :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`.
