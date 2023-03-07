@@ -25,7 +25,7 @@ number that allows a qualitative statement about the learning performance of the
 **Hyperparameter Tuning**
 
 Hyperparameter tuning is an optional training function performed by its own **HyperParamTuner** class. In particular, 
-it defines the **maximize** method, which maximizes the high score of a designated training by varying the hyperparameters 
+it defines the **maximize** method, which maximizes the highscore of a designated training by varying the hyperparameters 
 of the model it contains. The optimization itself is not performed natively by MLPro, but by third-party packages. To this purpose, MLPro provides 
 wrappers for :ref:`Optuna <Wrapper Optuna>` and :ref:`Hyperopt <Wrapper Hyperopt>`.
 
