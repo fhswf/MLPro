@@ -3,9 +3,9 @@ State-based Systems
 ===================
 
 MLPro aims to standardize machine learning processes to accommodate complex applications in simplified reusable APIs.
-MLPro's Systems module standardize state based systems and their operation in a modular design. The keyword
-**state-based** implies the possibility to characteristically represent a system's unique status vector corresponding
-to a given timestep.
+MLPro's Systems module standardizes state based systems and their operation in a modular design. The keyword
+**state-based** implies the possibility to characteristically represent a system's unique status as a vector
+corresponding to a given timestep.
 
 A state-based system has a definite condition at any given point in time, defined by a fixed number of variables that
 completely defines the condition. A system transits from a state to next state at each timestep based on the inherent
@@ -14,7 +14,7 @@ an Actuator.
 
 In real application of state-based systems, such as controlled systems, it is highly interesting to maintain a desired
 system state, reach a system state or maximize system output, through optimum state transitions. Additionally, it is
-also a important concern to verify if the system is performing within the objective of the application or if the
+also an important concern to verify if the system is performing within the objective of the application or if the
 system has failed.
 
 
@@ -76,7 +76,7 @@ actuator or an agent in case of Reinforcement Learning. The standard Action obje
 list of ActionElements, in case of more than one action sources. The action element is similar to a state object,
 consisting corresponding values for all the dimension in the related action-space.
 
-MLPro also provides the possibility to integrate real world hardware, such as controllers and hardwares to the System
+MLPro also provides the possibility to integrate real world hardware, such as controllers and hardware to the System
 object. Furthermore, Systems module integrates optional visualization and simulation functionalities from MuJoCo into
 MLPro for re-usability. Check out following sections to know more:
 
