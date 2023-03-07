@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.sl
-## -- Module  : models.py
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -10,16 +10,23 @@
 ## -- 2022-08-15  0.1.1     SY       Renaming maturity to accuracy
 ## -- 2022-11-02  0.2.0     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-15  0.3.0     DA       Class SLAdaptiveFunction: new parent class AdaptiveFunction
+## -- 2023-02-21  0.4.0     SY       - Introduce Class SLNetwork
+## --                                - Update Class SLAdaptiveFunction
+## -- 2023-02-22  0.4.1     SY       Update Class SLAdaptiveFunction
+## -- 2023-03-01  0.4.2     SY       - Renaming module
+## --                                - Remove SLNetwork
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2022-11-15)
+Ver. 0.4.2 (2023-03-01)
 
 This module provides model classes for supervised learning tasks. 
 """
 
 
 from mlpro.bf.ml import *
+
+
 
 
 
@@ -56,6 +63,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
     C_TYPE = 'Adaptive Function (SL)'
     C_NAME = '????'
 
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_input_space: MSpace,
@@ -80,10 +88,53 @@ class SLAdaptiveFunction (AdaptiveFunction):
         self._threshold      = p_threshold
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
+        self._parameters     = self._hyperparameters_check()
+        self._sl_model       = self._setup_model()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, p_input:Element, p_output:Element) -> bool:
+    def _setup_model(self):
+        """
+        A method to set up a supervised learning network.
+        Please redefine this method according to the type of network, if not provided yet.
+        
+        Returns
+        ----------
+            A set up supervised learning model
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_model(self):
+        """
+        A method to get the supervised learning network.
+        
+        Returns
+        ----------
+            A set up supervised learning model
+        """
+
+        return self._sl_model
+
+
+## -------------------------------------------------------------------------------------------------
+    def _hyperparameters_check(self) -> dict:
+        """
+        A method to check the hyperparameters related to the SL model.
+        
+        Returns
+        ----------
+        dict
+            A dictionary includes the name of the hyperparameters and their values.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def adapt(self, p_input:Element=None, p_output:Element=None, p_dataset=None) -> bool:
         """
         Adaption by supervised learning.
         
@@ -93,6 +144,8 @@ class SLAdaptiveFunction (AdaptiveFunction):
             Abscissa/input element object (type Element)
         p_output : Element
             Setpoint ordinate/output element (type Element)
+        p_dataset
+            A set of data for offline learning
         """
 
         if not self._adaptivity:
@@ -107,7 +160,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
         else:
             # Quality of function not ok. Adaptation is to be triggered.
-            self._set_adapted(self._adapt(p_input, p_output))
+            self._set_adapted(self._adapt(p_input, p_output, p_dataset))
             if self.get_adapted():
                 self._mappings_total = 1
 
@@ -124,9 +177,39 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_input: Element, p_output: Element) -> bool:
+    def _adapt(self, p_input:Element, p_output:Element, p_dataset:Buffer) -> bool:
         """
-        Custom adaptation algorithm that is called by public adaptation method. Please redefine.
+        Adaptation algorithm that is called by public adaptation method. This covers online and
+        offline supervised learning. Online learning means that the data set is dynamic according to
+        the input data, meanwhile offline learning means that the learning procedure is based on a
+        static data set.
+
+        Parameters
+        ----------
+        p_input : Element
+            Abscissa/input element object (type Element) for online learning
+        p_output : Element
+            Setpoint ordinate/output element (type Element) for online learning
+        p_dataset : Buffer
+            A set of data for offline learning
+
+        Returns
+        ----------
+            bool
+        """
+
+        if ( p_input is not None ) and ( p_output is not None ):
+            adapted = self._adapt_online(p_input, p_output)
+        else:
+            adapted = self._adapt_offline(p_dataset)
+
+        return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_online(self, p_input:Element, p_output:Element) -> bool:
+        """
+        Custom adaptation algorithm for online learning. Please redefine.
 
         Parameters
         ----------
@@ -135,6 +218,27 @@ class SLAdaptiveFunction (AdaptiveFunction):
         p_output : Element
             Setpoint ordinate/output element (type Element)
 
+        Returns
+        ----------
+            bool
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_offline(self, p_dataset:Buffer) -> bool:
+        """
+        Custom adaptation algorithm for offline learning. Please redefine.
+
+        Parameters
+        ----------
+        p_dataset : Buffer
+            A set of data for offline learning
+
+        Returns
+        ----------
+            bool
         """
 
         raise NotImplementedError
@@ -165,8 +269,14 @@ class SLScenario (Scenario):
 
     C_TYPE = 'SL-Scenario'
 
+
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_mode=Mode.C_MODE_SIM, p_ada: bool = True, p_cycle_limit: int = 0, p_visualize: bool = True, p_logging=Log.C_LOG_ALL):
+    def __init__(self,
+                 p_mode=Mode.C_MODE_SIM,
+                 p_ada: bool = True,
+                 p_cycle_limit: int = 0,
+                 p_visualize: bool = True, 
+                 _logging=Log.C_LOG_ALL):
         raise NotImplementedError
 
 
@@ -175,12 +285,13 @@ class SLScenario (Scenario):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SLTraining(Training):
+class SLTraining (Training):
     """
     To be designed.
     """
 
     C_NAME = 'SL'
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
