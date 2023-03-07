@@ -27,57 +27,51 @@ template. The System object of MLPro can be reused to define any custom system w
 
 The system's module provides following objects and templates:
 
-    1. **System**:
+1. **System**:
 
-    The System class standardizes and provides the base template for any State-based System along with standard MLPro
+The System class standardizes and provides the base template for any State-based System along with standard MLPro
 functionalities such as Logging, Timer, Cycle Management, Persistence, Real/Simulated mode and Reset. The System
 class additionally provides room for custom functionalities such as Reaction Simulation, Terminal State Monitoring
 such as Success and Broken. These custom functionalities can be incorporated by implementing the
 :code:`_simulate_reaction()`, :code:`_compute_success()`, :code:`_compute_broken()` methods on Systems class or
 corresponding function classes (described below), which are then passed as a parameter to the system.
 
-.. note::
-    The System class of also supports operation in modes: Real and Simulated, based on which it enables working with
-a real hardware or a simulated system respectively.
+.. note:: The System class of also supports operation in modes: **Real** and **Simulated**, based on which, it enables working with a real hardware or a simulated system respectively.
 
-    2. **FctStrans**:
+2. **FctStrans**:
 
-    The FctStrans (State Transition Function) standardizes the process of simulating the primary State Transition
+The FctStrans (State Transition Function) standardizes the process of simulating the primary State Transition
 process of a System. The :code:`simulate_reaction(p_state, p_action)` method of this class takes the current state of
 the environment and the action from the corresponding actuator as a parameter, and maps it to the next state of the
 system, based on the inherent dynamics.
 
-.. note::
-    Please implement the :code:`_simulate_reaction()` method of FctStrans, in order to re-use in a custom
-implementation.
+.. note:: Please implement the :code:`_simulate_reaction()` method of FctStrans, in order to re-use in a custom implementation.
 
-    3. **FctSuccess**:
+3. **FctSuccess**:
 
-    A System state can be monitored through FctSuccess (Success Function) to determine if the system has reached the
+A System state can be monitored through FctSuccess (Success Function) to determine if the system has reached the
 expected objective state/output. It maps the current state of the system to a boolean value indicating the success of
 a system.
 
-.. note::
-    Please implement :code:`_compute_success()` method of FctSuccess, in order to re-use it in a custom implementation.
+.. note:: Please implement :code:`_compute_success()` method of FctSuccess, in order to re-use it in a custom implementation.
 
 
-    4. **FctBroken**:
+4. **FctBroken**:
 
-    Similar to FctSuccess class, the FctBroken class standardizes the process of monitoring whether the system has
+Similar to FctSuccess class, the FctBroken class standardizes the process of monitoring whether the system has
 reached a broken terminal state, by mapping the current state to a boolean value indicating the broken state.
 
-.. note::
-    Please implement :code:`_compute_broken()` method of FctBroken, in order to re-use it in custom implementation.
+.. note:: Please implement :code:`_compute_broken()` method of FctBroken, in order to re-use it in custom implementation.
 
-    5. **State**:
+5. **State**:
 
-    The state object represents the current state of the system with respect to time. A state object inherits from
+The state object represents the current state of the system with respect to time. A state object inherits from
 the Element class of MLPro, which represents an element in a Multi-dimensional Set object, a State-Space in this case.
 The state consists information about the System for corresponding dimension of the related State-Space.
 
-    6. **Action**:
+6. **Action**:
 
-    The Action object standardizes external input to the system. For example, input from a controller, input from an
+The Action object standardizes external input to the system. For example, input from a controller, input from an
 actuator or an agent in case of Reinforcement Learning. The standard Action object consists of an ActionElement or a
 list of ActionElements, in case of more than one action sources. The action element is similar to a state object,
 consisting corresponding values for all the dimension in the related action-space.
