@@ -8,9 +8,11 @@ for machine learning:
 
 **1. Models can execute internal methods asynchronously**
 
-**2. Models, in turn, can run as separate threads or processes**
+**2. Models can run as separate threads or processes**
 
 **3. Models can be grouped into macro models in workflows**
+
+**4. Models can share/exchange data using a shared object**
 
 This enables the efficient execution and adaptation of models and model groups using all available
 runtime resources.
