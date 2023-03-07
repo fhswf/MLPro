@@ -24,8 +24,7 @@ This Random Action Generator policy can be imported via:
     
 
 **Cross Reference**
-    
-    + :ref:`Howto RL-ENV-004: A Random Agent on Double Pendulum Environment <Howto Env RL 004>`
+    + :ref:`API Reference <target_pol_randoms>`
 
 
 **Citation**

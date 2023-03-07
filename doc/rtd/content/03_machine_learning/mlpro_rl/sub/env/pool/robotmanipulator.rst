@@ -88,10 +88,9 @@ By default, the reward structures are shown in the following equation:
 
     
 **Cross Reference**
-    
-  + :ref:`API Reference <target_pool_rl_env_robot_manipulator>`
   + :ref:`Howto RL-ENV-002: SB3 Policy on RobotHTM Environment <Howto Env RL 002>`
   + :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`
+  + :ref:`API Reference <target_pool_rl_env_robot_manipulator>`
 
   
 **Citation**
