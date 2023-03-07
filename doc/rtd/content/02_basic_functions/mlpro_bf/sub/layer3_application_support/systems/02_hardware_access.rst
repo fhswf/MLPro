@@ -24,7 +24,7 @@ As shown in the above figure, the controller class in MLPro registers a number o
 
     The controller is responsible to gather sensor data, compute the error signal and generate a corresponding action in order to maintain/reach the desired state of the system. The Controller class in MLPro manages the mapping details to map actions and states, to and from Actuators and Sensors, respectively.
 
-**Cross Referecne**
+
 
 **Cross References**
 
