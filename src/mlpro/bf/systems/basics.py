@@ -26,10 +26,11 @@
 ## --                                update_plot()
 ## -- 2023-03-07  1.7.1     SY       Remove TransferFunction from bf.systems
 ## -- 2023-03-07  1.7.2     DA       Bugfix in method System._save()
+## -- 2023-03-08  1.7.3     MRD      Auto rename System, set latency from MuJoCo xml file
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.2 (2023-03-07)
+Ver. 1.7.3 (2023-03-08)
 
 This module provides models and templates for state based systems.
 """

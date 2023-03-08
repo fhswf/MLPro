@@ -10,11 +10,12 @@
 ## -- 2023-02-04  1.0.1     SY        Renaming
 ## -- 2023-02-13  1.0.2     MRD       Refactor
 ## -- 2023-02-23  1.0.3     MRD       Rename file
+## -- 2023-03-08  1.0.4     MRD       Remove Custom class
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.3 (2023-02-23)
+Ver. 1.0.3 (2023-03-08)
 
 This module demonstrates the principles of using classes System and uses MuJoCo wrapper to simulate 
 the pre-defined model.
