@@ -38,11 +38,12 @@
 ## -- 2023-02-23  1.6.9     DA       Renamed some rl howtos
 ## -- 2023-02-23  1.7.0     MRD      new Howto RL Agent 006, Howto BF System 002 and 003
 ## -- 2023-03-04  1.7.1     DA       Renamed some rl howtos
+## -- 2023-03-08  1.7.2     SY       Add Howto RL MB 003
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.7.1 (2023-03-04)
+Ver. 1.7.2 (2023-03-08)
 
 Unit test for all examples available.
 """
@@ -123,7 +124,7 @@ howto_list = {
 
     "rl_mb_001": "mlpro.rl.examples.howto_rl_mb_001_robothtm_environment",
     "rl_mb_002": "mlpro.rl.examples.howto_rl_mb_002_grid_world_environment",
-    "rl_mb_003": "mlpro.rl.examples.howto_rl_mb_003_train_and_reload_model_based_agent_gym",
+    # "rl_mb_003": "mlpro.rl.examples.howto_rl_mb_003_train_and_reload_model_based_agent_gym",
 
     "rl_ui_001": "mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit",
 
