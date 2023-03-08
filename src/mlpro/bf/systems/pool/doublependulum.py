@@ -95,7 +95,7 @@ class DoublePendulumSystemRoot (System):
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
 
-    C_NAME              = "DoublePendulumRoot"
+    C_NAME              = "DoublePendulumSystemRoot"
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
     C_SCIREF_AUTHOR     = "John Hunter, Darren Dale, Eric Firing, Michael \
@@ -611,7 +611,7 @@ class DoublePendulumSystemS4 (DoublePendulumSystemRoot):
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
 
-    C_NAME = 'DoublePendulumS4'
+    C_NAME = 'DoublePendulumSystemS4'
 
 
 ## ------------------------------------------------------------------------------------------------------
@@ -711,7 +711,7 @@ class DoublePendulumSystemS7 (DoublePendulumSystemS4):
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
 
-    C_NAME = 'DoublePendulumS7'
+    C_NAME = 'DoublePendulumSystemS7'
 
 ## -----------------------------------------------------------------------------------------------------
     def setup_spaces(self):

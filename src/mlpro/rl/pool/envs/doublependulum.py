@@ -173,32 +173,9 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
         Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
 
-    C_NAME              = "DoublePendulumRoot"
-
-    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
-    C_SCIREF_AUTHOR     = "John Hunter, Darren Dale, Eric Firing, Michael \
-                                       Droettboom and the Matplotlib development team"
-    C_SCIREF_TITLE      = "The Double Pendulum Problem"
-    C_SCIREF_URL        = "https://matplotlib.org/stable/gallery/animation/double_pendulum.html"
-
-    C_PLOT_ACTIVE       = True
-    C_PLOT_DEFAULT_VIEW = PlotSettings.C_VIEW_2D
-
-    C_CYCLE_LIMIT       = 0
-    C_LATENCY           = timedelta(0, 0, 40000)
 
     C_REWARD_TYPE       = Reward.C_TYPE_OVERALL
 
-    C_ANGLES_UP         = 'up'
-    C_ANGLES_DOWN       = 'down'
-    C_ANGLES_RND        = 'random'
-
-    C_VALID_ANGLES      = [C_ANGLES_UP, C_ANGLES_DOWN, C_ANGLES_RND]
-
-    C_THRSH_GOAL        = 0
-
-    C_ANI_FRAME         = 30
-    C_ANI_STEP          = 0.001
 
     C_PLOT_DEPTH_ENV    = 0
     C_PLOT_DEPTH_REWARD = 1
@@ -223,7 +200,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
                    p_m1=1.0,
                    p_m2=1.0,
                    p_g=9.8,
-                   p_init_angles=C_ANGLES_RND,
+                   p_init_angles=DoublePendulumSystemRoot.C_ANGLES_RND,
                    p_history_length=5,
                    p_fct_strans:FctSTrans=None,
                    p_fct_success:FctSuccess=None,
