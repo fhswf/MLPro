@@ -530,7 +530,6 @@ class MujocoHandler(Wrapper):
                 return None
             
 
-
 ## -------------------------------------------------------------------------------------------------
     def _close(self):
         if self._viewer is not None:
