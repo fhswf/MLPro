@@ -123,6 +123,7 @@ howto_list = {
 
     "rl_mb_001": "mlpro.rl.examples.howto_rl_mb_001_robothtm_environment",
     "rl_mb_002": "mlpro.rl.examples.howto_rl_mb_002_grid_world_environment",
+    "rl_mb_003": "mlpro.rl.examples.howto_rl_mb_003_train_and_reload_model_based_agent_gym",
 
     "rl_ui_001": "mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit",
 
