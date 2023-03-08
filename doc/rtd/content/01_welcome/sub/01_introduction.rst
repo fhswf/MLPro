@@ -103,7 +103,11 @@ learning or game theory. Furthermore, a wrapper for the popular physics engine `
 provided, which can be used for the simulation and visualization of externally designed system models. The MLPro 
 templates are also prepared for connection to industrial components like controllers, sensors, and actuators.
 
-**Learn more:** :ref:`Elementary Functions <target_bf_elementary>`, :ref:`Computation <target_bf_computation>`, :ref:`State-based Systems <target_bf_systems>`
+**Learn more** 
+
+- :ref:`Elementary Functions <target_bf_elementary>`
+- :ref:`Computation <target_bf_computation>`
+- :ref:`State-based Systems <target_bf_systems>`
 
 
 Development
@@ -111,7 +115,7 @@ Development
 MLPro is developed at the `South Westphalia University of Applied Sciences, Germany <https://www.fh-swf.de/en/international_3/index.php>`_ in the 
 `Department for Electrical Power Engineering <https://www.fh-swf.de/en/ueber_uns/standorte_4/soest_4/fb_eet/index.php>`_ in the `Lab 
 for Automation Technology and Learning Systems <https://www.fh-swf.de/en/forschung___transfer_4/labore_3/labs/labor_fuer_automatisierungstechnik__soest_1/standardseite_57.php>`_ 
-and is therefore freely available to all interested users from research and development as well as industry and economy.
+and is freely available to all interested users from research and development as industry and economy.
 
 The development team consistently applies the following principles:
 
@@ -126,3 +130,36 @@ The development team consistently applies the following principles:
    * Clean Code Paradigm
       We firmly believe that a clearly structured and legible source code has a significant influence on both the acceptance and the life 
       cycle of software. Anyone who opens any source code of MLPro knows immediately what we mean :-)
+
+
+Customer Extensions
+^^^^^^^^^^^^^^^^^^^
+
+Of course, frameworks like MLPro are made to reuse their functions in own applications. That's why we put a lot of effort into design and 
+documentation to create powerful and understandable templates and related example programs. The following notes are intended to help software 
+developers to interpret and use them correctly.
+
+There are essentially three types of classes in the MLPro framework:
+
+- **Property classes**
+   These are classes that standardize certain properties and pass them on to child classes through inheritance. These classes are primarily 
+   found in the lower layers of MLPro and are not intended for direct use in your own applications. Nevertheless, they can of course be used 
+   in your own classes to maintain compatibility and integrity with MLPro. Examples can be found in :ref:`Basic Functions, Layer 0 <target_bf_elementary>` 
+   among others.
+
+- **Process classes**
+   These classes provide higher level application functions such as training or running a model. They are primarily found in the higher sub-frameworks 
+   for machine learning. Customer extensions are not provided here.
+
+- **Template classes**
+   In order to be able to implement your own algorithms, models, data objects, systems, etc. in compliance with the MLPro standards, numerous template 
+   classes are provided on different levels. These in turn contain special **custom methods** that are intended for your own adjustments. These are explicitly 
+   identified in the :ref:`API Reference <target_appendix2>` both in the description of the classes and methods and in the associated class diagram. 
+   It should be noted here that custom methods are often inherited from parent classes (e.g. property classes). It is therefore recommended to follow 
+   the inheritance lines of template classes.
+
+
+**Learn more**
+
+- :ref:`Example Pool <target_appendix1>`
+- :ref:`API Reference <target_appendix2>`

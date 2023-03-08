@@ -1,6 +1,8 @@
 .. _DataPlotting:
 Plotting
-----------------
+========
+
+...
 
 .. code-block:: python
 
