@@ -200,7 +200,7 @@ if __name__ == '__main__':
 
 else:
     # Parameters for internal unit test
-    cycle_limit = 50
+    cycle_limit = 10
     adaptation_limit = 5
     stagnation_limit = 5
     eval_frequency = 2

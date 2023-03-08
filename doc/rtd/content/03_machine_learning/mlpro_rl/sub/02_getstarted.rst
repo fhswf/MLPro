@@ -79,6 +79,8 @@ After following this step-by-step guideline, we expect the user understands the 
 
       (b) :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
 
+      (c) :ref:`Howto RL-MB-003: Train and Reload Model Based Agent (Gym) <Howto MB RL 003>`
+
 
 **7. Additional Guidance**
    After following the previous steps, we hope that you could practice MLPro-RL and start using this subpackage for your RL-related activities.

@@ -114,5 +114,6 @@ the original environment module.
 
     - :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`
     - :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
+    - :ref:`Howto RL-MB-003: Train and Reload Model Based Agent (Gym) <Howto MB RL 003>`
     - :ref:`MLPro-SL <target_bf_sl_afct>`
 
