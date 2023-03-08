@@ -103,16 +103,16 @@ howto_list = {
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
 
     "rl_att_001": "mlpro.rl.examples.howto_rl_att_001_train_and_reload_single_agent_gym_sd",
-    "rl_att_002": "mlpro.rl.examples.howto_rl_att_002_train_and_reload_single_agent_mujoco_sd",
+    "rl_att_002": "mlpro.rl.examples.howto_rl_att_002_train_and_reload_single_agent_mujoco_sd_cartpole_discrete",
+    "rl_att_003": "mlpro.rl.examples.howto_rl_att_003_train_and_reload_single_agent_mujoco_sd_cartpole_continuous",
 
     "rl_agent_001": "mlpro.rl.examples.howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment",
     "rl_agent_002": "mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment",
     "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_004": "mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment",
-    "rl_agent_005": "mlpro.rl.examples.howto_rl_agent_005_train_agent_with_SB3_policy_on_cartpole_discrete_mujoco_environment",
-    "rl_agent_006": "mlpro.rl.examples.howto_rl_agent_006_train_agent_with_SB3_policy_on_cartpole_continuous_mujoco_environment",
     "rl_agent_011": "mlpro.rl.examples.howto_rl_agent_011_train_and_reload_single_agent_gym",
-    "rl_agent_021": "mlpro.rl.examples.howto_rl_agent_021_train_and_reload_single_agent_mujoco",
+    "rl_agent_021": "mlpro.rl.examples.howto_rl_agent_021_train_and_reload_single_agent_mujoco_cartpole_discrete",
+    "rl_agent_022": "mlpro.rl.examples.howto_rl_agent_022_train_and_reload_single_agent_mujoco_cartpole_continuous",
 
     "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment",
     "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_run_agent_with_random_actions_on_double_pendulum_environment",

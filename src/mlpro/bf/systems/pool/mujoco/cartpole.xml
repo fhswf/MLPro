@@ -5,7 +5,11 @@
     <default>
         <geom contype='0' friction='1 0.1 0.1'/>
     </default>
+
+    <include file="mlpro.xml"></include>
+    
     <worldbody>
+
         <body name="cart" pos="0 0 0.75">
             <geom name="cart" type="box" size="0.2 0.1 0.1" rgba="0.9 0.9 0.9 1"/>
             <joint name="slide" type="slide" axis="1 0 0"/>
@@ -21,11 +25,4 @@
     <visual>
         <map fogstart="3" fogend="5" znear="0.05"/>
     </visual>
-    <asset>
-        <texture name="texplane" type="2d" builtin="checker" rgb1="1 1 1" rgb2="0.2 0.2 0.2" width="512" height="512" mark="cross" markrgb="1 0 0" />
-        <material name="matplane" reflectance="0.5" texture="texplane" />
-    </asset>
-    <worldbody>
-        <geom name="ground" pos="0 0 0" size="50 50 0.125" type="plane" material="matplane" />
-    </worldbody>
 </mujoco>

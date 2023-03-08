@@ -1,19 +1,20 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_att_002_train_and_reload_single_agent_mujoco_sd.py
+## -- Module  : howto_rl_att_002_train_and_reload_single_agent_mujoco_sd_cartpole_discrete.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-04  1.0.0     DA       Creation as derivate of howto_rl_agent_021 
+## -- 2023-03-07  1.0.1     MRD      Renamed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-04)
+Ver. 1.0.1 (2023-03-07)
 
-As in Howto RL AGENT 021, this module shows how to train a single agent with SB3 Policy on Cartpole 
-MuJoCo Environment. In opposite to howto 021, stagnation detection is used to automatically end the
-training if no further progress can be made.
+As in Howto RL AGENT 021, this module shows how to train a single agent with SB3 Policy on Discrete 
+Cartpole MuJoCo Environment. In opposite to howto 021, stagnation detection is used to automatically 
+end the training if no further progress can be made.
 
 You will learn:
 

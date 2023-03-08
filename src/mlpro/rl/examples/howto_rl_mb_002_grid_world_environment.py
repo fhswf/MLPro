@@ -14,10 +14,11 @@
 ## -- 2023-02-04  1.2.1     SY       Add multiprocessing functionality and refactoring
 ## -- 2023-02-10  1.2.2     SY       Switch multiprocessing to threading
 ## -- 2023-03-07  2.0.0     SY       Update due to MLPro-SL
+## -- 2023-03-08  2.0.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2023-03-07)
+Ver. 2.0.1 (2023-03-08)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem.
 
@@ -78,14 +79,14 @@ class GridWorldAFct(PyTorchMLP):
         ids_ = self._hyperparam_tuple.get_dim_ids()
         self._hyperparam_tuple.set_value(ids_[0], self._input_space.get_num_dim())
         self._hyperparam_tuple.set_value(ids_[1], self._output_space.get_num_dim())
-        self._hyperparam_tuple.set_value(ids_[2], 1)
-        self._hyperparam_tuple.set_value(ids_[3], 3)
-        self._hyperparam_tuple.set_value(ids_[4], 128)
-        self._hyperparam_tuple.set_value(ids_[5], torch.nn.ReLU)
-        self._hyperparam_tuple.set_value(ids_[6], torch.nn.ReLU)
-        self._hyperparam_tuple.set_value(ids_[7], torch.optim.Adam)
-        self._hyperparam_tuple.set_value(ids_[8], torch.nn.MSELoss)
-        self._hyperparam_tuple.set_value(ids_[9], 3e-4)
+        self._hyperparam_tuple.set_value(ids_[2], p_par['p_update_rate'])
+        self._hyperparam_tuple.set_value(ids_[3], p_par['p_num_hidden_layers'])
+        self._hyperparam_tuple.set_value(ids_[4], p_par['p_hidden_size'])
+        self._hyperparam_tuple.set_value(ids_[5], p_par['p_act_fct'])
+        self._hyperparam_tuple.set_value(ids_[6], p_par['p_output_afc_fct'])
+        self._hyperparam_tuple.set_value(ids_[7], p_par['p_optimizer'])
+        self._hyperparam_tuple.set_value(ids_[8], p_par['p_loss_fct'])
+        self._hyperparam_tuple.set_value(ids_[9], p_par['p_learning_rate'])
               
 
             
@@ -116,6 +117,14 @@ class MLPEnvModel(EnvModel):
             p_buffer_size=5000,
             p_ada=p_ada,
             p_logging=p_logging,
+            p_update_rate=1,
+            p_num_hidden_layers=3,
+            p_hidden_size=128,
+            p_act_fct=torch.nn.ReLU,
+            p_output_afc_fct=torch.nn.ReLU,
+            p_optimizer=torch.optim.Adam,
+            p_loss_fct=torch.nn.MSELoss,
+            p_learning_rate=3e-4
         )
 
         EnvModel.__init__(

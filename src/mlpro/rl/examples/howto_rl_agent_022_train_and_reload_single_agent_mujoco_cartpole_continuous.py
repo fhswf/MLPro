@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_agent_005_train_agent_with_SB3_policy_on_cartpole_discrete_mujoco_environment.py
+## -- Module  : howto_rl_agent_022_train_and_reload_single_agent_mujoco_cartpole_continuous.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -12,14 +12,25 @@
 """
 Ver. 1.0.0 (2023-03-07)
 
-This module shows how to train a single agent with SB3 Policy on Cartpole Discrete MuJoCo Environment.
+This module shows how to train a single agent with SB3 Policy on Cartpole Continuous MuJoCo Environment.
+
+You will learn:
+
+1. How to use MLPro's RLScenario class.
+
+2. How to create sb3 policy object.
+
+3. How to create SB3 policy in MLPro.
+
+4. How to setup and run RLTraining in MLPro.
+
 """
 
 
 from stable_baselines3 import PPO
 from mlpro.rl import *
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
-from mlpro.rl.pool.envs.cartpole import CartpoleMujocoDiscrete
+from mlpro.rl.pool.envs.cartpole import CartpoleMujocoContinuous
 from pathlib import Path
 
 
@@ -28,7 +39,7 @@ class MyScenario(RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        self._env = CartpoleMujocoDiscrete(p_logging=logging, p_visualize=visualize)
+        self._env = CartpoleMujocoContinuous(p_logging=logging, p_visualize=visualize)
 
         # 1.2 Setup Policy From SB3
         policy_sb3 = PPO(policy="MlpPolicy", n_steps=10, env=None, _init_setup_model=False, device="cpu", seed=1)

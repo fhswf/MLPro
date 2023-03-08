@@ -1,8 +1,8 @@
-.. _Howto Agent RL 021:
-Howto RL-AGENT-021: Train and Reload Single Agent (MuJoCo)
+.. _Howto Agent RL 022:
+Howto RL-AGENT-022: Train and Reload Single Agent (MuJoCo)
 ==========================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_agent_021_train_and_reload_single_agent_mujoco_cartpole_discrete
+.. automodule:: mlpro.rl.examples.howto_rl_agent_022_train_and_reload_single_agent_mujoco_cartpole_continuous
 
 
 
@@ -17,7 +17,7 @@ Please install the following packages to run this examples properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_agent_021_train_and_reload_single_agent_mujoco_cartpole_discrete.py
+.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_agent_022_train_and_reload_single_agent_mujoco_cartpole_continuous.py
 	:language: python
 
 
