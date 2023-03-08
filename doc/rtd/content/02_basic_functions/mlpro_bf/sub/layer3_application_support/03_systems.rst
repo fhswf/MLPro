@@ -92,5 +92,6 @@ MLPro for re-usability.
 **Cross Reference**
 
 - :ref:`API Reference BF-Systems <target_ap_bf_systems>`
+- :ref:`API Reference BF-Systems Sample Pool <target_pool_bf_systems>`
 - :ref:`Howto BF-SYSTEMS-001: System, Controller, Actuator, Sensor <Howto BF SYSTEMS 001>`
 - :ref:`Howto BF-SYSTEMS-002: Systems wrapped with MuJoCo <Howto BF SYSTEMS 002>`
