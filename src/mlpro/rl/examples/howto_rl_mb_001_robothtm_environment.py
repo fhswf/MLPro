@@ -17,12 +17,14 @@
 ## -- 2023-02-02  1.2.0     DA       Refactoring 
 ## -- 2023-02-04  1.2.1     SY       Refactoring to avoid printing during unit test
 ## -- 2023-03-07  2.0.0     SY       Update due to MLPro-SL
+## -- 2023-03-08  2.0.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2023-03-07)
+Ver. 2.0.1 (2023-03-08)
 
-This module demonstrates model-based reinforcement learning (MBRL) with action planner using MPC.
+This module demonstrates model-based reinforcement learning (MBRL) with native algorithm and
+action planner using MPC.
 
 You will learn:
     
@@ -498,6 +500,7 @@ class HTMEnvModel(EnvModel):
             p_afct_success=None,
             p_afct_broken=None,
             p_ada=p_ada,
+            p_init_states=self._robot_htm.get_state(),
             p_logging=p_logging,
         )
 

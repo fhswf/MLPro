@@ -20,13 +20,14 @@
 """
 Ver. 2.0.1 (2023-03-08)
 
-This module shows how to incorporate MPC in Model-Based RL on Grid World problem.
+This module shows how to incorporate MPC in Model-Based RL on Grid World problem as well as using
+PyTorch-based MLP network from MLPro-SL's pool of objects.
 
 You will learn:
     
 1) How to set up an own agent on Grid World problem
     
-2) How to set up model-based RL (MBRL) training
+2) How to set up model-based RL (MBRL) training using network from MLPro-SL's pool
     
 3) How to incorporate MPC into MBRL training
 
