@@ -94,94 +94,6 @@ class GridWorldAFct(PyTorchMLP):
                 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MLPEnvModel(EnvModel):
-    C_NAME = "MLP Env Model for Grid World"
-    
-    
-## -------------------------------------------------------------------------------------------------
-    def __init__(
-        self,
-        p_ada=True,
-        p_logging=False,
-    ):
-
-        self.grid_world = GridWorld(p_logging=p_logging,
-                                    p_action_type=GridWorld.C_ACTION_TYPE_DISC_2D)
-        
-        # Setup Adaptive Function
-        afct_strans = AFctSTrans(
-            GridWorldAFct,
-            p_state_space=self.grid_world._state_space,
-            p_action_space=self.grid_world._action_space,
-            p_threshold=1.8,
-            p_buffer_size=5000,
-            p_ada=p_ada,
-            p_logging=p_logging,
-            p_update_rate=1,
-            p_num_hidden_layers=3,
-            p_hidden_size=128,
-            p_act_fct=torch.nn.ReLU,
-            p_output_afc_fct=torch.nn.ReLU,
-            p_optimizer=torch.optim.Adam,
-            p_loss_fct=torch.nn.MSELoss,
-            p_learning_rate=3e-4
-        )
-
-        EnvModel.__init__(
-            self,
-            p_observation_space=self.grid_world._state_space,
-            p_action_space=self.grid_world._action_space,
-            p_latency=timedelta(seconds=0.1),
-            p_afct_strans=afct_strans,
-            p_afct_reward=None,
-            p_afct_success=None,
-            p_afct_broken=None,
-            p_ada=p_ada,
-            p_logging=p_logging,
-        )
-
-        self.reset()
-        
-        
-## -------------------------------------------------------------------------------------------------
-    def get_state(self) -> State:
-        return self.grid_world._state
-
-
-## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state_old: State, p_state_new: State) -> Reward:
-        return self.grid_world._compute_reward(p_state_old, p_state_new)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state:State) -> bool:
-        return self.grid_world._compute_success(p_state)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state:State) -> bool:
-        return self.grid_world._compute_broken(p_state)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _process_action(self, p_action: Action) -> bool:
-    
-        self._set_state(self.simulate_reaction(self.get_state(), p_action))
-    
-        state = self.get_state()
-        state.set_success(self.compute_success(state))
-        state.set_broken(self.compute_broken(state))
-        if state.get_broken() or state.get_success():
-            state.set_terminal(True)
-    
-        return True
-              
-
-            
-                
-                
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
 
 # 2 Implement the random RL scenario
 class ScenarioGridWorld(RLScenario):
@@ -203,6 +115,38 @@ class ScenarioGridWorld(RLScenario):
                                         p_buffer_size=1,
                                         p_ada=1,
                                         p_logging=p_logging)
+        
+        # Setup Adaptive Function
+        afct_strans = AFctSTrans(
+            GridWorldAFct,
+            p_state_space=self._env._state_space,
+            p_action_space=self._env._action_space,
+            p_threshold=1.8,
+            p_buffer_size=5000,
+            p_ada=p_ada,
+            p_logging=p_logging,
+            p_update_rate=1,
+            p_num_hidden_layers=3,
+            p_hidden_size=128,
+            p_act_fct=torch.nn.ReLU,
+            p_output_afc_fct=torch.nn.ReLU,
+            p_optimizer=torch.optim.Adam,
+            p_loss_fct=torch.nn.MSELoss,
+            p_learning_rate=3e-4
+        )
+
+        envmodel = EnvModel(
+            p_observation_space=self._env._state_space,
+            p_action_space=self._env._action_space,
+            p_latency=self._env.get_latency(),
+            p_afct_strans=afct_strans,
+            p_afct_reward=self._env,
+            p_afct_success=self._env,
+            p_afct_broken=self._env,
+            p_ada=p_ada,
+            p_init_states=self._env.get_state(),
+            p_logging=p_logging
+        )
 
         mb_training_param = dict(p_cycle_limit=100,
                                  p_cycles_per_epi_limit=100,
@@ -214,8 +158,8 @@ class ScenarioGridWorld(RLScenario):
 
         return Agent(
             p_policy=policy_random,  
-            p_envmodel=MLPEnvModel(),
-            p_em_acc_thsld=0.2,
+            p_envmodel=envmodel,
+            p_em_acc_thsld=0.8,
             p_action_planner=MPC(p_range_max=mt.Async.C_RANGE_THREAD,
                                  p_logging=p_logging),
             p_predicting_horizon=5,
