@@ -1,4 +1,4 @@
-.. _target_native_streams_pool:
+.. _target_bf_streams_native_streams_pool:
 Native Streams
 ==============
 

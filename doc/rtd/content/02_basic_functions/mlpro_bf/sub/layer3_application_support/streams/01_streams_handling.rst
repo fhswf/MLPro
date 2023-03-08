@@ -1,4 +1,4 @@
-.. _target_streams_intro:
+.. _target_bf_streams_handling:
 Streams
 =======
 

@@ -1,3 +1,4 @@
+.. _target_bf_streams_tasks:
 Stream Tasks
 ------------
 

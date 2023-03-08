@@ -1,3 +1,4 @@
+.. _target_bf_math_normalizer:
 Normalizer
 ==========
 

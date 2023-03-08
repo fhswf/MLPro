@@ -1,3 +1,4 @@
+.. _target_bf_streams_handling_01:
 Streams Handling
 ----------------
 

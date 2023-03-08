@@ -1,4 +1,4 @@
-
+.. _target_bf_streams_processing_01:
 Stream Task
 -----------
 
