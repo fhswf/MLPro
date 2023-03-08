@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_mb_001_train_and_reload_model_based_agent_gym.py
+## -- Module  : howto_rl_mb_003_train_and_reload_model_based_agent_gym.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
