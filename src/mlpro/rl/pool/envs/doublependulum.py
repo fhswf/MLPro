@@ -65,17 +65,18 @@
 ## -- 2023-02-02  2.2.5     DA       Removed method DoublePendulumRoot._init_figure()
 ## -- 2023-03-01  2.2.6     LSB      Weight components for state space
 ## -- 2023-03-03  2.2.7     LSB      Bug Fix
+## -- 2023-03-05  2.3.0     LSB      Shifted the environment into a system in bf systems pool
+## -- 2023-03-08  2.3.1     LSB      Refactoring for visualization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.6 (2023-03-03)
+Ver. 2.3.1 (2023-03-08)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
 `Matplotlib <https://matplotlib.org/>`_. The double pendulum is a system of two poles, with the inner pole
 connected to a fixed point at one end and to outer pole at other end. The native implementation of Double
-Pendulum consists of an input motor providing the torque in either directions to actuate the system. The figure
-below shows the visualisation of MLPro's Double Pendulum environment.
+Pendulum consists of an input motor providing the torque in either directions to actuate the system.
 """
 
 import random
@@ -115,14 +116,32 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
         Mass of pendulum 1 in kg. The default is 0.5
     p_m2 : float, optional
         Mass of pendulum 2 in kg. The default is 0.25
+    p_g : float, optional
+        Gravitational acceleration. The default is 9.8
     p_init_angles: str, optional
         C_ANGLES_UP starts the pendulum in an upright position
         C_ANGLES_DOWN starts the pendulum in a downward position
         C_ANGLES_RND starts the pendulum from a random position.
-    p_g : float, optional
-        Gravitational acceleration. The default is 9.8
     p_history_length : int, optional
         Historical trajectory points to display. The default is 5.
+    p_fct_strans: FctSTrans, optional
+        The custom State transition function.
+    p_fct_success: FctSuccess, optional
+        The custom Success Function.
+    p_fct_broken: FctBroken, optional
+        The custom Broken Function.
+    p_fct_reward:FctReward, optional
+        The custom Reward Function.
+    p_mujoco_file: optional
+        The corresponding mujoco file
+    p_frame_skip: optional
+        Number of frames to be skipped for visualization.
+    p_state_mapping: optional
+        State mapping configurations.
+    p_action_mapping: optional
+        Action mapping configurations.
+    p_camera_conf: optional
+        Camera configurations for mujoco specific visualization.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_plot_level : int
@@ -130,7 +149,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
         C_PLOT_DEPTH_ENV only plots the environment
         C_PLOT_DEPTH_REWARD only plots the reward
         C_PLOT_ALL plots both reward and the environment
-    p_rst_balancingL
+    p_rst_balancing
         Reward strategy to be used for the balancing region of the environment
     p_rst_swinging
         Reward strategy to be used for the swinging region of the environment
@@ -203,8 +222,8 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
                    p_l2=1.0,
                    p_m1=1.0,
                    p_m2=1.0,
-                   p_init_angles=C_ANGLES_RND,
                    p_g=9.8,
+                   p_init_angles=C_ANGLES_RND,
                    p_history_length=5,
                    p_fct_strans:FctSTrans=None,
                    p_fct_success:FctSuccess=None,
@@ -246,7 +265,6 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
                          p_swinging_outer_pole_range = p_swinging_outer_pole_range,
                          p_break_swinging = p_break_swinging,
                          p_visualize = p_visualize,
-                         p_plot_level = p_plot_level,
                          p_logging = p_logging)
 
 
@@ -278,6 +296,8 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
                              DoublePendulumRoot.C_RST_BALANCING_002:self.compute_reward_002,
                              DoublePendulumRoot.C_RST_SWINGING_001:self.compute_reward_003,
                              DoublePendulumRoot.C_RST_SWINGING_OUTER_POLE_001:self.compute_reward_004}
+        self._plot_level = p_plot_level
+
         if self._plot_level in [self.C_PLOT_DEPTH_REWARD, self.C_PLOT_DEPTH_ALL]:
             self._reward_history = []
             self._reward_trend = p_reward_trend
@@ -505,6 +525,83 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
         current_reward.set_overall_reward(term_1+term_2)
         return current_reward
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings):
+
+        """
+        Custom method to initialize a 2D plot. If attribute p_settings.axes is not None the
+        initialization shall be done there. Otherwise a new MatPlotLib Axes object shall be
+        created in the given figure and stored in p_settings.axes.
+
+        Parameters
+        ----------
+        p_figure : Matplotlib.figure.Figure
+            Matplotlib figure object to host the subplot(s).
+        p_settings : PlotSettings
+            Object with further plot settings.
+        """
+
+        p_settings.axes = []
+
+        # Creates a grid space in the figure to use for subplot location
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, DoublePendulumRoot.C_PLOT_DEPTH_REWARD]:
+            grid = p_figure.add_gridspec(1, 1)
+        elif self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ALL:
+            if self._reward_trend:
+                grid = p_figure.add_gridspec(1, 3)
+                p_figure.set_size_inches(17, 5)
+            else:
+                grid = p_figure.add_gridspec(1,2)
+                p_figure.set_size_inches(11, 5)
+
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
+            DoublePendulumSystemRoot._init_plot_2d(self, p_figure = p_figure, p_settings = p_settings)
+            p_settings.axes[0].set_subplotspec(grid[0])
+
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_REWARD,
+                                DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
+            if self._reward_trend:
+                p_settings.axes.append(p_figure.add_subplot(grid[1:3]))
+                self._plot_reward_trend, = p_settings.axes[-1].plot(range(len(self._reward_history)),
+                    self._reward_history, 'r--', lw = 2)
+            else:
+                p_settings.axes.append(p_figure.add_subplot(grid[1:3]))
+
+
+            p_settings.axes[-1].set_title('Reward - '+ self.C_NAME)
+            p_settings.axes[-1].autoscale_view()
+            p_settings.axes[-1].grid()
+            p_settings.axes[-1].set_xlabel('Cycle ID')
+            p_settings.axes[-1].set_ylabel('Reward')
+            self._reward_plot,  = p_settings.axes[-1].plot(range(len(self._reward_history)), self._reward_history,'b', lw = 1)
+
+
+## ------------------------------------------------------------------------------------------------------
+    def _update_plot_2d(self, p_settings: PlotSettings, **p_kwargs):
+        """
+        This method updates the plot figure of each episode. When the figure is
+        detected to be an embedded figure, this method will only set up the
+        necessary data of the figure.
+        """
+        try:
+            if self._reward_window != 0 and len(self._reward_history) >= self._reward_window:
+                self._reward_plot.set_data(list(range(self._reward_window)), self._reward_history)
+            else:
+                self._reward_plot.set_data(list(range(len(self._reward_history))), self._reward_history)
+            if self._reward_trend:
+                self._plot_reward_trend.set_data(list(range(len(self._reward_history))), np.convolve(
+                self._reward_history, np.ones(len(self._reward_history))/len(self._reward_history), mode = 'same'))
+            p_settings.axes[-1].autoscale_view(False, True, True)
+            p_settings.axes[-1].relim()
+
+
+        except:
+            pass
+
+        if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_ENV, DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
+            DoublePendulumSystemRoot._update_plot_2d(self, p_settings = p_settings)
 
 
 
