@@ -2,6 +2,15 @@
 MuJoCo Integration
 ==================
 
+|pic1| |pic2|
+
+.. |pic1| image:: images/mujoco_cartpole.gif
+   :width: 47%
+
+.. |pic2| image:: images/mujoco_doublependulum.gif
+   :width: 47%
+
+
 MuJoCo is a well-known physics engine for its fast and accurate simulation. The aim is to facilitate research and development in robotics, biomechanics, graphics 
 and animation, and other areas. More explanation about MuJoCo can be found in `here <https://mujoco.org/>`_.
 
@@ -10,8 +19,7 @@ In order to use the MuJoCo integration in MLPro, the following steps need to be 
     * **Create a MuJoCo Model**
 
         Create a MuJoCo model file accordingly to your design. Some example model are published by MuJoCo and can be accessed `here <https://mujoco.readthedocs.io/en/latest/models.html>`_.
-
-        Here is an example of MuJoCo model file.
+        Below is an example of MuJoCo model file.
 
         .. code-block:: xml
 
@@ -36,6 +44,9 @@ In order to use the MuJoCo integration in MLPro, the following steps need to be 
               </actuator>
             </mujoco>
 
+        The above model simulates one body called ``link1`` which has a cylindrical shape. It is attached to the world body with a joint called ``pin`` 
+        with the type of hinge. This joint is controlled by an actuator called ``torque1`` boundaries between -50 and 50.
+
     * **Create a System**
 
         Create your system inherited from the bf.System class. When you instatiated your custom System, put the MuJoCo model file path on ``p_mujoco_file``.
@@ -45,6 +56,12 @@ In order to use the MuJoCo integration in MLPro, the following steps need to be 
 **Cross Reference**
 
 - `MuJoCo Model Samples <https://mujoco.readthedocs.io/en/latest/models.html>`_
+- `Unity Plug-in for MuJoCo <https://mujoco.readthedocs.io/en/stable/unity.html>`_
 - :ref:`Howto BF System 002 <Howto BF SYSTEMS 002>`
-- :ref:`Howto RL Env 007 <Howto Env RL 007>`
+- :ref:`Howto BF System 003 <Howto BF SYSTEMS 003>`
+- :ref:`Howto RL Agent 021 <Howto Agent RL 021>`
+- :ref:`Howto RL Agent 022 <Howto Agent RL 022>`
+- :ref:`Howto RL Att 002 <Howto RL ATT 002>`
+- :ref:`Howto RL Att 003 <Howto RL ATT 003>`
+- :ref:`Howto RL Env 005 <Howto Env RL 005>`
 - :ref:`MuJoCo Wrapper <Wrapper MuJoCo>`

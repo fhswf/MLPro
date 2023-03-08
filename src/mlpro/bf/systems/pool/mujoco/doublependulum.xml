@@ -2,9 +2,8 @@
 	<option timestep="0.05" gravity="0 0 -9.81" integrator="RK4">
 		<flag sensornoise="enable" energy="enable"/>
 	</option>
+	<include file="mlpro.xml"></include>
 	<worldbody>
-        <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
-		<geom type="plane" size="1 1 0.1" rgba=".9 0 0 1"/>
 
 		<body name="link1" pos="0 0 3" euler="0 0 0">
 			<joint name="pin1" type="hinge" axis = "0 1 0" pos="0 0 -0.5"/>
