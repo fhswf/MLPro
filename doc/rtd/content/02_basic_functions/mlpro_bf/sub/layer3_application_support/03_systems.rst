@@ -3,8 +3,8 @@ State-based Systems
 ===================
 
 MLPro aims to standardize machine learning processes to accommodate complex applications in simplified reusable APIs.
-MLPro's Systems module standardizes state based systems and their operation in a modular design. The keyword
-**state-based** implies the possibility to characteristically represent a system's unique status as a vector
+MLPro's Systems module standardizes state-based systems and their operation in a modular design. The keyword
+**state-based** implies the possibility to characteristically represent a system's unique state as a vector
 corresponding to a given timestep.
 
 A state-based system has a definite condition at any given point in time, defined by a fixed number of variables that
@@ -78,8 +78,9 @@ consisting corresponding values for all the dimension in the related action-spac
 
 MLPro also provides the possibility to integrate real world hardware, such as controllers and hardware to the System
 object. Furthermore, Systems module integrates optional visualization and simulation functionalities from MuJoCo into
-MLPro for re-usability. Check out following sections to know more:
+MLPro for re-usability.
 
+**Learn More:**
 
 .. toctree::
    :maxdepth: 2
@@ -88,8 +89,8 @@ MLPro for re-usability. Check out following sections to know more:
    systems/*
 
 
-**Cross References**
+**Cross Reference**
 
-- :ref:`BF-SYSTEMS - State-based Systems <target_ap_bf_systems>`
+- :ref:`API Reference BF-Systems <target_ap_bf_systems>`
 - :ref:`Howto BF-SYSTEMS-001: System, Controller, Actuator, Sensor <Howto BF SYSTEMS 001>`
 - :ref:`Howto BF-SYSTEMS-002: Systems wrapped with MuJoCo <Howto BF SYSTEMS 002>`
