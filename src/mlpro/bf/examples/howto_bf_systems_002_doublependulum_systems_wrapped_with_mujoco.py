@@ -37,13 +37,13 @@ from mlpro.bf.systems import *
 
 # 0 Prepare Demo/Unit test mode
 if __name__ == "__main__":
-    logging = Log.C_LOG_ALL
-    visualize = True
-    loop_cycle = 1000
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+    loop_cycle  = 1000
 else:
-    logging = Log.C_LOG_NOTHING
-    visualize = False
-    loop_cycle = 100
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
+    loop_cycle  = 100
 
 
 # 1 Instantiate own system in simulation mode
@@ -57,4 +57,6 @@ sys.reset()
 for x in range(loop_cycle):
     # Random Action
     action = np.random.uniform(-1, 1, size=(1,))
-    sys.process_action(p_action=Action(p_agent_id=0, p_action_space=sys.get_action_space(), p_values=action))
+    sys.process_action( p_action= Action( p_agent_id=0, 
+                                        p_action_space=sys.get_action_space(), 
+                                        p_values=action))
