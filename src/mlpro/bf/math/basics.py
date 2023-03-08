@@ -34,10 +34,12 @@
 ## --                                - internal optimizations
 ## --                                Class Set:
 ## --                                - new method is_numeric()
+## -- 2023-02-28  2.2.0     DA       Class Function: new method __call__()
+## -- 2023-03-07  2.2.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2022-12-13)
+Ver. 2.2.1 (2023-03-07)
 
 This module provides basic mathematical classes.
 """
@@ -408,7 +410,7 @@ class Element:
     def __init__(self, p_set:Set):
         self.set_related_set(p_set=p_set)
         if p_set.is_numeric():
-            self._values =np.zeros(self._set.get_num_dim())
+            self._values = np.zeros(self._set.get_num_dim())
         else:
             self._values = list(repeat(0, self._set.get_num_dim()))
         
@@ -452,7 +454,12 @@ class Element:
 
 ## -------------------------------------------------------------------------------------------------
     def set_value(self, p_dim_id, p_value):
-        self._values[self._set.get_dim_ids().index(p_dim_id)] = p_value
+        try:
+            self._values[self._set.get_dim_ids().index(p_dim_id)] = p_value
+        except:
+            self._values = self._values.tolist()
+            self._values[self._set.get_dim_ids().index(p_dim_id)] = p_value
+            self._values = np.array(self._values)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -557,12 +564,24 @@ class Function:
         self._input_space = p_input_space
         self._output_space = p_output_space
         self._output_elem_cls = p_output_elem_cls
+        self.map = self.__call__
 
 
 ## -------------------------------------------------------------------------------------------------
-    def map(self, p_input: Element) -> Element:
+    def __call__(self, p_input:Element) -> Element:
         """
-        Maps a multivariate abscissa/input element to a multivariate ordinate/output element. 
+        Maps a multivariate abscissa/input element to a multivariate ordinate/output element by 
+        calling the custom method _map().
+
+        Parameters
+        ----------
+        p_input : Element
+            Input element to be mapped.
+        
+        Returns
+        -------
+        output : Element
+            Output element.
         """
 
         output = self._output_elem_cls(self._output_space)
@@ -571,5 +590,20 @@ class Function:
 
 
 ## -------------------------------------------------------------------------------------------------
+    def map(self, p_input: Element) -> Element:
+        """
+        Alternative method to map an input to an output. Actually, it refers to method __call__().
+        Redefining this method has no effect. See method __call__() and constructor for further
+        details.
+        """
+
+        return self.__call__(p_input=p_input)
+
+
+## -------------------------------------------------------------------------------------------------
     def _map(self, p_input: Element, p_output: Element):
+        """
+        Custom method for own mapping algorithm. See methods __call__() and map() for further details.
+        """
+        
         raise NotImplementedError
