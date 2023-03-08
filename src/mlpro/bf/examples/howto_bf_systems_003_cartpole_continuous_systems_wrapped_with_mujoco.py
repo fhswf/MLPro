@@ -14,12 +14,12 @@
 """
 Ver. 1.0.1 (2023-03-07)
 
-This module demonstrates the principles of using classes System and use MuJoCo wrapper to do
-the simulation for pre defined model.
+This module demonstrates the principles of using classes System and uses MuJoCo wrapper to simulate 
+the pre-defined model.
 
 You will learn:
     
-1) How to set up a Pendulum System wrapped with MuJoCo
+1) How to set up a Cartpole Continuous System wrapped with MuJoCo
 
 2) How to run the system
     

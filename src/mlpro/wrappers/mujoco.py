@@ -517,6 +517,17 @@ class MujocoHandler(Wrapper):
 ## -------------------------------------------------------------------------------------------------
     def render(self):
         self._get_viewer().render()
+        
+        
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self):
+        for option_elem in self._xml_root.iter("option"):
+            try:
+                timestep = option_elem.attrib["timestep"]
+                return float(timestep)
+            except KeyError as e:
+                return None
+            
 
 
 ## -------------------------------------------------------------------------------------------------
