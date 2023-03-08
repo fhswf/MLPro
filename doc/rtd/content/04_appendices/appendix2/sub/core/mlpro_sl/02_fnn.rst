@@ -1,5 +1,5 @@
 .. _target_api_sl_fnn:
-SL - Feddforward Neural Network
+SL - Feedforward Neural Network
 ===================================
 
 .. image:: images/MLPro-SL-FNN_class_diagram.drawio.png
