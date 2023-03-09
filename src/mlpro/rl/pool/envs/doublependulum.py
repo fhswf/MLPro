@@ -67,10 +67,11 @@
 ## -- 2023-03-03  2.2.7     LSB      Bug Fix
 ## -- 2023-03-05  2.3.0     LSB      Shifted the environment into a system in bf systems pool
 ## -- 2023-03-08  2.3.1     LSB      Refactoring for visualization
+## -- 2023-03-09  2.3.2     LSB      Minor Bug Fix
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.1 (2023-03-08)
+Ver. 2.3.2 (2023-03-09)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -540,11 +541,11 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
         if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_REWARD,
                                 DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
             if self._reward_trend:
-                p_settings.axes.append(p_figure.add_subplot(grid[1:3]))
+                p_settings.axes.append(p_figure.add_subplot(111))
                 self._plot_reward_trend, = p_settings.axes[-1].plot(range(len(self._reward_history)),
                     self._reward_history, 'r--', lw = 2)
             else:
-                p_settings.axes.append(p_figure.add_subplot(grid[1:3]))
+                p_settings.axes.append(p_figure.add_subplot(111))
 
 
             p_settings.axes[-1].set_title('Reward - '+ self.C_NAME)
