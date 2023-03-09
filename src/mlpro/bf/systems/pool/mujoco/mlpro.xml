@@ -6,7 +6,7 @@
         <mesh name="y_letter" file="Y_letter.stl"/>
         <mesh name="z_letter" file="Z_letter.stl"/>
         <texture name="mlpro_logo" type="2d" file="logo.png"/>
-        <texture name="texplane" type="2d" builtin="checker" rgb1="0.5 0.5 0.5" rgb2="0.5 0.5 0.5" width="100" height="100" mark="cross" markrgb="0 0 0"/>
+        <texture name="texplane" type="2d" builtin="checker" rgb1="0 0 0" rgb2="0 0 0" width="40" height="40" mark="cross" markrgb="0.5 0.5 0.5"/>
 
         <material name="mlpro_mat" texture="mlpro_logo" rgba="1 1 1 1"/>
 
@@ -15,14 +15,14 @@
     <worldbody>
     <!-- Light -->
     <light diffuse="1 1 1" directional="true" castshadow="false" pos="0 0 0" dir="0 0 -1"/>
-    <light diffuse="1 1 1" directional="true" castshadow="false" pos="0 0 0" dir="0 1 0"/>
+    <light diffuse="0.1 0.1 0.1" directional="true" castshadow="false" pos="0 0 0" dir="0 1 0"/>
 
     <!-- Floor -->
 	<geom type="plane" material="grid" size="4 4 0.1"/>
 
     <!-- Back with MLPro Logo -->
     <geom type="plane" size="4 3 0.1" pos="0 4 3" quat="0.7071068 0.7071068 0 0" rgba="1 1 1 1"/>
-    <geom type="plane" material="mlpro_mat" size="1 1 0.1" pos="3 3.99 5" quat="0.7071068 0.7071068 0 0" rgba="1 1 1 1"/>
+    <geom type="plane" material="mlpro_mat" size="2 2 0.1" pos="2 3.99 4" quat="0.7071068 0.7071068 0 0" rgba="1 1 1 1"/>
     
     <!-- Axis Arrow -->
     <geom type="mesh" mesh="arrow" pos="-3.5 2.5 0.5" quat="1 0 0 0" rgba="0 0 1 1"/>
