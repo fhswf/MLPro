@@ -5,10 +5,10 @@ MuJoCo Integration
 |pic1| |pic2|
 
 .. |pic1| image:: images/mujoco_cartpole.gif
-   :width: 47%
+   :width: 20%
 
 .. |pic2| image:: images/mujoco_doublependulum.gif
-   :width: 47%
+   :width: 20%
 
 
 MuJoCo is a well-known physics engine for its fast and accurate simulation. The aim is to facilitate research and development in robotics, biomechanics, graphics 
