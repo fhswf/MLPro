@@ -541,11 +541,17 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
         if self._plot_level in [DoublePendulumRoot.C_PLOT_DEPTH_REWARD,
                                 DoublePendulumRoot.C_PLOT_DEPTH_ALL]:
             if self._reward_trend:
-                p_settings.axes.append(p_figure.add_subplot(111))
+                if self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ALL:
+                    p_settings.axes.append(p_figure.add_subplot(grid[1:3]))
+                else:
+                    p_settings.axes.append(p_figure.add_subplot(111))
                 self._plot_reward_trend, = p_settings.axes[-1].plot(range(len(self._reward_history)),
                     self._reward_history, 'r--', lw = 2)
             else:
-                p_settings.axes.append(p_figure.add_subplot(111))
+                if self._plot_level == DoublePendulumRoot.C_PLOT_DEPTH_ALL:
+                    p_settings.axes.append(p_figure.add_subplot(grid[1:3]))
+                else:
+                    p_settings.axes.append(p_figure.add_subplot(111))
 
 
             p_settings.axes[-1].set_title('Reward - '+ self.C_NAME)
