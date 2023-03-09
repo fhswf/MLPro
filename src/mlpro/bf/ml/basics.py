@@ -60,10 +60,11 @@
 ## -- 2023-02-20  2.1.0     DA       Class Training: 
 ## --                                - Method run_cycle(): scenario is now saved after training
 ## --                                - New methods get_training_path()
+## -- 2023-03-09  2.1.1     DA       Class TrainingResults: removed parameter p_path
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-02-20)
+Ver. 2.1.1 (2023-03-09)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -731,8 +732,6 @@ class TrainingResults (Log, Saveable):
         Run id.
     p_cycle_id : int
         Id of first cycle of this run.
-    p_path : str
-        Optional destination path to store the results.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
 
@@ -741,7 +740,7 @@ class TrainingResults (Log, Saveable):
     C_TYPE      = 'Results '
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_path=None, p_logging=Log.C_LOG_WE):
+    def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_logging=Log.C_LOG_WE):
         self.scenario           = p_scenario
         self.run                = p_run
         self.ts_start           = datetime.now()
@@ -754,7 +753,6 @@ class TrainingResults (Log, Saveable):
         self.num_cycles_eval    = 0
         self.num_adaptations    = 0
         self.highscore          = None
-        self.path               = p_path
 
         self.custom_results     = []
 
@@ -797,8 +795,6 @@ class TrainingResults (Log, Saveable):
         self.log(self.C_LOG_TYPE_W, '-- Evaluation cycles :', self.num_cycles_eval)
         self.log(self.C_LOG_TYPE_W, '-- Adaptations       :', self.num_adaptations)
         self.log(self.C_LOG_TYPE_W, '-- High score        :', self.highscore)
-        if self.path is not None:
-            self.log(self.C_LOG_TYPE_W, '-- Results stored in : "' + self.path +'"')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -845,7 +841,10 @@ class TrainingResults (Log, Saveable):
         self._save_line(file, 'Evaluation cycles', self.num_cycles_eval)
         self._save_line(file, 'Adaptations', self.num_adaptations)
         self._save_line(file, 'Highscore', self.highscore)
-        self._save_line(file, 'Path', '"' + str(self.path) + '"')
+        self._save_line(file, 'Path', '"' + str(p_path) + '"')
+
+        if p_path is not None:
+            self.log(self.C_LOG_TYPE_W, '-- Results stored in : "' + p_path +'"')
 
         for name, value in self.custom_results:
             self._save_line(file, name, value)
@@ -1127,7 +1126,6 @@ class Training (Log):
         return self.C_CLS_RESULTS( p_scenario = self._scenario, 
                                    p_run = self._current_run, 
                                    p_cycle_id = self._scenario.get_cycle_id(), 
-                                   p_path = self._current_path,
                                    p_logging = self._level )
 
 

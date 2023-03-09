@@ -47,10 +47,11 @@
 ## -- 2022-11-29  1.8.3     DA       Refactoring
 ## -- 2023-02-02  1.8.4     DA       Class RLTraining: signature of method init_plot refactored
 ## -- 2023-02-20  1.9.0     DA       Class RLScenario: new methods load(), _save()
+## -- 2023-03-09  1.9.1     DA       Class RLTrainingResults: removed parameter p_path
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.0 (2023-02-20)
+Ver. 1.9.1 (2023-03-09)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -570,8 +571,6 @@ class RLTrainingResults(TrainingResults):
         Run id.
     p_cycle_id : int
         Id of first cycle of this run.
-    p_path : str
-        Optional destination path to store the results.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
 
@@ -588,8 +587,11 @@ class RLTrainingResults(TrainingResults):
     C_CPAR_NUM_EVAL = 'Evaluations'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario: RLScenario, p_run, p_cycle_id, p_path=None, p_logging=Log.C_LOG_WE):
-        super().__init__(p_scenario, p_run, p_cycle_id, p_path=p_path, p_logging=p_logging)
+    def __init__(self, p_scenario: RLScenario, p_run, p_cycle_id, p_logging=Log.C_LOG_WE):
+        super().__init__( p_scenario = p_scenario, 
+                          p_run = p_run, 
+                          p_cycle_id = p_cycle_id, 
+                          p_logging = p_logging )
 
         self.num_episodes = 0
         self.num_evaluations = 0
