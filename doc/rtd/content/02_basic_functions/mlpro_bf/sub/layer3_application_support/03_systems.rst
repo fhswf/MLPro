@@ -19,7 +19,7 @@ system has failed.
 
 
 .. image::
-    images/systems.drawio.png
+    images/Systems.drawio.png
     :width: 550 px
 
 As shown in the figure above, MLPro's Systems module encapsulates the aforementioned functionalities into a standard

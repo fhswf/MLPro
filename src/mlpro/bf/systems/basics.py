@@ -26,10 +26,11 @@
 ## --                                update_plot()
 ## -- 2023-03-07  1.7.1     SY       Remove TransferFunction from bf.systems
 ## -- 2023-03-07  1.7.2     DA       Bugfix in method System._save()
+## -- 2023-03-08  1.7.3     MRD      Auto rename System, set latency from MuJoCo xml file
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.2 (2023-03-07)
+Ver. 1.7.3 (2023-03-08)
 
 This module provides models and templates for state based systems.
 """
@@ -749,6 +750,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
                   p_fct_success : FctSuccess = None,
                   p_fct_broken : FctBroken = None,
                   p_mujoco_file = None,
+                  p_name = None,
                   p_frame_skip : int = 1,
                   p_state_mapping = None,
                   p_action_mapping = None,
@@ -768,16 +770,15 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         self._controllers           = []
         self._mapping_actions       = {}
         self._mapping_states        = {}
-
-        FctSTrans.__init__(self, p_logging=p_logging)
-        FctSuccess.__init__(self, p_logging=p_logging)
-        FctBroken.__init__(self, p_logging=p_logging)
-        Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
-        Plottable.__init__(self, p_visualize=p_visualize)
-
+            
         if p_mujoco_file is not None:
             from mlpro.wrappers.mujoco import MujocoHandler
-
+            
+            if p_name is not None:
+                self.C_NAME = p_name
+            else:
+                self.C_NAME = p_mujoco_file.split("/")[-1][:p_mujoco_file.split("/")[-1].find(".")]
+                
             self._mujoco_file    = p_mujoco_file
             self._frame_skip     = p_frame_skip
             self._state_mapping  = p_state_mapping
@@ -794,11 +795,26 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
                                         p_logging=p_logging)
             
             self._state_space, self._action_space = self._mujoco_handler.setup_spaces()
-            self.set_latency(timedelta(0,0.05,0))
+            # Get Latency
+            mujoco_latency = self._mujoco_handler.get_latency()
+            
+            if mujoco_latency is not None:
+                self.set_latency(timedelta(0,mujoco_latency,0))
+            else:
+                if p_latency is not None:
+                    self.set_latency(p_latency)
+                else:
+                    raise ImplementationError('Please provide p_latency or set the timestep on the MuJoCo xml file!')
         else:
             self._mujoco_file = None
             self._state_space, self._action_space = self.setup_spaces()
             self.set_latency(p_latency)
+
+        FctSTrans.__init__(self, p_logging=p_logging)
+        FctSuccess.__init__(self, p_logging=p_logging)
+        FctBroken.__init__(self, p_logging=p_logging)
+        Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
 
 
  ## -------------------------------------------------------------------------------------------------

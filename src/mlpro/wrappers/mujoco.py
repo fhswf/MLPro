@@ -23,11 +23,12 @@
 ## -- 2023-02-23  1.2.2     MRD       Disable auto detect body position and orientation
 ## --                                 Detect Joint boundaries, default inf
 ## --                                 Disable custom reset from MLPro, now reset only from MuJoCo
+## -- 2023-03-08  1.2.3     MRD       Add get_latency() function to get latency from xml
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.2.2  (2023-02-23)
+Ver. 1.2.3  (2023-03-08)
 
 This module wraps bf.Systems with MuJoCo Simulation functionality.
 """
@@ -517,7 +518,17 @@ class MujocoHandler(Wrapper):
 ## -------------------------------------------------------------------------------------------------
     def render(self):
         self._get_viewer().render()
-
+        
+        
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self):
+        for option_elem in self._xml_root.iter("option"):
+            try:
+                timestep = option_elem.attrib["timestep"]
+                return float(timestep)
+            except KeyError as e:
+                return None
+            
 
 ## -------------------------------------------------------------------------------------------------
     def _close(self):

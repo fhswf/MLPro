@@ -10,7 +10,7 @@ If you have understood MLPro but not reinforcement learning, then you can jump t
 
 If you have experience in both MLPro and reinforcement learning, then you can directly start with **Section (3) What is MLPro-RL?**.
 
-After following this step-by-step guideline, we expect the user understands the MLPro-RL in practice and starts using MLPro-RL.
+After following the below step-by-step guideline, we expect the user understands the MLPro-RL in practice and starts using MLPro-RL.
 
 **1. What is MLPro?**
    If you are a first-time user of MLPro, you might wonder what is MLPro.
@@ -22,7 +22,7 @@ After following this step-by-step guideline, we expect the user understands the 
 
    (c) :ref:`installing and getting started with MLPro <target_mlpro_getstarted>`
 
-   (d) optionally `MLPro paper in Software Impact journal <https://doi.org/10.1016/j.simpa.2022.100421>`_
+   (d) `MLPro paper in Software Impact journal <https://doi.org/10.1016/j.simpa.2022.100421>`_
 
 **2. What is Reinforcement Learning?**
    If you have not dealt with reinforcement learning, we recommend starting to understand at least the basic concept of reinforcement learning.
@@ -38,7 +38,7 @@ After following this step-by-step guideline, we expect the user understands the 
    (b) `Section 4 of MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_
 
 **4. Understanding Environment in MLPro-RL**
-   First of all, it is important to understand the structure of an environment in MLPro, which can be found in :ref:`this page <target_env_RL>`.
+   First of all, it is important to understand the structure of an environment in MLPro, which can be found on :ref:`this page <target_env_RL>`.
 
    Then, you can start following some of our howto files related to the environment in MLPro-RL, as follows:
 

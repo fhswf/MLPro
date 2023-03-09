@@ -1,5 +1,5 @@
 .. _Howto Agent RL 021:
-Howto RL-AGENT-021: Train and Reload Single Agent (MuJoCo)
+Howto RL-AGENT-021: Train and Reload Single Agent Cartpole Discrete (MuJoCo)
 ==========================================================
 
 .. automodule:: mlpro.rl.examples.howto_rl_agent_021_train_and_reload_single_agent_mujoco_cartpole_discrete

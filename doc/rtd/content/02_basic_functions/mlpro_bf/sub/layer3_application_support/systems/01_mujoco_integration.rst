@@ -5,10 +5,10 @@ MuJoCo Integration
 |pic1| |pic2|
 
 .. |pic1| image:: images/mujoco_cartpole.gif
-   :width: 47%
+   :width: 20%
 
 .. |pic2| image:: images/mujoco_doublependulum.gif
-   :width: 47%
+   :width: 20%
 
 
 MuJoCo is a well-known physics engine for its fast and accurate simulation. The aim is to facilitate research and development in robotics, biomechanics, graphics 
@@ -49,19 +49,23 @@ In order to use the MuJoCo integration in MLPro, the following steps need to be 
 
     * **Create a System**
 
-        Create your system inherited from the bf.System class. When you instatiated your custom System, put the MuJoCo model file path on ``p_mujoco_file``.
+        When you instantiate the System, put the MuJoCo model file path on ``p_mujoco_file``.
         If the model is correct and the path is correct, then the wrapper will automatically wrap the state and action space based on the MuJoCo model.
         
+If you want to view your model only before including it in MLPro, you can use the MuJoCo tool by dragging and dropping the model file into it. The tool 
+can be downloaded `here <https://github.com/deepmind/mujoco/releases>`_.
 
 **Cross Reference**
 
+- `MuJoCo Tool <https://github.com/deepmind/mujoco/releases>`_
+- `MuJoCo XML Reference <https://mujoco.readthedocs.io/en/stable/XMLreference.html>`_
 - `MuJoCo Model Samples <https://mujoco.readthedocs.io/en/latest/models.html>`_
 - `Unity Plug-in for MuJoCo <https://mujoco.readthedocs.io/en/stable/unity.html>`_
-- :ref:`Howto BF System 002 <Howto BF SYSTEMS 002>`
-- :ref:`Howto BF System 003 <Howto BF SYSTEMS 003>`
-- :ref:`Howto RL Agent 021 <Howto Agent RL 021>`
-- :ref:`Howto RL Agent 022 <Howto Agent RL 022>`
-- :ref:`Howto RL Att 002 <Howto RL ATT 002>`
-- :ref:`Howto RL Att 003 <Howto RL ATT 003>`
-- :ref:`Howto RL Env 005 <Howto Env RL 005>`
 - :ref:`MuJoCo Wrapper <Wrapper MuJoCo>`
+- :ref:`Howto BF-SYSTEMS-002: Double Pendulum Systems wrapped with MuJoCo <Howto BF SYSTEMS 002>`
+- :ref:`Howto BF-SYSTEMS-003: Cartpole Continuous Systems wrapped with MuJoCo <Howto BF SYSTEMS 003>`
+- :ref:`Howto RL-AGENT-021: Train and Reload Single Agent Cartpole Discrete (MuJoCo) <Howto Agent RL 021>`
+- :ref:`Howto RL-AGENT-022: Train and Reload Single Agent Cartpole Continuous (MuJoCo) <Howto Agent RL 022>`
+- :ref:`Howto RL-ATT-002: Train and Reload Single Agent using Stagnation Detection Cartpole Discrete (MuJoCo) <Howto RL ATT 002>`
+- :ref:`Howto RL-ATT-003: Train and Reload Single Agent using Stagnation Detection Cartpole Continuous (MuJoCo) <Howto RL ATT 003>`
+- :ref:`Howto RL-ENV-005: Run Agent with random policy on double pendulum mujoco environment <Howto Env RL 005>`

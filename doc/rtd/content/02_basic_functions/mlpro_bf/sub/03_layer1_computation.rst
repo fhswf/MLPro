@@ -2,7 +2,7 @@
 Layer 1 - Computation
 =====================
 
-Further explanations coming soon...
+This layer introduces various techniques for efficiently executing higher-level program functions.
 
 .. toctree::
    :maxdepth: 1

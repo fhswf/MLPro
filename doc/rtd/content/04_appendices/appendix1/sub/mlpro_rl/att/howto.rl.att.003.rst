@@ -1,5 +1,5 @@
 .. _Howto RL ATT 003:
-Howto RL-ATT-002: Train and Reload Single Agent using Stagnation Detection (MuJoCo)
+Howto RL-ATT-003: Train and Reload Single Agent using Stagnation Detection Cartpole Continuous (MuJoCo)
 ===================================================================================
 
 .. automodule:: mlpro.rl.examples.howto_rl_att_003_train_and_reload_single_agent_mujoco_sd_cartpole_continuous
