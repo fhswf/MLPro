@@ -10,7 +10,7 @@ If you have understood MLPro but not the game theoretical approach in the engine
 
 If you have experience in both MLPro and game theory, then you can directly start with **Section (3) What is MLPro-GT?**.
 
-After following this step-by-step guideline, we expect the user understands the MLPro-GT in practice and starts using MLPro-GT.
+After following the below step-by-step guideline, we expect the user understands the MLPro-GT in practice and starts using MLPro-GT.
 
 **1. What is MLPro?**
    If you are a first-time user of MLPro, you might wonder what is MLPro.
@@ -22,7 +22,7 @@ After following this step-by-step guideline, we expect the user understands the 
 
    (c) :ref:`installing and getting started with MLPro <target_mlpro_getstarted>`
 
-   (d) optionally `MLPro paper in Software Impact journal <https://doi.org/10.1016/j.simpa.2022.100421>`_
+   (d) `MLPro paper in Software Impact journal <https://doi.org/10.1016/j.simpa.2022.100421>`_
 
 **2. What is Game Theory?**
    If you have not dealt with game theory for engineering applications, we recommend starting to understand at least the basic concept of game theory.
