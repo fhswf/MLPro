@@ -58,6 +58,7 @@ can be downloaded `here <https://github.com/deepmind/mujoco/releases>`_.
 **Cross Reference**
 
 - `MuJoCo Tool <https://github.com/deepmind/mujoco/releases>`_
+- `MuJoCo XML Reference <https://mujoco.readthedocs.io/en/stable/XMLreference.html>`_
 - `MuJoCo Model Samples <https://mujoco.readthedocs.io/en/latest/models.html>`_
 - `Unity Plug-in for MuJoCo <https://mujoco.readthedocs.io/en/stable/unity.html>`_
 - :ref:`MuJoCo Wrapper <Wrapper MuJoCo>`
