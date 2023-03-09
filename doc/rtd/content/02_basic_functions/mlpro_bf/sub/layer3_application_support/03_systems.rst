@@ -80,7 +80,7 @@ MLPro also provides the possibility to integrate real world hardware, such as co
 object. Furthermore, Systems module integrates optional visualization and simulation functionalities from MuJoCo into
 MLPro for re-usability.
 
-**Learn More:**
+**Learn more**
 
 .. toctree::
    :maxdepth: 2

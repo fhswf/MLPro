@@ -24,7 +24,8 @@ Transfer Function class can be accessed as follows:
 
     from mlpro.bf.physics import TransferFunction
 
+
 **Cross Reference**
-    + :ref:`Howto BF PHYSICS 001 <Howto BF PHYSICS 001>`
-    + :ref:`Howto BF PHYSICS 002 <Howto BF PHYSICS 002>`
+    + :ref:`Howto BF-PHYSICS-001: Transfer Functions <Howto BF PHYSICS 001>`
+    + :ref:`Howto BF-PHYSICS-002: Unit Converter <Howto BF PHYSICS 002>`
     + :ref:`API Reference <target_ap_bf_physics_basics>`

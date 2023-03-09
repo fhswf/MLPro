@@ -33,6 +33,5 @@ Additionally, MLPro also provides visualization functionality for window, as sho
 
 - :ref:`Howto BF-STREAMS-110: Window <Howto BF STREAMS 110>`
 - :ref:`API Reference: Streams <target_ap_bf_streams>`
-- :ref:`Streams <target_streams_intro>`
 
 
