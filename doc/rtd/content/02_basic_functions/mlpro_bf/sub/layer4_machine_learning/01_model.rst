@@ -49,4 +49,5 @@ Model class. These, in turn, take up the concepts of **Dimension**, **Set/Space*
 - :ref:`Howto BF-ML-010: Hyperparameters <Howto BF ML 010>`
 - :ref:`Models in Reinforcement Learning: Policy, Agent, MultiAgent <target_agents_RL>`
 - :ref:`Models in Game Theory: Player, MultiPlayer <target_players_GT>`
+- :ref:`BF-Events - Event Handling <target_bf_event>`
 - :ref:`API Reference BF-ML <target_api_bf_ml>`

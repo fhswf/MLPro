@@ -37,11 +37,12 @@ loaded as following:
 
 
 
-Know more about stream handling in MLPro:
+**Learn more**
 
 .. toctree::
 
     streams_handling/stream_handling.rst
+
 
 **Cross Reference**
 
