@@ -35,7 +35,7 @@ After following the below step-by-step guideline, we expect the user understands
    (a) :ref:`MLPro-SL introduction page <target_overview_SL>`
 
 **4. Understanding Adapative Function in MLPro-SL**
-   First of all, it is important to understand the adaptive function in MLPro-SL, which can be found in :ref:`this page <target_bf_sl_afct>`.
+   First of all, it is important to understand the adaptive function in MLPro-SL, which can be found on :ref:`this page <target_bf_sl_afct>`.
 
    Then, you can start following some of our howto files related to the adaptive function in MLPro-SL, which is used for model-based RL, as follows:
 

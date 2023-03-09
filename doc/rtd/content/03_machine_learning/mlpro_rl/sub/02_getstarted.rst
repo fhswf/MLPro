@@ -38,7 +38,7 @@ After following the below step-by-step guideline, we expect the user understands
    (b) `Section 4 of MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_
 
 **4. Understanding Environment in MLPro-RL**
-   First of all, it is important to understand the structure of an environment in MLPro, which can be found in :ref:`this page <target_env_RL>`.
+   First of all, it is important to understand the structure of an environment in MLPro, which can be found on :ref:`this page <target_env_RL>`.
 
    Then, you can start following some of our howto files related to the environment in MLPro-RL, as follows:
 

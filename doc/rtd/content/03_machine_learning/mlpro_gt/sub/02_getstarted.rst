@@ -38,7 +38,7 @@ After following the below step-by-step guideline, we expect the user understands
    (b) `Section 5 of MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_
 
 **4. Understanding Game Board and Player in MLPro-GT**
-   First of all, it is important to understand the structure of a game board in MLPro-GT, which can be found in :ref:`this page <target_gb_gt>`.
+   First of all, it is important to understand the structure of a game board in MLPro-GT, which can be found on :ref:`this page <target_gb_gt>`.
 
    In reinforcement learning, we have two types of agents, such as a single-agent RL or a multi-agent RL. Both of the types are covered by MLPro-RL.
    Meanwhile, in MLPro-GT, we focus on a multi-player GT because there are no significant advantages of using game theory for single-player.
