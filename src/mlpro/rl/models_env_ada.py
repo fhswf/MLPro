@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-11-29  1.0.0     DA       Creation due to refactoring of bf.systems and rl.models_env
 ## -- 2023-03-08  1.0.1     SY       Update EnvModel
+## -- 2023-03-10  1.0.2     SY       Update AFctReward: _setup_spaces, _compute_reward, and _adapt
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-03-08)
+Ver. 1.0.2 (2023-03-10)
 
 This module provides model classes for adaptive environment models.
 """
@@ -428,7 +429,7 @@ class AFctReward (AFctBase, FctReward):
                       p_output_space: MSpace):
         # 1 Setup input space
         p_input_space.append(p_state_space)
-        p_input_space.append(p_state_space)
+        p_input_space.append(p_state_space, p_ignore_duplicates=True)
 
         # 2 Setup output space
         p_output_space.add_dim(
@@ -436,13 +437,16 @@ class AFctReward (AFctBase, FctReward):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state: State = None, p_state_new: State = None) -> Reward:
-        if (p_state is None) or (p_state_new is None):
+    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+        if (p_state_old is None) or (p_state_new is None):
             raise ParamError('Both parameters p_state and p_state_new are needed to compute the reward')
 
         # 1 Create input vector from both states
-        input_values = p_state.get_values().copy()
-        input_values.append(p_state_new.get_values())
+        input_values = p_state_old.get_values().copy()
+        if isinstance(input_values, np.ndarray):
+            input_values = np.append(input_values, p_state_new.get_values())
+        else:
+            input_values.extend(p_state_new.get_values())
         input = Element(self._input_space)
         input.set_values(input_values)
 
@@ -474,7 +478,10 @@ class AFctReward (AFctBase, FctReward):
 
         # 1 Create input vector from both states
         input_values = p_state.get_values().copy()
-        input_values.append(p_state_new.get_values())
+        if isinstance(input_values, np.ndarray):
+            input_values = np.append(input_values, p_state_new.get_values())
+        else:
+            input_values.extend(p_state_new.get_values())
         input = Element(self._input_space)
         input.set_values(input_values)
 
