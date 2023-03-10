@@ -18,8 +18,8 @@ The current implementation covers:
 
 
 **Cross Reference**
-    - :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`
+    - :ref:`Howto RL-MB-001: Train and Reload Model Based Agent (Gym) <Howto MB RL 001>`
     - :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
-    - :ref:`Howto RL-MB-003: Train and Reload Model Based Agent (Gym) <Howto MB RL 003>`
+    - :ref:`Howto RL-MB-003: MBRL on RobotHTM Environment <Howto MB RL 003>`
     - :ref:`API Reference: MLPro-SL <target_api_sl>`
     - :ref:`API Reference: MLPro-SL Pool of Objects <target_api_pool_sl>`

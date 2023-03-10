@@ -1,23 +1,22 @@
 .. _Howto MB RL 001:
-Howto RL-MB-001: MBRL on RobotHTM Environment
-=======================================================
+Howto RL-MB-001: Train and Reload Model Based Agent (Gym)
+====================================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_mb_001_robothtm_environment
-  
+.. automodule:: mlpro.rl.examples.howto_rl_mb_001_train_and_reload_model_based_agent_gym
+
 
 
 **Prerequisites**
 
-
 Please install the following packages to run this examples properly:
-    - `Pytorch <https://pypi.org/project/torch/>`_
-    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
+    - `PyTorch <https://pypi.org/project/torch/>`_
+    - `OpenAI Gym <https://pypi.org/project/gym/>`_
 
 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_mb_001_robothtm_environment.py
+.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_mb_001_train_and_reload_model_based_agent_gym.py
 	:language: python
 
 
@@ -25,36 +24,39 @@ Please install the following packages to run this examples properly:
 **Results**
 
 
-After the environment is initiated, the training will run for the specified amount of limits.
-The expected initial console output can be seen below.
-
+After the environment is initiated, the training will run for the specified amount of limits. The expected initial console output can be seen below.
 
 .. code-block:: bash
 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Training Actual: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Operation mode set to 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Reset 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  SB3 Policy ????: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  SB3 Policy ????: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Agent Smith1: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Agent Smith1: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  SB3 Policy ????: Adaptivity switched on 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Matrix1: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Matrix1: Operation mode set to 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Training Actual: Training started (without hyperparameter tuning) 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Results  RL: Instantiated 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training Actual: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training Actual: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training Actual: -- Training run 0 started... 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training Actual: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training Actual: ------------------------------------------------------------------------------ 
-     
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Matrix1: Process time 0:00:00 : Scenario reset with seed 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Environment RobotHTM: Reset 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": -- Training episode 0 started... 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": ------------------------------------------------------------------------------ 
+    
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Agent "": Instantiated 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  S  Agent "": Adaptivity switched on 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": -- Training run 0 started... 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": ------------------------------------------------------------------------------ 
+    
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": ------------------------------------------------------------------------------ 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": -- Training episode 0 started... 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "RL": ------------------------------------------------------------------------------ 
+    
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Agent "": Action computation started 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Agent "": Action computation finished 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  S  Agent "": Adaptation started 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Agent "": Action computation started
     ...
-
+    
+After termination the local result folder contains the training result files:
+    - agent_actions.csv
+    - env_rewards.csv
+    - env_states.csv
+    - evaluation.csv
+    - summary.csv
+    - trained model.pkl
 
 **Cross Reference**
 

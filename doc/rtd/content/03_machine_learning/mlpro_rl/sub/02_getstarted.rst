@@ -75,11 +75,13 @@ After following the below step-by-step guideline, we expect the user understands
       Model-based RL contains two learning paradigms, such as learning the environment (model-based learning) and utilizing the model (e.g. as an action planner).
       To practice model-based RL in the MLPro-RL package, here are a howto file that can be followed:
 
-      (a) :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`
+      (a) :ref:`Howto RL-MB-001: Train and Reload Model Based Agent (Gym) <Howto MB RL 001>`
 
       (b) :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
 
-      (c) :ref:`Howto RL-MB-003: Train and Reload Model Based Agent (Gym) <Howto MB RL 003>`
+      For more advanced MBRL technique, e.g. applying a native MBRL network, here is an example that can be used as a reference:
+      
+      (c) :ref:`Howto RL-MB-003: MBRL on RobotHTM Environment <Howto MB RL 003>`
 
 
 **7. Additional Guidance**

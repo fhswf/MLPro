@@ -9,6 +9,6 @@ In this functionality, we integrate PyTorch into MLPro-SL, thus PyTorch function
 At the moment, we provide only PyTorch-based multilayer perceptron in the pool, but recurrent neural networks and transformers are planned to be included in the next version shortly. 
 
 **Cross Reference**
+    - :ref:`Howto RL-MB-001: Train and Reload Model Based Agent (Gym) <Howto MB RL 001>`
     - :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
-    - :ref:`Howto RL-MB-003: Train and Reload Model Based Agent (Gym) <Howto MB RL 003>`
     - :ref:`API Reference: MLPro-SL Pool of Objects <target_api_pool_sl>`

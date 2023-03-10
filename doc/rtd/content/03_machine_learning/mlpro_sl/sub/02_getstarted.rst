@@ -39,11 +39,13 @@ After following the below step-by-step guideline, we expect the user understands
 
    Then, you can start following some of our howto files related to the adaptive function in MLPro-SL, which is used for model-based RL, as follows:
 
-   (a) :ref:`Howto RL-MB-001: MBRL on RobotHTM Environment <Howto MB RL 001>`
+   (a) :ref:`Howto RL-MB-001: Train and Reload Model Based Agent (Gym) <Howto MB RL 001>`
 
    (b) :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
+
+   For more advanced supervised learning technique in model-based RL, e.g. applying a native model-based RL network, here is an example that can be used as a reference:
    
-   (c) :ref:`Howto RL-MB-003: Train and Reload Model Based Agent (Gym) <Howto MB RL 003>`
+   (c) :ref:`Howto RL-MB-003: MBRL on RobotHTM Environment <Howto MB RL 003>`
 
 
 **5. Additional Guidance**
