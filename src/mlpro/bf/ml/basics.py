@@ -62,10 +62,11 @@
 ## --                                - New methods get_training_path()
 ## -- 2023-03-09  2.1.1     DA       Class TrainingResults: removed parameter p_path
 ## -- 2023-03-10  2.1.2     DA       Class AdaptiveFunction: refactoring constructor parameters
+## -- 2022-03-10  2.1.3     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.2 (2023-03-10)
+Ver. 2.1.3 (2023-03-10)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -208,7 +209,7 @@ class Model (Task, LoadSave, ScientificObject):
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_par : Dict
-        Further model specific hyperparameters (to be defined in chhild class).
+        Further model specific hyperparameters (to be defined in child class).
     """
 
     C_TYPE              = 'Model'

@@ -15,10 +15,11 @@
 ## -- 2023-02-10  1.2.2     SY       Switch multiprocessing to threading
 ## -- 2023-03-07  2.0.0     SY       Update due to MLPro-SL
 ## -- 2023-03-08  2.0.1     SY       Refactoring
+## -- 2023-03-10  2.0.2     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2023-03-08)
+Ver. 2.0.2 (2023-03-10)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem as well as using
 PyTorch-based MLP network from MLPro-SL's pool of objects.
@@ -57,46 +58,7 @@ import mlpro.bf.mt as mt
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-# 1 Set up MLP for Grid World
-class GridWorldAFct(PyTorchMLP):
-    
-    C_NAME = "Grid World Adaptive Function"
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_hyperparam(self, **p_par): 
-        self._hyperparam_space.add_dim(HyperParam('input_size','Z'))
-        self._hyperparam_space.add_dim(HyperParam('output_size','Z'))
-        self._hyperparam_space.add_dim(HyperParam('update_rate','Z'))
-        self._hyperparam_space.add_dim(HyperParam('num_hidden_layers','Z'))
-        self._hyperparam_space.add_dim(HyperParam('hidden_size','Z'))
-        self._hyperparam_space.add_dim(HyperParam('activation_fct'))
-        self._hyperparam_space.add_dim(HyperParam('output_activation_fct'))
-        self._hyperparam_space.add_dim(HyperParam('optimizer'))
-        self._hyperparam_space.add_dim(HyperParam('loss_fct'))
-        self._hyperparam_space.add_dim(HyperParam('learning_rate','R'))
-        self._hyperparam_tuple = HyperParamTuple(self._hyperparam_space)
-        
-        ids_ = self._hyperparam_tuple.get_dim_ids()
-        self._hyperparam_tuple.set_value(ids_[0], self._input_space.get_num_dim())
-        self._hyperparam_tuple.set_value(ids_[1], self._output_space.get_num_dim())
-        self._hyperparam_tuple.set_value(ids_[2], p_par['p_update_rate'])
-        self._hyperparam_tuple.set_value(ids_[3], p_par['p_num_hidden_layers'])
-        self._hyperparam_tuple.set_value(ids_[4], p_par['p_hidden_size'])
-        self._hyperparam_tuple.set_value(ids_[5], p_par['p_act_fct'])
-        self._hyperparam_tuple.set_value(ids_[6], p_par['p_output_afc_fct'])
-        self._hyperparam_tuple.set_value(ids_[7], p_par['p_optimizer'])
-        self._hyperparam_tuple.set_value(ids_[8], p_par['p_loss_fct'])
-        self._hyperparam_tuple.set_value(ids_[9], p_par['p_learning_rate'])
-              
-
-            
-                
-                
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-
-# 2 Implement the random RL scenario
+# 1 Implement the random RL scenario
 class ScenarioGridWorld(RLScenario):
 
     C_NAME      = 'Grid World with Random Actions'
@@ -104,13 +66,13 @@ class ScenarioGridWorld(RLScenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
-        # 2.1 Setup environment
+        # 1.1 Setup environment
         self._env   = GridWorld(p_logging=p_logging,
                                 p_action_type=GridWorld.C_ACTION_TYPE_DISC_2D,
                                 p_max_step=100)
 
 
-        # 2.2 Setup and return random action agent
+        # 1.2 Setup and return random action agent
         policy_random = RandomGenerator(p_observation_space=self._env.get_state_space(), 
                                         p_action_space=self._env.get_action_space(),
                                         p_buffer_size=1,
@@ -119,7 +81,7 @@ class ScenarioGridWorld(RLScenario):
         
         # Setup Adaptive Function
         afct_strans = AFctSTrans(
-            GridWorldAFct,
+            PyTorchMLP,
             p_state_space=self._env._state_space,
             p_action_space=self._env._action_space,
             p_threshold=1.8,
@@ -129,8 +91,8 @@ class ScenarioGridWorld(RLScenario):
             p_update_rate=1,
             p_num_hidden_layers=3,
             p_hidden_size=128,
-            p_act_fct=torch.nn.ReLU,
-            p_output_afc_fct=torch.nn.ReLU,
+            p_activation_fct=torch.nn.ReLU,
+            p_output_activation_fct=torch.nn.ReLU,
             p_optimizer=torch.optim.Adam,
             p_loss_fct=torch.nn.MSELoss,
             p_learning_rate=3e-4
@@ -180,16 +142,16 @@ class ScenarioGridWorld(RLScenario):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 
-# 3 Train agent in scenario
+# 2 Train agent in scenario
 if __name__ == "__main__":
-    # 3.1 Parameters for demo mode
+    # 2.1 Parameters for demo mode
     cycle_limit = 5000
     logging     = Log.C_LOG_ALL
     visualize   = True
     path        = str(Path.home())
     plotting    = True
 else:
-    # 3.2 Parameters for internal unit test
+    # 2.2 Parameters for internal unit test
     cycle_limit = 10
     logging     = Log.C_LOG_NOTHING
     visualize   = False

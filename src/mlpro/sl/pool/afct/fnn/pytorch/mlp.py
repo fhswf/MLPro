@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-02-23  0.0.0     SY       Creation
 ## -- 2023-03-07  1.0.0     SY       Released first version
+## -- 2023-03-10  1.1.0     SY       Combining _hyperparameters_check and _init_hyperparam
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-07)
+Ver. 1.1.0 (2023-03-10)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
@@ -82,10 +83,11 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         self._output_space.distance = self._calc_loss
         
         if p_buffer_size > 0:
-            self._buffer = self.C_BUFFER_CLS(p_size=p_buffer_size,
-                                             p_test_data=self._parameters['test_data'],
-                                             p_batch_size=self._parameters['batch_size'],
-                                             p_seed=self._parameters['seed_buffer'])
+            ids_            = self.get_hyperparam().get_dim_ids()
+            self._buffer    = self.C_BUFFER_CLS(p_size=p_buffer_size,
+                                                p_test_data=self.get_hyperparam().get_value(ids_[9]),
+                                                p_batch_size=self.get_hyperparam().get_value(ids_[10]),
+                                                p_seed=self.get_hyperparam().get_value(ids_[11]))
         else:
             self._buffer = None
 
@@ -100,32 +102,30 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
             A set up supervised learning model
         """
 
-        # additional pytorch-related parameters checking
-        self._add_hyperparameters_check()
-        
         # setting up model
-        if self._parameters['weight_bias_init']:
+        ids_ = self.get_hyperparam().get_dim_ids()
+        if self.get_hyperparam().get_value(ids_[13]):
             init_ = lambda mod: self._default_weight_bias_init(mod,
-                                                               self._parameters['weight_init'],
-                                                               self._parameters['bias_init'],
-                                                               self._parameters['gain_init'])
+                                                               self.get_hyperparam().get_value(ids_[14]),
+                                                               self.get_hyperparam().get_value(ids_[15]),
+                                                               self.get_hyperparam().get_value(ids_[16]))
 
         modules = []
-        for hd in range(int(self._parameters['num_hidden_layers'])+1):
+        for hd in range(int(self.get_hyperparam().get_value(ids_[3]))+1):
             if hd == 0:
-                act_input_size  = self._parameters['input_size']
-                output_size     = self._parameters['hidden_size'][hd]
-                act_fct         = self._parameters['activation_fct'][hd]()
-            elif hd == self._parameters['num_hidden_layers']:
-                act_input_size  = self._parameters['hidden_size'][hd-1]
-                output_size     = self._parameters['output_size']
-                act_fct         = self._parameters['output_activation_fct']()
+                act_input_size  = self.get_hyperparam().get_value(ids_[0])
+                output_size     = self.get_hyperparam().get_value(ids_[4])[hd]
+                act_fct         = self.get_hyperparam().get_value(ids_[5])[hd]()
+            elif hd == self.get_hyperparam().get_value(ids_[3]):
+                act_input_size  = self.get_hyperparam().get_value(ids_[4])[hd-1]
+                output_size     = self.get_hyperparam().get_value(ids_[1])
+                act_fct         = self.get_hyperparam().get_value(ids_[6])()
             else:
-                act_input_size  = self._parameters['hidden_size'][hd-1]
-                output_size     = self._parameters['hidden_size'][hd]
-                act_fct         = self._parameters['activation_fct'][hd]()
+                act_input_size  = self.get_hyperparam().get_value(ids_[4])[hd-1]
+                output_size     = self.get_hyperparam().get_value(ids_[4])[hd]
+                act_fct         = self.get_hyperparam().get_value(ids_[5])[hd]()
             
-            if self._parameters['weight_bias_init']:
+            if self.get_hyperparam().get_value(ids_[13]):
                 modules.append(init_(torch.nn.Linear(int(act_input_size), int(output_size))))
             else:
                 modules.append(torch.nn.Linear(int(act_input_size), int(output_size)))
@@ -139,124 +139,165 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         except:
             pass 
         
-        self._parameters['loss_fct'] = self._parameters['loss_fct']()
-        self.optimizer = self._parameters['optimizer'](model.parameters(), lr=self._parameters['learning_rate'])
+        self._loss_fct = self.get_hyperparam().get_value(ids_[8])()
+        self.optimizer = self.get_hyperparam().get_value(ids_[7])(model.parameters(), lr=self.get_hyperparam().get_value(ids_[12]))
 
         return model
-
+    
 
 ## -------------------------------------------------------------------------------------------------
-    def _add_hyperparameters_check(self) -> bool:
+    def _init_hyperparam(self, **p_par): 
         """
-        Additional hyperparameters related to the PyTorch-based MLP model checking.
+        A method to deal with the hyperparameters related to the MLP model.
 
         Hyperparameters
         ----------
-        test_data : float
+        p_update_rate :
+            update rate.
+        p_num_hidden_layers :
+            number of hidden layers.
+        p_output_activation_fct :
+            extra activation function for the output layer.
+        p_optimizer :
+            optimizer.
+        p_loss_fct :
+            loss function.
+        p_test_data : float
             the proportion of test data during the sampling process. Default = 0.3.
-        batch_size : int
+        p_batch_size : int
             batch size of the buffer. Default = 100.
-        seed_buffer : int
+        p_seed_buffer : int
             seeding of the buffer. Default = 1.
-        learning_rate : float
+        p_learning_rate : float
             learning rate of the optimizer. Default = 3e-4.
-        hidden_size : int or list
+        p_hidden_size : int or list
             number of hidden neurons. There are two possibilities to set up the hidden size:
             1) if hidden_size is an integer, then the number of neurons in all hidden layers are
             exactly the same.
             2) if hidden_size is in a list, then the user can define the number of neurons in
             each hidden layer, but make sure that the length of the list must be equal to the
             number of hidden layers.
-        activation_fct : torch.nn or list
+        p_activation_fct : torch.nn or list
             activation function. There are two possibilities to set up the activation function:
             1) if activation_fct is a single activation function, then the activation function after all
             hidden layers are exactly the same.
             2) if activation_fct is in a list, then the user can define the activation function after
             each hidden layer, but make sure that the length of the list must be equal to the
             number of hidden layers.
-        weight_bias_init : bool, optional
+        p_weight_bias_init : bool, optional
             weight and bias initialization. Default : True
-        weight_init : torch.nn, optional
+        p_weight_init : torch.nn, optional
             weight initialization function. Default : torch.nn.init.orthogonal_
-        bias_init : torch.nn, optional
+        p_bias_init : torch.nn, optional
             bias initilization function. Default : lambda x: torch.nn.init.constant_(x, 0)
-        gain_init : int, optional
-            gain parameter of the weight and bias initialization. Default : np.sqrt(2)
-        
-        Returns
-        ----------
-        bool
-            True, if everything is succesful.
+        p_gain_init : int, optional
+                gain parameter of the weight and bias initialization. Default : np.sqrt(2)
         """
-
-        _param = {}
-        hp = self.get_hyperparam()
-        for idx in hp.get_dim_ids():
-            par_name = hp.get_related_set().get_dim(idx).get_name_short()
-            par_val  = hp.get_value(idx)
-            _param[par_name] = par_val
-
-        if 'test_data' not in _param:
-            self._parameters['test_data'] = 0.3
-        else:
-            self._parameters['test_data'] = _param['test_data']
-
-        if 'batch_size' not in _param:
-            self._parameters['batch_size'] = 100
-        else:
-            self._parameters['batch_size'] = _param['batch_size']
-
-        if 'seed_buffer' not in _param:
-            self._parameters['seed_buffer'] = 1
-        else:
-            self._parameters['seed_buffer'] = _param['seed_buffer']
-
-        if 'learning_rate' not in _param:
-            self._parameters['learning_rate'] = 3e-4
-        else:
-            self._parameters['learning_rate'] = _param['learning_rate']
         
-        if 'hidden_size' not in self._parameters:
-            raise ParamError("hidden_size is not defined.")
         try:
-            if len(self._parameters['hidden_size']) != self._parameters['num_hidden_layers']:
-                raise ParamError("length of hidden_size list must be equal to num_hidden_layers or an integer.")
+            p_input_size = self._input_space.get_num_dim()
+            p_output_size = self._output_space.get_num_dim()
         except:
-            self._parameters['hidden_size'] = [int(self._parameters['hidden_size'])] * int(self._parameters['num_hidden_layers'])
+            raise ParamError('Input size and/or output size of the network are not defined.')
         
-        if 'activation_fct' not in self._parameters:
-            raise ParamError("activation_fct is not defined.")
+        if 'p_update_rate' not in p_par:
+            p_par['p_update_rate'] = 1
+        elif p_par.get('p_update_rate') < 1:
+            raise ParamError("p_update_rate must be equal or higher than 1.")
+    
+        if 'p_num_hidden_layers' not in p_par:
+            raise ParamError("p_num_hidden_layers is not defined.")
+    
+        if 'p_output_activation_fct' not in p_par:
+            p_par['p_output_activation_fct'] = None
+        
+        if 'p_optimizer' not in p_par:
+            raise ParamError("p_optimizer is not defined.")
+        
+        if 'p_loss_fct' not in p_par:
+            raise ParamError("p_loss_fct is not defined.")
+
+        if 'p_test_data' not in p_par:
+            p_par['p_test_data'] = 0.3
+
+        if 'p_batch_size' not in p_par:
+            p_par['p_batch_size'] = 100
+
+        if 'p_seed_buffer' not in p_par:
+            p_par['p_seed_buffer'] = 1
+
+        if 'p_learning_rate' not in p_par:
+            p_par['p_learning_rate'] = 3e-4
+        
+        if 'p_hidden_size' not in p_par:
+            raise ParamError("p_hidden_size is not defined.")
         try:
-            if len(self._parameters['activation_fct']) != self._parameters['num_hidden_layers']:
+            if len(p_par['p_hidden_size']) != p_par['p_num_hidden_layers']:
+                raise ParamError("length of p_hidden_size list must be equal to p_num_hidden_layers or an integer.")
+        except:
+            p_par['p_hidden_size'] = [int(p_par['p_hidden_size'])] * int(p_par['p_num_hidden_layers'])
+        
+        if 'p_activation_fct' not in p_par:
+            raise ParamError("p_activation_fct is not defined.")
+        try:
+            if len(p_par['p_activation_fct']) != p_par['p_num_hidden_layers']:
                 raise ParamError("length of p_activation_fct list must be equal to p_num_hidden_layers or a single activation function.")
         except:
-            if isinstance(self._parameters['activation_fct'], list):
-                raise ParamError("length of activation_fct list must be equal to num_hidden_layers or a single activation function.")
+            if isinstance(p_par['p_activation_fct'], list):
+                raise ParamError("length of p_activation_fct list must be equal to p_num_hidden_layers or a single activation function.")
             else:
-                self._parameters['activation_fct'] = [self._parameters['activation_fct']] * int(self._parameters['num_hidden_layers'])
+                p_par['p_activation_fct'] = [p_par['p_activation_fct']] * int(p_par['p_num_hidden_layers'])
         
-        if 'weight_bias_init' not in _param:
-            self._parameters['weight_bias_init'] = True
-        else:
-            self._parameters['weight_bias_init'] = _param['weight_bias_init']
+        if 'p_weight_bias_init' not in p_par:
+            p_par['p_weight_bias_init'] = True
         
-        if self._parameters['weight_bias_init']:
-            if 'weight_init' not in _param:
-                self._parameters['weight_init'] = torch.nn.init.orthogonal_
-            else:
-                self._parameters['weight_init'] = _param['weight_init']
+        if p_par['p_weight_bias_init']:
+            if 'p_weight_init' not in p_par:
+                p_par['p_weight_init'] = torch.nn.init.orthogonal_
             
-            if 'bias_init' not in _param:
-                self._parameters['bias_init'] = lambda x: torch.nn.init.constant_(x, 0)
-            else:
-                self._parameters['bias_init'] = _param['bias_init']
+            if 'p_bias_init' not in p_par:
+                p_par['p_bias_init'] = lambda x: torch.nn.init.constant_(x, 0)
             
-            if 'gain_init' not in _param:
-                self._parameters['gain_init'] = np.sqrt(2)
-            else:
-                self._parameters['gain_init'] = _param['gain_init']
+            if 'p_gain_init' not in p_par:
+                p_par['p_gain_init'] = np.sqrt(2)
         
-        return True
+        self._hyperparam_space.add_dim(HyperParam('p_input_size','Z'))
+        self._hyperparam_space.add_dim(HyperParam('p_output_size','Z'))
+        self._hyperparam_space.add_dim(HyperParam('p_update_rate','Z'))
+        self._hyperparam_space.add_dim(HyperParam('p_num_hidden_layers','Z'))
+        self._hyperparam_space.add_dim(HyperParam('p_hidden_size','Z'))
+        self._hyperparam_space.add_dim(HyperParam('p_activation_fct'))
+        self._hyperparam_space.add_dim(HyperParam('p_output_activation_fct'))
+        self._hyperparam_space.add_dim(HyperParam('p_optimizer'))
+        self._hyperparam_space.add_dim(HyperParam('p_loss_fct'))
+        self._hyperparam_space.add_dim(HyperParam('p_test_data'))
+        self._hyperparam_space.add_dim(HyperParam('p_batch_size'))
+        self._hyperparam_space.add_dim(HyperParam('p_seed_buffer'))
+        self._hyperparam_space.add_dim(HyperParam('p_learning_rate'))
+        self._hyperparam_space.add_dim(HyperParam('p_weight_bias_init'))
+        self._hyperparam_space.add_dim(HyperParam('p_weight_init'))
+        self._hyperparam_space.add_dim(HyperParam('p_bias_init'))
+        self._hyperparam_space.add_dim(HyperParam('p_gain_init'))
+        self._hyperparam_tuple = HyperParamTuple(self._hyperparam_space)
+        
+        ids_ = self.get_hyperparam().get_dim_ids()
+        self.get_hyperparam().set_value(ids_[0], p_input_size)
+        self.get_hyperparam().set_value(ids_[1], p_output_size)
+        self.get_hyperparam().set_value(ids_[2], p_par['p_update_rate'])
+        self.get_hyperparam().set_value(ids_[3], p_par['p_num_hidden_layers'])
+        self.get_hyperparam().set_value(ids_[4], p_par['p_hidden_size'])
+        self.get_hyperparam().set_value(ids_[5], p_par['p_activation_fct'])
+        self.get_hyperparam().set_value(ids_[6], p_par['p_output_activation_fct'])
+        self.get_hyperparam().set_value(ids_[7], p_par['p_optimizer'])
+        self.get_hyperparam().set_value(ids_[8], p_par['p_loss_fct'])
+        self.get_hyperparam().set_value(ids_[9], p_par['p_test_data'])
+        self.get_hyperparam().set_value(ids_[10], p_par['p_batch_size'])
+        self.get_hyperparam().set_value(ids_[11], p_par['p_seed_buffer'])
+        self.get_hyperparam().set_value(ids_[12], p_par['p_learning_rate'])
+        self.get_hyperparam().set_value(ids_[13], p_par['p_weight_bias_init'])
+        self.get_hyperparam().set_value(ids_[14], p_par['p_weight_init'])
+        self.get_hyperparam().set_value(ids_[15], p_par['p_bias_init'])
+        self.get_hyperparam().set_value(ids_[16], p_par['p_gain_init'])
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -334,7 +375,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         model_act_output  = self.output_preproc(p_act_output)
         model_pred_output = self.output_preproc(p_pred_output)
 
-        return self._parameters['loss_fct'](model_act_output, model_pred_output)
+        return self._loss_fct(model_act_output, model_pred_output)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -367,10 +408,11 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
         model_input   = self.input_preproc(p_input)
         model_output  = self.output_preproc(p_output)
+        ids_          = self._hyperparam_tuple.get_dim_ids()
 
         self._add_buffer(PyTorchIOElement(model_input, model_output))
 
-        if ( not self._buffer.is_full() ) and ( self._buffer.get_internal_counter()%self._parameters['update_rate'] != 0 ):
+        if ( not self._buffer.is_full() ) and ( self._buffer.get_internal_counter()%self.get_hyperparam().get_value(ids_[2]) != 0 ):
             return False
 
         trainer, _  = self._buffer.sampling()
@@ -410,5 +452,6 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
         BatchSize   = p_input.shape[0]
         output      = self._sl_model(p_input)   
-        output      = output.reshape(BatchSize, int(self._parameters['output_size']))
+        ids_        = self.get_hyperparam().get_dim_ids()
+        output      = output.reshape(BatchSize, int(self.get_hyperparam().get_value(ids_[1])))
         return output

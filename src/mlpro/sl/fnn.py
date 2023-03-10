@@ -8,10 +8,11 @@
 ## -- 2023-03-01  0.0.0     SY       Creation 
 ## -- 2023-03-01  0.1.0     SY       Initial design of FNN for MLPro v1.0.0
 ## -- 2023-03-07  1.0.0     SY       Release first version 
+## -- 2023-03-10  1.1.0     SY       Combining _hyperparameters_check and _init_hyperparam
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-07)
+Ver. 1.1.0 (2023-03-10)
 
 This module provides model classes of feedforward neural networks for supervised learning tasks. 
 """
@@ -93,7 +94,8 @@ class FNN (SLAdaptiveFunction):
             Predicted output by the SL model.
         """
         
-        return self._parameters['loss_fct'](p_act_output.get_values(), p_pred_output.get_values())
+        ids_ = self.get_hyperparam().get_dim_ids()
+        return self.get_hyperparam().get_value(ids_[8])(p_act_output.get_values(), p_pred_output.get_values())
 
 
 
@@ -110,63 +112,75 @@ class MLP (FNN):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _hyperparameters_check(self) -> dict:
+    def _init_hyperparam(self, **p_par): 
         """
-        A method to check the hyperparameters related to the MLP model.
+        A method to deal with the hyperparameters related to the MLP model.
 
         Hyperparameters
         ----------
-        num_hidden_layers :
+        p_update_rate :
+            update rate.
+        p_num_hidden_layers :
             number of hidden layers.
-        hidden_size :
+        p_hidden_size :
             number of hidden neurons.
-        activation_fct :
+        p_activation_fct :
             activation function.
-        output_activation_fct :
+        p_output_activation_fct :
             extra activation function for the output layer.
-        optimizer :
+        p_optimizer :
             optimizer.
-        loss_fct :
+        p_loss_fct :
             loss function.
-        
-        Returns
-        ----------
-        dict
-            A dictionary includes the name of the hyperparameters and their values.
         """
-
-        _param = {}
-
-        hp = self.get_hyperparam()
-        for idx in hp.get_dim_ids():
-            par_name = hp.get_related_set().get_dim(idx).get_name_short()
-            par_val  = hp.get_value(idx)
-            _param[par_name] = par_val
-
-        if ( 'input_size' not in _param ) or ( 'output_size' not in _param ):
+        
+        try:
+            p_input_size = self._input_space.get_num_dim()
+            p_output_size = self._output_space.get_num_dim()
+        except:
             raise ParamError('Input size and/or output size of the network are not defined.')
         
-        if 'update_rate' not in _param:
-            _param['update_rate'] = 1
-        elif _param.get('update_rate') < 1:
-            raise ParamError("update_rate must be equal or higher than 1.")
-
-        if 'num_hidden_layers' not in _param:
-            raise ParamError("num_hidden_layers is not defined.")
+        if 'p_update_rate' not in p_par:
+            _param['p_update_rate'] = 1
+        elif _param.get('p_update_rate') < 1:
+            raise ParamError("p_update_rate must be equal or higher than 1.")
+    
+        if 'p_num_hidden_layers' not in p_par:
+            raise ParamError("p_num_hidden_layers is not defined.")
         
-        if 'hidden_size' not in _param:
-            raise ParamError("hidden_size is not defined.") 
+        if 'p_hidden_size' not in p_par:
+            raise ParamError("p_hidden_size is not defined.") 
         
-        if 'activation_fct' not in _param:
-            raise ParamError("activation_fct is not defined.")
-
-        if 'output_activation_fct' not in _param:
-            _param['output_activation_fct'] = None
+        if 'p_activation_fct' not in p_par:
+            raise ParamError("p_activation_fct is not defined.")
+    
+        if 'p_output_activation_fct' not in p_par:
+            p_par['p_output_activation_fct'] = None
         
-        if 'optimizer' not in _param:
-            raise ParamError("optimizer is not defined.")
+        if 'p_optimizer' not in p_par:
+            raise ParamError("p_optimizer is not defined.")
         
-        if 'loss_fct' not in _param:
-            raise ParamError("loss_fct is not defined.")
+        if 'p_loss_fct' not in p_par:
+            raise ParamError("p_loss_fct is not defined.")
         
-        return _param
+        self._hyperparam_space.add_dim(HyperParam('p_input_size','Z'))
+        self._hyperparam_space.add_dim(HyperParam('p_output_size','Z'))
+        self._hyperparam_space.add_dim(HyperParam('p_update_rate','Z'))
+        self._hyperparam_space.add_dim(HyperParam('p_num_hidden_layers','Z'))
+        self._hyperparam_space.add_dim(HyperParam('p_hidden_size','Z'))
+        self._hyperparam_space.add_dim(HyperParam('p_activation_fct'))
+        self._hyperparam_space.add_dim(HyperParam('p_output_activation_fct'))
+        self._hyperparam_space.add_dim(HyperParam('p_optimizer'))
+        self._hyperparam_space.add_dim(HyperParam('p_loss_fct'))
+        self._hyperparam_tuple = HyperParamTuple(self._hyperparam_space)
+        
+        ids_ = self.get_hyperparam().get_dim_ids()
+        self.get_hyperparam().set_value(ids_[0], p_input_size)
+        self.get_hyperparam().set_value(ids_[1], p_output_size)
+        self.get_hyperparam().set_value(ids_[2], p_par['p_update_rate'])
+        self.get_hyperparam().set_value(ids_[3], p_par['p_num_hidden_layers'])
+        self.get_hyperparam().set_value(ids_[4], p_par['p_hidden_size'])
+        self.get_hyperparam().set_value(ids_[5], p_par['p_activation_fct'])
+        self.get_hyperparam().set_value(ids_[6], p_par['p_output_activation_fct'])
+        self.get_hyperparam().set_value(ids_[7], p_par['p_optimizer'])
+        self.get_hyperparam().set_value(ids_[8], p_par['p_loss_fct'])
