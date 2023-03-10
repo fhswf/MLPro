@@ -61,10 +61,11 @@
 ## --                                - Method run_cycle(): scenario is now saved after training
 ## --                                - New methods get_training_path()
 ## -- 2023-03-09  2.1.1     DA       Class TrainingResults: removed parameter p_path
+## -- 2023-03-10  2.1.2     DA       Class AdaptiveFunction: refactoring constructor parameters
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.1 (2023-03-09)
+Ver. 2.1.2 (2023-03-10)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -1277,16 +1278,27 @@ class AdaptiveFunction (Function, Model):
         Output space of function
     p_output_elem_cls 
         Output element class (compatible to/inherited from class Element)
-    p_buffer_size : int
-        Initial size of internal data buffer. Default = 0 (no buffering).
     p_ada : bool
-        Boolean switch for adaptivity. Default = True.
+        Boolean switch for adaptivitiy. Default = True.
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
+    p_name : str
+        Optional name of the model. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_autorun : int
+        On value C_AUTORUN_RUN method run() is called imediately during instantiation.
+        On vaule C_AUTORUN_LOOP method run_loop() is called.
+        Value C_AUTORUN_NONE (default) causes an object instantiation without starting further
+        actions.    
+    p_class_shared
+        Optional class for a shared object (class Shared or a child class of it)
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_kwargs : Dict
-        Further model specific parameters (to be specified in child class).
+    p_par : Dict
+        Further model specific hyperparameters (to be defined in chhild class).
     """
 
     C_TYPE = 'Adaptive Function'
@@ -1294,23 +1306,31 @@ class AdaptiveFunction (Function, Model):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_input_space: MSpace,
-                  p_output_space:MSpace,
+                  p_input_space : MSpace,
+                  p_output_space : MSpace,
                   p_output_elem_cls=Element,
-                  p_buffer_size=0,
-                  p_ada:bool=True,
-                  p_visualize:bool=False,
-                  p_logging=Log.C_LOG_ALL,
-                  **p_kwargs ):
+                  p_ada : bool = True, 
+                  p_buffer_size : int = 0, 
+                  p_name: str = None, 
+                  p_range_max: int = Async.C_RANGE_PROCESS, 
+                  p_autorun = Task.C_AUTORUN_NONE, 
+                  p_class_shared=None, 
+                  p_visualize: bool = False, 
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_par ):
 
         Function.__init__( self, 
-                           p_input_space=p_input_space, 
-                           p_output_space=p_output_space,
-                           p_output_elem_cls=p_output_elem_cls )
+                           p_input_space = p_input_space, 
+                           p_output_space = p_output_space,
+                           p_output_elem_cls = p_output_elem_cls )
 
         Model.__init__( self, 
-                        p_buffer_size=p_buffer_size, 
-                        p_ada=p_ada, 
-                        p_visualize=p_visualize,
-                        p_logging=p_logging, 
-                        **p_kwargs )
+                        p_ada = p_ada, 
+                        p_buffer_size = p_buffer_size, 
+                        p_name = p_name,
+                        p_range_max = p_range_max,
+                        p_autorun = p_autorun,
+                        p_class_shared = p_class_shared,
+                        p_visualize = p_visualize,
+                        p_logging = p_logging, 
+                        **p_par )
