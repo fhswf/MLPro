@@ -141,8 +141,8 @@ class MLP (FNN):
             raise ParamError('Input size and/or output size of the network are not defined.')
         
         if 'p_update_rate' not in p_par:
-            _param['p_update_rate'] = 1
-        elif _param.get('p_update_rate') < 1:
+            p_par['p_update_rate'] = 1
+        elif p_par.get('p_update_rate') < 1:
             raise ParamError("p_update_rate must be equal or higher than 1.")
     
         if 'p_num_hidden_layers' not in p_par:

@@ -52,10 +52,11 @@
 ## -- 2023-01-02  1.6.4     SY       Add multi-processing on MultiAgent
 ## -- 2023-02-04  1.6.5     SY       Temporarily remove multi-processing on MultiAgent
 ## -- 2023-02-21  1.6.6     DA       Class MultiAgent: removed methods load(), save()
+## -- 2023-03-10  1.6.7     SY       Class Agent and RLScenarioMBInt : update logging
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.6 (2023-02-21) 
+Ver. 1.6.7 (2023-03-10) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -398,8 +399,8 @@ class RLScenarioMBInt(RLScenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup_ext(self, p_env: EnvBase, p_policy: Policy):
-        self._model = Agent(p_policy=p_policy)
+    def setup_ext(self, p_env: EnvBase, p_policy: Policy, p_logging: Log):
+        self._model = Agent(p_policy=p_policy, p_logging=p_logging)
         self._agent = self._model
         self._env = p_env
 
@@ -707,7 +708,9 @@ class Agent (Policy):
     def _adapt_policy_by_model(self):
         self.log(self.C_LOG_TYPE_I, 'Model-based policy training')
         training = RLTraining(**self._mb_training_param)
-        training.get_scenario().setup_ext(p_env=self._envmodel, p_policy=self._policy)
+        training.get_scenario().setup_ext(p_env=self._envmodel,
+                                          p_policy=self._policy,
+                                          p_logging=self.get_log_level())
 
         # The RLTraining need to be adjusted again due to setup_ext()
         # And also due to model_train.py line 595 only executed on RLTraining init
