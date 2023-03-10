@@ -21,10 +21,16 @@
 ## -- 2023-02-04  1.5.0     DA       United classes SystemBase, System to new class System
 ## -- 2023-02-13  1.5.1     MRD      Simplify State Space and Action Space generation
 ## -- 2023-02-20  1.6.0     DA       Class System: new parent class LoadSave to enable persistence
+## -- 2023-02-23  1.6.1     MRD      Add the posibility to customize the action between MLPro and MuJoCo
+## -- 2023-03-04  1.7.0     DA       Class System: redefinition of methods load(), _save(), init_plot(),
+## --                                update_plot()
+## -- 2023-03-07  1.7.1     SY       Remove TransferFunction from bf.systems
+## -- 2023-03-07  1.7.2     DA       Bugfix in method System._save()
+## -- 2023-03-08  1.7.3     MRD      Auto rename System, set latency from MuJoCo xml file
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2023-02-20)
+Ver. 1.7.3 (2023-03-08)
 
 This module provides models and templates for state based systems.
 """
@@ -33,7 +39,8 @@ This module provides models and templates for state based systems.
 from time import sleep
 from mlpro.bf.various import TStamp, ScientificObject, PersonalisedStamp
 from mlpro.bf.data import *
-from mlpro.bf.plot import Plottable
+from mlpro.bf.plot import Plottable, PlotSettings
+from matplotlib.figure import Figure
 from mlpro.bf.ops import Mode
 from mlpro.bf.math import *
 
@@ -733,6 +740,8 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
 
     C_LATENCY       = timedelta(0, 1, 0)  # Default latency 1s
 
+    C_PLOT_ACTIVE   = True
+
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
                   p_mode = Mode.C_MODE_SIM,
@@ -741,6 +750,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
                   p_fct_success : FctSuccess = None,
                   p_fct_broken : FctBroken = None,
                   p_mujoco_file = None,
+                  p_name = None,
                   p_frame_skip : int = 1,
                   p_state_mapping = None,
                   p_action_mapping = None,
@@ -760,30 +770,51 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         self._controllers           = []
         self._mapping_actions       = {}
         self._mapping_states        = {}
+            
+        if p_mujoco_file is not None:
+            from mlpro.wrappers.mujoco import MujocoHandler
+            
+            if p_name is not None:
+                self.C_NAME = p_name
+            else:
+                self.C_NAME = p_mujoco_file.split("/")[-1][:p_mujoco_file.split("/")[-1].find(".")]
+                
+            self._mujoco_file    = p_mujoco_file
+            self._frame_skip     = p_frame_skip
+            self._state_mapping  = p_state_mapping
+            self._action_mapping = p_action_mapping
+            self._camera_conf    = p_camera_conf
+
+            self._mujoco_handler = MujocoHandler(
+                                        p_mujoco_file=self._mujoco_file, 
+                                        p_frame_skip=self._frame_skip,
+                                        p_state_mapping=self._state_mapping,
+                                        p_action_mapping=self._action_mapping,
+                                        p_camera_conf=self._camera_conf,
+                                        p_visualize=p_visualize,
+                                        p_logging=p_logging)
+            
+            self._state_space, self._action_space = self._mujoco_handler.setup_spaces()
+            # Get Latency
+            mujoco_latency = self._mujoco_handler.get_latency()
+            
+            if mujoco_latency is not None:
+                self.set_latency(timedelta(0,mujoco_latency,0))
+            else:
+                if p_latency is not None:
+                    self.set_latency(p_latency)
+                else:
+                    raise ImplementationError('Please provide p_latency or set the timestep on the MuJoCo xml file!')
+        else:
+            self._mujoco_file = None
+            self._state_space, self._action_space = self.setup_spaces()
+            self.set_latency(p_latency)
 
         FctSTrans.__init__(self, p_logging=p_logging)
         FctSuccess.__init__(self, p_logging=p_logging)
         FctBroken.__init__(self, p_logging=p_logging)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
-
-        if p_mujoco_file is not None:
-            from mlpro.wrappers.mujoco import MujocoHandler
-
-            self._mujoco_handler = MujocoHandler(
-                                        p_mujoco_file=p_mujoco_file, 
-                                        p_frame_skip=p_frame_skip,
-                                        p_state_mapping=p_state_mapping,
-                                        p_action_mapping=p_action_mapping,
-                                        p_camera_conf=p_camera_conf,
-                                        p_visualize=p_visualize,
-                                        p_logging=p_logging)
-            
-            self._state_space, self._action_space = self._mujoco_handler.setup_spaces()
-            self.set_latency(timedelta(0,0.05,0))
-        else:
-            self._state_space, self._action_space = self.setup_spaces()
-            self.set_latency(p_latency)
 
 
  ## -------------------------------------------------------------------------------------------------
@@ -802,6 +833,52 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         """
 
         return None, None
+
+
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def load(p_path, p_filename):
+        system = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
+
+        if system._mujoco_file is not None:
+            from mlpro.wrappers.mujoco import MujocoHandler
+
+            system._mujoco_handler = MujocoHandler(
+                                        p_mujoco_file=system._mujoco_file, 
+                                        p_frame_skip=system._frame_skip,
+                                        p_state_mapping=system._state_mapping,
+                                        p_action_mapping=system._action_mapping,
+                                        p_camera_conf=system._camera_conf,
+                                        p_visualize=system.get_visualization(),
+                                        p_logging=system.get_log_level() )
+            
+            system._mujoco_handler._system_state_space = system.get_state_space()
+            system._mujoco_handler._system_action_space = system.get_action_space()
+
+        return system
+
+
+## -------------------------------------------------------------------------------------------------
+    def _save(self, p_path, p_filename) -> bool:
+
+        if self._mujoco_handler is not None:
+            self._mujoco_handler = None
+
+        pkl.dump( obj=self, 
+                  file=open(p_path + os.sep + p_filename, "wb"),
+                  protocol=pkl.HIGHEST_PROTOCOL )
+
+        if self._mujoco_file is not None:
+            from mlpro.wrappers.mujoco import MujocoHandler
+
+            self._mujoco_handler = MujocoHandler(
+                                        p_mujoco_file=self._mujoco_file, 
+                                        p_frame_skip=self._frame_skip,
+                                        p_state_mapping=self._state_mapping,
+                                        p_action_mapping=self._action_mapping,
+                                        p_camera_conf=self._camera_conf,
+                                        p_visualize=self.get_visualization(),
+                                        p_logging=self.get_log_level() )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -883,12 +960,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
 
         # Put Mujoco here
         if self._mujoco_handler is not None:
-            current_state = self.get_state()
-            if callable(getattr(self, '_obs_to_mujoco', None)):
-                current_state = self._obs_to_mujoco(current_state)
-
-            ob = self._mujoco_handler._reset_simulation(current_state)
-            
+            ob = self._mujoco_handler._reset_simulation()
             self._state = State(self.get_state_space())
             self._state.set_values(ob)
 
@@ -1121,7 +1193,9 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         if self._fct_strans is not None:
             return self._fct_strans.simulate_reaction(p_state, p_action)
         elif self._mujoco_handler is not None:
-            self._mujoco_handler._step_simulation(p_action)
+            # Check if there is changing in action
+            action = self.action_to_mujoco(p_action)
+            self._mujoco_handler._step_simulation(action)
 
             # Delay because of the simulation
             sleep(self.get_latency().total_seconds())
@@ -1143,6 +1217,35 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         """
         
         raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def action_to_mujoco(self, p_mlpro_action):
+        """
+        Action conversion method from converting MLPro action to MuJoCo action.
+        """
+        action = p_mlpro_action.get_sorted_values()
+        return self._action_to_mujoco(action)
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def _action_to_mujoco(self, p_mlpro_action):
+        """
+        Custom method for to do transition between MuJoCo state and MLPro state. Implement this method
+        if the MLPro state has different dimension from MuJoCo state.
+
+        Parameters
+        ----------
+        p_mujoco_state : Numpy
+            MLPro action.
+
+        Returns
+        -------
+        Numpy
+            Modified MLPro action
+        """
+        
+        return p_mlpro_action
 
 
 ## -------------------------------------------------------------------------------------------------    
@@ -1316,290 +1419,19 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
     def get_broken(self) -> bool:
         if self._state is None: return False
         return self._state.get_broken()
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-
-class TransferFunction(ScientificObject, Log, PersonalisedStamp):
-    """
-    This class serves as a base class of transfer functions, which provides the main attributes of
-    a transfer function. By default, there are several ready-to-use transfer function types
-    available. If none of them suits to your transfer function, then you can also select a 'custom'
-    type of transfer function and design your own function. Another possibility is to use a function
-    approximation functionality provided by MLPro (coming soon).
     
-    Parameters
-    ----------
-    p_name : str
-        name of the transfer function.
-    p_id : int
-        unique id of the transfer function. Default: None.
-    p_type : int
-        type of the transfer function. Default: None.
-    p_unit_in : str
-        unit of the transfer function's input. Default: None.
-    p_unit_out : str
-        unit of the transfer function's output. Default: None.
-    p_dt : float
-        delta time. Default: 0.01.
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
-    p_args : dict
-        extra parameter for each specific transfer function.
-        
-    Attributes
-    ----------
-    C_TYPE : str
-        type of the base class. Default: 'TransferFunction'.
-    C_NAME : str
-        name of the transfer function. Default: ''.
-    C_TRF_FUNC_LINEAR : int
-        linear function. Default: 0.
-    C_TRF_FUNC_CUSTOM : int
-        custom transfer function. Default: 1.
-    C_TRF_FUNC_APPROX : int
-        function approximation. Default: 2.
-    """
 
-    C_TYPE              = 'TransferFunction'
-    C_NAME              = ''
-    C_TRF_FUNC_LINEAR   = 0
-    C_TRF_FUNC_CUSTOM   = 1
-    C_TRF_FUNC_APPROX   = 2
+## -------------------------------------------------------------------------------------------------
+    def init_plot( self, 
+                   p_figure:Figure = None,
+                   p_plot_settings : PlotSettings = None, 
+                   **p_kwargs):
+        
+        if self._mujoco_handler is not None: return
+        super().init_plot(p_figure=p_figure, p_plot_settings=p_plot_settings, **p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_name:str,
-                 p_id:int=None,
-                 p_type:int=None,
-                 p_unit_in:str=None,
-                 p_unit_out:str=None,
-                 p_dt:float=0.01,
-                 p_logging=Log.C_LOG_ALL,
-                 **p_args) -> None:
-
-        self.C_NAME = p_name
-        self._set_type(p_type)
-        self.dt = p_dt
-        self._unit_in = p_unit_in
-        self._unit_out = p_unit_out
-
-        Log.__init__(self, p_logging=p_logging)
-        PersonalisedStamp.__init__(self, p_name, p_id)
-        
-        if self.get_type() is not None:
-            self._set_function_parameters(p_args)
-        else:
-            raise NotImplementedError('Please define p_type!')
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_units(self):
-        """
-        This method provides a functionality to get the SI units of the input and output data.
-
-        Returns
-        -------
-        self._unit_in : str
-            the SI unit of the input data.
-        self._unit_out : str
-            the SI unit of the output data.
-        """
-        return self._unit_in, self._unit_out
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_type(self, p_type:int):
-        """
-        This method provides a functionality to set the type of the transfer function.
-
-        Parameters
-        ----------
-        p_type : int
-            the type of the transfer function.
-        """
-        self._type = p_type
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_type(self) -> int:
-        """
-        This method provides a functionality to get the type of the transfer function.
-
-        Returns
-        -------
-        int
-            the type of the transfer function.
-        """
-        return self._type
-
-
-## -------------------------------------------------------------------------------------------------
-    def __call__(self, p_input, p_range=None):
-        """
-        This method provides a functionality to call the transfer function by giving an input value.
-
-        Parameters
-        ----------
-        p_input :
-            input value.
-        p_range :
-            range of the calculation. None means 0. Default: None.
-
-        Returns
-        -------
-        output :
-            output value.
-        """
-        if self.get_type() == self.C_TRF_FUNC_LINEAR:
-            output = self._linear(p_input, p_range)
-        
-        elif self.get_type() == self.C_TRF_FUNC_CUSTOM:
-            output = self._custom_function(p_input, p_range)
-        
-        elif self.get_type() == self.C_TRF_FUNC_APPROX:
-            output = self._function_approximation(p_input, p_range)
-        
-        return output
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_function_parameters(self, p_args:dict) -> bool:
-        """
-        This method provides a functionality to set the parameters of the transfer function.
-
-        Parameters
-        ----------
-        p_args : dict
-            set of parameters of the transfer function.
-
-        Returns
-        -------
-        bool
-            true means no parameters are missing.
-        """
-        if self.get_type() == self.C_TRF_FUNC_LINEAR:
-            try:
-                self.m = p_args['m']
-            except:
-                raise NotImplementedError('Parameter m for linear function is missing.')
-            try:
-                self.b = p_args['b']
-            except:
-                raise NotImplementedError('Parameter b for linear function is missing.')
-        
-        elif self.get_type() == self.C_TRF_FUNC_CUSTOM:
-            for key, val in p_args.items():
-                exec(key + '=val')
-        
-        elif self.get_type() == self.C_TRF_FUNC_APPROX:
-            raise NotImplementedError('Function approximation is not yet available.')
-                
-        return True
-
-
-## -------------------------------------------------------------------------------------------------
-    def _linear(self, p_input:float, p_range=None) -> float:
-        """
-        This method provides a functionality for linear transfer function.
-        
-        Formula --> y = mx+b
-        y = output
-        m = slope
-        x = input
-        b = y-intercept
-
-        Parameters
-        ----------
-        p_input : float
-            input value.
-        p_range :
-            range of the calculation. None means 0. Default: None.
-
-        Returns
-        -------
-        float
-            output value.
-        """
-        if p_range is None:
-            return self.m * p_input + self.b
-        else:
-            points = int(p_range/self.dt)
-            output = 0
-            for x in range(points+1):
-                current_input = p_input + x * self.dt
-                output += self.m * current_input + self.b
-            return output
-
-
-## -------------------------------------------------------------------------------------------------
-    def _custom_function(self, p_input, p_range=None):
-        """
-        This function represents the template to create a custom function and must be redefined.
-
-        Parameters
-        ----------
-        p_input :
-            input value.
-        p_range :
-            range of the calculation. None means 0. Default: None.
-
-        Returns
-        -------
-        float
-            output value.
-        """  
-        if p_range is None:
-            raise NotImplementedError('This custom function is missing.')
-        else:
-            raise NotImplementedError('This custom function is missing.')
-        
-
-## -------------------------------------------------------------------------------------------------
-    def plot(self, p_x_init:float, p_x_end:float):
-        """
-        This methods provides functionality to plot the defined function within a range.
-
-        Parameters
-        ----------
-        p_x_init : float
-            The initial value of the input (x-axis).
-        p_x_end : float
-            The end value of the input (x-axis).
-        """
-        x_value = []
-        output = []
-        p_range = p_x_end-p_x_init
-        points = int(p_range/self.dt)
-
-        for x in range(points+1):
-            current_input = p_x_init + x * self.dt
-            x_value.append(current_input)
-            output.append(self(current_input, p_range=None))
-        
-        fig, ax = plt.subplots()
-        ax.plot(x_value, output, linewidth=2.0)
-        plt.show()
-
-
-## -------------------------------------------------------------------------------------------------
-    def _function_approximation(self, p_input, p_range=None):
-        """
-        The function approximation is not yet ready (coming soon).
-
-        Parameters
-        ----------
-        p_input : TYPE
-            DESCRIPTION.
-
-        Returns
-        -------
-        bool
-            DESCRIPTION.
-        """
-        raise NotImplementedError('Function approximation is not yet available in this version.')
+    def update_plot(self, **p_kwargs):
+        if self._mujoco_handler is not None: return
+        super().update_plot(**p_kwargs)

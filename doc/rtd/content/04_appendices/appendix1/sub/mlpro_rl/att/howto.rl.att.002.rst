@@ -1,8 +1,8 @@
 .. _Howto RL ATT 002:
-Howto RL-ATT-002: SB3 Policy with Stagnation Detection
-======================================================
+Howto RL-ATT-002: Train and Reload Single Agent using Stagnation Detection Cartpole Discrete (MuJoCo)
+===================================================================================
 
-.. automodule:: mlpro.rl.examples.howto_rl_att_002_train_wrapped_sb3_policy_with_stagnation_detection
+.. automodule:: mlpro.rl.examples.howto_rl_att_002_train_and_reload_single_agent_mujoco_sd_cartpole_discrete
 
 
 
@@ -10,60 +10,42 @@ Howto RL-ATT-002: SB3 Policy with Stagnation Detection
 
 
 Please install the following packages to run this examples properly:
-    - `Pytorch <https://pypi.org/project/torch/>`_
-    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
     - `OpenAI Gym <https://pypi.org/project/gym/>`_
+    - `Stable-Baselines3 <https://pypi.org/project/stable-baselines3/>`_
 
 
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_att_002_train_wrapped_sb3_policy_with_stagnation_detection.py
+.. literalinclude:: ../../../../../../../../src/mlpro/rl/examples/howto_rl_att_002_train_and_reload_single_agent_mujoco_sd_cartpole_discrete.py
 	:language: python
 
 
 
 **Results**
 
+The MuJoCo Cartpole environment window appears during training and shows an improved control behavior after a while. After the training, 
+the related scenario is reloaded and run for a further episode to demonstrate the final control behavior.
 
-.. image:: images/Cartpole.png
+The training itself is terminated due to automatic stagnation detection. The chart below shows the training progress and the 
+ending at the point of maximum possible reward:
 
-After the environment is initialised, the training will run for the specified amount of limits. 
-When stagnation is detected, the training will be stopped.
+.. image:: images/howto_rl_att_002_evaluation.png
+    :scale: 80%
 
-.. code-block:: bash
 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training Results of run 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Scenario          : RL-Scenario Matrix 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Model             : Agent Smith 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Start time stamp  : YYYY-MM-DD HH:MM:SS.SSSSSS 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- End time stamp    : YYYY-MM-DD HH:MM:SS.SSSSSS 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Duration          : HH:MM:SS.SSSSSS 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Start cycle id    : 0 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- End cycle id      :  
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training cycles   :  
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Evaluation cycles :  
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Adaptations       :  
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- High score        :  
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Results stored in : "C:\Users\%username%\YYYY-MM-DD  HH:MM:SS Training RL" 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Training Episodes : 120 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: -- Evaluations       : 25 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  RL: ------------------------------------------------------------------------------ 
-    
 After termination the local result folder contains the training result files:
     - agent_actions.csv
     - env_rewards.csv
     - env_states.csv
     - evaluation.csv
     - summary.csv
-    - trained model.pkl
+    - scenario
 
 
 
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`RL Scenario and Training` <target_api_rl_run_train>
+- :ref:`MLPro-RL: Training <target_training_RL>`
+- :ref:`Howto RL-AGENT-021: Train and Reload Single Agent (MuJoCo) <Howto Agent RL 021>`
+- :ref:`API Reference <target_api_rl_run_train>`

@@ -24,5 +24,5 @@ The following are the functionalities of the timer:
     * ``finish_lap`` : to end the current lap
 
 **Cross Reference**
-    + :ref:`API Reference <target_api_bf_various>`
     + :ref:`Howto BF-002: Timer <Howto BF 002>`
+    + :ref:`API Reference <target_api_bf_various>`

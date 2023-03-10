@@ -1,5 +1,5 @@
-.. _Howto HT RL 002:
-Howto RL-HT-002: Optuna
+.. _Howto RL HT 002:
+Howto RL-HT-002: Hyperparameter Tuning using Optuna
 ===================================================
 
 .. automodule:: mlpro.bf.examples.howto_rl_ht_002_optuna
@@ -7,7 +7,6 @@ Howto RL-HT-002: Optuna
 
 
 **Prerequisites**
-
 
 Please install the following packages to run this examples properly:
     - `Optuna <https://pypi.org/project/optuna/>`_
@@ -113,6 +112,10 @@ Please install the following packages to run this examples properly:
     2023-02-12  16:50:56.065960  I  Wrapper "Optuna": ------------------------------------------------------------------------------
 
 
+
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Machine Learning <target_api_bf_ml>` :ref:`RL Scenario and Training` <target_api_rl_run_train>
+    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    + :ref:`API Reference - RL Environments <target_api_rl_env>`
+    + :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`
+    + :ref:`API Reference - Machine Learning <target_api_bf_ml>`

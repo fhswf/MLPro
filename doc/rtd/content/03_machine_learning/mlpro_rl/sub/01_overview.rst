@@ -28,16 +28,25 @@ The structure of MLPro-RL can be found in the following figure.
   
   This figure is taken from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
-Additionally, you can find the more comprehensive explanations of MLPro-RL including a sample application on controlling a UR5 Robot in this paper:
-`MLPro 1.0 - Standardized Reinforcement Learning and Game Theory in Python <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 If you are interested to utilize MLPro-RL, you can easily access the RL modules, as follows:
 
     .. code-block:: python
 
         from mlpro.rl import *
 
+Additionally, you can find the more comprehensive explanations of MLPro-RL including a sample application on controlling a UR5 Robot in this paper:
+`MLPro 1.0 - Standardized Reinforcement Learning and Game Theory in Python <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
-MLPro team recommends to visit our :ref:`getting started <target_getstarted_RL>` page to directly learn MLPro-RL in a practical way.
-You can also check out numerous ready to run examples on our :ref:`how to files <target_appendix1_RL>`
-or on our `MLPro GitHub <https://github.com/fhswf/MLPro/tree/main/src/mlpro/rl/examples>`_.
-Moreover, a technical API documentation can be found in :ref:`appendix 2 <target_appendix2_RL>`.
+
+**Learn more**
+
+  - :ref:`Getting started with MLPro-RL <target_getstarted_RL>`
+
+
+**Cross Reference**
+
+  - :ref:`Related Howtos <target_appendix1_RL>`
+  - :ref:`API Reference: MLPro-RL <target_api_rl>`
+  - :ref:`API Reference: MLPro-RL Pool of Objects <target_api_pool_rl>`
+  - `MLPro 1.0 Paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_
+  - `MLPro GitHub <https://github.com/fhswf/MLPro/tree/main/src/mlpro/rl/examples>`_

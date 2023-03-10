@@ -36,7 +36,8 @@ Depending on the number of planning horizon, but we believe that this reduces th
 
 **Cross Reference**
 
-    + :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`.
+    + :ref:`Howto RL-MB-002: MBRL with MPC on Grid World Environment <Howto MB RL 002>`
+    + :ref:`API Reference <target_pool_mpc>`
 
 **Citation**
 

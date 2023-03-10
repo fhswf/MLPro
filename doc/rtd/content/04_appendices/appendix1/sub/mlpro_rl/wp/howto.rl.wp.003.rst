@@ -60,6 +60,9 @@ By running the example code, the environment window appears and the runtime log 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Multi-Agent Connect4_Agents: Start vizualization for all agents... 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  I  RL-Scenario Connect Four V3: Process time 0:00:12 End of processing
 
+
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper PeetingZoo <Wrapper PettingZoo>`
+    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    + :ref:`API Reference - RL Environments <target_api_rl_env>`
+    + :ref:`API Reference - Wrapper PettingZoo <Wrapper PettingZoo>`

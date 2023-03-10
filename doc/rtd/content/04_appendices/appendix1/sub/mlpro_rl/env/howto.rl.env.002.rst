@@ -26,7 +26,8 @@ Executing the above script will ask the user to input the agent's action and the
 action shall be simulated.
 
 
-
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`RL Scenario and Training` <target_api_rl_run_train>
+    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    + :ref:`API Reference - RL Environments <target_api_rl_env>`
+    + :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`

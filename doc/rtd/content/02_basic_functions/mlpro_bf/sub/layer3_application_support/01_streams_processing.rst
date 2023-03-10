@@ -1,4 +1,4 @@
-.. _target_streams:
+.. _target_bf_streams:
 Stream Processing
 =================
 

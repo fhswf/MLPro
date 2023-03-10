@@ -6,9 +6,8 @@ Optuna
     :members:
     :undoc-members:
     :show-inheritance:
-   
 
 
-**Cross References**
+**Cross Reference**
 
-- :ref:`Howto BF-008: Hyperparameter Tuning using Optuna <Howto BF 008>`
+- :ref:`Howto RL HT 002: Hyperparameter Tuning using Optuna <Howto RL HT 002>`

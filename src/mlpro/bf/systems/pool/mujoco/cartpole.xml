@@ -1,0 +1,28 @@
+<mujoco>
+    <option timestep="0.05" gravity="0 0 -9.81" integrator="RK4">
+		<flag sensornoise="enable" energy="enable"/>
+	</option>
+    <default>
+        <geom contype='0' friction='1 0.1 0.1'/>
+    </default>
+
+    <include file="mlpro.xml"></include>
+    
+    <worldbody>
+
+        <body name="cart" pos="0 0 0.75">
+            <geom name="cart" type="box" size="0.4 0.2 0.2" rgba="0.1 0.1 1 1"/>
+            <joint name="slide" type="slide" axis="1 0 0"/>
+            <body name="pole" pos="0 0 1.2">
+                <geom name="pole" type="capsule" size="0.09 1.2" rgba="0.5 1 0.5 1"/>
+                <joint name="hinge" type="hinge" pos="0 0 -1.2" axis="0 1 0"/>
+            </body>
+        </body>
+    </worldbody>
+    <actuator>
+        <motor name="force" joint="slide" ctrllimited="true" ctrlrange="-50 50"/>
+    </actuator>
+    <visual>
+        <map fogstart="3" fogend="5" znear="0.05"/>
+    </visual>
+</mujoco>

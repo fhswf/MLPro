@@ -16,7 +16,7 @@ Please install the following packages to run this example properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_ui_001_reuse_of_interactive_2d_3d_input_space.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_ui_001_reuse_of_interactive_2d_3d_input_space.py
 	:language: python
 
 

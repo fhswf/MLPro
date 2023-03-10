@@ -2,4 +2,8 @@
 MLPro-SL - Supervised Learning
 ==============================
 
-Coming soon...
+.. toctree::
+   :maxdepth: 2
+   :glob:
+   
+   mlpro_sl/*

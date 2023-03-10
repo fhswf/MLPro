@@ -43,6 +43,9 @@ checker, we could confirm the success of the environment wrapping.
 There will be several more lines of action processing logs due to the nature of the environment checker.
 When there is no detected failure, the environment is successfully wrapped.
 
+
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Wrapper OpenAI Gym <Wrapper OpenAI Gym>`
+    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    + :ref:`API Reference - RL Environments <target_api_rl_env>`
+    + :ref:`API Reference - Wrapper OpenAI Gym <Wrapper OpenAI Gym>`

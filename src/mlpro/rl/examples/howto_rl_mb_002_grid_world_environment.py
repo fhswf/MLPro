@@ -13,18 +13,22 @@
 ## -- 2023-02-02  1.2.0     DA       Refactoring
 ## -- 2023-02-04  1.2.1     SY       Add multiprocessing functionality and refactoring
 ## -- 2023-02-10  1.2.2     SY       Switch multiprocessing to threading
+## -- 2023-03-07  2.0.0     SY       Update due to MLPro-SL
+## -- 2023-03-08  2.0.1     SY       Refactoring
+## -- 2023-03-10  2.0.2     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2023-02-10)
+Ver. 2.0.2 (2023-03-10)
 
-This module shows how to incorporate MPC in Model-Based RL on Grid World problem.
+This module shows how to incorporate MPC in Model-Based RL on Grid World problem as well as using
+PyTorch-based MLP network from MLPro-SL's pool of objects.
 
 You will learn:
     
 1) How to set up an own agent on Grid World problem
     
-2) How to set up model-based RL (MBRL) training
+2) How to set up model-based RL (MBRL) training using network from MLPro-SL's pool
     
 3) How to incorporate MPC into MBRL training
 
@@ -32,25 +36,35 @@ You will learn:
     
 """
 
+
+import torch
+import numpy as np
 from mlpro.bf.plot import DataPlotting
 from mlpro.bf.math import *
 from mlpro.rl import *
+from mlpro.rl.models import *
 from mlpro.rl.pool.envs.gridworld import *
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
+from mlpro.sl.pool.afct.fnn.pytorch.mlp import PyTorchMLP
 from pathlib import Path
 from mlpro.rl.pool.actionplanner.mpc import MPC
-from mlpro.rl.pool.envmodels.mlp_gridworld import MLPEnvModel
+from mlpro.rl.pool.envs.gridworld import *
 import mlpro.bf.mt as mt
+              
 
-
-
-
+            
+                
+                
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 
 # 1 Implement the random RL scenario
 class ScenarioGridWorld(RLScenario):
 
     C_NAME      = 'Grid World with Random Actions'
 
+
+## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
         self._env   = GridWorld(p_logging=p_logging,
@@ -64,6 +78,38 @@ class ScenarioGridWorld(RLScenario):
                                         p_buffer_size=1,
                                         p_ada=1,
                                         p_logging=p_logging)
+        
+        # Setup Adaptive Function
+        afct_strans = AFctSTrans(
+            PyTorchMLP,
+            p_state_space=self._env._state_space,
+            p_action_space=self._env._action_space,
+            p_threshold=0.1,
+            p_buffer_size=100,
+            p_ada=p_ada,
+            p_logging=p_logging,
+            p_update_rate=1,
+            p_num_hidden_layers=3,
+            p_hidden_size=128,
+            p_activation_fct=torch.nn.ReLU,
+            p_output_activation_fct=torch.nn.ReLU,
+            p_optimizer=torch.optim.Adam,
+            p_loss_fct=torch.nn.MSELoss,
+            p_learning_rate=3e-4
+        )
+
+        envmodel = EnvModel(
+            p_observation_space=self._env._state_space,
+            p_action_space=self._env._action_space,
+            p_latency=self._env.get_latency(),
+            p_afct_strans=afct_strans,
+            p_afct_reward=self._env,
+            p_afct_success=self._env,
+            p_afct_broken=self._env,
+            p_ada=p_ada,
+            p_init_states=self._env.get_state(),
+            p_logging=p_logging
+        )
 
         mb_training_param = dict(p_cycle_limit=100,
                                  p_cycles_per_epi_limit=100,
@@ -75,9 +121,9 @@ class ScenarioGridWorld(RLScenario):
 
         return Agent(
             p_policy=policy_random,  
-            p_envmodel=MLPEnvModel(),
-            p_em_acc_thsld=0.2,
-            p_action_planner=MPC(p_range_max=mt.Async.C_RANGE_PROCESS,
+            p_envmodel=envmodel,
+            p_em_acc_thsld=0.8,
+            p_action_planner=MPC(p_range_max=mt.Async.C_RANGE_THREAD,
                                  p_logging=p_logging),
             p_predicting_horizon=5,
             p_controlling_horizon=1,
@@ -88,8 +134,13 @@ class ScenarioGridWorld(RLScenario):
             p_logging=p_logging,
             **mb_training_param
         )
+              
 
-
+            
+                
+                
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 
 # 2 Train agent in scenario
 if __name__ == "__main__":
@@ -120,10 +171,19 @@ training = RLTraining(
 )
 
 training.run()
+              
 
+            
+                
+                
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 
 # 3 Plotting with MLpro
 class MyDataPlotting(DataPlotting):
+
+
+## -------------------------------------------------------------------------------------------------
     def get_plots(self):
         """
         A function to plot data
@@ -157,6 +217,13 @@ class MyDataPlotting(DataPlotting):
                     plt.show()
                 else:
                     plt.close(fig)
+                          
+
+                        
+                            
+                            
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 
 if __name__ == "__main__":
     data_printing = {

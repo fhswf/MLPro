@@ -13,7 +13,7 @@ Please install the following packages to run this example properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_111_stream_task_rearranger_2d.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_111_stream_task_rearranger_2d.py
 	:language: python
 
 

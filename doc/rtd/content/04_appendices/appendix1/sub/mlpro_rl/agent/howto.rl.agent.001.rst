@@ -27,6 +27,9 @@ The OpenAI Gym cartpole window appears and shows a randowm behavior while the de
 
 .. image:: images/Cartpole.png
 
+
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`RL Scenario and Training` <target_api_rl_run_train>
+    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    + :ref:`API Reference - RL Environments <target_api_rl_env>`
+    + :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`

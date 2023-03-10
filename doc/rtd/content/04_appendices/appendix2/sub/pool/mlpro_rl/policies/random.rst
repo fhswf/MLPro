@@ -1,5 +1,6 @@
-Random
-======
+.. _target_pol_randoms:
+Random Actions
+================
 
 .. automodule:: mlpro.rl.pool.policies.randomgenerator
    :members:

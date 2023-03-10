@@ -1,3 +1,4 @@
+.. _target_pool_mpc:
 MPC - Model Predictive Control
 ==============================
 

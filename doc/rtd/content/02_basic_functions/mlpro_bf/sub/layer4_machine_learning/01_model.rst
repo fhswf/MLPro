@@ -13,14 +13,14 @@ and possibilities for application-specific adjustments to them.
 
 **Performant Execution**
 
-As shown above, the Model class is made up of numerous base classes of the lower levels through 
-inheritance. So, from :ref:`Layer 1 - Computation <target_bf_computation>`, it inherits the executability 
-and asynchronous processing capabilities of class **Task**. In this way, it can also be combined in 
-workflows to (parallel/asynchronously) executable groups of models. From class **EventHandler** of the 
-same level, it inherits the ability to raise events and forward them to registered event handlers. 
+As shown in the simplified class diagram above, the Model class is made up of numerous base classes of the 
+lower levels through inheritance. So, from :ref:`Layer 1 - Computation <target_bf_computation>`, it inherits
+the executability and asynchronous processing capabilities of class **Task**. In this way, it can also be 
+combined in workflows to (parallelly/asynchronously) executable groups of models. From class **EventHandler** 
+of the same level, it inherits the ability to raise events and forward them to registered event handlers. 
 
 
-**Persistency**
+**Persistence**
 
 In particular, from :ref:`Layer 0 - Elementary Functions <target_bf_elementary>`, it inherits the ability 
 of the **LoadSave** class to be able to be saved and reloaded. Other elementary capabilities such as 
@@ -31,7 +31,7 @@ this lower level.
 **Adaptivity**
 
 The Model class itself adds the ability to adapt. To this end, two mechanisms are introduced that support 
-explicit adaptation based on external data and event-oriented adaptation. In both cases, the event 
+**explicit adaptation** based on external data and **event-oriented adaptation**. In both cases, the event 
 **C_EVENT_ADAPTED** is raised, which can also be optionally handled as part of event handling. In this way, 
 adaptation cascades can be triggered in a group of cooperating models.
 
@@ -49,4 +49,5 @@ Model class. These, in turn, take up the concepts of **Dimension**, **Set/Space*
 - :ref:`Howto BF-ML-010: Hyperparameters <Howto BF ML 010>`
 - :ref:`Models in Reinforcement Learning: Policy, Agent, MultiAgent <target_agents_RL>`
 - :ref:`Models in Game Theory: Player, MultiPlayer <target_players_GT>`
-- :ref:`API Reference MLPro-BF-ML <target_api_bf_ml>`
+- :ref:`BF-Events - Event Handling <target_bf_event>`
+- :ref:`API Reference BF-ML <target_api_bf_ml>`

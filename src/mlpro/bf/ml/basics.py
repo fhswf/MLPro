@@ -60,10 +60,13 @@
 ## -- 2023-02-20  2.1.0     DA       Class Training: 
 ## --                                - Method run_cycle(): scenario is now saved after training
 ## --                                - New methods get_training_path()
+## -- 2023-03-09  2.1.1     DA       Class TrainingResults: removed parameter p_path
+## -- 2023-03-10  2.1.2     DA       Class AdaptiveFunction: refactoring constructor parameters
+## -- 2022-03-10  2.1.3     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-02-20)
+Ver. 2.1.3 (2023-03-10)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -206,7 +209,7 @@ class Model (Task, LoadSave, ScientificObject):
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_par : Dict
-        Further model specific hyperparameters (to be defined in chhild class).
+        Further model specific hyperparameters (to be defined in child class).
     """
 
     C_TYPE              = 'Model'
@@ -731,8 +734,6 @@ class TrainingResults (Log, Saveable):
         Run id.
     p_cycle_id : int
         Id of first cycle of this run.
-    p_path : str
-        Optional estination path to store the results.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
 
@@ -741,7 +742,7 @@ class TrainingResults (Log, Saveable):
     C_TYPE      = 'Results '
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_path=None, p_logging=Log.C_LOG_WE):
+    def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_logging=Log.C_LOG_WE):
         self.scenario           = p_scenario
         self.run                = p_run
         self.ts_start           = datetime.now()
@@ -754,7 +755,6 @@ class TrainingResults (Log, Saveable):
         self.num_cycles_eval    = 0
         self.num_adaptations    = 0
         self.highscore          = None
-        self.path               = p_path
 
         self.custom_results     = []
 
@@ -797,8 +797,6 @@ class TrainingResults (Log, Saveable):
         self.log(self.C_LOG_TYPE_W, '-- Evaluation cycles :', self.num_cycles_eval)
         self.log(self.C_LOG_TYPE_W, '-- Adaptations       :', self.num_adaptations)
         self.log(self.C_LOG_TYPE_W, '-- High score        :', self.highscore)
-        if self.path is not None:
-            self.log(self.C_LOG_TYPE_W, '-- Results stored in : "' + self.path +'"')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -817,7 +815,7 @@ class TrainingResults (Log, Saveable):
         ----------
         p_path : str
             Destination folder
-        p_filename  :string
+        p_filename : string
             Name of summary file. Default = 'summary.csv'
 
         Returns
@@ -845,7 +843,10 @@ class TrainingResults (Log, Saveable):
         self._save_line(file, 'Evaluation cycles', self.num_cycles_eval)
         self._save_line(file, 'Adaptations', self.num_adaptations)
         self._save_line(file, 'Highscore', self.highscore)
-        self._save_line(file, 'Path', '"' + str(self.path) + '"')
+        self._save_line(file, 'Path', '"' + str(p_path) + '"')
+
+        if p_path is not None:
+            self.log(self.C_LOG_TYPE_W, '-- Results stored in : "' + p_path +'"')
 
         for name, value in self.custom_results:
             self._save_line(file, name, value)
@@ -905,6 +906,7 @@ class HyperParamTuner (Log, Saveable):
 ## -------------------------------------------------------------------------------------------------
     def _maximize(self) -> TrainingResults:
         raise NotImplementedError
+    
     
 ## -------------------------------------------------------------------------------------------------
     def _save_line(self, p_file, p_name, p_value):
@@ -1123,11 +1125,10 @@ class Training (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_results(self) -> TrainingResults:
-        return self.C_CLS_RESULTS(self._scenario, 
-                                  self._current_run, 
-                                  self._scenario.get_cycle_id(), 
-                                  p_path=self._current_path,
-                                  p_logging=self._level)
+        return self.C_CLS_RESULTS( p_scenario = self._scenario, 
+                                   p_run = self._current_run, 
+                                   p_cycle_id = self._scenario.get_cycle_id(), 
+                                   p_logging = self._level )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1278,16 +1279,27 @@ class AdaptiveFunction (Function, Model):
         Output space of function
     p_output_elem_cls 
         Output element class (compatible to/inherited from class Element)
-    p_buffer_size : int
-        Initial size of internal data buffer. Default = 0 (no buffering).
     p_ada : bool
-        Boolean switch for adaptivity. Default = True.
+        Boolean switch for adaptivitiy. Default = True.
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
+    p_name : str
+        Optional name of the model. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_autorun : int
+        On value C_AUTORUN_RUN method run() is called imediately during instantiation.
+        On vaule C_AUTORUN_LOOP method run_loop() is called.
+        Value C_AUTORUN_NONE (default) causes an object instantiation without starting further
+        actions.    
+    p_class_shared
+        Optional class for a shared object (class Shared or a child class of it)
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_kwargs : Dict
-        Further model specific parameters (to be specified in child class).
+    p_par : Dict
+        Further model specific hyperparameters (to be defined in chhild class).
     """
 
     C_TYPE = 'Adaptive Function'
@@ -1295,23 +1307,31 @@ class AdaptiveFunction (Function, Model):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_input_space: MSpace,
-                  p_output_space:MSpace,
+                  p_input_space : MSpace,
+                  p_output_space : MSpace,
                   p_output_elem_cls=Element,
-                  p_buffer_size=0,
-                  p_ada:bool=True,
-                  p_visualize:bool=False,
-                  p_logging=Log.C_LOG_ALL,
-                  **p_kwargs ):
+                  p_ada : bool = True, 
+                  p_buffer_size : int = 0, 
+                  p_name: str = None, 
+                  p_range_max: int = Async.C_RANGE_PROCESS, 
+                  p_autorun = Task.C_AUTORUN_NONE, 
+                  p_class_shared=None, 
+                  p_visualize: bool = False, 
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_par ):
 
         Function.__init__( self, 
-                           p_input_space=p_input_space, 
-                           p_output_space=p_output_space,
-                           p_output_elem_cls=p_output_elem_cls )
+                           p_input_space = p_input_space, 
+                           p_output_space = p_output_space,
+                           p_output_elem_cls = p_output_elem_cls )
 
         Model.__init__( self, 
-                        p_buffer_size=p_buffer_size, 
-                        p_ada=p_ada, 
-                        p_visualize=p_visualize,
-                        p_logging=p_logging, 
-                        **p_kwargs )
+                        p_ada = p_ada, 
+                        p_buffer_size = p_buffer_size, 
+                        p_name = p_name,
+                        p_range_max = p_range_max,
+                        p_autorun = p_autorun,
+                        p_class_shared = p_class_shared,
+                        p_visualize = p_visualize,
+                        p_logging = p_logging, 
+                        **p_par )

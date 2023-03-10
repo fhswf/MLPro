@@ -8,12 +8,21 @@
 ## -- 2021-10-07  1.0.0     DA       Creation
 ## -- 2021-11-03  1.1.0     DA       Introduction of new log type C_LOG_TYPE_S for success messages
 ## -- 2021-11-13  1.1.1     DA       Refactoring
+## -- 2023-03-02  1.1.2     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2021-11-13)
+Ver. 1.1.2 (2023-03-02)
 
 This module demonstrates the Log class functionality.
+
+You will learn:
+
+1. How to use the log functionality of MLPro in custom implementations.
+
+2. How to use different log levels to log information, warnings and error.
+
+3. How to switch logging functionality.
 """
 
 

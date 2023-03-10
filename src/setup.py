@@ -2,11 +2,11 @@ from setuptools import setup
 
 
 setup(name='mlpro',
-version='0.9.2',
-description='MLPro - A synoptic framework for standardized machine learning tasks',
+version='1.0.0',
+description='MLPro - The Integrative Middleware Framework for Standardized Machine Learning',
 author='MLPro Team',
 author_mail='mlpro@listen.fh-swf.de',
-license='MIT',
+license='Apache Software License (http://www.apache.org/licenses/LICENSE-2.0)',
 packages=['mlpro'],
 
 # Package dependencies for full installation

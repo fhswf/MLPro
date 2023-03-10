@@ -6,10 +6,12 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2022-11-29  1.0.0     DA       Creation due to refactoring of bf.systems and rl.models_env
+## -- 2023-03-08  1.0.1     SY       Update EnvModel
+## -- 2023-03-10  1.0.2     SY       Update AFctReward: _setup_spaces, _compute_reward, and _adapt
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-11-29)
+Ver. 1.0.2 (2023-03-10)
 
 This module provides model classes for adaptive environment models.
 """
@@ -427,7 +429,7 @@ class AFctReward (AFctBase, FctReward):
                       p_output_space: MSpace):
         # 1 Setup input space
         p_input_space.append(p_state_space)
-        p_input_space.append(p_state_space)
+        p_input_space.append(p_state_space, p_ignore_duplicates=True)
 
         # 2 Setup output space
         p_output_space.add_dim(
@@ -435,13 +437,16 @@ class AFctReward (AFctBase, FctReward):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_reward(self, p_state: State = None, p_state_new: State = None) -> Reward:
-        if (p_state is None) or (p_state_new is None):
+    def _compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+        if (p_state_old is None) or (p_state_new is None):
             raise ParamError('Both parameters p_state and p_state_new are needed to compute the reward')
 
         # 1 Create input vector from both states
-        input_values = p_state.get_values().copy()
-        input_values.append(p_state_new.get_values())
+        input_values = p_state_old.get_values().copy()
+        if isinstance(input_values, np.ndarray):
+            input_values = np.append(input_values, p_state_new.get_values())
+        else:
+            input_values.extend(p_state_new.get_values())
         input = Element(self._input_space)
         input.set_values(input_values)
 
@@ -473,7 +478,10 @@ class AFctReward (AFctBase, FctReward):
 
         # 1 Create input vector from both states
         input_values = p_state.get_values().copy()
-        input_values.append(p_state_new.get_values())
+        if isinstance(input_values, np.ndarray):
+            input_values = np.append(input_values, p_state_new.get_values())
+        else:
+            input_values.extend(p_state_new.get_values())
         input = Element(self._input_space)
         input.set_values(input_values)
 
@@ -548,6 +556,8 @@ class EnvModel (EnvBase, Model):
         Optional external adaptive function for state assessment 'broken'.
     p_ada : bool
         Boolean switch for adaptivity.
+    p_init_states : State
+        Initial state of the env models.
     p_visualize : bool
         Boolean switch for env/agent visualisation. Default = False.
     p_logging 
@@ -567,6 +577,7 @@ class EnvModel (EnvBase, Model):
                  p_afct_success : AFctSuccess = None,
                  p_afct_broken : AFctBroken = None,
                  p_ada : bool = True,
+                 p_init_states : State = None,
                  p_visualize : bool = False,
                  p_logging = Log.C_LOG_ALL ):
 
@@ -590,6 +601,11 @@ class EnvModel (EnvBase, Model):
         self._state_space  = p_observation_space
         self._action_space = p_action_space
         self._cycle_limit  = 0
+        
+        if p_init_states is None:
+            raise NotImplementedError("p_init_states is missing!")
+        else:
+            self._init_states = p_init_states
 
 
         # 2 Check adaptive functions for compatibility with agent
@@ -609,16 +625,25 @@ class EnvModel (EnvBase, Model):
         if (self._fct_reward is not None) and (self._fct_reward.get_state_space() != self._state_space):
             raise ParamError(
                 'Observation spaces of environment model and adaptive function for reward computation are not equal')
+        
+        if isinstance(self._fct_reward, Environment):
+            self._compute_reward = self._fct_reward._compute_reward
 
         # 2.3 Check function 'success'
         if (self._fct_success is not None) and (self._fct_success.get_state_space() != self._state_space):
             raise ParamError(
                 'Observation spaces of environment model and adaptive function for assessment success are not equal')
-
+        
+        if isinstance(self._fct_success, Environment):
+            self._compute_success = self._fct_success._compute_success
+        
         # 2.4 Check function 'broken'
         if (self._fct_broken is not None) and (self._fct_broken.get_state_space() != self._state_space):
             raise ParamError(
                 'Observation spaces of environment model and adaptive function for assessment broken are not equal')
+        
+        if isinstance(self._fct_broken, Environment):
+            self._compute_broken = self._fct_broken._compute_broken
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -691,7 +716,7 @@ class EnvModel (EnvBase, Model):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None):
         self.set_random_seed(p_seed=p_seed)
-        self._state = None
+        self._state = self._init_states
         self._prev_state = None
 
 
@@ -774,13 +799,13 @@ class EnvModel (EnvBase, Model):
 
         adapted = self._fct_strans.adapt(p_state=state, p_action=action, p_state_new=state_new)
 
-        if self._fct_reward is not None:
+        if ( self._fct_reward is not None ) and ( not isinstance(self._fct_reward, Environment) ):
             adapted = adapted or self._fct_reward.adapt(p_state=state, p_state_new=state_new, p_reward=reward)
 
-        if self._fct_success is not None:
+        if self._fct_success is not None and ( not isinstance(self._fct_success, Environment) ):
             adapted = adapted or self._fct_success.adapt(p_state=state_new)
 
-        if self._fct_broken is not None:
+        if self._fct_broken is not None and ( not isinstance(self._fct_broken, Environment) ):
             adapted = adapted or self._fct_broken.adapt(p_state=state_new)
 
         if (self._cycle_limit == 0) and state_new.get_timeout():
@@ -831,9 +856,9 @@ class EnvModel (EnvBase, Model):
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
         self._fct_strans.clear_buffer()
-        if self._fct_reward is not None:
+        if ( self._fct_reward is not None ) and ( not isinstance(self._fct_reward, Environment) ):
             self._fct_reward.clear_buffer()
-        if self._fct_success is not None:
+        if self._fct_success is not None and ( not isinstance(self._fct_success, Environment) ):
             self._fct_success.clear_buffer()
-        if self._fct_broken is not None:
+        if self._fct_broken is not None and ( not isinstance(self._fct_broken, Environment) ):
             self._fct_broken.clear_buffer()

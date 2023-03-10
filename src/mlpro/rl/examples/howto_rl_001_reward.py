@@ -9,12 +9,19 @@
 ## -- 2021-05-31  1.0.0     DA       Release of first version
 ## -- 2021-09-11  1.0.1     MRD      Change Header information to match our new library name
 ## -- 2022-10-13  1.0.2     SY       Refactoring 
+## -- 2023-03-02  1.0.3     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-10-13)
+Ver. 1.0.3 (2023-03-02)
 
 This module shows how to create and interprete reward objects in own projects.
+
+You will learn:
+
+1. How to use the reward class of MLPro.
+
+2. How to use reward class for different reward types supported in MLPro.
 """
 
 

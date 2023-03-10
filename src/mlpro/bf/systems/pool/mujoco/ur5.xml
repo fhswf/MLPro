@@ -1,0 +1,136 @@
+<mujoco model="ur5">
+    <compiler angle="radian" inertiafromgeom="true" meshdir="assets/mesh/"/>
+    <option gravity="0 0 0" timestep="0.05" impratio="20" tolerance="1e-10"/>
+    <size njmax="600" nconmax="150" nstack="300000"/>
+
+    <default>
+        <site rgba="0.8 0.6 0.7 0.3" type="ellipsoid" group="3"/>
+        <geom contype='1' conaffinity='1' condim='4'  margin="1e-3" solref=".01 1" solimp=".99 .99 .01" />
+        <joint armature="0.01" damping=".1"/>
+        <default class="UR5">
+            <joint damping='65'/>
+        </default>
+        <default class="UR5e">
+            <joint damping='45'/>
+        </default>
+    </default>
+
+    <visual>
+        <global fovy="70"/>
+        <map fogstart="3" fogend="5" znear="0.05"/>
+        <quality shadowsize="2048"/>
+        <scale framelength="0.1" framewidth="0.005" contactwidth="0.1" contactheight="0.005" forcewidth="0.01"/>
+    </visual>
+
+    <!--Assets-->
+    <asset>
+        <!--Meshes-->
+        <mesh name="base"           file="base.stl"     />
+        <mesh name="shoulder"       file="shoulder.stl" />
+        <mesh name="upperarm"       file="upperarm.stl" />
+        <mesh name="forearm"        file="forearm.stl"  />
+        <mesh name="wrist1"         file="wrist1.stl"   />
+        <mesh name="wrist2"         file="wrist2.stl"   />
+        <mesh name="wrist3"         file="wrist3.stl"   />
+
+        <!--Textures-->
+        <texture name="ur5_tex"     type="2d"       builtin="flat" height="32" width="32" rgb1="0.45 0.45 0.45" />
+        <texture name="texgeom"     type="cube"     builtin="flat" mark="cross" width="127" height="1278" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" markrgb="1 1 1" random="0.01" />
+
+        <!--Materials-->
+        <material name="ur5_mat"        texture="ur5_tex"   shininess="0.9" specular="0.75" reflectance="0.3"/>
+        <material name='geom'           texture="texgeom"   texuniform="true" />
+    </asset>
+
+    <!--Contacts-->
+    <contact>
+		<exclude body1="base_link" body2="shoulder_link"/>
+		<exclude body1="shoulder_link" body2="upper_arm_link"/>
+        <exclude body1="upper_arm_link" body2="forearm_link"/>
+		<exclude body1="forearm_link" body2="wrist_1_link"/>
+		<exclude body1="wrist_1_link" body2="wrist_2_link"/>
+        <exclude body1="wrist_2_link" body2="wrist_3_link"/>
+        <exclude body1="ee_link" body2="wrist_3_link"/>
+    </contact>
+
+    <worldbody>
+        <!--Lighting-->
+        <light name="light3" mode="targetbody" target="base_link" directional="true" pos="0 0 3" />
+
+        <!--UR5-->
+        <body name="base_link" pos="0 0 0" quat="0 0 0 1">
+            <body name="base" pos="0 0 0" quat="1.7949e-09 0 0 -1">
+                <inertial pos="0 0 0" quat="1.7949e-09 0 0 -1" mass="0" diaginertia="0 0 0" />
+            </body>
+            <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="4" diaginertia="0.0072 0.00443333 0.00443333" />
+            <geom type="mesh"  mesh="base" material="ur5_mat"/>
+            <body name="shoulder_link" pos="0 0 0.089159">
+                <inertial pos="0 0 0" mass="3.7" diaginertia="0.0102675 0.0102675 0.00666" />
+                <joint name="shoulder_pan_joint" class="UR5" pos="0 0 0" axis="0 0 1" limited="true" range="-3.14159 3.14159" />
+                <geom type="mesh"  mesh="shoulder" material="ur5_mat"/>
+                <body name="upper_arm_link" pos="0 0.13585 0" quat="0.707107 0 0.707107 0">
+                    <inertial pos="0 0 0.28" mass="8.393" diaginertia="0.226891 0.226891 0.0151074" />
+                    <joint name="shoulder_lift_joint" class="UR5" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 0" /> <!--Range= -3.14159 3.14159-->
+                    <geom type="mesh"  mesh="upperarm" material="ur5_mat"/>
+                    <body name="forearm_link" pos="0 -0.1197 0.425">
+                        <inertial pos="0 0 0.25" mass="2.275" diaginertia="0.0494433 0.0494433 0.004095" />
+                        <joint name="elbow_joint" class="UR5" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" />
+                        <geom type="mesh"  mesh="forearm" material="ur5_mat"/>
+                        <body name="wrist_1_link" pos="0 0 0.39225" quat="0.707107 0 0.707107 0">
+                            <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="1.219" diaginertia="0.21942 0.111173 0.111173" />
+                            <joint name="wrist_1_joint" class="UR5e" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" />
+                            <geom type="mesh"  mesh="wrist1" material="ur5_mat"/>
+                            <body name="wrist_2_link" pos="0 0.093 0">
+                                <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="1.219" diaginertia="0.21942 0.111173 0.111173" />
+                                <joint name="wrist_2_joint" class="UR5e" pos="0 0 0" axis="0 0 1" limited="true" range="-3.14159 3.14159" />
+                                <geom type="mesh"  mesh="wrist2" material="ur5_mat"/>
+                                <body name="wrist_3_link" pos="0 0 0.09465">
+                                    <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="0.1879" diaginertia="0.033822 0.0171365 0.0171365" />
+                                    <joint name="wrist_3_joint" class="UR5e" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" />
+                                    <geom type="mesh"  mesh="wrist3" material="ur5_mat"/>
+                                    <body name="ee_link" pos="0 0.0823 0" quat="0.707107 0 0 0.707107">
+                                        <inertial pos="-0.01 0 0" mass="0.001" diaginertia="1.66667e-08 1.66667e-08 1.66667e-08" />
+                                        <geom size="0.005 0.005 0.005" pos="-0.01 0 0" type="box" />
+                                    </body>
+                                    <!--EEF-->
+                                    <body name="tool0" pos="0 0.0823 0" quat="0.707107 -0.707107 0 0">
+                                        <inertial pos="0 0.0823 0" quat="0.707107 -0.707107 0 0" mass="0" diaginertia="0 0 0" />
+                                        <body name="eef" pos="0 0 0">
+                                            <geom contype="0" name="eef" pos="0 0 0" rgba="0.0 0.8 0.6 1" size=".01" type="sphere"/>
+                                        </body>
+                                    </body>
+                                </body>
+                            </body>
+                        </body>
+                    </body>
+                </body>
+            </body>
+        </body>
+        
+        <!--Target-->
+        <body name="target_1" pos="0 .5 0.6" quat="1 0 0 0">
+            <geom conaffinity="0" contype="0" name="target_1" pos="0 0 0" rgba="0.9 0.2 0.2 1" size=".009" type="sphere"/>
+        </body>
+        <body name="target_2" pos=".1 .4 0.6" quat="1 0 0 0">
+            <geom conaffinity="0" contype="0" name="target_2" pos="0 0 0" rgba="0.9 0.2 0.2 1" size=".009" type="sphere"/>
+        </body>
+        <body name="target_3" pos=".2 .3 0.6" quat="1 0 0 0">
+            <geom conaffinity="0" contype="0" name="target_3" pos="0 0 0" rgba="0.9 0.2 0.2 1" size=".009" type="sphere"/>
+        </body>
+        <body name="target_4" pos="-.1 .4 0.6" quat="1 0 0 0">
+            <geom conaffinity="0" contype="0" name="target_4" pos="0 0 0" rgba="0.9 0.2 0.2 1" size=".009" type="sphere"/>
+        </body>
+        <body name="target_5" pos="-.2 .3 0.6" quat="1 0 0 0">
+            <geom conaffinity="0" contype="0" name="target_5" pos="0 0 0" rgba="0.9 0.2 0.2 1" size=".009" type="sphere"/>
+        </body>
+    </worldbody>
+
+    <actuator>
+        <motor name='shoulder_pan_T' ctrllimited="true" ctrlrange="-1 1" joint='shoulder_pan_joint' gear="101"/>
+        <motor name='shoulder_lift_T' ctrllimited="true" ctrlrange="-1 1" joint='shoulder_lift_joint' gear="101"/>
+        <motor name='forearm_T' ctrllimited="true" ctrlrange="-1 1" joint='elbow_joint' gear="101" />
+        <motor name='wrist_1_T' ctrllimited="true" ctrlrange="-1 1" joint='wrist_1_joint' gear="101"/>
+        <motor name='wrist_2_T' ctrllimited="true" ctrlrange="-1 1" joint='wrist_2_joint' gear="101"/>
+        <motor name='wrist_3_T' ctrllimited="true" ctrlrange="-1 1" joint='wrist_3_joint' gear="101"/>
+    </actuator>
+</mujoco>

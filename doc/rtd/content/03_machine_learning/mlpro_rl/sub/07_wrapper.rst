@@ -24,7 +24,7 @@ At the moment, we have five ready-to-use wrapper classes related to RL from 3rd-
 | 5    | WrPolicySB32MLPro | StableBaselines3     | MLPro              | Off-Policy and On-Policy RL Algorithms  |
 +------+-------------------+----------------------+--------------------+-----------------------------------------+
 
-Moreover, wrapper classes for hyperparameter tuning by :ref:`Hyperopt <Howto HT RL 001>` and :ref:`Optuna <Howto HT RL 002>` can also be incorporated to your RL training.
+Moreover, wrapper classes for hyperparameter tuning by :ref:`Hyperopt <Wrapper Hyperopt>` and :ref:`Optuna <Wrapper Optuna>` can also be incorporated to your RL training.
 
 
 RL Environment: OpenAI Gym to MLPro
@@ -42,7 +42,9 @@ The user can call the wrapper class while setting up an environment, as follows:
     p_gym_env = gym.make('CartPole-v1', new_step_api=True, render_mode=None)
     self._env = WrEnvGYM2MLPro(p_gym_env, p_logging=True)
 
-For more information, please check the :ref:`Howto OpenAI Gym to MLPro <Howto WP RL 004>`.
+**Cross Reference**
+    - :ref:`Howto RL-AGENT-001: Run an Agent with Own Policy <Howto Agent RL 001>`
+    - :ref:`API Reference <Wrapper OpenAI Gym>`
 
 
 RL Environment: MLPro to OpenAI Gym
@@ -60,7 +62,9 @@ The user can call the wrapper class while setting up an environment, as follows:
     mlpro_env = GridWorld(p_logging=Log.C_LOG_ALL)
     env = WrEnvMLPro2GYM(mlpro_env, p_state_space=None, p_action_space=None, p_new_step_api=True)
 
-For more information, please check the :ref:`Howto MLPro to OpenAI Gym <Howto WP RL 001>`.
+**Cross Reference**
+    - :ref:`Howto RL-WP-001: MLPro to OpenAI Gym <Howto WP RL 001>`
+    - :ref:`API Reference <Wrapper OpenAI Gym>`
 
 
 RL Environment: PettingZoo to MLPro
@@ -78,7 +82,9 @@ The user can call the wrapper class while setting up an environment, as follows:
     p_zoo_env = pistonball_v6.env()
     self._env = WrEnvPZOO2MLPro(p_zoo_env, p_logging=True)
 
-For more information, please check the :ref:`Howto PettingZoo to MLPro <Howto WP RL 003>`.
+**Cross Reference**
+    - :ref:`Howto RL-WP-003: Run Multi-Agent on PettingZoo Environment <Howto WP RL 003>`
+    - :ref:`API Reference <Wrapper PettingZoo>`
 
 
 RL Environment: MLPro to PettingZoo
@@ -96,7 +102,9 @@ The user can call the wrapper class while setting up an environment, as follows:
     mlpro_env = BGLP(p_logging=Mode.C_LOG_ALL)
     env = WrEnvMLPro2PZoo(mlpro_env, p_num_agents=5, p_state_space=None, p_action_space=None).pzoo_env
 
-For more information, please check the :ref:`Howto MLPro to PettingZoo <Howto WP RL 002>`.
+**Cross Reference**
+    - :ref:`Howto RL-WP-002: MLPro to PettingZoo <Howto WP RL 002>`
+    - :ref:`API Reference <Wrapper PettingZoo>`
 
 
 RL Policy: StableBaselines3 to MLPro
@@ -143,6 +151,11 @@ The user can call the wrapper class while setting up an environment, as follows:
                 p_logging=p_logging
             )
 
-For more information, please check the :ref:`Howto SB3 to MLPro <Howto WP RL 004>` and the validations for :ref:`on-policy <Howto WP RL 005>` and :ref:`off-policy <Howto WP RL 006>`.
+
+**Cross Reference**
+    - :ref:`Howto RL-WP-004: Train an Agent with SB3 <Howto WP RL 004>`
+    - :ref:`Howto RL-WP-005: Validation SB3 Wrapper (On-Policy) <Howto WP RL 005>`
+    - :ref:`Howto RL-WP-006: Validation SB3 Wrapper (Off-Policy) <Howto WP RL 006>`
+    - :ref:`API Reference <Wrapper SB3>`
 
 
