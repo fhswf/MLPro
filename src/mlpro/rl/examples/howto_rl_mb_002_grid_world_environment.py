@@ -84,7 +84,7 @@ class ScenarioGridWorld(RLScenario):
             PyTorchMLP,
             p_state_space=self._env._state_space,
             p_action_space=self._env._action_space,
-            p_threshold=1.8,
+            p_threshold=0.1,
             p_buffer_size=5000,
             p_ada=p_ada,
             p_logging=p_logging,

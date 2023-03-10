@@ -411,8 +411,8 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         ids_          = self._hyperparam_tuple.get_dim_ids()
 
         self._add_buffer(PyTorchIOElement(model_input, model_output))
-
-        if ( not self._buffer.is_full() ) and ( self._buffer.get_internal_counter()%self.get_hyperparam().get_value(ids_[2]) != 0 ):
+        
+        if ( not self._buffer.is_full() ) or ( self._buffer.get_internal_counter()%self.get_hyperparam().get_value(ids_[2]) != 0 ):
             return False
 
         trainer, _  = self._buffer.sampling()
