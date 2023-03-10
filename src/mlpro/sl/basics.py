@@ -15,10 +15,11 @@
 ## -- 2023-02-22  0.4.1     SY       Update Class SLAdaptiveFunction
 ## -- 2023-03-01  0.4.2     SY       - Renaming module
 ## --                                - Remove SLNetwork
+## -- 2023-03-10  0.4.3     DA       Class SLAdaptiveFunction: refactoring of constructor parameters
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.2 (2023-03-01)
+Ver. 0.4.3 (2023-03-10)
 
 This module provides model classes for supervised learning tasks. 
 """
@@ -48,16 +49,27 @@ class SLAdaptiveFunction (AdaptiveFunction):
     p_threshold : float
         Threshold for the difference between a setpoint and a computed output. Computed outputs with 
         a difference less than this threshold will be assessed as 'good' outputs. Default = 0.
-    p_buffer_size : int
-        Initial size of internal data buffer. Default = 0 (no buffering).
     p_ada : bool
-        Boolean switch for adaptivity. Default = True.
+        Boolean switch for adaptivitiy. Default = True.
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
+    p_name : str
+        Optional name of the model. Default is None.
+    p_range_max : int
+        Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
+    p_autorun : int
+        On value C_AUTORUN_RUN method run() is called imediately during instantiation.
+        On vaule C_AUTORUN_LOOP method run_loop() is called.
+        Value C_AUTORUN_NONE (default) causes an object instantiation without starting further
+        actions.    
+    p_class_shared
+        Optional class for a shared object (class Shared or a child class of it)
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_kwargs : Dict
-        Further model specific parameters (to be specified in child class).
+    p_par : Dict
+        Further model specific hyperparameters (to be defined in chhild class).
     """
 
     C_TYPE = 'Adaptive Function (SL)'
@@ -66,29 +78,36 @@ class SLAdaptiveFunction (AdaptiveFunction):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_input_space: MSpace,
-                  p_output_space:MSpace,
+                  p_input_space : MSpace,
+                  p_output_space : MSpace,
                   p_output_elem_cls=Element,
                   p_threshold=0,
-                  p_buffer_size=0,
-                  p_ada:bool=True,
-                  p_visualize:bool=False,
-                  p_logging=Log.C_LOG_ALL,
-                  **p_kwargs ):
+                  p_ada : bool = True, 
+                  p_buffer_size : int = 0, 
+                  p_name: str = None, 
+                  p_range_max: int = Async.C_RANGE_PROCESS, 
+                  p_autorun = Task.C_AUTORUN_NONE, 
+                  p_class_shared=None, 
+                  p_visualize: bool = False, 
+                  p_logging=Log.C_LOG_ALL, 
+                  **p_par ):
 
-        super().__init__( p_input_space=p_input_space,
-                          p_output_space=p_output_space,
-                          p_output_elem_cls=p_output_elem_cls,
-                          p_buffer_size=p_buffer_size,
-                          p_ada=p_ada,
-                          p_visualize=p_visualize,
-                          p_logging=p_logging,
-                          **p_kwargs )                  
+        super().__init__( p_input_space = p_input_space,
+                          p_output_space = p_output_space,
+                          p_output_elem_cls = p_output_elem_cls,
+                          p_ada = p_ada,
+                          p_buffer_size = p_buffer_size,
+                          p_name = p_name,
+                          p_range_max = p_range_max,
+                          p_autorun = p_autorun,
+                          p_class_shared = p_class_shared,
+                          p_visualize = p_visualize,
+                          p_logging = p_logging,
+                          **p_par )                  
         
         self._threshold      = p_threshold
         self._mappings_total = 0  # Number of mappings since last adaptation
         self._mappings_good  = 0  # Number of 'good' mappings since last adaptation
-        self._parameters     = self._hyperparameters_check()
         self._sl_model       = self._setup_model()
 
 
@@ -117,20 +136,6 @@ class SLAdaptiveFunction (AdaptiveFunction):
         """
 
         return self._sl_model
-
-
-## -------------------------------------------------------------------------------------------------
-    def _hyperparameters_check(self) -> dict:
-        """
-        A method to check the hyperparameters related to the SL model.
-        
-        Returns
-        ----------
-        dict
-            A dictionary includes the name of the hyperparameters and their values.
-        """
-
-        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
