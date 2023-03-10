@@ -20,6 +20,12 @@ A Markov game contains a group of independent players that make decisions simult
   
   This figure is taken from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
+If you are interested to utilize MLPro-GT, you can easily access the GT modules, as follows:
+
+    .. code-block:: python
+
+        from mlpro.gt import *
+
 Additionally, you can find more comprehensive explanations of MLPro-GT including a sample application and difference with a native RL approach in this paper:
 `MLPro 1.0 - Standardized Reinforcement Learning and Game Theory in Python <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 The simplified diagram below shows the architecture of MLPro-GT, where MLPro-GT serves as a child package and MLPro-RL is its parent package.
@@ -29,13 +35,16 @@ The simplified diagram below shows the architecture of MLPro-GT, where MLPro-GT 
   
   This figure is taken from `MLPro 1.0 paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_.
 
-If you are interested to utilize MLPro-GT, you can easily access the GT modules, as follows:
 
-    .. code-block:: python
+**Learn more**
 
-        from mlpro.gt import *
+  - :ref:`Getting started with MLPro-GT <target_getstarted_GT>`
 
 
-MLPro team recommends visiting our :ref:`getting started <target_getstarted_GT>` page to directly learn MLPro-GT in a practical way.
-You can also check out numerous ready-to-run examples on our :ref:`how to files <target_appendix1>`.
-Moreover, technical API documentation can be found in :ref:`appendix 2 <target_appendix2>`.
+**Cross Reference**
+
+  - :ref:`Related Howtos <target_appendix1_GT>`
+  - :ref:`API Reference: MLPro-GT <target_api_gt>`
+  - :ref:`API Reference: MLPro-GT Pool of Objects <target_api_pool_gt>`
+  - `MLPro 1.0 Paper <https://doi.org/10.1016/j.mlwa.2022.100341>`_
+  - `MLPro GitHub <https://github.com/fhswf/MLPro/tree/main/src/mlpro/rl/examples>`_

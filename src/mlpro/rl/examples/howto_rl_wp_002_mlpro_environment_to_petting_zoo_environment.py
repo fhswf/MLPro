@@ -11,13 +11,18 @@
 ## -- 2021-11-15  1.0.2     DA       Refactoring
 ## -- 2021-12-03  1.0.3     DA       Refactoring
 ## -- 2022-10-14  1.0.4     SY       Refactoring 
-## -- 2022-11-02  1.0.5     SY       Unable logging in unit test model 
+## -- 2022-11-02  1.0.5     SY       Unable logging in unit test model
+## -- 2023-03-02  1.0.6     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.5 (2022-11-02)
+Ver. 1.0.6 (2023-03-02)
 
 This module shows how to wrap mlpro's Environment class to petting zoo compatible.
+
+1. How to setup an MLPro environment.
+
+2. How to wrap MLPro's native envrionment to a Petting Zoo environment.
 """
 
 

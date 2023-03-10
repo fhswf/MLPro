@@ -8,7 +8,7 @@
 
 <img src="https://github.com/fhswf/MLPro/blob/main/doc/logo/original/logo.png?raw=True" align="right" width="40%"/>
 
-# MLPro - A Synoptic Framework for Standardized Machine Learning Tasks in Python
+# MLPro - The Integrative Middleware Framework for Standardized Machine Learning in Python
 
 MLPro provides complete, standardized, and reusable functionalities to support your scientific research, educational tasks or industrial projects in machine learning.
 

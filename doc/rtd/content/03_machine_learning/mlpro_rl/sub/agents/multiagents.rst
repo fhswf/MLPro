@@ -12,4 +12,7 @@ Every single agent in this situation interacts with a separate portion of the su
 Multi-agent interactions take place in appropriate contexts that support the scalar reward per agent reward type. 
 These are native applications that incorporate the MLPro environment template or PettingZoo environments that may be incorporated using the corresponding :ref:`wrapper class<target-package-third>` offered by MLPro.
 
-For setting-up multi-agents in MLPro-RL, you can refer to :ref:`this page<target_training_RL>` or :ref:`this howto file <Howto Agent RL 004>`.
+
+**Cross Reference**
+    - :ref:`Howto RL-AGENT-004: Train Multi-Agent with Own Policy <Howto Agent RL 004>`
+    - :ref:`MLPro-RL: Training <target_training_RL>`

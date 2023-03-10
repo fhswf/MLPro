@@ -2,7 +2,7 @@
 Physics
 =======
 
-MLPro-PHYSICS is part of the third layer of MLPro-BF for application support, which provides elementary functionalities for the following topics:
+BF-PHYSICS is part of the third layer of MLPro-BF for application support, which provides elementary functionalities for the following topics:
 
 .. toctree::
    :maxdepth: 2

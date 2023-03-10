@@ -6,7 +6,7 @@ Howto BF-STREAMS-102: Tasks Workflows And Stream Scenarios
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/howto_bf_streams_102_tasks_workflows_and_stream_scenarios.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_102_tasks_workflows_and_stream_scenarios.py
 	:language: python
 
 **Results**

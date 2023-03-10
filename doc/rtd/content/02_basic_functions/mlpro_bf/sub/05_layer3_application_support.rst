@@ -2,8 +2,7 @@
 Layer 3 - Application Support
 =============================
 
-Further explanation coming soon...
-
+This layer deals with the provision of basic technologies to support real-world applications.
 
 .. toctree::
    :maxdepth: 1

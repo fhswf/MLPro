@@ -8,12 +8,19 @@
 ## -- 2021-05-19  1.0.0     DA       Creation
 ## -- 2021-09-11  1.0.0     MRD      Change Header information to match our new library name
 ## -- 2021-11-13  1.0.1     DA       Minor fix
+## -- 2023-03-02  1.0.2     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2021-11-13)
+Ver. 1.0.2 (2023-03-02)
 
 This module demonstrates the Timer class functionality.
+
+You will learn:
+
+1. How to use the timer functionality of MLPro in native and custom implementations.
+
+2. How to use the lap functionality of MLPro's Timer.
 """
 
 

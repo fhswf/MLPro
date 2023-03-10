@@ -13,13 +13,20 @@
 ## -- 2022-05-30  1.0.4     DA       Little refactoring
 ## -- 2022-07-28  1.0.5     SY       Update due to the latest introduction of Gym 0.25
 ## -- 2022-10-14  1.0.6     SY       Refactoring 
-## -- 2022-11-02  1.0.7     SY       Unable logging in unit test model 
+## -- 2022-11-02  1.0.7     SY       Unable logging in unit test model
+## -- 2023-03-02  1.0.8     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.7 (2022-11-02)
+Ver. 1.0.8 (2023-03-02)
 
 This module shows how to wrap a native MLPro environment class to OpenAI Gym environment.
+
+You will learn:
+
+1. How to setup an MLPro environment.
+
+2. How to wrap MLPro's native Environment class to the Gym environment object.
 """
 
 

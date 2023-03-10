@@ -2,7 +2,8 @@
 Layer 1 - Computation
 =====================
 
-Further explanations coming soon...
+This layer introduces various techniques for the efficient execution of higher functionalities of MLPro. 
+In particular, it is dedicated to these topics:
 
 .. toctree::
    :maxdepth: 1

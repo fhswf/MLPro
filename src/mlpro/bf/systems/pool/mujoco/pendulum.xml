@@ -1,0 +1,19 @@
+<mujoco>
+	<option timestep="0.05" gravity="0 0 -9.81" integrator="RK4">
+		<flag sensornoise="enable" energy="enable"/>
+	</option>
+	<include file="mlpro.xml"></include>
+	<worldbody>
+
+		<body name="link1" pos="0 0 2" euler="0 0 0">
+			<joint name="pin" type="hinge" axis = "0 -1 0" pos="0 0 0.75"/>
+			<inertial pos="0 0 0" mass="1" diaginertia="1 1 1" />
+			<geom type="cylinder" size="0.075 0.75" rgba="0 .9 0 1"/>
+		</body>
+		
+	</worldbody>
+
+	<actuator>
+		<motor joint="pin" name="torque1" gear="1" ctrllimited="true" ctrlrange="-50 50"/>
+	</actuator>
+</mujoco>

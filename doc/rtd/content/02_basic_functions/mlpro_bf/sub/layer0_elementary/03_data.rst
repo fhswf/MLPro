@@ -60,6 +60,6 @@ In general, there are three main functionalities of data management in MLPro:
         For better understanding : :ref:`Howto BF-004: Buffers <Howto BF 004>`
     
 **Cross Reference**
-    + :ref:`API Reference <target_api_bf_data>`
     + :ref:`Howto BF-003: Store and plot data <Howto BF 003>`
     + :ref:`Howto BF-004: Buffers <Howto BF 004>`
+    + :ref:`API Reference <target_api_bf_data>`

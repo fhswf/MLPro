@@ -1,3 +1,4 @@
+.. _target_sl_afct_pool:
 Adaptive Function Pool
 ^^^^^^^^^^^^^^^^^^^^^^
 

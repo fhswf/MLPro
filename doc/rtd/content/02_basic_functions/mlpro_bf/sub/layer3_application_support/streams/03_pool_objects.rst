@@ -1,6 +1,6 @@
 .. _target_stream_tasks_pool:
 Pool Objects
-=================
+============
 
 .. toctree::
    :maxdepth: 1

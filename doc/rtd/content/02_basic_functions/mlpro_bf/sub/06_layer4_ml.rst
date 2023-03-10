@@ -8,7 +8,7 @@ challenge here is to capture the nature of machine learning on an abstract and g
 establishing concrete templates and processes and solving elementary subtasks. The highest layer 4 
 of the basic functions of MLPro is dedicated to this topic.
 
-.. image:: layer4_machine_learning/images/MLPro-BF-ML_overview.drawio.png
+.. image:: layer4_machine_learning/images/MLPro-BF-ML_Overview.drawio.png
     :scale: 45 %
 
 The focus of the consideration is the :ref:`adaptive model <target_bf_ml_model>` with its elementary properties
@@ -16,12 +16,12 @@ The focus of the consideration is the :ref:`adaptive model <target_bf_ml_model>`
 - Adaptivity
 - Executability
 - Parameterizability
-- Persistency
+- Persistence
 
 Of course, this model does not exist just on its own. Rather, it interacts with a simulated or real object.
 For example, in the case of offline supervised learning, this can be a data set, in the case of online unsupervised 
 learning, a data stream, or in the case of reinforcement learning, a state-based system. Topics like this are 
-covered in MLPro in higher-level ML frameworks. On an abstract level, however, we introduce the so-called 
+covered in MLPro in higher-level ML frameworks. On an abstract level, however, we introduce the  
 :ref:`ML scenario <target_bf_ml_scenario>` for this because although we do not yet know anything about the 
 concrete ML application, we know that an adaptive model is involved. Furthermore, we propagate that the application 
 is executable in "simulation" or "real operation" mode.
@@ -32,13 +32,14 @@ using wrapper technology.
 
 In more complex applications, it can be helpful to group multiple models and allow communication between them. 
 It would be desirable here to optimally utilize the system resources through parallel processing. For this purpose, 
-MLPro provides the so-called :ref:`adaptive workflows <target_bf_ml_workflows>`.
+MLPro provides :ref:`adaptive workflows <target_bf_ml_workflows>`.
 
 In the field of systems engineering, the creation of suitable simulations or digital twins is an essential aspect.
 However, suppose a system cannot be described mathematically precisely enough due to its complexity or unknown 
 influencing factors. In that case, machine learning methods can also be used to imitate the system behavior based 
 on historical data and/or online monitoring. For this purpose, MLPro provides standards for 
 :ref:`adaptive systems <target_bf_ml_asystems>`.
+
 
 **Learn more**
 
@@ -53,4 +54,4 @@ on historical data and/or online monitoring. For this purpose, MLPro provides st
 
 - :ref:`Related Howtos <target_howtos_bf_ml>`
 - :ref:`API Reference BF-ML - Machine Learning <target_api_bf_ml>`
-- :ref:`API Reference BF-ML-SYSTEMS - Adaptive Systems <target_api_bf_ml_systems>`
+- :ref:`API Reference BF-ML-Systems - Adaptive Systems <target_api_bf_ml_systems>`

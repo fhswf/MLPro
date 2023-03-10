@@ -14,7 +14,7 @@ Please install the following packages to run this examples properly:
 
 **Executable code**
 
-.. literalinclude:: ../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_052_accessing_data_from_scikitlearn.py
+.. literalinclude:: ../../../../../../../../../src/mlpro/bf/examples/howto_bf_streams_052_accessing_data_from_scikitlearn.py
 	:language: python
 
 

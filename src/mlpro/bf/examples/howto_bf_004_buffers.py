@@ -6,12 +6,23 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2021-10-26  1.0.0     SY       Creation/Release
+## -- 2023-03-02  1.0.1     LSB      Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2021-10-26)
+Ver. 1.0.1 (2023-03-02)
 
 This module demonstrates how to use classes Buffer and BufferElement.
+
+You will learn:
+
+1. How to use the buffer, buffer element class of MLPro in native and custom implementations.
+
+2. How to add values to a buffer element object.
+
+2. How to add buffer elements with data to the buffer object.
+
+3. How to get the buffer elements and data from a buffer object and clear a buffer object.
 """
 
 

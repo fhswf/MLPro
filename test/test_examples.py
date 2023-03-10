@@ -36,11 +36,15 @@
 ## -- 2023-02-04  1.6.7     SY       Renaming some bf howtos
 ## -- 2023-02-15  1.6.8     DA       Renaming and extension of howtos for bf.ml
 ## -- 2023-02-23  1.6.9     DA       Renamed some rl howtos
+## -- 2023-02-23  1.7.0     MRD      new Howto RL Agent 006, Howto BF System 002 and 003
+## -- 2023-03-04  1.7.1     DA       Renamed some rl howtos
+## -- 2023-03-08  1.7.2     SY       Add Howto RL MB 003
+## -- 2023-03-10  1.7.3     SY       Renumbering module
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.6.9 (2023-02-23)
+Ver. 1.7.3 (2023-03-10)
 
 Unit test for all examples available.
 """
@@ -52,7 +56,7 @@ import importlib
 
 howto_list = {
 
-# Basic Functions:
+# MLPro-BF - Basic Functions:
 
     # bf.various
     "bf_001": "mlpro.bf.examples.howto_bf_001_logging",
@@ -89,31 +93,42 @@ howto_list = {
 
     # bf.systems
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
-    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_systems_wrapped_with_mujoco",
+    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_doublependulum_systems_wrapped_with_mujoco",
+    "bf_systems_003": "mlpro.bf.examples.howto_bf_systems_003_cartpole_continuous_systems_wrapped_with_mujoco",
 
     # bf.physics
     "bf_physics_001": "mlpro.bf.examples.howto_bf_physics_001_set_up_transfer_functions",
     "bf_physics_002": "mlpro.bf.examples.howto_bf_physics_002_unit_converter",
 
 
-
-# Reinforcement Learning:
+# MLPro-RL - Reinforcement Learning:
     "rl_001": "mlpro.rl.examples.howto_rl_001_reward",
-    "rl_att_001": "mlpro.rl.examples.howto_rl_att_001_advanced_training_with_stagnation_detection",
-    "rl_att_002": "mlpro.rl.examples.howto_rl_att_002_train_wrapped_sb3_policy_with_stagnation_detection",
+
+    "rl_att_001": "mlpro.rl.examples.howto_rl_att_001_train_and_reload_single_agent_gym_sd",
+    "rl_att_002": "mlpro.rl.examples.howto_rl_att_002_train_and_reload_single_agent_mujoco_sd_cartpole_discrete",
+    "rl_att_003": "mlpro.rl.examples.howto_rl_att_003_train_and_reload_single_agent_mujoco_sd_cartpole_continuous",
+
     "rl_agent_001": "mlpro.rl.examples.howto_rl_agent_001_run_agent_with_own_policy_on_gym_environment",
     "rl_agent_002": "mlpro.rl.examples.howto_rl_agent_002_train_agent_with_own_policy_on_gym_environment",
     "rl_agent_003": "mlpro.rl.examples.howto_rl_agent_003_run_multiagent_with_own_policy_on_multicartpole_environment",
     "rl_agent_004": "mlpro.rl.examples.howto_rl_agent_004_train_multiagent_with_own_policy_on_multicartpole_environment",
-    "rl_agent_005": "mlpro.rl.examples.howto_rl_agent_005_train_and_reload_single_agent",
+    "rl_agent_011": "mlpro.rl.examples.howto_rl_agent_011_train_and_reload_single_agent_gym",
+    "rl_agent_021": "mlpro.rl.examples.howto_rl_agent_021_train_and_reload_single_agent_mujoco_cartpole_discrete",
+    "rl_agent_022": "mlpro.rl.examples.howto_rl_agent_022_train_and_reload_single_agent_mujoco_cartpole_continuous",
+
     "rl_env_001": "mlpro.rl.examples.howto_rl_env_001_train_agent_with_SB3_policy_on_robothtm_environment",
     "rl_env_003": "mlpro.rl.examples.howto_rl_env_003_run_agent_with_random_actions_on_double_pendulum_environment",
     "rl_env_005": "mlpro.rl.examples.howto_rl_env_005_run_agent_with_random_policy_on_double_pendulum_mujoco_environment",
+
     "rl_ht_001": "mlpro.rl.examples.howto_rl_ht_001_hyperopt",
     "rl_ht_002": "mlpro.rl.examples.howto_rl_ht_002_optuna",
-    "rl_mb_001": "mlpro.rl.examples.howto_rl_mb_001_robothtm_environment",
+
+    "rl_mb_001": "mlpro.rl.examples.howto_rl_mb_001_train_and_reload_model_based_agent_gym",
     "rl_mb_002": "mlpro.rl.examples.howto_rl_mb_002_grid_world_environment",
+    "rl_mb_003": "mlpro.rl.examples.howto_rl_mb_003_robothtm_environment",
+
     "rl_ui_001": "mlpro.rl.examples.howto_rl_ui_001_reinforcement_learning_cockpit",
+
     "rl_wp_001": "mlpro.rl.examples.howto_rl_wp_001_mlpro_environment_to_gym_environment",
     "rl_wp_002": "mlpro.rl.examples.howto_rl_wp_002_mlpro_environment_to_petting_zoo_environment",
     "rl_wp_003": "mlpro.rl.examples.howto_rl_wp_003_run_multiagent_with_own_policy_on_petting_zoo_environment",
@@ -121,7 +136,8 @@ howto_list = {
     "rl_wp_005": "mlpro.rl.examples.howto_rl_wp_005_validation_wrapped_sb3_on_policy",
     "rl_wp_006": "mlpro.rl.examples.howto_rl_wp_006_validation_wrapped_sb3_off_policy",
 
-# Game Theory:
+
+# MLPro-GT - Game Theory:
     "gt_dp_001": "mlpro.gt.examples.howto_gt_dp_001_run_multi_player_with_own_policy_on_multicartpole_game_board",
     "gt_dp_002": "mlpro.gt.examples.howto_gt_dp_002_train_own_multi_player_on_multicartpole_game_board",
 }

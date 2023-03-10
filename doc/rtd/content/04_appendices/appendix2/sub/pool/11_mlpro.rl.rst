@@ -1,4 +1,4 @@
-.. _target_api_rl:
+.. _target_api_pool_rl:
 MLPro-RL - Reinforcement Learning
 =================================
 

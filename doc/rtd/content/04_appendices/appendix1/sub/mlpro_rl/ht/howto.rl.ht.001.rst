@@ -1,6 +1,6 @@
-.. _Howto HT RL 001:
-Howto RL-HT-001: Hyperopt
-=========================
+.. _Howto RL HT 001:
+Howto RL-HT-001: Hyperparameter Tuning using Hyperopt
+=====================================================
 
 .. automodule:: mlpro.rl.examples.howto_rl_ht_001_hyperopt
 
@@ -20,6 +20,7 @@ Please install the following packages to run this examples properly:
 	:language: python
 
 **Results**
+
 .. code-block:: bashh
 
     2023-02-12  16:44:58.495569  I  HyperParam Tuner "Hyperopt": Instantiated
@@ -62,6 +63,10 @@ Please install the following packages to run this examples properly:
     I  HyperParam Tuner "Hyperopt":
     ------------------------------------------------------------------------------
 
+
 **Cross Reference**
 
-+ API References: :ref:`RL Agent <target_api_rl_agents>`, :ref:`RL Environments <target_api_rl_env>`, :ref:`Machine Learning <target_api_bf_ml>`, :ref:`RL Scenario and Training` <target_api_rl_run_train>
+    + :ref:`API Reference - RL Agent <target_api_rl_agents>`
+    + :ref:`API Reference - RL Environments <target_api_rl_env>`
+    + :ref:`API Reference - RL Scenario and Training <target_api_rl_run_train>`
+    + :ref:`API Reference - Machine Learning <target_api_bf_ml>`
