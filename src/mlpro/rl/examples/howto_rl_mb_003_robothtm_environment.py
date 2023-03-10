@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_mb_001_robothtm_environment.py
+## -- Module  : howto_rl_mb_003_robothtm_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -18,10 +18,11 @@
 ## -- 2023-02-04  1.2.1     SY       Refactoring to avoid printing during unit test
 ## -- 2023-03-07  2.0.0     SY       Update due to MLPro-SL
 ## -- 2023-03-08  2.0.1     SY       Refactoring
+## -- 2023-03-10  2.0.2     SY       Renumbering module
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2023-03-08)
+Ver. 2.0.2 (2023-03-10)
 
 This module demonstrates model-based reinforcement learning (MBRL) with native algorithm and
 action planner using MPC.

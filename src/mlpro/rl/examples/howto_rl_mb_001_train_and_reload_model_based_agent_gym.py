@@ -1,18 +1,23 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_mb_003_train_and_reload_model_based_agent_gym.py
+## -- Module  : howto_rl_mb_001_train_and_reload_model_based_agent_gym.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-07  1.0.0     DA       Adapted from howto_rl_agent_011
 ## -- 2023-03-08  1.0.1     SY       Refactoring and quality assurance
+## -- 2023-03-10  1.0.2     SY       Renumbering module
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-03-08)
+Ver. 1.0.2 (2023-03-10)
 
 This module shows how to train a single agent in MBRL and load it again to do some extra cycles.
+
+At the moment, this module has not provided the success story, but we focus more on demonstrating
+how to execute MBRL in MLPro. However, in the near future, we are going to optimize the settings and
+assure that we bring a success story of this approach.
 
 You will learn:
 
