@@ -411,23 +411,23 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
             return False
 
         trainer, _  = self._buffer.sampling()
+        
+        # Future work: form trainer into DataSet format, once DataSet has been standardized.
         self._adapt_offline(trainer)
+        
         return True
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_offline(self, p_dataset:list) -> bool:
+    def _adapt_offline(self, p_dataset) -> bool:
         """
         Adaptation mechanism for PyTorch based model for offline learning.
         """
 
         self._sl_model.train()
-        for i, In in enumerate(p_dataset[0]):
-            outputs = self.forward(In)
-            
-        for i, Label in enumerate(p_dataset[1]):
-            loss = self._calc_loss(outputs, Label)
-            self._optimize(loss)
+        outputs = self.forward(p_dataset["input"].dataset[0])
+        loss = self._calc_loss(outputs, p_dataset["output"].dataset[0])
+        self._optimize(loss)
             
         return True
 
