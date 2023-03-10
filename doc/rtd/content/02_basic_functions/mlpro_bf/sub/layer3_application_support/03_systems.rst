@@ -36,7 +36,7 @@ such as Success and Broken. These custom functionalities can be incorporated by 
 :code:`_simulate_reaction()`, :code:`_compute_success()`, :code:`_compute_broken()` methods on Systems class or
 corresponding function classes (described below), which are then passed as a parameter to the system.
 
-.. note:: The System class of also supports operation in modes: **Real** and **Simulated**, based on which, it enables working with a real hardware or a simulated system respectively.
+.. note:: The System class also supports operation in modes: **Real** and **Simulated**, based on which, it enables working with a real hardware or a simulated system respectively.
 
 2. **FctStrans**:
 
@@ -91,7 +91,7 @@ MLPro for re-usability.
 
 **Cross Reference**
 
-- :ref:`API Reference BF-Systems <target_ap_bf_systems>`
-- :ref:`API Reference BF-Systems Sample Pool <target_pool_bf_systems>`
 - :ref:`Howto BF-SYSTEMS-001: System, Controller, Actuator, Sensor <Howto BF SYSTEMS 001>`
 - :ref:`Howto BF-SYSTEMS-002: Systems wrapped with MuJoCo <Howto BF SYSTEMS 002>`
+- :ref:`API Reference BF-Systems <target_ap_bf_systems>`
+- :ref:`API Reference BF-Systems Sample Pool <target_pool_bf_systems>`

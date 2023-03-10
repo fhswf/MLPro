@@ -24,9 +24,9 @@ The details of the multitasking implemented in MLPro are explained in more detai
 In the context of multitasking, the range describes the degree of parallelism of a program function. There are three 
 different degrees:
 
-- Serial
-- Parallel with multithreading
-- Parallel with multiprocessing
+- Synchronous/serial
+- Asynchronous/parallel using multithreading
+- Asynchronous/parallel using multiprocessing
 
 
 **Asynchronous execution of methods**
@@ -47,7 +47,7 @@ consistently reused in higher functions through inheritance. Some examples are :
 and the :ref:`Adaptive Workflows <target_bf_ml_workflows>`.
 
 
-**Gap unter MacOS**
+**Gap under MacOS**
 
 At the time of the creation of MLPro, a technical problem related to multiprocessing occurred on Apple computers 
 under MacOS. This is documented at `Race condition when using multiprocessing BaseManager and Pool in Python3 <https://github.com/python/cpython/issues/88321>`_. It is recommended to 
