@@ -80,8 +80,6 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
                           p_logging=p_logging,
                           **p_kwargs )
         
-        self._output_space.distance = self._calc_loss
-        
         if p_buffer_size > 0:
             ids_            = self.get_hyperparam().get_dim_ids()
             self._buffer    = self.C_BUFFER_CLS(p_size=p_buffer_size,
@@ -140,7 +138,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
             pass 
         
         self._loss_fct = self.get_hyperparam().get_value(ids_[8])()
-        self.optimizer = self.get_hyperparam().get_value(ids_[7])(model.parameters(), lr=self.get_hyperparam().get_value(ids_[12]))
+        self._optimizer = self.get_hyperparam().get_value(ids_[7])(model.parameters(), lr=self.get_hyperparam().get_value(ids_[12]))
 
         return model
     
@@ -360,22 +358,19 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _calc_loss(self, p_act_output:Element, p_pred_output:Element) -> float:
+    def _calc_loss(self, p_act_output:torch.Tensor, p_pred_output:torch.Tensor) -> float:
         """
         This method has a functionality to evaluate the adapted SL model. 
 
         Parameters
         ----------
-        p_act_output : Element
+        p_act_output : torch.Tensor
             Actual output from the buffer.
-        p_pred_output : Element
+        p_pred_output : torch.Tensor
             Predicted output by the SL model.
         """
 
-        model_act_output  = self.output_preproc(p_act_output)
-        model_pred_output = self.output_preproc(p_pred_output)
-
-        return self._loss_fct(model_act_output, model_pred_output)
+        return self._loss_fct(p_act_output, p_pred_output)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -421,16 +416,19 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_offline(self, p_dataset:torch.Tensor) -> bool:
+    def _adapt_offline(self, p_dataset:list) -> bool:
         """
         Adaptation mechanism for PyTorch based model for offline learning.
         """
 
         self._sl_model.train()
-        for i, (In, Label) in enumerate(p_dataset):
+        for i, In in enumerate(p_dataset[0]):
             outputs = self.forward(In)
-            loss    = self._calc_loss(outputs, Label)
+            
+        for i, Label in enumerate(p_dataset[1]):
+            loss = self._calc_loss(outputs, Label)
             self._optimize(loss)
+            
         return True
 
 

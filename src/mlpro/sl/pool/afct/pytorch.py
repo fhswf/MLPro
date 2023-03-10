@@ -13,10 +13,11 @@
 ## -- 2023-02-22  3.0.0     SY        - Shifted from mlpro.sl.afct
 ## --                                 - Release the third version
 ## -- 2023-03-02  3.0.1     SY        Updating and shifting from mlpro.sl.models
+## -- 2023-03-10  3.0.2     SY        Refactoring PyTorchBuffer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.1 (2023-03-02)
+Ver. 3.0.2 (2023-03-10)
 
 This a helper module for supervised learning models using PyTorch. 
 """
@@ -129,7 +130,7 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
         functionalities.
         """
 
-        dataset_size    = len(self._data_buffer)
+        dataset_size    = len(self._data_buffer["input"])
         indices         = list(range(dataset_size))
         split           = int(np.floor(self._testing_data*dataset_size))
         np.random.shuffle(indices)
@@ -137,12 +138,31 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
 
         train_sampler   = SubsetRandomSampler(train_indices)
         test_sampler    = SubsetRandomSampler(test_indices)
-        trainer         = torch.utils.data.DataLoader(self._data_buffer,
-                                                      batch_size=self._batch_size,
-                                                      sampler=train_sampler)
-        tester          = torch.utils.data.DataLoader(self._data_buffer,
-                                                      batch_size=self._batch_size,
-                                                      sampler=test_sampler)
+        trainer         = []
+        tester          = []
+        
+        trainer.append(torch.utils.data.DataLoader(self._data_buffer["input"],
+                                                   batch_size=self._batch_size,
+                                                   sampler=train_sampler
+                                                   )
+                       )
+        trainer.append(torch.utils.data.DataLoader(self._data_buffer["output"],
+                                                   batch_size=self._batch_size,
+                                                   sampler=train_sampler
+                                                   )
+                       )
+        
+        tester.append(torch.utils.data.DataLoader(self._data_buffer["input"],
+                                                   batch_size=self._batch_size,
+                                                   sampler=test_sampler
+                                                   )
+                       )
+        tester.append(torch.utils.data.DataLoader(self._data_buffer["output"],
+                                                   batch_size=self._batch_size,
+                                                   sampler=test_sampler
+                                                   )
+                       )
+        
         return trainer, tester
     
 
