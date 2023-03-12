@@ -26,7 +26,6 @@ Core classes for online adaptive stream processing.
 from mlpro.bf.various import Log
 from mlpro.bf.streams import *
 from mlpro.bf.ml import *
-import mlpro.sl.models as sl
 
 
 
