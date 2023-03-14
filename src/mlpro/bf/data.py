@@ -125,7 +125,7 @@ class DataStoring(Persistent):
         if (p_filename is not None) and (p_filename != ''):
             self.filename = p_filename
         else:
-            self.filename = self.generate_filename()
+            self.filename = self._generate_filename()
 
         if self.filename is None:
             return False
