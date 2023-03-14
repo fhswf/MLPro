@@ -46,5 +46,5 @@ loaded as following:
 
 **Cross Reference**
 
-+ :ref:`Howto BF-STREAMS-101: Basics of Streams <Howto BF STREAMS 101>`
-+ :ref:`API Reference: Streams <target_ap_bf_streams>`
+    + :ref:`Howto BF-STREAMS-101: Basics of Streams <Howto BF STREAMS 101>`
+    + :ref:`API Reference: Streams <target_ap_bf_streams>`
