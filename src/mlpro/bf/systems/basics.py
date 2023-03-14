@@ -684,7 +684,7 @@ class Controller (EventManager):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, ScientificObject):
+class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, ScientificObject):
     """
     Base class for state based systems.
 

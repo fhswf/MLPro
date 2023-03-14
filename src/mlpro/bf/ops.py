@@ -25,7 +25,7 @@ This module provides classes for operation.
 import sys
 from datetime import timedelta
 from matplotlib.figure import Figure
-from mlpro.bf.various import Log, LoadSave, Timer
+from mlpro.bf.various import Log, Persistent, Timer
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import *
 
@@ -99,7 +99,7 @@ class Mode (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class ScenarioBase (Mode, LoadSave, Plottable):
+class ScenarioBase (Mode, Persistent, Plottable):
     """
     Base class for executable scenarios in MLPro. To be inherited and specialized in higher layers.
     

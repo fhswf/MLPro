@@ -36,7 +36,7 @@ import pickle as pkl
 import os
 import csv
 import copy
-from mlpro.bf.various import LoadSave
+from mlpro.bf.various import Persistent
 import random
 
 
@@ -44,7 +44,7 @@ import random
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DataStoring(LoadSave):
+class DataStoring(Persistent):
     """
     This class provides a functionality to store values of variables during
     training/simulation.

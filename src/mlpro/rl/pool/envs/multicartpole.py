@@ -91,7 +91,7 @@ class MultiCartPole (Environment):
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
     def load(p_path, p_filename):
-        mcp = LoadSave.load(p_path, p_filename)
+        mcp = Persistent.load(p_path, p_filename)
         mcp._init_cartpoles()
         return mcp
 

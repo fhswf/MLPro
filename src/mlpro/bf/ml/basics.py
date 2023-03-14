@@ -177,7 +177,7 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Model (Task, LoadSave, ScientificObject):
+class Model (Task, Persistent, ScientificObject):
     """
     Fundamental template class for adaptive ML models. Supports in particular
       - Adaptivity (explicit and/or event based)

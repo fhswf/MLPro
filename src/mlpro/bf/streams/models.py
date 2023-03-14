@@ -295,7 +295,7 @@ class StreamShared (Shared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Stream (Mode, LoadSave, ScientificObject):
+class Stream (Mode, Persistent, ScientificObject):
     """
     Template class for data streams. Objects of this type can be used as iterators.
 
