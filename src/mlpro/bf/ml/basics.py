@@ -63,10 +63,11 @@
 ## -- 2023-03-09  2.1.1     DA       Class TrainingResults: removed parameter p_path
 ## -- 2023-03-10  2.1.2     DA       Class AdaptiveFunction: refactoring constructor parameters
 ## -- 2022-03-10  2.1.3     SY       Refactoring
+## -- 2022-03-16  2.1.4     SY       Add _get_accuracy(), add_objective, _add_objective in Model
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.3 (2023-03-10)
+Ver. 2.1.4 (2023-03-16)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -212,14 +213,15 @@ class Model (Task, LoadSave, ScientificObject):
         Further model specific hyperparameters (to be defined in child class).
     """
 
-    C_TYPE              = 'Model'
-    C_NAME              = '????'
+    C_TYPE                      = 'Model'
+    C_NAME                      = '????'
 
-    C_EVENT_ADAPTED     = 'ADAPTED'
+    C_EVENT_ADAPTED             = 'ADAPTED'  
+    C_EVENT_OBJECTIVE_REACHED   = False   
 
-    C_BUFFER_CLS        = Buffer       
+    C_BUFFER_CLS                = Buffer       
 
-    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_NONE     
+    C_SCIREF_TYPE               = ScientificObject.C_SCIREF_TYPE_NONE
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
@@ -423,9 +425,42 @@ class Model (Task, LoadSave, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def add_objective(self, **p_kwargs):
+        """
+        Determines the objective of the model.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _add_objective(self, **p_kwargs):
+        """
+        This method is called in add_objective(). PLease redefine this method.
+        """
+
+        raise NotImplementedError
+
+
+
+## -------------------------------------------------------------------------------------------------
     def get_accuracy(self) -> float:
         """
         Determines the accuracy of the model.
+
+        Returns
+        -------
+        accuracy : float
+            Accuracy of the model as a scalar value in interval [0,1]
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_accuracy(self) -> float:
+        """
+        This method is called in get_accuracy(). PLease redefine this method.
 
         Returns
         -------
