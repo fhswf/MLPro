@@ -13,10 +13,11 @@
 ## --                                - method setup(): parameters removed
 ## -- 2022-11-12  1.2.1     DA       Class ScenarioBase: minor changes on logging
 ## -- 2022-11-21  1.2.2     DA       Eliminated all uses of super()
+## -- 2023-03-17  1.2.3     DA       Class ScenarioBase: indroducted persistence type
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2022-11-21)
+Ver. 1.2.3 (2023-03-17)
 
 This module provides classes for operation.
 """
@@ -123,8 +124,10 @@ class ScenarioBase (Mode, Persistent, Plottable):
         Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
     """
 
-    C_TYPE      = 'Scenario Base'
-    C_NAME      = '????'
+    C_TYPE          = 'Scenario Base'
+    C_NAME          = '????'
+
+    C_PERSIST_TYPE  = Persistent.C_PERSIST_TYPE_FOLDER
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
@@ -135,6 +138,7 @@ class ScenarioBase (Mode, Persistent, Plottable):
                  p_logging=Log.C_LOG_ALL ):    
 
         # 1 Initialization
+        Persistent.__init__(self, p_logging=False)
         Mode.__init__(self, p_mode, p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
         self._cycle_max     = sys.maxsize

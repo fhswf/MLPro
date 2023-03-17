@@ -62,11 +62,12 @@
 ## --                                - New methods get_training_path()
 ## -- 2023-03-09  2.1.1     DA       Class TrainingResults: removed parameter p_path
 ## -- 2023-03-10  2.1.2     DA       Class AdaptiveFunction: refactoring constructor parameters
-## -- 2022-03-10  2.1.3     SY       Refactoring
+## -- 2023-03-10  2.1.3     SY       Refactoring
+## -- 2023-03-17  2.2.0     DA       Classes Model, Scenario: refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.3 (2023-03-10)
+Ver. 2.2.0 (2023-03-17)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -216,6 +217,8 @@ class Model (Task, Persistent, ScientificObject):
     C_NAME              = '????'
 
     C_EVENT_ADAPTED     = 'ADAPTED'
+
+    C_PERSIST_TYPE      = Persistent.C_PERSIST_TYPE_FOLDER
 
     C_BUFFER_CLS        = Buffer       
 
@@ -642,7 +645,7 @@ class Scenario (ScenarioBase):
                                    p_ada=self._ada, 
                                    p_visualize=self.get_visualization(),
                                    p_logging=self.get_log_level() )
-
+        
         if self._model is None: 
             raise ImplementationError('Please return your ML model in custom method self._setup()')
 
@@ -717,12 +720,22 @@ class Scenario (ScenarioBase):
         if self._visualize: self._model.init_plot()
 
 
+## -------------------------------------------------------------------------------------------------
+    def _save_folder(self, p_path: str) -> bool:
+        model_cls   = self._model.__class__
+        model_path  = p_path + os.sep + 'model'
+        self._model.save( p_path = model_path)
+        self._model = None
+        if not super()._save_folder(p_path): return False
+        self._model = model_cls.load( p_path = model_path)
+
+
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class TrainingResults (Log, Saveable):
+class TrainingResults (Persistent):
     """
     Results of a training (see class Training).
 
@@ -739,7 +752,9 @@ class TrainingResults (Log, Saveable):
 
     """
 
-    C_TYPE      = 'Results '
+    C_TYPE          = 'Results '
+
+    C_PERSIST_TYPE  = Persistent.C_PERSIST_TYPE_FILE
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_logging=Log.C_LOG_WE):
@@ -807,7 +822,7 @@ class TrainingResults (Log, Saveable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def save(self, p_path, p_filename='summary.csv') -> bool:
+    def _save_file(self, p_path, p_filename='summary.csv') -> bool:
         """
         Saves a training summary in the given path.
 
@@ -860,7 +875,7 @@ class TrainingResults (Log, Saveable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamTuner (Log, Saveable):
+class HyperParamTuner (Persistent):
     """
     Template class for hyperparameter tuning (HPT).
     """
