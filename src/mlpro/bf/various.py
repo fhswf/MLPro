@@ -40,7 +40,7 @@
 ## -- 2023-01-14  1.9.1     SY       Add class Label
 ## -- 2023-01-31  1.9.2     SY       Renaming class Label to PersonalisedStamp
 ## -- 2023-02-22  2.0.0     DA       Class Saveable: new custom method _save()
-## -- 2023-03-14  2.1.0     DA       Refactoring persistence:
+## -- 2023-03-19  2.1.0     DA       Refactoring persistence:
 ## --                                - renamed class LoadSave to Persistent
 ## --                                - merged classes Load, Save into Persistent
 ## --                                - introduction of persistence type: file/folder
@@ -48,7 +48,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-03-14)
+Ver. 2.1.0 (2023-03-19)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -258,7 +258,7 @@ class Persistent (Log):
 ## -------------------------------------------------------------------------------------------------
     @classmethod
     def _load_folder(cls, p_path:str):
-        pass
+        return cls._load_file( cls, p_path=p_path, p_filename='self')
 
 
 ## -------------------------------------------------------------------------------------------------
