@@ -37,6 +37,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx.ext.autosectionlabel",
     "sphinx_multitoc_numbering",
+    "sphinxcontrib-jquery",
 ]
 autodoc_member_order = "bysource"
 
@@ -82,9 +83,9 @@ def setup(app):
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 
-html_js_files = [
-    "jquery-3.6.4.min.js",
-]
+# html_js_files = [
+#     "jquery-3.6.4.min.js",
+# ]
 
 html_context = {
     "display_github": True,
