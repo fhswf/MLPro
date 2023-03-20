@@ -37,7 +37,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinx.ext.autosectionlabel",
     "sphinx_multitoc_numbering",
-    "sphinxcontrib-jquery",
+    "sphinxcontrib.jquery",
 ]
 autodoc_member_order = "bysource"
 
