@@ -22,3 +22,6 @@ formats:
 # python:
 #    install:
 #   - requirements: doc/rtd/requirements.txt
+
+conda:
+  environment: doc/rtd/conda_env.yml
