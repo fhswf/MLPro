@@ -40,7 +40,7 @@
 ## -- 2023-01-14  1.9.1     SY       Add class Label
 ## -- 2023-01-31  1.9.2     SY       Renaming class Label to PersonalisedStamp
 ## -- 2023-02-22  2.0.0     DA       Class Saveable: new custom method _save()
-## -- 2023-03-19  2.1.0     DA       Refactoring persistence:
+## -- 2023-03-20  2.1.0     DA       Refactoring persistence:
 ## --                                - renamed class LoadSave to Persistent
 ## --                                - merged classes Load, Save into Persistent
 ## --                                - introduction of persistence type: file/folder
@@ -48,7 +48,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-03-19)
+Ver. 2.1.0 (2023-03-20)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -213,6 +213,7 @@ class Persistent (Log):
         after incompatible changes!
     """
 
+    C_PERSIST_TYPE_NONE : str   = 'None'
     C_PERSIST_TYPE_FILE : str   = 'File'
     C_PERSIST_TYPE_FOLDER : str = 'Folder'
     C_PERSIST_TYPE : str        = C_PERSIST_TYPE_FILE
@@ -226,7 +227,9 @@ class Persistent (Log):
 ## -------------------------------------------------------------------------------------------------
     @classmethod
     def load( cls, p_path:str, p_filename:str = None):
-        if cls.C_PERSIST_TYPE == cls.C_PERSIST_TYPE_FILE:
+        if cls.C_PERSIST_TYPE == cls.C_PERSIST_TYPE_NONE: 
+            return None
+        elif cls.C_PERSIST_TYPE == cls.C_PERSIST_TYPE_FILE:
             return cls._load_file( p_path=p_path, p_filename=p_filename)
         else:
             return cls._load_folder( p_path )
@@ -295,6 +298,9 @@ class Persistent (Log):
         successful : bool
             True, if file content was saved successfully. False otherwise.
         """
+
+        # 0 Check: is persistence turned on?
+        if self.C_PERSIST_TYPE == self.C_PERSIST_TYPE_NONE: return True
 
         # 1 Create folder if it doesn't exist
         if not os.path.exists(p_path): os.makedirs(p_path)

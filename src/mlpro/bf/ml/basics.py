@@ -218,8 +218,6 @@ class Model (Task, Persistent, ScientificObject):
 
     C_EVENT_ADAPTED     = 'ADAPTED'
 
-    C_PERSIST_TYPE      = Persistent.C_PERSIST_TYPE_FOLDER
-
     C_BUFFER_CLS        = Buffer       
 
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_NONE     

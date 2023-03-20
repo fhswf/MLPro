@@ -53,10 +53,11 @@
 ## -- 2023-02-04  1.6.5     SY       Temporarily remove multi-processing on MultiAgent
 ## -- 2023-02-21  1.6.6     DA       Class MultiAgent: removed methods load(), save()
 ## -- 2023-03-10  1.6.7     SY       Class Agent and RLScenarioMBInt : update logging
+## -- 2023-03-20  1.7.0     DA       Refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.7 (2023-03-10) 
+Ver. 1.7.0 (2023-03-20) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -110,6 +111,7 @@ class Policy (Model):
     C_TYPE          = 'Policy'
     C_NAME          = '????'
     C_BUFFER_CLS    = SARSBuffer
+    C_PERSIST_TYPE  = Persistent.C_PERSIST_TYPE_FILE
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
