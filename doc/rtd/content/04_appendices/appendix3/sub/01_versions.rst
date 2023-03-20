@@ -7,4 +7,4 @@ Release Notes on GitHub:
 
 
 Upcoming:
-    - `Upcoming release <https://github.com/fhswf/MLPro/issues?q=is%3Aopen+is%3Aissue+label%3A%22next+release%22>`_    
+    - `Upcoming release <https://github.com/fhswf/MLPro/issues?q=is%3Aissue+label%3A%22next+release%22>`_    
