@@ -15,7 +15,6 @@ optuna==3.0.5
 hyperopt==0.2.7
 pyglet==1.5.27
 sphinx
-sphinx_rtd_theme
 sphinxcontrib-napoleon
 sphinx-copybutton
 sphinx_multitoc_numbering
