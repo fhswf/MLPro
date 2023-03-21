@@ -303,6 +303,7 @@ class Persistent (Id, Log):
 ## -------------------------------------------------------------------------------------------------
     @classmethod
     def load( cls, p_path:str, p_filename:str ):
+
         obj = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
 
         obj.log(Log.C_LOG_TYPE_I, 'Object loaded from file "' + p_path + os.sep + p_filename + '"')
