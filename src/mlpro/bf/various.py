@@ -218,10 +218,25 @@ class Persistent (Log):
     C_PERSIST_TYPE_FOLDER : str = 'Folder'
     C_PERSIST_TYPE : str        = C_PERSIST_TYPE_FILE
     C_PERSIST_VERSION : str     = None
+    C_PERSIST_SUFFIX : str      = '.pkl'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging=p_logging)
+
+        # Persistent objects need unique id and filename
+        self._id = uuid.uuid4()
+        self._filename  = self.C_TYPE + '-' + self._C_NAME + '-' + str(self._id) + self.C_PERSIST_SUFFIX
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_id(self):
+        return self._id
+    
+
+## -------------------------------------------------------------------------------------------------
+    def get_filename(self) -> str:
+        return self._filename
 
 
 ## -------------------------------------------------------------------------------------------------
