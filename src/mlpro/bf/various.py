@@ -40,15 +40,15 @@
 ## -- 2023-01-14  1.9.1     SY       Add class Label
 ## -- 2023-01-31  1.9.2     SY       Renaming class Label to PersonalisedStamp
 ## -- 2023-02-22  2.0.0     DA       Class Saveable: new custom method _save()
-## -- 2023-03-20  2.1.0     DA       Refactoring persistence:
+## -- 2023-03-21  2.1.0     DA       Refactoring persistence:
+## --                                - new class Id
 ## --                                - renamed class LoadSave to Persistent
 ## --                                - merged classes Load, Save into Persistent
-## --                                - introduction of persistence type: file/folder
 ## --                                - logging
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-03-20)
+Ver. 2.1.0 (2023-03-21)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -61,6 +61,54 @@ import dill as pkl
 import os
 import uuid
 from mlpro.bf.exceptions import *
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Id:
+    """
+    Property class that inherits a unique id and related get/set-methods to a child class.
+
+    Parameters
+    ----------
+    p_id
+        Optional external id
+
+    Attributes
+    _id
+        Unique id of the object.
+
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_id = None):
+        self.set_id(p_id=p_id)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_id(self):
+        return self._id
+    
+
+## -------------------------------------------------------------------------------------------------
+    def set_id(self, p_id = None):
+        """
+        Sets/generates a new id.
+
+        Parameters
+        ----------
+        p_id
+            Optional external id. If None, a unique id is generated.
+        """
+
+        if p_id is not None:
+            self._id = p_id
+        else:
+            self._id = uuid.uuid4()
+
 
 
 
@@ -189,109 +237,78 @@ class Log:
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Persistent (Log):
+class Persistent (Id, Log):
     """
     Property class that inherits persistence to its child classes.
 
     Parameters
     ----------
+    p_id
+        Optional external id
     p_logging
         Log level (see constants C_LOG_*). Default: Log.C_LOG_ALL
-
-    Attributes
-    ----------
-    C_PERSIST_TYPE_FILE : str = 'File'
-        Persistence type 'File'. If this type is set, the entire object is stored as one file.  
-    C_PERSIST_TYPE_FOLDER : str = 'Folder'
-        Persistence type 'Folder'. If this type is set, the entire object is stored in a 
-        (deep custom) folder structure. The object itself is serialized to file 'self.pkl' within
-        the folder.
-    C_PERSIST_TYPE : str
-        Persistence type of the class. Default = C_PERSIST_TYPE_FILE.
-    C_PERSIST_VERSION : str = None
-        Version of the persistence implementation. Please set on custom implementation and update
-        after incompatible changes!
     """
 
-    C_PERSIST_TYPE_NONE : str   = 'None'
-    C_PERSIST_TYPE_FILE : str   = 'File'
-    C_PERSIST_TYPE_FOLDER : str = 'Folder'
-    C_PERSIST_TYPE : str        = C_PERSIST_TYPE_FILE
-    C_PERSIST_VERSION : str     = None
-    C_PERSIST_SUFFIX : str      = '.pkl'
+    C_SUFFIX : str  = '.pkl'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging=p_logging)
+    def __init__(self, p_id=None, p_logging=Log.C_LOG_ALL):
+        Id.__init__(self, p_id=p_id)
+        Log.__init__(self, p_logging=p_logging)
 
-        # Persistent objects need unique id and filename
-        self._id = uuid.uuid4()
-        self._filename  = self.C_TYPE + '-' + self._C_NAME + '-' + str(self._id) + self.C_PERSIST_SUFFIX
+        # Persistent objects need a unique filename
+        self.set_filename( p_filename_stub = self.__class__.__name__ + '[' + str(self.get_id()) + ']')
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        return self._id
-    
+    def get_filename_stub(self) -> str:
+        """
+        Returns the unique filename of the object without a suffix.
+
+        Returns
+        -------
+        filename_stub : str
+            Filename stub.
+        """
+
+        return self._filename_stub
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_filename(self) -> str:
-        return self._filename
-
-
-## -------------------------------------------------------------------------------------------------
-    @classmethod
-    def load( cls, p_path:str, p_filename:str = None):
-        if cls.C_PERSIST_TYPE == cls.C_PERSIST_TYPE_NONE: 
-            return None
-        elif cls.C_PERSIST_TYPE == cls.C_PERSIST_TYPE_FILE:
-            return cls._load_file( p_path=p_path, p_filename=p_filename)
-        else:
-            return cls._load_folder( p_path )
-    
-
-## -------------------------------------------------------------------------------------------------
-    @classmethod
-    def _load_file( cls, p_path:str, p_filename:str):
         """
-        Loads content from the given file using dill. Can be redefined if the child class can't be
-        serialized/deserialized directly.
-
-        Parameters
-        ----------
-        p_path : str          
-            Path that contains the file 
-        p_filename : str      
-            File name
-
-        Returns 
-        -------
-        object : any
-            A loaded object, if file content was loaded successfully. None otherwise.
-        """
-
-        return pkl.load(open(p_path + os.sep + p_filename, 'rb'))
-
-
-## -------------------------------------------------------------------------------------------------
-    @classmethod
-    def _load_folder(cls, p_path:str):
-        return cls._load_file( cls, p_path=p_path, p_filename='self')
-
-
-## -------------------------------------------------------------------------------------------------
-    def _generate_filename(self) -> str:
-        """
-        Custom method to be redefined in case of use of internal generated file names.
+        Returns the full unique filename of the object including the suffix.
 
         Returns
         -------
         filename : str
-            Internal unique filename. 
+            Full filename.
         """
 
-        raise NotImplementedError
+        return self._filename
+    
 
+## -------------------------------------------------------------------------------------------------
+    def set_filename(self, p_filename_stub:str, p_suffix:str=None):
+        self._filename_stub = p_filename_stub
+        
+        if p_suffix is not None:
+            self._suffix = p_suffix 
+        else:
+            self._suffix = self.C_SUFFIX
+
+        self._filename = self._filename_stub + self._suffix
+    
+
+## -------------------------------------------------------------------------------------------------
+    @classmethod
+    def load( cls, p_path:str, p_filename:str ):
+        obj = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
+
+        obj.log(Log.C_LOG_TYPE_I, 'Object loaded from file "' + p_path + os.sep + p_filename + '"')
+
+        return obj
+    
 
 ## -------------------------------------------------------------------------------------------------
     def save(self, p_path:str, p_filename:str=None) -> bool:
@@ -306,7 +323,7 @@ class Persistent (Log):
         p_path : str
             Path where file will be saved
         p_filename : str = None      
-            File name (if None an internal filename will be generated)
+            File name (if None an internal filename will be used)
 
         Returns
         -------
@@ -314,51 +331,21 @@ class Persistent (Log):
             True, if file content was saved successfully. False otherwise.
         """
 
-        # 0 Check: is persistence turned on?
-        if self.C_PERSIST_TYPE == self.C_PERSIST_TYPE_NONE: return True
-
         # 1 Create folder if it doesn't exist
         if not os.path.exists(p_path): os.makedirs(p_path)
+        self._path = p_path
 
-        # 2 Save object depending on its persistence type
-        if self.C_PERSIST_TYPE == self.C_PERSIST_TYPE_FILE:
-
-            # 2.1 Save object as a flat file
-            if (p_filename is not None) and (p_filename != ''):
-                self.filename = p_filename
-            else:
-                self.filename = self._generate_filename()
-
-            if self.filename is None: return False
-
-            return self._save_file( p_path=p_path, p_filename=self.filename)
-        
+        if p_filename is not None:
+            filename = p_filename
         else:
-            # 2.2 Save object as a deep folder
-            return self._save_folder(p_path=p_path)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _save_file(self, p_path, p_filename) -> bool:
-        """
-        Custom method for saving an object. The default implementation is based on pickle/dill. Redefine
-        on demand. See method save() for further details.
-        """
+            filename = self.get_filename()
 
         pkl.dump( obj=self, 
-                  file=open(p_path + os.sep + p_filename + '.pkl', "wb"),
+                  file=open(self._path + os.sep + filename, "wb"),
                   protocol=pkl.HIGHEST_PROTOCOL )
+        
+        self.log(Log.C_LOG_TYPE_I, 'Object saved to file "' + self._path + os.sep + filename + '"')
         return True
-
-
-## -------------------------------------------------------------------------------------------------
-    def _save_folder(self, p_path:str) -> bool:
-        """
-        Custom method for saving an object as a deep folder. Please redefine and call parent-
-        implementation so ensure a standard folder structure.
-        """
-
-        if not self._save_file(p_path=p_path, p_filename='self'): return False
 
 
 
