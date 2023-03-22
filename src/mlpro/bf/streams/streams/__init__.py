@@ -4,3 +4,5 @@ from mlpro.bf.streams.streams.doublespiral2d import *
 from mlpro.bf.streams.streams.clouds2d_static import *
 from mlpro.bf.streams.streams.clouds3d_static import *
 from mlpro.bf.streams.streams.csv_file import *
+from mlpro.bf.streams.streams.clouds2d_dynamic import *
+from mlpro.bf.streams.streams.clouds3d_dynamic import *
