@@ -5,12 +5,13 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-03-22  0.0.0     SR       Creation 
-## -- 2023-03-22  1.0.0     SR       First draft implementation
+## -- 2023-03-22  0.0.0     SP       Creation 
+## -- 2023-03-22  1.0.0     SP       First draft implementation
+## -- 2023-03-22  1.0.1     SP       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-22)
+Ver. 1.0.1 (2023-03-22)
 
 This module provides the native stream class StreamMLProStaticClouds2D. This stream provides 1000 
 instances with 2-dimensional random feature data placed around four centers which move over time.
