@@ -5,11 +5,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-03-21  1.0.0     DA       Creation/Release
+## -- 2023-03-22  1.0.0     DA       Creation/Release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-21)
+Ver. 1.0.0 (2023-03-22)
 
 This module demonstrates the basic persistence functionalities of MLPro.
 
@@ -21,7 +21,7 @@ You will learn:
 
 3. How to load an object of your custom class from a file
 
-4. How to load/save internal data that can not be pickled
+4. How to implement custom methods to separately save internal data that can not be pickled
 
 """
 
@@ -67,14 +67,11 @@ class MyClass (Persistent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __setstate__(self, p_state):
-
-        # 1 Update object state 
-        self.__dict__.update(p_state)
+    def _complete_state(self, p_path: str, p_filename_stub: str):
+        # Complete object state from separate external data file
         self._separate_data = {}
 
-        # 2 Complete separate data from origin file
-        with open(self._path + os.sep + self._filename_stub + '.dat', 'r') as f:
+        with open(p_path + os.sep + p_filename_stub + '.dat', 'r') as f:
             for line in f:
                 (key, value) = line.split(sep='=')
                 (value, nl) = value.split(sep='\n')
@@ -82,19 +79,15 @@ class MyClass (Persistent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __getstate__(self):
+    def _reduce_state(self, p_state: dict, p_path: str, p_filename_stub: str):
 
         # 1 Persist all separate data that can/shall not be pickled
-        with open(self._path + os.sep + self._filename_stub + '.dat', 'w') as f:
-            for key in self._separate_data.keys():
-                f.write(key + '=' + self._separate_data[key] + '\n')
+        with open(p_path + os.sep + p_filename_stub + '.dat', 'w') as f:
+            for key in p_state['_separate_data'].keys():
+                f.write(key + '=' + p_state['_separate_data'][key] + '\n')
 
         # 2 Remove separate data from object state
-        state = self.__dict__.copy()
-        del state['_separate_data']
-
-        # 3 Return reduced state
-        return state
+        del p_state['_separate_data']
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -117,7 +110,7 @@ else:
     logging = Log.C_LOG_NOTHING
 
 now     = datetime.now()
-path    = str(Path.home()) + os.sep + '%04d-%02d-%02d  %02d:%02d:%02d ' % (now.year, now.month, now.day, now.hour, now.minute, now.second) + ' MLPro Persistence Test'
+path    = str(Path.home()) + os.sep + '%04d-%02d-%02d %02d.%02d.%02d ' % (now.year, now.month, now.day, now.hour, now.minute, now.second) + ' MLPro Persistence Test'
 
 
 # 2 Instantiate the demo object

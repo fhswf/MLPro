@@ -40,7 +40,7 @@
 ## -- 2023-01-14  1.9.1     SY       Add class Label
 ## -- 2023-01-31  1.9.2     SY       Renaming class Label to PersonalisedStamp
 ## -- 2023-02-22  2.0.0     DA       Class Saveable: new custom method _save()
-## -- 2023-03-21  2.1.0     DA       Refactoring persistence:
+## -- 2023-03-22  2.1.0     DA       Refactoring persistence:
 ## --                                - new class Id
 ## --                                - renamed class LoadSave to Persistent
 ## --                                - merged classes Load, Save into Persistent
@@ -48,7 +48,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-03-21)
+Ver. 2.1.0 (2023-03-22)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -62,6 +62,8 @@ import os
 import uuid
 from mlpro.bf.exceptions import *
 
+
+g_persistence_load_paths = {}
 
 
 
@@ -304,6 +306,8 @@ class Persistent (Id, Log):
     @classmethod
     def load( cls, p_path:str, p_filename:str ):
 
+        g_persistence_load_paths[cls.__name__] = p_path
+
         obj = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
 
         obj.log(Log.C_LOG_TYPE_I, 'Object loaded from file "' + p_path + os.sep + p_filename + '"')
@@ -334,7 +338,7 @@ class Persistent (Id, Log):
 
         # 1 Create folder if it doesn't exist
         if not os.path.exists(p_path): os.makedirs(p_path)
-        self._path = p_path
+        g_persistence_load_paths[self.__class__.__name__] = p_path
 
         if p_filename is not None:
             filename = p_filename
@@ -342,11 +346,89 @@ class Persistent (Id, Log):
             filename = self.get_filename()
 
         pkl.dump( obj=self, 
-                  file=open(self._path + os.sep + filename, "wb"),
+                  file=open(p_path + os.sep + filename, "wb"),
                   protocol=pkl.HIGHEST_PROTOCOL )
         
-        self.log(Log.C_LOG_TYPE_I, 'Object saved to file "' + self._path + os.sep + filename + '"')
+        self.log(Log.C_LOG_TYPE_I, 'Object saved to file "' + p_path + os.sep + filename + '"')
         return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def __setstate__(self, p_state:dict):
+        """
+        Python standard method to set the internal object state during unpickling from file.
+        The custom method _complete_state() is called to complete the state from further external
+        sources.
+
+        Parameters
+        ----------
+        p_state : dict
+            Incoming object state dictionary to be completed.
+        """
+
+        # 1 Update object state 
+        self.__dict__.update(p_state)
+
+        # 2 Call custom method to complete the object state
+        self._complete_state( p_path=g_persistence_load_paths[self.__class__.__name__],
+                              p_filename_stub=self.get_filename_stub() )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _complete_state(self, p_path:str, p_filename_stub:str):
+        """
+        Custom method to complete the object state (=self) from external data sources. This method
+        is called by standard method __setstate__() during unpickling the object from an external
+        file. 
+
+        Parameters
+        ----------
+        p_path : str
+            Path of the object pickle file (and further optional related files)
+        p_filename_stub : str
+            Filename stub to be used for further optional custom data files
+        """
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def __getstate__(self) -> dict:
+        """
+        Python standard method to get the internal object state during pickling from file.
+        The custom method _reduce_state() is called to remove data or object references from the
+        state that can not be pickled.
+
+        Returns
+        ----------
+        state : dict
+            (Reduced) object state dictionary to be pickled.
+        """
+
+        state = self.__dict__.copy()
+        self._reduce_state( p_state=state, 
+                            p_path=g_persistence_load_paths[self.__class__.__name__], 
+                            p_filename_stub=self.get_filename_stub() )
+        return state
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reduce_state(self, p_state:dict, p_path:str, p_filename_stub:str):
+        """
+        Custom method to reduce the given object state by components that can not be pickled. 
+        Further data files can be created in the given path and should use the given filename stub.
+
+        Parameters
+        ----------
+        p_state : dict
+            Object state dictionary to be reduced by components that can not be pickled.
+        p_path : str
+            Path to store further optional custom data files
+        p_filename_stub : str
+            Filename stub to be used for further optional custom data files
+        """
+
+        pass
 
 
 
