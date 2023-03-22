@@ -5,8 +5,8 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-03-22  0.0.0     DA       Creation 
-## -- 2023-03-22  1.0.0     DA       First draft implementation
+## -- 2023-03-22  0.0.0     SR       Creation 
+## -- 2023-03-22  1.0.0     SR       First draft implementation
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -111,17 +111,17 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
             for i in range(int(self.C_NUM_INSTANCES / 8)):
                 for j in range(4):
                     dataset[i*4+j] = centers[j] + c[i*4+j]
-                    centers[j] += (0-centers[j])/(int(self.C_NUM_INSTANCES / 8)-i)
+                    centers[j] = centers[j] + (0-centers[j])/(int(self.C_NUM_INSTANCES / 8)-i)
             for i in range(int(self.C_NUM_INSTANCES / 8)):
                 for j in range(4):
                     dataset[500+i*4+j] = centers[j] + c[i*4+j]
-                    centers[j] += (final_centers[j]-centers[j])/(int(self.C_NUM_INSTANCES / 8)-i)
+                    centers[j] = centers[j] + (final_centers[j]-centers[j])/(int(self.C_NUM_INSTANCES / 8)-i)
 
         else:
             for i in range(int(self.C_NUM_INSTANCES / 4)):
                 for j in range(4):
                     dataset[i*4+j] = centers[j] + c[i*4+j]
-                    centers[j] += (final_centers[j]-centers[j])/(int(self.C_NUM_INSTANCES / 4)-i)
+                    centers[j] = centers[j] + (final_centers[j]-centers[j])/(int(self.C_NUM_INSTANCES / 4)-i)
 
         self._dataset = dataset
 
