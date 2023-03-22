@@ -38,8 +38,8 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
     C_BOUNDARIES        = [-10,10]
 
 
-    def __init__(self, pattern='random'):
-        super().__init__()
+    def __init__(self, pattern='random', p_logging=Log.C_LOG_ALL, **p_kwargs):
+        StreamMLProBase.__init__(self, pattern='random', p_logging=Log.C_LOG_ALL, **p_kwargs)
         self.pattern             = pattern # random, static, random chain and merge
 
 
