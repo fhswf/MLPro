@@ -7,7 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-22  0.0.0     SR       Creation 
 ## -- 2023-03-22  1.0.0     SR       First draft implementation
-## -- 2023-03-22  1.0.1     SP       Corrections
+## -- 2023-03-23  1.0.2     SP       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -36,7 +36,7 @@ class StreamMLProDynamicClouds3D (StreamMLProBase):
     C_VERSION           = '1.0.0'
     C_NUM_INSTANCES     = 2000
     C_SCIREF_ABSTRACT   = 'Demo stream provides 2000 3-dimensional instances randomly positioned around eight centers which move over time.'
-    C_BOUNDARIES        = [-10,10]
+    C_BOUNDARIES        = [-100,100]
 
     def __init__(self, pattern='random', p_logging=Log.C_LOG_ALL, **p_kwargs):
         StreamMLProBase.__init__(self, pattern='random', p_logging=Log.C_LOG_ALL, **p_kwargs)

@@ -7,7 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-22  0.0.0     SP       Creation 
 ## -- 2023-03-22  1.0.0     SP       First draft implementation
-## -- 2023-03-22  1.0.1     SP       Corrections
+## -- 2023-03-23  1.0.2     SP       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
