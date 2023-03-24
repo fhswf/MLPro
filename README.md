@@ -2,6 +2,7 @@
 [![Documentation Status](https://readthedocs.org/projects/mlpro/badge/?version=latest)](https://mlpro.readthedocs.io/en/latest/?badge=latest)
 [![PyPI version](https://badge.fury.io/py/mlpro.svg)](https://badge.fury.io/py/mlpro)
 [![Anaconda-Version Badge](https://anaconda.org/mlpro/mlpro/badges/version.svg)](https://anaconda.org/mlpro/mlpro)
+[![Anaconda-Downloads Badge]([https://anaconda.org/mlpro/mlpro/badges/version.svg](https://img.shields.io/conda/dn/mlpro/mlpro?color=green&label=Anaconda.org%20Total%20downloads&style=flat-square)](https://anaconda.org/mlpro/mlpro)
 [![PyPI Total Downloads](https://static.pepy.tech/personalized-badge/mlpro?period=total&units=international_system&left_color=blue&right_color=orange&left_text=PyPI%20Total%20Downloads)](https://pepy.tech/project/mlpro)
 [![PyPI Last Month Downloads](https://static.pepy.tech/personalized-badge/mlpro?period=month&units=international_system&left_color=blue&right_color=orange&left_text=PyPI%20Last%20Month%20Downloads)](https://pepy.tech/project/mlpro)
 
