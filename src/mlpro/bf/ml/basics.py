@@ -752,8 +752,6 @@ class TrainingResults (Persistent):
 
     C_TYPE          = 'Results '
 
-    C_PERSIST_TYPE  = Persistent.C_PERSIST_TYPE_FILE
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_logging=Log.C_LOG_WE):
         self.scenario           = p_scenario
@@ -771,7 +769,7 @@ class TrainingResults (Persistent):
 
         self.custom_results     = []
 
-        Log.__init__(self, p_logging=p_logging)
+        Persistent.__init__( self, p_id=None, p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -820,7 +818,17 @@ class TrainingResults (Persistent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _save_file(self, p_path, p_filename='summary.csv') -> bool:
+    @classmethod
+    def load(cls, p_path: str, p_filename: str):
+        """
+        Loading training results is explicitely disabled.
+        """
+        
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def save(self, p_path: str, p_filename: str = 'summary.csv') -> bool:
         """
         Saves a training summary in the given path.
 

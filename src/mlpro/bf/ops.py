@@ -13,11 +13,11 @@
 ## --                                - method setup(): parameters removed
 ## -- 2022-11-12  1.2.1     DA       Class ScenarioBase: minor changes on logging
 ## -- 2022-11-21  1.2.2     DA       Eliminated all uses of super()
-## -- 2023-03-17  1.2.3     DA       Class ScenarioBase: indroducted persistence type
+## -- 2023-03-25  1.2.3     DA       Class ScenarioBase: new parent class Persistent
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.3 (2023-03-17)
+Ver. 1.2.3 (2023-03-25)
 
 This module provides classes for operation.
 """
@@ -25,7 +25,6 @@ This module provides classes for operation.
 
 import sys
 from datetime import timedelta
-from matplotlib.figure import Figure
 from mlpro.bf.various import Log, Persistent, Timer
 from mlpro.bf.plot import Plottable
 from mlpro.bf.events import *
@@ -114,6 +113,8 @@ class ScenarioBase (Mode, Persistent, Plottable):
     ----------
     p_mode
         Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+    p_id
+        Optional external id
     p_cycle_limit : int
         Maximum number of cycles. Default = 0 (no limit).
     p_auto_setup : bool
@@ -127,18 +128,17 @@ class ScenarioBase (Mode, Persistent, Plottable):
     C_TYPE          = 'Scenario Base'
     C_NAME          = '????'
 
-    C_PERSIST_TYPE  = Persistent.C_PERSIST_TYPE_FOLDER
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
                  p_mode,       
+                 p_id = None,
                  p_cycle_limit=0,  
                  p_auto_setup:bool = True,
                  p_visualize:bool=True,              
                  p_logging=Log.C_LOG_ALL ):    
 
         # 1 Initialization
-        Persistent.__init__(self, p_logging=False)
+        Persistent.__init__(self, p_id = p_id, p_logging=False )
         Mode.__init__(self, p_mode, p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
         self._cycle_max     = sys.maxsize
