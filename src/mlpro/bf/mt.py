@@ -524,8 +524,8 @@ class Task (Async, EventManager, Plottable, Persistent):
         self._num_predecessors  = 0
         self._ctr_predecessors  = 0
 
-        Async.__init__(self, p_range_max=p_range_max, p_class_shared=p_class_shared, p_logging=Log.C_LOG_NOTHING)
-        EventManager.__init__(self, p_logging=Log.C_LOG_NOTHING)
+        Async.__init__(self, p_range_max=p_range_max, p_class_shared=p_class_shared, p_logging=p_logging)
+        EventManager.__init__(self, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
         Persistent.__init__(self, p_id=None, p_logging=p_logging)
 
@@ -535,8 +535,7 @@ class Task (Async, EventManager, Plottable, Persistent):
         if p_name is not None:
             self.set_name(name + p_name)
         else:
-            self.set_name(name + str(self._id))
-
+            self.set_name(name + str(self.get_id()))
 
         self._autorun(p_autorun=p_autorun, p_kwargs=self._kwargs)
 

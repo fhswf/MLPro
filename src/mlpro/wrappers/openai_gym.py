@@ -48,10 +48,11 @@
 ## -- 2023-01-14  1.4.8     MRD      Separate reset function for gym, reset_old and reset_new
 ## -- 2023-02-18  1.5.0     DA       Added minimum version 0.21.0
 ## -- 2023-02-20  1.6.0     DA       Class WrEnvGym2MLPro: specific implementations for load(), _save()
+## -- 2023-03-26  1.7.0     DA       Class WrEnvGym2MLPro: refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.0 (2023-02-20)
+Ver. 1.7.0 (2023-03-26)
 
 This module provides wrapper classes for OpenAI Gym environments.
 
@@ -137,40 +138,20 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def load(p_path, p_filename):
-        mlpro_env = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
-        mlpro_env._gym_env = gym.make(mlpro_env._gym_env_id)
-        return mlpro_env
-
-
-## -------------------------------------------------------------------------------------------------
-    def _save(self, p_path, p_filename) -> bool:
+    def _reduce_state(self, p_state:dict, p_path:str, p_filename_stub:str):
         """
         The embedded Gym env itself can't be pickled due to it's dependencies on Pygame. That's why
-        the current env instance needs to be removed before pickling the object. After that a fresh
-        Gym env with same id is instantiated. Current inner state informations get lost.
+        the current env instance needs to be removed before pickling the object. 
 
         See also: https://stackoverflow.com/questions/52336196/how-to-save-object-using-pygame-surfaces-to-file-using-pickle
         """
 
-        # 1 Try to pickle/dill the entire environment...
-        try:
-            pkl.dump( obj=self, 
-                      file=open(p_path + os.sep + p_filename, "wb"),
-                      protocol=pkl.HIGHEST_PROTOCOL )
-            self.log(Log.C_LOG_TYPE_I, 'Env successfully stored')
-        except:
-            pass
+        p_state['_gym_env'] = None
 
-        # 2 Store the empty wrapper object without embedded env and re-initialize 
-        self._gym_env = None 
-        pkl.dump( obj=self, 
-                  file=open(p_path + os.sep + p_filename, "wb"),
-                  protocol=pkl.HIGHEST_PROTOCOL )
+
+## -------------------------------------------------------------------------------------------------
+    def _complete_state(self, p_path:str, p_filename_stub:str):
         self._gym_env = gym.make(self._gym_env_id)
-        self.log(Log.C_LOG_TYPE_W, 'Wrapper stored without env. Env is recovered, but state was lost.')
-        return True
 
 
 ## -------------------------------------------------------------------------------------------------

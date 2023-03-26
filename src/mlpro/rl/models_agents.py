@@ -111,25 +111,24 @@ class Policy (Model):
     C_TYPE          = 'Policy'
     C_NAME          = '????'
     C_BUFFER_CLS    = SARSBuffer
-    C_PERSIST_TYPE  = Persistent.C_PERSIST_TYPE_FILE
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_observation_space: MSpace,
-                 p_action_space: MSpace,
-                 p_buffer_size=1,
-                 p_ada=True,
-                 p_visualize:bool=False,
-                 p_logging=Log.C_LOG_ALL):
+    def __init__( self,
+                  p_observation_space : MSpace,
+                  p_action_space : MSpace,
+                  p_buffer_size : int = 1,
+                  p_ada : bool = True,
+                  p_visualize : bool = False,
+                  p_logging = Log.C_LOG_ALL ):
                  
-        super().__init__( p_buffer_size=p_buffer_size, 
-                          p_ada=p_ada, 
-                          p_visualize=p_visualize, 
-                          p_logging=p_logging )
+        Model.__init__( self, 
+                        p_buffer_size = p_buffer_size, 
+                        p_ada = p_ada,  
+                        p_visualize = p_visualize, 
+                        p_logging = p_logging )
 
         self._observation_space = p_observation_space
-        self._action_space = p_action_space
-        self.set_id(0)
+        self._action_space      = p_action_space
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -140,16 +139,6 @@ class Policy (Model):
 ## -------------------------------------------------------------------------------------------------
     def get_action_space(self) -> MSpace:
         return self._action_space
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        return self._id
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_id(self, p_id):
-        self._id = p_id
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -502,8 +491,6 @@ class Agent (Policy):
         self._previous_observation = None
         self._previous_action = None
         self._policy = p_policy
-        self._action_space = self._policy.get_action_space()
-        self._observation_space = self._policy.get_observation_space()
         self._envmodel = p_envmodel
         self._em_acc_thsld = p_em_acc_thsld
         self._action_planner = p_action_planner
@@ -511,12 +498,15 @@ class Agent (Policy):
         self._controlling_horizon = p_controlling_horizon
         self._planning_width = p_planning_width
 
+        Policy.__init__( self, 
+                         p_observation_space = self._policy.get_observation_space(),
+                         p_action_space = self._policy.get_action_space(),
+                         p_buffer_size = 0,
+                         p_ada = p_ada,
+                         p_visualize = p_visualize,
+                         p_logging = p_logging )
+
         self._set_id(p_id)
-
-        Log.__init__(self, p_logging)
-        self.switch_adaptivity(p_ada)
-        Plottable.__init__(self, p_visualize=p_visualize)
-
         self.clear_buffer()
 
         if self._action_planner is not None:
@@ -525,21 +515,6 @@ class Agent (Policy):
                                        p_prediction_horizon=self._predicting_horizon,
                                        p_control_horizon=self._controlling_horizon,
                                        p_width_limit=self._planning_width)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _set_id(self, p_id):
-        super().set_id(p_id)
-        self._policy.set_id(p_id)
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_id(self, p_id):
-        """
-        The unique agent id will be defined while instantiation and can't be changed anymore.
-        """
-
-        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -735,7 +710,7 @@ class Agent (Policy):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiAgent(Agent):
+class MultiAgent (Agent):
     """
     Multi-Agent.
 
@@ -753,18 +728,21 @@ class MultiAgent(Agent):
 
     C_TYPE      = 'Multi-Agent'
     C_NAME      = ''
-    C_SUFFIX    = '.cfg'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name='', p_ada=True, p_visualize:bool=False, p_logging=True):
+    def __init__( self, 
+                  p_name : str = '', 
+                  p_ada : bool = True, 
+                  p_visualize : bool = False, 
+                  p_logging = Log.C_LOG_ALL ):
+
+        Model.__init__( p_ada = p_ada,
+                        p_name = p_name,
+                        p_visualize = p_visualize,
+                        p_logging = p_logging )
+
         self._agents = []
         self._agent_ids = []
-        self.set_name(p_name)
-
-        Log.__init__(self, p_logging)
-        Plottable.__init__(self, p_visualize=p_visualize)
-        self.switch_adaptivity(p_ada)
-        self._set_adapted(False)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -789,43 +767,6 @@ class MultiAgent(Agent):
 
         for agent_entry in self._agents:
             agent_entry[0].set_log_level(p_level)
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def get_filename(self) -> str:
-#         return self.C_TYPE + ' ' + self.C_NAME + self.C_SUFFIX
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def load(self, p_path, p_filename=None) -> bool:
-#         # load all subagents
-#         for i, agent_entry in enumerate(self._agents):
-#             agent = agent_entry[0]
-#             agent_name = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
-
-#             if agent.load(p_path, agent_name + agent.C_SUFFIX):
-#                 self.log(Log.C_LOG_TYPE_I, agent_name + ' loaded')
-#             else:
-#                 self.log(Log.C_LOG_TYPE_E, agent_name + ' not loaded')
-#                 return False
-
-#         return True
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def save(self, p_path, p_filename=None) -> bool:
-#         # save all subagents
-#         for i, agent_entry in enumerate(self._agents):
-#             agent = agent_entry[0]
-#             agent_name = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
-
-#             if agent.save(p_path, agent_name + agent.C_SUFFIX):
-#                 self.log(Log.C_LOG_TYPE_I, agent_name + ' saved')
-#             else:
-#                 self.log(Log.C_LOG_TYPE_E, agent_name + ' not saved')
-#                 return False
-
-#         return True
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -138,7 +138,7 @@ class ScenarioBase (Mode, Persistent, Plottable):
                  p_logging=Log.C_LOG_ALL ):    
 
         # 1 Initialization
-        Persistent.__init__(self, p_id = p_id, p_logging=False )
+        Persistent.__init__(self, p_id = p_id, p_logging=p_logging )
         Mode.__init__(self, p_mode, p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
         self._cycle_max     = sys.maxsize

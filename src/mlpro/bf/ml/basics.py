@@ -63,11 +63,11 @@
 ## -- 2023-03-09  2.1.1     DA       Class TrainingResults: removed parameter p_path
 ## -- 2023-03-10  2.1.2     DA       Class AdaptiveFunction: refactoring constructor parameters
 ## -- 2023-03-10  2.1.3     SY       Refactoring
-## -- 2023-03-17  2.2.0     DA       Classes Model, Scenario: refactoring of persistence
+## -- 2023-03-26  2.2.0     DA       Classes Model, Scenario: refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2023-03-17)
+Ver. 2.2.0 (2023-03-26)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -178,7 +178,7 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Model (Task, Persistent, ScientificObject):
+class Model (Task, ScientificObject):
     """
     Fundamental template class for adaptive ML models. Supports in particular
       - Adaptivity (explicit and/or event based)
@@ -622,7 +622,9 @@ class Scenario (ScenarioBase):
                  p_visualize:bool=True,              
                  p_logging=Log.C_LOG_ALL ):  
 
-        self._ada = p_ada
+        self._ada            = p_ada
+        self._model_cls      = None
+        self._model_filename = None
 
         super().__init__( p_mode=p_mode,
                           p_cycle_limit=p_cycle_limit,
@@ -646,6 +648,9 @@ class Scenario (ScenarioBase):
         
         if self._model is None: 
             raise ImplementationError('Please return your ML model in custom method self._setup()')
+        
+        self._model_cls      = self._model.__class__
+        self._model_filename = self._model.get_filename()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -719,14 +724,27 @@ class Scenario (ScenarioBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _save_folder(self, p_path: str) -> bool:
-        model_cls   = self._model.__class__
-        model_path  = p_path + os.sep + 'model'
-        self._model.save( p_path = model_path)
-        self._model = None
-        if not super()._save_folder(p_path): return False
-        self._model = model_cls.load( p_path = model_path)
+    def _reduce_state(self, p_state: dict, p_path: str, p_filename_stub: str):
 
+        # 1 Persist model into a separate subfolder
+        model_path  = p_path + os.sep + 'model'
+        try:
+            p_state['_model'].save(p_path=model_path)
+        except:
+            return
+
+        # 2 Exclude model from scenario
+        p_state['_model'] = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _complete_state(self, p_path: str, p_filename_stub: str):
+
+        # Load model from separate subfolder
+        if self._model_cls is None: return
+        model_path  = p_path + os.sep + 'model'
+        self._model = self._model_cls.load(p_path=model_path, p_filename=self._model_filename)
+        
 
 
 
