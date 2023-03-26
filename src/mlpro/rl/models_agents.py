@@ -506,7 +506,7 @@ class Agent (Policy):
                          p_visualize = p_visualize,
                          p_logging = p_logging )
 
-        self._set_id(p_id)
+        self.set_id(p_id)
         self.clear_buffer()
 
         if self._action_planner is not None:
@@ -530,14 +530,23 @@ class Agent (Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self, **p_par):
-        self._hyperparam_space = self._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
-        if self._envmodel is not None:
-            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set(), p_new_dim_ids=False)
 
+        # 1 Create a dispatcher hyperparameter tuple for the agent
         self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
-        self._hyperparam_tuple.add_hp_tuple(self._policy.get_hyperparam())
-        if self._envmodel is not None:
+
+        # 2 Extend agent's hp space and tuple from policy
+        try:
+            self._hyperparam_space.append( self._policy.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+            self._hyperparam_tuple.add_hp_tuple(self._policy.get_hyperparam())
+        except:
+            pass
+
+        # 3 Extend agent's hp space and tuple from an optional environment model
+        try:
+            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set(), p_new_dim_ids=False)
             self._hyperparam_tuple.add_hp_tuple(self._envmodel.get_hyperparam())
+        except:
+            pass
 
         
 ## -------------------------------------------------------------------------------------------------

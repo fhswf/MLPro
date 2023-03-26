@@ -137,7 +137,6 @@ class HyperParamDispatcher (HyperParamTuple):
     To dispatch multiple hp tuples into one tuple
     """
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_set: Set) -> None:
         super().__init__(p_set)
@@ -146,6 +145,7 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
     def add_hp_tuple(self, p_hpt:HyperParamTuple):
+        if p_hpt is None: return
         for idx in p_hpt.get_dim_ids():
             self._hp_dict[idx] = p_hpt
 
@@ -1227,7 +1227,7 @@ class Training (Log):
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR, '\n')
 
             if self._current_path is not None:
-                self._scenario.save(self._current_path, 'scenario')
+                self._scenario.save( p_path=self._current_path + os.sep + 'scenario')
                 
             self._close_results(self._results)
             self._results.log_results()

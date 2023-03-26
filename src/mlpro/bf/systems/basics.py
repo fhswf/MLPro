@@ -816,6 +816,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         FctBroken.__init__(self, p_logging=p_logging)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
+        Persistent.__init__(self, p_id=None, p_logging=p_logging)
 
 
  ## -------------------------------------------------------------------------------------------------
