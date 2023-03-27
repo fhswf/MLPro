@@ -838,7 +838,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reduce_state(self, p_state:dict, p_path:str, p_filename_stub:str):
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
         """
         An embedded MuJoCo system can not be pickled and needs to be removed from the pickle stream.
         """
@@ -847,7 +847,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _complete_state(self, p_path:str, p_filename_stub:str):
+    def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
         
         if self._mujoco_file is None: return
 

@@ -67,11 +67,12 @@ class MyClass (Persistent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _complete_state(self, p_path: str, p_filename_stub: str):
+    def _complete_state(self, p_path: str, p_os_sep: str, p_filename_stub: str):
+
         # Complete object state from separate external data file
         self._separate_data = {}
 
-        with open(p_path + os.sep + p_filename_stub + '.dat', 'r') as f:
+        with open(p_path + p_os_sep + p_filename_stub + '.dat', 'r') as f:
             for line in f:
                 (key, value) = line.split(sep='=')
                 (value, nl) = value.split(sep='\n')
@@ -79,10 +80,10 @@ class MyClass (Persistent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reduce_state(self, p_state: dict, p_path: str, p_filename_stub: str):
+    def _reduce_state(self, p_state: dict, p_path: str, p_os_sep: str, p_filename_stub: str):
 
         # 1 Persist all separate data that can/shall not be pickled
-        with open(p_path + os.sep + p_filename_stub + '.dat', 'w') as f:
+        with open(p_path + p_os_sep + p_filename_stub + '.dat', 'w') as f:
             for key in p_state['_separate_data'].keys():
                 f.write(key + '=' + p_state['_separate_data'][key] + '\n')
 

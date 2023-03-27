@@ -410,12 +410,14 @@ class Persistent (Id, Log):
         self.__dict__.update(p_state)
 
         # 3 Call custom method to complete the object state
-        self._complete_state( p_path=self._get_path(),
-                              p_filename_stub=self.get_filename_stub() )
+        self._os_sep = os.sep
+        self._complete_state( p_path = self._get_path(),
+                              p_os_sep = os.sep,
+                              p_filename_stub = self.get_filename_stub() )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _complete_state(self, p_path:str, p_filename_stub:str):
+    def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
         """
         Custom method to complete the object state (=self) from external data sources. This method
         is called by standard method __setstate__() during unpickling the object from an external
@@ -425,6 +427,8 @@ class Persistent (Id, Log):
         ----------
         p_path : str
             Path of the object pickle file (and further optional related files)
+        p_os_sep : str
+            OS-specific path separator.
         p_filename_stub : str
             Filename stub to be used for further optional custom data files
         """
@@ -488,15 +492,16 @@ class Persistent (Id, Log):
 
         state = self.__dict__.copy()
 
-        self._reduce_state( p_state=state, 
-                            p_path=self._get_path(), 
-                            p_filename_stub=self.get_filename_stub() )           
+        self._reduce_state( p_state = state, 
+                            p_path = self._get_path(), 
+                            p_os_sep = os.sep,
+                            p_filename_stub = self.get_filename_stub() )           
 
         return state
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reduce_state(self, p_state:dict, p_path:str, p_filename_stub:str):
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
         """
         Custom method to reduce the given object state by components that can not be pickled. 
         Further data files can be created in the given path and should use the given filename stub.
@@ -507,6 +512,8 @@ class Persistent (Id, Log):
             Object state dictionary to be reduced by components that can not be pickled.
         p_path : str
             Path to store further optional custom data files
+        p_os_sep : str
+            OS-specific path separator.
         p_filename_stub : str
             Filename stub to be used for further optional custom data files
         """

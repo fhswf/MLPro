@@ -138,7 +138,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reduce_state(self, p_state:dict, p_path:str, p_filename_stub:str):
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
         """
         The embedded Gym env itself can't be pickled due to it's dependencies on Pygame. That's why
         the current env instance needs to be removed before pickling the object. 
@@ -150,7 +150,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _complete_state(self, p_path:str, p_filename_stub:str):
+    def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
         self._gym_env = gym.make(self._gym_env_id)
 
 

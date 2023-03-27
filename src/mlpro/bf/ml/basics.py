@@ -728,10 +728,10 @@ class Scenario (ScenarioBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reduce_state(self, p_state: dict, p_path: str, p_filename_stub: str):
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
 
         # 1 Persist model into a separate subfolder
-        model_path  = p_path + os.sep + 'model'
+        model_path  = p_path + p_os_sep + 'model'
         try:
             p_state['_model'].save(p_path=model_path)
         except:
@@ -742,11 +742,11 @@ class Scenario (ScenarioBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _complete_state(self, p_path: str, p_filename_stub: str):
+    def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
 
         # Load model from separate subfolder
         if self._model_cls is None: return
-        model_path  = p_path + os.sep + 'model'
+        model_path  = p_path + p_os_sep + 'model'
         self._model = self._model_cls.load(p_path=model_path, p_filename=self._model_filename)
         
 

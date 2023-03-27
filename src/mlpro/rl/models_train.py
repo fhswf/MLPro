@@ -345,13 +345,16 @@ class RLScenario (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _reduce_state(self, p_state: dict, p_path: str, p_filename_stub: str):
-        super()._reduce_state(p_state, p_path, p_filename_stub)
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):        
+        super()._reduce_state( p_state = p_state, 
+                               p_path = p_path,
+                               p_os_sep = p_os_sep, 
+                               p_filename_stub = p_filename_stub )
 
         p_state['_agent'] = None
 
         # 1 Persist environment into a separate subfolder
-        env_path = p_path + os.sep + 'environment'
+        env_path = p_path + p_os_sep + 'environment'
         try:
             p_state['_env'].save(p_path=env_path)
         except:
@@ -367,14 +370,16 @@ class RLScenario (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _complete_state(self, p_path: str, p_filename_stub: str):
-        super()._complete_state(p_path, p_filename_stub)
+    def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
+        super()._complete_state( p_path = p_path,
+                                 p_os_sep = p_os_sep,
+                                 p_filename_stub = p_filename_stub )
 
         self._agent = self._model
 
         # Load environment from separate subfolder
         if self._env_cls is None: return
-        env_path  = p_path + os.sep + 'environment'
+        env_path  = p_path + p_os_sep + 'environment'
         self._env = self._env_cls.load(p_path=env_path, p_filename=self._env_filename)
 
 
