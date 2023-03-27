@@ -40,7 +40,7 @@
 ## -- 2023-01-14  1.9.1     SY       Add class Label
 ## -- 2023-01-31  1.9.2     SY       Renaming class Label to PersonalisedStamp
 ## -- 2023-02-22  2.0.0     DA       Class Saveable: new custom method _save()
-## -- 2023-03-24  2.1.0     DA       Refactoring persistence:
+## -- 2023-03-27  2.1.0     DA       Refactoring persistence:
 ## --                                - new class Id
 ## --                                - renamed class LoadSave to Persistent
 ## --                                - merged classes Load, Save into Persistent
@@ -48,7 +48,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-03-24)
+Ver. 2.1.0 (2023-03-27)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -59,6 +59,7 @@ from datetime import datetime, timedelta
 from time import sleep
 import dill as pkl
 import os
+import sys
 import uuid
 from mlpro.bf.exceptions import *
 
@@ -314,6 +315,45 @@ class Persistent (Id, Log):
     
 
 ## -------------------------------------------------------------------------------------------------
+    def _get_path(self) -> str:
+        """
+        Internal helper method to determine the current path for loading/saving external data.
+        """
+
+        # 1 Check: is self the path donator?
+        try:
+            return g_persistence_file_paths[self.get_filename()]
+        except:
+            pass
+
+
+        # 2 Locate path donator in call stack
+        frame_id = 1
+        path = ''
+        path_donator_bak = self
+        
+        while True:
+            try:
+                frame = sys._getframe(frame_id)
+            except:
+                break
+
+            try:
+                path_donator = frame.f_locals['self']
+                if path_donator != path_donator_bak:
+                    path_donator_bak = path_donator
+                    filename = path_donator.get_filename()
+                    path = g_persistence_file_paths[filename]
+                    break
+            except:
+                pass
+            
+            frame_id += 1
+
+        return path
+
+
+## -------------------------------------------------------------------------------------------------
     @classmethod
     def load( cls, p_path:str, p_filename:str ):
         """
@@ -370,7 +410,7 @@ class Persistent (Id, Log):
         self.__dict__.update(p_state)
 
         # 3 Call custom method to complete the object state
-        self._complete_state( p_path=g_persistence_file_paths[self.get_filename()],
+        self._complete_state( p_path=self._get_path(),
                               p_filename_stub=self.get_filename_stub() )
 
 
@@ -447,9 +487,11 @@ class Persistent (Id, Log):
         """
 
         state = self.__dict__.copy()
+
         self._reduce_state( p_state=state, 
-                            p_path=g_persistence_file_paths[self.get_filename()], 
-                            p_filename_stub=self.get_filename_stub() )
+                            p_path=self._get_path(), 
+                            p_filename_stub=self.get_filename_stub() )           
+
         return state
 
 

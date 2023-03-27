@@ -53,11 +53,11 @@
 ## -- 2023-02-04  1.6.5     SY       Temporarily remove multi-processing on MultiAgent
 ## -- 2023-02-21  1.6.6     DA       Class MultiAgent: removed methods load(), save()
 ## -- 2023-03-10  1.6.7     SY       Class Agent and RLScenarioMBInt : update logging
-## -- 2023-03-20  1.7.0     DA       Refactoring of persistence
+## -- 2023-03-27  1.7.0     DA       Refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.0 (2023-03-20) 
+Ver. 1.7.0 (2023-03-27) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -517,15 +517,15 @@ class Agent (Policy):
                                        p_width_limit=self._planning_width)
 
 
-## -------------------------------------------------------------------------------------------------
-    def get_name(self):
-        return self._name
+# ## -------------------------------------------------------------------------------------------------
+#     def get_name(self):
+#         return self._name
 
 
-## -------------------------------------------------------------------------------------------------
-    def set_name(self, p_name):
-        self._name = p_name
-        self.C_NAME = p_name
+# ## -------------------------------------------------------------------------------------------------
+#     def set_name(self, p_name):
+#         self._name = p_name
+#         self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -745,13 +745,20 @@ class MultiAgent (Agent):
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL ):
 
-        Model.__init__( p_ada = p_ada,
+        self._agents = []
+        self._agent_ids = []
+
+        Model.__init__( self,
+                        p_ada = p_ada,
                         p_name = p_name,
                         p_visualize = p_visualize,
                         p_logging = p_logging )
 
-        self._agents = []
-        self._agent_ids = []
+        # if p_name != '':
+        #     self.set_name(p_name)
+        # else:
+        #     self.set_name(self.C_NAME)
+
 
 
 ## -------------------------------------------------------------------------------------------------
