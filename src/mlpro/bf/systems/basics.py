@@ -27,11 +27,11 @@
 ## -- 2023-03-07  1.7.1     SY       Remove TransferFunction from bf.systems
 ## -- 2023-03-07  1.7.2     DA       Bugfix in method System._save()
 ## -- 2023-03-08  1.7.3     MRD      Auto rename System, set latency from MuJoCo xml file
-## -- 2023-03-26  1.8.0     DA       Class System: refactoring of persistence
+## -- 2023-03-27  1.8.0     DA       Class System: refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2023-03-26)
+Ver. 1.8.0 (2023-03-27)
 
 This module provides models and templates for state based systems.
 """
@@ -843,7 +843,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         An embedded MuJoCo system can not be pickled and needs to be removed from the pickle stream.
         """
         
-        p_state['mujoco_handler'] = None
+        p_state['_mujoco_handler'] = None
 
 
 ## -------------------------------------------------------------------------------------------------

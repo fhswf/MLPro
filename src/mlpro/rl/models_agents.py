@@ -98,6 +98,8 @@ class Policy (Model):
         Subspace of an environment that is observed by the policy.
     p_action_space : MSpace
         Action space object.
+    p_id
+        Optional external id
     p_buffer_size : int           
         Size of internal buffer. Default = 1.
     p_ada : bool               
@@ -116,12 +118,14 @@ class Policy (Model):
     def __init__( self,
                   p_observation_space : MSpace,
                   p_action_space : MSpace,
+                  p_id = None,
                   p_buffer_size : int = 1,
                   p_ada : bool = True,
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL ):
                  
         Model.__init__( self, 
+                        p_id = p_id,
                         p_buffer_size = p_buffer_size, 
                         p_ada = p_ada,  
                         p_visualize = p_visualize, 
@@ -424,8 +428,6 @@ class Agent (Policy):
         Optional planning width (obligatory for model based agents). Default = 0.
     p_name : str             
         Optional name of agent. Default = ''.
-    p_id : int               
-        Optional unique agent id (especially important for multi-agent scenarios). Default = 0.
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
     p_visualize : bool
@@ -451,7 +453,6 @@ class Agent (Policy):
                  p_controlling_horizon=0,
                  p_planning_width=0,
                  p_name='',
-                 p_id=0,
                  p_ada=True,
                  p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL,
@@ -501,12 +502,12 @@ class Agent (Policy):
         Policy.__init__( self, 
                          p_observation_space = self._policy.get_observation_space(),
                          p_action_space = self._policy.get_action_space(),
+                         p_id = p_policy.get_id(),
                          p_buffer_size = 0,
                          p_ada = p_ada,
                          p_visualize = p_visualize,
                          p_logging = p_logging )
 
-        self.set_id(p_id)
         self.clear_buffer()
 
         if self._action_planner is not None:
@@ -515,17 +516,6 @@ class Agent (Policy):
                                        p_prediction_horizon=self._predicting_horizon,
                                        p_control_horizon=self._controlling_horizon,
                                        p_width_limit=self._planning_width)
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def get_name(self):
-#         return self._name
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def set_name(self, p_name):
-#         self._name = p_name
-#         self.C_NAME = p_name
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -745,8 +735,7 @@ class MultiAgent (Agent):
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL ):
 
-        self._agents = []
-        self._agent_ids = []
+        self._agents = {}
 
         Model.__init__( self,
                         p_ada = p_ada,
@@ -754,18 +743,12 @@ class MultiAgent (Agent):
                         p_visualize = p_visualize,
                         p_logging = p_logging )
 
-        # if p_name != '':
-        #     self.set_name(p_name)
-        # else:
-        #     self.set_name(self.C_NAME)
-
-
 
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging) -> None:
         Log.switch_logging(self, p_logging=p_logging)
 
-        for agent_entry in self._agents:
+        for agent_entry in self._agents.values():
             agent_entry[0].switch_logging(p_logging)
 
 
@@ -773,7 +756,7 @@ class MultiAgent (Agent):
     def switch_adaptivity(self, p_ada: bool):
         super().switch_adaptivity(p_ada)
         
-        for agent_entry in self._agents:
+        for agent_entry in self._agents.values():
             agent_entry[0].switch_adaptivity(p_ada)
 
     
@@ -781,7 +764,7 @@ class MultiAgent (Agent):
     def set_log_level(self, p_level):
         Log.set_log_level(self, p_level)
 
-        for agent_entry in self._agents:
+        for agent_entry in self._agents.values():
             agent_entry[0].set_log_level(p_level)
 
 
@@ -800,43 +783,31 @@ class MultiAgent (Agent):
         """
 
         p_agent.switch_adaptivity(self._adaptivity)
-        self._agent_ids.append(p_agent.get_id())
-        self._agents.append([p_agent, p_weight])
-        p_agent.set_name(str(p_agent.get_id()) + ' ' + p_agent.get_name())
+        self._agents[p_agent.get_id()] = (p_agent, p_weight)
         self.log(Log.C_LOG_TYPE_I, p_agent.C_TYPE + ' ' + p_agent.get_name() + ' added.')
 
-        agent_model = self._agents[p_agent.get_id()][0]
+        if p_agent._policy.get_hyperparam() is not None:
+            self._hyperparam_space.append( p_set=p_agent._policy.get_hyperparam().get_related_set(), 
+                                           p_new_dim_ids=False,
+                                           p_ignore_duplicates=True )
         
-        if agent_model._policy.get_hyperparam() is not None:
-            if p_agent.get_id() == 0:
-                self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
-            else:
-                self._hyperparam_space.append( p_set=agent_model._policy.get_hyperparam().get_related_set(), 
-                                               p_new_dim_ids=False,
-                                               p_ignore_duplicates=True )
-        
-        if agent_model._envmodel is not None:
+        if p_agent._envmodel is not None:
             try:
-                self._hyperparam_space.append(agent_model._envmodel.get_hyperparam().get_related_set())
+                self._hyperparam_space.append(p_agent._envmodel.get_hyperparam().get_related_set())
             except:
                 pass
  
-        if '_hyperparam_space' in dir(self):
+        if self._hyperparam_tuple is None:
             self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
             
-            for x, mod in enumerate(self._agents):
-                self._hyperparam_tuple.add_hp_tuple(mod[0]._policy.get_hyperparam())
-                
-                if mod[0]._envmodel is not None:
-                    try:
-                        self._hyperparam_tuple.add_hp_tuple(mod[0]._envmodel.get_hyperparam())
-                    except:
-                          pass
-        
+        self._hyperparam_tuple.add_hp_tuple(p_agent.get_hyperparam())
+                        
 
 ## -------------------------------------------------------------------------------------------------
     def get_agents(self):
-        return self._agents
+        agents = []
+        for agent_info in self._agents.values(): agents.append(agent_info)
+        return agents
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -846,12 +817,12 @@ class MultiAgent (Agent):
 
         Returns
         -------
-        agent_info : list
+        agent_info : tuple
             agent_info[0] is the agent object itself and agent_info[1] it's weight
             
         """
 
-        return self._agents[self._agent_ids.index(p_agent_id)]
+        return self._agents[p_agent_id]
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -866,8 +837,7 @@ class MultiAgent (Agent):
     
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
-        for i, agent_entry in enumerate(self._agents):
-            agent = agent_entry[0]
+        for agent, weight in self._agents.values():
             agent.set_random_seed(p_seed)
 
     
@@ -877,9 +847,9 @@ class MultiAgent (Agent):
 
         action = Action()
 
-        for agent, weight in self._agents:
+        for agent, weight in self._agents.values():
             action_agent = agent.compute_action(p_state)
-            action_element = action_agent.get_elem(agent.get_id())
+            action_element = action_agent.get_elem( agent.get_id() )
             action_element.set_weight(weight)
             action.add_elem(agent.get_id(), action_element)
 
@@ -892,8 +862,7 @@ class MultiAgent (Agent):
         self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')
 
         adapted = False
-        for agent_entry in self._agents:
-            agent = agent_entry[0]
+        for agent, weight in self._agents.values():
             if (p_reward.get_type() != Reward.C_TYPE_OVERALL) and not p_reward.is_rewarded(agent.get_id()):
                 continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
@@ -907,8 +876,8 @@ class MultiAgent (Agent):
     
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
-        for agent_entry in self._agents:
-            agent_entry[0].clear_buffer()
+        for agent, weight in self._agents.values():
+            agent.clear_buffer()
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -921,8 +890,8 @@ class MultiAgent (Agent):
 
         self.log(self.C_LOG_TYPE_I, 'Init visualization for all agents...')
 
-        for agent_entry in self._agents:
-            agent_entry[0].init_plot(p_figure = None)
+        for agent, weight in self._agents.values():
+            agent.init_plot(p_figure = None)
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -931,5 +900,5 @@ class MultiAgent (Agent):
 
         self.log(self.C_LOG_TYPE_I, 'Start visualization for all agents...')
 
-        for agent_entry in self._agents:
-            agent_entry[0].update_plot()
+        for agent, weight in self._agents.values():
+            agent.update_plot()

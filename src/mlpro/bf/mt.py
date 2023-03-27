@@ -31,11 +31,11 @@
 ## -- 2022-12-30  1.7.1     DA       Bugfix in method Task._get_plot_host_tag()
 ## -- 2023-01-01  1.8.0     DA       Refactoring of plot settings
 ## -- 2023-02-15  1.8.1     DA       Class Task: changed default range to C_RANGE_THREAD
-## -- 2023-03-15  1.9.0     DA       Class Task: added parent class Persistent
+## -- 2023-03-27  1.9.0     DA       Class Task: added parent class Persistent
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.0 (2023-03-25)
+Ver. 1.9.0 (2023-03-27)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -480,6 +480,8 @@ class Task (Async, EventManager, Plottable, Persistent):
 
     Parameters
     ----------
+    p_id
+        Optional external id
     p_name : str
         Optional name of the task. Default is None.
     p_range_max : int
@@ -509,12 +511,13 @@ class Task (Async, EventManager, Plottable, Persistent):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_name:str=None,
-                  p_range_max:int=Async.C_RANGE_THREAD, 
-                  p_autorun=C_AUTORUN_NONE,
-                  p_class_shared=None, 
-                  p_visualize:bool=False,
-                  p_logging=Log.C_LOG_ALL,
+                  p_id = None, 
+                  p_name : str = None,
+                  p_range_max : int = Async.C_RANGE_THREAD, 
+                  p_autorun = C_AUTORUN_NONE,
+                  p_class_shared = None, 
+                  p_visualize : bool = False,
+                  p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
 
         self._kwargs            = p_kwargs.copy()
@@ -527,7 +530,7 @@ class Task (Async, EventManager, Plottable, Persistent):
         Async.__init__(self, p_range_max=p_range_max, p_class_shared=p_class_shared, p_logging=p_logging)
         EventManager.__init__(self, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
-        Persistent.__init__(self, p_id=None, p_logging=p_logging)
+        Persistent.__init__(self, p_id=p_id, p_logging=p_logging)
 
         self._custom_run_method = self._get_custom_run_method()
         name = self.get_name()
