@@ -735,7 +735,8 @@ class MultiAgent (Agent):
                   p_visualize : bool = False, 
                   p_logging = Log.C_LOG_ALL ):
 
-        self._agents = {}
+        self._agents    = []
+        self._agent_ids = []
 
         Model.__init__( self,
                         p_ada = p_ada,
@@ -748,24 +749,24 @@ class MultiAgent (Agent):
     def switch_logging(self, p_logging) -> None:
         Log.switch_logging(self, p_logging=p_logging)
 
-        for agent_entry in self._agents.values():
-            agent_entry[0].switch_logging(p_logging)
+        for agent, weight in self._agents:
+            agent.switch_logging(p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada: bool):
         super().switch_adaptivity(p_ada)
         
-        for agent_entry in self._agents.values():
-            agent_entry[0].switch_adaptivity(p_ada)
+        for agent, weight in self._agents:
+            agent.switch_adaptivity(p_ada)
 
     
 ## -------------------------------------------------------------------------------------------------
     def set_log_level(self, p_level):
         Log.set_log_level(self, p_level)
 
-        for agent_entry in self._agents.values():
-            agent_entry[0].set_log_level(p_level)
+        for agent, weight in self._agents:
+            agent.set_log_level(p_level)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -783,7 +784,9 @@ class MultiAgent (Agent):
         """
 
         p_agent.switch_adaptivity(self._adaptivity)
-        self._agents[p_agent.get_id()] = (p_agent, p_weight)
+        self._agents.append( (p_agent, p_weight) )
+        self._agent_ids.append( p_agent.get_id() )
+
         self.log(Log.C_LOG_TYPE_I, p_agent.C_TYPE + ' ' + p_agent.get_name() + ' added.')
 
         if p_agent._policy.get_hyperparam() is not None:
@@ -805,9 +808,7 @@ class MultiAgent (Agent):
 
 ## -------------------------------------------------------------------------------------------------
     def get_agents(self):
-        agents = []
-        for agent_info in self._agents.values(): agents.append(agent_info)
-        return agents
+        return self._agents
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -822,7 +823,7 @@ class MultiAgent (Agent):
             
         """
 
-        return self._agents[p_agent_id]
+        return self._agents[ self._agent_ids.index(p_agent_id) ]
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -837,7 +838,7 @@ class MultiAgent (Agent):
     
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
-        for agent, weight in self._agents.values():
+        for agent, weight in self._agents:
             agent.set_random_seed(p_seed)
 
     
@@ -847,7 +848,7 @@ class MultiAgent (Agent):
 
         action = Action()
 
-        for agent, weight in self._agents.values():
+        for agent, weight in self._agents:
             action_agent = agent.compute_action(p_state)
             action_element = action_agent.get_elem( agent.get_id() )
             action_element.set_weight(weight)
@@ -862,7 +863,7 @@ class MultiAgent (Agent):
         self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')
 
         adapted = False
-        for agent, weight in self._agents.values():
+        for agent, weight in self._agents:
             if (p_reward.get_type() != Reward.C_TYPE_OVERALL) and not p_reward.is_rewarded(agent.get_id()):
                 continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
@@ -876,7 +877,7 @@ class MultiAgent (Agent):
     
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
-        for agent, weight in self._agents.values():
+        for agent, weight in self._agents:
             agent.clear_buffer()
 
     
@@ -890,7 +891,7 @@ class MultiAgent (Agent):
 
         self.log(self.C_LOG_TYPE_I, 'Init visualization for all agents...')
 
-        for agent, weight in self._agents.values():
+        for agent, weight in self._agents:
             agent.init_plot(p_figure = None)
 
     
@@ -900,5 +901,5 @@ class MultiAgent (Agent):
 
         self.log(self.C_LOG_TYPE_I, 'Start visualization for all agents...')
 
-        for agent, weight in self._agents.values():
+        for agent, weight in self._agents:
             agent.update_plot()

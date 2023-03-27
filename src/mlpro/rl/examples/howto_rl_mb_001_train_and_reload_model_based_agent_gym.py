@@ -9,10 +9,11 @@
 ## -- 2023-03-08  1.0.1     SY       Refactoring and quality assurance
 ## -- 2023-03-10  1.0.2     SY       Renumbering module
 ## -- 2023-03-10  1.0.3     SY       Refactoring
+## -- 2023-03-27  1.0.4     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2023-03-10)
+Ver. 1.0.4 (2023-03-27)
 
 This module shows how to train a single agent in MBRL and load it again to do some extra cycles.
 
@@ -51,7 +52,6 @@ from pathlib import Path
 class MyScenario (RLScenario):
     
     C_NAME = 'Matrix'
-
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
@@ -162,7 +162,7 @@ class MyScenario (RLScenario):
 
 if __name__ == '__main__':
     # Parameters for demo mode
-    cycle_limit = 10000
+    cycle_limit = 10 #000
     adaptation_limit = 0
     stagnation_limit = 0
     eval_frequency = 0
@@ -199,6 +199,7 @@ training = RLTraining(
 
 # 3 Training
 training.run()
+filename_scenario = training.get_scenario().get_filename()
 
 
 
@@ -206,7 +207,8 @@ training.run()
 if __name__ == '__main__':
     input( '\nTraining finished. Press ENTER to reload and run the scenario...\n')
 
-scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario' )
+scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario',
+                            p_filename = filename_scenario )
 
 
 # 5 Reset Scenario
