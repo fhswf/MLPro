@@ -44,7 +44,7 @@ import random
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DataStoring(Persistent):
+class DataStoring: #(Persistent):
     """
     This class provides a functionality to store values of variables during
     training/simulation.
