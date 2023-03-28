@@ -8,7 +8,8 @@
 ## -- 2023-02-23  0.0.0     SY       Creation
 ## -- 2023-03-07  1.0.0     SY       Released first version
 ## -- 2023-03-10  1.1.0     SY       Combining _hyperparameters_check and _init_hyperparam
-## -- 2023-03-28  1.2.0     SY       Add _complete_state, _reduce_state due to new class Persistent
+## -- 2023-03-28  1.2.0     SY       - Add _complete_state, _reduce_state due to new class Persistent
+## --                                - Update _map
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -330,6 +331,8 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         p_output : Element
             Setpoint ordinate/output element (type Element)
         """
+        
+        self._sl_model.eval()
 
         # Input pre processing
         input = self.input_preproc(p_input)
