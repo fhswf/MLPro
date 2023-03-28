@@ -162,7 +162,7 @@ class MyScenario (RLScenario):
 
 if __name__ == '__main__':
     # Parameters for demo mode
-    cycle_limit = 10 #000
+    cycle_limit = 10000
     adaptation_limit = 0
     stagnation_limit = 0
     eval_frequency = 0
