@@ -557,25 +557,6 @@ class RLScenario (Scenario):
         return success, error, adapted, end_of_data
 
 
-## -------------------------------------------------------------------------------------------------
-    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
-
-        # 1 Remove data storing of states, rewards, and actions to reduce memory
-        p_state['_ds_states']  = None 
-        p_state['_ds_actions'] = None
-        p_state['_ds_rewards'] = None
-
-        # 2 Persist model into a separate subfolder
-        model_path  = p_path + p_os_sep + 'model'
-        try:
-            p_state['_model'].save(p_path=model_path)
-        except:
-            return
-
-        # 3 Exclude model from scenario
-        p_state['_model'] = None
-
-
 
 
 
