@@ -49,10 +49,11 @@
 ## -- 2023-02-20  1.9.0     DA       Class RLScenario: new methods load(), _save()
 ## -- 2023-03-09  1.9.1     DA       Class RLTrainingResults: removed parameter p_path
 ## -- 2023-03-26  2.0.0     DA       Class RLScenario: refactoring persistence
+## -- 2023-03-28  2.0.1     SY       Remove _ds_states and more to be stored during saving scenario  
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2..0.0 (2023-03-26)
+Ver. 2.0.1 (2023-03-28)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -554,6 +555,26 @@ class RLScenario (Scenario):
             self.log(self.C_LOG_TYPE_E, 'Process time', self._timer.get_time(), ': Environment terminated')
 
         return success, error, adapted, end_of_data
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
+
+        # 1 Remove data storing of states, rewards, and actions to reduce memory
+        p_state['_ds_states']  = None 
+        p_state['_ds_actions'] = None
+        p_state['_ds_rewards'] = None
+
+        # 2 Persist model into a separate subfolder
+        model_path  = p_path + p_os_sep + 'model'
+        try:
+            p_state['_model'].save(p_path=model_path)
+        except:
+            return
+
+        # 3 Exclude model from scenario
+        p_state['_model'] = None
+
 
 
 

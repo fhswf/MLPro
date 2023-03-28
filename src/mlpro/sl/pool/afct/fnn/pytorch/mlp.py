@@ -430,7 +430,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
         self._sl_model.train()
         outputs = self.forward(p_dataset["input"].dataset[0])
-        loss = self._calc_loss(outputs, p_dataset["output"].dataset[0])
+        loss    = self._calc_loss(outputs, p_dataset["output"].dataset[0])
         self._optimize(loss)
             
         return True
@@ -474,8 +474,12 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 ## -------------------------------------------------------------------------------------------------
     def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
         
-        self._sl_model = self._setup_model()
-        self._sl_model.load_state_dict(torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_model.pt'))
-        self._optimizer.load_state_dict(torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_optimizer.pt'))
-
+        try:
+            load_model      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_model.pt')
+            load_optim      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_optimizer.pt')
+            self._sl_model  = self._setup_model()
+            self._sl_model.load_state_dict(load_model)
+            self._optimizer.load_state_dict(load_optim)
+        except:
+            pass
         
