@@ -52,7 +52,7 @@ Unit test for all examples available.
 
 
 import pytest
-import importlib
+import runpy
 
 
 howto_list = {
@@ -148,5 +148,5 @@ howto_list = {
 
 @pytest.mark.parametrize("cls", list(howto_list.keys()))
 def test_howto(cls):
-    importlib.import_module(howto_list[cls])
+    runpy.run_path("src/"+howto_list[cls].replace(".","/")+".py")
 
