@@ -49,11 +49,10 @@
 ## -- 2023-02-20  1.9.0     DA       Class RLScenario: new methods load(), _save()
 ## -- 2023-03-09  1.9.1     DA       Class RLTrainingResults: removed parameter p_path
 ## -- 2023-03-26  2.0.0     DA       Class RLScenario: refactoring persistence
-## -- 2023-03-28  2.0.1     SY       Remove _ds_states and more to be stored during saving scenario  
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2023-03-28)
+Ver. 2.0.0 (2023-03-26)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
