@@ -116,13 +116,13 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
             i = 0
             while i<range_divided:
                 dataset[i*4:(i+1)*4] = centers + c[i*4:(i+1)*4]
-                centers += centers_diff
+                centers = centers + centers_diff
                 i += 1
 
             range_divided = range_divided*2
             while i<range_divided:
                 dataset[i*4:(i+1)*4] = centers + c[i*4:(i+1)*4]
-                centers -= centers_diff
+                centers = centers - centers_diff
                 i += 1
 
         else:
@@ -131,7 +131,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
 
             for i in range(range_divided):
                 dataset[i*4:(i+1)*4] = centers + c[i*4:(i+1)*4]
-                centers += centers_diff
+                centers = centers + centers_diff
 
         self._dataset = dataset
 
