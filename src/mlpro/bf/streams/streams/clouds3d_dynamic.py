@@ -7,7 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-22  0.0.0     SR       Creation 
 ## -- 2023-03-22  1.0.0     SR       First draft implementation
-## -- 2023-03-23  1.0.2     SP       Corrections
+## -- 2023-03-29  1.0.3     SP       Corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -108,20 +108,28 @@ class StreamMLProDynamicClouds3D (StreamMLProBase):
         dataset = np.zeros((self.C_NUM_INSTANCES, 3))
 
         if self.pattern == 'static':
-            for i in range(int(self.C_NUM_INSTANCES / 16)):
-                for j in range(8):
-                    dataset[i*8+j] = centers[j] + c[i*8+j]
-                    centers[j] = centers[j] + (0-centers[j])/(int(self.C_NUM_INSTANCES / 16)-i)
-            for i in range(int(self.C_NUM_INSTANCES / 16)):
-                for j in range(8):
-                    dataset[1000+i*8+j] = centers[j] + c[i*8+j]
-                    centers[j] = centers[j] + (final_centers[j]-centers[j])/(int(self.C_NUM_INSTANCES / 16)-i)
+            range_divided = int(self.C_NUM_INSTANCES / 16)
+            centers_diff = (0-centers) / range_divided
+
+            i = 0
+            while i<range_divided:
+                dataset[i*8:(i+1)*8] = centers + c[i*8:(i+1)*8]
+                centers = centers + centers_diff
+                i += 1
+
+            range_divided = range_divided*2
+            while i<range_divided:
+                dataset[i*8:(i+1)*8] = centers + c[i*8:(i+1)*8]
+                centers = centers - centers_diff
+                i += 1
 
         else:
-            for i in range(int(self.C_NUM_INSTANCES / 8)):
-                for j in range(8):
-                    dataset[i*8+j] = centers[j] + c[i*8+j]
-                    centers[j] = centers[j] + (final_centers[j]-centers[j])/(int(self.C_NUM_INSTANCES / 8)-i)
+            range_divided = int(self.C_NUM_INSTANCES / 8)
+            centers_diff = (final_centers - centers) / range_divided
+
+            for i in range(range_divided):
+                dataset[i*8:(i+1)*8] = centers + c[i*8:(i+1)*8]
+                centers = centers + centers_diff
 
         self._dataset = dataset
 
