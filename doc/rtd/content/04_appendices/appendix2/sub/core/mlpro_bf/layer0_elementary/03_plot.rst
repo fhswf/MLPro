@@ -8,4 +8,5 @@ BF-PLOT - Plotting and Visualization
 .. automodule:: mlpro.bf.plot
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

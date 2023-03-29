@@ -5,4 +5,5 @@ BF-EXCEPTIONS - Exceptions
 .. automodule:: mlpro.bf.exceptions
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

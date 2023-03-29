@@ -63,11 +63,11 @@
 ## -- 2023-03-09  2.1.1     DA       Class TrainingResults: removed parameter p_path
 ## -- 2023-03-10  2.1.2     DA       Class AdaptiveFunction: refactoring constructor parameters
 ## -- 2023-03-10  2.1.3     SY       Refactoring
-## -- 2023-03-27  2.2.0     DA       Classes Model, Scenario: refactoring of persistence
+## -- 2023-03-29  2.2.0     DA       Classes Model, Scenario: refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2023-03-27)
+Ver. 2.2.0 (2023-03-29)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -833,13 +833,6 @@ class TrainingResults (Persistent):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _save_line(self, p_file, p_name, p_value):
-        value = p_value
-        if value is None: value = '-'
-        p_file.write(p_name + '\t' + str(value) + '\n')
-
-
-## -------------------------------------------------------------------------------------------------
     @classmethod
     def load(cls, p_path: str, p_filename: str):
         """
@@ -847,6 +840,13 @@ class TrainingResults (Persistent):
         """
         
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _save_line(self, p_file, p_name, p_value):
+        value = p_value
+        if value is None: value = '-'
+        p_file.write(p_name + '\t' + str(value) + '\n')
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -951,6 +951,16 @@ class HyperParamTuner (Persistent):
         raise NotImplementedError
     
     
+## -------------------------------------------------------------------------------------------------
+    @classmethod
+    def load(cls, p_path: str, p_filename: str):
+        """
+        Loading training results is explicitely disabled.
+        """
+        
+        raise NotImplementedError
+
+
 ## -------------------------------------------------------------------------------------------------
     def _save_line(self, p_file, p_name, p_value):
         value = p_value
