@@ -25,13 +25,13 @@
     <geom type="plane" material="mlpro_mat" size="2 2 0.1" pos="2 3.99 4" quat="0.7071068 0.7071068 0 0" rgba="1 1 1 1"/>
     
     <!-- Axis Arrow -->
-    <geom type="mesh" mesh="arrow" pos="-3.5 2.5 0.5" quat="1 0 0 0" rgba="0 0 1 1"/>
-    <geom type="mesh" mesh="arrow" pos="-3.5 2.5 0.5" quat="0.7071068 -0.7071068 0 0" rgba="0 1 0 1"/>
-    <geom type="mesh" mesh="arrow" pos="-3.5 2.5 0.5" quat="0.7071068 0 0.7071068 0" rgba="1 0 0 1"/>
+    <geom type="mesh" mesh="arrow" pos="-4 -4 0.5" quat="1 0 0 0" rgba="0 0 1 1"/>
+    <geom type="mesh" mesh="arrow" pos="-4 -4 0.5" quat="0.7071068 -0.7071068 0 0" rgba="0 1 0 1"/>
+    <geom type="mesh" mesh="arrow" pos="-4 -4 0.5" quat="0.7071068 0 0.7071068 0" rgba="1 0 0 1"/>
 
     <!-- Axis Text -->
-    <geom type="mesh" mesh="x_letter" pos="-2 2.5 0.5" quat="0.7071068 0.7071068 0 0" rgba="1 0 0 1"/>
-    <geom type="mesh" mesh="y_letter" pos="-3.5 4 0.5" quat="0.7071068 0.7071068 0 0" rgba="0 1 0 1"/>
-    <geom type="mesh" mesh="z_letter" pos="-3.5 2.5 2" quat="0.7071068 0.7071068 0 0" rgba="0 0 1 1"/>
+    <geom type="mesh" mesh="x_letter" pos="-2.5 -4 0.5" quat="0.7071068 0.7071068 0 0" rgba="1 0 0 1"/>
+    <geom type="mesh" mesh="y_letter" pos="-4 -2.5 0.5" quat="0.7071068 0.7071068 0 0" rgba="0 1 0 1"/>
+    <geom type="mesh" mesh="z_letter" pos="-4 -4 2" quat="0.7071068 0.7071068 0 0" rgba="0 0 1 1"/>
     </worldbody>
 </mujoco>
