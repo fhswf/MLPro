@@ -46,6 +46,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
+        # sourcery skip: use-fstring-for-concatenation
         feature_space : MSpace = MSpace()
 
         for i in range(2):
@@ -109,20 +110,28 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
         dataset = np.zeros((self.C_NUM_INSTANCES, 2))
 
         if self.pattern == 'static':
-            for i in range(int(self.C_NUM_INSTANCES / 8)):
-                for j in range(4):
-                    dataset[i*4+j] = centers[j] + c[i*4+j]
-                    centers[j] = centers[j] + (0-centers[j])/(int(self.C_NUM_INSTANCES / 8)-i)
-            for i in range(int(self.C_NUM_INSTANCES / 8)):
-                for j in range(4):
-                    dataset[500+i*4+j] = centers[j] + c[i*4+j]
-                    centers[j] = centers[j] + (final_centers[j]-centers[j])/(int(self.C_NUM_INSTANCES / 8)-i)
+            range_divided = int(self.C_NUM_INSTANCES / 8)
+            centers_diff = (0-centers) / range_divided
+
+            i = 0
+            while i<range_divided:
+                dataset[i*4:(i+1)*4] = centers + c[i*4:(i+1)*4]
+                centers += centers_diff
+                i += 1
+
+            range_divided = range_divided*2
+            while i<range_divided:
+                dataset[i*4:(i+1)*4] = centers + c[i*4:(i+1)*4]
+                centers -= centers_diff
+                i += 1
 
         else:
-            for i in range(int(self.C_NUM_INSTANCES / 4)):
-                for j in range(4):
-                    dataset[i*4+j] = centers[j] + c[i*4+j]
-                    centers[j] = centers[j] + (final_centers[j]-centers[j])/(int(self.C_NUM_INSTANCES / 4)-i)
+            range_divided = int(self.C_NUM_INSTANCES / 4)
+            centers_diff = (final_centers - centers) / range_divided
+
+            for i in range(range_divided):
+                dataset[i*4:(i+1)*4] = centers + c[i*4:(i+1)*4]
+                centers += centers_diff
 
         self._dataset = dataset
 
