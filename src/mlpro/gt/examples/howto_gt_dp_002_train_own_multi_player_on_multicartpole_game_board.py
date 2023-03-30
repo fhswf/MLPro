@@ -20,10 +20,11 @@
 ## -- 2022-11-01  1.2.4     DA       Refactoring 
 ## -- 2022-11-02  1.2.5     DA       Refactoring 
 ## -- 2022-11-07  1.3.0     DA       Refactoring 
+## -- 2023-03-30  1.3.1     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2022-11-07)
+Ver. 1.3.1 (2023-03-30)
  
 This module shows how to train an own multi-player with the enhanced multi-action
 game board MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -80,7 +81,7 @@ class MyPolicy(Policy):
 
 
 # 2 Implement your own game
-class MyGame(Game):
+class MyGame(GTGame_DP):
 
     C_NAME      = 'Matrix'
 
@@ -93,7 +94,7 @@ class MyGame(Game):
         # 2 Setup Multi-Player
 
         # 2.1 Create empty Multi-Player
-        multi_player = MultiPlayer(
+        multi_player = GTMultiPlayer_DP(
             p_name='Human Beings',
             p_ada=p_ada,
             p_visualize=p_visualize,
@@ -104,7 +105,7 @@ class MyGame(Game):
         ss_ids = self._env.get_state_space().get_dim_ids()
         as_ids = self._env.get_action_space().get_dim_ids()
         multi_player.add_player(
-            p_player=Player(
+            p_player=GTPlayer_DP(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[0],ss_ids[1],ss_ids[2],ss_ids[3]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[0]]),
@@ -125,7 +126,7 @@ class MyGame(Game):
 
         # 2.2 Add Single-Player #2 with own policy (controlling sub-environments #2,#3)
         multi_player.add_player(
-            p_player=Player(
+            p_player=GTPlayer_DP(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[4],ss_ids[5],ss_ids[6],ss_ids[7],ss_ids[8],ss_ids[9],ss_ids[10],ss_ids[11]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[1],as_ids[2]]),

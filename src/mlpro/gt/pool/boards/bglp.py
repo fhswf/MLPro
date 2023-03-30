@@ -11,10 +11,11 @@
 ## -- 2021-09-06  1.0.2     SY       Minor improvements
 ## -- 2021-09-11  1.0.3     MRD      Change Header information to match our new library name
 ## -- 2021-11-29  1.0.4     SY       Enable batch production scenario
-## -----------------------------------------------------------------------------
+## -- 2023-03-30  1.0.5     SY       Refactoring 
+## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.4 (2021-11-29)
+Ver. 1.0.5 (2023-03-30)
 
 This module provides an environment of Bulk Good Laboratory Plant (BGLP)
 following GT interface. This module provides game board classed based on BGLP
@@ -23,7 +24,7 @@ environment of the reinforcement learning pool.
 
 from mlpro.rl.models import Reward
 from mlpro.rl.pool.envs.bglp import BGLP
-from mlpro.gt.models import *
+from mlpro.gt.dp import *
 
         
         
