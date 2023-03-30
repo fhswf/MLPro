@@ -8,4 +8,5 @@ BF-VARIOUS - Various Functions
 .. automodule:: mlpro.bf.various
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

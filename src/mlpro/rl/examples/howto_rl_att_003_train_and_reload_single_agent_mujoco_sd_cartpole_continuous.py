@@ -5,11 +5,12 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-03-07  1.0.0     MRD       Creation as derivate of howto_rl_agent_022 
+## -- 2023-03-07  1.0.0     MRD      Creation as derivate of howto_rl_agent_022 
+## -- 2023-03-27  1.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-07)
+Ver. 1.0.1 (2023-03-27)
 
 As in Howto RL AGENT 022, this module shows how to train a single agent with SB3 Policy on Continuous 
 Cartpole MuJoCo Environment. In opposite to howto 022, stagnation detection is used to automatically 
@@ -102,13 +103,15 @@ training = RLTraining(
 
 # 3 Training
 training.run()
+filename_scenario = training.get_scenario().get_filename()
 
 
 # 4 Reload the scenario
 if __name__ == '__main__':
     input( '\nTraining finished. Press ENTER to reload and run the scenario...\n')
 
-scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario' )
+scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario',
+                            p_filename = filename_scenario )
 
 
 # 5 Reset Scenario

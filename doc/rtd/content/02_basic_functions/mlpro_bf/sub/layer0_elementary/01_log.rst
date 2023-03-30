@@ -1,5 +1,5 @@
 Logging
--------
+=======
 
 MLPro makes extensive use of a textual logging mechanism provided by the property class **Log**. This class centralizes
 and standardizes log outputs by adding appropriate methods to child classes by inheritance. It can be accessed as follows:

@@ -8,11 +8,11 @@
 ## -- 2022-08-21  1.0.0     DA       Creation/release
 ## -- 2022-10-06  1.1.0     DA       Specification of event id as string (for better observation and
 ## --                                to avoid collisions)
-## -- 2023-02-15  1.1.1     DA       Class Task: changed log types
+## -- 2023-03-25  1.1.1     DA       Class EventManager: correction in constructor
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-02-15)
+Ver. 1.1.1 (2023-03-25)
 
 This module provides classes for event handling. To this regard, the property class Eventmanager is
 provided to add event functionality to child classes by inheritence.
@@ -77,7 +77,7 @@ class EventManager (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL):
-        super().__init__(p_logging=p_logging)
+        Log.__init__(self, p_logging=p_logging)
         self._registered_handlers = {}
 
 

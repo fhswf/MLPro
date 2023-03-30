@@ -53,10 +53,11 @@
 ## -- 2023-02-04  1.6.5     SY       Temporarily remove multi-processing on MultiAgent
 ## -- 2023-02-21  1.6.6     DA       Class MultiAgent: removed methods load(), save()
 ## -- 2023-03-10  1.6.7     SY       Class Agent and RLScenarioMBInt : update logging
+## -- 2023-03-27  1.7.0     DA       Refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.6.7 (2023-03-10) 
+Ver. 1.7.0 (2023-03-27) 
 
 This module provides model classes for policies, model-free and model-based agents and multi-agents.
 """
@@ -97,6 +98,8 @@ class Policy (Model):
         Subspace of an environment that is observed by the policy.
     p_action_space : MSpace
         Action space object.
+    p_id
+        Optional external id
     p_buffer_size : int           
         Size of internal buffer. Default = 1.
     p_ada : bool               
@@ -112,22 +115,24 @@ class Policy (Model):
     C_BUFFER_CLS    = SARSBuffer
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_observation_space: MSpace,
-                 p_action_space: MSpace,
-                 p_buffer_size=1,
-                 p_ada=True,
-                 p_visualize:bool=False,
-                 p_logging=Log.C_LOG_ALL):
+    def __init__( self,
+                  p_observation_space : MSpace,
+                  p_action_space : MSpace,
+                  p_id = None,
+                  p_buffer_size : int = 1,
+                  p_ada : bool = True,
+                  p_visualize : bool = False,
+                  p_logging = Log.C_LOG_ALL ):
                  
-        super().__init__( p_buffer_size=p_buffer_size, 
-                          p_ada=p_ada, 
-                          p_visualize=p_visualize, 
-                          p_logging=p_logging )
+        Model.__init__( self, 
+                        p_id = p_id,
+                        p_buffer_size = p_buffer_size, 
+                        p_ada = p_ada,  
+                        p_visualize = p_visualize, 
+                        p_logging = p_logging )
 
         self._observation_space = p_observation_space
-        self._action_space = p_action_space
-        self.set_id(0)
+        self._action_space      = p_action_space
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -138,16 +143,6 @@ class Policy (Model):
 ## -------------------------------------------------------------------------------------------------
     def get_action_space(self) -> MSpace:
         return self._action_space
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        return self._id
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_id(self, p_id):
-        self._id = p_id
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -433,8 +428,6 @@ class Agent (Policy):
         Optional planning width (obligatory for model based agents). Default = 0.
     p_name : str             
         Optional name of agent. Default = ''.
-    p_id : int               
-        Optional unique agent id (especially important for multi-agent scenarios). Default = 0.
     p_ada : bool               
         Boolean switch for adaptivity. Default = True.
     p_visualize : bool
@@ -460,7 +453,6 @@ class Agent (Policy):
                  p_controlling_horizon=0,
                  p_planning_width=0,
                  p_name='',
-                 p_id=0,
                  p_ada=True,
                  p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL,
@@ -500,8 +492,6 @@ class Agent (Policy):
         self._previous_observation = None
         self._previous_action = None
         self._policy = p_policy
-        self._action_space = self._policy.get_action_space()
-        self._observation_space = self._policy.get_observation_space()
         self._envmodel = p_envmodel
         self._em_acc_thsld = p_em_acc_thsld
         self._action_planner = p_action_planner
@@ -509,11 +499,14 @@ class Agent (Policy):
         self._controlling_horizon = p_controlling_horizon
         self._planning_width = p_planning_width
 
-        self._set_id(p_id)
-
-        Log.__init__(self, p_logging)
-        self.switch_adaptivity(p_ada)
-        Plottable.__init__(self, p_visualize=p_visualize)
+        Policy.__init__( self, 
+                         p_observation_space = self._policy.get_observation_space(),
+                         p_action_space = self._policy.get_action_space(),
+                         p_id = p_policy.get_id(),
+                         p_buffer_size = 0,
+                         p_ada = p_ada,
+                         p_visualize = p_visualize,
+                         p_logging = p_logging )
 
         self.clear_buffer()
 
@@ -526,41 +519,24 @@ class Agent (Policy):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_id(self, p_id):
-        super().set_id(p_id)
-        self._policy.set_id(p_id)
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_id(self, p_id):
-        """
-        The unique agent id will be defined while instantiation and can't be changed anymore.
-        """
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_name(self):
-        return self._name
-
-
-## -------------------------------------------------------------------------------------------------
-    def set_name(self, p_name):
-        self._name = p_name
-        self.C_NAME = p_name
-
-
-## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self, **p_par):
-        self._hyperparam_space = self._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
-        if self._envmodel is not None:
-            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set(), p_new_dim_ids=False)
 
+        # 1 Create a dispatcher hyperparameter tuple for the agent
         self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
-        self._hyperparam_tuple.add_hp_tuple(self._policy.get_hyperparam())
-        if self._envmodel is not None:
+
+        # 2 Extend agent's hp space and tuple from policy
+        try:
+            self._hyperparam_space.append( self._policy.get_hyperparam().get_related_set(), p_new_dim_ids=False)
+            self._hyperparam_tuple.add_hp_tuple(self._policy.get_hyperparam())
+        except:
+            pass
+
+        # 3 Extend agent's hp space and tuple from an optional environment model
+        try:
+            self._hyperparam_space.append(self._envmodel.get_hyperparam().get_related_set(), p_new_dim_ids=False)
             self._hyperparam_tuple.add_hp_tuple(self._envmodel.get_hyperparam())
+        except:
+            pass
 
         
 ## -------------------------------------------------------------------------------------------------
@@ -733,7 +709,7 @@ class Agent (Policy):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class MultiAgent(Agent):
+class MultiAgent (Agent):
     """
     Multi-Agent.
 
@@ -751,79 +727,46 @@ class MultiAgent(Agent):
 
     C_TYPE      = 'Multi-Agent'
     C_NAME      = ''
-    C_SUFFIX    = '.cfg'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_name='', p_ada=True, p_visualize:bool=False, p_logging=True):
-        self._agents = []
-        self._agent_ids = []
-        self.set_name(p_name)
+    def __init__( self, 
+                  p_name : str = '', 
+                  p_ada : bool = True, 
+                  p_visualize : bool = False, 
+                  p_logging = Log.C_LOG_ALL ):
 
-        Log.__init__(self, p_logging)
-        Plottable.__init__(self, p_visualize=p_visualize)
-        self.switch_adaptivity(p_ada)
-        self._set_adapted(False)
+        self._agents    = []
+        self._agent_ids = []
+
+        Model.__init__( self,
+                        p_ada = p_ada,
+                        p_name = p_name,
+                        p_visualize = p_visualize,
+                        p_logging = p_logging )
 
 
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging) -> None:
         Log.switch_logging(self, p_logging=p_logging)
 
-        for agent_entry in self._agents:
-            agent_entry[0].switch_logging(p_logging)
+        for agent, weight in self._agents:
+            agent.switch_logging(p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada: bool):
         super().switch_adaptivity(p_ada)
         
-        for agent_entry in self._agents:
-            agent_entry[0].switch_adaptivity(p_ada)
+        for agent, weight in self._agents:
+            agent.switch_adaptivity(p_ada)
 
     
 ## -------------------------------------------------------------------------------------------------
     def set_log_level(self, p_level):
         Log.set_log_level(self, p_level)
 
-        for agent_entry in self._agents:
-            agent_entry[0].set_log_level(p_level)
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def get_filename(self) -> str:
-#         return self.C_TYPE + ' ' + self.C_NAME + self.C_SUFFIX
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def load(self, p_path, p_filename=None) -> bool:
-#         # load all subagents
-#         for i, agent_entry in enumerate(self._agents):
-#             agent = agent_entry[0]
-#             agent_name = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
-
-#             if agent.load(p_path, agent_name + agent.C_SUFFIX):
-#                 self.log(Log.C_LOG_TYPE_I, agent_name + ' loaded')
-#             else:
-#                 self.log(Log.C_LOG_TYPE_E, agent_name + ' not loaded')
-#                 return False
-
-#         return True
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def save(self, p_path, p_filename=None) -> bool:
-#         # save all subagents
-#         for i, agent_entry in enumerate(self._agents):
-#             agent = agent_entry[0]
-#             agent_name = agent.C_TYPE + ' ' + agent.C_NAME + '(' + str(i) + ')'
-
-#             if agent.save(p_path, agent_name + agent.C_SUFFIX):
-#                 self.log(Log.C_LOG_TYPE_I, agent_name + ' saved')
-#             else:
-#                 self.log(Log.C_LOG_TYPE_E, agent_name + ' not saved')
-#                 return False
-
-#         return True
+        for agent, weight in self._agents:
+            agent.set_log_level(p_level)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -841,39 +784,27 @@ class MultiAgent(Agent):
         """
 
         p_agent.switch_adaptivity(self._adaptivity)
-        self._agent_ids.append(p_agent.get_id())
-        self._agents.append([p_agent, p_weight])
-        p_agent.set_name(str(p_agent.get_id()) + ' ' + p_agent.get_name())
+        self._agents.append( (p_agent, p_weight) )
+        self._agent_ids.append( p_agent.get_id() )
+
         self.log(Log.C_LOG_TYPE_I, p_agent.C_TYPE + ' ' + p_agent.get_name() + ' added.')
 
-        agent_model = self._agents[p_agent.get_id()][0]
+        if p_agent._policy.get_hyperparam() is not None:
+            self._hyperparam_space.append( p_set=p_agent._policy.get_hyperparam().get_related_set(), 
+                                           p_new_dim_ids=False,
+                                           p_ignore_duplicates=True )
         
-        if agent_model._policy.get_hyperparam() is not None:
-            if p_agent.get_id() == 0:
-                self._hyperparam_space = agent_model._policy.get_hyperparam().get_related_set().copy(p_new_dim_ids=False)
-            else:
-                self._hyperparam_space.append( p_set=agent_model._policy.get_hyperparam().get_related_set(), 
-                                               p_new_dim_ids=False,
-                                               p_ignore_duplicates=True )
-        
-        if agent_model._envmodel is not None:
+        if p_agent._envmodel is not None:
             try:
-                self._hyperparam_space.append(agent_model._envmodel.get_hyperparam().get_related_set())
+                self._hyperparam_space.append(p_agent._envmodel.get_hyperparam().get_related_set())
             except:
                 pass
  
-        if '_hyperparam_space' in dir(self):
+        if self._hyperparam_tuple is None:
             self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
             
-            for x, mod in enumerate(self._agents):
-                self._hyperparam_tuple.add_hp_tuple(mod[0]._policy.get_hyperparam())
-                
-                if mod[0]._envmodel is not None:
-                    try:
-                        self._hyperparam_tuple.add_hp_tuple(mod[0]._envmodel.get_hyperparam())
-                    except:
-                          pass
-        
+        self._hyperparam_tuple.add_hp_tuple(p_agent.get_hyperparam())
+                        
 
 ## -------------------------------------------------------------------------------------------------
     def get_agents(self):
@@ -887,12 +818,12 @@ class MultiAgent(Agent):
 
         Returns
         -------
-        agent_info : list
+        agent_info : tuple
             agent_info[0] is the agent object itself and agent_info[1] it's weight
             
         """
 
-        return self._agents[self._agent_ids.index(p_agent_id)]
+        return self._agents[ self._agent_ids.index(p_agent_id) ]
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -907,8 +838,7 @@ class MultiAgent(Agent):
     
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
-        for i, agent_entry in enumerate(self._agents):
-            agent = agent_entry[0]
+        for agent, weight in self._agents:
             agent.set_random_seed(p_seed)
 
     
@@ -920,7 +850,7 @@ class MultiAgent(Agent):
 
         for agent, weight in self._agents:
             action_agent = agent.compute_action(p_state)
-            action_element = action_agent.get_elem(agent.get_id())
+            action_element = action_agent.get_elem( agent.get_id() )
             action_element.set_weight(weight)
             action.add_elem(agent.get_id(), action_element)
 
@@ -933,8 +863,7 @@ class MultiAgent(Agent):
         self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')
 
         adapted = False
-        for agent_entry in self._agents:
-            agent = agent_entry[0]
+        for agent, weight in self._agents:
             if (p_reward.get_type() != Reward.C_TYPE_OVERALL) and not p_reward.is_rewarded(agent.get_id()):
                 continue
             self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
@@ -948,8 +877,8 @@ class MultiAgent(Agent):
     
 ## -------------------------------------------------------------------------------------------------
     def clear_buffer(self):
-        for agent_entry in self._agents:
-            agent_entry[0].clear_buffer()
+        for agent, weight in self._agents:
+            agent.clear_buffer()
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -962,8 +891,8 @@ class MultiAgent(Agent):
 
         self.log(self.C_LOG_TYPE_I, 'Init visualization for all agents...')
 
-        for agent_entry in self._agents:
-            agent_entry[0].init_plot(p_figure = None)
+        for agent, weight in self._agents:
+            agent.init_plot(p_figure = None)
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -972,5 +901,5 @@ class MultiAgent(Agent):
 
         self.log(self.C_LOG_TYPE_I, 'Start visualization for all agents...')
 
-        for agent_entry in self._agents:
-            agent_entry[0].update_plot()
+        for agent, weight in self._agents:
+            agent.update_plot()

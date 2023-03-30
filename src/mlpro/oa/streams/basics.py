@@ -13,10 +13,11 @@
 ## -- 2022-12-09  0.4.1     DA       Corrections
 ## -- 2022-12-20  0.5.0     DA       Refactoring
 ## -- 2023-01-01  0.6.0     DA       Refactoring
+## -- 2023-03-27  0.6.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.0 (2023-01-01)
+Ver. 0.6.1 (2023-03-27)
 
 Core classes for online machine learning.
 """
@@ -25,7 +26,7 @@ Core classes for online machine learning.
 from mlpro.bf.various import Log
 from mlpro.bf.streams import *
 from mlpro.bf.ml import *
-import mlpro.sl.models as sl
+import mlpro.sl as sl
 
 
 

@@ -8,10 +8,12 @@
 ## -- 2023-02-23  0.0.0     SY       Creation
 ## -- 2023-03-07  1.0.0     SY       Released first version
 ## -- 2023-03-10  1.1.0     SY       Combining _hyperparameters_check and _init_hyperparam
+## -- 2023-03-28  1.2.0     SY       - Add _complete_state, _reduce_state due to new class Persistent
+## --                                - Update _map
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-03-10)
+Ver. 1.2.0 (2023-03-28)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
@@ -329,6 +331,8 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         p_output : Element
             Setpoint ordinate/output element (type Element)
         """
+        
+        self._sl_model.eval()
 
         # Input pre processing
         input = self.input_preproc(p_input)
@@ -426,7 +430,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
         self._sl_model.train()
         outputs = self.forward(p_dataset["input"].dataset[0])
-        loss = self._calc_loss(outputs, p_dataset["output"].dataset[0])
+        loss    = self._calc_loss(outputs, p_dataset["output"].dataset[0])
         self._optimize(loss)
             
         return True
@@ -453,3 +457,26 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         ids_        = self.get_hyperparam().get_dim_ids()
         output      = output.reshape(BatchSize, int(self.get_hyperparam().get_value(ids_[1])))
         return output
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
+        
+        torch.save(p_state['_sl_model'].state_dict(),
+                   p_path + p_os_sep + p_filename_stub + '_model.pt')
+        torch.save(p_state['_optimizer'].state_dict(),
+                   p_path + p_os_sep + p_filename_stub + '_optimizer.pt')
+        
+        del p_state['_sl_model']
+        del p_state['_optimizer']
+
+
+## -------------------------------------------------------------------------------------------------
+    def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
+        
+        load_model      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_model.pt')
+        load_optim      = torch.load(p_path + p_os_sep + 'model' + p_os_sep + p_filename_stub + '_optimizer.pt')
+        self._sl_model  = self._setup_model()
+        self._sl_model.load_state_dict(load_model)
+        self._optimizer.load_state_dict(load_optim)
+        

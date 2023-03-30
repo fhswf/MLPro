@@ -33,10 +33,12 @@
 ## -- 2022-08-24  2.2.6     SY       Update state calculation function
 ## -- 2022-11-09  2.2.7     DA       Refactoring due to changes on plot systematics
 ## -- 2023-02-22  2.3.0     SY       Refactoring
+## -- 2023-03-27  2.3.1     DA       Method BGLP._compute_reward(): refactoring of reward type
+## --                                Reward.C_TYPE_EVERY_AGENT
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.0 (2023-02-22)
+Ver. 2.3.1 (2023-03-27)
 
 This module provides an RL environment of Bulk Good Laboratory Plant (BGLP).
 """
@@ -1062,9 +1064,9 @@ class BGLP (Environment):
             reward.set_overall_reward(r_overall)
         
         elif self.reward_type == Reward.C_TYPE_EVERY_AGENT:
-           for agent_id in self._last_action.get_agent_ids():
+           for i, agent_id in enumerate( self._last_action.get_agent_ids() ):
                r_reward = self.calc_reward()
-               reward.add_agent_reward(agent_id, r_reward[int(agent_id)])
+               reward.add_agent_reward(agent_id, r_reward[i])
                
         else:
            for agent_id in self._last_action.get_agent_ids():

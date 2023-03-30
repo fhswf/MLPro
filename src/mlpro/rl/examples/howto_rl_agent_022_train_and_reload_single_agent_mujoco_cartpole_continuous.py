@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-07  0.0.0     MRD      Creation
 ## -- 2023-03-07  1.0.0     MRD      Released first version
+## -- 2023-03-27  1.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-07)
+Ver. 1.0.1 (2023-03-27)
 
 This module shows how to train a single agent with SB3 Policy on Cartpole Continuous MuJoCo Environment.
 
@@ -101,3 +102,26 @@ training = RLTraining(
 
 # 3 Training
 training.run()
+filename_scenario = training.get_scenario().get_filename()
+
+
+# 4 Reload the scenario
+if __name__ == '__main__':
+    input( '\nTraining finished. Press ENTER to reload and run the scenario...\n')
+
+scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario',
+                            p_filename = filename_scenario )
+
+
+# 5 Reset Scenario
+scenario.reset()  
+
+
+# 6 Run Scenario
+scenario.run()
+
+if __name__ != '__main__':
+    from shutil import rmtree
+    rmtree(training.get_training_path())
+else:
+    input( '\nPress ENTER to finish...')
