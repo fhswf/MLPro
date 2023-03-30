@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-04  1.0.0     DA       Creation as derivate of howto_rl_agent_011
+## -- 2023-03-27  1.0.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-04)
+Ver. 1.0.1 (2023-03-27)
 
 As in Howto RL AGENT 011, this module shows how to train a single agent and load it again to do some
 extra cycles. In opposite to howto 011, stagnation detection is used to automatically end the
@@ -116,6 +117,7 @@ training = RLTraining(
 
 # 3 Training
 training.run()
+filename_scenario = training.get_scenario().get_filename()
 
 
 
@@ -123,7 +125,8 @@ training.run()
 if __name__ == '__main__':
     input( '\nTraining finished. Press ENTER to reload and run the scenario...\n')
 
-scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario' )
+scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario',
+                            p_filename = filename_scenario )
 
 
 # 5 Reset Scenario

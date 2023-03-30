@@ -15,10 +15,11 @@
 ## -- 2022-11-02  1.0.6     DA       Refactoring 
 ## -- 2022-11-09  1.1.0     DA       Refactoring 
 ## -- 2022-11-21  1.1.1     DA       Corrections on logging
+## -- 2023-03-27  1.2.0     DA       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-11-21)
+Ver. 1.2.0 (2023-03-27)
 
 This module demonstrates how to utilize wrapper class for Hyperopt in RL context.
 
@@ -119,23 +120,21 @@ class BGLP_Rnd(RLScenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         self._env       = BGLP(p_logging=p_logging)
-        self._agent     = MultiAgent(p_name='Dummy Policy', p_ada=1, p_logging=p_logging)
+        _agent          = MultiAgent(p_name='Dummy Policy', p_ada=1, p_logging=p_logging)
         state_space     = self._env.get_state_space()
         action_space    = self._env.get_action_space()
         
         
         # Agent 1
         _name         = 'BELT_CONVEYOR_A'
-        _id           = 0
         _ospace       = state_space.spawn([state_space.get_dim_ids()[0],state_space.get_dim_ids()[1]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[0]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=Log.C_LOG_NOTHING)
-        self._agent.add_agent(
+        _agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
                 p_envmodel=None,
                 p_name=_name,
-                p_id=_id,
                 p_ada=p_ada,
                 p_visualize=p_visualize,
                 p_logging=p_logging),
@@ -145,16 +144,14 @@ class BGLP_Rnd(RLScenario):
         
         # Agent 2
         _name         = 'VACUUM_PUMP_B'
-        _id           = 1
         _ospace       = state_space.spawn([state_space.get_dim_ids()[1],state_space.get_dim_ids()[2]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[1]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=Log.C_LOG_NOTHING)
-        self._agent.add_agent(
+        _agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
                 p_envmodel=None,
                 p_name=_name,
-                p_id=_id,
                 p_ada=p_ada,
                 p_visualize=p_visualize,
                 p_logging=p_logging),
@@ -164,16 +161,14 @@ class BGLP_Rnd(RLScenario):
         
         # Agent 3
         _name         = 'VIBRATORY_CONVEYOR_B'
-        _id           = 2
         _ospace       = state_space.spawn([state_space.get_dim_ids()[2],state_space.get_dim_ids()[3]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[2]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=Log.C_LOG_NOTHING)
-        self._agent.add_agent(
+        _agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
                 p_envmodel=None,
                 p_name=_name,
-                p_id=_id,
                 p_ada=p_ada,
                 p_visualize=p_visualize,
                 p_logging=p_logging),
@@ -183,16 +178,14 @@ class BGLP_Rnd(RLScenario):
         
         # Agent 4
         _name         = 'VACUUM_PUMP_C'
-        _id           = 3
         _ospace       = state_space.spawn([state_space.get_dim_ids()[3],state_space.get_dim_ids()[4]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[3]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=Log.C_LOG_NOTHING)
-        self._agent.add_agent(
+        _agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
                 p_envmodel=None,
                 p_name=_name,
-                p_id=_id,
                 p_ada=p_ada,
                 p_visualize=p_visualize,
                 p_logging=p_logging),
@@ -202,23 +195,21 @@ class BGLP_Rnd(RLScenario):
         
         # Agent 5
         _name         = 'ROTARY_FEEDER_C'
-        _id           = 4
         _ospace       = state_space.spawn([state_space.get_dim_ids()[4],state_space.get_dim_ids()[5]])
         _aspace       = action_space.spawn([action_space.get_dim_ids()[4]])
         _policy       = myPolicy(p_observation_space=_ospace, p_action_space=_aspace, p_buffer_size=1, p_ada=1, p_logging=Log.C_LOG_NOTHING)
-        self._agent.add_agent(
+        _agent.add_agent(
             p_agent=Agent(
                 p_policy=_policy,
                 p_envmodel=None,
                 p_name=_name,
-                p_id=_id,
                 p_ada=p_ada,
                 p_visualize=p_visualize,
                 p_logging=p_logging),
             p_weight=1.0
             )
         
-        return self._agent
+        return _agent
 
 
 

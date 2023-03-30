@@ -47,7 +47,6 @@ class PyTorchIOElement (BufferElement):
         Setpoint ordinate/output element (type Element)
     """
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_input:torch.Tensor, p_output:torch.Tensor):
         super().__init__({"input": p_input, "output": p_output})
@@ -74,7 +73,6 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
     p_seed : int
         the seeding for randomizer in the buffer, optional. Default = 1.
     """
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_size:int=1, p_test_data:float=0.3, p_batch_size:int=100, p_seed:int=1):
@@ -172,7 +170,6 @@ class PyTorchHelperFunctions():
     PyTorch Helper Functions in MLPro-SL.
     """
 
-
 ## -------------------------------------------------------------------------------------------------
     def input_preproc(self, p_input:Element) -> torch.Tensor:
         """
@@ -200,6 +197,7 @@ class PyTorchHelperFunctions():
             pass
 
         return input
+
 
 ## -------------------------------------------------------------------------------------------------
     def output_preproc(self, p_output:Element) -> torch.Tensor:

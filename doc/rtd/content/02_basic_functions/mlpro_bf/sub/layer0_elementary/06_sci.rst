@@ -1,9 +1,10 @@
-Scientific Reference
------------------------
+Scientific Referencing
+======================
 
 MLPro integrates scientific referencing in any class using a class **ScientificObject**.
 This class provides elementary functionality for storing scientific references.
-For example, when the users create a custom reinforcement learning policy or a custom environment, then the users can simply inherit ScientificObject class and add a scientific reference to the related elements.
+For example, when the users create a custom reinforcement learning policy or a custom environment, 
+then the users can simply inherit ScientificObject class and add a scientific reference to the related elements.
 This class can be accessed as follows:
 
 .. code-block:: python

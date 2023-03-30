@@ -27,17 +27,18 @@
 ## -- 2023-03-07  1.7.1     SY       Remove TransferFunction from bf.systems
 ## -- 2023-03-07  1.7.2     DA       Bugfix in method System._save()
 ## -- 2023-03-08  1.7.3     MRD      Auto rename System, set latency from MuJoCo xml file
+## -- 2023-03-27  1.8.0     DA       Class System: refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.3 (2023-03-08)
+Ver. 1.8.0 (2023-03-27)
 
 This module provides models and templates for state based systems.
 """
 
 
 from time import sleep
-from mlpro.bf.various import TStamp, ScientificObject, PersonalisedStamp
+from mlpro.bf.various import TStamp, ScientificObject, Persistent
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable, PlotSettings
 from matplotlib.figure import Figure
@@ -684,7 +685,7 @@ class Controller (EventManager):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, ScientificObject):
+class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, ScientificObject):
     """
     Base class for state based systems.
 
@@ -815,6 +816,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
         FctBroken.__init__(self, p_logging=p_logging)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
+        Persistent.__init__(self, p_id=None, p_logging=p_logging)
 
 
  ## -------------------------------------------------------------------------------------------------
@@ -836,49 +838,31 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, LoadSave, Scien
 
 
 ## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def load(p_path, p_filename):
-        system = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
-
-        if system._mujoco_file is not None:
-            from mlpro.wrappers.mujoco import MujocoHandler
-
-            system._mujoco_handler = MujocoHandler(
-                                        p_mujoco_file=system._mujoco_file, 
-                                        p_frame_skip=system._frame_skip,
-                                        p_state_mapping=system._state_mapping,
-                                        p_action_mapping=system._action_mapping,
-                                        p_camera_conf=system._camera_conf,
-                                        p_visualize=system.get_visualization(),
-                                        p_logging=system.get_log_level() )
-            
-            system._mujoco_handler._system_state_space = system.get_state_space()
-            system._mujoco_handler._system_action_space = system.get_action_space()
-
-        return system
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
+        """
+        An embedded MuJoCo system can not be pickled and needs to be removed from the pickle stream.
+        """
+        
+        p_state['_mujoco_handler'] = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _save(self, p_path, p_filename) -> bool:
+    def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
+        
+        if self._mujoco_file is None: return
 
-        if self._mujoco_handler is not None:
-            self._mujoco_handler = None
+        from mlpro.wrappers.mujoco import MujocoHandler
 
-        pkl.dump( obj=self, 
-                  file=open(p_path + os.sep + p_filename, "wb"),
-                  protocol=pkl.HIGHEST_PROTOCOL )
+        self._mujoco_handler = MujocoHandler( p_mujoco_file=self._mujoco_file, 
+                                              p_frame_skip=self._frame_skip,
+                                              p_state_mapping=self._state_mapping,
+                                              p_action_mapping=self._action_mapping,
+                                              p_camera_conf=self._camera_conf,
+                                              p_visualize=self.get_visualization(),
+                                              p_logging=self.get_log_level() )
 
-        if self._mujoco_file is not None:
-            from mlpro.wrappers.mujoco import MujocoHandler
-
-            self._mujoco_handler = MujocoHandler(
-                                        p_mujoco_file=self._mujoco_file, 
-                                        p_frame_skip=self._frame_skip,
-                                        p_state_mapping=self._state_mapping,
-                                        p_action_mapping=self._action_mapping,
-                                        p_camera_conf=self._camera_conf,
-                                        p_visualize=self.get_visualization(),
-                                        p_logging=self.get_log_level() )
+        self._mujoco_handler._system_state_space  = self.get_state_space()
+        self._mujoco_handler._system_action_space = self.get_action_space()
 
 
 ## -------------------------------------------------------------------------------------------------

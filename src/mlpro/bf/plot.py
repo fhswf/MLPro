@@ -55,7 +55,7 @@ import matplotlib.pyplot as plt
 import os
 import statistics
 from mlpro.bf.exceptions import ImplementationError, ParamError
-from mlpro.bf.various import LoadSave
+from mlpro.bf.various import Persistent
 from mlpro.bf.data import DataStoring
 
 
@@ -498,7 +498,7 @@ class Plottable:
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DataPlotting(LoadSave):
+class DataPlotting(Persistent):
     """
     This class provides a functionality to plot the stored values of variables.
 

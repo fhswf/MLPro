@@ -22,6 +22,7 @@ You will learn:
 1. How to use the reward class of MLPro.
 
 2. How to use reward class for different reward types supported in MLPro.
+
 """
 
 

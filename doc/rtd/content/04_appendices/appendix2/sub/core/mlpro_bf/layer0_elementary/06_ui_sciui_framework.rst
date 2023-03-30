@@ -8,4 +8,5 @@ BF-UI-SCIUI - SciUI Framework
 .. automodule:: mlpro.bf.ui.sciui.framework
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

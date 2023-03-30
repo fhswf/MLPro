@@ -40,18 +40,19 @@
 ## -- 2023-03-04  1.7.1     DA       Renamed some rl howtos
 ## -- 2023-03-08  1.7.2     SY       Add Howto RL MB 003
 ## -- 2023-03-10  1.7.3     SY       Renumbering module
+## -- 2023-03-24  1.7.4     DA       Add Howto BF 005
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.7.3 (2023-03-10)
+Ver. 1.7.4 (2023-03-24)
 
 Unit test for all examples available.
 """
 
 
 import pytest
-import importlib
+import runpy
 
 
 howto_list = {
@@ -63,6 +64,7 @@ howto_list = {
     "bf_002": "mlpro.bf.examples.howto_bf_002_timer",
     "bf_003": "mlpro.bf.examples.howto_bf_003_store_plot_and_save_variables",
     "bf_004": "mlpro.bf.examples.howto_bf_004_buffers",
+    "bf_005": "mlpro.bf.examples.howto_bf_005_persistence",
 
     # bf.eh
     "bf_eh_001": "mlpro.bf.examples.howto_bf_eh_001_event_handling",
@@ -146,5 +148,5 @@ howto_list = {
 
 @pytest.mark.parametrize("cls", list(howto_list.keys()))
 def test_howto(cls):
-    importlib.import_module(howto_list[cls])
+    runpy.run_path("src/"+howto_list[cls].replace(".","/")+".py")
 

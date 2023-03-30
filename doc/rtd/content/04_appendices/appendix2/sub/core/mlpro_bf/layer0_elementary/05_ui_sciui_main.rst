@@ -5,4 +5,5 @@ BF-UI-SCIUI - SciUI Application Class
 .. automodule:: mlpro.bf.ui.sciui.main
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

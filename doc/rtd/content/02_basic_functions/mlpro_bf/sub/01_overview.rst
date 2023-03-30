@@ -5,9 +5,10 @@ MLPro has an extensive substructure of comprehensive basic functionalities, whic
 This is organized in a total of five layers that build on one another, as shown in the following figure:
 
 .. image:: images/MLPro-BF_Overview.drawio.png
+    :scale: 50%
 
 The lowest :ref:`Layer 0: Elementary Functions <target_bf_elementary>` provides a collection of functions for logging, 
-time measurement in simulated or real processes, data management/plotting, etc. It also contains a framework for interactive
+time measurement in simulated or real processes, persistence and data management, plotting, etc. It also contains a framework for interactive
 GUI applications.
 
 The next :ref:`Layer 1: Computation <target_bf_computation>` consists of various functionalities related to computation 

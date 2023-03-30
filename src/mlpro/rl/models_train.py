@@ -48,10 +48,11 @@
 ## -- 2023-02-02  1.8.4     DA       Class RLTraining: signature of method init_plot refactored
 ## -- 2023-02-20  1.9.0     DA       Class RLScenario: new methods load(), _save()
 ## -- 2023-03-09  1.9.1     DA       Class RLTrainingResults: removed parameter p_path
+## -- 2023-03-26  2.0.0     DA       Class RLScenario: refactoring persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.1 (2023-03-09)
+Ver. 2.0.0 (2023-03-26)
 
 This module provides model classes to define and run rl scenarios and to train agents inside them.
 """
@@ -331,10 +332,9 @@ class RLScenario (Scenario):
         if self._env is None:
             raise ImplementationError('Please bind your RL environment to self._env')
 
-        self._agent = self._model
-
-        self._model_class = self._model.__class__ 
-        self._env_class   = self._env.__class__
+        self._agent        = self._model
+        self._env_cls      = self._env.__class__
+        self._env_filename = self._env.get_filename()
 
         # 2 Finalize cycle limit
         if self._cycle_limit == -1:
@@ -345,40 +345,42 @@ class RLScenario (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def load(p_path):
-        scenario = pkl.load(open(p_path + os.sep + 'scenario', 'rb'))
-        scenario._model = scenario._model_class.load(p_path, 'model')
-        scenario._agent = scenario._model
-        scenario._env   = scenario._env_class.load(p_path, 'environment')
-        return scenario
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):        
+        super()._reduce_state( p_state = p_state, 
+                               p_path = p_path,
+                               p_os_sep = p_os_sep, 
+                               p_filename_stub = p_filename_stub )
+
+        p_state['_agent'] = None
+
+        # 1 Persist environment into a separate subfolder
+        env_path = p_path + p_os_sep + 'environment'
+        try:
+            p_state['_env'].save(p_path=env_path)
+        except:
+            return
+
+        # 2 Exclude environment from scenario
+        p_state['_env']   = None
+
+        # 3 Exclude data logger from scenario
+        p_state['_ds_states']  = None 
+        p_state['_ds_actions'] = None
+        p_state['_ds_rewards'] = None
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _save(self, p_path, p_filename=None) -> bool:
+    def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
+        super()._complete_state( p_path = p_path,
+                                 p_os_sep = p_os_sep,
+                                 p_filename_stub = p_filename_stub )
 
-        # 1 Create new subfolder for scenario files
-        scenario_path = p_path + os.sep + 'scenario'
-        os.makedirs(scenario_path)
-
-        # 2 Save model and environment
-        self._model.save(scenario_path, 'model')
-        self._env.save(scenario_path, 'environment')
-
-        # 3 Save scenario w/o model and env
-        self._model = None 
-        self._agent = None
-        self._env   = None
-        pkl.dump( obj=self, 
-                  file=open(scenario_path + os.sep + 'scenario', "wb"),
-                  protocol=pkl.HIGHEST_PROTOCOL )
-
-        # 4 Reload model and env
-        self._model = self._model_class.load(scenario_path, 'model')
         self._agent = self._model
-        self._env   = self._env_class.load(scenario_path, 'environment')
 
-        return True
+        # Load environment from separate subfolder
+        if self._env_cls is None: return
+        env_path  = p_path + p_os_sep + 'environment'
+        self._env = self._env_cls.load(p_path=env_path, p_filename=self._env_filename)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -472,7 +474,7 @@ class RLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def connect_data_logger(self, p_ds_states: RLDataStoring = None, p_ds_actions: RLDataStoring = None,
                             p_ds_rewards: RLDataStoring = None):
-        self._ds_states = p_ds_states
+        self._ds_states  = p_ds_states
         self._ds_actions = p_ds_actions
         self._ds_rewards = p_ds_rewards
 
@@ -552,6 +554,7 @@ class RLScenario (Scenario):
             self.log(self.C_LOG_TYPE_E, 'Process time', self._timer.get_time(), ': Environment terminated')
 
         return success, error, adapted, end_of_data
+
 
 
 

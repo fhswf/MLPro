@@ -20,4 +20,5 @@ Therefore, special attention should be paid to the custom methods that are alrea
 **Cross Reference**
 
 - :ref:`API Reference BF-OPS - Operations <target_api_bf_ops>`
+- :ref:`BF-Various - Persistence <target_bf_persistence>`
 

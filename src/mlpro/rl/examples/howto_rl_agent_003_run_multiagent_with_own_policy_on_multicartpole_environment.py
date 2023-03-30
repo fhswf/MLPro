@@ -113,7 +113,6 @@ class MyScenario (RLScenario):
                 ),
                 p_envmodel=None,
                 p_name='Smith-1',
-                p_id=0,
                 p_ada=True,
                 p_logging=p_logging
             ),
@@ -132,7 +131,6 @@ class MyScenario (RLScenario):
                 ),
                 p_envmodel=None,
                 p_name='Smith-2',
-                p_id=1,
                 p_ada=True,
                 p_logging=p_logging
             ),
@@ -150,17 +148,19 @@ if __name__ == '__main__':
     # 3.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
     visualize   = True
+    cycle_limit = 200
   
 else:
     # 3.2 Parameters for internal unit test
     logging     = Log.C_LOG_NOTHING
     visualize   = False
+    cycle_limit = 5
  
 
 myscenario  = MyScenario(
         p_mode=Mode.C_MODE_SIM,
         p_ada=True,
-        p_cycle_limit=200,
+        p_cycle_limit=cycle_limit,
         p_visualize=visualize,
         p_logging=logging
 )

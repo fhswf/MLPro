@@ -162,7 +162,7 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
 
 ## -------------------------------------------------------------------------------------------------
     def _async_subtask(self, p_tid:int, p_obs:State):
-        self._so.checkin(p_tid=p_tid)
+        self._so.checkin(p_id=p_tid)
         
         state = p_obs
         path = SARSBuffer(p_size=self._prediction_horizon)
@@ -204,5 +204,5 @@ class MPC(ActionPlanner, ScientificObject, mt.Async):
             # adjust the current state with next state
             state = next_state
 
-        self._so.add_result(p_tid=p_tid, p_result=[overall_reward, path])
-        self._so.checkout(p_tid=p_tid)
+        self._so.add_result(p_id=p_tid, p_result=[overall_reward, path])
+        self._so.checkout(p_id=p_tid)
