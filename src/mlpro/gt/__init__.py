@@ -1,2 +1,2 @@
-from mlpro.gt.models import *
+from mlpro.gt.basics import *
 from mlpro.gt.dp import *
