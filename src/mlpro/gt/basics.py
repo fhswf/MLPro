@@ -10,7 +10,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-30)
+Ver. 1.0.0 (2023-??-??)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
