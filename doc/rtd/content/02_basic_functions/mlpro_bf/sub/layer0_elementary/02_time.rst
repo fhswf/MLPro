@@ -1,5 +1,5 @@
 Time Measurement
-----------------
+================
 
 MLPro provides an internal timing mechanism that is introduced by class property **Timer**.
 This class uses the built-in python package, namely **datetime**, to deal with the time management system.

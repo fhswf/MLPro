@@ -21,10 +21,11 @@
 ## -- 2023-02-20  1.2.0     DA       Simplification after changes on class bf.ml.Training
 ## -- 2023-03-02  1.2.1     LSB      Refactoring
 ## -- 2023-03-04  1.3.0     DA       Renamed
+## -- 2023-03-27  1.3.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2023-03-04)
+Ver. 1.3.1 (2023-03-27)
 
 This module shows how to train a single agent and load it again to do some extra cycles.
 
@@ -90,7 +91,7 @@ class MyScenario (RLScenario):
 
 if __name__ == '__main__':
     # Parameters for demo mode
-    cycle_limit = 10000
+    cycle_limit = 100 #00
     adaptation_limit = 0
     stagnation_limit = 0
     eval_frequency = 0
@@ -127,6 +128,7 @@ training = RLTraining(
 
 # 3 Training
 training.run()
+filename_scenario = training.get_scenario().get_filename()
 
 
 
@@ -134,7 +136,8 @@ training.run()
 if __name__ == '__main__':
     input( '\nTraining finished. Press ENTER to reload and run the scenario...\n')
 
-scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario' )
+scenario = MyScenario.load( p_path = training.get_training_path() + os.sep + 'scenario', 
+                            p_filename = filename_scenario )
 
 
 # 5 Reset Scenario

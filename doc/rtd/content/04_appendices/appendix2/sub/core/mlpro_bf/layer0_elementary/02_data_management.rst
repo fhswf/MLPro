@@ -8,4 +8,5 @@ BF-DATA - Data Management
 .. automodule:: mlpro.bf.data
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

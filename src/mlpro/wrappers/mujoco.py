@@ -205,9 +205,7 @@ class RenderViewer(CallbacksViewer):
         
         # X Y Z Position of the camera
         if xyz_pos is None:
-            for i in range(3):
-                self.cam.lookat[i] = np.median(self.data.geom_xpos[:, i])
-            self.cam.lookat[0] = 0
+            self.cam.lookat = np.zeros(3)
         else:
             for i in range(3):
                 self.cam.lookat[i] = xyz_pos[i]

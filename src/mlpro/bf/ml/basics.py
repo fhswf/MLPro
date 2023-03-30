@@ -62,12 +62,13 @@
 ## --                                - New methods get_training_path()
 ## -- 2023-03-09  2.1.1     DA       Class TrainingResults: removed parameter p_path
 ## -- 2023-03-10  2.1.2     DA       Class AdaptiveFunction: refactoring constructor parameters
-## -- 2022-03-10  2.1.3     SY       Refactoring
+## -- 2023-03-10  2.1.3     SY       Refactoring
 ## -- 2022-03-16  2.1.4     SY       Add _get_accuracy(), add_objective, _add_objective in Model
+## -- 2023-03-29  2.2.0     DA       Classes Model, Scenario: refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.4 (2023-03-16)
+Ver. 2.2.0 (2023-03-29)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -137,7 +138,6 @@ class HyperParamDispatcher (HyperParamTuple):
     To dispatch multiple hp tuples into one tuple
     """
 
-
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_set: Set) -> None:
         super().__init__(p_set)
@@ -146,6 +146,7 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
     def add_hp_tuple(self, p_hpt:HyperParamTuple):
+        if p_hpt is None: return
         for idx in p_hpt.get_dim_ids():
             self._hp_dict[idx] = p_hpt
 
@@ -178,7 +179,7 @@ class HyperParamDispatcher (HyperParamTuple):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Model (Task, LoadSave, ScientificObject):
+class Model (Task, ScientificObject):
     """
     Fundamental template class for adaptive ML models. Supports in particular
       - Adaptivity (explicit and/or event based)
@@ -194,6 +195,8 @@ class Model (Task, LoadSave, ScientificObject):
         Boolean switch for adaptivitiy. Default = True.
     p_buffer_size : int
         Initial size of internal data buffer. Defaut = 0 (no buffering).
+    p_id
+        Optional external id
     p_name : str
         Optional name of the model. Default is None.
     p_range_max : int
@@ -227,6 +230,7 @@ class Model (Task, LoadSave, ScientificObject):
     def __init__( self, 
                   p_ada : bool = True, 
                   p_buffer_size : int = 0, 
+                  p_id = None,
                   p_name: str = None, 
                   p_range_max: int = Async.C_RANGE_PROCESS, 
                   p_autorun = Task.C_AUTORUN_NONE, 
@@ -236,6 +240,7 @@ class Model (Task, LoadSave, ScientificObject):
                   **p_par ):
 
         Task.__init__( self, 
+                       p_id = p_id,
                        p_name = p_name, 
                        p_range_max = p_range_max, 
                        p_autorun = p_autorun, 
@@ -656,7 +661,9 @@ class Scenario (ScenarioBase):
                  p_visualize:bool=True,              
                  p_logging=Log.C_LOG_ALL ):  
 
-        self._ada = p_ada
+        self._ada            = p_ada
+        self._model_cls      = None
+        self._model_filename = None
 
         super().__init__( p_mode=p_mode,
                           p_cycle_limit=p_cycle_limit,
@@ -677,9 +684,12 @@ class Scenario (ScenarioBase):
                                    p_ada=self._ada, 
                                    p_visualize=self.get_visualization(),
                                    p_logging=self.get_log_level() )
-
+        
         if self._model is None: 
             raise ImplementationError('Please return your ML model in custom method self._setup()')
+        
+        self._model_cls      = self._model.__class__
+        self._model_filename = self._model.get_filename()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -752,12 +762,35 @@ class Scenario (ScenarioBase):
         if self._visualize: self._model.init_plot()
 
 
+## -------------------------------------------------------------------------------------------------
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
+
+        # 1 Persist model into a separate subfolder
+        model_path  = p_path + p_os_sep + 'model'
+        try:
+            p_state['_model'].save(p_path=model_path)
+        except:
+            return
+
+        # 2 Exclude model from scenario
+        p_state['_model'] = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
+
+        # Load model from separate subfolder
+        if self._model_cls is None: return
+        model_path  = p_path + p_os_sep + 'model'
+        self._model = self._model_cls.load(p_path=model_path, p_filename=self._model_filename)
+        
+
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class TrainingResults (Log, Saveable):
+class TrainingResults (Persistent):
     """
     Results of a training (see class Training).
 
@@ -774,7 +807,7 @@ class TrainingResults (Log, Saveable):
 
     """
 
-    C_TYPE      = 'Results '
+    C_TYPE          = 'Results '
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_scenario:Scenario, p_run, p_cycle_id, p_logging=Log.C_LOG_WE):
@@ -793,7 +826,7 @@ class TrainingResults (Log, Saveable):
 
         self.custom_results     = []
 
-        Log.__init__(self, p_logging=p_logging)
+        Persistent.__init__( self, p_id=None, p_logging=p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -835,6 +868,16 @@ class TrainingResults (Log, Saveable):
 
 
 ## -------------------------------------------------------------------------------------------------
+    @classmethod
+    def load(cls, p_path: str, p_filename: str):
+        """
+        Loading training results is explicitely disabled.
+        """
+        
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
     def _save_line(self, p_file, p_name, p_value):
         value = p_value
         if value is None: value = '-'
@@ -842,7 +885,7 @@ class TrainingResults (Log, Saveable):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def save(self, p_path, p_filename='summary.csv') -> bool:
+    def save(self, p_path: str, p_filename: str = 'summary.csv') -> bool:
         """
         Saves a training summary in the given path.
 
@@ -895,7 +938,7 @@ class TrainingResults (Log, Saveable):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class HyperParamTuner (Log, Saveable):
+class HyperParamTuner (Persistent):
     """
     Template class for hyperparameter tuning (HPT).
     """
@@ -943,6 +986,16 @@ class HyperParamTuner (Log, Saveable):
         raise NotImplementedError
     
     
+## -------------------------------------------------------------------------------------------------
+    @classmethod
+    def load(cls, p_path: str, p_filename: str):
+        """
+        Loading training results is explicitely disabled.
+        """
+        
+        raise NotImplementedError
+
+
 ## -------------------------------------------------------------------------------------------------
     def _save_line(self, p_file, p_name, p_value):
         value = p_value
@@ -1223,7 +1276,7 @@ class Training (Log):
             self.log(self.C_LOG_TYPE_W, self.C_LOG_SEPARATOR, '\n')
 
             if self._current_path is not None:
-                self._scenario.save(self._current_path, 'scenario')
+                self._scenario.save( p_path=self._current_path + os.sep + 'scenario')
                 
             self._close_results(self._results)
             self._results.log_results()

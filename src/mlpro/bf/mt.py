@@ -31,11 +31,11 @@
 ## -- 2022-12-30  1.7.1     DA       Bugfix in method Task._get_plot_host_tag()
 ## -- 2023-01-01  1.8.0     DA       Refactoring of plot settings
 ## -- 2023-02-15  1.8.1     DA       Class Task: changed default range to C_RANGE_THREAD
-## -- 2023-02-12  1.9.0     DA       New plot parameter p_view_autoselect
+## -- 2023-03-27  1.9.0     DA       Class Task: added parent class Persistent
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2023-01-01)
+Ver. 1.9.0 (2023-03-27)
 
 This module provides classes for multitasking with optional interprocess communication (IPC) based
 on shared objects. Multitasking in MLPro combines multrithreading and multiprocessing and simplifies
@@ -57,7 +57,7 @@ import matplotlib
 from matplotlib.figure import Figure
 from multiprocess.managers import BaseManager
 from mlpro.bf.exceptions import *
-from mlpro.bf.various import Log
+from mlpro.bf.various import *
 from mlpro.bf.events import EventManager, Event
 from mlpro.bf.plot import PlotSettings, Plottable
 
@@ -472,7 +472,7 @@ class Async (Range, Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Task (Async, EventManager, Plottable): 
+class Task (Async, EventManager, Plottable, Persistent): 
     """
     Template class for a task, that can run things - and even itself - asynchronously in a thread
     or process. Tasks can run standalone or as part of a workflow (see class Workflow). The integrated
@@ -480,6 +480,8 @@ class Task (Async, EventManager, Plottable):
 
     Parameters
     ----------
+    p_id
+        Optional external id
     p_name : str
         Optional name of the task. Default is None.
     p_range_max : int
@@ -509,15 +511,15 @@ class Task (Async, EventManager, Plottable):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_name:str=None,
-                  p_range_max:int=Async.C_RANGE_THREAD, 
-                  p_autorun=C_AUTORUN_NONE,
-                  p_class_shared=None, 
-                  p_visualize:bool=False,
-                  p_logging=Log.C_LOG_ALL,
+                  p_id = None, 
+                  p_name : str = None,
+                  p_range_max : int = Async.C_RANGE_THREAD, 
+                  p_autorun = C_AUTORUN_NONE,
+                  p_class_shared = None, 
+                  p_visualize : bool = False,
+                  p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        self._tid               = uuid.uuid4()
         self._kwargs            = p_kwargs.copy()
 
         self._predecessor_tasks = []
@@ -525,18 +527,18 @@ class Task (Async, EventManager, Plottable):
         self._num_predecessors  = 0
         self._ctr_predecessors  = 0
 
+        Async.__init__(self, p_range_max=p_range_max, p_class_shared=p_class_shared, p_logging=p_logging)
+        EventManager.__init__(self, p_logging=p_logging)
+        Plottable.__init__(self, p_visualize=p_visualize)
+        Persistent.__init__(self, p_id=p_id, p_logging=p_logging)
+
+        self._custom_run_method = self._get_custom_run_method()
         name = self.get_name()
         if name != '': name = name + ' '
         if p_name is not None:
             self.set_name(name + p_name)
         else:
-            self.set_name(name + str(self._tid))
-
-        Async.__init__(self, p_range_max=p_range_max, p_class_shared=p_class_shared, p_logging=p_logging)
-        EventManager.__init__(self, p_logging=p_logging)
-        Plottable.__init__(self, p_visualize=p_visualize)
-
-        self._custom_run_method = self._get_custom_run_method()
+            self.set_name(name + str(self.get_id()))
 
         self._autorun(p_autorun=p_autorun, p_kwargs=self._kwargs)
 
@@ -552,7 +554,7 @@ class Task (Async, EventManager, Plottable):
         Returns unique task id.
         """
 
-        return self._tid
+        return self.get_id()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -623,7 +625,7 @@ class Task (Async, EventManager, Plottable):
         """
 
         if self._so is not None: 
-            self._so.checkin(p_tid=self._tid)
+            self._so.checkin(p_tid=self._id)
             self.log(Log.C_LOG_TYPE_I, 'Checked in to shared object')
 
         self._custom_run_method(**p_kwargs)

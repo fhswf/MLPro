@@ -43,10 +43,11 @@
 ## -- 2022-11-29  2.0.3     DA       Refactoring
 ## -- 2022-12-21  2.0.4     SY       Update _recognize_space due to howto_rl_wp_003
 ## -- 2023-02-21  2.1.0     DA       Class WrEnvPZOO2MLPro: specific implementations for load(), _save()
+## -- 2023-03-26  2.2.0     DA       Class WrEnvPZOO2MLPro: refactoring of persistence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-02-21)
+Ver. 2.2.0 (2023-03-26)
 
 This module provides wrapper classes for PettingZoo multi-agent environments.
 
@@ -150,59 +151,33 @@ class WrEnvPZOO2MLPro(Wrapper, Environment):
 
 
 ## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def load(p_path, p_filename):
-        mlpro_env = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
-
-        if mlpro_env.get_visualization():
-            render_mode = 'human'
-        else:
-            render_mode = 'ansi'
-
-        for mod in WrEnvPZOO2MLPro.C_SUPPORTED_MODULES:
-            try:
-                mlpro_env._zoo_env_cls = locate( mod + '.' + mlpro_env._zoo_env_cls_name )
-                break
-            except:
-                pass
-
-        mlpro_env._zoo_env = mlpro_env._zoo_env_cls.env(render_mode=render_mode)
-
-        return mlpro_env
-
-
-## -------------------------------------------------------------------------------------------------
-    def _save(self, p_path, p_filename) -> bool:
+    def _reduce_state(self, p_state:dict, p_path:str, p_os_sep:str, p_filename_stub:str):
         """
         The embedded PettingZoo env itself can't be pickled due to it's dependencies on Pygame. That's 
-        why the current env instance needs to be removed before pickling the object. After that a fresh
-        PettingZoo env with same id is instantiated. Current inner state informations get lost.
+        why the current env instance needs to be removed before pickling the object. 
 
         See also: https://stackoverflow.com/questions/52336196/how-to-save-object-using-pygame-surfaces-to-file-using-pickle
         """
 
-        self._zoo_env     = None 
-        self._zoo_env_cls = None
+        p_state['_zoo_env'] = None
 
-        pkl.dump( obj=self, 
-                  file=open(p_path + os.sep + self.filename, "wb"),
-                  protocol=pkl.HIGHEST_PROTOCOL )
 
-        for mod in self.C_SUPPORTED_MODULES:
-            try:
-                self._zoo_env_cls = locate( mod + '.' + self._zoo_env_cls_name )
-                break
-            except:
-                pass
+## -------------------------------------------------------------------------------------------------
+    def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
 
         if self.get_visualization():
             render_mode = 'human'
         else:
             render_mode = 'ansi'
 
-        self._zoo_env = self._zoo_env_cls.env(render_mode=render_mode)
+        for mod in WrEnvPZOO2MLPro.C_SUPPORTED_MODULES:
+            try:
+                self._zoo_env_cls = locate( mod + '.' + self._zoo_env_cls_name )
+                break
+            except:
+                pass
 
-        return True
+        self._zoo_env = self._zoo_env_cls.env(render_mode=render_mode)
 
 
 ## -------------------------------------------------------------------------------------------------

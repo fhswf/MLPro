@@ -21,10 +21,11 @@
 ## -- 2023-02-02  1.2.0     DA       Refactoring 
 ## -- 2023-02-04  1.2.1     SY       Refactoring to avoid printing during unit test
 ## -- 2023-02-13  1.2.2     DA       Optimization of dark mode
+## -- 2023-03-27  1.3.0     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2023-02-13)
+Ver. 1.3.0 (2023-03-27)
 
 This module shows comparison between native and wrapped SB3 policy (On-policy).
 """
@@ -187,7 +188,7 @@ data_printing = {"Cycle": [False],
                  "Day": [False],
                  "Second": [False],
                  "Microsecond": [False],
-                 "Smith": [True, -1]}
+                 training.get_scenario().get_model().get_name(): [True, -1]}
 
 mem = training.get_results().ds_rewards
 mem_plot = MyDataPlotting(mem, p_showing=False, p_printing=data_printing)

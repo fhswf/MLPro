@@ -296,7 +296,7 @@ class StreamShared (Shared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Stream (Mode, LoadSave, ScientificObject):
+class Stream (Mode, Persistent, ScientificObject):
     """
     Template class for data streams. Objects of this type can be used as iterators.
 
@@ -1504,6 +1504,7 @@ class StreamWorkflow (StreamTask, Workflow):
 
         # Update of workflow master plot by using the StreamTask default implementation
         StreamTask.update_plot(self, p_inst_new=p_inst_new, p_inst_del=p_inst_del, **p_kwargs)
+
 
 
 

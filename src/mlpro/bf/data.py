@@ -37,7 +37,7 @@ import pickle as pkl
 import os
 import csv
 import copy
-from mlpro.bf.various import LoadSave
+from mlpro.bf.various import Persistent
 import random
 
 
@@ -45,7 +45,7 @@ import random
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DataStoring(LoadSave):
+class DataStoring: #(Persistent):
     """
     This class provides a functionality to store values of variables during
     training/simulation.
@@ -126,7 +126,7 @@ class DataStoring(LoadSave):
         if (p_filename is not None) and (p_filename != ''):
             self.filename = p_filename
         else:
-            self.filename = self.generate_filename()
+            self.filename = self._generate_filename()
 
         if self.filename is None:
             return False

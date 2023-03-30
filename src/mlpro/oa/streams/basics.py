@@ -14,10 +14,11 @@
 ## -- 2022-12-20  0.5.0     DA       Refactoring
 ## -- 2023-01-01  0.6.0     DA       Refactoring
 ## -- 2023-02-23  0.6.1     DA       Removed class OAFunction
+## -- 2023-03-27  0.6.1     DA       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.1 (2023-02-23)
+Ver. 0.6.1 (2023-03-27)
 
 Core classes for online adaptive stream processing.
 """
@@ -26,6 +27,7 @@ Core classes for online adaptive stream processing.
 from mlpro.bf.various import Log
 from mlpro.bf.streams import *
 from mlpro.bf.ml import *
+import mlpro.sl as sl
 
 
 
