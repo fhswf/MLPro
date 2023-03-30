@@ -16,7 +16,7 @@ This module provides model classes for tasks related to a Native Game Theory.
 """
 
 
-from mlpro.bf.various import TStamp, Log, Saveable
+from mlpro.bf.various import TStamp, Persistent
 from mlpro.bf.systems import Action
 from mlpro.bf.ml import Model, Scenario
 
@@ -90,7 +90,7 @@ class GTMultiPlayer (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTEvaluation (Log, Saveable):
+class GTEvaluation (Persistent):
 
 
 ## -------------------------------------------------------------------------------------------------
