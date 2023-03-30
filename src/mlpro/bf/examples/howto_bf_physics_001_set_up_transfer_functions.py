@@ -13,11 +13,12 @@
 ## -- 2023-01-16  1.0.3     SY       Update due to __call__
 ## -- 2023-01-24  1.0.4     SY       Quality Assurance on TransferFunction
 ## -- 2023-02-04  1.0.5     SY       Shift UnitConverter from bf.systems to bf.physics
+## -- 2023-03-14  1.0.6     SY       Recatoring
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.5 (2023-02-04)
+Ver. 1.0.6 (2023-03-14)
 
 This module provides an example of using the transfer function method in MLPro for both default and
 custom implementation.
@@ -38,18 +39,21 @@ import math
 
 
 if __name__ == "__main__":
-    p_print = True
+    p_logging   = Log.C_LOG_ALL
+    p_print     = True
     p_visualize = True
 else:
-    p_print = False
+    p_logging   = Log.C_LOG_NOTHING
+    p_print     = False
     p_visualize = False
-    
+        
     
 # 1. Using default type
 
 # 1.1. Initialize a given default transfer function
 myTF_linear = TransferFunction(p_name='Linear_TF',
                                p_type=TransferFunction.C_TRF_FUNC_LINEAR,
+                               p_logging=p_logging,
                                p_dt=0.01,
                                m=5,
                                b=2)
@@ -110,6 +114,7 @@ class MyTransferFunction(TransferFunction):
 # 2.2. Initialize the transfer function
 myFunction = MyTransferFunction(p_name='DGL_solution',
                                 p_type=TransferFunction.C_TRF_FUNC_CUSTOM,
+                                p_logging=p_logging,
                                 p_dt=0.05,
                                 A = 3.5,         # Current
                                 w = 314.15,      # angular velocity
