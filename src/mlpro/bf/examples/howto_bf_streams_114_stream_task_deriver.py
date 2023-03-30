@@ -8,10 +8,11 @@
 ## -- 2023-02-02  0.0.0     SY       Creation
 ## -- 2023-02-05  1.0.0     SY       First version release
 ## -- 2023-02-07  1.1.0     SY       Change the dataset to doublespiral2d
+## -- 2023-02-12  1.2.0     DA       New plot parameter p_view_autoselect
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-02-07)
+Ver. 1.2.0 (2023-02-12)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -94,14 +95,14 @@ class MyScenario (StreamScenario):
         derived_feature = features[0]
 
         task_deriver_1 = Deriver( p_name='t2',
-                                 p_range_max=Task.C_RANGE_THREAD,
-                                 p_visualize=p_visualize,
-                                 p_logging=p_logging,
-                                 p_features=features,
-                                 p_label=None,
-                                 p_derived_feature=derived_feature,
-                                 p_derived_label=None,
-                                 p_order_derivative=1 )
+                                  p_range_max=Task.C_RANGE_THREAD,
+                                  p_visualize=p_visualize,
+                                  p_logging=p_logging,
+                                  p_features=features,
+                                  p_label=None,
+                                  p_derived_feature=derived_feature,
+                                  p_derived_label=None,
+                                  p_order_derivative=1 )
 
         workflow.add_task( p_task=task_deriver_1, p_pred_tasks=[task_rearranger] )
 
@@ -110,14 +111,14 @@ class MyScenario (StreamScenario):
         derived_feature = features[0]
         
         task_deriver_2 = Deriver( p_name='t3',
-                                 p_range_max=Task.C_RANGE_THREAD,
-                                 p_visualize=p_visualize,
-                                 p_logging=p_logging,
-                                 p_features=features,
-                                 p_label=None,
-                                 p_derived_feature=derived_feature,
-                                 p_derived_label=None,
-                                 p_order_derivative=2 )
+                                  p_range_max=Task.C_RANGE_THREAD,
+                                  p_visualize=p_visualize,
+                                  p_logging=p_logging,
+                                  p_features=features,
+                                  p_label=None,
+                                  p_derived_feature=derived_feature,
+                                  p_derived_label=None,
+                                  p_order_derivative=2 )
 
         workflow.add_task( p_task=task_deriver_2, p_pred_tasks=[task_rearranger, task_deriver_1] )
 
@@ -153,6 +154,7 @@ myscenario.reset()
 
 if __name__ == '__main__':
     myscenario.init_plot( p_plot_settings=PlotSettings( p_view = PlotSettings.C_VIEW_ND,
+                                                        p_view_autoselect = False,
                                                         p_step_rate = 2 ) )
     input('Press ENTER to start stream processing...')
 

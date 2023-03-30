@@ -12,10 +12,11 @@
 ## -- 2022-12-30  1.0.4     LSB      Bug fix
 ## -- 2023-01-12  1.1.0     LSB      Renormalizing plot data
 ## -- 2023-01-24  1.1.1     LSB      Bug fix
+## -- 2022-02-13  1.1.2     LSB      Bug Fix: Setting the default parameter update flag ot false
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2022-01-24)
+Ver. 1.1.2 (2022-01-13)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization and ZTransformation
 """
@@ -72,7 +73,7 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
 
 
         Norm.NormalizerMinMax.__init__(self)
-        self._parameters_updated:bool = True
+        self._parameters_updated:bool = None
 
         if p_visualize:
             self.plot_data_2d = None
@@ -132,6 +133,8 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
         set = p_event_object.get_raising_object().get_related_set()
 
         self.update_parameters(set)
+
+        self._parameters_updated = True
 
         return True
 

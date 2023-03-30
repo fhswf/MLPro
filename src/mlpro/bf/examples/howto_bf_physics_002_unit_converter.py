@@ -9,11 +9,12 @@
 ## -- 2023-01-15  1.0.0     SY       Release of first version
 ## -- 2023-01-16  1.0.1     SY       Renaming and debugging
 ## -- 2023-02-04  1.0.2     SY       Shift UnitConverter from bf.math to bf.physics
+## -- 2023-03-14  1.0.3     SY       Recatoring
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.2 (2023-02-04)
+Ver. 1.0.3 (2023-03-14)
 
 This module provides an example of using the unit converter in MLPro.
 
@@ -30,48 +31,58 @@ from mlpro.bf.various import Log
 
 
 if __name__ == "__main__":
-    p_print = True
+    p_logging   = Log.C_LOG_ALL
+    p_print     = True
 else:
-    p_print = False
+    p_logging   = Log.C_LOG_NOTHING
+    p_print     = False
 
 # 1 Initialize unit converters
 conv_length = UnitConverter(p_name='conv_length',
                             p_type=UnitConverter.C_UNIT_CONV_LENGTH,
+                            p_logging=p_logging,
                             p_unit_in='m',
                             p_unit_out='km')
 
 conv_pressure = UnitConverter(p_name='conv_pressure',
                               p_type=UnitConverter.C_UNIT_CONV_PRESSURE,
+                              p_logging=p_logging,
                               p_unit_in='bar',
                               p_unit_out='Pa')
 
 conv_current = UnitConverter(p_name='conv_current',
                              p_type=UnitConverter.C_UNIT_CONV_CURRENT,
+                             p_logging=p_logging,
                              p_unit_in='mA',
                              p_unit_out='A')
 
 conv_force = UnitConverter(p_name='conv_force',
                            p_type=UnitConverter.C_UNIT_CONV_FORCE,
+                           p_logging=p_logging,
                            p_unit_in='N',
                            p_unit_out='J/cm')
 
 conv_power = UnitConverter(p_name='conv_power',
                            p_type=UnitConverter.C_UNIT_CONV_POWER,
+                           p_logging=p_logging,
                            p_unit_in='W',
                            p_unit_out='kW')
 
 conv_mass = UnitConverter(p_name='conv_mass',
                           p_type=UnitConverter.C_UNIT_CONV_MASS,
+                          p_logging=p_logging,
                           p_unit_in='kg',
                           p_unit_out='lb')
 
 conv_time = UnitConverter(p_name='conv_time',
                           p_type=UnitConverter.C_UNIT_CONV_TIME,
+                          p_logging=p_logging,
                           p_unit_in='hr',
                           p_unit_out='s')
 
 conv_temperature = UnitConverter(p_name='conv_temperature',
                                  p_type=UnitConverter.C_UNIT_CONV_TEMPERATURE,
+                                 p_logging=p_logging,
                                  p_unit_in='K',
                                  p_unit_out='F')
 

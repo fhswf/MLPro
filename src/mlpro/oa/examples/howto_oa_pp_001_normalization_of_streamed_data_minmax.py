@@ -9,10 +9,12 @@
 ## -- 2022-12-09  1.0.0     LSB      Release
 ## -- 2022-12-13  1.0.1     LSB      Refctoring
 ## -- 2022-12-31  1.0.2     LSB      Using native stream
+## -- 2023-02-23  1.0.3     DA       Little refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2022-12-31)
+Ver. 1.0.3 (2023-02-23)
+
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
 You will learn:
@@ -25,10 +27,9 @@ You will learn:
 
 """
 
-from mlpro.oa.tasks.normalizers import *
-from mlpro.oa.tasks.boundarydetectors import *
-from mlpro.bf.streams.models import *
-from mlpro.wrappers.openml import *
+from mlpro.oa.streams.tasks.normalizers import *
+from mlpro.oa.streams.tasks.boundarydetectors import *
+from mlpro.oa.streams import *
 
 
 

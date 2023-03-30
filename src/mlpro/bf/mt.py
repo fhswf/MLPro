@@ -967,7 +967,8 @@ class Workflow (Task):
                                                    p_plot_depth = ps.plot_depth,
                                                    p_detail_level = ps.detail_level,
                                                    p_force_fg = ps.force_fg,
-                                                   p_id=task_ax_id )
+                                                   p_id=task_ax_id,
+                                                   p_view_autoselect = ps.view_autoselect )
 
             else:
                 # Task plots embedded in the predecessor/workflow figure/subplot
