@@ -110,7 +110,7 @@ that labels the current implementation of persistence with a unique version. The
 of the loading class and the object to be loaded and denies file access if the versions differ. 
 
 .. note::
-    The version of a child class of **Persistent** should to be increased in case of incompatible changes on the 
+    The version of a child class of **Persistent** should be increased in case of incompatible changes on the 
     methods **_complete_state(**) or **_reduce_state()**.
 
 
