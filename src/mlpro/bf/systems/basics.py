@@ -146,6 +146,21 @@ class State(Instance, Element, TStamp):
         self._terminal = p_terminal
 
 
+## -------------------------------------------------------------------------------------------------
+    def copy(self):
+        """
+        Returns a copy of the state element
+
+        Returns
+        -------
+        copied_state: State
+            The copy of original state object.
+        """
+
+        copied_state = self.__class__(self.get_related_set)
+        copied_state.set_values(self.get_values)
+        return copied_state
+
 
 
 
