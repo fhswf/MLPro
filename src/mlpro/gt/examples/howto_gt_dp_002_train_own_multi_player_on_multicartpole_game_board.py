@@ -20,11 +20,11 @@
 ## -- 2022-11-01  1.2.4     DA       Refactoring 
 ## -- 2022-11-02  1.2.5     DA       Refactoring 
 ## -- 2022-11-07  1.3.0     DA       Refactoring 
-## -- 2023-03-30  1.3.1     SY       Refactoring 
+## -- 2023-04-03  1.3.1     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2023-03-30)
+Ver. 1.3.1 (2023-04-03)
  
 This module shows how to train an own multi-player with the enhanced multi-action
 game board MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -41,7 +41,7 @@ You will learn:
 
 
 from mlpro.rl import *
-from mlpro.gt import *
+from mlpro.gt.dp import *
 from mlpro.gt.pool.boards.multicartpole import MultiCartPolePGT
 import random
 import numpy as np

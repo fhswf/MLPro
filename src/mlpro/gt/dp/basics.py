@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.gt
-## -- Module  : dp.py
+## -- Package : mlpro.gt.dp
+## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -16,16 +16,15 @@
 ## -- 2021-12-09  1.1.3     DA       Class GTTraining: refactoring
 ## -- 2022-11-01  1.2.0     DA       Refactoring and code cleaning
 ## -- 2023-03-30  2.0.0     SY       Introduction as MLPro-GT-DP
+## -- 2023-04-03  2.0.1     SY       Remove Potential Games and refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.0 (2023-03-30)
+Ver. 2.0.1 (2023-04-03)
 
 This module provides model classes for tasks related to Game Theory in dynamic programming.
 """
 
-from datetime import timedelta
-from mlpro.bf.various import Log
 from mlpro.rl import *
 
 
