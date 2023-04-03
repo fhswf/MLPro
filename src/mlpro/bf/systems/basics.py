@@ -28,16 +28,18 @@
 ## -- 2023-03-07  1.7.2     DA       Bugfix in method System._save()
 ## -- 2023-03-08  1.7.3     MRD      Auto rename System, set latency from MuJoCo xml file
 ## -- 2023-03-27  1.8.0     DA       Class System: refactoring of persistence
+## -- 2023-04-04  1.9.0     LSB      Class State inherits form Instance
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2023-03-27)
+Ver. 1.3.0 (2023-04-04)
 
 This module provides models and templates for state based systems.
 """
 
 
 from time import sleep
+from mlpro.bf.streams.models import Instance
 from mlpro.bf.various import TStamp, ScientificObject, Persistent
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable, PlotSettings
@@ -50,7 +52,7 @@ from mlpro.bf.math import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class State(Element, TStamp):
+class State(Instance, Element, TStamp):
     """
     State of a system as an element of a given state space. Additionally, the state can be
     labeled with various properties.
@@ -82,6 +84,7 @@ class State(Element, TStamp):
 
         TStamp.__init__(self)
         Element.__init__(self, p_state_space)
+        Instance.__init__(self, p_feature_data=self)
         self.set_initial(p_initial)
         self.set_terminal(p_terminal)
         self.set_success(p_success)
