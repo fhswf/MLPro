@@ -29,10 +29,11 @@
 ## -- 2023-03-08  1.7.3     MRD      Auto rename System, set latency from MuJoCo xml file
 ## -- 2023-03-27  1.8.0     DA       Class System: refactoring of persistence
 ## -- 2023-04-04  1.9.0     LSB      Class State inherits form Instance
+## -- 2023-04-04  1.9.1     LSB      Class State: New method Copy()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2023-04-04)
+Ver. 1.9.1 (2023-04-04)
 
 This module provides models and templates for state based systems.
 """
