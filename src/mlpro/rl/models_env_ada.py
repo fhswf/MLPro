@@ -18,7 +18,7 @@ This module provides model classes for adaptive environment models.
 """
 
 from mlpro.bf.ml import *
-from mlpro.bf.ml.systems.systems import AFctBase, AFctBroken, AFctSTrans, AFctSuccess
+from mlpro.bf.ml.systems import AFctBase, AFctBroken, AFctSTrans, AFctSuccess
 from mlpro.rl.models_env import *
 
 
