@@ -8,6 +8,8 @@ include the following implementations.
 Cross Reference:
  + :ref:`Howto BF-STREAMS-001: Accessing Native Data From MLPro <Howto_BF_ZZ_999>`
  + :ref:`Howto BF-STREAMS-002: Accessing Data From CSV Files <Howto_BF_STREAMS_002>`
+ + :ref:`Howto BF-STREAMS-003: Visualise Moving 2D Clouds Provided By MLPro <Howto_BF_STREAMS_003>`
+ + :ref:`Howto BF-STREAMS-004: Visualise Moving 3D Clouds Provided By MLPro <Howto_BF_STREAMS_004>`
  + :ref:`API Reference: Streams <target_ap_bf_streams>`
 
 
