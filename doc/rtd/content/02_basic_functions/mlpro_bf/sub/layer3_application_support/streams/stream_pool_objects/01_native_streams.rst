@@ -19,6 +19,7 @@ Random 10 Dimensional
     images/random_10d.png
     :width: 600px
 
+
 Double Spiral 2D
 ----------------
 .. automodule:: mlpro.bf.streams.streams.doublespiral2d
@@ -50,3 +51,21 @@ Data from CSV Files
 .. image::
     images/csv_files.png
     :width: 600px
+
+Dynamic Clouds 2D
+----------------
+.. automodule:: mlpro.bf.streams.streams.clouds2d_dynamic
+
+.. image::
+    images/dynamic_cloud_2d.png
+    :width: 600px
+
+Dynamic Clouds 3D
+----------------
+.. automodule:: mlpro.bf.streams.streams.clouds3d_dynamic
+
+.. image::
+    images/dynamic_cloud_3d.png
+    :width: 600px
+
+    
