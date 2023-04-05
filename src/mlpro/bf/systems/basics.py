@@ -30,10 +30,11 @@
 ## -- 2023-03-27  1.8.0     DA       Class System: refactoring of persistence
 ## -- 2023-04-04  1.9.0     LSB      Class State inherits form Instance
 ## -- 2023-04-04  1.9.1     LSB      Class State: New method Copy()
+## -- 2023-04-05  1.9.2     LSB      Refactor: Copy method of State, copying all the attributes
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.1 (2023-04-04)
+Ver. 1.9.2 (2023-04-05)
 
 This module provides models and templates for state based systems.
 """
@@ -158,8 +159,21 @@ class State(Instance, Element, TStamp):
             The copy of original state object.
         """
 
-        copied_state = self.__class__(self.get_related_set)
+        broken = self.get_broken()
+        success = self.get_success()
+        initial = self.get_initial()
+        terminal = self.get_terminal()
+        timeout = self.get_timeout()
+        state_space = self.get_related_set()
+        copied_state = self.__class__(p_state_space=state_space,
+                                      p_broken= broken,
+                                      p_success=success,
+                                      p_initial=initial,
+                                      p_terminal=terminal,
+                                      p_timeout=timeout)
         copied_state.set_values(self.get_values)
+        self.set_tstamp(self.get_tstamp())
+        
         return copied_state
 
 
