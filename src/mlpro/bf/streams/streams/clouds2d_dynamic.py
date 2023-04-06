@@ -38,7 +38,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
     C_SCIREF_ABSTRACT   = 'Demo stream provides 1000 2-dimensional instances randomly positioned around four centers which move over time.'
     C_BOUNDARIES        = [-100,100]
 
-
+## -------------------------------------------------------------------------------------------------
     def __init__(self, pattern='random', p_logging=Log.C_LOG_ALL, **p_kwargs):
         StreamMLProBase.__init__(self, pattern='random', p_logging=Log.C_LOG_ALL, **p_kwargs)
         self.pattern             = pattern # random, static, random chain and merge
