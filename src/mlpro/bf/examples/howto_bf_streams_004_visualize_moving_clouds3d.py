@@ -45,42 +45,43 @@ else:
     visualize   = False
 
 
-# Initialise the stream object using the StreamMLProDynamicClouds3D class
-# and creates an iterator my_iter for it.
-# The argument pattern can be random, random chain, static and merge.
-stream = StreamMLProDynamicClouds3D(p_pattern = 'static',  p_logging=logging)
-my_iter = iter(stream)
+if visualize:
+    # Initialise the stream object using the StreamMLProDynamicClouds3D class
+    # and creates an iterator my_iter for it.
+    # The argument pattern can be random, random chain, static and merge.
+    stream = StreamMLProDynamicClouds3D(p_pattern = 'static',  p_logging=logging)
+    my_iter = iter(stream)
 
-# Create three empty lists to store x, y and z coordinates of the points.
-x = []
-y = []
-z = []
+    # Create three empty lists to store x, y and z coordinates of the points.
+    x = []
+    y = []
+    z = []
 
-# Creating figure
-fig = plt.figure(figsize = (10, 7))
-ax = plt.axes(projection ="3d")
+    # Creating figure
+    fig = plt.figure(figsize = (10, 7))
+    ax = plt.axes(projection ="3d")
 
-# Iterate over the instances of the stream and store the coordinate values in the empty lists.
-for i, curr_instance in enumerate(my_iter):
-    curr_data = curr_instance.get_feature_data().get_values()
-    x.append(list(curr_data)[0])
-    y.append(list(curr_data)[1])
-    z.append(list(curr_data)[2])
+    # Iterate over the instances of the stream and store the coordinate values in the empty lists.
+    for i, curr_instance in enumerate(my_iter):
+        curr_data = curr_instance.get_feature_data().get_values()
+        x.append(list(curr_data)[0])
+        y.append(list(curr_data)[1])
+        z.append(list(curr_data)[2])
 
 
-# Function that draws each frame of the animation
-def animate(i):
-    ax.clear()
-    ax.scatter3D(x[:(i+1)], y[:(i+1)], z[:(i+1)], s=1)
-    ax.set_xlim([-110,110])
-    ax.set_ylim([-110,110])
-    ax.set_zlim([-110,110])
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
-    ax.set_zlabel('z')
+    # Function that draws each frame of the animation
+    def animate(i):
+        ax.clear()
+        ax.scatter3D(x[:(i+1)], y[:(i+1)], z[:(i+1)], s=1)
+        ax.set_xlim([-110,110])
+        ax.set_ylim([-110,110])
+        ax.set_zlim([-110,110])
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
+        ax.set_zlabel('z')
 
-# Run the animation
-ani = FuncAnimation(fig, animate, frames=1999, interval=100, repeat=False)
+    # Run the animation
+    ani = FuncAnimation(fig, animate, frames=1999, interval=100, repeat=False)
 
-plt.show()
+    plt.show()
 

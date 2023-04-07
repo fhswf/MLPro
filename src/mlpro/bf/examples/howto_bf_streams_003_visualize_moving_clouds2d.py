@@ -45,37 +45,39 @@ else:
     visualize   = False
 
 
-# Initialise the stream object using the StreamMLProDynamicClouds3D class
-# and creates an iterator my_iter for it.
-# The argument pattern can be random, random chain, static and merge.
-stream = StreamMLProDynamicClouds2D(p_pattern = 'static', p_logging=logging)
-my_iter = iter(stream)
+if visualize:
+    # Initialise the stream object using the StreamMLProDynamicClouds3D class
+    # and creates an iterator my_iter for it.
+    # The argument pattern can be random, random chain, static and merge.
+    stream = StreamMLProDynamicClouds2D(p_pattern = 'static', p_logging=logging)
+    my_iter = iter(stream)
 
-# Create three empty lists to store x and y coordinates of the points.
-x = []
-y = []
+    # Create three empty lists to store x and y coordinates of the points.
+    x = []
+    y = []
 
-# Create the figure and axes objects
-fig, ax = plt.subplots()
+    # Create the figure and axes objects
+    fig, ax = plt.subplots()
 
-# Iterate over the instances of the stream and store the coordinate values in the empty lists.
-for i, curr_instance in enumerate(my_iter):
-    curr_data = curr_instance.get_feature_data().get_values()
-    x.append(list(curr_data)[0])
-    y.append(list(curr_data)[1])
+    # Iterate over the instances of the stream and store the coordinate values in the empty lists.
+    for i, curr_instance in enumerate(my_iter):
+        curr_data = curr_instance.get_feature_data().get_values()
+        x.append(list(curr_data)[0])
+        y.append(list(curr_data)[1])
 
 
-# Function that draws each frame of the animation
-def animate(i):
-    ax.clear()
-    ax.scatter(x[:(i+1)], y[:(i+1)], s=1)
-    ax.set_xlim([-110,110])
-    ax.set_ylim([-110,110])
-    ax.set_xlabel('x')
-    ax.set_ylabel('y')
+    # Function that draws each frame of the animation
+    def animate(i):
+        ax.clear()
+        ax.scatter(x[:(i+1)], y[:(i+1)], s=1)
+        ax.set_xlim([-110,110])
+        ax.set_ylim([-110,110])
+        ax.set_xlabel('x')
+        ax.set_ylabel('y')
 
-# Run the animation
-ani = FuncAnimation(fig, animate, frames=999, interval=100, repeat=False)
 
-plt.show()
+    # Run the animation
+    ani = FuncAnimation(fig, animate, frames=999, interval=100, repeat=False)
+
+    plt.show()
 
