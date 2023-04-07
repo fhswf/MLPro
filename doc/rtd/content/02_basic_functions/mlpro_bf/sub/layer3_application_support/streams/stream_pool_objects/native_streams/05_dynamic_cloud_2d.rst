@@ -8,4 +8,4 @@ Dynamic Clouds 2D
 
 **Cross References**
 
- + :ref:`Howto BF-STREAMS-003: Visualise Moving 2D Clouds Provided By MLPro <Howto_BF_STREAMS_003>`
+ + :ref:`Howto BF-STREAMS-003: Visualize Moving 2D Clouds Provided By MLPro <Howto_BF_STREAMS_003>`

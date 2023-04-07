@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_streams_004_visualise_moving_clouds3d.py
+## -- Module  : howto_bf_streams_004_visualize_moving_clouds3d.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -13,7 +13,7 @@
 """
 Ver. 1.0.2 (2023-03-23)
 
-This module demonstrates how to visualise the moving clouds 3D data stream provided by MLPro.
+This module demonstrates how to visualize the moving clouds 3D data stream provided by MLPro.
 
 You will learn:
 
@@ -23,7 +23,7 @@ You will learn:
 
 3) How to access feature data of the stream.
 
-4) How to visualise the data.
+4) How to visualize the data.
 
 """
 
