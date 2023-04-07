@@ -23,7 +23,6 @@ from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 
 
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProDynamicClouds2D (StreamMLProBase):
@@ -38,11 +37,14 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
     C_NUM_INSTANCES     = 1000
     C_SCIREF_ABSTRACT   = 'Demo stream provides 1000 2-dimensional instances randomly positioned around four centers which move over time.'
     C_BOUNDARIES        = [-100,100]
+    C_PATTERN           = ['random', 'random chain', 'static', 'merge']
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, pattern='random', p_logging=Log.C_LOG_ALL, **p_kwargs):
+    def __init__(self, p_pattern='random', p_logging=Log.C_LOG_ALL, **p_kwargs):
         StreamMLProBase.__init__(self, pattern='random', p_logging=Log.C_LOG_ALL, **p_kwargs)
-        self.pattern             = pattern # random, static, random chain and merge
+        if str.lower(p_pattern) not in self.C_PATTERN:
+            raise ValueError(f"Invalid value for pattern, allowed values are {self.ALLOWED_VALUES}")
+        self.pattern = str.lower(p_pattern)
 
 
 ## -------------------------------------------------------------------------------------------------
