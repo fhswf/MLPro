@@ -49,7 +49,7 @@ if visualize:
     # Initialise the stream object using the StreamMLProDynamicClouds3D class
     # and creates an iterator my_iter for it.
     # The argument pattern can be random, random chain, static and merge.
-    stream = StreamMLProDynamicClouds2D(p_pattern = 'random', p_variance=7.0 p_logging=logging)
+    stream = StreamMLProDynamicClouds2D(p_pattern = 'random', p_variance=7.0, p_logging=logging)
     my_iter = iter(stream)
 
     # Create three empty lists to store x and y coordinates of the points.
