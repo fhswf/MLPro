@@ -32,13 +32,23 @@ from mlpro.bf.streams.streams import *
 from mlpro.bf.streams.streams.clouds3d_dynamic import StreamMLProDynamicClouds3D
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from mlpro.bf.various import Log
 
+
+
+# 0 Prepare Demo/Unit test mode
+if __name__ == '__main__':
+    logging     = Log.C_LOG_ALL
+    visualize   = True
+else:
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
 
 
 # Initialise the stream object using the StreamMLProDynamicClouds3D class
 # and creates an iterator my_iter for it.
 # The argument pattern can be random, random chain, static and merge.
-stream = StreamMLProDynamicClouds3D(pattern = 'static')
+stream = StreamMLProDynamicClouds3D(pattern = 'static',  p_logging=logging)
 my_iter = iter(stream)
 
 # Create three empty lists to store x, y and z coordinates of the points.
