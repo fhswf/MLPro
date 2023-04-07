@@ -7,7 +7,8 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-22  0.0.0     SP       Creation 
 ## -- 2023-03-22  1.0.0     SP       First draft implementation
-## -- 2023-03-29  1.0.4     SP       Corrections
+## -- 2023-03-29  1.0.1     SP       Update to speed up the code
+## -- 2023-04-07  1.0.2     SP       Add new parameter p_variance, update the parameter p_pattern with constants
 ## -------------------------------------------------------------------------------------------------
 
 """
