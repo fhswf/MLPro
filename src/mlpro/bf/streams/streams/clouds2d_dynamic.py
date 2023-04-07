@@ -33,6 +33,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
 
     C_ID                = 'DynamicClouds2D'
     C_NAME              = 'Dynamic Clouds 2D'
+    C_TYPE              = 'Demo'
     C_VERSION           = '1.0.0'
     C_NUM_INSTANCES     = 1000
     C_SCIREF_ABSTRACT   = 'Demo stream provides 1000 2-dimensional instances randomly positioned around four centers which move over time.'
@@ -57,7 +58,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
                                             p_boundaries = self.C_BOUNDARIES,
                                             p_description = '',
                                             p_symmetrical = False,
-                                            p_logging=Log.C_LOG_NOTHING ) )
+                                            p_logging=Log.C_LOG_NOTHING, ) )
 
         return feature_space
 
