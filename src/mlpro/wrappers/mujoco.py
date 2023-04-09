@@ -24,11 +24,12 @@
 ## --                                 Detect Joint boundaries, default inf
 ## --                                 Disable custom reset from MLPro, now reset only from MuJoCo
 ## -- 2023-03-08  1.2.3     MRD       Add get_latency() function to get latency from xml
+## -- 2023-04-09  1.2.4     MRD       Add Camera functionality for Image Processing
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.2.3  (2023-03-08)
+Ver. 1.2.4  (2023-04-09)
 
 This module wraps bf.Systems with MuJoCo Simulation functionality.
 """
@@ -339,6 +340,7 @@ class MujocoHandler(Wrapper):
         self._sim_obs_list_order = []
         self._sim_act_list_order = {}
         self._vis_obs_list_order = []
+        self._camera_list = {}
 
         self._initialize_simulation()
 
@@ -388,6 +390,11 @@ class MujocoHandler(Wrapper):
                 
                 self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".vel.joint"), p_boundaries=[float('inf'), float('inf')]))
                 self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".acc.joint"), p_boundaries=[float('inf'), float('inf')]))
+                
+            # Extract camera
+            for elem in world_body_elem.iter("camera"):
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".camera"), p_base_set=Dimension.C_BASE_SET_DO))
+                self._camera_list[elem.attrib["name"]] = self._setup_camera(elem.attrib["name"])
         
         return self._system_state_space
     
@@ -412,24 +419,25 @@ class MujocoHandler(Wrapper):
         state_value = []
         for dim in self._system_state_space.get_dims():
             state = dim.get_name_short().split(".")
-            if state[2] == "body":
+            if state[1] == "camera":
+                state_value.append(self._get_camera_data(self._camera_list[state[0]]))
+            elif state[2] == "body":
                 if state[1] == "pos":
-                    state_value.append(self._data.body(state[0]).xpos)
+                    state_value.append(self._data.body(state[0]).xpos.tolist())
                 elif state[1] == "rot":
-                    state_value.append(self._data.body(state[0]).xquat)
+                    state_value.append(self._data.body(state[0]).xquat.tolist())
             elif state[2] == "joint":
                 if state[1] == "pos":
-                    state_value.append(self._data.joint(state[0]).qpos)
+                    state_value.append(self._data.joint(state[0]).qpos.squeeze().tolist())
                 elif state[1] == "vel":
-                    state_value.append(self._data.joint(state[0]).qvel)
+                    state_value.append(self._data.joint(state[0]).qvel.squeeze().tolist())
                 elif state[1] == "acc":
-                    state_value.append(self._data.joint(state[0]).qacc)
+                    state_value.append(self._data.joint(state[0]).qacc.squeeze().tolist())
                 else:
                     raise NotImplementedError
             else:
                 raise NotImplementedError
-
-        return np.concatenate(state_value).ravel()
+        return state_value
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -487,6 +495,50 @@ class MujocoHandler(Wrapper):
         self._model.vis.global_.offwidth = 480
         self._model.vis.global_.offheight = 480
         self._data = mujoco.MjData(self._model)
+        self._viewer = RenderViewer(self._model, self._data, self._xyz_camera, self._distance_camera, self._elavation_camera)
+
+
+## -------------------------------------------------------------------------------------------------    
+    def _setup_camera(self, camera_name):
+        cam = mujoco.MjvCamera()
+        camera_id = mujoco.mj_name2id(
+            self._model,
+            mujoco.mjtObj.mjOBJ_CAMERA,
+            camera_name,
+        )
+        cam.type = mujoco.mjtCamera.mjCAMERA_FIXED
+        cam.fixedcamid = camera_id
+
+        return cam
+
+
+## -------------------------------------------------------------------------------------------------    
+    def _get_camera_data(self, cam):
+        rgb_arr = np.zeros(
+            3 * self._viewer.viewport.width * self._viewer.viewport.height, dtype=np.uint8
+        )
+        depth_arr = np.zeros(
+            self._viewer.viewport.width * self._viewer.viewport.height, dtype=np.float32
+        )
+
+        mujoco.mjv_updateScene(
+            self._model,
+            self._data,
+            self._viewer.vopt,
+            self._viewer.pert,
+            cam,
+            mujoco.mjtCatBit.mjCAT_ALL,
+            self._viewer.scn,
+        )
+
+        mujoco.mjr_render(
+            self._viewer.viewport, self._viewer.scn, self._viewer.con
+        )
+
+        # Read Pixel
+        mujoco.mjr_readPixels(rgb_arr, depth_arr, self._viewer.viewport, self._viewer.con)
+        rgb_img = rgb_arr.reshape(self._viewer.viewport.height, self._viewer.viewport.width, 3)
+        return rgb_img[::-1, :, :]
 
 
 ## -------------------------------------------------------------------------------------------------    
