@@ -54,13 +54,17 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_gym_env,  
+                 p_gym_env_id,  
                  p_state_space: MSpace = None,  
                  p_action_space: MSpace = None,  
                  p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL):
 
-        self._gym_env    = p_gym_env
+        if p_visualize:
+            self._gym_env = gym.make(p_gym_env_id, render_mode="human")
+        else:
+            self._gym_env = gym.make(p_gym_env_id, render_mode="rgb_array")
+            
         self._gym_env_id = self._gym_env.env.spec.id
         self.C_NAME      = '(' + self._gym_env_id + ')'
 
@@ -362,14 +366,13 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
     C_TYPE              = 'Wrapper MLPro2Gym'
     C_WRAPPED_PACKAGE   = 'gymnasium'
     C_MINIMUM_VERSION   = '0.28.1'
-    metadata            = {'render.modes': ['human']}
+    metadata            = {'render.modes': ['human', 'rgb_array']}
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_mlpro_env:Environment, 
                   p_state_space: MSpace = None, 
                   p_action_space: MSpace = None, 
-                  p_new_step_api: bool = False,
                   p_render_mode: str = None,
                   p_logging = Log.C_LOG_ALL ):
 

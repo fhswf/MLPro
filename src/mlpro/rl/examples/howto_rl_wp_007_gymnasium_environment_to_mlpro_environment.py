@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_wp_007_mlpro_environment_to_gymasium_environment.py
+## -- Module  : howto_rl_wp_007_gymnasium_environment_to_mlpro_environment.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -32,7 +32,6 @@ You will learn:
 from mlpro.bf.math import *
 from mlpro.rl import *
 from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
-import gymnasium as gym
 import random
 
 
@@ -76,8 +75,7 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize:bool, p_logging) -> Model:
         # 2.1 Setup environment
-        gym_env     = gym.make('CartPole-v1', render_mode="human")
-        self._env   = WrEnvGYM2MLPro( p_gym_env=gym_env, p_visualize=p_visualize, p_logging=p_logging) 
+        self._env   = WrEnvGYM2MLPro( p_gym_env_id='CartPole-v1', p_visualize=p_visualize, p_logging=p_logging) 
 
         # 2.2 Setup standard single-agent with own policy
         return Agent( p_policy=MyPolicy( p_observation_space=self._env.get_state_space(),

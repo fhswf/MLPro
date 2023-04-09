@@ -137,7 +137,7 @@ howto_list = {
     "rl_wp_004": "mlpro.rl.examples.howto_rl_wp_004_train_agent_with_sb3_policy",
     "rl_wp_005": "mlpro.rl.examples.howto_rl_wp_005_validation_wrapped_sb3_on_policy",
     "rl_wp_006": "mlpro.rl.examples.howto_rl_wp_006_validation_wrapped_sb3_off_policy",
-    "rl_wp_007": "mlpro.rl.examples.howto_rl_wp_007_mlpro_environment_to_gymasium_environment",
+    "rl_wp_007": "mlpro.rl.examples.howto_rl_wp_007_gymnasium_environment_to_mlpro_environment",
 
 
 # MLPro-GT - Game Theory:
