@@ -24,7 +24,8 @@
 ## --                                 Detect Joint boundaries, default inf
 ## --                                 Disable custom reset from MLPro, now reset only from MuJoCo
 ## -- 2023-03-08  1.2.3     MRD       Add get_latency() function to get latency from xml
-## -- 2023-04-09  1.2.4     MRD       Add Camera functionality for Image Processing
+## -- 2023-04-09  1.2.4     MRD       Add Offscreen Render and Camera functionality for Image 
+##                                    Processing
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -239,6 +240,8 @@ class OffRenderViewer(BaseViewer):
         
         self._init_camera(xyz_pos, elevation, distance)
         
+        mujoco.mj_forward(self.model, self.data)
+        
         
 ## -------------------------------------------------------------------------------------------------
     def _set_mujoco_buffer(self):
@@ -257,6 +260,7 @@ class OffRenderViewer(BaseViewer):
             self.opengl_context = GLContext(width, height)
         except:
             raise RuntimeError("Runtime Error OpenGL Context")
+        
         
 ## ------------------------------------------------------------------------------------------------- 
     def render(self, render_mode):
@@ -468,7 +472,7 @@ class MujocoHandler(Wrapper):
     C_MINIMUM_VERSION = '2.3.1'
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self, 
                 p_mujoco_file, 
                 p_frame_skip,
@@ -696,6 +700,7 @@ class MujocoHandler(Wrapper):
         else:
             depth_img = depth_arr.reshape(self._viewer.viewport.height, self._viewer.viewport.width)
             return depth_img[::-1, :]
+
 
 ## -------------------------------------------------------------------------------------------------    
     def _get_viewer(self):
