@@ -263,7 +263,7 @@ class OffRenderViewer(BaseViewer):
         
         
 ## ------------------------------------------------------------------------------------------------- 
-    def render(self, render_mode):
+    def render(self):
         mujoco.mjv_updateScene(
             self.model,
             self.data,
@@ -725,8 +725,7 @@ class MujocoHandler(Wrapper):
         self._data.ctrl[:] = p_action
         mujoco.mj_step(self._model, self._data, nstep=self._frame_skip)
         mujoco.mj_rnePostConstraint(self._model, self._data)
-        if self._visualize:
-            self.render()
+        self.render()
 
 
 ## -------------------------------------------------------------------------------------------------
