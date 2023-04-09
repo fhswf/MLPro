@@ -153,52 +153,30 @@ class CallbacksViewer():
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class RenderViewer(CallbacksViewer):
-    def __init__(self, model, data, xyz_pos=None, elevation=None, distance=None) -> None:
-        super().__init__()
-
+class BaseViewer():
+    def __init__(self, model, data, width, height) -> None:
         self.model = model
         self.data = data
 
-        # Init GLFW
-        glfw.init()
-
-        # Get Width and Height of monitor
-        width, height = glfw.get_video_mode(glfw.get_primary_monitor()).size
-
-        # Create Window
-        self.window = glfw.create_window(
-            width, height, "MuJoCo in MLPRo Viewer", None, None)
-        glfw.make_context_current(self.window)
-        glfw.swap_interval(1)
-
-        framebuffer_width, framebuffer_height = glfw.get_framebuffer_size(self.window)
-        window_width, _ = glfw.get_window_size(self.window)
-        self._scale = framebuffer_width * 1.0 / window_width
-        
-        # Set Callbacks
-        glfw.set_cursor_pos_callback(self.window, self._cursor_pos_callback)
-        glfw.set_mouse_button_callback(self.window, self._mouse_button_callback)
-        glfw.set_scroll_callback(self.window, self._scroll_callback)
-        glfw.set_key_callback(self.window, self._key_callback)
-
-        # get viewport
-        self.viewport = mujoco.MjrRect(0, 0, framebuffer_width, framebuffer_height)
-
-        # overlay, markers
+        self._markers = []
         self._overlays = {}
 
-        mujoco.mj_forward(self.model, self.data)
+        self.viewport = mujoco.MjrRect(0, 0, width, height)
 
-        self.scn = mujoco.MjvScene(self.model, maxgeom=10000)
+        # This goes to specific visualizer
+        self.scn = mujoco.MjvScene(self.model, 1000)
         self.cam = mujoco.MjvCamera()
         self.vopt = mujoco.MjvOption()
         self.pert = mujoco.MjvPerturb()
+
+        self._make_context_current()
+
+        # Keep in Mujoco Context
         self.con = mujoco.MjrContext(self.model, mujoco.mjtFontScale.mjFONTSCALE_150)
 
-        self._init_camera(xyz_pos, elevation, distance)
-
-
+        self._set_mujoco_buffer()
+        
+        
 ## -------------------------------------------------------------------------------------------------
     def _init_camera(self, xyz_pos=None, elevation=None, distance=None):
         self.cam.type = mujoco.mjtCamera.mjCAMERA_FREE
@@ -224,11 +202,172 @@ class RenderViewer(CallbacksViewer):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def add_overlay(self, gridpos: int, text1: str, text2: str):
+        if gridpos not in self._overlays:
+            self._overlays[gridpos] = ["", ""]
+        self._overlays[gridpos][0] += text1 + "\n"
+        self._overlays[gridpos][1] += text2 + "\n"
+            
+            
+## -------------------------------------------------------------------------------------------------
+    def _set_mujoco_buffer(self):
+        raise NotImplementedError
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def _make_context_current(self):
+        raise NotImplementedError
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def close(self):
+        raise NotImplementedError
+
+
+
+        
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class OffRenderViewer(BaseViewer):
+    def __init__(self, model, data, xyz_pos=None, elevation=None, distance=None) -> None:
+        width = model.vis.global_.offwidth
+        height = model.vis.global_.offheight
+        
+        self._get_opengl_backend(width, height)
+        BaseViewer.__init__(self, model, data, width, height)
+        
+        self._init_camera(xyz_pos, elevation, distance)
+        
+        
+## -------------------------------------------------------------------------------------------------
+    def _set_mujoco_buffer(self):
+        mujoco.mjr_setBuffer(mujoco.mjtFramebuffer.mjFB_OFFSCREEN, self.con)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _make_context_current(self):
+        self.opengl_context.make_current()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_opengl_backend(self, width: int, height: int):
+        try:
+            from mujoco.glfw import GLContext
+            self.opengl_context = GLContext(width, height)
+        except:
+            raise RuntimeError("Runtime Error OpenGL Context")
+        
+## ------------------------------------------------------------------------------------------------- 
+    def render(self, render_mode):
+        mujoco.mjv_updateScene(
+            self.model,
+            self.data,
+            self.vopt,
+            self.pert,
+            self.cam,
+            mujoco.mjtCatBit.mjCAT_ALL,
+            self.scn,
+        )
+
+        for marker_params in self._markers:
+            self._add_marker_to_scene(marker_params)
+
+        mujoco.mjr_render(self.viewport, self.scn, self.con)
+
+        for gridpos, (text1, text2) in self._overlays.items():
+            mujoco.mjr_overlay(
+                mujoco.mjtFontScale.mjFONTSCALE_150,
+                gridpos,
+                self.viewport,
+                text1.encode(),
+                text2.encode(),
+                self.con,
+            )
+
+        rgb_arr = np.zeros(
+            3 * self.viewport.width * self.viewport.height, dtype=np.uint8
+        )
+        depth_arr = np.zeros(
+            self.viewport.width * self.viewport.height, dtype=np.float32
+        )
+
+        mujoco.mjr_readPixels(rgb_arr, depth_arr, self.viewport, self.con)
+
+        rgb_img = rgb_arr.reshape(self.viewport.height, self.viewport.width, 3)
+        # original image is upside-down, so flip i
+        return rgb_img[::-1, :, :]
+
+
+## -------------------------------------------------------------------------------------------------
+    def close(self):
+        self.free()
+        glfw.terminate()
+
+
+## -------------------------------------------------------------------------------------------------
+    def free(self):
+        self.opengl_context.free()
+
+
+## -------------------------------------------------------------------------------------------------
+    def __del__(self):
+        self.free()
+
+
+
+
+        
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class RenderViewer(BaseViewer, CallbacksViewer):
+    def __init__(self, model, data, xyz_pos=None, elevation=None, distance=None) -> None:
+        # Init GLFW
+        glfw.init()
+
+        # Get Width and Height of monitor
+        width, height = glfw.get_video_mode(glfw.get_primary_monitor()).size
+
+        # Create Window
+        self.window = glfw.create_window(
+            width, height, "MuJoCo in MLPRo Viewer", None, None)
+        glfw.make_context_current(self.window)
+        glfw.swap_interval(1)
+
+        framebuffer_width, framebuffer_height = glfw.get_framebuffer_size(self.window)
+        window_width, _ = glfw.get_window_size(self.window)
+        self._scale = framebuffer_width * 1.0 / window_width
+        
+        # Set Callbacks
+        CallbacksViewer.__init__(self)
+        glfw.set_cursor_pos_callback(self.window, self._cursor_pos_callback)
+        glfw.set_mouse_button_callback(self.window, self._mouse_button_callback)
+        glfw.set_scroll_callback(self.window, self._scroll_callback)
+        glfw.set_key_callback(self.window, self._key_callback)
+
+        BaseViewer.__init__(self, model, data, framebuffer_width, framebuffer_height)
+        
+        self._init_camera(xyz_pos, elevation, distance)
+        
+        mujoco.mj_forward(self.model, self.data)
+
+
+## -------------------------------------------------------------------------------------------------
     def _create_overlays(self):
         """
         Should be user customizeable
         """
         pass
+    
+    
+## -------------------------------------------------------------------------------------------------
+    def _set_mujoco_buffer(self):
+        mujoco.mjr_setBuffer(mujoco.mjtFramebuffer.mjFB_WINDOW, self.con)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _make_context_current(self):
+        glfw.make_context_current(self.window)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -297,9 +436,22 @@ class RenderViewer(CallbacksViewer):
 
 ## -------------------------------------------------------------------------------------------------
     def close(self):
-        glfw.destroy_window(self.window)
+        self.free()
         glfw.terminate()
 
+
+## -------------------------------------------------------------------------------------------------
+    def free(self):
+        if self.window:
+            if glfw.get_current_context() == self.window:
+                glfw.make_context_current(None)
+        glfw.destroy_window(self.window)
+        self.window = None
+        
+
+## -------------------------------------------------------------------------------------------------
+    def __del__(self):
+        self.free()
 
 
 
@@ -495,7 +647,6 @@ class MujocoHandler(Wrapper):
         self._model.vis.global_.offwidth = 480
         self._model.vis.global_.offheight = 480
         self._data = mujoco.MjData(self._model)
-        # self._viewer = RenderViewer(self._model, self._data, self._xyz_camera, self._distance_camera, self._elavation_camera)
 
 
 ## -------------------------------------------------------------------------------------------------    
@@ -513,7 +664,9 @@ class MujocoHandler(Wrapper):
 
 
 ## -------------------------------------------------------------------------------------------------    
-    def _get_camera_data(self, cam):
+    def _get_camera_data(self, cam, rgb=True):
+        self._get_viewer()
+        
         rgb_arr = np.zeros(
             3 * self._viewer.viewport.width * self._viewer.viewport.height, dtype=np.uint8
         )
@@ -537,14 +690,20 @@ class MujocoHandler(Wrapper):
 
         # Read Pixel
         mujoco.mjr_readPixels(rgb_arr, depth_arr, self._viewer.viewport, self._viewer.con)
-        rgb_img = rgb_arr.reshape(self._viewer.viewport.height, self._viewer.viewport.width, 3)
-        return rgb_img[::-1, :, :]
-
+        if rgb:
+            rgb_img = rgb_arr.reshape(self._viewer.viewport.height, self._viewer.viewport.width, 3)
+            return rgb_img[::-1, :, :]
+        else:
+            depth_img = depth_arr.reshape(self._viewer.viewport.height, self._viewer.viewport.width)
+            return depth_img[::-1, :]
 
 ## -------------------------------------------------------------------------------------------------    
     def _get_viewer(self):
         if self._viewer is None:
-            self._viewer = RenderViewer(self._model, self._data, self._xyz_camera, self._distance_camera, self._elavation_camera)
+            if self._visualize:
+                self._viewer = RenderViewer(self._model, self._data, self._xyz_camera, self._distance_camera, self._elavation_camera)
+            else:
+                self._viewer = OffRenderViewer(self._model, self._data, self._xyz_camera, self._distance_camera, self._elavation_camera)
         
         return self._viewer
 
