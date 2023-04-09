@@ -43,9 +43,6 @@ from sys import platform
 try:
     from tkinter import *
     import matplotlib
-    # Due to bug in TKinter for macos, disabled for macos https://bugs.python.org/issue46573
-    if platform != 'darwin':
-        matplotlib.use('TkAgg')
 except:
     print('Please install tkinter for a better plot experience')
     import matplotlib
