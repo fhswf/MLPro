@@ -725,7 +725,8 @@ class MujocoHandler(Wrapper):
         self._data.ctrl[:] = p_action
         mujoco.mj_step(self._model, self._data, nstep=self._frame_skip)
         mujoco.mj_rnePostConstraint(self._model, self._data)
-        self.render()
+        if self._visualize:
+            self.render()
 
 
 ## -------------------------------------------------------------------------------------------------
