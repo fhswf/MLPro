@@ -27,10 +27,11 @@
 ## -- 2023-02-02  2.8.1     MRD      Disable Tkinter backend for macos https://bugs.python.org/issue46573
 ## -- 2023-02-17  2.8.2     SY       Add p_window_type in DataPlotting
 ## -- 2023-02-23  2.9.0     DA       Class PlotSettings: new parameter p_view_autoselect
+## -- 2023-04-10  2.9.1     MRD      Turn on Tkinter backend for macos
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.9.0 (2023-02-23)
+Ver. 2.9.1 (2023-04-10)
 
 This module provides various classes related to data plotting.
 """
