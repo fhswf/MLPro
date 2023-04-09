@@ -8,10 +8,11 @@
 ## -- 2023-03-23  0.0.0     SP       Creation
 ## -- 2023-03-23  1.0.0     SP       First draft implementation
 ## -- 2023-04-07  1.0.1     SP       Corrections to include visualize parameter
+## -- 2023-04-08  1.0.2     DA       Addded seeding for reproducible behavior
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-03-23)
+Ver. 1.0.2 (2023-04-08)
 
 This module demonstrates how to visualize the moving clouds 3D data stream provided by MLPro.
 
@@ -50,6 +51,7 @@ if visualize:
     # and creates an iterator my_iter for it.
     # The argument pattern can be random, random chain, static and merge.
     stream = StreamMLProDynamicClouds3D(p_pattern = 'random', p_variance=7.0, p_logging=logging)
+    stream.set_random_seed(3)
     my_iter = iter(stream)
 
     # Create three empty lists to store x, y and z coordinates of the points.
