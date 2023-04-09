@@ -72,20 +72,19 @@ class StreamMLProDynamicClouds3D (StreamMLProBase):
 
         # 1 Preparation
         try:
-            seed = self._random_seed
+            seed = Stream.set_random_seed(p_seed=32)
         except:
-            self.set_random_seed()
-            seed = self._random_seed
+            seed = random.seed(32)
 
         self._dataset = np.empty( (self.C_NUM_INSTANCES, 3))
 
 
         # Compute the initial positions of the centers
-        centers = np.random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1], size=(8, 3))
+        centers = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1], size=(8, 3))
 
         if self.pattern == 'random':
             # Compute the final positions of the centers
-            final_centers = np.random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1], size=(8, 3))
+            final_centers = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1], size=(8, 3))
 
         elif self.pattern == 'random chain':
             # Compute the final positions of the centers
@@ -100,7 +99,7 @@ class StreamMLProDynamicClouds3D (StreamMLProBase):
         elif self.pattern == 'merge':
             # Compute the final positions of the centers
             final_centers = np.zeros((8, 3))
-            final_centers[:4] = np.random.randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1], size=(4, 3))
+            final_centers[:4] = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1], size=(4, 3))
             final_centers[4:] = final_centers[:4]
 
 
