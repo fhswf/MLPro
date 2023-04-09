@@ -12,24 +12,25 @@
 ## -- 2022-12-30  1.0.4     LSB      Bug fix
 ## -- 2023-01-12  1.1.0     LSB      Renormalizing plot data
 ## -- 2023-01-24  1.1.1     LSB      Bug fix
-## -- 2022-02-13  1.1.2     LSB      Bug Fix: Setting the default parameter update flag ot false
+## -- 2023-02-13  1.1.2     LSB      Bug Fix: Setting the default parameter update flag ot false
+## -- 2023-04-09  1.2.0     DA       Class NormalizerZTransform: new methods _adapt(), _adapt_reverse()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2022-01-13)
+Ver. 1.2.0 (2023-04-09)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization and ZTransformation
 """
 
 
-from mlpro.oa.streams import *
+from mlpro.oa.streams.basics import *
 from mlpro.bf.math import normalizers as Norm
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
+class NormalizerMinMax (OATask, Norm.NormalizerMinMax):
     """
     Class with functionality for adaptive normalization of instances using MinMax Normalization.
 
@@ -277,7 +278,7 @@ class NormalizerMinMax(OATask, Norm.NormalizerMinMax):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
+class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
     """
     Class with functionality of adaptive normalization of instances with Z-Transformation
 
@@ -299,6 +300,7 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
         Additional task parameters
     """
     C_NAME = 'Normalizer Z Transform'
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name: str = None,
                  p_range_max=StreamTask.C_RANGE_THREAD,
@@ -349,14 +351,35 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:list, p_inst_del:list) -> bool:
+    def _adapt(self, p_inst_new:list[Instance]) -> bool:
         """
-        Custom method to for adapting of Z-transform parameters on new and deleted instances.
+        Custom method to for adapting of Z-transform parameters on new instances.
 
         Parameters
         ----------
         p_inst_new: list
             List of new instances in the workflow
+
+        Returns
+        -------
+        adapted : bool
+            Returns True, if task has adapted.
+
+        """
+
+        for inst in p_inst_new:
+            self.update_parameters(p_data_new=inst.get_feature_data())
+
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_reverse(self, p_inst_del:list[Instance]) -> bool:
+        """
+        Custom method to for adapting of Z-transform parameters on deleted instances.
+
+        Parameters
+        ----------
         p_inst_del: list
             List of deleted instances in the workflow
 
@@ -367,18 +390,7 @@ class NormalizerZTransform(OATask, Norm.NormalizerZTrans):
 
         """
 
-        adapted = False
-        try:
-            # 1. Update parameters based on new elements
-            for inst in p_inst_new:
-                self.update_parameters(p_data_new=inst.get_feature_data())
+        for del_inst in p_inst_del:
+            self.update_parameters(p_data_del=del_inst.get_feature_data())
 
-            # 2. Update parameters based on deleted elements
-            for del_inst in p_inst_del:
-                self.update_parameters(p_data_del=del_inst.get_feature_data())
-
-            adapted = True
-
-        except: pass
-
-        return adapted
+        return True

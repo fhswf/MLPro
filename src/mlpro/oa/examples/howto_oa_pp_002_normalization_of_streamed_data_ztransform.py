@@ -31,15 +31,11 @@ from mlpro.oa.streams import *
 
 
 
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MyAdaptiveScenario (OAScenario):
 
     C_NAME = 'Dummy'
-
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_visualize:bool, p_logging):
@@ -67,6 +63,7 @@ class MyAdaptiveScenario (OAScenario):
 
         # 3 Return stream and workflow
         return stream, workflow
+
 
 
 if __name__ == "__main__":

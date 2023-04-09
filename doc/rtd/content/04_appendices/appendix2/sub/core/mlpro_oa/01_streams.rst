@@ -2,7 +2,7 @@
 OA-STREAMS - Online-adaptive Stream Processing
 ==============================================
 
-.. image:: images/01_environments/MLPro-OA-Proc_class_diagram.drawio.png
+.. image:: images/01_environments/MLPro-OA-Streams_class_diagram.drawio.png
    :scale: 50%
    
 .. automodule:: mlpro.oa.streams.basics

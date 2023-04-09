@@ -15,10 +15,11 @@
 ## -- 2023-01-01  0.6.0     DA       Refactoring
 ## -- 2023-02-23  0.6.1     DA       Removed class OAFunction
 ## -- 2023-03-27  0.6.1     DA       Refactoring
+## -- 2023-04-09  0.7.0     DA       Class Task: new methods adapt(), _adapt(), adapt_reverse()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.6.1 (2023-03-27)
+Ver. 0.7.0 (2023-04-09)
 
 Core classes for online adaptive stream processing.
 """
@@ -106,14 +107,50 @@ class OATask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:list, p_inst_del:list) -> bool:
+    def adapt(self, p_inst_new:list[Instance], p_inst_del:list[Instance]) -> bool:
+        if not self._adaptivity: return False
+
+        if len(p_inst_new) > 0:
+            self.log(self.C_LOG_TYPE_S, 'Adaptation started')
+            adapted = self._adapt( p_inst_new=p_inst_new )
+        else:
+            adapted = False
+
+        if len(p_inst_del) > 0:
+            self.log(self.C_LOG_TYPE_S, 'Reverse adaptation started')
+            adapted = adapted or self._adapt_reverse( p_inst_del=p_inst_del )
+
+        self._set_adapted( p_adapted = adapted )
+
+        return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, p_inst_new:list[Instance]) -> bool:
         """
-        Custom method for adaptations during regular operation. See method _run() for further informmation.
+        Obligatory custom method for adaptations during regular operation. 
 
         Parameters
         ----------
         p_inst_new : list
             List of new stream instances to be processed.
+
+        Returns
+        -------
+        adapted : bool
+            True, if something has been adapted. False otherwise.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_reverse(self, p_inst_del:list[Instance]) -> bool:
+        """
+        Optional custom method for reverse adaptations during regular operation. 
+
+        Parameters
+        ----------
         p_inst_del : list
             List of obsolete stream instances to be removed.
 
@@ -123,7 +160,7 @@ class OATask (StreamTask, Model):
             True, if something has been adapted. False otherwise.
         """
 
-        raise NotImplementedError
+        return False
 
 
 

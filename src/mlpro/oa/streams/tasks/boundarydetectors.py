@@ -23,10 +23,11 @@
 ## -- 2023-02-02  1.1.5     DA       Method BoundaryDetector._init_plot_2D: removed figure creation
 ## -- 2023-02-13  1.1.6     SY       Bug Fix: Solving issue, when the first data is lower than 1
 ## -- 2023-02-13  1.1.7     LSB      Bug Fix: Setting initial boundaries to [0,0]
+## -- 2023-04-09  1.2.0     DA       Refactoring of method BoundaryDetector._adapt()
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.7 (2023-02-13)
+Ver. 1.2.0 (2023-04-09)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
@@ -38,9 +39,8 @@ from mlpro.bf.plot import *
 from mlpro.bf.math import *
 from mlpro.bf.mt import Task as MLTask
 import mlpro.bf.streams.tasks.windows as windows
-from mlpro.oa.streams import *
+from mlpro.oa.streams.basics import *
 from typing import Union, Iterable, List
-
 
 
 
@@ -91,7 +91,6 @@ class BoundaryDetector (OATask):
                  p_scaler:Union[float, Iterable] = np.ones([1]),
                  **p_kwargs):
 
-
         super().__init__(p_name = p_name,
                          p_range_max = p_range_max,
                          p_ada = p_ada,
@@ -106,7 +105,7 @@ class BoundaryDetector (OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:List[Instance], p_inst_del:List[Instance]):
+    def _adapt(self, p_inst_new:List[Instance]):
         """
         Method to check if the new instances exceed the current boundaries of the Set.
 
@@ -120,8 +119,6 @@ class BoundaryDetector (OATask):
         adapted : bool
             Returns true if there is a change of boundaries, false otherwise.
         """
-
-        if p_inst_new is None: return
 
         adapted = False
 
@@ -176,7 +173,8 @@ class BoundaryDetector (OATask):
 ## -------------------------------------------------------------------------------------------------
     def _adapt_on_event(self, p_event_id:str, p_event_object:Event):
         """
-        Event handler for Boundary Detector that adapts if the related event is raised
+        Event handler for Boundary Detector that adapts if the related event is raised.
+
         Parameters
         ----------
             p_event_id
