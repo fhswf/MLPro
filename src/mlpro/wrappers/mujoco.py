@@ -391,10 +391,10 @@ class MujocoHandler(Wrapper):
                 self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".vel.joint"), p_boundaries=[float('inf'), float('inf')]))
                 self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".acc.joint"), p_boundaries=[float('inf'), float('inf')]))
                 
-            # # Extract camera
-            # for elem in world_body_elem.iter("camera"):
-            #     self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".camera"), p_base_set=Dimension.C_BASE_SET_DO))
-            #     self._camera_list[elem.attrib["name"]] = self._setup_camera(elem.attrib["name"])
+            # Extract camera
+            for elem in world_body_elem.iter("camera"):
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".camera"), p_base_set=Dimension.C_BASE_SET_DO))
+                self._camera_list[elem.attrib["name"]] = self._setup_camera(elem.attrib["name"])
         
         return self._system_state_space
     
@@ -495,7 +495,7 @@ class MujocoHandler(Wrapper):
         self._model.vis.global_.offwidth = 480
         self._model.vis.global_.offheight = 480
         self._data = mujoco.MjData(self._model)
-        self._viewer = RenderViewer(self._model, self._data, self._xyz_camera, self._distance_camera, self._elavation_camera)
+        # self._viewer = RenderViewer(self._model, self._data, self._xyz_camera, self._distance_camera, self._elavation_camera)
 
 
 ## -------------------------------------------------------------------------------------------------    
