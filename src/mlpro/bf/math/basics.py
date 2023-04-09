@@ -36,10 +36,11 @@
 ## --                                - new method is_numeric()
 ## -- 2023-02-28  2.2.0     DA       Class Function: new method __call__()
 ## -- 2023-03-07  2.2.1     SY       Refactoring
+## -- 2023-04-09  2.2.2     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.1 (2023-03-07)
+Ver. 2.2.2 (2023-04-09)
 
 This module provides basic mathematical classes.
 """
@@ -459,7 +460,7 @@ class Element:
         except:
             self._values = self._values.tolist()
             self._values[self._set.get_dim_ids().index(p_dim_id)] = p_value
-            self._values = np.array(self._values)
+            self._values = np.array(self._values, dtype=object)
 
 
 ## -------------------------------------------------------------------------------------------------
