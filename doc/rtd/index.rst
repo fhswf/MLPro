@@ -57,9 +57,9 @@ MLPro
    :target: content/04_appendices/appendix3/sub/02_publications.html
 
 
-|welcome| |mlpro_bf| |mlpro_sl| |mlpro_rl| |mlpro_gt|
+|welcome| |mlpro_bf| |mlpro_sl| |mlpro_oa| |mlpro_rl| 
 
-|mlpro_oa| |examples| |mlpro_api| |project| |publications|
+|mlpro_gt| |examples| |mlpro_api| |project| |publications|
 
 
 .. |mlpro_pypi| image:: content/00_start_page/images/pypi.svg
@@ -118,9 +118,9 @@ MLPro is also present on...
    :numbered:
 
    content/03_machine_learning/mlpro_sl/main
+   content/03_machine_learning/mlpro_oa/main   
    content/03_machine_learning/mlpro_rl/main
    content/03_machine_learning/mlpro_gt/main   
-   content/03_machine_learning/mlpro_oa/main   
 
 
 .. toctree::

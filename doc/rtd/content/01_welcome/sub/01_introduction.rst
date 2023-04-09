@@ -49,7 +49,7 @@ recombinability of higher functions of MLPro. In fact, with each new feature, we
 it into MLPro. The deeper the level, the more universal the usability, and thus the range within MLPro.
 
 .. image:: images/MLPro_Architecture.drawio.png
-   :scale: 85 %
+   :scale: 40 %
 
 
 Standardized Machine Learning

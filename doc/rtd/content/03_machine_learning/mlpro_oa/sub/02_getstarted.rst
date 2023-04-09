@@ -1,6 +1,6 @@
-.. _target_getstarted_OA:
+.. _target_oa_getstarted:
 Getting Started
----------------
+===============
 
-Add text here!
+Further descriptions coming soon...
 
