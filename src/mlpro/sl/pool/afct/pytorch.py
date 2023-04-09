@@ -14,16 +14,18 @@
 ## --                                 - Release the third version
 ## -- 2023-03-02  3.0.1     SY        Updating and shifting from mlpro.sl.models
 ## -- 2023-03-10  3.0.2     SY        Refactoring PyTorchBuffer
+## -- 2023-04-09  3.0.3     SY        Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.2 (2023-03-10)
+Ver. 3.0.3 (2023-04-09)
 
 This a helper module for supervised learning models using PyTorch. 
 """
 
 
 import torch
+import numpy as np
 from torch.utils.data.sampler import SubsetRandomSampler
 from mlpro.sl.basics import *
 from mlpro.bf.ml import *
@@ -188,7 +190,7 @@ class PyTorchHelperFunctions():
         """
 
         # Convert p_input from Element to Tensor
-        input = torch.Tensor([p_input.get_values()])
+        input = torch.Tensor(np.array([p_input.get_values()]))
 
         # Preprocessing Data if needed
         try:
@@ -217,7 +219,7 @@ class PyTorchHelperFunctions():
         """
 
         # Convert p_output from Element to Tensor
-        output = torch.Tensor([p_output.get_values()])
+        output = torch.Tensor(np.array([p_output.get_values()]))
 
         # Preprocessing Data if needed
         try:
