@@ -65,10 +65,11 @@
 ## -- 2023-03-10  2.1.3     SY       Refactoring
 ## -- 2022-03-16  2.1.4     SY       Add _get_accuracy(), add_objective, _add_objective in Model
 ## -- 2023-03-29  2.2.0     DA       Classes Model, Scenario: refactoring of persistence
+## -- 2022-04-10  2.2.1     SY       Update get_accuracy, add_objective in Model
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.2.0 (2023-03-29)
+Ver. 2.2.1 (2023-04-10)
 
 This module provides the fundamental templates and processes for machine learning in MLPro.
 
@@ -435,7 +436,7 @@ class Model (Task, ScientificObject):
         Determines the objective of the model.
         """
 
-        raise NotImplementedError
+        self._add_objective(**p_kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -459,7 +460,7 @@ class Model (Task, ScientificObject):
             Accuracy of the model as a scalar value in interval [0,1]
         """
 
-        raise NotImplementedError
+        return self._get_accuracy()
 
 
 ## -------------------------------------------------------------------------------------------------
