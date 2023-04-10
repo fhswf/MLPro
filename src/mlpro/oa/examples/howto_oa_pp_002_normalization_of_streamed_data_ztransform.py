@@ -8,10 +8,11 @@
 ## -- 2022-12-30  1.0.0     LSB      Creation/Release
 ## -- 2022-12-31  1.0.1     LSB      Using native stream
 ## -- 2023-02-23  1.0.2     DA       Little refactoring
+## -- 2023-04-10  1.0.3     LSB      Adding a window task to validate the _adapt_reverse() method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-02-23)
+Ver. 1.0.3 (2023-04-10)
 
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
@@ -28,6 +29,7 @@ You will learn:
 from mlpro.oa.streams.tasks.normalizers import *
 from mlpro.oa.streams.tasks.boundarydetectors import *
 from mlpro.oa.streams import *
+from mlpro.bf.streams.tasks import Window
 
 
 
@@ -47,7 +49,8 @@ class MyAdaptiveScenario (OAScenario):
             p_logging=p_logging)
         # 2 Set up a stream workflow based on a custom stream task
 
-        # 2.1 Creation of a task
+        # 2.1 Creation of a tasks
+        TaskWindow = Window(p_name = 'Window', p_buffer_size=10)
         TaskNormalizerZTrans = NormalizerZTransform(p_name='Demo ZTrans Normalizer', p_ada=True, p_visualize=True,
             p_logging=p_logging)
 
@@ -57,8 +60,13 @@ class MyAdaptiveScenario (OAScenario):
             p_visualize=p_visualize,
             p_logging=p_logging)
 
-        # 2.3 Addition of the task to the workflow
-        workflow.add_task(p_task = TaskNormalizerZTrans)
+        
+        # 2.3 Add a window task of size 2
+        workflow.add_task(p_task=TaskWindow)
+        # 2.4 Addition of the Z-transform task to the workflow
+        workflow.add_task(p_task = TaskNormalizerZTrans, p_pred_tasks=[TaskWindow])
+
+
 
 
         # 3 Return stream and workflow
