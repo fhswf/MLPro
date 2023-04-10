@@ -317,6 +317,15 @@ class Sampler:
         
         self._num_instances = p_num_instances
         self._kwargs        = p_kwargs
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self):
+        """
+        A method to reset the sampler's settings. Please redefine this method!
+        """
+        
+        raise NotImplementedError
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -571,6 +580,10 @@ class Stream (Mode, Persistent, ScientificObject):
         self.log(self.C_LOG_TYPE_I, 'Reset')
         self._next_inst_id = 0
         self._reset()
+        
+        if self._sampler is not None:
+            self._sampler.reset()
+            
         return self
 
 
