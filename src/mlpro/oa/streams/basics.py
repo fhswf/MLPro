@@ -232,10 +232,79 @@ class OAWorkflow (StreamWorkflow, AWorkflow):
 # -------------------------------------------------------------------------------------------------
 class OAScenario (StreamScenario): 
     """
-    ...
+    Template class for stream based scenarios with online adaptive workflows. 
+
+    Parameters
+    ----------
+    p_mode
+        Operation mode. See bf.ops.Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+    p_ada : bool
+        Boolean switch for adaptivitiy. Default = True.
+    p_cycle_limit : int
+        Maximum number of cycles (0=no limit, -1=get from env). Default = 0.
+    p_visualize : bool
+        Boolean switch for env/agent visualisation. Default = False.
+    p_logging
+        Log level (see constants of class mlpro.bf.various.Log). Default = Log.C_LOG_WE.
     """
     
     C_TYPE      = 'OA-Scenario'
+
+# -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_mode = Mode.C_MODE_SIM,  
+                  p_ada : bool = True,  
+                  p_cycle_limit = 0, 
+                  p_visualize : bool = False, 
+                  p_logging = Log.C_LOG_ALL ):
+        
+        self._ada = p_ada
+
+        super().__init__( p_mode = p_mode, 
+                          p_cycle_limit = p_cycle_limit, 
+                          p_visualize = p_visualize, 
+                          p_logging = p_logging )
+
+
+## -------------------------------------------------------------------------------------------------
+    def setup(self):
+        """
+        Specialized method to set up an oa stream scenario. It is automatically called by the 
+        constructor and calls in turn the custom method _setup().
+        """
+
+        self._stream, self._workflow = self._setup( p_mode = self.get_mode(),
+                                                    p_ada = self._ada, 
+                                                    p_visualize = self.get_visualization(),
+                                                    p_logging = self.get_log_level() )
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging):
+        """
+        Custom method to set up a stream scenario consisting of a stream and a processing stream
+        workflow.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        p_ada : bool
+            Boolean switch for adaptivitiy. Default = True.
+        p_visualize : bool
+            Boolean switch for visualisation.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+
+        Returns
+        -------
+        stream : Stream
+            A stream object.
+        workflow : OAWorkflow
+            An online adaptive stream workflow object.
+        """
+
+        raise NotImplementedError
 
 
 

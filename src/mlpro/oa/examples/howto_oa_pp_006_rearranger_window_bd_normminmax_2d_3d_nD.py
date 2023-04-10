@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-01-09  1.0.0     DA       Creation
+## -- 2023-04-10  1.1.0     DA       Refactoring after changes on class OAScenario
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-01-09)
+Ver. 1.1.0 (2023-04-10)
 
 This module is an example of adaptive normalization of streaming data using MinMax normalizer. To 
 this regard, an online-adadptive custom scenario is set up. It combines a native 10-dimensional 
@@ -43,7 +44,7 @@ class MyAdaptiveScenario (OAScenario):
     C_NAME = 'Dummy'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize:bool, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
         # 1 Prepare a native stream from MLPro
         mlpro  = StreamProviderMLPro(p_logging=p_logging)
@@ -58,7 +59,7 @@ class MyAdaptiveScenario (OAScenario):
         # 2.1 Creation of a workflow
         workflow = OAWorkflow( p_name='wf',
                                p_range_max=OAWorkflow.C_RANGE_NONE,
-                               p_ada=True,
+                               p_ada=p_ada,
                                p_visualize=p_visualize, 
                                p_logging=p_logging )
 

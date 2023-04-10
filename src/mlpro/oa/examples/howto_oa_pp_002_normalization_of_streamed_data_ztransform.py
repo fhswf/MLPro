@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.oa.examples.howto_oa_002_normalization_of_streamed_data_ztransform
+## -- Package : mlpro.oa.examples
 ## -- Module  : howto_oa_pp_002_normalization_of_streamed_data_ztransform.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
@@ -9,10 +9,11 @@
 ## -- 2022-12-31  1.0.1     LSB      Using native stream
 ## -- 2023-02-23  1.0.2     DA       Little refactoring
 ## -- 2023-04-10  1.0.3     LSB      Adding a window task to validate the _adapt_reverse() method
+## -- 2023-04-10  1.1.0     DA       Refactoring after changes on class OAScenario
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.3 (2023-04-10)
+Ver. 1.1.0 (2023-04-10)
 
 This module is an example of adaptive normalization of streaming data using MinMax Normalizer
 
@@ -40,13 +41,15 @@ class MyAdaptiveScenario (OAScenario):
     C_NAME = 'Dummy'
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_visualize:bool, p_logging):
+    def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
+
         # 1 Import a stream from OpenML
         mlpro = StreamProviderMLPro(p_logging=p_logging)
         stream = mlpro.get_stream(p_name=StreamMLProRnd10D.C_NAME,
             p_mode=p_mode,
             p_visualize=p_visualize,
             p_logging=p_logging)
+
         # 2 Set up a stream workflow based on a custom stream task
 
         # 2.1 Creation of a tasks
@@ -57,6 +60,7 @@ class MyAdaptiveScenario (OAScenario):
         # 2.2 Creation of a workflow
         workflow = OAWorkflow(p_name='wf1',
             p_range_max=OAWorkflow.C_RANGE_NONE,  # StreamWorkflow.C_RANGE_THREAD,
+            p_ada=p_ada,
             p_visualize=p_visualize,
             p_logging=p_logging)
 
