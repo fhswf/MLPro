@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-02  0.0.0     SY       Creation 
 ## -- 2023-03-06  1.0.0     SY       First release
+## -- 2023-04-10  1.0.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-03-06)
+Ver. 1.0.1 (2023-04-10)
 
 This module provides the native stream class  StreamMLProCSV.
 This stream provides a functionality to convert csv file to a MLPro compatible stream data.
@@ -84,7 +85,7 @@ class StreamMLProCSV(StreamMLProBase):
         except:
             self.C_NUM_INSTANCES = 0
 
-        super().__init__(p_logging = p_logging)
+        super().__init__(p_logging = p_logging, **p_kwargs)
     
 
 ## -------------------------------------------------------------------------------------------------
