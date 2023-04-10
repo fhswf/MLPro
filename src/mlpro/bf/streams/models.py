@@ -47,10 +47,11 @@
 ## --                                - incorporation of new plot parameter p_horizon
 ## -- 2023-01-05  1.0.1     DA       Refactoring of method StreamShared.get_instances()
 ## -- 2023-02-12  1.1.0     DA       Class StreamTask: implementation of plot parameter view_autoselect
+## -- 2023-04-10  1.2.0     SY       Introduce class Sampler and update class Stream accordingly
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-02-12)
+Ver. 1.2.0 (2023-04-10)
 
 This module provides classes for standardized stream processing. 
 """
@@ -296,6 +297,74 @@ class StreamShared (Shared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
+class Sampler:
+    """
+    Template class for data streams sampler. This object can be used in Stream.
+
+    Parameters
+    ----------
+    p_num_instances : int
+        number of instances.
+    p_kwargs : dict
+        Further sampler specific parameters.
+    """
+
+    C_TYPE          = 'Sampler'
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_num_instances:int, **p_kwargs):
+        
+        self._num_instances = p_num_instances
+        self._kwargs        = p_kwargs
+        
+
+## -------------------------------------------------------------------------------------------------
+    def filter_instance(self, p_inst:Instance) -> bool:
+        """
+        A method to filter any incoming instances.
+
+        Parameters
+        ----------
+        p_inst : Instance
+            An input instance to be filtered.
+
+        Returns
+        -------
+        bool
+            True means utilize the input instance, otherwise False.
+
+        """
+        
+        return self._filter_instance(p_inst)
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _filter_instance(self, p_inst:Instance) -> bool:
+        """
+        A custom method to filter any incoming instances, which is being called by filter_intance()
+        method. Please redefine this method!
+
+        Parameters
+        ----------
+        p_inst : Instance
+            An input instance to be filtered.
+
+        Returns
+        -------
+        bool
+            True means utilize the input instance, otherwise False.
+
+        """
+        
+        raise NotImplementedError
+        
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class Stream (Mode, Persistent, ScientificObject):
     """
     Template class for data streams. Objects of this type can be used as iterators.
@@ -314,6 +383,8 @@ class Stream (Mode, Persistent, ScientificObject):
         Optional feature space. Default = None.
     p_label_space : MSpace
         Optional label space. Default = None.
+    p_sampler
+        Optional sampler. Default: None.
     p_mode
         Operation mode. Default: Mode.C_MODE_SIM.
     p_logging
@@ -323,6 +394,7 @@ class Stream (Mode, Persistent, ScientificObject):
     """
 
     C_TYPE          = 'Stream'
+    
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -332,6 +404,7 @@ class Stream (Mode, Persistent, ScientificObject):
                   p_version : str = '',
                   p_feature_space : MSpace = None,
                   p_label_space : MSpace = None,
+                  p_sampler : Sampler = None,
                   p_mode = Mode.C_MODE_SIM,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
@@ -343,6 +416,12 @@ class Stream (Mode, Persistent, ScientificObject):
         self._feature_space = p_feature_space
         self._label_space   = p_label_space
         self.set_options(**p_kwargs)
+        
+        if p_sampler is None:
+            self._sampler   = None
+        else:
+            self._sampler   = self._set_sampler(p_sampler, p_num_instances)
+            
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
 
 
@@ -505,6 +584,20 @@ class Stream (Mode, Persistent, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def _set_sampler(self, p_sampler, p_num_instances) -> Sampler:
+        """
+        A method to set up a sampler.
+
+        Returns
+        -------
+        Sampler
+            An instantiated sampler.
+        """
+
+        return p_sampler.__init__(p_num_instances, self._kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
     def __next__(self) -> Instance:
         """
         Returns next data stream instance by calling the custom method _get_next(). 
@@ -514,8 +607,15 @@ class Stream (Mode, Persistent, ScientificObject):
         instance : Instance
             Next instance of data stream or None.
         """
-
-        inst = self._get_next()
+        
+        if self._sampler is not None:
+            ret = False
+            while ret is False:
+                inst = self._get_next()
+                ret = self._sampler.filter_instance(inst)
+        else:
+            inst = self._get_next()
+            
         inst.set_id(self._next_inst_id)
         self._next_inst_id += 1
         return inst
