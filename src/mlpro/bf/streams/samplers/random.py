@@ -119,8 +119,8 @@ class SamplerRND(Sampler):
                 self._idx += 1
                 return False
             else:
-                self._nxt_idx = random.randint(self._idx, self._idx+self._max_step_rate)
                 self._idx += 1
+                self._nxt_idx = random.randint(self._idx, self._idx+self._max_step_rate)
                 return True
         
             

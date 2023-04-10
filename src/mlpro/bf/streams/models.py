@@ -426,6 +426,11 @@ class Stream (Mode, Persistent, ScientificObject):
         self._label_space   = p_label_space
         self.set_options(**p_kwargs)
         
+        try:
+            p_sampler = p_kwargs['p_sampler']
+        except:
+            pass
+        
         if p_sampler is None:
             self._sampler   = None
         else:
@@ -607,7 +612,7 @@ class Stream (Mode, Persistent, ScientificObject):
             An instantiated sampler.
         """
 
-        return p_sampler.__init__(p_num_instances, self._kwargs)
+        return p_sampler(p_num_instances=p_num_instances, **self._kwargs)
 
 
 ## -------------------------------------------------------------------------------------------------
