@@ -26,6 +26,20 @@ Learn More: `OpenML <https://www.openml.org/>`_
 .. note::
     MLPro's stream provider functionality not only allows users to access third-party platforms but also provides additional options for loading stream objects from these platforms. For instance, when accessing datasets from OpenML, MLPro users can choose between default or custom input and target features.
 
+You can import OpenML Stream Provider wrapper as following:
+
+.. code-block:: python
+
+
+    # Importing River Stream Provider
+    from mlpro.wrappers.river import WrStreamProviderRiver
+
+**Cross References**
+
+- :ref:`Howto BF-STREAMS-051: Accessing Data from OpenML <Howto BF STREAMS 051>`
+
+- :ref:`OpenML <Wrapper OpenML>`
+
 ScikitLearn
 -----------
 ScikitLearn is a popular and well-established machine learning package that provides various algorithms for
@@ -36,6 +50,19 @@ supports ScikitLearn's datasets as stream objects, which can be used in stream p
 
 
 Learn More: `ScikitLearn <https://scikit-learn.org/>`_
+
+You can import ScikitLearn Stream Provider wrapper as following:
+.. code-block:: python
+
+
+    # Importing ScikitLearn Stream Provider
+    from mlpro.wrappers.sklearn import WrStreamProviderSKLearn
+
+**Cross References**
+
+- :ref:`Howto BF-STREAMS-052: Accessing Data from Scikit-Learn <Howto BF STREAMS 052>`
+
+- :ref:`ScikitLearn <Wrapper sklearn>`
 
 River
 -----
@@ -51,40 +78,20 @@ standardized support for algorithms in River.
 
 Learn More: `River ML <https://riverml.xyz/latest/>`_
 
-
-Accessing the Datasets
-----------------------
-ScikitLearn, River, and OpenML datasets are all available through MLPro-BF-Stream's stream provider functionality.
-Each dataset is provided as a stream package containing metadata information about the Streams, including their
-names, descriptions, and the attributes they contain.
-
-The stream providers can be included in your script as following:
+You can import River Stream Provider wrapper as following:
 
 .. code-block:: python
 
-
-    # Importing ScikitLearn Stream Provider
-    from mlpro.wrappers.sklearn import WrStreamProviderSKLearn
-
-    # Importing River Stream Provider
-    from mlpro.wrappers.river import WrStreamProviderRiver
-
     # Importing OpenML Stream Provider
     from mlpro.wrappers.openml import WrStreamProviderOpenML
+
 
 Learn more in the Howto section of MLPro, in appendix 01 section.
 
 
 **Cross References**
 
-- :ref:`Howto BF-STREAMS-051: Accessing Data from OpenML <Howto BF STREAMS 051>`
-
-- :ref:`Howto BF-STREAMS-052: Accessing Data from Scikit-Learn <Howto BF STREAMS 052>`
-
 - :ref:`Howto BF-STREAMS-053: Accessing Data from River <Howto BF STREAMS 053>`
-
-- :ref:`OpenML <Wrapper OpenML>`
 
 - :ref:`ScikitLearn <Wrapper River>`
 
-- :ref:`ScikitLearn <Wrapper sklearn>`
