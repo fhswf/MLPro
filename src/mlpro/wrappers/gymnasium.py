@@ -501,7 +501,7 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
         return obs, reward.get_overall_reward(), terminated, truncated, info
 
 
-    def reset(self, seed=None, return_info=False, options=None):
+    def reset(self, seed=None, options=None):
         """
         Resets the environment to an initial state and returns the initial observation.
         This is for new gym version.
@@ -549,10 +549,7 @@ class WrEnvMLPro2GYM(Wrapper, gym.Env):
             obs = np.array(self._mlpro_env.get_state().get_values())
         
         info = {}
-        if return_info:
-            return obs, info
-        else:
-            return obs
+        return obs, info
 
     
 ## -------------------------------------------------------------------------------------------------
