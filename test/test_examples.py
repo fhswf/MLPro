@@ -97,6 +97,7 @@ howto_list = {
     "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
     "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_doublependulum_systems_wrapped_with_mujoco",
     "bf_systems_003": "mlpro.bf.examples.howto_bf_systems_003_cartpole_continuous_systems_wrapped_with_mujoco",
+    "bf_systems_004": "mlpro.bf.examples.howto_bf_systems_004_box_on_table_mujoco_simulation",
 
     # bf.physics
     "bf_physics_001": "mlpro.bf.examples.howto_bf_physics_001_set_up_transfer_functions",
