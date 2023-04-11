@@ -10,19 +10,19 @@ It is also possible to combine an environment and a policy from different packag
 
 At the moment, we have five ready-to-use wrapper classes related to RL from 3rd-party packages to MLPro and two wrapper classes from MLPro to 3rd-party packages, such as:
 
-+------+-------------------+----------------------+--------------------+-----------------------------------------+
-|  No  |   Wrapper Class   |        Origin        |       Target       |          Wrapped RL Components          |
-+======+===================+======================+====================+=========================================+
-| 1    | WrEnvGYM2MLPro    | OpenAI Gym           | MLPro              | RL Environments                         |
-+------+-------------------+----------------------+--------------------+-----------------------------------------+
-| 2    | WrEnvMLPro2GYM    | MLPro                | OpenAI Gym         | RL Environments                         |
-+------+-------------------+----------------------+--------------------+-----------------------------------------+
-| 3    | WrEnvPZOO2MLPro   | PettingZoo           | MLPro              | Multi-Agent RL Environments             |
-+------+-------------------+----------------------+--------------------+-----------------------------------------+
-| 4    | WrEnvMLPro2PZoo   | MLPro                | PettingZoo         | Multi-Agent RL Environments             |
-+------+-------------------+----------------------+--------------------+-----------------------------------------+
-| 5    | WrPolicySB32MLPro | StableBaselines3     | MLPro              | Off-Policy and On-Policy RL Algorithms  |
-+------+-------------------+----------------------+--------------------+-----------------------------------------+
++------+-------------------+----------------------+---------------------+-----------------------------------------+
+|  No  |   Wrapper Class   |        Origin        |       Target        |          Wrapped RL Components          |
++======+===================+======================+=====================+=========================================+
+| 1    | WrEnvGYM2MLPro    | OpenAI Gym/Gymnasium | MLPro               | RL Environments                         |
++------+-------------------+----------------------+---------------------+-----------------------------------------+
+| 2    | WrEnvMLPro2GYM    | MLPro                | OpenAI Gym/Gymnasium| RL Environments                         |
++------+-------------------+----------------------+---------------------+-----------------------------------------+
+| 3    | WrEnvPZOO2MLPro   | PettingZoo           | MLPro               | Multi-Agent RL Environments             |
++------+-------------------+----------------------+---------------------+-----------------------------------------+
+| 4    | WrEnvMLPro2PZoo   | MLPro                | PettingZoo          | Multi-Agent RL Environments             |
++------+-------------------+----------------------+---------------------+-----------------------------------------+
+| 5    | WrPolicySB32MLPro | StableBaselines3     | MLPro               | Off-Policy and On-Policy RL Algorithms  |
++------+-------------------+----------------------+---------------------+-----------------------------------------+
 
 Moreover, wrapper classes for hyperparameter tuning by :ref:`Hyperopt <Wrapper Hyperopt>` and :ref:`Optuna <Wrapper Optuna>` can also be incorporated to your RL training.
 
@@ -65,6 +65,45 @@ The user can call the wrapper class while setting up an environment, as follows:
 **Cross Reference**
     - :ref:`Howto RL-WP-001: MLPro to OpenAI Gym <Howto WP RL 001>`
     - :ref:`API Reference <Wrapper OpenAI Gym>`
+
+
+RL Environment: Gymnasium to MLPro
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Here is the wrapper class to convert RL Environment from Gymnasium to MLPro.
+The implementation is pretty simple and straightforward.
+The user can call the wrapper class while setting up an environment, as follows:
+
+.. code-block:: python
+
+    from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
+    import gym
+    
+    p_gym_env = gym.make('CartPole-v1', render_mode="human")
+    self._env = WrEnvGYM2MLPro(p_gym_env, p_logging=True)
+
+**Cross Reference**
+    - :ref:`API Reference <Wrapper Gymnasium`
+
+
+RL Environment: MLPro to Gymnasium
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Here is the wrapper class to convert RL Environment from MLPro to Gymnasium.
+The implementation is pretty simple and straightforward.
+The user can call the wrapper class while setting up an environment, as follows:
+
+.. code-block:: python
+
+    from mlpro.wrappers.gymnasium import WrEnvMLPro2GYM
+    from mlpro.rl.pool.envs.gridworld import GridWorld
+    
+    mlpro_env = GridWorld(p_logging=Log.C_LOG_ALL)
+    env = WrEnvMLPro2GYM(mlpro_env, p_state_space=None, p_action_space=None)
+
+**Cross Reference**
+    - :ref:`Howto RL-WP-007: Gymnasium to MLPro <Howto WP RL 007>`
+    - :ref:`API Reference <Wrapper Gymnasium`
 
 
 RL Environment: PettingZoo to MLPro
