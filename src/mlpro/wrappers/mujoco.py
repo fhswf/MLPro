@@ -500,8 +500,8 @@ class MujocoHandler(Wrapper):
 
         self._initialize_simulation()
 
-        self._init_qpos = self._data.qpos.ravel().copy()
-        self._init_qvel = self._data.qvel.ravel().copy()
+        self.init_qpos = self._data.qpos.ravel().copy()
+        self.init_qvel = self._data.qvel.ravel().copy()
         
         parser = etree.XMLParser(remove_blank_text=True)
         tree = etree.parse(self._model_path, parser=parser)
@@ -598,14 +598,14 @@ class MujocoHandler(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset_model(self, reset_state=None):
-        qpos = self._init_qpos
-        qvel = self._init_qpos
-        self._set_state(qpos, qvel)
-        # if reset_state is None:
-        #     qpos = self._init_qpos
-        #     qvel = self._init_qpos
-        #     self._set_state(qpos, qvel)
-        # else:
+        if reset_state is None:
+            qpos = self.init_qpos
+            qvel = self.init_qvel
+            self._set_state(qpos, qvel)
+        else:
+            qpos = reset_state[0]
+            qvel = reset_state[1]
+            self._set_state(qpos, qvel)
         #     for dim in self._system_state_space.get_dims():
         #         state = dim.get_name_short().split("_")
         #         if state[2] == "body":
@@ -669,13 +669,15 @@ class MujocoHandler(Wrapper):
 
 ## -------------------------------------------------------------------------------------------------    
     def _get_camera_data(self, cam, rgb=True):
-        self._get_viewer()
+        if self._viewer is None:
+            self._get_viewer()
         
+        cam_viewport = mujoco.MjrRect(0, 0, 1024, 768)
         rgb_arr = np.zeros(
-            3 * self._viewer.viewport.width * self._viewer.viewport.height, dtype=np.uint8
+            3 * cam_viewport.width * cam_viewport.height, dtype=np.uint8
         )
         depth_arr = np.zeros(
-            self._viewer.viewport.width * self._viewer.viewport.height, dtype=np.float32
+            cam_viewport.width * cam_viewport.height, dtype=np.float32
         )
 
         mujoco.mjv_updateScene(
@@ -689,16 +691,16 @@ class MujocoHandler(Wrapper):
         )
 
         mujoco.mjr_render(
-            self._viewer.viewport, self._viewer.scn, self._viewer.con
+            cam_viewport, self._viewer.scn, self._viewer.con
         )
 
         # Read Pixel
-        mujoco.mjr_readPixels(rgb_arr, depth_arr, self._viewer.viewport, self._viewer.con)
+        mujoco.mjr_readPixels(rgb_arr, depth_arr, cam_viewport, self._viewer.con)
         if rgb:
-            rgb_img = rgb_arr.reshape(self._viewer.viewport.height, self._viewer.viewport.width, 3)
+            rgb_img = rgb_arr.reshape(cam_viewport.height, cam_viewport.width, 3)
             return rgb_img[::-1, :, :]
         else:
-            depth_img = depth_arr.reshape(self._viewer.viewport.height, self._viewer.viewport.width)
+            depth_img = depth_arr.reshape(cam_viewport.height, cam_viewport.width)
             return depth_img[::-1, :]
 
 
