@@ -2,12 +2,12 @@
 3rd Party Support
 =================
 
-
 MLPro's stream sub-package is a comprehensive package that supports third-party platforms in addition
 to its native stream object implementation. Third-party platforms provide access to various datasets, enabling to
 design, test, and validate stream processing workflows and online machine learning algorithms. These thrird party
 platforms are called StreamProvider in context of Stream sub-package of MLPro. Currently the streams sub-package
 supports following 3rd party packages:
+
 
 OpenML
 ------
@@ -30,43 +30,38 @@ You can import OpenML Stream Provider wrapper as following:
 
 .. code-block:: python
 
-    # Importing OpenML wrapper
-    from mlpro.wrapper import OpenML
-
     # Importing OpenML Stream Provider
     from mlpro.wrappers.openml import WrStreamProviderOpenML
 
 **Cross References**
 
 - :ref:`Howto BF-STREAMS-051: Accessing Data from OpenML <Howto BF STREAMS 051>`
+- :ref:`Wrapper OpenML <Wrapper OpenML>`
 
-- :ref:`OpenML <Wrapper OpenML>`
 
-ScikitLearn
------------
-ScikitLearn is a popular and well-established machine learning package that provides various algorithms for
+Scikit-learn
+------------
+Scikit-learn is a popular and well-established machine learning package that provides various algorithms for
 classification, regression, clustering, and dimensionality reduction. ScikitLearn also provides a wide range of
 datasets which includes popular examples such as the Iris dataset for classification, and the California Housing
 dataset for regression that are frequently used for training and testing machine learning models. MLPro currently
-supports ScikitLearn's datasets as stream objects, which can be used in stream processing and online machine learning.
+supports scikit-learn's datasets as stream objects, which can be used in stream processing and online machine learning.
 
+Learn more: `Scikit-learn <https://scikit-learn.org/>`_
 
-Learn More: `ScikitLearn <https://scikit-learn.org/>`_
+You can import scikit-learn Stream Provider wrapper as following:
 
-You can import ScikitLearn Stream Provider wrapper as following:
 .. code-block:: python
 
-    # Importing Scikit learn wrapper
-    from mlpro.wrappers import sklearn
-
-    # Importing ScikitLearn Stream Provider
+    # Importing scikit-learn Stream Provider
     from mlpro.wrappers.sklearn import WrStreamProviderSKLearn
+
 
 **Cross References**
 
 - :ref:`Howto BF-STREAMS-052: Accessing Data from Scikit-Learn <Howto BF STREAMS 052>`
+- :ref:`Wrapper Scikit-learn <Wrapper sklearn>`
 
-- :ref:`ScikitLearn <Wrapper sklearn>`
 
 River
 -----
@@ -80,14 +75,12 @@ learning algorithms. MLPro standardizes the access to the River streams, making 
 stream processing workflows. While MLPro currently supports River as a data resource, future updates will include
 standardized support for algorithms in River.
 
-Learn More: `River ML <https://riverml.xyz/latest/>`_
+Learn more: `River ML <https://riverml.xyz/latest/>`_
 
 You can import River Stream Provider wrapper as following:
 
 .. code-block:: python
 
-    # Importing River wrapper
-    from mlpro.wrapper import river
     # Importing River Stream Provider
     from mlpro.wrappers.river import WrStreamProviderRiver
 
@@ -98,6 +91,5 @@ Learn more in the Howto section of MLPro, in appendix 01 section.
 **Cross References**
 
 - :ref:`Howto BF-STREAMS-053: Accessing Data from River <Howto BF STREAMS 053>`
-
-- :ref:`ScikitLearn <Wrapper River>`
+- :ref:`Wrapper River <Wrapper River>`
 
