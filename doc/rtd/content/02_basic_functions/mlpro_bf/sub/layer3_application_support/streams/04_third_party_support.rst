@@ -30,9 +30,11 @@ You can import OpenML Stream Provider wrapper as following:
 
 .. code-block:: python
 
+    # Importing OpenML wrapper
+    from mlpro.wrapper import OpenML
 
-    # Importing River Stream Provider
-    from mlpro.wrappers.river import WrStreamProviderRiver
+    # Importing OpenML Stream Provider
+    from mlpro.wrappers.openml import WrStreamProviderOpenML
 
 **Cross References**
 
@@ -54,6 +56,8 @@ Learn More: `ScikitLearn <https://scikit-learn.org/>`_
 You can import ScikitLearn Stream Provider wrapper as following:
 .. code-block:: python
 
+    # Importing Scikit learn wrapper
+    from mlpro.wrappers import sklearn
 
     # Importing ScikitLearn Stream Provider
     from mlpro.wrappers.sklearn import WrStreamProviderSKLearn
@@ -82,8 +86,10 @@ You can import River Stream Provider wrapper as following:
 
 .. code-block:: python
 
-    # Importing OpenML Stream Provider
-    from mlpro.wrappers.openml import WrStreamProviderOpenML
+    # Importing River wrapper
+    from mlpro.wrapper import river
+    # Importing River Stream Provider
+    from mlpro.wrappers.river import WrStreamProviderRiver
 
 
 Learn more in the Howto section of MLPro, in appendix 01 section.
