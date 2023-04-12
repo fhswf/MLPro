@@ -528,8 +528,13 @@ class MujocoHandler(Wrapper):
         for world_body_elem in self._xml_root.iter("worldbody"):
             # Extract Position and Orientation, if a body
             for elem in self._xml_root.iter("body"):
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body")))
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body")))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body.x"), p_boundaries=[float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body.y"), p_boundaries=[float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body.z"), p_boundaries=[float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.w"), p_boundaries=[float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.x"), p_boundaries=[float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.y"), p_boundaries=[float('inf'), float('inf')]))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body.z"), p_boundaries=[float('inf'), float('inf')]))
                 
             # Extract Position, Velocity, and Acceleration, if a joint
             for elem in world_body_elem.iter("joint"):
@@ -582,9 +587,25 @@ class MujocoHandler(Wrapper):
                 state_value.append(self._get_camera_data(self._camera_list[state[0]]))
             elif state[2] == "body":
                 if state[1] == "pos":
-                    state_value.append(self._data.body(state[0]).xpos.tolist())
+                    if state[3] == "x":
+                        state_value.append(self._data.body(state[0]).xpos.tolist()[0])
+                    elif state[3] == "y":
+                        state_value.append(self._data.body(state[0]).xpos.tolist()[1])
+                    elif state[3] == "z":
+                        state_value.append(self._data.body(state[0]).xpos.tolist()[2])
+                    else:
+                        raise NotImplementedError
                 elif state[1] == "rot":
-                    state_value.append(self._data.body(state[0]).xquat.tolist())
+                    if state[3] == "w":
+                        state_value.append(self._data.body(state[0]).xquat.tolist()[0])
+                    elif state[3] == "x":
+                        state_value.append(self._data.body(state[0]).xquat.tolist()[1])
+                    elif state[3] == "y":
+                        state_value.append(self._data.body(state[0]).xquat.tolist()[2])
+                    elif state[3] == "z":
+                        state_value.append(self._data.body(state[0]).xquat.tolist()[3])
+                    else:
+                        raise NotImplementedError
             elif state[2] == "joint":
                 if state[1] == "pos":
                     state_value.append(self._data.joint(state[0]).qpos.squeeze().tolist())
