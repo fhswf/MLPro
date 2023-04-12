@@ -144,6 +144,8 @@ howto_list = {
 # MLPro-GT - Game Theory:
     "gt_dg_001": "mlpro.gt.examples.howto_gt_dg_001_run_multi_player_with_own_policy_on_multicartpole_game_board",
     "gt_dg_002": "mlpro.gt.examples.howto_gt_dg_002_train_own_multi_player_on_multicartpole_game_board",
+    "gt_dg_003": "mlpro.gt.examples.howto_gt_dg_003_train_own_multi_player_in_potential_games",
+    "gt_dg_004": "mlpro.gt.examples.howto_gt_dg_004_train_own_multi_player_in_stackelberg_games",
 }
 
 
