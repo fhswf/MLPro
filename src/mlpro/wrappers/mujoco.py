@@ -240,8 +240,6 @@ class OffRenderViewer(BaseViewer):
         
         self._init_camera(xyz_pos, elevation, distance)
         
-        mujoco.mj_forward(self.model, self.data)
-        
         
 ## -------------------------------------------------------------------------------------------------
     def _set_mujoco_buffer(self):
@@ -335,12 +333,13 @@ class RenderViewer(BaseViewer, CallbacksViewer):
         # Create Window
         self.window = glfw.create_window(
             width, height, "MuJoCo in MLPRo Viewer", None, None)
-        glfw.make_context_current(self.window)
-        glfw.swap_interval(1)
 
         framebuffer_width, framebuffer_height = glfw.get_framebuffer_size(self.window)
         window_width, _ = glfw.get_window_size(self.window)
         self._scale = framebuffer_width * 1.0 / window_width
+        
+        BaseViewer.__init__(self, model, data, framebuffer_width, framebuffer_height)
+        glfw.swap_interval(1)
         
         # Set Callbacks
         CallbacksViewer.__init__(self)
@@ -348,12 +347,8 @@ class RenderViewer(BaseViewer, CallbacksViewer):
         glfw.set_mouse_button_callback(self.window, self._mouse_button_callback)
         glfw.set_scroll_callback(self.window, self._scroll_callback)
         glfw.set_key_callback(self.window, self._key_callback)
-
-        BaseViewer.__init__(self, model, data, framebuffer_width, framebuffer_height)
         
         self._init_camera(xyz_pos, elevation, distance)
-        
-        mujoco.mj_forward(self.model, self.data)
 
 
 ## -------------------------------------------------------------------------------------------------

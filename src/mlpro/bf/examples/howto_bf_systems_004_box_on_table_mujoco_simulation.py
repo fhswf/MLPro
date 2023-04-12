@@ -87,3 +87,4 @@ for x in range(5):
     sys.reset()
     
 plt.ioff()
+plt.close()
