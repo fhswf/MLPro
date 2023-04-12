@@ -525,13 +525,13 @@ class MujocoHandler(Wrapper):
     def _get_state_space(self):
         self._system_state_space = ESpace()
         
-        # # Extract Position and Orientation, if a body
-        # for elem in self._xml_root.iter("body"):
-        #     self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body")))
-        #     self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body")))
-        
-        # Extract Position, Velocity, and Acceleration, if a joint
         for world_body_elem in self._xml_root.iter("worldbody"):
+            # Extract Position and Orientation, if a body
+            for elem in self._xml_root.iter("body"):
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".pos.body")))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+str(".rot.body")))
+                
+            # Extract Position, Velocity, and Acceleration, if a joint
             for elem in world_body_elem.iter("joint"):
                 try:
                     bound = elem.attrib["range"].split(" ")
@@ -555,12 +555,20 @@ class MujocoHandler(Wrapper):
         self._system_action_space = ESpace()
         
         # Actuator list
-        for elem in self._xml_root.iter("motor"):
-            try:
-                bound = elem.attrib["ctrlrange"].split(" ")
-                self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float(bound[0]), float(bound[1])]))
-            except KeyError as e:
-                self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float('inf'), float('inf')]))
+        for actuator_elem in self._xml_root.iter("actuator"):
+            for elem in actuator_elem.iter("motor"):
+                try:
+                    bound = elem.attrib["ctrlrange"].split(" ")
+                    self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float(bound[0]), float(bound[1])]))
+                except KeyError as e:
+                    self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float('inf'), float('inf')]))
+                    
+        for elem in actuator_elem.iter("position"):
+                try:
+                    bound = elem.attrib["ctrlrange"].split(" ")
+                    self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float(bound[0]), float(bound[1])]))
+                except KeyError as e:
+                    self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float('inf'), float('inf')]))
             
         return self._system_action_space
 
