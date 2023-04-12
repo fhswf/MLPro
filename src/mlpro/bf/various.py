@@ -376,8 +376,9 @@ class Persistent (Id, Log):
         """
 
         g_persistence_file_paths[p_filename] = p_path
-
-        obj = pkl.load(open(p_path + os.sep + p_filename, 'rb'))
+        
+        with open(p_path + os.sep + p_filename, 'rb') as file:
+            obj = pkl.load(file)
 
         obj.log(Log.C_LOG_TYPE_I, 'Object loaded from file "' + p_path + os.sep + p_filename + '"')
 
@@ -469,9 +470,10 @@ class Persistent (Id, Log):
 
         g_persistence_file_paths[filename] = p_path
 
-        pkl.dump( obj=self, 
-                  file=open(p_path + os.sep + filename, "wb"),
-                  protocol=pkl.HIGHEST_PROTOCOL )
+        with open(p_path + os.sep + filename, "wb") as file:
+            pkl.dump( obj=self, 
+                    file=file,
+                    protocol=pkl.HIGHEST_PROTOCOL )
         
         self.log(Log.C_LOG_TYPE_I, 'Object saved to file "' + p_path + os.sep + filename + '"')
         return True
