@@ -28,6 +28,11 @@ class GTPlayer_SG (GTPlayer_DG):
     This class implements a game theoretical player model in a stackelberg game mode, in which
     there is a possibility to assign the role of the player as a leader or follower.
 
+    The leader(s) has a priority to compute actions and adapt policies over the followers.
+    Then, the followers can react according to the selected actions by the leaders, while computing
+    their actions and adapting their policies. Thus, as followers, the selected actions by the
+    leaders will assign as one of the inputs on both _adapt and compute_action methods.
+
     Parameters
     ----------
     p_role          
@@ -72,7 +77,7 @@ class GTPlayer_SG (GTPlayer_DG):
     
     
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, **p_args) -> bool:
         
         # 1 Check: Adaptation possible?
         if self._previous_observation is None:
@@ -80,11 +85,11 @@ class GTPlayer_SG (GTPlayer_DG):
             return False
 
         # 2 Extract agent specific observation data from state
-        state = p_args[0]
-        reward = p_args[1]
+        state = p_args['p_state']
+        reward = p_args['p_reward']
 
-        if self.role == self.C_PLAYER_FOLLOWER:
-            action_leaders = p_args[2]
+        if self._role == self.C_PLAYER_FOLLOWER:
+            action_leaders = p_args['p_action_leaders']
 
         observation = self._extract_observation(state)
         adapted = False
@@ -92,18 +97,27 @@ class GTPlayer_SG (GTPlayer_DG):
         # 3 Adaptation
         if self._envmodel is None:
             # 3.1 Model-free adaptation
-            if self.role == self.C_PLAYER_FOLLOWER:
+            if self._role == self.C_PLAYER_FOLLOWER:
                 adapted = self._policy.adapt(
-                    SARSElement(self._previous_observation, self._previous_action, reward, observation),
-                    action_leaders)
+                    p_sars_element=SARSElement(self._previous_observation,
+                                               self._previous_action,
+                                               reward,
+                                               observation),
+                    p_action_leaders=action_leaders)
             else:
                 adapted = self._policy.adapt(
-                    SARSElement(self._previous_observation, self._previous_action, reward, observation))
+                    p_sars_element=SARSElement(self._previous_observation,
+                                               self._previous_action,
+                                               reward,
+                                               observation))
 
         else:
             # 3.2 Model-based adaptation
             adapted = self._envmodel.adapt(
-                SARSElement(self._previous_observation, self._previous_action, reward, observation))
+                p_sars_element=SARSElement(self._previous_observation,
+                                           self._previous_action,
+                                           reward,
+                                           observation))
 
             if self._envmodel.get_maturity() >= self._em_mat_thsld:
                 adapted = adapted or self._adapt_policy_by_model()
@@ -148,10 +162,10 @@ class GTMultiPlayer_SG (GTMultiPlayer_DG):
 
     
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, *p_args) -> bool:
+    def _adapt(self, **p_args) -> bool:
 
-        state = p_args[0]
-        reward = p_args[1]
+        state = p_args['p_state']
+        reward = p_args['p_reward']
         adapted = False
 
         self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')
@@ -163,7 +177,7 @@ class GTMultiPlayer_SG (GTMultiPlayer_DG):
                 if (reward.get_type() != Reward.C_TYPE_OVERALL) and not reward.is_rewarded(agent.get_id()):
                     continue
                 self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-                adapted = agent.adapt(state, reward) or adapted
+                adapted = agent.adapt(p_state=state, p_reward=reward) or adapted
                 
         ## followers make adaptations ## 
         for agent_entry in self._agents:
@@ -177,7 +191,9 @@ class GTMultiPlayer_SG (GTMultiPlayer_DG):
                     if potential_leader._role == GTPlayer_SG.C_PLAYER_LEADER:
                         action_leaders.append(potential_leader._previous_action)
                 self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
-                adapted = agent.adapt(state, reward, action_leaders) or adapted
+                adapted = agent.adapt(p_state=state,
+                                      p_reward=reward,
+                                      p_action_leaders=action_leaders) or adapted
 
         self.log(self.C_LOG_TYPE_I, 'End of adaptation for all agents...')
 
