@@ -568,7 +568,7 @@ class MujocoHandler(Wrapper):
                 except KeyError as e:
                     self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float('inf'), float('inf')]))
                     
-        for elem in actuator_elem.iter("position"):
+            for elem in actuator_elem.iter("position"):
                 try:
                     bound = elem.attrib["ctrlrange"].split(" ")
                     self._system_action_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"], p_boundaries=[float(bound[0]), float(bound[1])]))
