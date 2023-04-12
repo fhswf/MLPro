@@ -41,11 +41,12 @@
 ## -- 2023-03-08  1.7.2     SY       Add Howto RL MB 003
 ## -- 2023-03-10  1.7.3     SY       Renumbering module
 ## -- 2023-03-24  1.7.4     DA       Add Howto BF 005
+## -- 2023-04-12  1.8.0     SY       Update due to GT HowTos
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.7.4 (2023-03-24)
+Ver. 1.8.0 (2023-04-12)
 
 Unit test for all examples available.
 """
@@ -141,8 +142,8 @@ howto_list = {
 
 
 # MLPro-GT - Game Theory:
-    "gt_dp_001": "mlpro.gt.examples.howto_gt_dp_001_run_multi_player_with_own_policy_on_multicartpole_game_board",
-    "gt_dp_002": "mlpro.gt.examples.howto_gt_dp_002_train_own_multi_player_on_multicartpole_game_board",
+    "gt_dg_001": "mlpro.gt.examples.howto_gt_dg_001_run_multi_player_with_own_policy_on_multicartpole_game_board",
+    "gt_dg_002": "mlpro.gt.examples.howto_gt_dg_002_train_own_multi_player_on_multicartpole_game_board",
 }
 
 

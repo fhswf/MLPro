@@ -21,17 +21,16 @@
 ## -- 2022-10-07  2.0.1     SY       Boundaries updates and reward function updates
 ## -- 2022-10-08  2.0.2     SY       Bug fixing
 ## -- 2022-11-29  2.0.3     DA       Bug fixing
-## -- 2023-03-30  2.0.4     SY       Refactoring 
+## -- 2023-04-12  2.0.4     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.4 (2023-03-30)
+Ver. 2.0.4 (2023-04-12)
 
 This module provides an environment of customizable Gridworld.
 """
 
 from mlpro.rl.models import *
-from mlpro.gt.dp import *
 import numpy as np
       
 

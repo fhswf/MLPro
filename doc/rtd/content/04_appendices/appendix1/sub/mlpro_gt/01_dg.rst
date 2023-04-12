@@ -1,0 +1,8 @@
+Dynamic Games
+===================
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   
+   dg/howto.*

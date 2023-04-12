@@ -11,11 +11,11 @@
 ## -- 2022-04-05  1.0.2     SY       Add tuning recap visualization: class _plot_results
 ## -- 2022-08-14  1.1.0     DA       Introduction of root class Wrapper
 ## -- 2022-10-17  1.1.1     SY       Refactoring due to unit test
-## -- 2023-03-30  1.1.2     SY       Refactoring 
+## -- 2023-04-12  1.1.2     SY       Refactoring 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2023-03-30)
+Ver. 1.1.2 (2023-04-12)
 
 This module provides a wrapper class for hyperparameter tuning by reusing Optuna framework.
 
@@ -30,7 +30,7 @@ from mlpro.bf.ml import *
 from mlpro.bf.math import *
 from mlpro.bf.various import *
 from mlpro.rl.models import *
-from mlpro.gt.dp import *
+from mlpro.gt.dynamicgames import *
 import os
 
 

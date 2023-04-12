@@ -17,12 +17,13 @@
 ## -- 2022-11-01  1.2.0     DA       Refactoring and code cleaning
 ## -- 2023-03-30  2.0.0     SY       Introduction as MLPro-GT-DP
 ## -- 2023-04-03  2.0.1     SY       Remove Potential Games and refactoring
+## -- 2023-04-12  2.1.0     SY       MLPro-GT-DP to MLPro-GT-DG (Dynamic Games)
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.1 (2023-04-03)
+Ver. 2.1.0 (2023-04-12)
 
-This module provides model classes for tasks related to Game Theory in dynamic programming.
+This module provides model classes for tasks related to Game Theory in dynamic games.
 """
 
 from mlpro.rl import *
@@ -91,12 +92,12 @@ class PGameBoard (GameBoard):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTPlayer_DP (Agent):
+class GTPlayer_DG (Agent):
     """
     This class implements a game theoretical player model. See super class for more information.
     """
 
-    C_TYPE = 'GT Player DP'
+    C_TYPE = 'GT Player DG'
 
 
 
@@ -104,16 +105,16 @@ class GTPlayer_DP (Agent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTMultiPlayer_DP (MultiAgent):
+class GTMultiPlayer_DG (MultiAgent):
     """
     This class implements a game theoretical model for a team of players. See super class for more 
     information.
     """
 
-    C_TYPE = 'GT Multi-Player DP'
+    C_TYPE = 'GT Multi-Player DG'
 
 ## -------------------------------------------------------------------------------------------------
-    def add_player(self, p_player: GTPlayer_DP, p_weight=1.0) -> None:
+    def add_player(self, p_player: GTPlayer_DG, p_weight=1.0) -> None:
         super().add_agent(p_agent=p_player, p_weight=p_weight)
 
 
@@ -122,7 +123,7 @@ class GTMultiPlayer_DP (MultiAgent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTGame_DP (RLScenario):
+class GTGame_DG (RLScenario):
     """
     This class implements a game consisting of a game board and a (multi-)player. See super class for 
     more information.

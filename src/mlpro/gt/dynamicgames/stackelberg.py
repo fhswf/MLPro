@@ -6,13 +6,13 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-03  0.0.0     SY       Creation
-## -- 2023-??-??  1.0.0     SY       Release of first version
+## -- 2023-04-12  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-??-??)
+Ver. 1.0.0 (2023-04-12)
 
 This module provides model classes for Stackelberg Games in dynamic programming.
 """
 
-from mlpro.gt.dp.basics import *
+from mlpro.gt.dynamicgames.basics import *
