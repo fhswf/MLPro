@@ -45,10 +45,11 @@
 ## --                                - renamed class LoadSave to Persistent
 ## --                                - merged classes Load, Save into Persistent
 ## --                                - logging
+## -- 2023-04-12  2.1.1     MRD      Safe guarding open file with "with" 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-03-27)
+Ver. 2.1.1 (2023-04-12)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -376,7 +377,7 @@ class Persistent (Id, Log):
         """
 
         g_persistence_file_paths[p_filename] = p_path
-        
+
         with open(p_path + os.sep + p_filename, 'rb') as file:
             obj = pkl.load(file)
 
