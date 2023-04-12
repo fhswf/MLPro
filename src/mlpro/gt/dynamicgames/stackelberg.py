@@ -135,3 +135,83 @@ class GTPlayer_SG (GTPlayer_DG):
 
 
 
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class GTMultiPlayer_SG (GTMultiPlayer_DG):
+    """
+    This class implements a game theoretical multi-player model in a stackelberg game mode.
+    """
+
+    C_TYPE = 'GT Multi-Player SG'
+
+    
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, *p_args) -> bool:
+
+        state = p_args[0]
+        reward = p_args[1]
+        adapted = False
+
+        self.log(self.C_LOG_TYPE_I, 'Start of adaptation for all agents...')
+        
+        ## leaders make initial adaptations ##
+        for agent_entry in self._agents:
+            agent = agent_entry[0]
+            if agent._role == GTPlayer_SG.C_PLAYER_LEADER:
+                if (reward.get_type() != Reward.C_TYPE_OVERALL) and not reward.is_rewarded(agent.get_id()):
+                    continue
+                self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
+                adapted = agent.adapt(state, reward) or adapted
+                
+        ## followers make adaptations ## 
+        for agent_entry in self._agents:
+            agent = agent_entry[0]
+            if agent._role == GTPlayer_SG.C_PLAYER_FOLLOWER:
+                action_leaders = []
+                if (reward.get_type() != Reward.C_TYPE_OVERALL) and not reward.is_rewarded(agent.get_id()):
+                    continue
+                for ag in self._agents:
+                    potential_leader = ag[0]
+                    if potential_leader._role == GTPlayer_SG.C_PLAYER_LEADER:
+                        action_leaders.append(potential_leader._previous_action)
+                self.log(self.C_LOG_TYPE_I, 'Start adaption for agent', agent.get_id())
+                adapted = agent.adapt(state, reward, action_leaders) or adapted
+
+        self.log(self.C_LOG_TYPE_I, 'End of adaptation for all agents...')
+
+        self._set_adapted(adapted)
+        return adapted
+
+    
+## -------------------------------------------------------------------------------------------------
+    def compute_action(self, p_state: State) -> Action:
+
+        self.log(self.C_LOG_TYPE_I, 'Start of action computation for all agents...')
+
+        action = Action()
+
+        ## leaders makes initial moves ##
+        for agent, weight in self._agents:
+            if agent._role == GTPlayer_SG.C_PLAYER_LEADER:
+                action_agent = agent.compute_action(p_state)
+                action_element = action_agent.get_elem(agent.get_id())
+                action_element.set_weight(weight)
+                action.add_elem(agent.get_id(), action_element)
+
+        ## followers makes moves ##
+        for agent, weight in self._agents:
+            if agent._role == GTPlayer_SG.C_PLAYER_FOLLOWER:
+                action_leaders = []
+                for ag in self._agents:
+                    potential_leader = ag[0]
+                    if potential_leader._role == GTPlayer_SG.C_PLAYER_LEADER:
+                        action_leaders.append(potential_leader._previous_action)
+                action_agent = agent.compute_action(p_state, action_leaders)
+                action_element = action_agent.get_elem(agent.get_id())
+                action_element.set_weight(weight)
+                action.add_elem(agent.get_id(), action_element)
+
+        self.log(self.C_LOG_TYPE_I, 'End of action computation for all agents...')
+        return action
