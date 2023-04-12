@@ -5,12 +5,13 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-04-10  0.0.0     MRD       Creation
+## -- 2023-04-10  0.0.0     MRD      Creation
+## -- 2023-04-12  1.0.0     MRD      First Release
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.0 (2023-04-10)
+Ver. 1.0.0 (2023-04-12)
 
 This module demonstrates the principles of using classes System and uses MuJoCo wrapper to simulate 
 the pre-defined model. A camera is integrated in the simulation model. The camera is extracted from
