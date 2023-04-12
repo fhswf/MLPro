@@ -13,3 +13,6 @@ _build/
 .devcontainer
 .spyproject
 *.pkl
+
+# Temp
+.gitlab-ci.yml
