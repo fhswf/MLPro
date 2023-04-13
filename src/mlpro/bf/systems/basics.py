@@ -31,10 +31,12 @@
 ## -- 2023-04-04  1.9.0     LSB      Class State inherits form Instance
 ## -- 2023-04-04  1.9.1     LSB      Class State: New method Copy()
 ## -- 2023-04-05  1.9.2     LSB      Refactor: Copy method of State, copying all the attributes
+## -- 2023-04-11  1.9.3     MRD      Add custom reset functionality for MuJoCo
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.2 (2023-04-05)
+Ver. 1.9.3 (2023-04-11)
+
 
 This module provides models and templates for state based systems.
 """
@@ -977,9 +979,12 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
 
         # Put Mujoco here
         if self._mujoco_handler is not None:
-            ob = self._mujoco_handler._reset_simulation()
-            self._state = State(self.get_state_space())
-            self._state.set_values(ob)
+            try:
+                self._reset(p_seed)
+            except NotImplementedError:
+                ob = self._mujoco_handler._reset_simulation()
+                self._state = State(self.get_state_space())
+                self._state.set_values(ob)
 
         else:
             self._reset(p_seed)
