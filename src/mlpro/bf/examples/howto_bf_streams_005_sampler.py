@@ -75,7 +75,7 @@ if __name__ == '__main__':
                                 p_header=True,
                                 p_list_features=["action", "states_1", "states_2"],
                                 p_list_labels=["model_loss"],
-                                p_sampler=SamplerRND,
+                                p_sampler=None,
                                 p_max_step_rate=5,
                                 p_seed=5)
 

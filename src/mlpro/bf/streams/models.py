@@ -48,10 +48,11 @@
 ## -- 2023-01-05  1.0.1     DA       Refactoring of method StreamShared.get_instances()
 ## -- 2023-02-12  1.1.0     DA       Class StreamTask: implementation of plot parameter view_autoselect
 ## -- 2023-04-10  1.2.0     SY       Introduce class Sampler and update class Stream accordingly
+## -- 2023-04-14  1.2.1     SY       Refactoring class Sampler and class Stream 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-04-10)
+Ver. 1.2.1 (2023-04-14)
 
 This module provides classes for standardized stream processing. 
 """
@@ -329,7 +330,7 @@ class Sampler:
         
 
 ## -------------------------------------------------------------------------------------------------
-    def filter_instance(self, p_inst:Instance) -> bool:
+    def omit_instance(self, p_inst:Instance) -> bool:
         """
         A method to filter any incoming instances.
 
@@ -341,17 +342,17 @@ class Sampler:
         Returns
         -------
         bool
-            True means utilize the input instance, otherwise False.
+            False means the input instance is not omitted, otherwise True.
 
         """
         
-        return self._filter_instance(p_inst)
+        return self._omit_instance(p_inst)
         
 
 ## -------------------------------------------------------------------------------------------------
-    def _filter_instance(self, p_inst:Instance) -> bool:
+    def _omit_instance(self, p_inst:Instance) -> bool:
         """
-        A custom method to filter any incoming instances, which is being called by filter_intance()
+        A custom method to filter any incoming instances, which is being called by omit_instance()
         method. Please redefine this method!
 
         Parameters
@@ -362,7 +363,7 @@ class Sampler:
         Returns
         -------
         bool
-            True means utilize the input instance, otherwise False.
+            False means the input instance is not omitted, otherwise True.
 
         """
         
@@ -432,9 +433,12 @@ class Stream (Mode, Persistent, ScientificObject):
             pass
         
         if p_sampler is None:
-            self._sampler   = None
+            try:
+                self._sampler = self.setup_sampler()
+            except:
+                self._sampler = None
         else:
-            self._sampler   = self._set_sampler(p_sampler, p_num_instances)
+            self._sampler   = p_sampler
             
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
 
@@ -602,9 +606,10 @@ class Stream (Mode, Persistent, ScientificObject):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _set_sampler(self, p_sampler, p_num_instances) -> Sampler:
+    def setup_sampler(self) -> Sampler:
         """
-        A method to set up a sampler.
+        A static method to set up a sampler, which allows to set a sampler after instantiation of
+        a stream. 
 
         Returns
         -------
@@ -612,7 +617,7 @@ class Stream (Mode, Persistent, ScientificObject):
             An instantiated sampler.
         """
 
-        return p_sampler(p_num_instances=p_num_instances, **self._kwargs)
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
