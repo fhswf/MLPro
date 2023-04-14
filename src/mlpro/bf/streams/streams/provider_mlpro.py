@@ -43,7 +43,7 @@ class StreamMLProBase (Stream):
     C_SCIREF_URL        = 'https://mlpro.readthedocs.io'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, p_logging=Log.C_LOG_ALL ):
+    def __init__( self, p_logging=Log.C_LOG_ALL, **p_kwargs ):
 
         super().__init__( p_id = self.C_ID, 
                           p_name = self.C_NAME, 
@@ -52,7 +52,8 @@ class StreamMLProBase (Stream):
                           p_feature_space = self._setup_feature_space(), 
                           p_label_space = self._setup_label_space(), 
                           p_mode=Mode.C_MODE_SIM,
-                          p_logging = p_logging )
+                          p_logging = p_logging,
+                          **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
