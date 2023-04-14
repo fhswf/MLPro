@@ -7,11 +7,12 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-10  0.0.0     MRD      Creation
 ## -- 2023-04-12  1.0.0     MRD      First Release
+## -- 2023-04-12  1.0.1     MRD      Refactor reset
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.0 (2023-04-12)
+Ver. 1.0.1 (2023-04-12)
 
 This module demonstrates the principles of using classes System and uses MuJoCo wrapper to simulate 
 the pre-defined model. A camera is integrated in the simulation model. The camera is extracted from
@@ -39,15 +40,26 @@ from mlpro.bf.systems import *
 # 0 Create Custom System for Custom reset
 class RandomBoxOnTable(System):
     def _reset(self, p_seed=None) -> None:
-        # Random Box Position
-        box_1 = [random.uniform(-0.2, 0.2), random.uniform(-0.2, 0.2), 0.95, 1, 0, 0, 0]
-        box_2 = [random.uniform(-0.2, 0.2), random.uniform(-0.2, 0.2), 0.95, 1, 0, 0, 0]
-        box_3 = [random.uniform(-0.2, 0.2), random.uniform(-0.2, 0.2), 0.95, 1, 0, 0, 0]
+        init_qpos = State(self._mujoco_handler.get_init_qpos_space())
+        init_qvel = State(self._mujoco_handler.get_init_qvel_space())
         
-        init_qpos = [*box_1, *box_2, *box_3]
-        init_qvel = self._mujoco_handler.init_qvel
-        reset_state = [[init_qpos], [init_qvel]]
-        ob = self._mujoco_handler._reset_simulation(reset_state)
+        # Set Default from MuJoCo
+        init_qpos.set_values(self._mujoco_handler.init_qpos)
+        init_qvel.set_values(self._mujoco_handler.init_qvel)
+        
+        # Box 1 Configuration
+        init_qpos.set_value(self._mujoco_handler.get_init_qpos_space().get_dim_by_name("box_1.pos.x").get_id(), random.uniform(-0.1, 0.1))
+        init_qpos.set_value(self._mujoco_handler.get_init_qpos_space().get_dim_by_name("box_1.pos.y").get_id(), random.uniform(-0.1, 0.1))
+        
+        # Box 2 Configuration
+        init_qpos.set_value(self._mujoco_handler.get_init_qpos_space().get_dim_by_name("box_2.pos.x").get_id(), random.uniform(-0.1, 0.1))
+        init_qpos.set_value(self._mujoco_handler.get_init_qpos_space().get_dim_by_name("box_2.pos.y").get_id(), random.uniform(-0.1, 0.1))
+        
+        # Box 3 Configuration
+        init_qpos.set_value(self._mujoco_handler.get_init_qpos_space().get_dim_by_name("box_3.pos.x").get_id(), random.uniform(-0.1, 0.1))
+        init_qpos.set_value(self._mujoco_handler.get_init_qpos_space().get_dim_by_name("box_3.pos.y").get_id(), random.uniform(-0.1, 0.1))
+        
+        ob = self._mujoco_handler._reset_simulation(reset_state=[init_qpos, init_qvel])
         self._state = State(self.get_state_space())
         self._state.set_values(ob)
         

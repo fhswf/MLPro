@@ -64,6 +64,7 @@ can be downloaded `here <https://github.com/deepmind/mujoco/releases>`_.
 - :ref:`MuJoCo Wrapper <Wrapper MuJoCo>`
 - :ref:`Howto BF-SYSTEMS-002: Double Pendulum Systems wrapped with MuJoCo <Howto BF SYSTEMS 002>`
 - :ref:`Howto BF-SYSTEMS-003: Cartpole Continuous Systems wrapped with MuJoCo <Howto BF SYSTEMS 003>`
+- :ref:`Howto BF-SYSTEMS-004: MuJoCo Simulation with Camera <Howto BF SYSTEMS 004>`
 - :ref:`Howto RL-AGENT-021: Train and Reload Single Agent Cartpole Discrete (MuJoCo) <Howto Agent RL 021>`
 - :ref:`Howto RL-AGENT-022: Train and Reload Single Agent Cartpole Continuous (MuJoCo) <Howto Agent RL 022>`
 - :ref:`Howto RL-ATT-002: Train and Reload Single Agent using Stagnation Detection Cartpole Discrete (MuJoCo) <Howto RL ATT 002>`
