@@ -8,12 +8,13 @@
 ## -- 2023-03-02  0.0.0     SY       Creation 
 ## -- 2023-03-06  1.0.0     SY       First release
 ## -- 2023-04-10  1.0.1     SY       Refactoring
+## -- 2023-04-14  1.1.0     SY       Make StreamMLProCSV independent from StreamMLProBase
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-04-10)
+Ver. 1.1.0 (2023-04-14)
 
-This module provides the native stream class  StreamMLProCSV.
+This module provides the native stream class StreamMLProCSV.
 This stream provides a functionality to convert csv file to a MLPro compatible stream data.
 """
 
@@ -21,7 +22,6 @@ This stream provides a functionality to convert csv file to a MLPro compatible s
 import numpy as np
 from mlpro.bf.data import *
 from mlpro.bf.streams.models import *
-from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 
 
@@ -29,7 +29,7 @@ from mlpro.bf.streams.streams.provider_mlpro import StreamMLProBase
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class StreamMLProCSV(StreamMLProBase):
+class StreamMLProCSV(Stream):
 
     C_ID        = 'CSV2MLPro'
     C_NAME      = 'CSV Format to MLPro Stream'
@@ -41,51 +41,38 @@ class StreamMLProCSV(StreamMLProBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, **p_kwargs):
-        
-        if 'p_path_load' not in p_kwargs:
-            p_kwargs['p_path_load'] = None
+    def set_options(self, **p_kwargs):
+        """
+        Method to set specific options for the stream. The possible options depend on the 
+        stream provider and stream itself.
+        """
+
+        self._kwargs = p_kwargs.copy()
+
+        if 'p_path_load' not in self._kwargs:
+            self._kwargs['p_path_load'] = None
             
-        if 'p_csv_filename' not in p_kwargs:
-            p_kwargs['p_csv_filename'] = None
+        if 'p_csv_filename' not in self._kwargs:
+            self._kwargs['p_csv_filename'] = None
             
-        if 'p_delimiter' not in p_kwargs:
-            p_kwargs['p_delimiter'] = "\t"
+        if 'p_delimiter' not in self._kwargs:
+            self._kwargs['p_delimiter'] = "\t"
             
-        if 'p_frame' not in p_kwargs:
-            p_kwargs['p_frame'] = True
+        if 'p_frame' not in self._kwargs:
+            self._kwargs['p_frame'] = True
             
-        if 'p_header' not in p_kwargs:
-            p_kwargs['p_header'] = True
+        if 'p_header' not in self._kwargs:
+            self._kwargs['p_header'] = True
             
-        if 'p_list_features' not in p_kwargs:
+        if 'p_list_features' not in self._kwargs:
             self._list_features = None
         else:
-            self._list_features = p_kwargs['p_list_features']
+            self._list_features = self._kwargs['p_list_features']
             
-        if 'p_list_labels' not in p_kwargs:
+        if 'p_list_labels' not in self._kwargs:
             self._list_labels = None
         else:
-            self._list_labels = p_kwargs['p_list_labels']
-        
-        p_variable          = []
-        self._from_csv      = DataStoring(p_variable)
-        self._from_csv.load_data(p_kwargs['p_path_load'],
-                                 p_kwargs['p_csv_filename'],
-                                 p_kwargs['p_delimiter'],
-                                 p_kwargs['p_frame'],
-                                 p_kwargs['p_header'])
-        
-        try:
-            extended_data       = []
-            key_0               = list(self._from_csv.memory_dict.keys())[0]
-            for fr in self._from_csv.memory_dict[key_0]:
-                extended_data.extend(self._from_csv.memory_dict[key_0][fr])
-            self.C_NUM_INSTANCES = len(extended_data)
-        except:
-            self.C_NUM_INSTANCES = 0
-
-        super().__init__(p_logging = p_logging, **p_kwargs)
+            self._list_labels = self._kwargs['p_list_labels']
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -129,6 +116,28 @@ class StreamMLProCSV(StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _init_dataset(self):
         
+        p_variable      = []
+        self._from_csv  = DataStoring(p_variable)
+        self._from_csv.load_data(self._kwargs['p_path_load'],
+                                 self._kwargs['p_csv_filename'],
+                                 self._kwargs['p_delimiter'],
+                                 self._kwargs['p_frame'],
+                                 self._kwargs['p_header'])
+        
+        try:
+            extended_data   = []
+            key_0           = list(self._from_csv.memory_dict.keys())[0]
+            for fr in self._from_csv.memory_dict[key_0]:
+                extended_data.extend(self._from_csv.memory_dict[key_0][fr])
+            self.C_NUM_INSTANCES = len(extended_data)
+            self._num_instances  = len(extended_data)
+        except:
+            self.C_NUM_INSTANCES = 0
+            self._num_instances  = 0
+
+        self._feature_space = self._setup_feature_space()
+        self._label_space   = self._setup_label_space()
+        
         dim             = self._feature_space.get_num_dim()
         dim_l           = self._label_space.get_num_dim()
         self._dataset   = np.zeros((self.C_NUM_INSTANCES,dim))
@@ -154,3 +163,22 @@ class StreamMLProCSV(StreamMLProBase):
                 extended_data[lbl_name].extend(self._from_csv.memory_dict[lbl_name][fr])
             self._dataset_l[:,x] = np.array(extended_data[lbl_name])
             x += 1
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self):
+        self._index = 0
+        self._init_dataset()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_next(self) -> Instance:
+
+        if self._index == self.C_NUM_INSTANCES: raise StopIteration
+
+        feature_data = Element(self._feature_space)
+        feature_data.set_values(p_values=self._dataset[self._index])
+
+        self._index += 1
+
+        return Instance( p_feature_data=feature_data )
