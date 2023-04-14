@@ -29,11 +29,12 @@
 ## -- 2023-04-09  1.2.5     MRD       New ESpace for initial states of MuJoCo for easy access to the
 ## --                                 value by its dimnesion short name. Add docstring.
 ## -- 2023-04-14  1.2.6     MRD       Add camera fovy to the state
+## -- 2023-04-14  1.2.7     MRD       Add depth data to the state
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.2.6  (2023-04-14)
+Ver. 1.2.7  (2023-04-14)
 
 This module wraps bf.Systems with MuJoCo Simulation functionality.
 """
@@ -632,7 +633,8 @@ class MujocoHandler(Wrapper):
                 
             # Extract camera
             for elem in world_body_elem.iter("camera"):
-                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".camera.data", p_base_set=Dimension.C_BASE_SET_DO))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".camera.rgb", p_base_set=Dimension.C_BASE_SET_DO))
+                self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".camera.depth", p_base_set=Dimension.C_BASE_SET_DO))
                 self._system_state_space.add_dim(p_dim = Dimension(p_name_short=elem.attrib["name"]+".camera.fovy", p_boundaries=[float('inf'), float('inf')]))
                 self._camera_list[elem.attrib["name"]] = self._setup_camera(elem.attrib["name"])
         
@@ -684,8 +686,10 @@ class MujocoHandler(Wrapper):
         for dim in self._system_state_space.get_dims():
             state = dim.get_name_short().split(".")
             if state[1] == "camera":
-                if state[2] == "data":
+                if state[2] == "rgb":
                     state_value.append(self._get_camera_data(self._camera_list[state[0]]))
+                elif state[2] == "depth":
+                    state_value.append(self._get_camera_data(self._camera_list[state[0]], rgb=False))
                 elif state[2] == "fovy":
                     state_value.append(self._model.cam_fovy[self._camera_list[state[0]].fixedcamid])
                 else:
