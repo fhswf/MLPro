@@ -330,7 +330,7 @@ class Sampler:
         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_num_instances(self):
+    def get_num_instances(self) -> int:
         """
         A method to get the number of instances that is being processed by the sampler.
 

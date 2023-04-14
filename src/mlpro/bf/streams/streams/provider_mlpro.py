@@ -9,7 +9,7 @@
 ## -- 2022-11-08  0.1.0     DA       First draft implementation
 ## -- 2022-12-14  1.0.0     DA       First release
 ## -- 2023-03-03  1.0.1     SY       Add p_kwargs in StreamProviderMLPro and StreamMLProBase
-## -- 2023-04-12  1.0.2     SY       Remove p_kwargs in StreamProviderMLPro and StreamMLProBase
+## -- 2023-04-12  1.0.2     SY       Remove p_kwargs in StreamProviderMLPro
 ## -------------------------------------------------------------------------------------------------
 
 """
