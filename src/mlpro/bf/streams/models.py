@@ -310,7 +310,7 @@ class Sampler:
         Further sampler specific parameters.
     """
 
-    C_TYPE          = 'Sampler'
+    C_TYPE = 'Sampler'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -426,11 +426,6 @@ class Stream (Mode, Persistent, ScientificObject):
         self._feature_space = p_feature_space
         self._label_space   = p_label_space
         self.set_options(**p_kwargs)
-        
-        try:
-            p_sampler = p_kwargs['p_sampler']
-        except:
-            pass
         
         if p_sampler is None:
             try:
