@@ -63,7 +63,7 @@ if __name__ == '__main__':
     mem.save_data(path_save, "data_storage", "\t")
 
 
-    # 2 Instantiate Stream Provider
+    # 2 Instantiate Stream
     stream = StreamMLProCSV(p_logging=logging,
                            p_path_load=path_save,
                            p_csv_filename="data_storage.csv",
@@ -79,25 +79,10 @@ if __name__ == '__main__':
     mem_from_csv = DataStoring(data_names)
     mem_from_csv.load_data(path_save, "data_storage.csv", "\t")
     
+    # 4 Performance test: iterate all data streams dark and measure the time
     input('\nPress ENTER to iterate all streams dark...\n')
-    
-    
-    # 4. Use StreamMLProCSV for loading data from the csv file and converting them
-    # try:
-    #     labels = stream.get_label_space().get_num_dim()
-    # except:
-    #     labels = 0
-    
-    # stream.log(Log.C_LOG_TYPE_W, 'Features:', stream.get_feature_space().get_num_dim(), ', Labels:', labels, ', Instances:', stream.get_num_instances() )
-    
-    # input('\nPress ENTER to iterate all streams dark...\n')
-    
-    # # 5 Performance test: iterate all data streams dark and measure the time
-    # stream.switch_logging( p_logging=logging )
-    # stream.log(Log.C_LOG_TYPE_W, 'Number of instances:', stream.get_num_instances() )
-    # stream.switch_logging( p_logging=Log.C_LOG_NOTHING )
 
-    # 5.1 Iterate all instances of the stream
+    # 4.1 Iterate all instances of the stream
     tp_start = datetime.now()
     myiterator = iter(stream)
 

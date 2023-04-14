@@ -129,11 +129,12 @@ class StreamMLProCSV(Stream):
             key_0           = list(self._from_csv.memory_dict.keys())[0]
             for fr in self._from_csv.memory_dict[key_0]:
                 extended_data.extend(self._from_csv.memory_dict[key_0][fr])
-            self.C_NUM_INSTANCES = len(extended_data)
-            self._num_instances  = len(extended_data)
+            self.C_NUM_INSTANCES = self._num_instances = len(extended_data)
         except:
-            self.C_NUM_INSTANCES = 0
-            self._num_instances  = 0
+            self.C_NUM_INSTANCES = self._num_instances = 0
+        
+        if self._sampler is not None:
+            self._sampler.set_num_instances(self._num_instances)
 
         self._feature_space = self._setup_feature_space()
         self._label_space   = self._setup_label_space()

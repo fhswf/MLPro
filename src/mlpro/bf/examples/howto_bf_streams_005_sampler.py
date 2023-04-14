@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-10  0.0.0     SY       Creation 
-## -- 2023-04-10  1.0.0     SY       First release
+## -- 2023-04-14  1.0.0     SY       First release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-04-10)
+Ver. 1.0.0 (2023-04-14)
 
 This howto file demonstrates the incorporation of a stream sampler in a stream scenario with loading
 and converting data stored in csv files to be compatible for data streams provided by MLPro.
@@ -45,7 +45,7 @@ if __name__ == '__main__':
     
     # 1 Generate random data and store them in csv format
     num_eps         = 10
-    num_cycles      = 100
+    num_cycles      = 10000
     data_names      = ["action","states_1","states_2","model_loss"]
     data_printing   = {"action":        [True,0,10],
                        "states_1":      [True,0,4],
@@ -66,18 +66,16 @@ if __name__ == '__main__':
     mem.save_data(path_save, "data_storage", "\t")
 
 
-    # 2 Instantiate Stream Provider
-    mlpro = StreamProviderMLPro(p_logging=logging,
-                                p_path_load=path_save,
-                                p_csv_filename="data_storage.csv",
-                                p_delimiter="\t",
-                                p_frame=True,
-                                p_header=True,
-                                p_list_features=["action", "states_1", "states_2"],
-                                p_list_labels=["model_loss"],
-                                p_sampler=None,
-                                p_max_step_rate=5,
-                                p_seed=5)
+    # 2 Instantiate Stream
+    stream = StreamMLProCSV(p_logging=logging,
+                           p_path_load=path_save,
+                           p_csv_filename="data_storage.csv",
+                           p_delimiter="\t",
+                           p_frame=True,
+                           p_header=True,
+                           p_sampler=SamplerRND(p_max_step_rate=10, p_seed=10),
+                           p_list_features=["action", "states_1", "states_2"],
+                           p_list_labels=["model_loss"])
 
 
     # 3. load data from the csv file
@@ -85,29 +83,24 @@ if __name__ == '__main__':
     mem_from_csv = DataStoring(data_names)
     mem_from_csv.load_data(path_save, "data_storage.csv", "\t")
     
-    
-    # 4. Use StreamMLProCSV for loading data from the csv file and converting them
-    stream = mlpro._get_stream(p_id='CSV2MLPro')
-    
+    # 4 Performance test: iterate all data streams dark and measure the time
+    input('\nPress ENTER to iterate all streams dark...\n')
+
+    # 4.1 Iterate all instances of the stream
+    tp_start = datetime.now()
+    myiterator = iter(stream)
+
+    stream.switch_logging( p_logging=logging )
     try:
         labels = stream.get_label_space().get_num_dim()
     except:
         labels = 0
-    
     stream.log(Log.C_LOG_TYPE_W, 'Features:', stream.get_feature_space().get_num_dim(), ', Labels:', labels, ', Instances:', stream.get_num_instances() )
-    
-    input('\nPress ENTER to iterate all streams dark...\n')
-    
-    # 5 Performance test: iterate all data streams dark and measure the time
-    stream.switch_logging( p_logging=logging )
-    stream.log(Log.C_LOG_TYPE_W, 'Number of instances:', stream.get_num_instances() )
-    stream.switch_logging( p_logging=Log.C_LOG_NOTHING )
 
-    # 5.1 Iterate all instances of the stream
-    tp_start = datetime.now()
-    myiterator = iter(stream)
+
     for i, curr_instance in enumerate(myiterator):
         curr_data = curr_instance.get_feature_data().get_values()
+
         
     myiterator.switch_logging( p_logging=logging )
     stream.log(Log.C_LOG_TYPE_W, 'Number of instances being sampled:', int(i+1) )

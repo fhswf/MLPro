@@ -44,7 +44,7 @@ class SamplerRND(Sampler):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_num_instances:int, p_max_step_rate:int, p_seed:int=0):
+    def __init__(self, p_num_instances:int=0, p_max_step_rate:int=5, p_seed:int=0):
         
         super().__init__(p_num_instances=p_num_instances, p_max_step_rate=p_max_step_rate, p_seed=p_seed)
         
@@ -55,7 +55,6 @@ class SamplerRND(Sampler):
         
         self.reset()
         
-
 
 ## -------------------------------------------------------------------------------------------------
     def reset(self):

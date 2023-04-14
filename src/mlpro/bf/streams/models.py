@@ -314,7 +314,7 @@ class Sampler:
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_num_instances:int, **p_kwargs):
+    def __init__(self, p_num_instances:int=0, **p_kwargs):
         
         self._num_instances = p_num_instances
         self._kwargs        = p_kwargs
@@ -327,6 +327,36 @@ class Sampler:
         """
         
         raise NotImplementedError
+        
+
+## -------------------------------------------------------------------------------------------------
+    def get_num_instances(self):
+        """
+        A method to get the number of instances that is being processed by the sampler.
+
+        Returns
+        -------
+        int
+            Number of instances.
+
+        """
+    
+        return self._num_instances
+        
+
+## -------------------------------------------------------------------------------------------------
+    def set_num_instances(self, p_num_instances:int):
+        """
+        A method to set the number of instances that is going to be processed by the sampler.
+
+        Parameters
+        ----------
+        p_num_instances : int
+            Number of instances.
+
+        """
+    
+        self._num_instances = p_num_instances
         
 
 ## -------------------------------------------------------------------------------------------------
@@ -627,10 +657,10 @@ class Stream (Mode, Persistent, ScientificObject):
         """
         
         if self._sampler is not None:
-            ret = False
-            while ret is False:
+            ret = True
+            while ret:
                 inst = self._get_next()
-                ret = self._sampler.filter_instance(inst)
+                ret = self._sampler.omit_instance(inst)
         else:
             inst = self._get_next()
             

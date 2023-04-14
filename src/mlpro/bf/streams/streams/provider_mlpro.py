@@ -9,10 +9,11 @@
 ## -- 2022-11-08  0.1.0     DA       First draft implementation
 ## -- 2022-12-14  1.0.0     DA       First release
 ## -- 2023-03-03  1.0.1     SY       Add p_kwargs in StreamProviderMLPro and StreamMLProBase
+## -- 2023-04-12  1.0.2     SY       Remove p_kwargs in StreamProviderMLPro and StreamMLProBase
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2022-12-14)
+Ver. 1.0.2 (2022-12-14)
 
 This module consists of a native stream provider and a template for builtin streams.
 
@@ -42,7 +43,7 @@ class StreamMLProBase (Stream):
     C_SCIREF_URL        = 'https://mlpro.readthedocs.io'
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__( self, p_logging=Log.C_LOG_ALL, **p_kwargs ):
+    def __init__( self, p_logging=Log.C_LOG_ALL ):
 
         super().__init__( p_id = self.C_ID, 
                           p_name = self.C_NAME, 
@@ -51,8 +52,7 @@ class StreamMLProBase (Stream):
                           p_feature_space = self._setup_feature_space(), 
                           p_label_space = self._setup_label_space(), 
                           p_mode=Mode.C_MODE_SIM,
-                          p_logging = p_logging,
-                          **p_kwargs )
+                          p_logging = p_logging )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -101,7 +101,7 @@ class StreamProviderMLPro (StreamProvider):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_logging=Log.C_LOG_ALL, **p_kwargs):
+    def __init__(self, p_logging=Log.C_LOG_ALL):
         super().__init__(p_logging)
 
         self._stream_list      = []
@@ -109,7 +109,7 @@ class StreamProviderMLPro (StreamProvider):
         self._streams_by_name  = {}
 
         for cls in StreamMLProBase.__subclasses__():
-            stream = cls(p_logging=p_logging, **p_kwargs)
+            stream = cls(p_logging=p_logging)
             self._stream_list.append(stream)
             self._streams_by_id[stream.get_id()] = stream
             self._streams_by_name[stream.get_name()] = stream
