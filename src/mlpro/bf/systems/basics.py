@@ -28,10 +28,11 @@
 ## -- 2023-03-07  1.7.2     DA       Bugfix in method System._save()
 ## -- 2023-03-08  1.7.3     MRD      Auto rename System, set latency from MuJoCo xml file
 ## -- 2023-03-27  1.8.0     DA       Class System: refactoring of persistence
+## -- 2023-04-11  1.8.1     MRD      Add custom reset functionality for MuJoCo
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.0 (2023-03-27)
+Ver. 1.8.1 (2023-04-11)
 
 This module provides models and templates for state based systems.
 """
@@ -944,9 +945,12 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
 
         # Put Mujoco here
         if self._mujoco_handler is not None:
-            ob = self._mujoco_handler._reset_simulation()
-            self._state = State(self.get_state_space())
-            self._state.set_values(ob)
+            try:
+                self._reset(p_seed)
+            except NotImplementedError:
+                ob = self._mujoco_handler._reset_simulation()
+                self._state = State(self.get_state_space())
+                self._state.set_values(ob)
 
         else:
             self._reset(p_seed)
