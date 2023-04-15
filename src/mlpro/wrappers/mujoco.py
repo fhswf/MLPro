@@ -29,7 +29,7 @@
 ## -- 2023-04-09  1.2.5     MRD       New ESpace for initial states of MuJoCo for easy access to the
 ## --                                 value by its dimnesion short name. Add docstring.
 ## -- 2023-04-14  1.2.6     MRD       Add camera fovy to the state
-## -- 2023-04-14  1.2.7     MRD       Add depth data to the state
+## -- 2023-04-14  1.2.7     MRD       Add depth data to the state, simplify _get_camera_data
 ## -------------------------------------------------------------------------------------------------
 
 
@@ -686,10 +686,11 @@ class MujocoHandler(Wrapper):
         for dim in self._system_state_space.get_dims():
             state = dim.get_name_short().split(".")
             if state[1] == "camera":
+                rgb, depth = self._get_camera_data(self._camera_list[state[0]])
                 if state[2] == "rgb":
-                    state_value.append(self._get_camera_data(self._camera_list[state[0]]))
+                    state_value.append(rgb)
                 elif state[2] == "depth":
-                    state_value.append(self._get_camera_data(self._camera_list[state[0]], rgb=False))
+                    state_value.append(depth)
                 elif state[2] == "fovy":
                     state_value.append(self._model.cam_fovy[self._camera_list[state[0]].fixedcamid])
                 else:
@@ -817,7 +818,7 @@ class MujocoHandler(Wrapper):
 
 
 ## -------------------------------------------------------------------------------------------------    
-    def _get_camera_data(self, cam, rgb=True):
+    def _get_camera_data(self, cam):
         """
         Get camera data from MuJoCo camera.
 
@@ -825,8 +826,6 @@ class MujocoHandler(Wrapper):
         ----------
             cam : mujoco.MjvCamera
                 MuJoCo Camera Object.
-            rgb : bool
-                True for RGB image, False for Depth image. Defaults to True.
 
         Returns
         -------
@@ -860,12 +859,10 @@ class MujocoHandler(Wrapper):
 
         # Read Pixel
         mujoco.mjr_readPixels(rgb_arr, depth_arr, cam_viewport, self._viewer.con)
-        if rgb:
-            rgb_img = rgb_arr.reshape(cam_viewport.height, cam_viewport.width, 3)
-            return rgb_img[::-1, :, :]
-        else:
-            depth_img = depth_arr.reshape(cam_viewport.height, cam_viewport.width)
-            return depth_img[::-1, :]
+        rgb_img = rgb_arr.reshape(cam_viewport.height, cam_viewport.width, 3)
+        depth_img = depth_arr.reshape(cam_viewport.height, cam_viewport.width)
+        
+        return rgb_img[::-1, :, :], depth_img[::-1, :]
 
 
 ## -------------------------------------------------------------------------------------------------    
