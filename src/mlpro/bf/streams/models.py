@@ -49,10 +49,14 @@
 ## -- 2023-02-12  1.1.0     DA       Class StreamTask: implementation of plot parameter view_autoselect
 ## -- 2023-04-10  1.2.0     SY       Introduce class Sampler and update class Stream accordingly
 ## -- 2023-04-14  1.2.1     SY       Refactoring class Sampler and class Stream 
+## -- 2023-04-15  1.2.2     DA       Class Stream: 
+## --                                - replaced parent Persistent by Id
+## --                                - removed own method get_id()
+## --                                - constructor: keep value of internal attribute C_NAME if p_name = ''
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-04-14)
+Ver. 1.2.2 (2023-04-15)
 
 This module provides classes for standardized stream processing. 
 """
@@ -405,14 +409,14 @@ class Sampler:
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Stream (Mode, Persistent, ScientificObject):
+class Stream (Mode, Id, ScientificObject):
     """
     Template class for data streams. Objects of this type can be used as iterators.
 
     Parameters
     ----------
     p_id
-        Optional id of the stream. Default = 0.
+        Optional id of the stream. Default = None.
     p_name : str
         Optional name of the stream. Default = ''.
     p_num_instances : int
@@ -438,7 +442,7 @@ class Stream (Mode, Persistent, ScientificObject):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_id = 0,
+                  p_id = None,
                   p_name : str = '',
                   p_num_instances : int = 0,
                   p_version : str = '',
@@ -449,12 +453,17 @@ class Stream (Mode, Persistent, ScientificObject):
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        self._id            = p_id
-        self.C_NAME         = self.C_SCIREF_TITLE = p_name
+        if p_name != '':
+            self.C_NAME         = self.C_SCIREF_TITLE = p_name
+
         self._num_instances = p_num_instances
         self._version       = p_version
         self._feature_space = p_feature_space
         self._label_space   = p_label_space
+
+        Id.__init__(self, p_id = p_id)
+        Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
+
         self.set_options(**p_kwargs)
         
         if p_sampler is None:
@@ -464,18 +473,7 @@ class Stream (Mode, Persistent, ScientificObject):
                 self._sampler = None
         else:
             self._sampler   = p_sampler
-            
-        Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        """
-        Returns the id of the stream.
-        """
-
-        return self._id
-
+ 
 
 ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
