@@ -18,12 +18,21 @@
 ## -- 2022-11-08  1.3.1     DA       Corrections
 ## -- 2022-11-19  1.4.0     DA       Method WrStreamRiver._get_string(): new parameter p_name
 ## -- 2022-12-09  1.4.1     DA       Bugfix
+## -- 2023-04-16  2.0.0     DA       - New root class WrapperRiver
+## --                                - New wrappers for River cluster analyzers
+## --                                - Refatoring of classes WrStream*
+## --                                - Class WrStreamProviderRiver: detects now all River data sets 
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2022-12-09)
+Ver. 2.0.0 (2023-04-16)
 
-This module provides wrapper functionalities to incorporate public data sets of the River ecosystem.
+This module provides wrapper classes to embed River functionalities into MLPro. Currently, the 
+following topics are supported by the wrapper:
+
+- Native data streams
+
+- Selected cluster algorithms
 
 Learn more:
 https://www.riverml.xyz/
@@ -34,18 +43,39 @@ from mlpro.bf.various import ScientificObject
 from mlpro.wrappers.models import Wrapper
 from mlpro.bf.streams import *
 from mlpro.bf.math import *
-from river import datasets
+import river.datasets as river_ds
 import numpy
 
 
 
 
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrapperRiver (Wrapper):
+    """
+    Root class for all River wrapper classes.
+    """
+
+    C_TYPE              = 'Wrapper River'
+    C_WRAPPED_PACKAGE   = 'river'
+    C_MINIMUM_VERSION   = '0.15.0'
+
+    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
+    C_SCIREF_AUTHOR     = 'River'
+    C_SCIREF_URL        = 'riverml.xyz'
+
+
+
+
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class WrStreamProviderRiver (Wrapper, StreamProvider):
+class WrStreamProviderRiver (WrapperRiver, StreamProvider):
     """
-    Wrapper class for River as StreamProvider.
+    Wrapper class for River as StreamProvider. The wrapper provides all River data sets as streams.
+    The full list of data sets provided by River can be found here:
+
+    https://github.com/online-ml/river/blob/main/river/datasets/__init__.py
 
     Parameters
     ----------
@@ -53,44 +83,14 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
         Log level of stream objects (see constants of class Log). Default: Log.C_LOG_ALL.
     """
 
-    C_NAME              = 'River'
-    C_WRAPPED_PACKAGE   = 'river'
-
-    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
-    C_SCIREF_AUTHOR     = 'River'
-    C_SCIREF_URL        = 'riverml.xyz'
+    C_NAME              = 'Native Streams'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging = Log.C_LOG_ALL):
 
-        self._stream_ids = [
-                "AirlinePassengers",
-                "Bananas",
-                "Bikes",
-                "ChickWeights",
-                "CreditCard",
-                "Elec2",
-                "Higgs",
-                "HTTP",
-                "ImageSegments",
-                "Insects",
-                "Keystroke",
-                "MaliciousURL",
-                "MovieLens100K",
-                "Music",
-                "Phishing",
-                "Restaurants",
-                "SMSSpam",
-                "SMTP",
-                "SolarFlare",
-                "Taxis",
-                "TREC07",
-                "TrumpApproval",
-            ]
+        self._river_streams = {}
 
-        self._stream_list = []
-
-        Wrapper.__init__(self, p_logging=p_logging)
+        WrapperRiver.__init__(self, p_logging=p_logging)
         StreamProvider.__init__(self, p_logging = p_logging)
 
 
@@ -114,17 +114,21 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
             List of provided streams.
         """
 
-        if len(self._stream_list) == 0:
-            for i, stream_id in enumerate(self._stream_ids):
-                self._stream_list.append( WrStreamRiver( p_id=stream_id,
-                                                         p_name=stream_id,
-                                                         p_num_instances=eval("datasets."+ stream_id + "().n_samples"),
-                                                         p_version='',
-                                                         p_mode=p_mode,
-                                                         p_logging=Log.C_LOG_WE,
-                                                         **p_kwargs) )
+        if len(self._river_streams) == 0:
+            for stream_id in river_ds.__all__:
+                try:
+                    self._river_streams[stream_id] = WrStreamRiver( p_id=stream_id,
+                                                                    p_name=stream_id,
+                                                                    p_num_instances=eval("river_ds."+ stream_id + "().n_samples"),
+                                                                    p_version='',
+                                                                    p_mode=p_mode,
+                                                                    p_logging=Log.C_LOG_WE,
+                                                                    **p_kwargs) 
+                    self.log(Log.C_LOG_TYPE_I, 'Data set "' + stream_id + '" included as stream')
+                except:
+                    pass
 
-        return self._stream_list
+        return self._river_streams
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -153,13 +157,13 @@ class WrStreamProviderRiver (Wrapper, StreamProvider):
 
         if p_id is not None:
             try:
-                stream = self._stream_list[int(p_id)]
+                stream = self._river_streams[p_id]
             except ValueError:
-                raise ValueError('Stream with id', p_id, 'not found')
+                raise ValueError('Stream with id "' + p_id + '" not found')
 
         elif p_name is not None:
             try:
-                stream = self._stream_list[self._stream_ids.index(p_name)]
+                stream = self._river_streams[p_name]
             except ValueError:
                 raise ValueError('Stream with name "' + p_name + '" not found')
 
@@ -200,7 +204,7 @@ class WrStreamRiver (Stream):
         Further stream specific parameters.
     """
 
-    C_NAME              = 'River stream'
+    C_TYPE              = 'River stream'
     C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
 
 ## -------------------------------------------------------------------------------------------------
@@ -217,23 +221,22 @@ class WrStreamRiver (Stream):
 
         self._downloaded = False
         self.C_ID = self._id = p_id
-        self._name = p_name
 
         try:
-            self.C_SCIREF_URL = eval("datasets."+self._name+"().url")
+            self.C_SCIREF_URL = eval("river_ds." + p_name + "().url")
 
         except:
             self.C_SCIREF_URL = ''
 
         try:
-            self.C_SCIREF_ABSTRACT = eval("datasets."+self._name+"().desc")
+            self.C_SCIREF_ABSTRACT = eval("river_ds." + p_name + "().desc")
 
         except:
             self.C_SCIREF_ABSTRACT = ''
 
         Stream.__init__( self, 
                          p_id=p_id,
-                         p_name=self.C_NAME + ' "' + p_name + '"',
+                         p_name=p_name,
                          p_num_instances=p_num_instances,
                          p_version=p_version,
                          p_feature_space=p_feature_space,
@@ -308,7 +311,7 @@ class WrStreamRiver (Stream):
             True for the download status of the stream
         """
 
-        self._dataset = iter(eval("datasets."+self._name+"()"))
+        self._dataset = iter(eval("river_ds." + self.C_NAME + "()"))
 
         if self._dataset is not None:
             return True

@@ -47,10 +47,11 @@
 ## --                                - incorporation of new plot parameter p_horizon
 ## -- 2023-01-05  1.0.1     DA       Refactoring of method StreamShared.get_instances()
 ## -- 2023-02-12  1.1.0     DA       Class StreamTask: implementation of plot parameter view_autoselect
+## -- 2023-04-16  1.1.1     DA       Method StreamTask._run(): completed parameter types
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-02-12)
+Ver. 1.1.1 (2023-04-16)
 
 This module provides classes for standardized stream processing. 
 """
@@ -805,8 +806,8 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def _run( self, 
-              p_inst_new : list, 
-              p_inst_del : list ):
+              p_inst_new : list[Instance], 
+              p_inst_del : list[Instance] ):
         """
         Custom method that is called by method run(). 
 

@@ -14,10 +14,11 @@
 ## -- 2022-11-19  1.1.2     DA       Get string by name
 ## -- 2022-11-21  1.1.3     DA       Correction on logging
 ## -- 2023-02-02  1.1.4     DA       Correction of time measurement
+## -- 2023-04-16  1.1.5     DA       Get number of instances from stream
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.4 (2023-02-02)
+Ver. 1.1.5 (2023-04-16)
 
 This module demonstrates the use of River datasets as streams in MLPro. To this regard, MLPro
 provides wrapper classes to standardize stream access in own ML applications.
@@ -85,10 +86,10 @@ myiterator = iter(mystream)
 
 
 # 8 Fetching all 182,470 instances
-myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all 182,470 instances...')
+myiterator.log(mystream.C_LOG_TYPE_W,'Fetching all', str(mystream.get_num_instances()), 'instances...')
 for i, curr_instance in enumerate(myiterator):
     if i == num_inst: 
-        myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the 182,470 instances dark...')
+        myiterator.log(Log.C_LOG_TYPE_W, 'Rest of the', str(mystream.get_num_instances()), 'instances dark...')
         myiterator.switch_logging(p_logging=Log.C_LOG_NOTHING)
         tp_start = datetime.now()
 
