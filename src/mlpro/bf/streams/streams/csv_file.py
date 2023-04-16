@@ -9,10 +9,11 @@
 ## -- 2023-03-06  1.0.0     SY       First release
 ## -- 2023-04-10  1.0.1     SY       Refactoring
 ## -- 2023-04-14  1.1.0     SY       Make StreamMLProCSV independent from StreamMLProBase
+## -- 2023-04-16  1.1.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-04-14)
+Ver. 1.1.1 (2023-04-16)
 
 This module provides the native stream class StreamMLProCSV.
 This stream provides a functionality to convert csv file to a MLPro compatible stream data.
@@ -30,9 +31,49 @@ from mlpro.bf.streams.models import *
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class StreamMLProCSV(Stream):
+    """
+    Reusable class for converting data from csv files to MLPro's data streams.
+
+    Parameters
+    ----------
+    p_id
+        Optional id of the stream. Default = None.
+    p_name : str
+        Optional name of the stream. Default = ''.
+    p_num_instances : int
+        Optional number of instances in the stream. Default = 0.
+    p_version : str
+        Optional version of the stream. Default = ''.
+    p_feature_space : MSpace
+        Optional feature space. Default = None.
+    p_label_space : MSpace
+        Optional label space. Default = None.
+    p_sampler
+        Optional sampler. Default: None.
+    p_mode
+        Operation mode. Default: Mode.C_MODE_SIM.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL.
+    p_path_load
+        Path of the loaded file.
+    p_csv_filename
+        File name of the loaded CSV file. 
+    p_delimiter
+        Delimiter of the CSV data. Default: "\t"
+    p_frame
+        Availability of framed in the loaded CSV file. Default: True
+    p_header
+        Availability of header in the first row of the loaded CSV file. Default: True
+    p_list_features
+        List of the file's headers that is loaded as features in the stream. Default: None
+    p_list_labels
+        List of the file's headers that is loaded as labels in the stream. Default: None
+
+    """
 
     C_ID        = 'CSV2MLPro'
-    C_NAME      = 'CSV Format to MLPro Stream'
+    C_TYPE      = 'Stream CSV File'
+    C_NAME      = ''
     C_VERSION   = '1.0.0'
 
     C_SCIREF_TYPE   = ScientificObject.C_SCIREF_TYPE_ONLINE
@@ -48,12 +89,15 @@ class StreamMLProCSV(Stream):
         """
 
         self._kwargs = p_kwargs.copy()
+        self._loaded = False
 
         if 'p_path_load' not in self._kwargs:
-            self._kwargs['p_path_load'] = None
+            raise NotImplementedError('p_path_load is not defined!')
             
         if 'p_csv_filename' not in self._kwargs:
-            self._kwargs['p_csv_filename'] = None
+            raise NotImplementedError('p_csv_filename is not defined!')
+        else:
+            self.C_NAME = self._kwargs['p_csv_filename']
             
         if 'p_delimiter' not in self._kwargs:
             self._kwargs['p_delimiter'] = "\t"
@@ -115,59 +159,63 @@ class StreamMLProCSV(Stream):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_dataset(self):
-        
-        p_variable      = []
-        self._from_csv  = DataStoring(p_variable)
-        self._from_csv.load_data(self._kwargs['p_path_load'],
-                                 self._kwargs['p_csv_filename'],
-                                 self._kwargs['p_delimiter'],
-                                 self._kwargs['p_frame'],
-                                 self._kwargs['p_header'])
-        
-        try:
-            extended_data   = []
-            key_0           = list(self._from_csv.memory_dict.keys())[0]
-            for fr in self._from_csv.memory_dict[key_0]:
-                extended_data.extend(self._from_csv.memory_dict[key_0][fr])
-            self.C_NUM_INSTANCES = self._num_instances = len(extended_data)
-        except:
-            self.C_NUM_INSTANCES = self._num_instances = 0
-        
-        if self._sampler is not None:
-            self._sampler.set_num_instances(self._num_instances)
 
-        self._feature_space = self._setup_feature_space()
-        self._label_space   = self._setup_label_space()
-        
-        dim             = self._feature_space.get_num_dim()
-        dim_l           = self._label_space.get_num_dim()
-        self._dataset   = np.zeros((self.C_NUM_INSTANCES,dim))
-        self._dataset_l = np.zeros((self.C_NUM_INSTANCES,dim_l))
-        extended_data   = {}
-        ids             = self._feature_space.get_dim_ids()
-        
-        x = 0
-        for id_ in ids:
-            ft_name = self._feature_space.get_dim(id_).get_name_short()
-            extended_data[ft_name] = []
-            for fr in self._from_csv.memory_dict[ft_name]:
-                extended_data[ft_name].extend(self._from_csv.memory_dict[ft_name][fr])
-            self._dataset[:,x] = np.array(extended_data[ft_name])
-            x += 1
-        
-        x = 0        
-        ids = self._label_space.get_dim_ids()    
-        for id_ in ids:
-            lbl_name = self._label_space.get_dim(id_).get_name_short()
-            extended_data[lbl_name] = []
-            for fr in self._from_csv.memory_dict[lbl_name]:
-                extended_data[lbl_name].extend(self._from_csv.memory_dict[lbl_name][fr])
-            self._dataset_l[:,x] = np.array(extended_data[lbl_name])
-            x += 1
+        if self._loaded == False:
+            p_variable      = []
+            self._from_csv  = DataStoring(p_variable)
+            self._from_csv.load_data(self._kwargs['p_path_load'],
+                                    self._kwargs['p_csv_filename'],
+                                    self._kwargs['p_delimiter'],
+                                    self._kwargs['p_frame'],
+                                    self._kwargs['p_header'])
+            
+            try:
+                extended_data   = []
+                key_0           = list(self._from_csv.memory_dict.keys())[0]
+                for fr in self._from_csv.memory_dict[key_0]:
+                    extended_data.extend(self._from_csv.memory_dict[key_0][fr])
+                self.C_NUM_INSTANCES = self._num_instances = len(extended_data)
+            except:
+                self.C_NUM_INSTANCES = self._num_instances = 0
+            
+            if self._sampler is not None:
+                self._sampler.set_num_instances(self._num_instances)
+
+            self._feature_space = self._setup_feature_space()
+            self._label_space   = self._setup_label_space()
+            
+            dim             = self._feature_space.get_num_dim()
+            dim_l           = self._label_space.get_num_dim()
+            self._dataset   = np.zeros((self.C_NUM_INSTANCES,dim))
+            self._dataset_l = np.zeros((self.C_NUM_INSTANCES,dim_l))
+            extended_data   = {}
+            ids             = self._feature_space.get_dim_ids()
+            
+            x = 0
+            for id_ in ids:
+                ft_name = self._feature_space.get_dim(id_).get_name_short()
+                extended_data[ft_name] = []
+                for fr in self._from_csv.memory_dict[ft_name]:
+                    extended_data[ft_name].extend(self._from_csv.memory_dict[ft_name][fr])
+                self._dataset[:,x] = np.array(extended_data[ft_name])
+                x += 1
+            
+            x = 0        
+            ids = self._label_space.get_dim_ids()    
+            for id_ in ids:
+                lbl_name = self._label_space.get_dim(id_).get_name_short()
+                extended_data[lbl_name] = []
+                for fr in self._from_csv.memory_dict[lbl_name]:
+                    extended_data[lbl_name].extend(self._from_csv.memory_dict[lbl_name][fr])
+                self._dataset_l[:,x] = np.array(extended_data[lbl_name])
+                x += 1
+            
+            self._loaded = True
 
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self):
+
         self._index = 0
         self._init_dataset()
 
