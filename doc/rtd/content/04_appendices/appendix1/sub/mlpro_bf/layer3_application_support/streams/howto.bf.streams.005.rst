@@ -21,15 +21,23 @@ Howto BF-STREAMS-005: Streams Sampler
 
     Press ENTER to iterate all streams dark...
 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream "": Reset
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream "": Features: 3 , Labels: 1 , Instances: 100000 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream "": Reset
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream "": Number of instances being sampled: 84702 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream "": Done in 1.435  seconds (throughput = 69704 instances/sec)
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream CSV File "data_storage.csv": Reset
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream CSV File "data_storage.csv": Features: 3 , Labels: 1 , Instances: 100000 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream CSV File "data_storage.csv": Reset
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream CSV File "data_storage.csv": Number of instances being sampled: 15298 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream CSV File "data_storage.csv": Done in 0.658  seconds (throughput = 152048 instances/sec)
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream CSV File "data_storage.csv": Reset
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream CSV File "data_storage.csv": Number of instances being sampled: 24884 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream CSV File "data_storage.csv": Reset
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream CSV File "data_storage.csv": Number of instances being sampled: 100 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream CSV File "data_storage.csv": Reset
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream CSV File "data_storage.csv": Number of instances being sampled: 786 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream CSV File "data_storage.csv": Reset
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Stream CSV File "data_storage.csv": Number of instances being sampled: 5000
 
 
 **Cross Reference**
 
 
-+ :ref:`API Reference: Random Samplers <ap2_rand_samplers>`
++ :ref:`API Reference: Random Samplers <ap2_samplers>`
 + :ref:`API Reference: Data from CSV files <ap2_csv_files>`

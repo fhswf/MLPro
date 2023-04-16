@@ -1,3 +1,4 @@
+.. _ap2_samplers:
 Samplers
 ============
 

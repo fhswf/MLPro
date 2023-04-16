@@ -78,6 +78,7 @@ From a stream provider a specific stream of interest can be accessed with a stre
 After accessing the stream from the stream provider, a new instance can be accessed from the data stream by iterating
 over it.
 
+
 Stream Instance
 ---------------
 
@@ -106,3 +107,19 @@ a unique id, feature data and label data.
     - The ids of the stream instances are managed internally by a Stream Workflow, and are also used for stream plotting functionalities. Changing instance ids might affect the performance of stream functionalities of MLPro.
 
 
+
+Stream Sampler
+--------------
+In MLPro, a stream has an optional component, which is a stream sampler.
+A sampler is a component that selects a subset of instances from a continuous stream of data.
+The purpose of a sampler is to reduce the volume of data that needs to be processed, while still providing a representative sample of the data.
+
+Each streaming instance is going through the **omit_instance** method that is provided by a sampler.
+If the output is True, then the instance is omitted and not part of the subset of instances being sampled.
+Otherwise, the instance is added to the subset of instances.
+
+A stream sampler can be attached to a stream during its instantiation or after instantiation through the public method **setup_sampler**.
+
+.. note::
+    There are several different ready-to-use samplers in the pool of objects that can be used in MLPro stream processing, including random samplers, `min-wise samplers <https://doi.org/10.1145/1031495.1031525>`_, `reservoir samplers with Algorithm R <https://doi.org/10.1145/3147.3165>`_, and more.
+    Each type of sampler has its characteristics and is suitable for different types of data and processing scenarios.
