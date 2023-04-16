@@ -302,7 +302,7 @@ class StreamShared (Shared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Sampler:
+class Sampler (ScientificObject):
     """
     Template class for data streams sampler. This object can be used in Stream.
 

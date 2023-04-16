@@ -1,18 +1,20 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.streams.samplers
-## -- Module  : random.py
+## -- Module  : weighted_random.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-04-10  0.0.0     SY       Creation 
-## -- 2023-04-14  1.0.0     SY       First version release
+## -- 2023-04-16  0.0.0     SY       Creation 
+## -- 2023-04-16  1.0.0     SY       First version release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-04-14)
+Ver. 1.0.0 (2023-04-16)
 
-This module provides a ready-to-use stream sampler class SamplerRND.
+This module provides a ready-to-use stream sampler class SamplerWeightedRND, in which each instance
+is randomly uniformly weighted. Then, it is compared to a pre-defined threshold. If the weight of an
+instance is higher than the threshold, then the instance is not omitted. Otherwise, it is omitted.
 
 """
 
@@ -26,32 +28,33 @@ import random
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class SamplerRND(Sampler):
+class SamplerWeightedRND(Sampler):
     """
-    A ready-to-use class for data streams with random sampler. This object can be used in Stream.
+    A ready-to-use class for data streams with random sampler and weighted instance.
+    This object can be used in Stream.
 
     Parameters
     ----------
     p_num_instances : int
         Number of instances. This parameter has no affect in this sampler method. Default = 0.
-    p_max_step_rate : int
-        Maximum step rate parameter for non time series data streams. Default = 5.
+    p_threshold : float
+        Threshold for selection of an instance. This value must be between 0 to 1. Default = 0.5.
     p_seed : int
         Random seeding. Default = 0.
     """
 
-    C_TYPE          = 'Random Sampler'
+    C_TYPE          = 'Weighted Random Sampler'
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_num_instances:int=0, p_max_step_rate:int=5, p_seed:int=0):
+    def __init__(self, p_num_instances:int=0, p_threshold:float=0.5, p_seed:int=0):
         
-        super().__init__(p_num_instances=p_num_instances, p_max_step_rate=p_max_step_rate, p_seed=p_seed)
+        super().__init__(p_num_instances=p_num_instances, p_threshold=p_threshold, p_seed=p_seed)
         
         try:
-            self._max_step_rate = self._kwargs['p_max_step_rate']
+            self._threshold = self._kwargs['p_threshold']
         except:
-            raise ParamError('Parameter p_max_step_rate is missing.')
+            raise ParamError('Parameter p_threshold is missing.')
         
         self.reset()
         
@@ -62,8 +65,6 @@ class SamplerRND(Sampler):
         A method to reset the sampler's settings.
         """
         
-        self._idx      = 0
-        self._nxt_idx  = None
         random.seed(self._kwargs['p_seed'])
         
 
@@ -85,14 +86,11 @@ class SamplerRND(Sampler):
 
         """
         
-        if self._nxt_idx is None:
-            self._nxt_idx = random.randint(1, self._max_step_rate)
-        if self._idx < self._nxt_idx:
-            self._idx += 1
-            return True
-        else:
-            self._idx = 0
-            self._nxt_idx = None
+        weight_inst = random.uniform(0, 1)
+
+        if weight_inst >= self._threshold:
             return False
+        else:
+            return True
         
             
