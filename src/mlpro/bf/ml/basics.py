@@ -65,7 +65,7 @@
 ## -- 2023-03-10  2.1.3     SY       Refactoring
 ## -- 2022-03-16  2.1.4     SY       Add _get_accuracy(), add_objective, _add_objective in Model
 ## -- 2023-03-29  2.2.0     DA       Classes Model, Scenario: refactoring of persistence
-## -- 2022-04-10  2.2.1     SY       Update get_accuracy, add_objective in Model
+## -- 2023-04-10  2.2.1     SY       Update get_accuracy, add_objective in Model
 ## -------------------------------------------------------------------------------------------------
 
 """
