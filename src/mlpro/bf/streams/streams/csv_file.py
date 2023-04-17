@@ -10,10 +10,12 @@
 ## -- 2023-04-10  1.0.1     SY       Refactoring
 ## -- 2023-04-14  1.1.0     SY       Make StreamMLProCSV independent from StreamMLProBase
 ## -- 2023-04-16  1.1.1     SY       Refactoring
+## -- 2023-04-17  1.1.2     DA       Method StreamMLProCSV.set_options(): changed exception type 
+## --                                to ParamError
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-04-16)
+Ver. 1.1.2 (2023-04-17)
 
 This module provides the native stream class StreamMLProCSV.
 This stream provides a functionality to convert csv file to a MLPro compatible stream data.
@@ -92,10 +94,10 @@ class StreamMLProCSV(Stream):
         self._loaded = False
 
         if 'p_path_load' not in self._kwargs:
-            raise NotImplementedError('p_path_load is not defined!')
+            raise ParamError('p_path_load is not defined!')
             
         if 'p_csv_filename' not in self._kwargs:
-            raise NotImplementedError('p_csv_filename is not defined!')
+            raise ParamError('p_csv_filename is not defined!')
         else:
             self.C_NAME = self._kwargs['p_csv_filename']
             

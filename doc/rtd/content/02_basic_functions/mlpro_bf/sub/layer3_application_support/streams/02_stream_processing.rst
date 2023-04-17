@@ -21,7 +21,7 @@ figure. The processed instances are stored in the shared object for further acce
 
 .. toctree::
 
-    streams_processing/stream_processing.rst
+    stream_processing/stream_processing.rst
 
 
 **Cross References**

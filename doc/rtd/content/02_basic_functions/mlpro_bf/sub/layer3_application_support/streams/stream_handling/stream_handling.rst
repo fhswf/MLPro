@@ -123,3 +123,9 @@ A stream sampler can be attached to a stream during its instantiation or after i
 .. note::
     There are several different ready-to-use samplers in the pool of objects that can be used in MLPro stream processing, including random samplers, `min-wise samplers <https://doi.org/10.1145/1031495.1031525>`_, `reservoir samplers with Algorithm R <https://doi.org/10.1145/3147.3165>`_, and more.
     Each type of sampler has its characteristics and is suitable for different types of data and processing scenarios.
+
+
+**Cross References**
+
+- :ref:`Howto BF-STREAMS-005: Streams Sampler <Howto_BF_STREAMS_005>`
+- :ref:`API Reference: Streams <target_ap_bf_streams>`

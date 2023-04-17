@@ -1,6 +1,6 @@
 .. _Howto_BF_STREAMS_005:
 Howto BF-STREAMS-005: Streams Sampler
-=============================================================
+=====================================
 
 .. automodule:: mlpro.bf.examples.howto_bf_streams_005_sampler
 
