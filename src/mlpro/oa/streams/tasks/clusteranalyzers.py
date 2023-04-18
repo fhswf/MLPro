@@ -23,18 +23,15 @@ from typing import List, Tuple
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Cluster (OATask):
+class Cluster (Id, Plottable):
     """
-    This is the base class for a multivariate cluster. 
+    Base class for a cluster. 
 
     Parameters
     ----------
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
     """
-
-    C_TYPE                  = 'Cluster'
-    C_NAME                  = '????'
 
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False
@@ -46,31 +43,12 @@ class Cluster (OATask):
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
                   p_id = None,
-                  p_name : str = None, 
-                  p_range_max = StreamTask.C_RANGE_THREAD, 
-                  p_ada : bool = True, 
-                  p_duplicate_data : bool = False,
                   p_visualize : bool = False,
-                  p_logging = Log.C_LOG_ALL, 
                   **p_kwargs ):
-        
-        super().__init__( p_name = p_name,
-                          p_range_max = p_range_max,
-                          p_ada = p_ada,
-                          p_duplicate_data = p_duplicate_data,
-                          p_visualize = p_visualize,
-                          p_logging = p_logging,
-                          **p_kwargs )
-        
-        self._num_instances = 0
-      
-        if p_id is not None: self.set_id( p_id = p_id )
 
-
-## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: List[Instance], p_inst_del: List[Instance]):
-        self.adapt( p_inst_new=p_inst_new, p_inst_del=p_inst_del )
-        self._num_instances += len(p_inst_new) - len(p_inst_del)
+        self._kwargs = p_kwargs.copy()
+        Id.__init__( self, p_id = p_id )
+        Plottable.__init__( self, p_visualize = p_visualize )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -100,8 +78,7 @@ class Cluster (OATask):
 ## -------------------------------------------------------------------------------------------------
 class ClusterAnalyzer (OATask):
     """
-    This is the base class for multivariate online cluster analysis. It raises an event when a cluster
-    was added or removed.
+    Base class for online cluster analysis. It raises an event when a cluster was added or removed.
 
     Parameters
     ----------
@@ -117,6 +94,8 @@ class ClusterAnalyzer (OATask):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
+    p_cls_cluster 
+        Cluster class (Class Cluster or a child class). Default = Cluster.
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -129,7 +108,27 @@ class ClusterAnalyzer (OATask):
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False
 
-    C_CLS_CLUSTER           = Cluster
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_name: str = None, 
+                  p_range_max = StreamTask.C_RANGE_THREAD, 
+                  p_ada: bool = True, 
+                  p_duplicate_data: bool = False, 
+                  p_visualize: bool = False, 
+                  p_logging = Log.C_LOG_ALL, 
+                  p_cls_cluster = Cluster,
+                  **p_kwargs ):
+        
+        self._cls_cluster = p_cls_cluster
+        self._clusters    = {}
+
+        super().__init__( p_name = p_name, 
+                          p_range_max = p_range_max, 
+                          p_ada = p_ada, 
+                          p_duplicate_data = p_duplicate_data, 
+                          p_visualize = p_visualize, 
+                          p_logging = p_logging, 
+                          **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -140,8 +139,7 @@ class ClusterAnalyzer (OATask):
 ## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> List[Cluster]:
         """
-        Custom method that returns the current list of clusters. The implementation depends on the
-        specific internal cluster management.
+        This method returns the current list of clusters. 
 
         Returns
         -------
@@ -149,7 +147,7 @@ class ClusterAnalyzer (OATask):
             Current list of clusters.
         """
 
-        raise NotImplementedError
+        return self._clusters.values()
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -189,3 +187,63 @@ class ClusterAnalyzer (OATask):
                 memberships_rel.append( ( cluster.get_id(), 0, cluster) )
 
         return memberships_rel
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
+        Plottable.init_plot(self, p_figure, p_plot_settings)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings): pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings): pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings): pass
+        
+    
+## -------------------------------------------------------------------------------------------------
+    def update_plot( self, 
+                     p_inst_new: List[Instance] = None, 
+                     p_inst_del: List[Instance] = None, 
+                     **p_kwargs ):
+
+        if not self.get_visualization(): return
+
+        for cluster in self._clusters.values():
+            cluster.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class ClusterCentroid (Cluster):
+    """
+    Extended cluster class with a centroid.
+    """
+
+## -------------------------------------------------------------------------------------------------
+    def __init__( self, 
+                  p_id=None, 
+                  p_visualize: bool = False, 
+                  p_centroid : Element = None,
+                  **p_kwargs ):
+        
+        self._centroid : Element = p_centroid
+
+        super().__init__(p_id, p_visualize, **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_centroid(self) -> Element:
+        return self._centroid
+    
+
+    def set_centroid(self, p_centroid : Element):
+        
