@@ -1,6 +1,6 @@
 .. _target_bf_math_normalizer:
-Normalizer
-==========
+Normalization
+=============
 
 Normalization is a process of scaling different parameters to a common scale. The way the parameters are scaled depends
 on the type of normalization being performed. For e.g. parameters are scaled within a range of -1 to 1 in case of a
@@ -23,6 +23,7 @@ Both the normalizers provide following operations:
  * Denormalize : Denormalize a given data element based on the set parameters.
  * Update Parameters : Upadte the normalization parameters based on data characteristics such as boundaries or statistical properties.
  * Renormalize : MLPro's normalizers also provide the possibility to renormalize the previously normalized data elements on new normalization parameters.
+
 
 **Cross Reference**
     + :ref:`Howto BF-MATH-010: Normalizers <Howto BF MATH 010>`

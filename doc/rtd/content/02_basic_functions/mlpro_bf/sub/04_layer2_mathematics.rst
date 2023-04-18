@@ -41,8 +41,10 @@ Lastly, there are more advanced functions of mathematics, as follows:
 
 .. toctree::
    :maxdepth: 1
+   :glob:
 
-   layer2_mathematics/normalizers.rst
+   layer2_mathematics/*
+
 
 **Cross Reference**
     + :ref:`Howto BF-MATH-001: Dimensions, Spaces and Elements <Howto BF MATH 001>`
