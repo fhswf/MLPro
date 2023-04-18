@@ -6,16 +6,18 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-01-24  0.0.0     DA       Creation
-## -- 2023-04-16  0.1.0     DA       First implementation of classes ClusterMembership, ClusterAnalyzer
+## -- 2023-04-18  0.1.0     DA       First implementation of classes ClusterMembership, ClusterAnalyzer
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2023-04-10)
+Ver. 0.1.0 (2023-04-18)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
 
 from mlpro.oa.streams import *
+from typing import List, Tuple
+
 
 
 
@@ -66,7 +68,7 @@ class Cluster (OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list[Instance], p_inst_del: list[Instance]):
+    def _run(self, p_inst_new: List[Instance], p_inst_del: List[Instance]):
         self.adapt( p_inst_new=p_inst_new, p_inst_del=p_inst_del )
         self._num_instances += len(p_inst_new) - len(p_inst_del)
 
@@ -89,29 +91,6 @@ class Cluster (OATask):
         """
 
         raise NotImplementedError
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class ClusterMembership:
-    """
-    Defnes the membership of an instance to a cluster.
-
-    Parameters
-    ----------
-    p_cluster : Cluster
-        Related cluster object.
-    p_membership : float
-        Relative membership of an instance to the related cluster in percent.
-    """
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_cluster : Cluster, p_membership : float ):
-        self.cluster = p_cluster 
-        self.membership = p_membership
 
 
 
@@ -154,19 +133,19 @@ class ClusterAnalyzer (OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: list[Instance], p_inst_del: list[Instance]):
+    def _run(self, p_inst_new: List[Instance], p_inst_del: List[Instance]):
         self.adapt( p_inst_new=p_inst_new, p_inst_del=p_inst_del )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self) -> list[Cluster]:
+    def get_clusters(self) -> List[Cluster]:
         """
         Custom method that returns the current list of clusters. The implementation depends on the
         specific internal cluster management.
 
         Returns
         -------
-        list_of_clusters : list[Cluster]
+        list_of_clusters : List[Cluster]
             Current list of clusters.
         """
 
@@ -174,7 +153,7 @@ class ClusterAnalyzer (OATask):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def get_cluster_membership(self, p_inst : Instance ) -> list[ClusterMembership]:
+    def get_cluster_membership(self, p_inst : Instance ) -> List[Tuple[str, float, Cluster]]:
         """
         Public custom method to determine the membership of the given instance to each cluster as
         a value in percent.
@@ -185,8 +164,10 @@ class ClusterAnalyzer (OATask):
             Instance to be evaluated.
 
         Returns
-        membership : list[ClusterMembership]
-            List of membership objects for each cluster.
+        -------
+        membership : List[Tuple[str, float, Cluster]]
+            List of membership tuples for each cluster. A tuple consists of a cluster id, a
+            relative membership value in percent and a reference to the cluster.
         """
 
         clusters        = self.get_clusters()
@@ -202,9 +183,9 @@ class ClusterAnalyzer (OATask):
         if sum_memberships > 0:
             for cluster in clusters:
                 membership_rel = memberships_abs.pop(0) / sum_memberships
-                memberships_rel.append( ClusterMembership( p_cluster = cluster, p_membership = membership_rel ) )
+                memberships_rel.append( ( cluster.get_id(), membership_rel, cluster) )
         else:
             for cluster in clusters:
-                memberships_rel.append( ClusterMembership( p_cluster = cluster, p_membership = 0 ) )
+                memberships_rel.append( ( cluster.get_id(), 0, cluster) )
 
         return memberships_rel
