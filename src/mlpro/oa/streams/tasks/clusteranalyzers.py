@@ -246,4 +246,4 @@ class ClusterCentroid (Cluster):
     
 
     def set_centroid(self, p_centroid : Element):
-        
+        pass
