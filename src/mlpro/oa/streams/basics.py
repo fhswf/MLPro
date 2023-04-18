@@ -30,6 +30,8 @@ from mlpro.bf.streams import *
 from mlpro.bf.ml import *
 import mlpro.sl as sl
 
+from typing import List
+
 
 
 
@@ -107,7 +109,7 @@ class OATask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def adapt(self, p_inst_new:list[Instance], p_inst_del:list[Instance]) -> bool:
+    def adapt(self, p_inst_new:List[Instance], p_inst_del:List[Instance]) -> bool:
         if not self._adaptivity: return False
 
         if len(p_inst_new) > 0:
@@ -126,7 +128,7 @@ class OATask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:list[Instance]) -> bool:
+    def _adapt(self, p_inst_new:List[Instance]) -> bool:
         """
         Obligatory custom method for adaptations during regular operation. 
 
@@ -145,7 +147,7 @@ class OATask (StreamTask, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_reverse(self, p_inst_del:list[Instance]) -> bool:
+    def _adapt_reverse(self, p_inst_del:List[Instance]) -> bool:
         """
         Optional custom method for reverse adaptations during regular operation. 
 

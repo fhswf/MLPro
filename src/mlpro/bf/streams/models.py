@@ -53,11 +53,11 @@
 ## --                                - replaced parent Persistent by Id
 ## --                                - removed own method get_id()
 ## --                                - constructor: keep value of internal attribute C_NAME if p_name = ''
-## -- 2023-04-16  1.1.1     DA       Method StreamTask._run(): completed parameter types
+## -- 2023-04-16  1.2.3     DA       Method StreamTask._run(): completed parameter types
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-04-16)
+Ver. 1.2.3 (2023-04-16)
 
 This module provides classes for standardized stream processing. 
 """
@@ -73,6 +73,8 @@ from datetime import datetime
 from matplotlib.figure import Figure
 import random
 import uuid
+
+from typing import List
 
 
 
@@ -186,12 +188,9 @@ class StreamShared (Shared):
 
     Attributes
     ----------
-    _inst_new : list
-        List of new instances of a process cycle. At the beginning of a cycle it contains the incoming
-        instance of a stream. The list evolves due to the manipulations of the stream tasks.
-    _inst_del : list
-        List of instances to be removed. At the beginning of a cycle it is empty. The list evolves due 
-        to the manipulations of the stream tasks.
+    _instances : dict        
+        Dictionary of new/deleted instances per task. At the beginning of a cycle it contains the incoming
+        instance of a stream. The dictionalry evolves due to the manipulations of the stream tasks.
     """
 
 ## -------------------------------------------------------------------------------------------------
@@ -201,13 +200,13 @@ class StreamShared (Shared):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_inst_new:list):
+    def reset(self, p_inst_new:List[Instance]):
         """
         Resets the shared object and prepares the processing of the given set of new instances.
 
         Parameters
         ----------
-        p_inst_new : list
+        p_inst_new : List[Instance]
             List of new instances to be processed.
         """
 
@@ -281,7 +280,7 @@ class StreamShared (Shared):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_instances(self, p_task_id, p_inst_new:list, p_inst_del:list):
+    def set_instances(self, p_task_id, p_inst_new:List[Instance], p_inst_del:List[Instance]):
         """
         Stores result instances of a task in the shared object.
 
@@ -439,7 +438,6 @@ class Stream (Mode, Id, ScientificObject):
     """
 
     C_TYPE          = 'Stream'
-    
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
@@ -886,8 +884,8 @@ class StreamTask (Task):
     def run( self, 
              p_range : int = None, 
              p_wait: bool = False, 
-             p_inst_new : list = None, 
-             p_inst_del : list = None ):
+             p_inst_new : List[Instance] = None, 
+             p_inst_del : List[Instance] = None ):
         """
         Executes the specific actions of the task implemented in custom method _run(). At the end event
         C_EVENT_FINISHED is raised to start subsequent actions.
@@ -940,8 +938,8 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def _run_wrapper( self, 
-                      p_inst_new : list, 
-                      p_inst_del : list ):
+                      p_inst_new : List[Instance], 
+                      p_inst_del : List[Instance] ):
         """
         Internal use.
         """
@@ -952,8 +950,8 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def _run( self, 
-              p_inst_new : list[Instance], 
-              p_inst_del : list[Instance] ):
+              p_inst_new : List[Instance], 
+              p_inst_del : List[Instance] ):
         """
         Custom method that is called by method run(). 
 
@@ -1085,17 +1083,17 @@ class StreamTask (Task):
 
 ## -------------------------------------------------------------------------------------------------
     def update_plot( self, 
-                     p_inst_new : list = None, 
-                     p_inst_del : list = None, 
+                     p_inst_new : List[Instance] = None, 
+                     p_inst_del : List[Instance] = None, 
                      **p_kwargs ):
         """
         Specialized definition of method update_plot() of class mlpro.bf.plot.Plottable.
 
         Parameters
         ----------
-        p_inst_new : list
+        p_inst_new : List[Instance]
             List of new stream instances to be plotted.
-        p_inst_del : list
+        p_inst_del : List[Instance]
             List of obsolete stream instances to be removed.
         p_kwargs : dict
             Further optional plot parameters.
