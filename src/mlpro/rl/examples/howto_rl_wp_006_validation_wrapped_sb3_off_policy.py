@@ -16,23 +16,25 @@
 ## -- 2023-02-04  1.2.1     SY       Refactoring to avoid printing during unit test
 ## -- 2023-02-13  1.2.2     DA       Optimization of dark mode
 ## -- 2023-03-27  1.3.0     DA       Refactoring
+## -- 2023-04-19  1.3.1     MRD      Refactor module import gym to gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2023-03-27)
+Ver. 1.3.1 (2023-04-19)
 
 This module shows comparison between native and wrapped SB3 policy (Off-policy).
 """
 
 
-import gym
+import gymnasium as gym
 import pandas as pd
 import torch
+from gymnasium.utils import seeding
 from stable_baselines3 import DQN
 from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.bf.plot import DataPlotting
 from mlpro.rl import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 
@@ -64,24 +66,11 @@ class MyScenario(RLScenario):
     C_NAME = 'Howto-RL-WP-006'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
-
-        class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
-            def _reset(self, p_seed=None):
-                self.log(self.C_LOG_TYPE_I, 'Reset')
-
-                # 1 Reset Gym environment and determine initial state
-                observation = self._gym_env.reset()
-                obs = DataObject(observation)
-
-                # 2 Create state object from Gym observation
-                state = State(self._state_space)
-                state.set_values(obs.get_data())
-                self._set_state(state)
-
         # 1 Setup environment
         gym_env = gym.make('CartPole-v1')
-        gym_env.seed(2)
-        self._env = CustomWrapperFixedSeed(gym_env, p_logging=p_logging)
+        np_random, _ = seeding.np_random(2)
+        gym_env.np_random = np_random
+        self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
 
         # 2 Instatiate Policy From SB3
         # DQN
@@ -252,7 +241,8 @@ class CustomCallback(BaseCallback, Log):
 
 # 8 Run the SB3 Training Native
 gym_env = gym.make('CartPole-v1')
-gym_env.seed(2)
+np_random, _ = seeding.np_random(2)
+gym_env.np_random = np_random
 policy_sb3 = DQN(
     policy="MlpPolicy",
     learning_starts=12,

@@ -23,10 +23,11 @@
 ## -- 2022-11-29  1.3.1     DA       Refactoring
 ## -- 2023-01-14  1.3.2     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -- 2023-02-22  1.3.3     DA       Refactoring
+## -- 2023-04-19  1.3.4     MRD      Refactor module import gym to gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.3 (2023-02-22)
+Ver. 1.3.4 (2023-04-19)
 
 This module provides an environment with multivariate state and action spaces based on the 
 OpenAI Gym environment 'CartPole-v1'. 
@@ -34,9 +35,9 @@ OpenAI Gym environment 'CartPole-v1'.
 
 
 from mlpro.rl.models import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
 import numpy as np
-import gym
+import gymnasium as gym
 
 
 

@@ -16,10 +16,11 @@
 ## -- 2022-11-02  2.0.3     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-07  2.0.4     DA       Refactoring: method RLScenario._setup()
 ## -- 2023-01-14  2.0.5     MRD      Removing default parameter new_step_api and render_mode for gym
+## -- 2023-04-19  2.0.6     MRD      Refactor module import gym to gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.5 (2023-01-14)
+Ver. 2.0.6 (2023-04-19)
 
 Unit test classes for environment.
 """
@@ -27,10 +28,10 @@ Unit test classes for environment.
 
 from numpy import empty
 import pytest
-import gym
+import gymnasium as gym
 import torch
 from mlpro.rl import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro, WrEnvMLPro2GYM
+from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro, WrEnvMLPro2GYM
 from mlpro.rl.pool.envs.robotinhtm import RobotHTM
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC

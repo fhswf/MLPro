@@ -26,10 +26,11 @@
 ## -- 2022-11-02  1.2.4     DA       Refactoring: methods adapt(), _adapt()
 ## -- 2022-11-07  1.2.5     DA       Class WrPolicySB32MLPro: new parameter p_visualize
 ## -- 2023-02-16  1.2.6     SY       Bug fixing: observation_space recognization for integer
+## -- 2023-04-19  1.2.7     MRD      Refactor module import gym to gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.6 (2023-02-16)
+Ver. 1.2.7 (2023-04-19)
 
 This module provides wrapper classes for integrating stable baselines3 policy algorithms.
 
@@ -38,7 +39,7 @@ See also: https://pypi.org/project/stable-baselines3/
 """
 
 
-import gym
+import gymnasium as gym
 import torch
 import numpy as np
 from stable_baselines3.common import utils
@@ -80,6 +81,12 @@ class DummyEnv(gym.Env):
                        _info: Optional[Dict[str, Any]]) -> np.float32:
         distance = np.linalg.norm(achieved_goal - desired_goal, axis=-1)
         return -(distance > 0).astype(np.float32)
+    
+
+## -------------------------------------------------------------------------------------------------
+    def seed(self, p_seed):
+        pass
+
 
 
 
@@ -240,6 +247,8 @@ class WrPolicySB32MLPro (Wrapper, Policy):
             self.sb3.observation_space = observation_space
             self.sb3.action_space = action_space
             self.sb3.n_envs = 1
+            
+        self.sb3._setup_model()
 
         if isinstance(p_sb3_policy, OnPolicyAlgorithm):
             self.compute_action = self._compute_action_on_policy
@@ -255,7 +264,6 @@ class WrPolicySB32MLPro (Wrapper, Policy):
             self._buffer = self.sb3.replay_buffer
             self.collected_steps = 0
 
-        self.sb3._setup_model()
         self.sb3._total_timesteps = p_cycle_limit
         self.sb3._logger = utils.configure_logger()
 
