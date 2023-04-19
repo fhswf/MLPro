@@ -24,7 +24,7 @@ jobs:
 
       - name: Generate dependecies list
         run: |
-          awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg | tr -d "<" | tr -s "==" "," > doc/rtd/content/01_welcome/sub/deps.txt
+          awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg | tr -d "<" | tr -d ">" | tr -s "==" "," > doc/rtd/content/01_welcome/sub/deps.txt
           awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg > requirements.txt
 
       - name: Commit files
@@ -104,10 +104,7 @@ jobs:
       run: |
         pip install flake8 pytest
         pip install -r requirements.txt
-        pip install sphinx
-        pip install sphinx-rtd-theme
-        pip install sphinx-copybutton
-        pip install sphinx_multitoc_numbering
+        
     - name: Test with pytest
       run: |
         make pytest
@@ -135,10 +132,7 @@ jobs:
       run: |
         pip install flake8 pytest
         pip install -r requirements.txt
-        pip install sphinx
-        pip install sphinx-rtd-theme
-        pip install sphinx-copybutton
-        pip install sphinx_multitoc_numbering
+
     - name: Test with pytest
       run: |
         make pytest
