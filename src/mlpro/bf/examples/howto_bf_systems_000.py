@@ -10,10 +10,19 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-This example runs all the native systems in MLPro for 10 cycles.
+This module illustrates the use of DemoScenario to demonstrate systems. This example runs all the 
+native systems in MLPro for 10 cycles.
+
+You will learn:
+
+1. Setting up demo scenario
+
+2. Running a system in MLPro
 
 ver. 1.0.0 (2023-04-19)
+
 """
+
 from mlpro.bf.systems import *
 from mlpro.bf.systems.pool import DoublePendulumSystemS4, DoublePendulumSystemS7
 
@@ -28,6 +37,7 @@ else:
 
 
 systems = [DoublePendulumSystemS4(), DoublePendulumSystemS7()]
+
 
 for system in systems:
 
