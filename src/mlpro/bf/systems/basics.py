@@ -1506,6 +1506,11 @@ class DemoScenario(ScenarioBase):
                  p_logging=Log.C_LOG_ALL):
         
 
+        self._system = p_system
+        self._action_pattern = p_action_pattern
+        self._action = p_action
+        
+
         ScenarioBase.__init__(self,
                               p_mode = p_mode, 
                               p_id = p_id, 
@@ -1514,11 +1519,6 @@ class DemoScenario(ScenarioBase):
                               p_visualize = p_visualize, 
                               p_logging = p_logging)
         
-
-        self._system = p_system
-        self._action_pattern = p_action_pattern
-        self._action = p_action
-        self.reset()
 
 
         self._action_length = len(self._system.get_action_space().get_dims())
@@ -1531,7 +1531,26 @@ class DemoScenario(ScenarioBase):
             if self._action_length == len(self._action):
                 raise ParamError("Please provide the action as a list of length equal to the number"+
                                  " of dimenstions in the action space of the system.")
+        
+        self.reset()
             
+
+## -------------------------------------------------------------------------------------------------
+    def setup(self):
+
+        """Set's up the system spaces."""
+
+        self._system.setup_spaces()
+
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self) -> timedelta:
+        
+        """
+        Returns the latency of the system.
+        """
+        
+        return self._system.get_latency()
+
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
@@ -1545,7 +1564,6 @@ class DemoScenario(ScenarioBase):
             Seed for the purpose of reproducibility.
         """
 
-        self._system.setup_spaces()
         self._system.reset(p_seed = p_seed)
 
 
@@ -1570,7 +1588,7 @@ class DemoScenario(ScenarioBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _get_next_action(self):
-        
+
         """
         Generates new action based on the pattern provided by the user.
         """
