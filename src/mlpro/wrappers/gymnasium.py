@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-09  0.0.0     MRD      Copied from openai_gym wrapper
 ## -- 2023-04-10  1.0.0     MRD      First Release 
+## -- 2023-04-19  1.0.1     MRD      Refactor reset function
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-04-10)
+Ver. 1.0.1 (2023-04-19)
 
 This module provides wrapper classes for Gym environments from Farama-Foundation Gymnasium.
 
@@ -168,7 +169,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
 
         # 1 Reset Gym environment and determine initial state
         try:
-            observation = self._gym_env.reset(seed=p_seed)
+            observation, _ = self._gym_env.reset(seed=p_seed)
         except:
            self._gym_env.seed(p_seed)
            observation = self._gym_env.reset() 
@@ -218,7 +219,6 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
             observation, reward_gym, termination, truncation, info = self._gym_env.step(action_gym)
         except:
             observation, reward_gym, termination, truncation, info = self._gym_env.step(np.atleast_1d(action_gym))
-            
         obs = DataObject(observation)
 
         # 3 Create state object from Gym observation
