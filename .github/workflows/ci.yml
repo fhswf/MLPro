@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout Codes
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           token: ${{ secrets.PAT }}
           ref: ${{ github.head_ref }}
@@ -47,22 +47,22 @@ jobs:
     if: needs.deps_gen.outputs.trigger_build == 'true'
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
 
     steps:
     - name: Checkout Codes
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         ref: ${{ github.head_ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         
     - name: Install dependencies
       run: |
-        pip install setuptools==57.1.0
+        pip install setuptools==65.5.0
         pip install flake8 pytest
         pip install -r requirements.txt
         
@@ -87,18 +87,18 @@ jobs:
 
     steps:
     - name: Checkout Codes
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         ref: ${{ github.head_ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         
     - name: Install dependencies
       run: |
-        pip install setuptools==57.1.0
+        pip install setuptools==65.5.0
         pip install flake8 pytest
         pip install -r requirements.txt
         pip install sphinx
@@ -120,18 +120,18 @@ jobs:
 
     steps:
     - name: Checkout Codes
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         ref: ${{ github.head_ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         
     - name: Install dependencies
       run: |
-        pip install setuptools==57.1.0
+        pip install setuptools==65.5.0
         pip install flake8 pytest
         pip install -r requirements.txt
 
@@ -149,18 +149,18 @@ jobs:
 
     steps:
     - name: Checkout Codes
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         ref: ${{ github.head_ref }}
 
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         
     - name: Install dependencies
       run: |
-        pip install setuptools==57.1.0
+        pip install setuptools==65.5.0
         pip install flake8 pytest
         pip install -r requirements.txt
 
