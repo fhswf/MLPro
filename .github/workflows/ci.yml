@@ -47,7 +47,11 @@ jobs:
     if: needs.deps_gen.outputs.trigger_build == 'true'
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10', '3.11']
+        python-major-version: [3]
+        python-minor-version: [8, 9, 10, 11]
+    
+    env:
+      python-version: ${{ format('{0}.{1}', matrix.python-major-version, matrix.python-minor-version) }}
 
     steps:
     - name: Checkout Codes
@@ -55,28 +59,32 @@ jobs:
       with:
         ref: ${{ github.head_ref }}
 
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python ${{ env.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ env.python-version }}
         
     - name: Install dependencies
       run: |
         pip install flake8 pytest
         pip install -r requirements.txt
-        pip install sphinx
-        pip install sphinx-rtd-theme
-        pip install sphinx-copybutton
-        pip install sphinx_multitoc_numbering
+
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
     - name: Build the Documentation
+      if: ${{ matrix.python-minor-version == 10 }}
       run: |
+        pip install sphinx
+        pip install sphinx-rtd-theme
+        pip install sphinx-copybutton
+        pip install sphinx_multitoc_numbering
         make docu
+
     - name: Test with pytest
       run: |
         make pytest
