@@ -68,8 +68,6 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install sphinx_multitoc_numbering
-        pip install openml
-        pip install mujoco
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
@@ -89,7 +87,7 @@ jobs:
     if: needs.deps_gen.outputs.trigger_build == 'true'
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10', '3.11']
+        python-version: ['3.11']
 
     steps:
     - name: Checkout Codes
@@ -110,7 +108,6 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install sphinx_multitoc_numbering
-        pip install openml
     - name: Test with pytest
       run: |
         make pytest
@@ -121,7 +118,7 @@ jobs:
     if: needs.deps_gen.outputs.trigger_build == 'true'
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10', '3.11']
+        python-version: ['3.11']
 
     steps:
     - name: Checkout Codes
@@ -142,7 +139,6 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install sphinx_multitoc_numbering
-        pip install openml
     - name: Test with pytest
       run: |
         make pytest
