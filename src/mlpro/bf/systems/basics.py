@@ -1463,7 +1463,31 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class DemoScenario(ScenarioBase):
-    
+
+    """
+        Demo Scenario Class to demonstrate systems, inherits from the ScenarioBase.
+        
+        Parameters
+        ----------
+        p_system : System
+            Mandatory parameter, takes the system for the scenario.
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        p_action_pattern : str
+            The action pattern to be used for demonstration. Default is C_ACTION_RANDOM
+        p_action_random : list
+            The action to be executed in constant mode. Mandatory when the mdoe is constant.
+        p_id
+            Optional external id
+        p_cycle_limit : int
+            Maximum number of cycles. Default = 0 (no limit).
+        p_auto_setup : bool
+            If True custom method setup() is called after initialization.
+        p_visualize : bool
+            Boolean switch for visualisation. Default = True.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+    """    
 
 
     C_ACTION_RANDOM = 'random'
@@ -1490,10 +1514,13 @@ class DemoScenario(ScenarioBase):
                               p_visualize = p_visualize, 
                               p_logging = p_logging)
         
+
         self._system = p_system
         self._action_pattern = p_action_pattern
         self._action = p_action
         self.reset()
+
+
         self._action_length = len(self._system.get_action_space().get_dims())
 
         if (self._action_pattern == DemoScenario.C_ACTION_CONSTANT): 
@@ -1508,14 +1535,27 @@ class DemoScenario(ScenarioBase):
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
-        
+
+        """
+        Resets the Scenario and the system. Sets up the action and state spaces of the system.
+
+        Parameters
+        ----------
+        p_seed
+            Seed for the purpose of reproducibility.
+        """
+
         self._system.setup_spaces()
         self._system.reset(p_seed = p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
-        
+
+        """
+        Runs the custom scenario cycle, through the run method of the scenario base. 
+        Checks and returns the brokent state, false otherwise.
+        """
         
         self.log(Log.C_LOG_TYPE_I, "Generating new action")
         
@@ -1531,8 +1571,9 @@ class DemoScenario(ScenarioBase):
 ## -------------------------------------------------------------------------------------------------
     def _get_next_action(self):
         
-        
-        
+        """
+        Generates new action based on the pattern provided by the user.
+        """
         
         action_space = self._system.get_action_space()
 
