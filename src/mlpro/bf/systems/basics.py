@@ -32,6 +32,7 @@
 ## -- 2023-04-04  1.9.1     LSB      Class State: New method Copy()
 ## -- 2023-04-05  1.9.2     LSB      Refactor: Copy method of State, copying all the attributes
 ## -- 2023-04-11  1.9.3     MRD      Add custom reset functionality for MuJoCo
+## -- 2023-04-19  1.10.1    LSB      Mew DemoScenario class for system demonstration
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -48,7 +49,7 @@ from mlpro.bf.various import TStamp, ScientificObject, Persistent
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable, PlotSettings
 from matplotlib.figure import Figure
-from mlpro.bf.ops import Mode
+from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.math import *
 
 
@@ -1457,3 +1458,97 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
     def update_plot(self, **p_kwargs):
         if self._mujoco_handler is not None: return
         super().update_plot(**p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class DemoScenario(ScenarioBase):
+    
+
+
+    C_ACTION_RANDOM = 'random'
+    C_ACTION_CONSTANT = 'constant'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, 
+                 p_system : System,
+                 p_mode, 
+                 p_action_pattern : str = 'random',
+                 p_action : list = None,
+                 p_id=None, 
+                 p_cycle_limit=0, 
+                 p_auto_setup: bool = True, 
+                 p_visualize: bool = True, 
+                 p_logging=Log.C_LOG_ALL):
+        
+
+        ScenarioBase.__init__(self,
+                              p_mode = p_mode, 
+                              p_id = p_id, 
+                              p_cycle_limit = p_cycle_limit, 
+                              p_auto_setup = p_auto_setup, 
+                              p_visualize = p_visualize, 
+                              p_logging = p_logging)
+        
+        self._system = p_system
+        self._action_pattern = p_action_pattern
+        self._action = p_action
+        self.reset()
+        self._action_length = len(self._system.get_action_space().get_dims())
+
+        if (self._action_pattern == DemoScenario.C_ACTION_CONSTANT): 
+
+            if self._action is None:
+                raise ParamError("Please provide a value for action, when running in constant action mode.")
+            
+            if self._action_length == len(self._action):
+                raise ParamError("Please provide the action as a list of length equal to the number"+
+                                 " of dimenstions in the action space of the system.")
+            
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed):
+        
+        self._system.setup_spaces()
+        self._system.reset(p_seed = p_seed)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run_cycle(self):
+        
+        
+        self.log(Log.C_LOG_TYPE_I, "Generating new action")
+        
+        action = self._get_next_action()
+
+        self._system.process_action(p_action=action)
+
+        broken = self._system.compute_broken(p_state=self._system.get_state()) 
+
+        return False, broken, False, False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_next_action(self):
+        
+        
+        
+        
+        action_space = self._system.get_action_space()
+
+        if self._action_pattern == self.C_ACTION_CONSTANT:
+            return Action(p_action_space = action_space, p_values = self._action)
+
+        action = []
+
+        for dim in action_space.get_dims():
+            if dim.get_base_set() in (Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_R):
+                action.append(random.uniform(*dim.get_boundaries()))
+
+            elif dim.get_base_set() == Dimension.C_BASE_SET_Z:
+                action.append(random.randint(*dim.get_boundaries()))
+
+        return Action(p_action_space=action_space, p_values=action)
+ 
+
+        
