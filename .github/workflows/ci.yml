@@ -24,7 +24,7 @@ jobs:
 
       - name: Generate dependecies list
         run: |
-          awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg | tr -d "<" | tr -s "==" "," > doc/rtd/content/01_welcome/sub/deps.txt
+          awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg | tr -d "<" | tr -d ">" | tr -s "==" "," > doc/rtd/content/01_welcome/sub/deps.txt
           awk '/^[[]/{f=0} /full/{f=1;next} {sub(/^[ \t]+|[ \t]/, "")} f' setup.cfg > requirements.txt
 
       - name: Commit files
@@ -47,7 +47,42 @@ jobs:
     if: needs.deps_gen.outputs.trigger_build == 'true'
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10']
+        python-version: [3.8, 3.9, '3.10', '3.11']
+
+    steps:
+    - name: Checkout Codes
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+        
+    - name: Install dependencies
+      run: |
+        pip install flake8 pytest
+        pip install -r requirements.txt
+        
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+    - name: Test with pytest
+      run: |
+        make pytest
+
+  doc_test:
+    runs-on: ubuntu-latest
+    needs: deps_gen
+    if: needs.deps_gen.outputs.trigger_build == 'true'
+    strategy:
+      matrix:
+        python-version: ['3.10']
 
     steps:
     - name: Checkout Codes
@@ -68,20 +103,10 @@ jobs:
         pip install sphinx-rtd-theme
         pip install sphinx-copybutton
         pip install sphinx_multitoc_numbering
-        pip install openml
-        pip install mujoco
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
     - name: Build the Documentation
       run: |
         make docu
-    - name: Test with pytest
-      run: |
-        make pytest
 
   windows_test:
     runs-on: windows-latest
@@ -89,7 +114,7 @@ jobs:
     if: needs.deps_gen.outputs.trigger_build == 'true'
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10']
+        python-version: ['3.11']
 
     steps:
     - name: Checkout Codes
@@ -106,11 +131,7 @@ jobs:
       run: |
         pip install flake8 pytest
         pip install -r requirements.txt
-        pip install sphinx
-        pip install sphinx-rtd-theme
-        pip install sphinx-copybutton
-        pip install sphinx_multitoc_numbering
-        pip install openml
+
     - name: Test with pytest
       run: |
         make pytest
@@ -121,7 +142,7 @@ jobs:
     if: needs.deps_gen.outputs.trigger_build == 'true'
     strategy:
       matrix:
-        python-version: [3.8, 3.9, '3.10']
+        python-version: ['3.11']
 
     steps:
     - name: Checkout Codes
@@ -138,11 +159,7 @@ jobs:
       run: |
         pip install flake8 pytest
         pip install -r requirements.txt
-        pip install sphinx
-        pip install sphinx-rtd-theme
-        pip install sphinx-copybutton
-        pip install sphinx_multitoc_numbering
-        pip install openml
+
     - name: Test with pytest
       run: |
         make pytest
