@@ -5,6 +5,7 @@ PettingZoo
 .. automodule:: mlpro.wrappers.pettingzoo
     :members:
     :undoc-members:
+    :private-members:
     :show-inheritance:
    
 

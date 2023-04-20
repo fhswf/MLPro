@@ -6,6 +6,7 @@ OpenML
     .. automodule:: mlpro.wrappers.openml
         :members:
         :undoc-members:
+        :private-members:
         :show-inheritance:
    
 

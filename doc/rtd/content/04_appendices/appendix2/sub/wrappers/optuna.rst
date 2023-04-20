@@ -5,6 +5,7 @@ Optuna
 .. automodule:: mlpro.wrappers.optuna
     :members:
     :undoc-members:
+    :private-members:
     :show-inheritance:
 
 
