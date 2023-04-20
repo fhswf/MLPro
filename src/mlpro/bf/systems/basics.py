@@ -52,7 +52,7 @@ from mlpro.bf.plot import Plottable, PlotSettings
 from matplotlib.figure import Figure
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.math import *
-
+from mlpro.bf.mt import *
 
 
 
@@ -733,7 +733,7 @@ class Controller (EventManager):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, ScientificObject):
+class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, ScientificObject):
     """
     Base class for state based systems.
 
@@ -1470,6 +1470,59 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
     def update_plot(self, **p_kwargs):
         if self._mujoco_handler is not None: return
         super().update_plot(**p_kwargs)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MultiSystem(Workflow, System):
+
+    C_TYPE = 'Multi-System'
+
+    
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, 
+                 p_name: str = None, 
+                 p_range_max=Async.C_RANGE_THREAD, 
+                 p_class_shared=None, 
+                 p_mode=Mode.C_MODE_SIM, 
+                 p_latency: timedelta = None, 
+                 p_fct_strans: FctSTrans = None, 
+                 p_fct_success: FctSuccess = None, 
+                 p_fct_broken: FctBroken = None, 
+                 p_mujoco_file=None, 
+                 p_frame_skip: int = 1, 
+                 p_state_mapping=None, 
+                 p_action_mapping=None, 
+                 p_camera_conf: tuple = (None, None, None), 
+                 p_visualize: bool = False, 
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
+        
+
+        System.__init__( self,
+                         p_mode = p_mode, 
+                         p_latency=p_latency, 
+                         p_fct_strans=p_fct_strans, 
+                         p_fct_success=p_fct_success, 
+                         p_fct_broken=p_fct_broken,
+                         p_mujoco_file=p_mujoco_file,
+                         p_name=p_name,
+                         p_frame_skip=p_frame_skip, 
+                         p_state_mapping=p_state_mapping,
+                         p_action_mapping=p_action_mapping, 
+                         p_camera_conf=p_camera_conf, 
+                         p_visualize=p_visualize, 
+                         p_logging=p_logging )
+
+        
+        pass
+
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
