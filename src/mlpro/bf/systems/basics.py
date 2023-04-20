@@ -33,10 +33,11 @@
 ## -- 2023-04-05  1.9.2     LSB      Refactor: Copy method of State, copying all the attributes
 ## -- 2023-04-11  1.9.3     MRD      Add custom reset functionality for MuJoCo
 ## -- 2023-04-19  1.10.1    LSB      Mew DemoScenario class for system demonstration
+## -- 2023-04-20  1.10.2    LSB      Refactoring State-Instance inheritence
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.9.3 (2023-04-11)
+Ver. 1.10.2 (2023-04-20)
 
 
 This module provides models and templates for state based systems.
