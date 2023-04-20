@@ -85,11 +85,12 @@ class State(Instance, Element, TStamp):
                  p_terminal: bool = False,
                  p_success: bool = False,
                  p_broken: bool = False,
-                 p_timeout: bool = False):
+                 p_timeout: bool = False,
+                 **p_kwargs):
 
         TStamp.__init__(self)
         Element.__init__(self, p_state_space)
-        Instance.__init__(self, p_feature_data=self)
+        Instance.__init__(self, p_feature_data=self, **p_kwargs)
         self.set_initial(p_initial)
         self.set_terminal(p_terminal)
         self.set_success(p_success)
@@ -149,6 +150,16 @@ class State(Instance, Element, TStamp):
 ## -------------------------------------------------------------------------------------------------
     def set_terminal(self, p_terminal: bool):
         self._terminal = p_terminal
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_feature_data(self) -> Element:
+        return self
+    
+
+## -------------------------------------------------------------------------------------------------
+    def set_feature_data(self, p_feature_data: Element):
+        self.set_values(p_feature_data.get_values())
 
 
 ## -------------------------------------------------------------------------------------------------
