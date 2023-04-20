@@ -67,7 +67,10 @@ class MyScenario(RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1 Setup environment
-        gym_env = gym.make('CartPole-v1')
+        if p_visualize:
+            gym_env     = gym.make('CartPole-v1', render_mode="human")
+        else:
+            gym_env     = gym.make('CartPole-v1')
         np_random, _ = seeding.np_random(2)
         gym_env.np_random = np_random
         self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)

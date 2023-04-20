@@ -81,7 +81,10 @@ class MultiCartPole (Environment):
             action_space_id  = self._action_space.get_dim_ids()
             state_space_env  = self._state_space.spawn([state_space_id[i*4], state_space_id[i*4+1], state_space_id[i*4+2], state_space_id[i*4+3]])
             action_space_env = self._action_space.spawn([action_space_id[i]])
-            env_make         = gym.make('CartPole-v1')
+            if self.get_visualization():
+                env_make     = gym.make('CartPole-v1', render_mode="human")
+            else:
+                env_make     = gym.make('CartPole-v1')
             env              = WrEnvGYM2MLPro(env_make, state_space_env, action_space_env, p_visualize=self.get_visualization(), p_logging=self.get_log_level())
             env.C_NAME = env.C_NAME + ' (' + str(i) + ')'
             self._envs.append(env)

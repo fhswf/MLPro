@@ -73,12 +73,29 @@ class MyScenario(RLScenario):
     C_NAME = 'Howto-RL-WP-005'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
+        class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
+            def _reset(self, p_seed=None):
+                self.log(self.C_LOG_TYPE_I, 'Reset')
+                self._num_cycles = 0
+
+                # 1 Reset Gym environment and determine initial state
+                observation, _ = self._gym_env.reset()
+                obs = DataObject(observation)
+
+                # 2 Create state object from Gym observation
+                state = State(self._state_space)
+                state.set_values(obs.get_data())
+                self._set_state(state)
+                    
         # 1 Setup environment
-        gym_env = gym.make('CartPole-v1')
+        if p_visualize:
+            gym_env     = gym.make('CartPole-v1', render_mode="human")
+        else:
+            gym_env     = gym.make('CartPole-v1')
         np_random, _ = seeding.np_random(2)
         gym_env.np_random = np_random
         # self._env   = mlpro_env
-        self._env = WrEnvGYM2MLPro(gym_env, p_logging=p_logging)
+        self._env = CustomWrapperFixedSeed(gym_env, p_logging=p_logging)
 
         # 2 Instatiate Policy From SB3
         # env is set to None, it will be set up later inside the wrapper
@@ -221,7 +238,7 @@ class CustomCallback(BaseCallback, Log):
         self.ds_rewards.memorize_row(self.total_cycle, timedelta(0, 0, 0), self.locals.get("rewards"))
         self.total_cycle += 1
         self.cycles += 1
-        if self.locals.get("infos")[0]:
+        if self.locals.get("done"):
             self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'finished after', self.total_cycle + 1,
                      'cycles')
@@ -260,7 +277,7 @@ policy_sb3 = PPO(
     seed=1)
 
 cus_callback = CustomCallback(p_logging=logging)
-policy_sb3.learn(total_timesteps=1000, callback=cus_callback)
+policy_sb3.learn(total_timesteps=cycle_limit, callback=cus_callback)
 native_plot = cus_callback.plots
 
 
