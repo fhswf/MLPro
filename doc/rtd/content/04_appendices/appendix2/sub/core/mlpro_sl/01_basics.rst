@@ -8,4 +8,5 @@ SL - Basics
 .. automodule:: mlpro.sl.basics
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

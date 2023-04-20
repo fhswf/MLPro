@@ -8,4 +8,5 @@ RL-ENV-ADA - Environment Models
 .. automodule:: mlpro.rl.models_env_ada
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:
