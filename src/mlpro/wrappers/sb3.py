@@ -81,10 +81,9 @@ class DummyEnv(gym.Env):
                        _info: Optional[Dict[str, Any]]) -> np.float32:
         distance = np.linalg.norm(achieved_goal - desired_goal, axis=-1)
         return -(distance > 0).astype(np.float32)
-    
 
 ## -------------------------------------------------------------------------------------------------
-    def seed(self, p_seed):
+    def seed(self,seed):
         pass
 
 
@@ -106,9 +105,11 @@ class VecExtractDictObs(VecEnvWrapper):
         obs = self.venv.reset()
         return obs[self.key]
 
+
 ## -------------------------------------------------------------------------------------------------
     def step_async(self, actions: np.ndarray) -> None:
         self.venv.step_async(actions)
+
 
 ## -------------------------------------------------------------------------------------------------
     def step_wait(self) -> VecEnvStepReturn:
@@ -153,8 +154,8 @@ class WrPolicySB32MLPro (Wrapper, Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace,
-                 p_action_space:MSpace, p_ada:bool=True, p_visualize:bool=False, p_logging=Log.C_LOG_ALL,
-                 p_num_envs:int=1, p_desired_goals=None):
+                 p_action_space:MSpace, p_ada:bool=True, p_visualize:bool=False, p_use_tensorboard:bool=False, 
+                 p_logging=Log.C_LOG_ALL, p_num_envs:int=1, p_desired_goals=None):
         # Set Name
         WrPolicySB32MLPro.C_NAME = "Policy " + type(p_sb3_policy).__name__
         
@@ -222,28 +223,34 @@ class WrPolicySB32MLPro (Wrapper, Policy):
             )
 
         # Create Dummy Env
-        if not isinstance(p_sb3_policy, OnPolicyAlgorithm) and self.sb3.replay_buffer_class == HerReplayBuffer:
-            if p_desired_goals is None:
-                raise NotImplementedError('The desired goal is missing!')
+        if not isinstance(p_sb3_policy, OnPolicyAlgorithm):
+            if self.sb3.replay_buffer_class == HerReplayBuffer:
+                if p_desired_goals is None:
+                    raise NotImplementedError('The desired goal is missing!')
+                else:
+                    self.desired_goals = p_desired_goals
+                observation_space_vec = gym.spaces.Dict({'observation':observation_space,
+                                                        'achieved_goal':observation_space,
+                                                        'desired_goal':observation_space})
+                DummyEnv.observation_space = observation_space_vec
+                DummyEnv.action_space = action_space
+                
+                set_of_envs = [DummyEnv for i in range(p_num_envs)]
+                self.sb3.env = DummyVecEnv(set_of_envs)
+                self.sb3.env = VecExtractDictObs(self.sb3.env,
+                                                observation_space=self.sb3.env.observation_space,
+                                                action_space=self.sb3.env.action_space)
+                self.sb3.observation_space = observation_space_vec
             else:
-                self.desired_goals = p_desired_goals
-            observation_space_vec = gym.spaces.Dict({'observation':observation_space,
-                                                     'achieved_goal':observation_space,
-                                                     'desired_goal':observation_space})
-            DummyEnv.observation_space = observation_space_vec
-            DummyEnv.action_space = action_space
-            set_of_envs = [DummyEnv for i in range(p_num_envs)]
-            self.sb3.env = DummyVecEnv(set_of_envs)
-            self.sb3.env = VecExtractDictObs(self.sb3.env,
-                                             observation_space=self.sb3.env.observation_space,
-                                             action_space=self.sb3.env.action_space)
-            # Setup SB3 Model
-            self.sb3.observation_space = observation_space_vec
+                self.sb3.env = DummyEnv(p_observation_space=observation_space,
+                                                p_action_space=action_space)
+                self.sb3.observation_space = observation_space
+                
             self.sb3.action_space = action_space
             self.sb3.n_envs = p_num_envs
         else:
-            self.sb3.env = DummyEnv(observation_space, action_space)
-            # Setup SB3 Model
+            self.sb3.env = DummyEnv(p_observation_space=observation_space,
+                                                p_action_space=action_space)
             self.sb3.observation_space = observation_space
             self.sb3.action_space = action_space
             self.sb3.n_envs = 1
@@ -263,9 +270,9 @@ class WrPolicySB32MLPro (Wrapper, Policy):
             self.clear_buffer = self._clear_buffer_off_policy
             self._buffer = self.sb3.replay_buffer
             self.collected_steps = 0
-
+        
         self.sb3._total_timesteps = p_cycle_limit
-        self.sb3._logger = utils.configure_logger()
+        self.sb3._logger = utils.configure_logger(0, self.sb3.tensorboard_log, "MLPro")
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -376,6 +383,8 @@ class WrPolicySB32MLPro (Wrapper, Policy):
 
         # Compute Return and Advantage
         self.sb3.rollout_buffer.compute_returns_and_advantage(last_values=last_values, dones=last_done)
+        
+        self.sb3.logger.dump(step=self.sb3.num_timesteps)
 
         # Train
         self.sb3.train()
