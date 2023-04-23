@@ -3,8 +3,7 @@ numpy,1.24.2
 torch,2.0.0
 matplotlib,3.7.1
 transformations,2022.9.26
-stable-baselines3,1.8.0
-gym,0.21.0
+stable_baselines3,2.0.0a1
 scipy,1.10.1
 pettingzoo,1.22.3
 pygame,2.1.3
