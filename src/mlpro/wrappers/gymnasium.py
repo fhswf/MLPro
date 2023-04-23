@@ -58,6 +58,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
                  p_gym_env,  
                  p_state_space: MSpace = None,  
                  p_action_space: MSpace = None,  
+                 p_seed=None,
                  p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL):
 
@@ -80,6 +81,7 @@ class WrEnvGYM2MLPro(Wrapper, Environment):
             self._action_space = self.recognize_space(self._gym_env.action_space)
         
         self.log(self.C_LOG_TYPE_I, 'Gym Environment has been sucessfully wrapped as MLPro Environment.')
+        WrEnvGYM2MLPro._reset(self, p_seed=p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------

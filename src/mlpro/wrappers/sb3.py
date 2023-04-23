@@ -83,9 +83,8 @@ class DummyEnv(gym.Env):
         return -(distance > 0).astype(np.float32)
 
 ## -------------------------------------------------------------------------------------------------
-    def seed(self,seed):
+    def seed(self, seed = None):
         pass
-
 
 
 
@@ -154,7 +153,7 @@ class WrPolicySB32MLPro (Wrapper, Policy):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_sb3_policy, p_cycle_limit, p_observation_space:MSpace,
-                 p_action_space:MSpace, p_ada:bool=True, p_visualize:bool=False, p_use_tensorboard:bool=False, 
+                 p_action_space:MSpace, p_ada:bool=True, p_visualize:bool=False, 
                  p_logging=Log.C_LOG_ALL, p_num_envs:int=1, p_desired_goals=None):
         # Set Name
         WrPolicySB32MLPro.C_NAME = "Policy " + type(p_sb3_policy).__name__

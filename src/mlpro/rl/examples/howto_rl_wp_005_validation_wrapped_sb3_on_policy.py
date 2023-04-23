@@ -49,10 +49,10 @@ from pathlib import Path
 # 1 Parameter
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    logging     = Log.C_LOG_ALL
-    visualize   = True
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
     path        = str(Path.home())
-    cycle_limit = 1000
+    cycle_limit = 600
 
 else:
     # 1.2 Parameters for internal unit test
@@ -64,7 +64,7 @@ else:
 mva_window = 1
 buffer_size = 100
 policy_kwargs = dict(activation_fn=torch.nn.Tanh,
-                     net_arch=[dict(pi=[10, 10], vf=[10, 10])])
+                     net_arch=dict(pi=[10, 10], vf=[10, 10]))
 
 
 
@@ -92,10 +92,8 @@ class MyScenario(RLScenario):
             gym_env     = gym.make('CartPole-v1', render_mode="human")
         else:
             gym_env     = gym.make('CartPole-v1')
-        np_random, _ = seeding.np_random(2)
-        gym_env.np_random = np_random
         # self._env   = mlpro_env
-        self._env = CustomWrapperFixedSeed(gym_env, p_logging=p_logging)
+        self._env = CustomWrapperFixedSeed(gym_env, p_seed=2, p_logging=p_logging)
 
         # 2 Instatiate Policy From SB3
         # env is set to None, it will be set up later inside the wrapper
@@ -110,7 +108,7 @@ class MyScenario(RLScenario):
             _init_setup_model=False,
             policy_kwargs=policy_kwargs,
             device="cpu",
-            seed=1)
+            seed=2)
 
         # 3 Wrap the policy
         self.policy_wrapped = WrPolicySB32MLPro(
@@ -265,8 +263,6 @@ class CustomCallback(BaseCallback, Log):
 
 # 8 Run the SB3 Training Native
 gym_env = gym.make('CartPole-v1')
-np_random, _ = seeding.np_random(2)
-gym_env.np_random = np_random
 policy_sb3 = PPO(
     policy="MlpPolicy",
     env=gym_env,
@@ -274,7 +270,7 @@ policy_sb3 = PPO(
     verbose=0,
     policy_kwargs=policy_kwargs,
     device="cpu",
-    seed=1)
+    seed=2)
 
 cus_callback = CustomCallback(p_logging=logging)
 policy_sb3.learn(total_timesteps=cycle_limit, callback=cus_callback)
