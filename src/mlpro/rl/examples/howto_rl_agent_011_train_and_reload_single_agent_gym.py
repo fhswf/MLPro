@@ -22,10 +22,11 @@
 ## -- 2023-03-02  1.2.1     LSB      Refactoring
 ## -- 2023-03-04  1.3.0     DA       Renamed
 ## -- 2023-03-27  1.3.1     DA       Refactoring
+## -- 2023-04-19  1.3.2     MRD      Refactor module import gym to gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.1 (2023-03-27)
+Ver. 1.3.2 (2023-04-19)
 
 This module shows how to train a single agent and load it again to do some extra cycles.
 
@@ -40,10 +41,10 @@ You will learn:
 """
 
 
-import gym
+import gymnasium as gym
 from stable_baselines3 import PPO
 from mlpro.rl import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 
@@ -55,7 +56,10 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        gym_env = gym.make('CartPole-v1')
+        if p_visualize:
+            gym_env     = gym.make('CartPole-v1', render_mode="human")
+        else:
+            gym_env     = gym.make('CartPole-v1')
         self._env = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging)
 
         # 1.2 Setup Policy From SB3

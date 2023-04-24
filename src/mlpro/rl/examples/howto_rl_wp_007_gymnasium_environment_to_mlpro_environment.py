@@ -79,7 +79,7 @@ class MyScenario (RLScenario):
         if p_visualize:
             gym_env = gym.make('CartPole-v1', render_mode="human")
         else:
-            gym_env = gym.make('CartPole-v1', render_mode="rgb_array")
+            gym_env = gym.make('CartPole-v1')
             
         self._env   = WrEnvGYM2MLPro( p_gym_env=gym_env, p_visualize=p_visualize, p_logging=p_logging) 
 
