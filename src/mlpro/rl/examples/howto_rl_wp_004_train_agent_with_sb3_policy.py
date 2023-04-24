@@ -19,10 +19,11 @@
 ## -- 2022-11-07  1.1.0     DA       Refactoring 
 ## -- 2023-01-14  1.1.1     MRD      Removing default parameter new_step_api and render_mode for gym
 ## -- 2023-02-13  1.1.2     DA       Optimization of dark mode
+## -- 2023-04-19  1.1.3     MRD      Refactor module import gym to gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.2 (2023-02-13)
+Ver. 1.1.3 (2023-04-19)
 
 This module shows how to train agent with SB3 Wrapper for On- and Off-Policy Algorithms
 
@@ -35,10 +36,10 @@ You will learn:
 """
 
 
-import gym
+import gymnasium as gym
 from stable_baselines3 import A2C, PPO, DQN, DDPG, SAC
 from mlpro.rl.models import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from collections import deque
 from pathlib import Path
@@ -51,7 +52,10 @@ class MyScenario(RLScenario):
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1 Setup environment
         # self._env   = RobotHTM(p_logging=False)
-        gym_env = gym.make('CartPole-v1')
+        if p_visualize:
+            gym_env     = gym.make('CartPole-v1', render_mode="human")
+        else:
+            gym_env     = gym.make('CartPole-v1')
         self._env = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging)
 
         # 2 Instantiate Policy From SB3
