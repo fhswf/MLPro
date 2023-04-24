@@ -8,20 +8,21 @@
 ## -- 2021-12-08  1.0.0     MRD      Creation
 ## -- 2022-05-19  1.0.1     SY       Add RandomGenerator policy
 ## -- 2022-11-07  1.1.0     DA       Refactoring
+## -- 2023-04-19  1.1.1     MRD      Refactor module import gym to gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2022-11-07)
+Ver. 1.1.1 (2023-04-19)
 
 Unit test classes for policies.
 """
 
 
 import pytest
-import gym
+import gymnasium as gym
 import numpy as np
 from mlpro.rl import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
 from mlpro.rl.pool.policies.dummy import MyDummyPolicy
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
