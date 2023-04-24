@@ -15,10 +15,11 @@
 ## -- 2022-10-14  1.0.6     SY       Refactoring 
 ## -- 2022-11-02  1.0.7     SY       Unable logging in unit test model
 ## -- 2023-03-02  1.0.8     LSB      Refactoring
+## -- 2023-04-19  1.0.9     MRD      Refactor module import gym to gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.8 (2023-03-02)
+Ver. 1.0.9 (2023-04-19)
 
 This module shows how to wrap a native MLPro environment class to OpenAI Gym environment.
 
@@ -31,9 +32,9 @@ You will learn:
 
 
 from mlpro.bf.various import Log
-from mlpro.wrappers.openai_gym import WrEnvMLPro2GYM
+from mlpro.wrappers.gymnasium import WrEnvMLPro2GYM
 from mlpro.rl.pool.envs.gridworld import GridWorld
-from gym.utils.env_checker import check_env
+from gymnasium.utils.env_checker import check_env
 
 
 if __name__ == "__main__":
@@ -48,7 +49,6 @@ mlpro_env = GridWorld(p_logging=logging)
 env = WrEnvMLPro2GYM(mlpro_env,
                      p_state_space=None,
                      p_action_space=None,
-                     p_new_step_api=False,
                      p_logging=logging)
 
 # 3. Check whether the environment is valid
