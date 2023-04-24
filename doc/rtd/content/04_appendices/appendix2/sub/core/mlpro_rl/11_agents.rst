@@ -8,4 +8,5 @@ RL-AGENTS - Agents
 .. automodule:: mlpro.rl.models_agents
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

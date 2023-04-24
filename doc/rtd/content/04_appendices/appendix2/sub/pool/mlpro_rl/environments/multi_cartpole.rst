@@ -5,4 +5,5 @@ Multi-Cartpole
 .. automodule:: mlpro.rl.pool.envs.multicartpole
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

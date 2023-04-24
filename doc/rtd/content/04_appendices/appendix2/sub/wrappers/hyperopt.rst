@@ -5,6 +5,7 @@ Hyperopt
 .. automodule:: mlpro.wrappers.hyperopt
     :members:
     :undoc-members:
+    :private-members:
     :show-inheritance:
    
 

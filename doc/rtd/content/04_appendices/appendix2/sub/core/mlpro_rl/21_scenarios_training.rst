@@ -8,4 +8,5 @@ RL-TRAIN - Scenarios, Training and Tuning
 .. automodule:: mlpro.rl.models_train
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

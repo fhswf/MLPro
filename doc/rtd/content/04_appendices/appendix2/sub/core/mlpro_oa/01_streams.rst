@@ -8,4 +8,5 @@ OA-STREAMS - Online-adaptive Stream Processing
 .. automodule:: mlpro.oa.streams.basics
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

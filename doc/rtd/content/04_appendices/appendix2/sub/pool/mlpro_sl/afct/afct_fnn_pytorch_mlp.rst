@@ -7,4 +7,5 @@ PyTorch-based MLP
 .. automodule:: mlpro.sl.pool.afct.fnn.pytorch.mlp
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:
