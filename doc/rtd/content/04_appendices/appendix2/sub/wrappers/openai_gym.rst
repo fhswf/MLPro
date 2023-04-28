@@ -5,6 +5,7 @@ OpenAI Gym
 .. automodule:: mlpro.wrappers.openai_gym
     :members:
     :undoc-members:
+    :private-members:
     :show-inheritance:
    
 

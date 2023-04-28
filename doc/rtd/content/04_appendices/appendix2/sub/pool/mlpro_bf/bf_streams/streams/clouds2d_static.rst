@@ -4,4 +4,5 @@
 .. automodule:: mlpro.bf.streams.streams.clouds2d_static
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

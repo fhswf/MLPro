@@ -8,4 +8,5 @@ GT - Basics
 .. automodule:: mlpro.gt.models
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

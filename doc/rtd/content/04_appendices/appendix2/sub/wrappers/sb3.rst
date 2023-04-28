@@ -5,6 +5,7 @@ Stable Baslines3
 .. automodule:: mlpro.wrappers.sb3
     :members:
     :undoc-members:
+    :private-members:
     :show-inheritance:
    
 
