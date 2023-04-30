@@ -8,4 +8,5 @@ Double Pendulum System
 .. automodule:: mlpro.bf.systems.pool.doublependulum
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

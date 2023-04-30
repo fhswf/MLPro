@@ -9,6 +9,7 @@ River
 .. automodule:: mlpro.wrappers.river
     :members:
     :undoc-members:
+    :private-members:
     :show-inheritance:
     :private-members:
    
