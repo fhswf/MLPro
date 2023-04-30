@@ -16,7 +16,10 @@ This module provides templates for cluster analysis to be used in the context of
 """
 
 from mlpro.oa.streams import *
+from mlpro.bf.math.geometry import Point
 from typing import List, Tuple
+
+
 
 
 
@@ -232,18 +235,24 @@ class ClusterCentroid (Cluster):
     def __init__( self, 
                   p_id=None, 
                   p_visualize: bool = False, 
-                  p_centroid : Element = None,
+                  p_centroid_pos : Element = None,
                   **p_kwargs ):
         
-        self._centroid : Element = p_centroid
+        self._centroid : Point = Point( p_pos=p_centroid_pos )
 
-        super().__init__(p_id, p_visualize, **p_kwargs)
+        super().__init__( p_id = p_id, p_visualize = p_visualize, **p_kwargs )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_centroid(self) -> Element:
+    def get_centroid(self) -> Point:
         return self._centroid
     
 
-    def set_centroid(self, p_centroid : Element):
+## -------------------------------------------------------------------------------------------------
+    def set_centroid_pos(self, p_centroid_pos : Element):
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_membership(self, p_inst: Instance) -> float:
+        return super().get_membership(p_inst)
