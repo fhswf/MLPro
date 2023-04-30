@@ -13,7 +13,7 @@ Ver. 0.0.0 (2023-04-18)
 
 This module provides class for geometric objects like points, etc.
 
-"""
+""" 
 
 
 from mlpro.bf.plot import *
