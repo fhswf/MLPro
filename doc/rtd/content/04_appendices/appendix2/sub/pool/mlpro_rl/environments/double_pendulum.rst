@@ -8,4 +8,5 @@ Double Pendulum
 .. automodule:: mlpro.rl.pool.envs.doublependulum
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:
