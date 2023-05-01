@@ -94,9 +94,11 @@ howto_list = {
     "bf_streams_114": "mlpro.bf.examples.howto_bf_streams_114_stream_task_deriver",
 
     # bf.systems
-    "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
-    "bf_systems_002": "mlpro.bf.examples.howto_bf_systems_002_doublependulum_systems_wrapped_with_mujoco",
-    "bf_systems_003": "mlpro.bf.examples.howto_bf_systems_003_cartpole_continuous_systems_wrapped_with_mujoco",
+    "bf_systems_001": "mlpro.bf.examples.howto_bf_systems_001_demonstrating_native_systems",
+    "bf_systems_010": "mlpro.bf.examples.howto_bf_systems_001_systems_controllers_actuators_sensors",
+    "bf_systems_011": "mlpro.bf.examples.howto_bf_systems_002_doublependulum_systems_wrapped_with_mujoco",
+    "bf_systems_012": "mlpro.bf.examples.howto_bf_systems_003_cartpole_continuous_systems_wrapped_with_mujoco",
+    "bf_systems_013": "mlpro.bf.examples.howto_bf_systems_013_box_on_table_mujoco_simulation",
 
     # bf.physics
     "bf_physics_001": "mlpro.bf.examples.howto_bf_physics_001_set_up_transfer_functions",
