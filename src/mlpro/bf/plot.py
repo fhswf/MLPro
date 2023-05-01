@@ -28,10 +28,11 @@
 ## -- 2023-02-17  2.8.2     SY       Add p_window_type in DataPlotting
 ## -- 2023-02-23  2.9.0     DA       Class PlotSettings: new parameter p_view_autoselect
 ## -- 2023-04-10  2.9.1     MRD      Turn on Tkinter backend for macos
+## -- 2023-05-01  2.9.2     DA       Enable Tkinter backend for all platforms
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.9.1 (2023-04-10)
+Ver. 2.9.2 (2023-05-01)
 
 This module provides various classes related to data plotting.
 """
@@ -44,6 +45,7 @@ from sys import platform
 try:
     from tkinter import *
     import matplotlib
+    matplotlib.use('TkAgg')
 except:
     print('Please install tkinter for a better plot experience')
     import matplotlib
