@@ -151,13 +151,38 @@ class Point (Plottable):
                                                       np.array([self._point_pos[1]]),
                                                       np.array([self._point_vel[0]]),
                                                       np.array([self._point_vel[1]]),
-                                                      color='red',
-                                                      lw = .5 )
+                                                      scale = 1,
+                                                      color='red' )
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_plot_3d(self, p_settings: PlotSettings, **p_kwargs):
-        return super()._update_plot_3d(p_settings, **p_kwargs)
+
+        if self._plot_pos is not None:
+            self._plot_pos.remove()
+
+        self._plot_pos,  = p_settings.axes.plot( self._point_pos[0], 
+                                                 self._point_pos[1], 
+                                                 self._point_pos[2],
+                                                 marker='+', 
+                                                 color='blue', 
+                                                 linestyle='',
+                                                 markersize=3 )
+            
+        if self._plot_vel is not None:
+            self._plot_vel.remove()
+        elif self._point_vel is None:
+            return
+
+        self._plot_vel  = p_settings.axes.quiver( np.array([self._point_pos[0]]), 
+                                                  np.array([self._point_pos[1]]),
+                                                  np.array([self._point_pos[2]]),
+                                                  np.array([self._point_vel[0]]),
+                                                  np.array([self._point_vel[1]]),
+                                                  np.array([self._point_vel[2]]),
+                                                  length = 0.1,
+                                                  normalize = True,
+                                                  color='red' )
     
 
 ## -------------------------------------------------------------------------------------------------
