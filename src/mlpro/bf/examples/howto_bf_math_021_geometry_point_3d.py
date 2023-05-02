@@ -5,11 +5,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-05-01  1.0.0     DA       Creation
+## -- 2023-05-02  1.0.0     DA       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-05-01)
+Ver. 1.0.0 (2023-05-02)
 
 This module demonstrates the functionality of class bf.math.geometry.Point in a 3D plot.
 
@@ -84,7 +84,7 @@ for i in range(200):
     my_log.log(Log.C_LOG_TYPE_S, 'pos :', details[0], ', vel :', details[1], ', acc :', details[2])
     time_stamp += time_step
 
-    if visualize: sleep(0.1)
+    if visualize: sleep(0.05)
 
 
 
