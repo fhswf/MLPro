@@ -15,7 +15,10 @@ Ver. 0.1.0 (2023-04-18)
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
 
-from mlpro.oa.streams import *
+from mlpro.bf.various import *
+from mlpro.bf.plot import *
+from mlpro.bf.streams import *
+from mlpro.oa.streams import OATask
 from mlpro.bf.math.geometry import Point
 from typing import List, Tuple
 

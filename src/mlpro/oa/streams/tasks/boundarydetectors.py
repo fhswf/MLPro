@@ -24,10 +24,13 @@
 ## -- 2023-02-13  1.1.6     SY       Bug Fix: Solving issue, when the first data is lower than 1
 ## -- 2023-02-13  1.1.7     LSB      Bug Fix: Setting initial boundaries to [0,0]
 ## -- 2023-04-09  1.2.0     DA       Refactoring of method BoundaryDetector._adapt()
+## -- 2023-05-02  1.2.1     DA       Class BoundaryDetector
+## --                                - constructor: removed parameter p_window
+## --                                - method _adapt(): removed unnecessary code
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-04-09)
+Ver. 1.2.1 (2023-05-02)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
@@ -38,7 +41,6 @@ from mlpro.bf.various import *
 from mlpro.bf.plot import *
 from mlpro.bf.math import *
 from mlpro.bf.mt import Task as MLTask
-import mlpro.bf.streams.tasks.windows as windows
 from mlpro.oa.streams.basics import *
 from typing import Union, Iterable, List
 
@@ -65,8 +67,6 @@ class BoundaryDetector (OATask):
         True to turn on the visualization.
     p_logging
         Logging level for the task, default is Log all.
-    p_window: Window
-        A predecessor window object, if any.
     p_scaler: float, np.ndarray
         A scaler vector to scale the detected boundaries.
 
@@ -87,7 +87,6 @@ class BoundaryDetector (OATask):
                  p_duplicate_data : bool = False,
                  p_visualize : bool = False,
                  p_logging=Log.C_LOG_ALL,
-                 p_window: windows.Window = None,
                  p_scaler:Union[float, Iterable] = np.ones([1]),
                  **p_kwargs):
 
@@ -99,7 +98,6 @@ class BoundaryDetector (OATask):
                          p_logging = p_logging,
                          **p_kwargs)
 
-        self._window = p_window
         self._scaler = p_scaler
         self._related_set: Set = None
 
@@ -142,14 +140,13 @@ class BoundaryDetector (OATask):
                     boundary = [ 0,0 ]
                     dim[i].set_boundaries(boundary)
                     adapted = True
+
                 if value < boundary[0]:
                     dim[i].set_boundaries([value*self._scaler[i], boundary[1]])
                     adapted = True
                 elif value > boundary[1]:
                     dim[i].set_boundaries([boundary[0],value*self._scaler[i]])
                     adapted = True
-                else:
-                    adapted = False or adapted
 
         return adapted
 
@@ -166,7 +163,8 @@ class BoundaryDetector (OATask):
             p_inst_del:list
                 List of old obsolete instance/s removed from the workflow
         """
-        if p_inst_new or p_inst_del: #and not p_inst_del
+
+        if p_inst_new:
             self.adapt(p_inst_new=p_inst_new, p_inst_del=p_inst_del)
 
 
@@ -189,6 +187,7 @@ class BoundaryDetector (OATask):
         """
 
         adapted = False
+        
         try:
             boundaries = self._scaler*p_event_object.get_raising_object().get_boundaries()
             self._related_set = p_event_object.get_data()["p_set"]
@@ -197,7 +196,9 @@ class BoundaryDetector (OATask):
                 if dim.get_boundaries()[0] != boundaries[i][0] or dim.get_boundaries()[1] != boundaries[i][1]:
                     dim.set_boundaries([boundaries[i]])
                     adapted = True
-        except: raise ImplementationError("Event not raised by a window")
+        except: 
+            raise ImplementationError("Event not raised by a window")
+        
         return adapted
 
 
