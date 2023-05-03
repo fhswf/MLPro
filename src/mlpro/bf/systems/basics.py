@@ -1527,10 +1527,13 @@ class MultiSystem(Workflow, System):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
                  p_name: str = None, 
+                 p_id = None,
                  p_range_max=Async.C_RANGE_THREAD, 
+                 p_autorun = Task.C_AUTORUN_NONE,
                  p_class_shared=None, 
                  p_mode=Mode.C_MODE_SIM, 
-                 p_latency: timedelta = None, 
+                 p_latency: timedelta = None,
+                 p_t_step:timedelta = None, 
                  p_fct_strans: FctSTrans = None, 
                  p_fct_success: FctSuccess = None, 
                  p_fct_broken: FctBroken = None, 
@@ -1545,13 +1548,19 @@ class MultiSystem(Workflow, System):
         
 
         System.__init__( self,
+                         p_name=p_name,
+                         p_id = p_id,
+                         p_name = p_name,
+                         p_range_max = p_range_max,
+                         p_autorun=p_autorun,
+                         p_class_shared = p_class_shared,
                          p_mode = p_mode, 
                          p_latency=p_latency, 
+                         p_t_step = p_t_step,
                          p_fct_strans=p_fct_strans, 
                          p_fct_success=p_fct_success, 
                          p_fct_broken=p_fct_broken,
                          p_mujoco_file=p_mujoco_file,
-                         p_name=p_name,
                          p_frame_skip=p_frame_skip, 
                          p_state_mapping=p_state_mapping,
                          p_action_mapping=p_action_mapping, 
@@ -1559,6 +1568,13 @@ class MultiSystem(Workflow, System):
                          p_visualize=p_visualize, 
                          p_logging=p_logging )
 
+        Workflow.__init__(self, 
+                          p_name = p_name, 
+                          p_range_max = p_range_max, 
+                          p_class_shared = p_class_shared,
+                          p_visualize = p_visualize, 
+                          p_logging = p_logging,
+                          **p_kwargs)
         
         pass
 
