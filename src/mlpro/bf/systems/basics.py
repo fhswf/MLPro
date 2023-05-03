@@ -35,10 +35,11 @@
 ## -- 2023-04-19  1.10.1    LSB      Mew DemoScenario class for system demonstration
 ## -- 2023-04-20  1.10.2    LSB      Refactoring State-Instance inheritence
 ## -- 2023-05-03  1.11.0    LSB      Enhancing System Class for task and workflow architecture 
+## -- 2023-05-03  1.11.1    LSB      Bug Fix: Visualization for DemoScenario
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.11.0 (2023-05-03)
+Ver. 1.11.1 (2023-05-03)
 
 
 This module provides models and templates for state based systems.
@@ -1597,6 +1598,7 @@ class DemoScenario(ScenarioBase):
     C_NAME = 'Demo System Scenario'
     C_ACTION_RANDOM = 'random'
     C_ACTION_CONSTANT = 'constant'
+
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -1639,7 +1641,7 @@ class DemoScenario(ScenarioBase):
                                  " of dimenstions in the action space of the system.")
         
         self.reset()
-            
+
 
 ## -------------------------------------------------------------------------------------------------
     def setup(self):
@@ -1671,6 +1673,7 @@ class DemoScenario(ScenarioBase):
         """
 
         self._system.reset(p_seed = p_seed)
+        self._system.init_plot()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1715,5 +1718,8 @@ class DemoScenario(ScenarioBase):
 
         return Action(p_action_space=action_space, p_values=action)
  
-
-        
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, **p_kwargs):
+       
+       super().update_plot(**p_kwargs)
+       self._system.update_plot(**p_kwargs)
