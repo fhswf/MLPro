@@ -47,6 +47,7 @@ This module provides models and templates for state based systems.
 
 
 from time import sleep
+from mlpro.bf.mt import Range
 from mlpro.bf.streams.models import Instance
 from mlpro.bf.various import TStamp, ScientificObject, Persistent
 from mlpro.bf.data import *
@@ -1561,6 +1562,24 @@ class MultiSystem(Workflow, System):
         
         pass
 
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SystemShared(Shared):
+
+
+    C_NAME = 'System Shared'
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
+        
+        
+        
+        Shared.__init__(self, p_range = p_range)
 
 
 
