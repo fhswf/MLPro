@@ -134,10 +134,12 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
         ----------
         trainer : dict
             a dictionary that consists of sampled data for training, which are splitted to 2 keys
-            such as input and output. The value of each key is a torch.Tensor of the sampled data.
+            such as input and output. The value of each key is a torch's DataLoader of the sampled
+            data.
         tester : dict
             a dictionary that consists of sampled data for testing, which are splitted to 2 keys
-            such as input and output. The value of each key is a torch.Tensor of the sampled data.
+            such as input and output. The value of each key is a torch's DataLoader of the sampled
+            data.
         """
 
         dataset_size    = len(self._data_buffer["input"])
@@ -150,49 +152,23 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
         test_sampler    = SubsetRandomSampler(test_indices)
         trainer         = {}
         tester          = {}
-        loader          = []
         
-        trainer_loader_input    = torch.utils.data.DataLoader(self._data_buffer["input"],
-                                                              batch_size=self._batch_size,
-                                                              sampler=train_sampler
-                                                              )
-        loader.append(trainer_loader_input)
-        
-        trainer_loader_output   = torch.utils.data.DataLoader(self._data_buffer["output"],
-                                                              batch_size=self._batch_size,
-                                                              sampler=train_sampler
-                                                              )
-        loader.append(trainer_loader_output)
-        
-        tester_loader_input     = torch.utils.data.DataLoader(self._data_buffer["input"],
-                                                              batch_size=self._batch_size,
-                                                              sampler=test_sampler
-                                                              )
-        loader.append(tester_loader_input)
-        
-        tester_loader_output    = torch.utils.data.DataLoader(self._data_buffer["output"],
-                                                              batch_size=self._batch_size,
-                                                              sampler=test_sampler
-                                                              )
-        loader.append(tester_loader_output)
-        
-        counter = 0
-        for ld in loader:
-            data = None
-            for idx in ld.sampler.indices:
-                if data is None:
-                    data = ld.dataset[idx]
-                else:
-                    data = torch.cat((data, ld.dataset[idx]))
-            if counter == 0:
-                trainer["input"] = data
-            elif counter == 1:
-                trainer["output"] = data
-            elif counter == 2:
-                tester["input"] = data
-            elif counter == 3:
-                tester["output"] = data
-            counter += 1
+        trainer["input"] = torch.utils.data.DataLoader(self._data_buffer["input"],
+                                                       batch_size=self._batch_size,
+                                                       sampler=train_sampler
+                                                       )
+        trainer["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
+                                                        batch_size=self._batch_size,
+                                                        sampler=train_sampler
+                                                        )
+        tester["input"] = torch.utils.data.DataLoader(self._data_buffer["input"],
+                                                      batch_size=self._batch_size,
+                                                      sampler=test_sampler
+                                                      )
+        tester["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
+                                                       batch_size=self._batch_size,
+                                                       sampler=test_sampler
+                                                       )
         
         return trainer, tester
     
