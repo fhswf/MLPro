@@ -80,6 +80,20 @@ MLPro also provides the possibility to integrate real world hardware, such as co
 object. Furthermore, Systems module integrates optional visualization and simulation functionalities from MuJoCo into
 MLPro for re-usability.
 
+7. **DemoScenario**:
+
+Our module provides a demo scenario class to help users validate their system's behavior. The Demo scenario takes a system 
+as a parameter and runs a particular scenario to validate its behavior. Currently, this scenario does not consider an external 
+object to compute and deliver the actions. Rather, it computes the action internally and processes the action in the system. 
+The demo scenario supports two action styles:
+
+- Constant Action: 
+    A constant value of action is given for the entire run.
+
+- Action List: 
+    A list of actions provided by the user is used to process the system for a given number of cycles. With this 
+    demo scenario class, users can easily test their system and ensure that it behaves as expected.
+
 **Learn more**
 
 .. toctree::
@@ -91,7 +105,9 @@ MLPro for re-usability.
 
 **Cross Reference**
 
-- :ref:`Howto BF-SYSTEMS-001: System, Controller, Actuator, Sensor <Howto BF SYSTEMS 001>`
-- :ref:`Howto BF-SYSTEMS-002: Systems wrapped with MuJoCo <Howto BF SYSTEMS 002>`
+- :ref:`Howto BF-SYSTEMS-010: System, Controller, Actuator, Sensor <Howto BF SYSTEMS 010>`
+- :ref:`Howto BF-SYSTEMS-011: Systems wrapped with MuJoCo <Howto BF SYSTEMS 011>`
+- :ref:`Howto BF-SYSTEMS-012: Cartpole Continuous Systems wrapped with MuJoCo <Howto BF SYSTEMS 012>`
+- :ref:`Howto BF-SYSTEMS-013: MuJoCo Simulation with Camera <Howto BF SYSTEMS 013>`
 - :ref:`API Reference BF-Systems <target_ap_bf_systems>`
 - :ref:`API Reference BF-Systems Sample Pool <target_pool_bf_systems>`
