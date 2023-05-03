@@ -7,6 +7,7 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-19  0.0.0     LSB      Creation 
 ## -- 2023-04-19  1.0.0     LSB      Release 
+## -- 2023-05-03  1.0.1     LSB      Logging in Dark Mode
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -19,7 +20,7 @@ You will learn:
 
 2. Running a system in MLPro
 
-ver. 1.0.0 (2023-04-19)
+ver. 1.0.1 (2023-05-03)
 
 """
 
@@ -36,7 +37,7 @@ else:
 
 
 
-systems = [DoublePendulumSystemS4(), DoublePendulumSystemS7()]
+systems = [DoublePendulumSystemS4(p_logging=p_logging), DoublePendulumSystemS7(p_logging=p_logging)]
 
 
 for system in systems:

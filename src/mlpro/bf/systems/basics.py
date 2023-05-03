@@ -1557,6 +1557,7 @@ class DemoScenario(ScenarioBase):
 
     C_ACTION_RANDOM = 'random'
     C_ACTION_CONSTANT = 'constant'
+    C_NAME = 'Demo System Scenario'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
