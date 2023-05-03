@@ -34,7 +34,7 @@
 ## -- 2023-04-11  1.9.3     MRD      Add custom reset functionality for MuJoCo
 ## -- 2023-04-19  1.10.1    LSB      Mew DemoScenario class for system demonstration
 ## -- 2023-04-20  1.10.2    LSB      Refactoring State-Instance inheritence
-## -- 2023-05-03  1.11.0    LSB      Enhancing System Class for task and workflow architecture
+## -- 2023-05-03  1.11.0    LSB      Enhancing System Class for task and workflow architecture and t_step
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -315,7 +315,7 @@ class FctSTrans (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
         """
         Simulates a state transition based on a state and action. Custom method _simulate_reaction()
         is called.
@@ -334,11 +334,11 @@ class FctSTrans (Log):
         """
 
         self.log(Log.C_LOG_TYPE_I, 'Start simulating a state transition...')
-        return self._simulate_reaction( p_state = p_state, p_action = p_action )
+        return self._simulate_reaction( p_state = p_state, p_action = p_action, p_t_step = p_t_step )
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def _simulate_reaction(self, p_state: State, p_action: Action, p_t_step: timedelta = None) -> State:
         """
         Custom method for a simulated state transition. See method simulate_reaction() for further
         details.
@@ -1216,7 +1216,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         # 1 State transition
         if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
-            self._set_state(self.simulate_reaction(self.get_state(), p_action))
+            self._set_state(self.simulate_reaction(self.get_state(), p_action, self._t_step))
 
         elif self._mode == self.C_MODE_REAL:
             # 1.2 Real state transition
@@ -1246,7 +1246,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State = None, p_action: Action = None) -> State:
+    def simulate_reaction(self, p_state: State = None, p_action: Action = None, p_t_step:timedelta = None) -> State:
         """
         Simulates a state transition based on a state and an action. The simulation step itself is
         carried out either by an internal custom implementation in method _simulate_reaction() or
@@ -1266,7 +1266,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         """
 
         if self._fct_strans is not None:
-            return self._fct_strans.simulate_reaction(p_state, p_action)
+            return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
         elif self._mujoco_handler is not None:
             # Check if there is changing in action
             action = self.action_to_mujoco(p_action)
@@ -1280,11 +1280,11 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
             return current_state
         else:
-            return self._simulate_reaction(p_state, p_action)
+            return self._simulate_reaction(p_state, p_action, p_t_step)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def _simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
         """
         Custom method for a simulated state transition. Implement this method if no external state
         transition function is used. See method simulate_reaction() for further
