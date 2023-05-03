@@ -34,10 +34,11 @@
 ## -- 2023-04-11  1.9.3     MRD      Add custom reset functionality for MuJoCo
 ## -- 2023-04-19  1.10.1    LSB      Mew DemoScenario class for system demonstration
 ## -- 2023-04-20  1.10.2    LSB      Refactoring State-Instance inheritence
+## -- 2023-05-03  1.11.0    LSB      Enhancing System Class for task and workflow architecture
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.10.2 (2023-04-20)
+Ver. 1.11.0 (2023-05-03)
 
 
 This module provides models and templates for state based systems.
@@ -793,19 +794,25 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
+                  p_id = None,
+                  p_name : str =None,
+                  p_range_max : int = Async.C_RANGE_NONE,
+                  p_autorun = Task.C_AUTORUN_NONE,
+                  p_class_shared = None,
                   p_mode = Mode.C_MODE_SIM,
                   p_latency : timedelta = None,
+                  p_t_step : timedelta = None,
                   p_fct_strans : FctSTrans = None,
                   p_fct_success : FctSuccess = None,
                   p_fct_broken : FctBroken = None,
                   p_mujoco_file = None,
-                  p_name = None,
                   p_frame_skip : int = 1,
                   p_state_mapping = None,
                   p_action_mapping = None,
                   p_camera_conf : tuple = (None, None, None),
                   p_visualize : bool = False,
-                  p_logging = Log.C_LOG_ALL ):
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
 
         self._fct_strans            = p_fct_strans
         self._fct_success           = p_fct_success
@@ -819,15 +826,16 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         self._controllers           = []
         self._mapping_actions       = {}
         self._mapping_states        = {}
-            
+        self._t_step = p_t_step
+
         if p_mujoco_file is not None:
             from mlpro.wrappers.mujoco import MujocoHandler
-            
+
             if p_name is not None:
                 self.C_NAME = p_name
             else:
                 self.C_NAME = p_mujoco_file.split("/")[-1][:p_mujoco_file.split("/")[-1].find(".")]
-                
+
             self._mujoco_file    = p_mujoco_file
             self._frame_skip     = p_frame_skip
             self._state_mapping  = p_state_mapping
@@ -835,18 +843,18 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
             self._camera_conf    = p_camera_conf
 
             self._mujoco_handler = MujocoHandler(
-                                        p_mujoco_file=self._mujoco_file, 
+                                        p_mujoco_file=self._mujoco_file,
                                         p_frame_skip=self._frame_skip,
                                         p_state_mapping=self._state_mapping,
                                         p_action_mapping=self._action_mapping,
                                         p_camera_conf=self._camera_conf,
                                         p_visualize=p_visualize,
                                         p_logging=p_logging)
-            
+
             self._state_space, self._action_space = self._mujoco_handler.setup_spaces()
             # Get Latency
             mujoco_latency = self._mujoco_handler.get_latency()
-            
+
             if mujoco_latency is not None:
                 self.set_latency(timedelta(0,mujoco_latency,0))
             else:
@@ -864,7 +872,16 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         FctBroken.__init__(self, p_logging=p_logging)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
-        Persistent.__init__(self, p_id=None, p_logging=p_logging)
+        Persistent.__init__(self, p_id=p_id, p_logging=p_logging)
+        Task.__init__(self,
+                        p_id=p_id,
+                        p_name = p_name,
+                        p_range_max = p_range_max,
+                        p_autorun = p_autorun,
+                        p_class_shared=p_class_shared,
+                        p_visualize=p_visualize,
+                        p_logging=p_logging,
+                        **p_kwargs)
 
 
  ## -------------------------------------------------------------------------------------------------
@@ -890,18 +907,18 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         """
         An embedded MuJoCo system can not be pickled and needs to be removed from the pickle stream.
         """
-        
+
         p_state['_mujoco_handler'] = None
 
 
 ## -------------------------------------------------------------------------------------------------
     def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
-        
+
         if self._mujoco_file is None: return
 
         from mlpro.wrappers.mujoco import MujocoHandler
 
-        self._mujoco_handler = MujocoHandler( p_mujoco_file=self._mujoco_file, 
+        self._mujoco_handler = MujocoHandler( p_mujoco_file=self._mujoco_file,
                                               p_frame_skip=self._frame_skip,
                                               p_state_mapping=self._state_mapping,
                                               p_action_mapping=self._action_mapping,
@@ -959,8 +976,8 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 ## -------------------------------------------------------------------------------------------------
     def get_action_space(self) -> MSpace:
         return self._action_space
-        
-        
+
+
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
         """
@@ -1069,10 +1086,10 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
                 except:
                     self.log(Log.C_LOG_TYPE_E, 'Invalid sensor "' + entry[2] + '"')
                     successful = False
-                
+
                 if successful:
                     mapping_int.append( ( entry[0], entry[1], entry[2], state_id, sensor_id ) )
-                    
+
             elif entry[0] == 'A':
                 # 1.2 Check action and actuator
                 try:
@@ -1086,7 +1103,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
                 except:
                     self.log(Log.C_LOG_TYPE_E, 'Invalid sensor "' + entry[2] + '"')
                     successful = False
-                
+
                 if successful:
                     mapping_int.append( ( entry[0], entry[1], entry[2], action_id, actuator_id ) )
 
@@ -1128,6 +1145,29 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         """
 
         self._state = p_state
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self, **p_kwargs):
+        """
+        Run method that runs the system as a task. It runs the simulate reaction method of the system with state and
+        action as a parameter.
+        """
+        pass
+
+## -------------------------------------------------------------------------------------------------
+    def get_fct_strans(self):
+        return self._fct_strans
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_fct_success(self):
+        return self._fct_success
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_fct_broken(self):
+        return self._fct_broken
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1250,10 +1290,10 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         transition function is used. See method simulate_reaction() for further
         details.
         """
-        
+
         raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
-    
-    
+
+
 ## -------------------------------------------------------------------------------------------------
     def action_to_mujoco(self, p_mlpro_action):
         """
@@ -1261,8 +1301,8 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         """
         action = p_mlpro_action.get_sorted_values()
         return self._action_to_mujoco(action)
-    
-    
+
+
 ## -------------------------------------------------------------------------------------------------
     def _action_to_mujoco(self, p_mlpro_action):
         """
@@ -1279,11 +1319,11 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         Numpy
             Modified MLPro action
         """
-        
+
         return p_mlpro_action
 
 
-## -------------------------------------------------------------------------------------------------    
+## -------------------------------------------------------------------------------------------------
     def state_from_mujoco(self, p_mujoco_state):
         """
         State conversion method from converting MuJoCo state to MLPro state.
@@ -1336,12 +1376,12 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
             else:
                 sensor_value = mapping[0].get_sensor_value( p_id = mapping[1] )
 
-                if sensor_value is None: 
+                if sensor_value is None:
                     successful = False
                 else:
                     new_state.set_value(p_dim_id=state_dim_id, p_value = sensor_value )
 
-        if not successful: 
+        if not successful:
             return False
 
         # 3 Assessment of new state
@@ -1454,14 +1494,14 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
     def get_broken(self) -> bool:
         if self._state is None: return False
         return self._state.get_broken()
-    
+
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot( self, 
+    def init_plot( self,
                    p_figure:Figure = None,
-                   p_plot_settings : PlotSettings = None, 
+                   p_plot_settings : PlotSettings = None,
                    **p_kwargs):
-        
+
         if self._mujoco_handler is not None: return
         super().init_plot(p_figure=p_figure, p_plot_settings=p_plot_settings, **p_kwargs)
 
