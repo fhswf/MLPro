@@ -1554,10 +1554,10 @@ class DemoScenario(ScenarioBase):
             Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
     """    
 
-
+    C_NAME = 'Demo System Scenario'
     C_ACTION_RANDOM = 'random'
     C_ACTION_CONSTANT = 'constant'
-    C_NAME = 'Demo System Scenario'
+    
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, 
