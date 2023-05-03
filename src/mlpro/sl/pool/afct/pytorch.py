@@ -15,10 +15,11 @@
 ## -- 2023-03-02  3.0.1     SY        Updating and shifting from mlpro.sl.models
 ## -- 2023-03-10  3.0.2     SY        Refactoring PyTorchBuffer
 ## -- 2023-04-09  3.0.3     SY        Refactoring
+## -- 2023-05-03  3.0.4     SY        Updating sampling method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.3 (2023-04-09)
+Ver. 3.0.4 (2023-05-03)
 
 This a helper module for supervised learning models using PyTorch. 
 """
@@ -128,6 +129,15 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
         """
         This method has a functionality to sample from the buffer using built-in PyTorch
         functionalities.
+
+        Returns
+        ----------
+        trainer : dict
+            a dictionary that consists of sampled data for training, which are splitted to 2 keys
+            such as input and output. The value of each key is a torch.Tensor of the sampled data.
+        tester : dict
+            a dictionary that consists of sampled data for testing, which are splitted to 2 keys
+            such as input and output. The value of each key is a torch.Tensor of the sampled data.
         """
 
         dataset_size    = len(self._data_buffer["input"])
@@ -140,24 +150,49 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
         test_sampler    = SubsetRandomSampler(test_indices)
         trainer         = {}
         tester          = {}
+        loader          = []
         
-        trainer["input"] = torch.utils.data.DataLoader(self._data_buffer["input"],
-                                                       batch_size=self._batch_size,
-                                                       sampler=train_sampler
-                                                       )
-        trainer["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
-                                                        batch_size=self._batch_size,
-                                                        sampler=train_sampler
-                                                        )
+        trainer_loader_input    = torch.utils.data.DataLoader(self._data_buffer["input"],
+                                                              batch_size=self._batch_size,
+                                                              sampler=train_sampler
+                                                              )
+        loader.append(trainer_loader_input)
         
-        tester["input"] = torch.utils.data.DataLoader(self._data_buffer["input"],
-                                                      batch_size=self._batch_size,
-                                                      sampler=test_sampler
-                                                      )
-        tester["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
-                                                       batch_size=self._batch_size,
-                                                       sampler=test_sampler
-                                                       )
+        trainer_loader_output   = torch.utils.data.DataLoader(self._data_buffer["output"],
+                                                              batch_size=self._batch_size,
+                                                              sampler=train_sampler
+                                                              )
+        loader.append(trainer_loader_output)
+        
+        tester_loader_input     = torch.utils.data.DataLoader(self._data_buffer["input"],
+                                                              batch_size=self._batch_size,
+                                                              sampler=test_sampler
+                                                              )
+        loader.append(tester_loader_input)
+        
+        tester_loader_output    = torch.utils.data.DataLoader(self._data_buffer["output"],
+                                                              batch_size=self._batch_size,
+                                                              sampler=test_sampler
+                                                              )
+        loader.append(tester_loader_output)
+        
+        counter = 0
+        for ld in loader:
+            data = None
+            for idx in ld.sampler.indices:
+                if data is None:
+                    data = ld.dataset[idx]
+                else:
+                    data = torch.cat((data, ld.dataset[idx]))
+            if counter == 0:
+                trainer["input"] = data
+            elif counter == 1:
+                trainer["output"] = data
+            elif counter == 2:
+                tester["input"] = data
+            elif counter == 3:
+                tester["output"] = data
+            counter += 1
         
         return trainer, tester
     
