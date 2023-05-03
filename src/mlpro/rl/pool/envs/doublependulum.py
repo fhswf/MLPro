@@ -262,7 +262,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
                              p_logging = p_logging)
 
 
-
+        self._t_step = self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
         self._state = State(self._state_space)
         self._target_state = State(self._state_space)
         self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
