@@ -46,7 +46,7 @@ class MyAdaptiveScenario(OAScenario):
 
         # 1 Import a stream from OpenML
         mlpro = StreamProviderMLPro(p_logging=p_logging)
-        stream = mlpro.get_stream( p_name=StreamMLProStaticClouds2D.C_NAME,  #StreamMLProRnd10D.C_NAME,
+        stream = mlpro.get_stream( p_name=StreamMLProRnd10D.C_NAME,
                                    p_mode=p_mode,
                                    p_visualize=p_visualize,
                                    p_logging=p_logging)
@@ -82,8 +82,6 @@ class MyAdaptiveScenario(OAScenario):
 
         # 4 Return stream and workflow
         return stream, workflow
-
-
 
 
 

@@ -119,7 +119,6 @@ class MyAdaptiveScenario (OAScenario):
 # 1 Preparation of demo/unit test mode
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    # 1.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
     visualize   = True
 
@@ -141,12 +140,12 @@ else:
     step_rate   = 1
 
 
+
 # 2 Instantiate the stream scenario
 myscenario = MyAdaptiveScenario(p_mode=Mode.C_MODE_REAL,
     p_cycle_limit=cycle_limit,
     p_visualize=visualize,
     p_logging=logging)
-
 
 
 
