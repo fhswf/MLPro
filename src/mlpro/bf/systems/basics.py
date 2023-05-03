@@ -315,7 +315,7 @@ class FctSTrans (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
+    def simulate_reaction(self, p_state: State, p_action: Action) -> State:
         """
         Simulates a state transition based on a state and action. Custom method _simulate_reaction()
         is called.
@@ -1216,7 +1216,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         # 1 State transition
         if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
-            self._set_state(self.simulate_reaction(self.get_state(), p_action, self._t_step))
+            self._set_state(self.simulate_reaction(self.get_state(), p_action))
 
         elif self._mode == self.C_MODE_REAL:
             # 1.2 Real state transition
@@ -1246,7 +1246,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State = None, p_action: Action = None, p_t_step:timedelta = None) -> State:
+    def simulate_reaction(self, p_state: State = None, p_action: Action = None) -> State:
         """
         Simulates a state transition based on a state and an action. The simulation step itself is
         carried out either by an internal custom implementation in method _simulate_reaction() or
