@@ -10,10 +10,11 @@
 ## -- 2023-03-10  1.1.0     SY       Combining _hyperparameters_check and _init_hyperparam
 ## -- 2023-03-28  1.2.0     SY       - Add _complete_state, _reduce_state due to new class Persistent
 ## --                                - Update _map
+## -- 2023-05-03  1.2.1     SY       Updating _adapt_offline method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-03-28)
+Ver. 1.2.1 (2023-05-03)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
@@ -423,14 +424,25 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_offline(self, p_dataset) -> bool:
+    def _adapt_offline(self, p_dataset:dict) -> bool:
         """
         Adaptation mechanism for PyTorch based model for offline learning.
+
+        Parameters
+        ----------
+        p_dataset : dict
+            a dictionary that consists of a set of data, which are splitted to 2 keys such as input
+            and output. The value of each key is a torch.Tensor of the sampled data.
+
+        Returns
+        ----------
+            bool
         """
 
         self._sl_model.train()
-        outputs = self.forward(p_dataset["input"].dataset[0])
-        loss    = self._calc_loss(outputs, p_dataset["output"].dataset[0])
+        
+        outputs = self.forward(p_dataset["input"])
+        loss    = self._calc_loss(outputs, p_dataset["output"])
         self._optimize(loss)
             
         return True
@@ -456,6 +468,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         output      = self._sl_model(p_input)   
         ids_        = self.get_hyperparam().get_dim_ids()
         output      = output.reshape(BatchSize, int(self.get_hyperparam().get_value(ids_[1])))
+        
         return output
 
 
