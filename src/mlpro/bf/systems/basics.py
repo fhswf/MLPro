@@ -47,6 +47,7 @@ This module provides models and templates for state based systems.
 
 
 from time import sleep
+from typing import List
 from mlpro.bf.mt import Range
 from mlpro.bf.streams.models import Instance
 from mlpro.bf.various import TStamp, ScientificObject, Persistent
@@ -1567,6 +1568,7 @@ class MultiSystem(Workflow, System):
                          p_visualize=p_visualize, 
                          p_logging=p_logging )
 
+
         Workflow.__init__(self, 
                           p_name = p_name, 
                           p_range_max = p_range_max, 
@@ -1585,16 +1587,212 @@ class MultiSystem(Workflow, System):
 ## -------------------------------------------------------------------------------------------------
 class SystemShared(Shared):
 
+    """
+    A specialised shared object for managing IPC between Multisystems.
+
+    Parameters
+    ----------
+        p_range 
+            The multiprocessing range for the specific process. Default is None.
+        p_spaces : list[MSpace]
+            The list of spaces stored within the shared object. 
+
+    Attributes
+    ----------
+        _spaces
+            Spaces of all the systems registered in the Shared Object.
+
+        _states
+            States of all the systems registered in the Shared Object.
+
+        _actions
+            Corresponding Actions for all the systems.
+
+        _dimension_set
+            All the dimensions present in the Shared Object.
+
+        _mappings
+            Mapping configurations for system to action mapping.
+
+    """
 
     C_NAME = 'System Shared'
+    C_MAP_D2D = 'Dimension to Dimension Mapping'
+    C_MAP_S2A = 'State to Action Mapping'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_range: int = Range.C_RANGE_PROCESS):
+
+
+
+        Shared.__init__(self,
+                        p_range = p_range)
+
+
+        self._spaces : dict = {}
+        self._states : dict = {}
+        self._actions : dict = {}
+        self._dimension_set : set = set()
+        self._mappings : dict = {}
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_range: int = Range.C_RANGE_PROCESS):
+    def update_state(self, p_sys_id, p_state : State) -> bool:
+        """
+        Updates the states in the Shared Object.
         
-        
-        
-        Shared.__init__(self, p_range = p_range)
+        Parameters
+        ----------
+            p_state : State
+                The id of the system, for which action is to be fetched.
+
+        Returns
+        -------
+            bool
+        """
+
+        self._states[p_sys_id] = p_state.copy()
+        self._map(p_state = self._states[p_sys_id])
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _update_actions(self, p_state):
+
+        maps = self._map(p_state = p_state)
+
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_action(self, p_sys_id) -> Action:
+        """
+        Fetches the corresponding action for a particular system.
+
+        Parameters
+        ----------
+            p_sys_id
+                The id of the system, for which action is to be fetched.
+
+        Returns
+        -------
+            action : Action
+                The corresponding action for the system.
+        """
+
+        action = self._actions[p_sys_id].copy()
+
+        return action
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_state(self, p_sys_id) -> State:
+        """
+        Fetches the state of a particular system from the Shared Object.
+
+        Parameters
+        ----------
+            p_sys_id
+                The id of the system, of which state is to be fetched.
+
+        Returns
+        -------
+            state : State
+                The corresponding state of the system.
+
+        """
+        state = self._states[p_sys_id].copy()
+
+        return state
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map(self, p_state:State = None):
+        """
+        Maps a state to Action.
+
+        Parameters
+        ----------
+        p_sys_id
+            Id of the system for which action is to be mapped into the mappings.
+
+        p_state : State
+            State to be mapped into the 'states' dictionary.
+
+        Returns
+        -------
+
+        """
+        maps = []
+
+        for dim in p_state.get_related_set().get_dims():
+            maps.append(self._mappings[dim])
+
+        return maps
+
+
+## -------------------------------------------------------------------------------------------------
+    def register_system(self, p_system:System, p_mapping : tuple):
+        """
+        Registers the system in the Shared Object and sets up the dimension to dimension mapping.
+
+        Parameters
+        ----------
+        p_system : System
+            The system to be registered.
+
+        p_mapping : (StateDimension : ActionDimension)
+            The dimension to dimension mapping of State to Action in a MultiSystem context.
+
+
+        Returns
+        -------
+
+        """
+        try:
+            system_id = p_system.get_id()
+            state_space_dims = list(i for i in p_system.get_state_space().get_dims())
+            action_space_dims = list(i for i in p_system.get_action_space().get_dims())
+            self._spaces[system_id] = p_system.get_state_space().copy()
+            self._states[system_id] = State(self._spaces[system_id])
+            self._actions[system_id] = Action(p_action_space=p_system.get_action_space())
+
+            self._dimension_set.update(*state_space_dims)
+            self._dimension_set.update(*action_space_dims)
+
+            return True
+
+        except:
+
+            return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_mappings(self, p_mapping):
+        """
+        Sets up the mappings in the dictionary.
+
+        Parameters
+        ----------
+        p_mapping : (StateDimension : ActionDimension)
+            The dimension to dimension mapping of State to Action in a MultiSystem context.
+
+        Returns
+        -------
+
+        """
+        for state_dim, action_dim in p_mapping:
+
+            if state_dim not in self._mappings.keys():
+                self._mappings[state_dim] = []
+
+            self._mappings[state_dim].append(action_dim)
+
+
 
 
 
