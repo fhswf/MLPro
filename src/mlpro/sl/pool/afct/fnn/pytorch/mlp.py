@@ -140,9 +140,10 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         except:
             pass 
         
-        self._loss_fct = self.get_hyperparam().get_value(ids_[8])()
-        self._optimizer = self.get_hyperparam().get_value(ids_[7])(model.parameters(), lr=self.get_hyperparam().get_value(ids_[12]))
-
+        self._loss_fct      = self.get_hyperparam().get_value(ids_[8])()
+        self._optimizer     = self.get_hyperparam().get_value(ids_[7])(model.parameters(), lr=self.get_hyperparam().get_value(ids_[12]))
+        self._sampling_seed = self.get_hyperparam().get_value(ids_[11])
+        
         return model
     
 
@@ -440,18 +441,17 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         """
 
         self._sl_model.train()
-        manual_seed = 0
         
         for itr in range(len(p_dataset["input"])):
             
-            torch.manual_seed(manual_seed)
+            torch.manual_seed(self._sampling_seed)
             outputs = self.forward(torch.squeeze(next(iter(p_dataset["input"]))))
             
-            torch.manual_seed(manual_seed)
+            torch.manual_seed(self._sampling_seed)
             loss    = self._calc_loss(outputs, torch.squeeze(next(iter(p_dataset["output"]))))
             
             self._optimize(loss)
-            manual_seed += 1
+            self._sampling_seed += 1
             
         return True
 
