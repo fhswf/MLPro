@@ -1550,7 +1550,6 @@ class MultiSystem(Workflow, System):
         System.__init__( self,
                          p_name=p_name,
                          p_id = p_id,
-                         p_name = p_name,
                          p_range_max = p_range_max,
                          p_autorun=p_autorun,
                          p_class_shared = p_class_shared,
