@@ -1592,12 +1592,15 @@ class MultiSystem(Workflow, System):
 class SystemShared(Shared):
 
     """
-    A specialised shared object for managing IPC between Multisystems.
+    A specialised shared object for managing IPC between MultiSystems.
+
+    :TODO: Entry Systems to be handled yet, that get action from outside.
 
     Parameters
     ----------
         p_range 
             The multiprocessing range for the specific process. Default is None.
+
 
     Attributes
     ----------
@@ -1619,8 +1622,6 @@ class SystemShared(Shared):
     """
 
     C_NAME = 'System Shared'
-    C_MAP_D2D = 'Dimension to Dimension Mapping'
-    C_MAP_S2A = 'State to Action Mapping'
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -1631,7 +1632,6 @@ class SystemShared(Shared):
         Shared.__init__(self,
                         p_range = p_range)
 
-        self.systems = []
         self._spaces : dict = {}
         self._states : dict = {}
         self._actions : dict = {}
@@ -1662,12 +1662,24 @@ class SystemShared(Shared):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_actions(self, p_sys_id, p_state:State):
+        """
+        Updates the action values based on a new state, in a MultiSystem Context.
+
+        Parameters
+        ----------
+        p_sys_id
+            Id of the system from which the state is received.
+
+        p_state : State
+            The State of the system which affects the action.
+
+        """
 
         action_sys_ids, maps = self._map(p_sys_id=p_sys_id ,p_state = p_state)
 
-        # for action_sys_ids:
-        #     self._actions[action_sys_ids]
+
         # :TODO: Check if there actually exists a mapping among them, here and also in _map function
+
         for state_id, (action_sys_id, action_id) in maps:
             action_space = self._spaces[action_sys_id]
             self._actions[action_sys_id][action_space.index(action_id)] = p_state.get_value(state_id)
@@ -1683,13 +1695,13 @@ class SystemShared(Shared):
 
         Parameters
         ----------
-            p_sys_id
-                The id of the system, for which action is to be fetched.
+        p_sys_id
+            The id of the system, for which action is to be fetched.
 
         Returns
         -------
-            action : Action
-                The corresponding action for the system.
+        action : Action
+            The corresponding action for the system.
         """
 
         action = Action(p_action_space=self._spaces[p_sys_id][1], p_values=self._actions[p_sys_id])
@@ -1706,13 +1718,13 @@ class SystemShared(Shared):
 
         Parameters
         ----------
-            p_sys_id
-                The id of the system, of which state is to be fetched.
+        p_sys_id
+            The id of the system, of which state is to be fetched.
 
         Returns
         -------
-            state : State
-                The corresponding state of the system.
+        state : State
+            The corresponding state of the system.
 
         """
         state = self._states[p_sys_id].copy()
@@ -1735,7 +1747,8 @@ class SystemShared(Shared):
 
         Returns
         -------
-
+        mappings : (System Mappings, Dimension Mappings)
+            A tuple of tuples of System id and dimension id mappings from State to Action respectively.
         """
 
         sys_maps = self._sys_mappings[p_sys_id]
@@ -1743,7 +1756,8 @@ class SystemShared(Shared):
         for id in p_state.get_dim_ids():
             dim_maps = zip(id, self._dim_mappings[id])
 
-        return (sys_maps, dim_maps)
+        mappings = (sys_maps, dim_maps)
+        return mappings
 
 
 ## -------------------------------------------------------------------------------------------------
