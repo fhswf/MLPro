@@ -1598,26 +1598,26 @@ class SystemShared(Shared):
 
     Parameters
     ----------
-        p_range 
-            The multiprocessing range for the specific process. Default is None.
+    p_range
+        The multiprocessing range for the specific process. Default is None.
 
 
     Attributes
     ----------
-        _spaces
-            Spaces of all the systems registered in the Shared Object.
+    _spaces
+        Spaces of all the systems registered in the Shared Object.
 
-        _states
-            States of all the systems registered in the Shared Object.
+    _states
+        States of all the systems registered in the Shared Object.
 
-        _actions
-            Corresponding Actions for all the systems.
+    _actions
+        Corresponding Actions for all the systems.
 
-        _dimension_set
-            All the dimensions present in the Shared Object.
+    _dimension_set
+        All the dimensions present in the Shared Object.
 
-        _mappings
-            Mapping configurations for system to action mapping.
+    _mappings
+        Mapping configurations for system to action mapping.
 
     """
 
@@ -1638,6 +1638,26 @@ class SystemShared(Shared):
         self._dimension_set : set = set()
         self._dim_mappings : dict = {}
         self._sys_mappings : dict = {}
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_seed : int = None):
+        """
+        Resets the shared object.
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed for reproducibility.
+        """
+        self._states.clear()
+        self._actions.clear()
+        # self.initiate_values()
+        for system in self._spaces.keys():
+            self._states[system] = State(p_state_space=self._spaces[system][0])
+            self._actions[system] = Action(p_action_space=self._spaces[system][1],
+                                           p_values=np.zeros(len(self._spaces[system][1].get_dims())))
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1678,7 +1698,7 @@ class SystemShared(Shared):
         action_sys_ids, maps = self._map(p_sys_id=p_sys_id ,p_state = p_state)
 
 
-        # :TODO: Check if there actually exists a mapping among them, here and also in _map function
+        # TODO: Check if there actually exists a mapping among them, here and also in _map function
 
         for state_id, (action_sys_id, action_id) in maps:
             action_space = self._spaces[action_sys_id]
@@ -1725,8 +1745,8 @@ class SystemShared(Shared):
         -------
         state : State
             The corresponding state of the system.
-
         """
+
         state = self._states[p_sys_id].copy()
 
         return state
@@ -1794,7 +1814,9 @@ class SystemShared(Shared):
 
             self._dimension_set.update(*state_space_dim_ids)
             self._dimension_set.update(*action_space_dim_ids)
+
             self._setup_mappings(p_mapping = p_mapping)
+
             return True
 
         except:
