@@ -36,10 +36,11 @@
 ## -- 2023-04-20  1.10.2    LSB      Refactoring State-Instance inheritence
 ## -- 2023-05-03  1.11.0    LSB      Enhancing System Class for task and workflow architecture 
 ## -- 2023-05-03  1.11.1    LSB      Bug Fix: Visualization for DemoScenario
+## -- 2023-05-05  1.12.0    LSB      New Class SystemShared
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.11.1 (2023-05-03)
+Ver. 1.12.0 (2023-05-04)
 
 
 This module provides models and templates for state based systems.
@@ -48,6 +49,9 @@ This module provides models and templates for state based systems.
 
 from time import sleep
 from typing import List
+
+import numpy as np
+
 from mlpro.bf.mt import Range
 from mlpro.bf.streams.models import Instance
 from mlpro.bf.various import TStamp, ScientificObject, Persistent
@@ -1594,8 +1598,6 @@ class SystemShared(Shared):
     ----------
         p_range 
             The multiprocessing range for the specific process. Default is None.
-        p_spaces : list[MSpace]
-            The list of spaces stored within the shared object. 
 
     Attributes
     ----------
@@ -1622,19 +1624,20 @@ class SystemShared(Shared):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_range: int = Range.C_RANGE_PROCESS):
+                 p_range: int = Range.C_RANGE_NONE):
 
 
 
         Shared.__init__(self,
                         p_range = p_range)
 
-
+        self.systems = []
         self._spaces : dict = {}
         self._states : dict = {}
         self._actions : dict = {}
         self._dimension_set : set = set()
-        self._mappings : dict = {}
+        self._dim_mappings : dict = {}
+        self._sys_mappings : dict = {}
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1653,16 +1656,24 @@ class SystemShared(Shared):
         """
 
         self._states[p_sys_id] = p_state.copy()
-        self._map(p_state = self._states[p_sys_id])
+        self._update_actions(p_sys_id = p_sys_id , p_state = self._states[p_sys_id])
         return True
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_actions(self, p_state):
+    def _update_actions(self, p_sys_id, p_state:State):
 
-        maps = self._map(p_state = p_state)
+        action_sys_ids, maps = self._map(p_sys_id=p_sys_id ,p_state = p_state)
 
-        pass
+        # for action_sys_ids:
+        #     self._actions[action_sys_ids]
+        # :TODO: Check if there actually exists a mapping among them, here and also in _map function
+        for state_id, (action_sys_id, action_id) in maps:
+            action_space = self._spaces[action_sys_id]
+            self._actions[action_sys_id][action_space.index(action_id)] = p_state.get_value(state_id)
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1681,8 +1692,7 @@ class SystemShared(Shared):
                 The corresponding action for the system.
         """
 
-        action = self._actions[p_sys_id].copy()
-
+        action = Action(p_action_space=self._spaces[p_sys_id][1], p_values=self._actions[p_sys_id])
         return action
 
 
@@ -1711,7 +1721,7 @@ class SystemShared(Shared):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _map(self, p_state:State = None):
+    def _map(self, p_sys_id, p_state:State = None):
         """
         Maps a state to Action.
 
@@ -1727,12 +1737,13 @@ class SystemShared(Shared):
         -------
 
         """
-        maps = []
 
-        for dim in p_state.get_related_set().get_dims():
-            maps.append(self._mappings[dim])
+        sys_maps = self._sys_mappings[p_sys_id]
 
-        return maps
+        for id in p_state.get_dim_ids():
+            dim_maps = zip(id, self._dim_mappings[id])
+
+        return (sys_maps, dim_maps)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1745,7 +1756,7 @@ class SystemShared(Shared):
         p_system : System
             The system to be registered.
 
-        p_mapping : (StateDimension : ActionDimension)
+        p_mapping : ( (State_sys_id, StateDimension) , (Action_sys_id, ActionDimension) )
             The dimension to dimension mapping of State to Action in a MultiSystem context.
 
 
@@ -1754,16 +1765,22 @@ class SystemShared(Shared):
 
         """
         try:
+
             system_id = p_system.get_id()
-            state_space_dims = list(i for i in p_system.get_state_space().get_dims())
-            action_space_dims = list(i for i in p_system.get_action_space().get_dims())
-            self._spaces[system_id] = p_system.get_state_space().copy()
+            state_space_dim_ids = p_system.get_state_space().get_dim_ids()
+            action_space_dim_ids = p_system.get_action_space().get_dim_ids()
+
+
+            # :TODO: Also check if the system is already registered and raise error
+
+            self._spaces[system_id] = (p_system.get_state_space().copy(), p_system.get_action_space().copy())
             self._states[system_id] = State(self._spaces[system_id])
-            self._actions[system_id] = Action(p_action_space=p_system.get_action_space())
 
-            self._dimension_set.update(*state_space_dims)
-            self._dimension_set.update(*action_space_dims)
+            self._actions[system_id] = np.zeros(len(action_space_dim_ids))
 
+            self._dimension_set.update(*state_space_dim_ids)
+            self._dimension_set.update(*action_space_dim_ids)
+            self._setup_mappings(p_mapping = p_mapping)
             return True
 
         except:
@@ -1785,13 +1802,15 @@ class SystemShared(Shared):
         -------
 
         """
-        for state_dim, action_dim in p_mapping:
+        for (state_sys_id, state_dim), (action_sys_id, action_dim) in p_mapping:
 
-            if state_dim not in self._mappings.keys():
-                self._mappings[state_dim] = []
+            if state_dim.get_id() not in self._dim_mappings.keys():
+                self._dim_mappings[state_dim.get_id()] = []
+            if state_sys_id not in self._sys_mappings:
+                self._sys_mappings[state_sys_id] = []
 
-            self._mappings[state_dim].append(action_dim)
-
+            self._sys_mappings[state_sys_id].append(action_sys_id)
+            self._dim_mappings[state_dim.get_id()].append((action_sys_id, action_dim.get_id()))
 
 
 
