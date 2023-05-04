@@ -1584,6 +1584,157 @@ class MultiSystem(Workflow, System):
         pass
 
 
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def setup_spaces() -> tuple[MSpace, MSpace]:
+        """
+        Sets up the state and action spaces of the system. Please provide the state space and the action spaces at
+        the MultiSystem level.
+
+        Returns
+        -------
+        state_space, action_space : MSpace, MSpace
+            State and Action space of the MultiSystem.
+        """
+        return None, None
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_system(self, p_system : System, p_mapping):
+        """
+        Adds sub system to the MultiSystem.
+
+        Parameters
+        ----------
+        p_system
+        p_mapping
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None) -> None:
+        """
+        Resets the MultiSystem and all the sub-systems inside.
+
+        Parameters
+        ----------
+        p_seed
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_subsystem(self, p_system_id) -> System:
+        """
+        Returns a sub system from the MultiSystem.
+
+        Parameters
+        ----------
+        p_system_id
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def run(self, p_action, p_state, p_t_step):
+        """
+        Runs the MultiSystem as a Workflow.
+
+        Parameters
+        ----------
+        p_action
+        p_state
+        p_t_step
+
+        Returns
+        -------
+
+        """
+
+        Workflow.run(self)
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_state(self) -> State:
+        """
+        Returns the State of the MultiSystem.
+
+        Returns
+        -------
+        state : State
+            The state of the MultiSystem.
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_states(self):
+        """
+        Returns a list of the states of all the Sub-Systems in the MultiSystem.
+
+        Returns
+        -------
+        states : list
+            States of all the subsystems.
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def simulate_reaction(self, p_state: State = None, p_action: Action = None) -> State:
+        """
+        Simulates the system.
+
+        Parameters
+        ----------
+        p_state
+        p_action
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state: State) -> bool:
+        """
+        Returns true if the system is broken
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_success(self, p_state: State) -> bool:
+        """
+        Returns true if the system has reached success.
+        
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
+        pass
+
+
 
 
 
