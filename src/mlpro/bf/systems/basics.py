@@ -1586,7 +1586,7 @@ class MultiSystem(Workflow, System):
 
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
-    def setup_spaces() -> tuple[MSpace, MSpace]:
+    def setup_spaces():
         """
         Sets up the state and action spaces of the system. Please provide the state space and the action spaces at
         the MultiSystem level.
