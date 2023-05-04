@@ -424,7 +424,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_offline(self, p_dataset:dict, p_num_iter:int=1) -> bool:
+    def _adapt_offline(self, p_dataset:dict) -> bool:
         """
         Adaptation mechanism for PyTorch based model for offline learning.
 
@@ -433,8 +433,6 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         p_dataset : dict
             a dictionary that consists of a set of data, which are splitted to 2 keys such as input
             and output. The value of each key is a torch.Tensor of the sampled data.
-        p_num_iter : int
-            number of iterations. Default: 1.
 
         Returns
         ----------
@@ -444,7 +442,7 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
         self._sl_model.train()
         manual_seed = 0
         
-        for itr in range(p_num_iter):
+        for itr in range(len(p_dataset["input"])):
             
             torch.manual_seed(manual_seed)
             outputs = self.forward(torch.squeeze(next(iter(p_dataset["input"]))))
