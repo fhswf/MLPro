@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-01-24  0.0.0     DA       Creation
 ## -- 2023-04-18  0.1.0     DA       First implementation of classes ClusterMembership, ClusterAnalyzer
+## -- 2023-05-06  0.2.0     DA       New class ClusterCentroid
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2023-04-18)
+Ver. 0.2.0 (2023-05-06)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -21,8 +22,6 @@ from mlpro.bf.streams import *
 from mlpro.oa.streams import OATask
 from mlpro.bf.math.geometry import Point
 from typing import List, Tuple
-
-
 
 
 
@@ -238,11 +237,9 @@ class ClusterCentroid (Cluster):
     def __init__( self, 
                   p_id=None, 
                   p_visualize: bool = False, 
-                  p_centroid_pos : Element = None,
                   **p_kwargs ):
         
-        self._centroid : Point = Point( p_pos=p_centroid_pos )
-
+        self._centroid : Point = Point( p_visualize=p_visualize )
         super().__init__( p_id = p_id, p_visualize = p_visualize, **p_kwargs )
 
 
@@ -253,15 +250,5 @@ class ClusterCentroid (Cluster):
 
 ## -------------------------------------------------------------------------------------------------
     def get_membership(self, p_inst: Instance) -> float:
-        
-        feature_data  = p_inst.get_feature_data()
-        feature_set   = feature_data.get_related_set()
-        centroid_elem = Element(p_set=feature_set)
-        centroid_elem.set_values( p_values = self._centroid.get_details()[0] )
-        
-        try:
-            metric = feature_set.distance
-        except:
-            metric = ESpace().distance
-
-        return metric( p_e1 = feature_data, p_e2 = centroid_elem )
+        feature_data = p_inst.get_feature_data()
+        return feature_data.get_related_set().distance( p_e1 = feature_data, p_e2 = self._centroid )
