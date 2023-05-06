@@ -5,11 +5,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-05-02  1.0.0     DA       Creation
+## -- 2023-05-06  1.0.0     DA       Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-05-02)
+Ver. 1.0.0 (2023-05-06)
 
 This module demonstrates the functionality of class bf.math.geometry.Point in a 2D plot.
 
@@ -25,13 +25,13 @@ You will learn:
 
 
 from mlpro.bf.various import Log
-from mlpro.bf.plot import PlotSettings
 from mlpro.bf.math.geometry import Point
 from datetime import datetime, timedelta
 import numpy as np
 from math import sin, cos, pi
 from time import sleep
 import random
+
 
 
 
@@ -79,9 +79,10 @@ for i in range(200):
 
     pos[0] = cos( angle * pi / 180 )
     pos[1] = sin( angle * pi / 180 )
-    my_point.set_pos( p_pos = pos, p_time_stamp = time_stamp )
-    details = my_point.get_details()
-    my_log.log(Log.C_LOG_TYPE_S, 'pos :', details[0], ', vel :', details[1], ', acc :', details[2])
+    my_point.set_values( p_values = pos, p_time_stamp = time_stamp )
+    vel = my_point.get_velocity()
+    acc = my_point.get_acceleration()
+    my_log.log(Log.C_LOG_TYPE_S, 'pos :', pos, ', vel :', vel, ', acc :', acc)
     time_stamp += time_step
 
     if visualize: sleep(0.05)
