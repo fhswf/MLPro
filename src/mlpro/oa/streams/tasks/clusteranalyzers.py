@@ -252,10 +252,16 @@ class ClusterCentroid (Cluster):
     
 
 ## -------------------------------------------------------------------------------------------------
-    def set_centroid_pos(self, p_centroid_pos : Element):
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
     def get_membership(self, p_inst: Instance) -> float:
-        return super().get_membership(p_inst)
+        
+        feature_data  = p_inst.get_feature_data()
+        feature_set   = feature_data.get_related_set()
+        centroid_elem = Element(p_set=feature_set)
+        centroid_elem.set_values( p_values = self._centroid.get_details()[0] )
+        
+        try:
+            metric = feature_set.distance
+        except:
+            metric = ESpace().distance
+
+        return metric( p_e1 = feature_data, p_e2 = centroid_elem )
