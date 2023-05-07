@@ -405,7 +405,7 @@ class FctSuccess (Log):
         Custom method for assessment for success. See method compute_success() for further details.
         """
 
-        raise NotImplementedError
+        return False
 
 
 
@@ -456,7 +456,7 @@ class FctBroken (Log):
         Custom method for assessment for breakdown. See method compute_broken() for further details.
         """
 
-        raise NotImplementedError
+        return False
 
 
 
