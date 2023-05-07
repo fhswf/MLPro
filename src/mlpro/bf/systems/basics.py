@@ -877,9 +877,29 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
             self._state_space, self._action_space = self.setup_spaces()
             self.set_latency(p_latency)
 
-        FctSTrans.__init__(self, p_logging=p_logging)
-        FctSuccess.__init__(self, p_logging=p_logging)
-        FctBroken.__init__(self, p_logging=p_logging)
+
+
+        # Inheriting from user defined class, thus allowing the functions to use the System level attributes to do
+        # various operations
+
+        if self._fct_strans is not None:
+            self._fct_strans.__class__.__init__(self)
+        else:
+            FctSTrans.__init__(self, p_logging=p_logging)
+
+        if self._fct_success is not None:
+            self._fct_success.__class__(self)
+        else:
+            FctSuccess.__init__(self, p_logging=p_logging)
+
+        if self._fct_broken is not None:
+            self._fct_broken.__class__.__init__(self)
+        else:
+            FctBroken.__init__(self, p_logging=p_logging)
+
+
+
+
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
         Persistent.__init__(self, p_id=p_id, p_logging=p_logging)
@@ -1787,7 +1807,7 @@ class MultiSystem(Workflow, System):
 
     """
     A complex system of systems.
-    
+
     Parameters
     ----------
     p_name
@@ -1870,8 +1890,7 @@ class MultiSystem(Workflow, System):
         self._subsystems = None
         self._subsystem_ids = None
         self._t_step = p_t_step
-
-
+        self.get_so().register_system(p_system = self, p_mapping = None)
 
 ## -------------------------------------------------------------------------------------------------
     @staticmethod
@@ -1941,7 +1960,7 @@ class MultiSystem(Workflow, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, p_action, p_states, p_t_step):
+    def run(self, p_action, p_t_step):
         """
         Runs the MultiSystem as a Workflow.
 
@@ -1956,8 +1975,7 @@ class MultiSystem(Workflow, System):
 
         """
 
-        states = self.get_states()
-        Workflow.run(self, p_action = p_action, p_states = states, p_t_step = self._t_step)
+        Workflow.run(self, p_action = p_action, p_t_step = self._t_step)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1990,7 +2008,8 @@ class MultiSystem(Workflow, System):
         -------
 
         """
-        self.run(p_action = p_action, p_states=self.get_states(), p_t_step=self._t_step)
+
+        self.run(p_action = p_action, p_t_step=self._t_step)
 
 
 ## -------------------------------------------------------------------------------------------------
