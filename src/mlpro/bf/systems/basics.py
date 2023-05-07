@@ -37,11 +37,11 @@
 ## -- 2023-05-03  1.11.0    LSB      Enhancing System Class for task and workflow architecture 
 ## -- 2023-05-03  1.11.1    LSB      Bug Fix: Visualization for DemoScenario
 ## -- 2023-05-05  1.12.0    LSB      New Class SystemShared
+## -- 2023-05-dd  2.0.0     LSB      New class MultiSystem
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.12.0 (2023-05-04)
-
+Ver. 2.0.0 (2023-05-dd)
 
 This module provides models and templates for state based systems.
 """
@@ -61,8 +61,6 @@ from matplotlib.figure import Figure
 from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.math import *
 from mlpro.bf.mt import *
-
-
 
 
 
@@ -1787,6 +1785,33 @@ class SystemShared(Shared):
 ## -------------------------------------------------------------------------------------------------
 class MultiSystem(Workflow, System):
 
+    """
+    A complex system of systems.
+    
+    Parameters
+    ----------
+    p_name
+    p_id
+    p_range_max
+    p_autorun
+    p_class_shared
+    p_mode
+    p_latency
+    p_t_step
+    p_fct_strans
+    p_fct_success
+    p_fct_broken
+    p_mujoco_file
+    p_frame_skip
+    p_state_mapping
+    p_action_mapping
+    p_camera_conf
+    p_visualize
+    p_logging
+    p_kwargs
+    """
+
+
     C_TYPE = 'Multi-System'
 
     
@@ -1843,7 +1868,7 @@ class MultiSystem(Workflow, System):
                           **p_kwargs)
         
         self._subsystems = None
-        self._subsytem_ids = None
+        self._subsystem_ids = None
         self._t_step = p_t_step
 
 
@@ -1895,7 +1920,8 @@ class MultiSystem(Workflow, System):
         -------
 
         """
-        pass
+        for system in self._subsystems:
+            system.reset(p_seed = p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1911,7 +1937,7 @@ class MultiSystem(Workflow, System):
         -------
 
         """
-        pass
+        return self._subsystems[self._subsystem_ids.index(p_system_id)]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1935,19 +1961,6 @@ class MultiSystem(Workflow, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_state(self) -> State:
-        """
-        Returns the State of the MultiSystem.
-
-        Returns
-        -------
-        state : State
-            The state of the MultiSystem.
-        """
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
     def get_states(self):
         """
         Returns a list of the states of all the Sub-Systems in the MultiSystem.
@@ -1957,7 +1970,10 @@ class MultiSystem(Workflow, System):
         states : list
             States of all the subsystems.
         """
-        pass
+
+        so = self.get_so()
+
+        return so._states
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1974,7 +1990,7 @@ class MultiSystem(Workflow, System):
         -------
 
         """
-        pass
+        self.run(p_action = p_action, p_states=self.get_states(), p_t_step=self._t_step)
 
 
 ## -------------------------------------------------------------------------------------------------
