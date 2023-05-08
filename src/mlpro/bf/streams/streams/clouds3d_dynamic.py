@@ -108,13 +108,13 @@ class StreamMLProDynamicClouds3D (StreamMLProBase):
                 m = int(e1/2)
             else:
                 e1 = self.no_clouds-1
-                e2 = self.no_clouds
+                e2 = e1
                 m = int(e1/2)
                 
             final_centers[:m] = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1], size=(m, 3))
             final_centers[m:e1] = final_centers[:m]
             if e2!=0:
-                final_centers[e2] = final_centers[m]
+                final_centers[e1] = final_centers[m-1]
 
 
         # 2 Create 250 noisy inputs around each of the 8 hotspots
