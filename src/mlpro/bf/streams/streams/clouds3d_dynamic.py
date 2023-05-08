@@ -79,7 +79,7 @@ class StreamMLProDynamicClouds3D (StreamMLProBase):
         except:
             seed = random.seed(32)
 
-        self._dataset = np.empty( (self.C_NUM_INSTANCES, 3))
+        self._dataset = np.empty( (self.num_instances, 3))
 
 
         # Compute the initial positions of the centers
