@@ -7,4 +7,5 @@ PyTorch Helper Functions
 .. automodule:: mlpro.sl.pool.afct.pytorch
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

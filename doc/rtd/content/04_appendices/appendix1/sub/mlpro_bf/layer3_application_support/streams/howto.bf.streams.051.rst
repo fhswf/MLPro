@@ -6,7 +6,6 @@ Howto BF-STREAMS-051: Accessing Data from OpenML
     .. automodule:: mlpro.bf.examples.howto_bf_streams_051_accessing_data_from_openml
 
 
-
 **Prerequisites**
 
 
@@ -19,9 +18,7 @@ Howto BF-STREAMS-051: Accessing Data from OpenML
 
 **Executable code**
 
-
-
-..
+`howto_bf_streams_051_accessing_data_from_openml.py <https://github.com/fhswf/MLPro/blob/main/src/mlpro/bf/examples/howto_bf_streams_051_accessing_data_from_openml.py>`_
 
 
 

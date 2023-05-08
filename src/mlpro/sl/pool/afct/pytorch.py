@@ -14,16 +14,19 @@
 ## --                                 - Release the third version
 ## -- 2023-03-02  3.0.1     SY        Updating and shifting from mlpro.sl.models
 ## -- 2023-03-10  3.0.2     SY        Refactoring PyTorchBuffer
+## -- 2023-04-09  3.0.3     SY        Refactoring
+## -- 2023-05-03  3.0.4     SY        Updating sampling method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 3.0.2 (2023-03-10)
+Ver. 3.0.4 (2023-05-03)
 
 This a helper module for supervised learning models using PyTorch. 
 """
 
 
 import torch
+import numpy as np
 from torch.utils.data.sampler import SubsetRandomSampler
 from mlpro.sl.basics import *
 from mlpro.bf.ml import *
@@ -126,6 +129,17 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
         """
         This method has a functionality to sample from the buffer using built-in PyTorch
         functionalities.
+
+        Returns
+        ----------
+        trainer : dict
+            a dictionary that consists of sampled data for training, which are splitted to 2 keys
+            such as input and output. The value of each key is a torch's DataLoader of the sampled
+            data.
+        tester : dict
+            a dictionary that consists of sampled data for testing, which are splitted to 2 keys
+            such as input and output. The value of each key is a torch's DataLoader of the sampled
+            data.
         """
 
         dataset_size    = len(self._data_buffer["input"])
@@ -147,7 +161,6 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
                                                         batch_size=self._batch_size,
                                                         sampler=train_sampler
                                                         )
-        
         tester["input"] = torch.utils.data.DataLoader(self._data_buffer["input"],
                                                       batch_size=self._batch_size,
                                                       sampler=test_sampler
@@ -188,7 +201,7 @@ class PyTorchHelperFunctions():
         """
 
         # Convert p_input from Element to Tensor
-        input = torch.Tensor([p_input.get_values()])
+        input = torch.Tensor(np.array([p_input.get_values()]))
 
         # Preprocessing Data if needed
         try:
@@ -217,7 +230,7 @@ class PyTorchHelperFunctions():
         """
 
         # Convert p_output from Element to Tensor
-        output = torch.Tensor([p_output.get_values()])
+        output = torch.Tensor(np.array([p_output.get_values()]))
 
         # Preprocessing Data if needed
         try:

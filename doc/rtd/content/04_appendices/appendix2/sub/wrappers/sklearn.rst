@@ -5,6 +5,7 @@ Scikit-learn
 .. automodule:: mlpro.wrappers.sklearn
     :members:
     :undoc-members:
+    :private-members:
     :show-inheritance:
    
 

@@ -24,10 +24,11 @@
 ## -- 2022-11-02  1.3.6     DA       Refactoring 
 ## -- 2022-11-07  1.4.0     DA       Refactoring 
 ## -- 2023-01-14  1.4.1     MRD      Removing default parameter new_step_api and render_mode for gym
+## -- 2023-04-19  1.4.2     MRD      Refactor module import gym to gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.4.1 (2023-01-14)
+Ver. 1.4.2 (2023-04-19)
 
 This module shows how to train an agent with a custom policy inside on an OpenAI Gym environment using
 MLPro framework.
@@ -49,8 +50,8 @@ You will learn:
 
 from mlpro.bf.math import *
 from mlpro.rl import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
-import gym
+from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
+import gymnasium as gym
 import random
 from pathlib import Path
 
@@ -95,7 +96,10 @@ class MyScenario (RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 2.1 Setup environment
-        gym_env     = gym.make('CartPole-v1')
+        if p_visualize:
+            gym_env     = gym.make('CartPole-v1', render_mode="human")
+        else:
+            gym_env     = gym.make('CartPole-v1')
         self._env   = WrEnvGYM2MLPro(gym_env, p_visualize=p_visualize, p_logging=p_logging) 
 
         # 2.2 Setup and return standard single-agent with own policy

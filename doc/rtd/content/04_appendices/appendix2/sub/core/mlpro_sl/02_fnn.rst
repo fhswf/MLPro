@@ -8,4 +8,5 @@ SL - Feedforward Neural Network
 .. automodule:: mlpro.sl.fnn
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

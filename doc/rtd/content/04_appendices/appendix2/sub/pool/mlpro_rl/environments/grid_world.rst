@@ -5,4 +5,5 @@ Grid World
 .. automodule:: mlpro.rl.pool.envs.gridworld
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

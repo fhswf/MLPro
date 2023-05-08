@@ -22,23 +22,25 @@
 ## -- 2023-02-04  1.2.1     SY       Refactoring to avoid printing during unit test
 ## -- 2023-02-13  1.2.2     DA       Optimization of dark mode
 ## -- 2023-03-27  1.3.0     DA       Refactoring
+## -- 2023-04-19  1.3.1     MRD      Refactor module import gym to gymnasium
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.0 (2023-03-27)
+Ver. 1.3.1 (2023-04-19)
 
 This module shows comparison between native and wrapped SB3 policy (On-policy).
 """
 
 
-import gym
+import gymnasium as gym
 import pandas as pd
 import torch
+from gymnasium.utils import seeding
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback
 from mlpro.bf.plot import DataPlotting
 from mlpro.rl import *
-from mlpro.wrappers.openai_gym import WrEnvGYM2MLPro
+from mlpro.wrappers.gymnasium import WrEnvGYM2MLPro
 from mlpro.wrappers.sb3 import WrPolicySB32MLPro
 from pathlib import Path
 
@@ -47,10 +49,10 @@ from pathlib import Path
 # 1 Parameter
 if __name__ == "__main__":
     # 1.1 Parameters for demo mode
-    logging     = Log.C_LOG_ALL
-    visualize   = True
+    logging     = Log.C_LOG_NOTHING
+    visualize   = False
     path        = str(Path.home())
-    cycle_limit = 1000
+    cycle_limit = 600
 
 else:
     # 1.2 Parameters for internal unit test
@@ -62,7 +64,7 @@ else:
 mva_window = 1
 buffer_size = 100
 policy_kwargs = dict(activation_fn=torch.nn.Tanh,
-                     net_arch=[dict(pi=[10, 10], vf=[10, 10])])
+                     net_arch=dict(pi=[10, 10], vf=[10, 10]))
 
 
 
@@ -71,26 +73,27 @@ class MyScenario(RLScenario):
     C_NAME = 'Howto-RL-WP-005'
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
-
         class CustomWrapperFixedSeed(WrEnvGYM2MLPro):
             def _reset(self, p_seed=None):
                 self.log(self.C_LOG_TYPE_I, 'Reset')
+                self._num_cycles = 0
 
                 # 1 Reset Gym environment and determine initial state
-                observation = self._gym_env.reset()
+                observation, _ = self._gym_env.reset()
                 obs = DataObject(observation)
 
                 # 2 Create state object from Gym observation
                 state = State(self._state_space)
                 state.set_values(obs.get_data())
-                state.set_success(True)
                 self._set_state(state)
-
+                    
         # 1 Setup environment
-        gym_env = gym.make('CartPole-v1')
-        gym_env.seed(1)
+        if p_visualize:
+            gym_env     = gym.make('CartPole-v1', render_mode="human")
+        else:
+            gym_env     = gym.make('CartPole-v1')
         # self._env   = mlpro_env
-        self._env = CustomWrapperFixedSeed(gym_env, p_logging=p_logging)
+        self._env = CustomWrapperFixedSeed(gym_env, p_seed=2, p_logging=p_logging)
 
         # 2 Instatiate Policy From SB3
         # env is set to None, it will be set up later inside the wrapper
@@ -105,7 +108,7 @@ class MyScenario(RLScenario):
             _init_setup_model=False,
             policy_kwargs=policy_kwargs,
             device="cpu",
-            seed=1)
+            seed=2)
 
         # 3 Wrap the policy
         self.policy_wrapped = WrPolicySB32MLPro(
@@ -233,7 +236,7 @@ class CustomCallback(BaseCallback, Log):
         self.ds_rewards.memorize_row(self.total_cycle, timedelta(0, 0, 0), self.locals.get("rewards"))
         self.total_cycle += 1
         self.cycles += 1
-        if self.locals.get("infos")[0]:
+        if self.locals.get("done"):
             self.log(self.C_LOG_TYPE_I, Training.C_LOG_SEPARATOR)
             self.log(self.C_LOG_TYPE_I, '-- Episode', self.episode_num, 'finished after', self.total_cycle + 1,
                      'cycles')
@@ -260,7 +263,6 @@ class CustomCallback(BaseCallback, Log):
 
 # 8 Run the SB3 Training Native
 gym_env = gym.make('CartPole-v1')
-gym_env.seed(1)
 policy_sb3 = PPO(
     policy="MlpPolicy",
     env=gym_env,
@@ -268,10 +270,10 @@ policy_sb3 = PPO(
     verbose=0,
     policy_kwargs=policy_kwargs,
     device="cpu",
-    seed=1)
+    seed=2)
 
 cus_callback = CustomCallback(p_logging=logging)
-policy_sb3.learn(total_timesteps=1000, callback=cus_callback)
+policy_sb3.learn(total_timesteps=cycle_limit, callback=cus_callback)
 native_plot = cus_callback.plots
 
 
