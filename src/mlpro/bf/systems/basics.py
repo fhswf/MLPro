@@ -883,17 +883,17 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         # various operations
 
         if self._fct_strans is not None:
-            self._fct_strans.__class__.__init__(self, p_logging = p_logging)
+            self._fct_strans.__class__.__init__(self)
         else:
             FctSTrans.__init__(self, p_logging=p_logging)
 
         if self._fct_success is not None:
-            self._fct_success.__class__.__init__(self, p_logging = p_logging)
+            self._fct_success.__class__(self)
         else:
             FctSuccess.__init__(self, p_logging=p_logging)
 
         if self._fct_broken is not None:
-            self._fct_broken.__class__.__init__(self, p_logging=p_logging)
+            self._fct_broken.__class__.__init__(self)
         else:
             FctBroken.__init__(self, p_logging=p_logging)
 
@@ -1295,9 +1295,9 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
             Subsequent state after transition
         """
 
-        # if self._fct_strans is not None:
-        #     return self._fct_strans.simulate_reaction(p_state, p_action)
-        if self._mujoco_handler is not None:
+        if self._fct_strans is not None:
+            return self._fct_strans.simulate_reaction(p_state, p_action)
+        elif self._mujoco_handler is not None:
             # Check if there is changing in action
             action = self.action_to_mujoco(p_action)
             self._mujoco_handler._step_simulation(action)
@@ -1313,16 +1313,16 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
             return self._simulate_reaction(p_state, p_action)
 
 
-# ## -------------------------------------------------------------------------------------------------
-#     def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
-#         """
-#         Custom method for a simulated state transition. Implement this method if no external state
-#         transition function is used. See method simulate_reaction() for further
-#         details.
-#         """
-#
-#         raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
-#
+## -------------------------------------------------------------------------------------------------
+    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+        """
+        Custom method for a simulated state transition. Implement this method if no external state
+        transition function is used. See method simulate_reaction() for further
+        details.
+        """
+
+        raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
+
 
 ## -------------------------------------------------------------------------------------------------
     def action_to_mujoco(self, p_mlpro_action):
@@ -1465,16 +1465,16 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
             True, if the given state is a 'success' state. False otherwise.
         """
 
-        # if self._fct_success is not None:
-        #     return self._fct_success.compute_success(p_state)
-        # else:
-        return self._compute_success(p_state)
+        if self._fct_success is not None:
+            return self._fct_success.compute_success(p_state)
+        else:
+            return FctSuccess.compute_success(self, p_state)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_success(self, p_state: State) -> bool:
         """
-        Custom method for assessment for success. Implement this method if no external function is
+        Custom method for assessment for success. Implement this method if no external function is 
         used. See method compute_success() for further details.
         """
 
@@ -1504,16 +1504,16 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
             True, if the given state is a 'broken' state. False otherwise.
         """
 
-        # if self._fct_broken is not None:
-        #     return self._fct_broken.compute_broken(p_state)
-
-        return self._compute_broken(p_state)
+        if self._fct_broken is not None:
+            return self._fct_broken.compute_broken(p_state)
+        else:
+            return FctBroken.compute_broken(self, p_state)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _compute_broken(self, p_state: State) -> bool:
         """
-        Custom method for assessment for breakdown. Implement this method if no external function is
+        Custom method for assessment for breakdown. Implement this method if no external function is 
         used. See method compute_broken() for further details.
         """
 
