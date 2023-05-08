@@ -37,7 +37,7 @@ class StreamMLProDynamicClouds3D (StreamMLProBase):
     C_NAME              = 'Dynamic Clouds 3D'
     C_TYPE              = 'Demo'
     C_VERSION           = '1.0.0'
-    C_NUM_INSTANCES     = '2000 by default'
+    C_NUM_INSTANCES     = 2000
     C_SCIREF_ABSTRACT   = 'Demo stream provides 250 3-dimensional instances per cluster randomly positioned around centers which move over time.'
     C_BOUNDARIES        = [-100,100]
     C_PATTERN           = ['random', 'random chain', 'static', 'merge']
@@ -50,7 +50,7 @@ class StreamMLProDynamicClouds3D (StreamMLProBase):
         self.pattern = str.lower(p_pattern)
         self.variance = p_variance
         self.no_clouds = int(p_no_clouds)
-        self.num_instances = 250*self.no_clouds
+        self.C_NUM_INSTANCES = 250*self.no_clouds
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -118,14 +118,14 @@ class StreamMLProDynamicClouds3D (StreamMLProBase):
 
 
         # 2 Create 250 noisy inputs around each of the 8 hotspots
-        a = np.random.RandomState(seed=seed).rand(self.num_instances, 3)**3
-        s = np.round(np.random.RandomState(seed=seed).rand(self.num_instances, 3))
+        a = np.random.RandomState(seed=seed).rand(self.C_NUM_INSTANCES, 3)**3
+        s = np.round(np.random.RandomState(seed=seed).rand(self.C_NUM_INSTANCES, 3))
         s[s==0] = -1
         fx = self.variance
         c = a*s * np.array([fx, fx, fx]) 
         
         # Create the dataset
-        dataset = np.zeros((self.num_instances, 3))
+        dataset = np.zeros((self.C_NUM_INSTANCES, 3))
 
         if self.pattern == 'static':
             centers_diff = (0-centers) / 125
