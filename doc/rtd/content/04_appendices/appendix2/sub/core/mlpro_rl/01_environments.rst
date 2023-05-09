@@ -8,4 +8,5 @@ RL-ENV - Environments
 .. automodule:: mlpro.rl.models_env
    :members:
    :undoc-members:
+   :private-members:
    :show-inheritance:

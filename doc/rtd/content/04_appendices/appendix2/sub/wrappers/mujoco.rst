@@ -8,6 +8,7 @@ MuJoCo
 .. automodule:: mlpro.wrappers.mujoco
     :members:
     :undoc-members:
+    :private-members:
     :show-inheritance:
    
 

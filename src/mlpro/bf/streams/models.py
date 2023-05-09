@@ -47,10 +47,16 @@
 ## --                                - incorporation of new plot parameter p_horizon
 ## -- 2023-01-05  1.0.1     DA       Refactoring of method StreamShared.get_instances()
 ## -- 2023-02-12  1.1.0     DA       Class StreamTask: implementation of plot parameter view_autoselect
+## -- 2023-04-10  1.2.0     SY       Introduce class Sampler and update class Stream accordingly
+## -- 2023-04-14  1.2.1     SY       Refactoring class Sampler and class Stream 
+## -- 2023-04-15  1.2.2     DA       Class Stream: 
+## --                                - replaced parent Persistent by Id
+## --                                - removed own method get_id()
+## --                                - constructor: keep value of internal attribute C_NAME if p_name = ''
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.0 (2023-02-12)
+Ver. 1.2.2 (2023-04-15)
 
 This module provides classes for standardized stream processing. 
 """
@@ -296,14 +302,121 @@ class StreamShared (Shared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Stream (Mode, Persistent, ScientificObject):
+class Sampler (ScientificObject):
+    """
+    Template class for data streams sampler. This object can be used in Stream.
+
+    Parameters
+    ----------
+    p_num_instances : int
+        number of instances.
+    p_kwargs : dict
+        Further sampler specific parameters.
+    """
+
+    C_TYPE = 'Sampler'
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_num_instances:int=0, **p_kwargs):
+        
+        self._num_instances = p_num_instances
+        self._kwargs        = p_kwargs
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self):
+        """
+        A method to reset the sampler's settings. Please redefine this method!
+        """
+        
+        raise NotImplementedError
+        
+
+## -------------------------------------------------------------------------------------------------
+    def get_num_instances(self) -> int:
+        """
+        A method to get the number of instances that is being processed by the sampler.
+
+        Returns
+        -------
+        int
+            Number of instances.
+
+        """
+    
+        return self._num_instances
+        
+
+## -------------------------------------------------------------------------------------------------
+    def set_num_instances(self, p_num_instances:int):
+        """
+        A method to set the number of instances that is going to be processed by the sampler.
+
+        Parameters
+        ----------
+        p_num_instances : int
+            Number of instances.
+
+        """
+    
+        self._num_instances = p_num_instances
+        
+
+## -------------------------------------------------------------------------------------------------
+    def omit_instance(self, p_inst:Instance) -> bool:
+        """
+        A method to filter any incoming instances.
+
+        Parameters
+        ----------
+        p_inst : Instance
+            An input instance to be filtered.
+
+        Returns
+        -------
+        bool
+            False means the input instance is not omitted, otherwise True.
+
+        """
+        
+        return self._omit_instance(p_inst)
+        
+
+## -------------------------------------------------------------------------------------------------
+    def _omit_instance(self, p_inst:Instance) -> bool:
+        """
+        A custom method to filter any incoming instances, which is being called by omit_instance()
+        method. Please redefine this method!
+
+        Parameters
+        ----------
+        p_inst : Instance
+            An input instance to be filtered.
+
+        Returns
+        -------
+        bool
+            False means the input instance is not omitted, otherwise True.
+
+        """
+        
+        raise NotImplementedError
+        
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class Stream (Mode, Id, ScientificObject):
     """
     Template class for data streams. Objects of this type can be used as iterators.
 
     Parameters
     ----------
     p_id
-        Optional id of the stream. Default = 0.
+        Optional id of the stream. Default = None.
     p_name : str
         Optional name of the stream. Default = ''.
     p_num_instances : int
@@ -314,6 +427,8 @@ class Stream (Mode, Persistent, ScientificObject):
         Optional feature space. Default = None.
     p_label_space : MSpace
         Optional label space. Default = None.
+    p_sampler
+        Optional sampler. Default: None.
     p_mode
         Operation mode. Default: Mode.C_MODE_SIM.
     p_logging
@@ -323,37 +438,42 @@ class Stream (Mode, Persistent, ScientificObject):
     """
 
     C_TYPE          = 'Stream'
+    
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
-                  p_id = 0,
+                  p_id = None,
                   p_name : str = '',
                   p_num_instances : int = 0,
                   p_version : str = '',
                   p_feature_space : MSpace = None,
                   p_label_space : MSpace = None,
+                  p_sampler : Sampler = None,
                   p_mode = Mode.C_MODE_SIM,
                   p_logging = Log.C_LOG_ALL,
                   **p_kwargs ):
 
-        self._id            = p_id
-        self.C_NAME         = self.C_SCIREF_TITLE = p_name
+        if p_name != '':
+            self.C_NAME         = self.C_SCIREF_TITLE = p_name
+
         self._num_instances = p_num_instances
         self._version       = p_version
         self._feature_space = p_feature_space
         self._label_space   = p_label_space
-        self.set_options(**p_kwargs)
+
+        Id.__init__(self, p_id = p_id)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
 
-
-## -------------------------------------------------------------------------------------------------
-    def get_id(self):
-        """
-        Returns the id of the stream.
-        """
-
-        return self._id
-
+        self.set_options(**p_kwargs)
+        
+        if p_sampler is None:
+            try:
+                self._sampler = self.setup_sampler()
+            except:
+                self._sampler = None
+        else:
+            self._sampler   = p_sampler
+ 
 
 ## -------------------------------------------------------------------------------------------------
     def get_name(self) -> str:
@@ -492,6 +612,10 @@ class Stream (Mode, Persistent, ScientificObject):
         self.log(self.C_LOG_TYPE_I, 'Reset')
         self._next_inst_id = 0
         self._reset()
+        
+        if self._sampler is not None:
+            self._sampler.reset()
+            
         return self
 
 
@@ -499,6 +623,21 @@ class Stream (Mode, Persistent, ScientificObject):
     def _reset(self):
         """
         Custom reset method for data stream. See method __iter__() for more details.
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def setup_sampler(self) -> Sampler:
+        """
+        A static method to set up a sampler, which allows to set a sampler after instantiation of
+        a stream. 
+
+        Returns
+        -------
+        Sampler
+            An instantiated sampler.
         """
 
         raise NotImplementedError
@@ -514,8 +653,15 @@ class Stream (Mode, Persistent, ScientificObject):
         instance : Instance
             Next instance of data stream or None.
         """
-
-        inst = self._get_next()
+        
+        if self._sampler is not None:
+            ret = True
+            while ret:
+                inst = self._get_next()
+                ret = self._sampler.omit_instance(inst)
+        else:
+            inst = self._get_next()
+            
         inst.set_id(self._next_inst_id)
         self._next_inst_id += 1
         return inst

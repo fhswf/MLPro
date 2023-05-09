@@ -82,6 +82,7 @@ class GridWorld(Environment):
                  p_random_goal_position:bool=True,
                  p_max_step:int=50,
                  p_action_type:int=C_ACTION_TYPE_CONT,
+                 p_visualize=True,
                  p_start_position=None,
                  p_goal_position=None):
         
@@ -94,7 +95,7 @@ class GridWorld(Environment):
         self.max_step = p_max_step
         self.action_type = p_action_type
         
-        super().__init__(p_mode=Environment.C_MODE_SIM, p_logging=p_logging)
+        super().__init__(p_mode=Environment.C_MODE_SIM, p_visualize=p_visualize, p_logging=p_logging)
         self._state_space, self._action_space = self._setup_spaces()
         self.reset()
 

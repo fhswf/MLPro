@@ -16,10 +16,11 @@
 ## -- 2023-03-07  2.0.0     SY       Update due to MLPro-SL
 ## -- 2023-03-08  2.0.1     SY       Refactoring
 ## -- 2023-03-10  2.0.2     SY       Refactoring
+## -- 2023-05-04  2.0.3     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.0.2 (2023-03-10)
+Ver. 2.0.3 (2023-05-04)
 
 This module shows how to incorporate MPC in Model-Based RL on Grid World problem as well as using
 PyTorch-based MLP network from MLPro-SL's pool of objects.
@@ -86,6 +87,7 @@ class ScenarioGridWorld(RLScenario):
             p_action_space=self._env._action_space,
             p_threshold=0.1,
             p_buffer_size=100,
+            p_batch_size=10,
             p_ada=p_ada,
             p_logging=p_logging,
             p_update_rate=1,

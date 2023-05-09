@@ -5,6 +5,7 @@ Gymnasium
 .. automodule:: mlpro.wrappers.gymnasium
     :members:
     :undoc-members:
+    :private-members:
     :show-inheritance:
    
 

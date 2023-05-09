@@ -41,7 +41,7 @@ loaded as following:
 
 .. toctree::
 
-    streams_handling/stream_handling.rst
+    stream_handling/stream_handling.rst
 
 
 **Cross Reference**
