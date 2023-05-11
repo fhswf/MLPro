@@ -18,10 +18,11 @@
 ## -- 2023-03-30  2.0.0     SY       Introduction as MLPro-GT-DP
 ## -- 2023-04-03  2.0.1     SY       Remove Potential Games and refactoring
 ## -- 2023-04-12  2.1.0     SY       MLPro-GT-DP to MLPro-GT-DG (Dynamic Games)
+## -- 2023-05-11  2.2.0     SY       Remove PGameBoard and refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.0 (2023-04-12)
+Ver. 2.2.0 (2023-05-11)
 
 This module provides model classes for tasks related to Game Theory in dynamic games.
 """
@@ -64,40 +65,12 @@ class GameBoard (Environment):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class PGameBoard (GameBoard):
-    """
-    Model class for a potential game theoretical game board. See super class for more information.
-    """
-
-    C_TYPE = 'Potential Game Board'
-
-## -------------------------------------------------------------------------------------------------
-    def compute_potential(self):
-        """
-        Computes (weighted) potential level of the game board.
-        """
-
-        if self._last_action == None: return 0
-        self.potential = 0
-
-        for player_id in self._last_action.get_agent_ids():
-            self.potential = self.potential + (
-                        self._utility_fct(player_id) * self._last_action.get_elem(player_id).get_weight())
-
-        return self.potential
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class GTPlayer_DG (Agent):
+class GTPlayer (Agent):
     """
     This class implements a game theoretical player model. See super class for more information.
     """
 
-    C_TYPE = 'GT Player DG'
+    C_TYPE = 'GT Player'
 
 
 
@@ -105,16 +78,16 @@ class GTPlayer_DG (Agent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTMultiPlayer_DG (MultiAgent):
+class GTMultiPlayer (MultiAgent):
     """
     This class implements a game theoretical model for a team of players. See super class for more 
     information.
     """
 
-    C_TYPE = 'GT Multi-Player DG'
+    C_TYPE = 'GT Multi-Player'
 
 ## -------------------------------------------------------------------------------------------------
-    def add_player(self, p_player: GTPlayer_DG, p_weight=1.0) -> None:
+    def add_player(self, p_player: GTPlayer, p_weight=1.0) -> None:
         super().add_agent(p_agent=p_player, p_weight=p_weight)
 
 
@@ -123,13 +96,13 @@ class GTMultiPlayer_DG (MultiAgent):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTGame_DG (RLScenario):
+class GTGame (RLScenario):
     """
     This class implements a game consisting of a game board and a (multi-)player. See super class for 
     more information.
     """
 
-    C_TYPE = 'GT Game DP'
+    C_TYPE = 'GT Game'
 
 
 
