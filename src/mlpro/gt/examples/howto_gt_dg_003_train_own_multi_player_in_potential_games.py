@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-12  0.0.0     SY       Creation
 ## -- 2023-04-12  1.0.0     SY       Release of first version
+## -- 2023-05-11  1.0.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-04-12)
+Ver. 1.0.1 (2023-05-11)
  
 This module shows how to train an own multi-player in potential games.
 
@@ -26,7 +27,8 @@ You will learn:
 
 
 from mlpro.rl import *
-from mlpro.gt.dynamicgames import *
+from mlpro.gt import *
+from mlpro.gt.dynamicgames.potential import *
 from mlpro.rl.models import Reward
 from mlpro.rl.pool.envs.bglp import BGLP
 import random
@@ -84,7 +86,7 @@ class BGLP_PG(BGLP, PGameBoard):
 
 
 # 3 Implement your own game
-class MyGame(GTGame_DG):
+class MyGame(GTGame):
 
     C_NAME      = 'Matrix'
 
@@ -97,7 +99,7 @@ class MyGame(GTGame_DG):
         # 2 Setup Multi-Player
 
         # 2.1 Create empty Multi-Player
-        multi_player = GTMultiPlayer_DG(
+        multi_player = GTMultiPlayer(
             p_name='BGLP Players with Random Policies',
             p_ada=p_ada,
             p_visualize=p_visualize,
@@ -110,7 +112,7 @@ class MyGame(GTGame_DG):
 
         # Player 1
         multi_player.add_player(
-            p_player=GTPlayer_DG(
+            p_player=GTPlayer(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[0],ss_ids[1]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[0]]),
@@ -130,7 +132,7 @@ class MyGame(GTGame_DG):
         
         # Player 2
         multi_player.add_player(
-            p_player=GTPlayer_DG(
+            p_player=GTPlayer(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[1],ss_ids[2]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[1]]),
@@ -150,7 +152,7 @@ class MyGame(GTGame_DG):
         
         # Player 3
         multi_player.add_player(
-            p_player=GTPlayer_DG(
+            p_player=GTPlayer(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[2],ss_ids[3]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[2]]),
@@ -170,7 +172,7 @@ class MyGame(GTGame_DG):
         
         # Player 4
         multi_player.add_player(
-            p_player=GTPlayer_DG(
+            p_player=GTPlayer(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[3],ss_ids[4]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[3]]),
@@ -190,7 +192,7 @@ class MyGame(GTGame_DG):
         
         # Player 5
         multi_player.add_player(
-            p_player=GTPlayer_DG(
+            p_player=GTPlayer(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[4],ss_ids[5]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[4]]),

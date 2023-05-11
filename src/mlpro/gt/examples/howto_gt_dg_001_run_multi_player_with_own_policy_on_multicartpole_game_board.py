@@ -17,10 +17,11 @@
 ## -- 2022-11-02  1.1.4     DA       Refactoring 
 ## -- 2022-11-07  1.2.0     DA       Refactoring 
 ## -- 2023-04-03  1.2.1     SY       Refactoring 
+## -- 2023-05-11  1.2.2     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-04-03)
+Ver. 1.2.2 (2023-05-11)
 
 This module shows how to run an own multi-player with the enhanced multi-action game board 
 MultiCartPole based on the OpenAI Gym CartPole environment.
@@ -37,7 +38,7 @@ You will learn:
 
 
 from mlpro.rl import *
-from mlpro.gt.dynamicgames import *
+from mlpro.gt import *
 from mlpro.gt.pool.boards.multicartpole import MultiCartPolePGT
 import random
 import numpy as np
@@ -78,7 +79,7 @@ class MyPolicy (Policy):
 
 
 # 2 Implement your own game
-class MyGame (GTGame_DG):
+class MyGame (GTGame):
 
     C_NAME      = 'Matrix'
 
@@ -91,7 +92,7 @@ class MyGame (GTGame_DG):
         # 2.2 Setup Multi-Player
 
         # 2.2.1 Create empty Multi-Player
-        multi_player = GTMultiPlayer_DG(
+        multi_player = GTMultiPlayer(
             p_name='Human Beings',
             p_ada=True,
             p_visualize=p_visualize,
@@ -102,7 +103,7 @@ class MyGame (GTGame_DG):
         ss_ids = self._env.get_state_space().get_dim_ids()
         as_ids = self._env.get_action_space().get_dim_ids()
         multi_player.add_player(
-            p_player=GTPlayer_DG(
+            p_player=GTPlayer(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[0],ss_ids[1],ss_ids[2],ss_ids[3]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[0]]),
@@ -122,7 +123,7 @@ class MyGame (GTGame_DG):
 
         # 2.2.3 Add Single-Player #2 with own policy (controlling sub-environments #2,#3)
         multi_player.add_player(
-            p_player=GTPlayer_DG(
+            p_player=GTPlayer(
                 p_policy=MyPolicy(
                     p_observation_space=self._env.get_state_space().spawn([ss_ids[4],ss_ids[5],ss_ids[6],ss_ids[7],ss_ids[8],ss_ids[9],ss_ids[10],ss_ids[11]]),
                     p_action_space=self._env.get_action_space().spawn([as_ids[1],as_ids[2]]),

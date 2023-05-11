@@ -11,10 +11,11 @@
 ## -- 2021-12-03  1.0.1     DA       Refactoring
 ## -- 2022-11-07  1.1.0     DA       Refactoring
 ## -- 2023-04-12  1.1.1     SY       Refactoring 
+## -- 2023-05-11  1.1.2     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.1.1 (2023-04-12)
+Ver. 1.1.2 (2023-05-11)
 
 This module provides game board classes based on the Multi-CartPole environment
 of the reinforcement learning pool.
@@ -22,7 +23,8 @@ of the reinforcement learning pool.
 
 from mlpro.rl.models import Reward
 from mlpro.rl.pool.envs.multicartpole import MultiCartPole
-from mlpro.gt.dynamicgames import *
+from mlpro.gt import *
+from mlpro.gt.dynamicgames.potential import *
 
 
 

@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-12  0.0.0     SY       Creation
 ## -- 2023-04-12  1.0.0     SY       Release of first version
+## -- 2023-05-11  1.0.1     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-04-12)
+Ver. 1.0.1 (2023-05-11)
  
 This module shows how to train an own multi-player in stackelberg games.
 
@@ -28,8 +29,8 @@ You will learn:
 
 
 from mlpro.rl import *
-from mlpro.gt.dynamicgames import *
-from mlpro.rl.models import Reward
+from mlpro.gt import *
+from mlpro.gt.dynamicgames.stackelberg import *
 from mlpro.gt.pool.boards.bglp import BGLP_GT
 import random
 import numpy as np
@@ -67,7 +68,7 @@ class MyPolicy(Policy):
 
 
 # 2 Implement your own game
-class MyGame(GTGame_DG):
+class MyGame(GTGame):
 
     C_NAME      = 'Matrix'
 
