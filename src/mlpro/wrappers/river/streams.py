@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.wrappers
-## -- Module  : river.py
+## -- Package : mlpro.wrappers.river
+## -- Module  : streams.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -27,43 +27,17 @@
 """
 Ver. 2.0.0 (2023-04-16)
 
-This module provides wrapper classes to embed River functionalities into MLPro. Currently, the 
-following topics are supported by the wrapper:
-
-- Native data streams
-
-- Selected cluster algorithms
+This module provides wrapper classes to embed River stream functionalities into MLPro. 
 
 Learn more:
 https://www.riverml.xyz/
 
 """
 
-from mlpro.bf.various import ScientificObject
-from mlpro.wrappers.models import Wrapper
+from mlpro.wrappers.river.basics import WrapperRiver
 from mlpro.bf.streams import *
-from mlpro.bf.math import *
 import river.datasets as river_ds
 import numpy
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class WrapperRiver (Wrapper):
-    """
-    Root class for all River wrapper classes.
-    """
-
-    C_TYPE              = 'Wrapper River'
-    C_WRAPPED_PACKAGE   = 'river'
-    C_MINIMUM_VERSION   = '0.15.0'
-
-    C_SCIREF_TYPE       = ScientificObject.C_SCIREF_TYPE_ONLINE
-    C_SCIREF_AUTHOR     = 'River'
-    C_SCIREF_URL        = 'riverml.xyz'
-
 
 
 
