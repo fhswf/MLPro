@@ -346,7 +346,7 @@ class FctSTrans (Log):
         self.log(Log.C_LOG_TYPE_I, 'Start simulating a state transition...')
         try:
             return self._simulate_reaction( p_state = p_state, p_action = p_action, p_t_step = p_t_step )
-        except:
+        except TypeError:
             return self._simulate_reaction(p_state=p_state, p_action=p_action)
 
 
@@ -1229,8 +1229,10 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         # 1 State transition
         if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
-            self._set_state(self.simulate_reaction(self.get_state(), p_action, p_t_step = self._t_step ))
-
+            try:
+                self._set_state(self.simulate_reaction(self.get_state(), p_action, p_t_step = self._t_step ))
+            except ParamError:
+                self._set_state(self.simulate_reaction(self.get_state(), p_action))
         elif self._mode == self.C_MODE_REAL:
             # 1.2 Real state transition
 
@@ -1281,7 +1283,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         if self._fct_strans is not None:
             try:
                 return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
-            except:
+            except TypeError:
                 return self._fct_strans.simulate_reaction(p_state, p_action)
 
         elif self._mujoco_handler is not None:
@@ -1299,7 +1301,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         else:
             try:
                 return self._simulate_reaction(p_state, p_action)
-            except:
+            except TypeError:
                 return self._simulate_reaction(p_state, p_action)
 
 ## -------------------------------------------------------------------------------------------------
@@ -1986,7 +1988,7 @@ class MultiSystem(Workflow, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State = None, p_action: Action = None) -> State:
+    def simulate_reaction(self, p_state: State = None, p_action: Action = None, p_t_step : timedelta = None) -> State:
         """
         Simulates the system.
 
