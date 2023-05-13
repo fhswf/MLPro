@@ -1231,8 +1231,10 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
             # 1.1 Simulated state transition
             try:
                 self._set_state(self.simulate_reaction(self.get_state(), p_action, p_t_step = self._t_step ))
-            except ParamError:
+            except TypeError:
                 self._set_state(self.simulate_reaction(self.get_state(), p_action))
+
+
         elif self._mode == self.C_MODE_REAL:
             # 1.2 Real state transition
 
@@ -1300,7 +1302,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
             return current_state
         else:
             try:
-                return self._simulate_reaction(p_state, p_action)
+                return self._simulate_reaction(p_state, p_action, p_t_step)
             except TypeError:
                 return self._simulate_reaction(p_state, p_action)
 
