@@ -37,6 +37,7 @@
 ## -- 2023-05-03  1.11.0    LSB      Enhancing System Class for task and workflow architecture 
 ## -- 2023-05-03  1.11.1    LSB      Bug Fix: Visualization for DemoScenario
 ## -- 2023-05-05  1.12.0    LSB      New Class SystemShared
+## -- 2023-05-13  1.13.0    LSB      New parameter p_t_step in simulate reaction method
 ## -- 2023-05-dd  2.0.0     LSB      New class MultiSystem
 ## -------------------------------------------------------------------------------------------------
 
