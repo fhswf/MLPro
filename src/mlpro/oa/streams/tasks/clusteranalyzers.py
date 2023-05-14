@@ -8,10 +8,11 @@
 ## -- 2023-01-24  0.0.0     DA       Creation
 ## -- 2023-04-18  0.1.0     DA       First implementation of classes ClusterMembership, ClusterAnalyzer
 ## -- 2023-05-06  0.2.0     DA       New class ClusterCentroid
+## -- 2023-05-14  0.3.0     DA       Class ClusterAnalyzer: simplification
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.2.0 (2023-05-06)
+Ver. 0.3.0 (2023-05-14)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -125,7 +126,7 @@ class ClusterAnalyzer (OATask):
                   **p_kwargs ):
         
         self._cls_cluster = p_cls_cluster
-        self._clusters    = {}
+        self._clusters    = []
 
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
@@ -152,7 +153,7 @@ class ClusterAnalyzer (OATask):
             Current list of clusters.
         """
 
-        return self._clusters.values()
+        return self._clusters
     
 
 ## -------------------------------------------------------------------------------------------------
@@ -173,22 +174,21 @@ class ClusterAnalyzer (OATask):
             relative membership value in percent and a reference to the cluster.
         """
 
-        clusters        = self.get_clusters()
         sum_memberships = 0
         memberships_abs = []
         memberships_rel = []
 
-        for cluster in clusters:
+        for cluster in self._clusters:
             membership_abs = cluster.get_membership( p_inst = p_inst )
             memberships_abs.append(membership_abs)
             sum_memberships += membership_abs
 
         if sum_memberships > 0:
-            for cluster in clusters:
+            for cluster in self._clusters:
                 membership_rel = memberships_abs.pop(0) / sum_memberships
                 memberships_rel.append( ( cluster.get_id(), membership_rel, cluster) )
         else:
-            for cluster in clusters:
+            for cluster in self._clusters:
                 memberships_rel.append( ( cluster.get_id(), 0, cluster) )
 
         return memberships_rel
@@ -219,7 +219,7 @@ class ClusterAnalyzer (OATask):
 
         if not self.get_visualization(): return
 
-        for cluster in self._clusters.values():
+        for cluster in self._clusters:
             cluster.update_plot(p_inst_new = p_inst_new, p_inst_del = p_inst_del, **p_kwargs)
 
 
