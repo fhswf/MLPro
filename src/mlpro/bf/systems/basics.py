@@ -1162,12 +1162,34 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, **p_kwargs):
+    def run(self,
+            p_range:int=None,
+            p_wait:bool=False,
+            p_actions: dict = None):
         """
-        Run method that runs the system as a task. It runs the simulate reaction method of the system with state and
+        Runs the system as a task. Fetches the action from the action dictionary provided by the shared object prior
+        to the run.
+
+        Parameters
+        ----------
+        p_range
+        p_wait
+        p_actions
+
+        """
+
+        action = p_actions[self.get_id()]
+
+        Task.run(self, p_action = action)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_action: Action = None):
+        """
+        Run method that runs the system as a task. It runs the process_action() method of the system with
         action as a parameter.
         """
-        pass
+        return self.process_action(p_action = p_action)
 
 ## -------------------------------------------------------------------------------------------------
     def get_fct_strans(self):
