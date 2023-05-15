@@ -1162,24 +1162,14 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self,
-            p_range:int=None,
-            p_wait:bool=False,
+    def run(self, 
+            p_range:int=None, 
+            p_wait:bool=False, 
             p_actions: dict = None):
-        """
-        Runs the system as a task. Fetches the action from the action dictionary provided by the shared object prior
-        to the run.
-
-        Parameters
-        ----------
-        p_range
-        p_wait
-        p_actions
-
-        """
-
+        
+        
         action = p_actions[self.get_id()]
-
+        
         Task.run(self, p_action = action)
 
 
@@ -1189,7 +1179,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         Run method that runs the system as a task. It runs the process_action() method of the system with
         action as a parameter.
         """
-        return self.process_action(p_action = p_action)
+        return self.process_action(p_action=p_action)
 
 ## -------------------------------------------------------------------------------------------------
     def get_fct_strans(self):
@@ -1603,7 +1593,7 @@ class SystemShared(Shared):
 
 
         Shared.__init__(self,
-            p_range=p_range)
+                        p_range=p_range)
 
         self._spaces: dict = {}
         self._states: dict = {}
@@ -1676,27 +1666,28 @@ class SystemShared(Shared):
                         self._states[output_sys].set_value(p_dim_id=output_dim, p_value=value)
                     if output_dim_type == 'A':
                         action_space = self._spaces[output_sys][1]
-                        self._actions[ouput_sys][action_space.index(ouput_id)] = value
+                        self._actions[output_sys][action_space.index(output_dim)] = value
 
         # TODO: Check how to get the action dimensions from the action object
 
         if p_action is not None:
-            for id in p_state.get_dim_ids():
-                value = p_state.get_value(id)
+            elem_ids = p_action.get_elem_ids()
+            action_dims = []
+            action_values = []
+            for elem_id in elem_ids:
+                action_dims.extend(p_action.get_elem(elem_id).get_related_set().get_dim_ids())
+                action_values.extend(p_action.get_elem(elem_id).get_values())
+            for i,id in enumerate(action_dims):
+                value = action_values[i]
                 for output_sys, output_dim_type, output_dim in self._map(p_input_dim=id):
                     if output_dim_type == 'S':
                         self._states[output_sys].set_value(p_dim_id=output_dim, p_value=value)
                     if output_dim_type == 'A':
                         action_space = self._spaces[output_sys][1]
-                        self._actions[ouput_sys][action_space.index(ouput_id)] = value
+                        self._actions[output_sys][action_space.index(output_dim)] = value
 
         # TODO: Check if there actually exists a mapping among them, here and also in _map function
 
-
-
-        # for state_id, (action_sys_id, action_id) in maps:
-        #     action_space = self._spaces[action_sys_id]
-        #     self._actions[action_sys_id][action_space.index(action_id)] = p_state.get_value(state_id)
 
 
 ## -------------------------------------------------------------------------------------------------
