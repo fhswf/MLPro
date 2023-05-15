@@ -1162,24 +1162,21 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, 
-            p_range:int=None, 
-            p_wait:bool=False, 
-            p_actions: dict = None):
-        
-        
-        action = p_actions[self.get_id()]
-        
-        Task.run(self, p_action = action)
+    def get_so(self):
+
+        return super().get_so()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_action: Action = None):
+    def _run(self, p_t_step : timedelta = None):
         """
         Run method that runs the system as a task. It runs the process_action() method of the system with
         action as a parameter.
         """
-        return self.process_action(p_action=p_action)
+        p_action = self.get_so().get_action(p_sys_id = self.get_id())
+        self.process_action(p_action=p_action)
+        self.get_so().update_state(p_sys_id = self.get_id(), p_state = self.get_state())
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_fct_strans(self):
@@ -1197,7 +1194,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def process_action(self, p_action: Action) -> bool:
+    def process_action(self, p_action: Action, p_t_step: timedelta = None) -> bool:
         """
         Processes a state transition based on the current state and a given action. The state
         transition itself is implemented in child classes in the custom method _process_action().
@@ -1206,6 +1203,9 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         ----------
         p_action : Action
             Action to be processed
+
+        p_t_step : timedelta
+            The timestep for which the system is to be simulated
 
         Returns
         -------
@@ -1216,7 +1216,12 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         self.log(self.C_LOG_TYPE_I, 'Start processing action')
 
         state = self.get_state()
-        result = self._process_action(p_action)
+
+        try:
+            result = self._process_action(p_action, p_t_step = p_t_step)
+        except TypeError:
+            result = self._process_action(p_action)
+
         self._prev_state = state
         self._last_action = p_action
 
@@ -1229,7 +1234,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _process_action(self, p_action: Action) -> bool:
+    def _process_action(self, p_action: Action, p_t_step : timedelta = None) -> bool:
         """
         Internal custom method for state transition with default implementation. To be redefined in 
         a child class on demand. See method process_action() for further details.
@@ -1243,7 +1248,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
             try:
-                self._set_state(self.simulate_reaction(self.get_state(), p_action, p_t_step = self._t_step ))
+                self._set_state(self.simulate_reaction(self.get_state(), p_action, p_t_step = p_t_step ))
             except TypeError:
                 self._set_state(self.simulate_reaction(self.get_state(), p_action))
 
@@ -1599,8 +1604,6 @@ class SystemShared(Shared):
         self._states: dict = {}
         self._actions: dict = {}
         self._action_dimensions: set = set()
-        # self._dim_mappings: dict = {}
-        # self._sys_mappings: dict = {}
 
         # Mappings in the form 'dim : [(output_sys, out_dim), ]'
         self._mappings = {}
@@ -1614,6 +1617,8 @@ class SystemShared(Shared):
         p_seed : int
             Seed for reproducibility.
         """
+        #  TODO: How do you reset systems in a multiprocess, through the shared object or the workflow itself?
+
         self._states.clear()
         self._actions.clear()
         # self.initiate_values()
@@ -1639,12 +1644,12 @@ class SystemShared(Shared):
         """
 
         self._states[p_sys_id] = p_state.copy()
-        self._update_actions(p_state=self._states[p_sys_id])
+        self._map_values(p_state=self._states[p_sys_id])
         return True
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_actions(self,  p_state: State, p_action:Action = None):
+    def _map_values(self, p_state: State = None, p_action:Action = None):
         """
         Updates the action values based on a new state, in a MultiSystem Context.
 
@@ -1688,6 +1693,11 @@ class SystemShared(Shared):
         # TODO: Check if there actually exists a mapping among them, here and also in _map function
 
 
+## -------------------------------------------------------------------------------------------------
+    def get_actions(self):
+
+        return self._actions
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_action(self, p_sys_id) -> Action:
@@ -1707,6 +1717,12 @@ class SystemShared(Shared):
 
         action = Action(p_action_space=self._spaces[p_sys_id][1], p_values=self._actions[p_sys_id])
         return action
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_states(self):
+
+        return self._states
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1962,26 +1978,6 @@ class MultiSystem(Workflow, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def run(self, p_action, p_states, p_t_step):
-        """
-        Runs the MultiSystem as a Workflow.
-
-        Parameters
-        ----------
-        p_action
-        p_state
-        p_t_step
-
-        Returns
-        -------
-
-        """
-
-        states = self.get_states()
-        Workflow.run(self, p_action = p_action, p_states = states, p_t_step = self._t_step)
-
-
-## -------------------------------------------------------------------------------------------------
     def get_states(self):
         """
         Returns a list of the states of all the Sub-Systems in the MultiSystem.
@@ -2011,7 +2007,9 @@ class MultiSystem(Workflow, System):
         -------
 
         """
-        self.run(p_action = p_action, p_states=self.get_states(), p_t_step=self._t_step)
+        # self.get_so()._update_actions(p_action=p_action)
+        self.run(p_action = self.get_so().get_actions(), p_t_step = self._t_step)
+        return self.get_state()
 
 
 ## -------------------------------------------------------------------------------------------------
