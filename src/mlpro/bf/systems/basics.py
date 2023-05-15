@@ -1599,8 +1599,8 @@ class SystemShared(Shared):
         self._states: dict = {}
         self._actions: dict = {}
         self._action_dimensions: set = set()
-        self._dim_mappings: dict = {}
-        self._sys_mappings: dict = {}
+        # self._dim_mappings: dict = {}
+        # self._sys_mappings: dict = {}
 
         # Mappings in the form 'dim : [(output_sys, out_dim), ]'
         self._mappings = {}
@@ -1619,8 +1619,7 @@ class SystemShared(Shared):
         # self.initiate_values()
         for system in self._spaces.keys():
             self._states[system] = State(p_state_space=self._spaces[system][0])
-            self._actions[system] = Action(p_action_space=self._spaces[system][1],
-                p_values=np.zeros(len(self._spaces[system][1].get_dims())))
+            self._actions[system] = np.zeros(len(self._spaces[system][1].get_dims()))
         pass
 
 
@@ -1640,12 +1639,12 @@ class SystemShared(Shared):
         """
 
         self._states[p_sys_id] = p_state.copy()
-        self._update_actions(p_sys_id=p_sys_id, p_state=self._states[p_sys_id])
+        self._update_actions(p_state=self._states[p_sys_id])
         return True
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _update_actions(self, p_sys_id, p_state: State, p_action:Action = None):
+    def _update_actions(self,  p_state: State, p_action:Action = None):
         """
         Updates the action values based on a new state, in a MultiSystem Context.
 
@@ -1742,32 +1741,22 @@ class SystemShared(Shared):
             Id of the system for which action is to be mapped into the mappings.
 
         p_state : State
-            State to be mapped into the 'states' dictionary.
+            The State to be mapped into the 'states' dictionary.
 
         Returns
         -------
-        mapping : (output_sys, output_dim_id, output_dim)
+        mapping : (output_sys, output_dim_type, output_dim)
             A tuple of tuples of System id and dimension id mappings from State to Action respectively.
         """
 
-        # sys_maps = self._sys_mappings[p_sys_id]
-        #
-        # for id in p_state.get_dim_ids():
-        #     dim_maps = zip(id, self._dim_mappings[id])
-        #
-        # mappings = (sys_maps, dim_maps)
-        # return mappings
-        # output_sys = self._sys_mappings[p_sys_id]
 
-        output_dims = []
+        output_dims = self._mappings[p_input_dim]
 
-        output_dims.append(self._dim_mappings[p_input_dim])
-
-        return ouput_dims
+        return output_dims
 
 
 ## -------------------------------------------------------------------------------------------------
-    def register_system(self, p_system: System, p_mapping: tuple):
+    def register_system(self, p_system: System, p_mappings: tuple):
         """
         Registers the system in the Shared Object and sets up the dimension to dimension mapping.
 
@@ -1794,47 +1783,22 @@ class SystemShared(Shared):
             self._spaces[system_id] = (p_system.get_state_space().copy(), p_system.get_action_space().copy())
             self._states[system_id] = State(self._spaces[system_id])
 
-            self._actions[system_id] = np.zeros(len(action_space_dim_ids))
 
+            self._action_dimensions.update(*action_space.get_dim_ids())
+            self._actions[system_id] = np.zeros(len(action_space.get_dim_ids()))
 
-            self._action_dimensions.update(*action_space_dim_ids)
+            for (in_dim_type, output_dim_type), (input_sys_id, input_dim), (output_sys_id, output_dim) in p_mappings:
 
-            self._setup_mappings(p_mapping=p_mapping)
+                if input_dim not in self._mappings.keys():
+                    self._mappings[input_dim] = []
+
+                self._mappings[input_dim].append(output_sys_id, output_dim_type, output_dim)
 
             return True
 
         except:
 
             return False
-
-
-## -------------------------------------------------------------------------------------------------
-    def _setup_mappings(self, p_mapping):
-        """
-        Sets up the mappings in the dictionary.
-        Sets up the mappings in dictionaries sys_mappings and dim_mappings.
-
-        Parameters
-        ----------
-        p_mapping : ( (dim_type, dim_type), (input_sys_id, input_dim) , (action_sys_id, action_dimension) )
-            The dimension to dimension mapping of dimension to Action in a MultiSystem context.
-            Use 'S' for state dimension type, 'A' for action dimension type.
-
-        """
-        for (in_dim_type, output_dim_type), (input_sys_id, input_dim), (output_sys_id, output_dim) in p_mapping:
-
-            # if input_dim.get_id() not in self._dim_mappings.keys():
-            #     self._dim_mappings[input_dim.get_id()] = []
-            # if state_sys_id not in self._sys_mappings:
-            #     self._sys_mappings[input_sys_id] = []
-            #
-            # self._sys_mappings[state_sys_id].append(output_sys_id)
-            # self._dim_mappings[input_dim.get_id()].append((output_sys_id, output_dim.get_id()))
-            if input_dim not in self._mappings.keys():
-                self._mappings[inout_dim] = []
-
-            self._mappings[input_dim].append(output_sys_id, output_dim_type, output_dim)
-
 
 
 
