@@ -87,7 +87,7 @@ class OATask (StreamTask, Model):
                   p_name: str = None, 
                   p_range_max = StreamTask.C_RANGE_THREAD, 
                   p_ada : bool = True, 
-                  p_buffer_size : int,
+                  p_buffer_size : int = 0,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
