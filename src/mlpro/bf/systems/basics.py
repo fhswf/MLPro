@@ -741,7 +741,277 @@ class Controller (EventManager):
         """
 
         raise NotImplementedError
-        
+
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SystemShared(Shared):
+    """
+    A specialised shared object for managing IPC between MultiSystems.
+
+    :TODO: Entry Systems to be handled yet, that get action from outside.
+
+    Parameters
+    ----------
+    p_range
+        The multiprocessing range for the specific process. Default is None.
+
+
+    Attributes
+    ----------
+    _spaces
+        Spaces of all the systems registered in the Shared Object.
+
+    _states
+        States of all the systems registered in the Shared Object.
+
+    _actions
+        Corresponding Actions for all the systems.
+
+    _action_dimensions
+        All the dimensions present in the Shared Object.
+
+    _mappings
+        Mapping configurations for system to action mapping.
+
+    """
+
+    C_NAME = 'System Shared'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_range: int = Range.C_RANGE_NONE):
+
+
+        Shared.__init__(self,
+                        p_range=p_range)
+
+        self._spaces: dict = {}
+        self._states: dict = {}
+        self._actions: dict = {}
+        self._action_dimensions: set = set()
+
+        # Mappings in the form 'dim : [(output_sys, out_dim), ]'
+        self._mappings = {}
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_seed: int = None):
+        """
+        Resets the shared object.
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed for reproducibility.
+        """
+        #  TODO: How do you reset systems in a multiprocess, through the shared object or the workflow itself?
+
+        self._states.clear()
+        self._actions.clear()
+        # self.initiate_values()
+        for system in self._spaces.keys():
+            self._states[system] = State(p_state_space=self._spaces[system][0])
+            self._actions[system] = np.zeros(len(self._spaces[system][1].get_dims()))
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_state(self, p_sys_id, p_state: State) -> bool:
+        """
+        Updates the states in the Shared Object.
+
+        Parameters
+        ----------
+            p_state : State
+                The id of the system, for which action is to be fetched.
+
+        Returns
+        -------
+            bool
+        """
+
+        self._states[p_sys_id] = p_state.copy()
+        self._map_values(p_state=self._states[p_sys_id])
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map_values(self, p_state: State = None, p_action:Action = None):
+        """
+        Updates the action values based on a new state, in a MultiSystem Context.
+
+        Parameters
+        ----------
+        p_sys_id
+            Id of the system from which the state is received.
+
+        p_state : State
+            The State of the system which affects the action.
+
+        """
+        if p_state is not None:
+            for id in p_state.get_dim_ids():
+                value = p_state.get_value(id)
+                for output_sys, output_dim_type, output_dim in self._map(p_input_dim=id):
+                    if output_dim_type == 'S':
+                        self._states[output_sys].set_value(p_dim_id=output_dim, p_value=value)
+                    if output_dim_type == 'A':
+                        action_space = self._spaces[output_sys][1]
+                        self._actions[output_sys][action_space.index(output_dim)] = value
+
+        # TODO: Check how to get the action dimensions from the action object
+
+        if p_action is not None:
+            elem_ids = p_action.get_elem_ids()
+            action_dims = []
+            action_values = []
+            for elem_id in elem_ids:
+                action_dims.extend(p_action.get_elem(elem_id).get_related_set().get_dim_ids())
+                action_values.extend(p_action.get_elem(elem_id).get_values())
+            for i,id in enumerate(action_dims):
+                value = action_values[i]
+                for output_sys, output_dim_type, output_dim in self._map(p_input_dim=id):
+                    if output_dim_type == 'S':
+                        self._states[output_sys].set_value(p_dim_id=output_dim, p_value=value)
+                    if output_dim_type == 'A':
+                        action_space = self._spaces[output_sys][1]
+                        self._actions[output_sys][action_space.index(output_dim)] = value
+
+        # TODO: Check if there actually exists a mapping among them, here and also in _map function
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_actions(self):
+
+        return self._actions
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_action(self, p_sys_id) -> Action:
+        """
+        Fetches the corresponding action for a particular system.
+
+        Parameters
+        ----------
+        p_sys_id
+            The id of the system, for which action is to be fetched.
+
+        Returns
+        -------
+        action : Action
+            The corresponding action for the system.
+        """
+
+        action = Action(p_action_space=self._spaces[p_sys_id][1], p_values=self._actions[p_sys_id])
+        return action
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_states(self):
+
+        return self._states
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_state(self, p_sys_id) -> State:
+        """
+        Fetches the state of a particular system from the Shared Object.
+
+        Parameters
+        ----------
+        p_sys_id
+            The id of the system, of which state is to be fetched.
+
+        Returns
+        -------
+        state : State
+            The corresponding state of the system.
+        """
+
+        state = self._states[p_sys_id].copy()
+
+        return state
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map(self, p_input_dim = None):
+        """
+        Maps a dimension to output dimension with info about output sys, output dim type and output dim.
+
+        Parameters
+        ----------
+        p_sys_id
+            Id of the system for which action is to be mapped into the mappings.
+
+        p_state : State
+            The State to be mapped into the 'states' dictionary.
+
+        Returns
+        -------
+        mapping : (output_sys, output_dim_type, output_dim)
+            A tuple of tuples of System id and dimension id mappings from State to Action respectively.
+        """
+
+
+        output_dims = self._mappings[p_input_dim]
+
+        return output_dims
+
+
+## -------------------------------------------------------------------------------------------------
+    def register_system(self,
+                        p_sys_id = None,
+                        p_state_space : MSpace = None,
+                        p_action_space : MSpace = None,
+                        p_mappings: tuple = None):
+        """
+        Registers the system in the Shared Object and sets up the dimension to dimension mapping.
+
+        Parameters
+        ----------
+        p_system : System
+            The system to be registered.
+
+        p_mapping : ( (dim_type, dim_type), (input_sys_id, input_dim) , (action_sys_id, action_dimension) )
+
+
+        Returns
+        -------
+
+        """
+        try:
+
+            system_id = p_sys_id
+            state_space = p_state_space
+            action_space = p_action_space
+
+            # :TODO: Also check if the system is already registered and raise error
+
+            self._spaces[system_id] = (state_space.copy(), action_space.copy())
+            self._states[system_id] = State(self._spaces[system_id])
+
+
+            self._action_dimensions.update(*action_space.get_dim_ids())
+            self._actions[system_id] = np.zeros(len(action_space.get_dim_ids()))
+
+            for (in_dim_type, output_dim_type), (input_sys_id, input_dim), (output_sys_id, output_dim) in p_mappings:
+
+                if input_dim not in self._mappings.keys():
+                    self._mappings[input_dim] = []
+
+                self._mappings[input_dim].append(output_sys_id, output_dim_type, output_dim)
+
+            return True
+
+        except:
+
+            return False
+
+
+
         
         
 
@@ -1162,7 +1432,7 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_so(self):
+    def get_so(self) -> SystemShared:
 
         return super().get_so()
 
@@ -1172,25 +1442,17 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
         """
         Run method that runs the system as a task. It runs the process_action() method of the system with
         action as a parameter.
+
+        Parameters
+        ----------
+        p_t_step : timedelta
+            Time for which the system must be simulated.
+
         """
+
         p_action = self.get_so().get_action(p_sys_id = self.get_id())
         self.process_action(p_action=p_action)
         self.get_so().update_state(p_sys_id = self.get_id(), p_state = self.get_state())
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_fct_strans(self):
-        return self._fct_strans
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_fct_success(self):
-        return self._fct_success
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_fct_broken(self):
-        return self._fct_broken
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1556,268 +1818,6 @@ class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persisten
 
 
 
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class SystemShared(Shared):
-    """
-    A specialised shared object for managing IPC between MultiSystems.
-
-    :TODO: Entry Systems to be handled yet, that get action from outside.
-
-    Parameters
-    ----------
-    p_range
-        The multiprocessing range for the specific process. Default is None.
-
-
-    Attributes
-    ----------
-    _spaces
-        Spaces of all the systems registered in the Shared Object.
-
-    _states
-        States of all the systems registered in the Shared Object.
-
-    _actions
-        Corresponding Actions for all the systems.
-
-    _action_dimensions
-        All the dimensions present in the Shared Object.
-
-    _mappings
-        Mapping configurations for system to action mapping.
-
-    """
-
-    C_NAME = 'System Shared'
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_range: int = Range.C_RANGE_NONE):
-
-
-        Shared.__init__(self,
-                        p_range=p_range)
-
-        self._spaces: dict = {}
-        self._states: dict = {}
-        self._actions: dict = {}
-        self._action_dimensions: set = set()
-
-        # Mappings in the form 'dim : [(output_sys, out_dim), ]'
-        self._mappings = {}
-## -------------------------------------------------------------------------------------------------
-    def reset(self, p_seed: int = None):
-        """
-        Resets the shared object.
-
-        Parameters
-        ----------
-        p_seed : int
-            Seed for reproducibility.
-        """
-        #  TODO: How do you reset systems in a multiprocess, through the shared object or the workflow itself?
-
-        self._states.clear()
-        self._actions.clear()
-        # self.initiate_values()
-        for system in self._spaces.keys():
-            self._states[system] = State(p_state_space=self._spaces[system][0])
-            self._actions[system] = np.zeros(len(self._spaces[system][1].get_dims()))
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def update_state(self, p_sys_id, p_state: State) -> bool:
-        """
-        Updates the states in the Shared Object.
-
-        Parameters
-        ----------
-            p_state : State
-                The id of the system, for which action is to be fetched.
-
-        Returns
-        -------
-            bool
-        """
-
-        self._states[p_sys_id] = p_state.copy()
-        self._map_values(p_state=self._states[p_sys_id])
-        return True
-
-
-## -------------------------------------------------------------------------------------------------
-    def _map_values(self, p_state: State = None, p_action:Action = None):
-        """
-        Updates the action values based on a new state, in a MultiSystem Context.
-
-        Parameters
-        ----------
-        p_sys_id
-            Id of the system from which the state is received.
-
-        p_state : State
-            The State of the system which affects the action.
-
-        """
-        if p_state is not None:
-            for id in p_state.get_dim_ids():
-                value = p_state.get_value(id)
-                for output_sys, output_dim_type, output_dim in self._map(p_input_dim=id):
-                    if output_dim_type == 'S':
-                        self._states[output_sys].set_value(p_dim_id=output_dim, p_value=value)
-                    if output_dim_type == 'A':
-                        action_space = self._spaces[output_sys][1]
-                        self._actions[output_sys][action_space.index(output_dim)] = value
-
-        # TODO: Check how to get the action dimensions from the action object
-
-        if p_action is not None:
-            elem_ids = p_action.get_elem_ids()
-            action_dims = []
-            action_values = []
-            for elem_id in elem_ids:
-                action_dims.extend(p_action.get_elem(elem_id).get_related_set().get_dim_ids())
-                action_values.extend(p_action.get_elem(elem_id).get_values())
-            for i,id in enumerate(action_dims):
-                value = action_values[i]
-                for output_sys, output_dim_type, output_dim in self._map(p_input_dim=id):
-                    if output_dim_type == 'S':
-                        self._states[output_sys].set_value(p_dim_id=output_dim, p_value=value)
-                    if output_dim_type == 'A':
-                        action_space = self._spaces[output_sys][1]
-                        self._actions[output_sys][action_space.index(output_dim)] = value
-
-        # TODO: Check if there actually exists a mapping among them, here and also in _map function
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_actions(self):
-
-        return self._actions
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_action(self, p_sys_id) -> Action:
-        """
-        Fetches the corresponding action for a particular system.
-
-        Parameters
-        ----------
-        p_sys_id
-            The id of the system, for which action is to be fetched.
-
-        Returns
-        -------
-        action : Action
-            The corresponding action for the system.
-        """
-
-        action = Action(p_action_space=self._spaces[p_sys_id][1], p_values=self._actions[p_sys_id])
-        return action
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_states(self):
-
-        return self._states
-
-
-## -------------------------------------------------------------------------------------------------
-    def get_state(self, p_sys_id) -> State:
-        """
-        Fetches the state of a particular system from the Shared Object.
-
-        Parameters
-        ----------
-        p_sys_id
-            The id of the system, of which state is to be fetched.
-
-        Returns
-        -------
-        state : State
-            The corresponding state of the system.
-        """
-
-        state = self._states[p_sys_id].copy()
-
-        return state
-
-
-## -------------------------------------------------------------------------------------------------
-    def _map(self, p_input_dim = None):
-        """
-        Maps a dimension to output dimension with info about output sys, output dim type and output dim.
-
-        Parameters
-        ----------
-        p_sys_id
-            Id of the system for which action is to be mapped into the mappings.
-
-        p_state : State
-            The State to be mapped into the 'states' dictionary.
-
-        Returns
-        -------
-        mapping : (output_sys, output_dim_type, output_dim)
-            A tuple of tuples of System id and dimension id mappings from State to Action respectively.
-        """
-
-
-        output_dims = self._mappings[p_input_dim]
-
-        return output_dims
-
-
-## -------------------------------------------------------------------------------------------------
-    def register_system(self, p_system: System, p_mappings: tuple):
-        """
-        Registers the system in the Shared Object and sets up the dimension to dimension mapping.
-
-        Parameters
-        ----------
-        p_system : System
-            The system to be registered.
-
-        p_mapping : ( (dim_type, dim_type), (input_sys_id, input_dim) , (action_sys_id, action_dimension) )
-
-
-        Returns
-        -------
-
-        """
-        try:
-
-            system_id = p_system.get_id()
-            state_space = p_system.get_state_space()
-            action_space = p_system.get_action_space()
-
-            # :TODO: Also check if the system is already registered and raise error
-
-            self._spaces[system_id] = (p_system.get_state_space().copy(), p_system.get_action_space().copy())
-            self._states[system_id] = State(self._spaces[system_id])
-
-
-            self._action_dimensions.update(*action_space.get_dim_ids())
-            self._actions[system_id] = np.zeros(len(action_space.get_dim_ids()))
-
-            for (in_dim_type, output_dim_type), (input_sys_id, input_dim), (output_sys_id, output_dim) in p_mappings:
-
-                if input_dim not in self._mappings.keys():
-                    self._mappings[input_dim] = []
-
-                self._mappings[input_dim].append(output_sys_id, output_dim_type, output_dim)
-
-            return True
-
-        except:
-
-            return False
-
-
-
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class MultiSystem(Workflow, System):
@@ -1926,7 +1926,7 @@ class MultiSystem(Workflow, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_system(self, p_system : System, p_mapping):
+    def add_system(self, p_system : System, p_mappings):
         """
         Adds sub system to the MultiSystem.
 
@@ -1940,9 +1940,15 @@ class MultiSystem(Workflow, System):
 
         """
         self._subsystems.append(p_system)
-        self._subsystem_ids.append(p_system.get_id())
-        self.get_so().register_system(p_system = p_system, p_mapping = p_mapping)
 
+        self._subsystem_ids.append(p_system.get_id())
+
+        self.get_so().register_system(p_sys_id = p_system.get_id(),
+                                      p_state_space=p_system.get_state_space(),
+                                      p_action_space=p_system.get_action_space(),
+                                      p_mappings = p_mappings)
+
+        self.add_task(p_system)
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
@@ -1990,7 +1996,7 @@ class MultiSystem(Workflow, System):
 
         so = self.get_so()
 
-        return so._states
+        return so.get_states()
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -2007,7 +2013,7 @@ class MultiSystem(Workflow, System):
         -------
 
         """
-        # self.get_so()._update_actions(p_action=p_action)
+        self.get_so()._map_values(p_action=p_action)
         self.run(p_action = self.get_so().get_actions(), p_t_step = self._t_step)
         return self.get_state()
 
