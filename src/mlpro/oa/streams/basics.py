@@ -15,11 +15,12 @@
 ## -- 2023-01-01  0.6.0     DA       Refactoring
 ## -- 2023-02-23  0.6.1     DA       Removed class OAFunction
 ## -- 2023-03-27  0.6.1     DA       Refactoring
-## -- 2023-04-09  0.7.0     DA       Class Task: new methods adapt(), _adapt(), adapt_reverse()
+## -- 2023-04-09  0.7.0     DA       Class OATask: new methods adapt(), _adapt(), adapt_reverse()
+## -- 2023-05-15  0.7.1     DA       Class OATask: new parameter p_buffer_size
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.7.0 (2023-04-09)
+Ver. 0.7.1 (2023-05-15)
 
 Core classes for online adaptive stream processing.
 """
@@ -62,6 +63,8 @@ class OATask (StreamTask, Model):
         Maximum range of asynchonicity. See class Range. Default is Range.C_RANGE_PROCESS.
     p_ada : bool
         Boolean switch for adaptivitiy. Default = True.
+    p_buffer_size : int
+        Initial size of internal data buffer. Defaut = 0 (no buffering).
     p_duplicate_data : bool
         If True, instances will be duplicated before processing. Default = False.
     p_visualize : bool
@@ -84,6 +87,7 @@ class OATask (StreamTask, Model):
                   p_name: str = None, 
                   p_range_max = StreamTask.C_RANGE_THREAD, 
                   p_ada : bool = True, 
+                  p_buffer_size : int,
                   p_duplicate_data : bool = False,
                   p_visualize : bool = False,
                   p_logging = Log.C_LOG_ALL, 
@@ -95,7 +99,7 @@ class OATask (StreamTask, Model):
                         p_range_max = p_range_max,
                         p_autorun = Task.C_AUTORUN_NONE,
                         p_class_shared = None,
-                        p_buffer_size = 0,
+                        p_buffer_size = p_buffer_size,
                         p_visualize = p_visualize,
                         p_logging = p_logging )    
 

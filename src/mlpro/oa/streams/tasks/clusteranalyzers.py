@@ -102,6 +102,8 @@ class ClusterAnalyzer (OATask):
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
     p_cls_cluster 
         Cluster class (Class Cluster or a child class). Default = Cluster.
+    p_cluster_limit : int
+        Optional limit for clusters to be created. Default = 0 (no limit).
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -123,10 +125,12 @@ class ClusterAnalyzer (OATask):
                   p_visualize: bool = False, 
                   p_logging = Log.C_LOG_ALL, 
                   p_cls_cluster = Cluster,
+                  p_cluster_limit : int = 0,
                   **p_kwargs ):
         
-        self._cls_cluster = p_cls_cluster
-        self._clusters    = []
+        self._cls_cluster   = p_cls_cluster
+        self._clusters      = []
+        self._cluster_limit = p_cluster_limit
 
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
