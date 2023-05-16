@@ -26,9 +26,55 @@ from mlpro.oa.streams import *
 
 
 
+
+
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAFctSTrans(AFctSTrans):
+class PseudoTask(OATask):
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_wrap_task:OATask = None,
+                 p_name='PseudoTask',
+                 p_range_max=Range.C_RANGE_NONE,
+                 p_duplicate_data=True,
+                 p_logging=Log.C_LOG_ALL,
+                 p_visualize=False,
+                 **p_kwargs):
+
+
+        OATask.__init__(self,
+                        p_name = p_name,
+                        p_range_max = p_range_max,
+                        p_duplicate_data = p_duplicate_data,
+                        p_ada = False,
+                        p_logging = p_logging,
+                        p_visualize= p_visualize,
+                        **p_kwargs)
+
+
+        self._host_task = p_wrap_task
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run( self,
+              p_inst_new : list,
+              p_inst_del : list ):
+
+        self._host_task._run(p_inst_new = p_inst_new,
+                        p_inst_del = p_inst_del)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class OAFctSTrans(AFctSTrans, OAWorkflow):
     """
 
     Parameters
@@ -68,7 +114,7 @@ class OAFctSTrans(AFctSTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
         """
 
         Parameters
@@ -84,39 +130,39 @@ class OAFctSTrans(AFctSTrans):
 
 
         # 1. check if the user has already created a workflow and added to tasks
-        if self._processing_wf is None:
-            # Create a shared object if not provided
-            if self._shared is None:
-                self._shared = StreamShared()
-
-            # Create an OA workflow
-            self._processing_wf = OAWorkflow(p_name='State Transition Wf', p_class_shared=self._shared)
+        # if self._processing_wf is None:
+        #     # Create a shared object if not provided
+        #     if self._shared is None:
+        #         self._shared = StreamShared()
+        #
+        #     # Create an OA workflow
+        #     self._processing_wf = OAWorkflow(p_name='State Transition Wf', p_class_shared=self._shared)
 
 
         # 2. Create a reward task
-        if self._strans_task is None:
-            # Create a pseudo reward task
-            self._strans_task = OATask(p_name='Simulate Reaction',
-                p_visualize=self._visualize,
-                p_range_max=self.get_range(),
-                p_duplicate_data=True)
-
-            # Assign the task method to custom implementation
-            self._strans_task._run = self._run
-
-            # Add the task to workflow
-            self._processing_wf.add_task(self._strans_task)
-
-
-        # 4. Creating task level attributes for states
-        try:
-            self._strans_task._state
-        except AttributeError:
-            self._strans_task._state = p_state.copy()
+        # if self._strans_task is None:
+        #     # Create a pseudo reward task
+        #     self._strans_task = OATask(p_name='Simulate Reaction',
+        #         p_visualize=self._visualize,
+        #         p_range_max=self.get_range(),
+        #         p_duplicate_data=True)
+        #
+        #     # Assign the task method to custom implementation
+        #     self._strans_task._run = self._run
+        #
+        #     # Add the task to workflow
+        #     self._processing_wf.add_task(self._strans_task)
 
 
-        # 5. creating new instance with new state
-        self._instance = Instance(p_state)
+        # # 4. Creating task level attributes for states
+        # try:
+        #     self._strans_task._state
+        # except AttributeError:
+        #     self._strans_task._state = p_state.copy()
+        #
+        #
+        # # 5. creating new instance with new state
+        # self._instance = Instance(p_state)
 
 
         # 6. Run the workflow
@@ -124,7 +170,7 @@ class OAFctSTrans(AFctSTrans):
 
 
         # 7. Return the results
-        return self._processing_wf.get_so().get_results()[self._strans_task.get_tid()]
+        return self._processing_wf.get_so().get_results()[self.get_id().get_tid()]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -175,7 +221,7 @@ class OAFctSTrans(AFctSTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task:StreamTask):
+    def add_task(self, p_task:StreamTask, p_pred_task = None):
         """
 
         Parameters
@@ -186,7 +232,7 @@ class OAFctSTrans(AFctSTrans):
         -------
 
         """
-        pass
+        self._processing_wf.add_task(p_task, p_pred_task)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -202,9 +248,9 @@ class OAFctSTrans(AFctSTrans):
         -------
 
         """
-        self._state.set_values(p_inst_new.get_feature_data().get_values())
 
-        return self._simulate_reaction(p_state=self._state, p_action=self._action)
+        self.get_so().add_result(self.get_id() ,FctSTrans.simulate_reaction(self, p_state=self._state,
+                                                                                p_action=self._action))
 
 
 
