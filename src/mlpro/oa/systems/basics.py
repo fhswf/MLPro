@@ -72,9 +72,89 @@ class PseudoTask(OATask):
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAFctSTrans(AFctSTrans, OAWorkflow):
+class OAFctBase(OAWorkflow):
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self):
+
+
+        self._processing_wf: OAWorkflow = None
+        self._first_fct_run:bool = True
+        OATask.__init__(self)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_fct_workflow(self):
+        """
+
+        Returns
+        -------
+
+        """
+
+        self._processing_wf.add_task(PseudoTask(p_wrap_task=self))
+        return False
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_task(self, p_task : StreamTask, p_pred_tasks: list = None):
+        """
+
+        Parameters
+        ----------
+        p_task
+        p_pred_tasks
+
+        Returns
+        -------
+
+        """
+
+        if p_task is not None:
+            self._processing_wf.add_task(p_task = p_task, p_pred_tasks=p_pred_tasks)
+
+
+## -------------------------------------------------------------------------------------------------
+    def run( self,
+             p_range : int = None,
+             p_wait: bool = False,
+             p_inst_new : list = None,
+             p_inst_del : list = None ):
+        """
+
+        Parameters
+        ----------
+        p_range
+        p_wait
+        p_inst_new
+        p_inst_del
+
+        Returns
+        -------
+
+        """
+
+        if self._first_fct_run:
+            self._first_fct_run = self._setup_fct_workflow()
+
+        OAWorkflow.run(self,
+                       p_range=p_range,
+                       p_wait = p_wait,
+                       p_inst_new=p_inst_new,
+                       p_inst_del=p_inst_del)
+
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class OAFctSTrans(AFctSTrans, OAFctBase):
     """
 
     Parameters
@@ -170,7 +250,7 @@ class OAFctSTrans(AFctSTrans, OAWorkflow):
 
 
         # 7. Return the results
-        return self._processing_wf.get_so().get_results()[self.get_id().get_tid()]
+        return self._processing_wf.get_so().get_results()[self.get_id()]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -249,8 +329,9 @@ class OAFctSTrans(AFctSTrans, OAWorkflow):
 
         """
 
-        self.get_so().add_result(self.get_id() ,FctSTrans.simulate_reaction(self, p_state=self._state,
-                                                                                p_action=self._action))
+        self.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
+                                                                            p_state=self._state,
+                                                                            p_action=self._action))
 
 
 
@@ -258,7 +339,7 @@ class OAFctSTrans(AFctSTrans, OAWorkflow):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAFctSuccess(FctSuccess):
+class OAFctSuccess(FctSuccess, OAFctBase):
     """
 
     Parameters
@@ -312,41 +393,41 @@ class OAFctSuccess(FctSuccess):
         """
         self.log(Log.C_LOG_TYPE_I, 'Assessing Success...')
 
-        # 1. check if the user has already created a workflow and added to tasks
-        if self._processing_wf is None:
-            # Create a shared object if not provided
-            if self._shared is None:
-                self._shared = StreamShared()
-
-            # Create an OA workflow
-            self._processing_wf = OAWorkflow(p_name='Success Assessment Wf', p_class_shared=self._shared)
-
-
-        # 2. Create a reward task
-        if self._success_task is None:
-            # Create a pseudo reward task
-            self._success_task = OATask(p_name='Compute Success',
-                p_visualize=self._visualize,
-                p_range_max=self.get_range(),
-                p_duplicate_data=True)
-
-            # Assign the task method to custom implementation
-            self._success_task._run = self._run
-
-            # Add the task to workflow
-            self._processing_wf.add_task(self._success_task)
-
-
-        # 4. Creating task level attributes for states
-        try:
-            self._success_task._state
-        except AttributeError:
-            self._success_task._state = p_state.copy()
-
-
-
-        # 5. creating new instance with new state
-        self._instance = Instance(p_state)
+        # # 1. check if the user has already created a workflow and added to tasks
+        # if self._processing_wf is None:
+        #     # Create a shared object if not provided
+        #     if self._shared is None:
+        #         self._shared = StreamShared()
+        #
+        #     # Create an OA workflow
+        #     self._processing_wf = OAWorkflow(p_name='Success Assessment Wf', p_class_shared=self._shared)
+        #
+        #
+        # # 2. Create a reward task
+        # if self._success_task is None:
+        #     # Create a pseudo reward task
+        #     self._success_task = OATask(p_name='Compute Success',
+        #         p_visualize=self._visualize,
+        #         p_range_max=self.get_range(),
+        #         p_duplicate_data=True)
+        #
+        #     # Assign the task method to custom implementation
+        #     self._success_task._run = self._run
+        #
+        #     # Add the task to workflow
+        #     self._processing_wf.add_task(self._success_task)
+        #
+        #
+        # # 4. Creating task level attributes for states
+        # try:
+        #     self._success_task._state
+        # except AttributeError:
+        #     self._success_task._state = p_state.copy()
+        #
+        #
+        #
+        # # 5. creating new instance with new state
+        # self._instance = Instance(p_state)
 
 
         # 6. Run the workflow
@@ -354,7 +435,7 @@ class OAFctSuccess(FctSuccess):
 
 
         # 7. Return the results
-        return self._processing_wf.get_so().get_results()[self._success_task.get_tid()]
+        return self._processing_wf.get_so().get_results()[self.get_id()]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -431,9 +512,9 @@ class OAFctSuccess(FctSuccess):
         -------
 
         """
-        self._state.set_values(p_inst_new.get_feature_data().get_values())
+        self.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
+                                                                            p_state=self._state))
 
-        return self._compute_success(p_state=self._state)
 
 
 
@@ -442,7 +523,7 @@ class OAFctSuccess(FctSuccess):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAFCtBroken(FctBroken):
+class OAFCtBroken(FctBroken, OAFctBase):
     """
 
     Parameters
@@ -498,41 +579,41 @@ class OAFCtBroken(FctBroken):
         self.log(Log.C_LOG_TYPE_I, 'Assessing Broken...')
 
 
-        # 1. check if the user has already created a workflow and added to tasks
-        if self._processing_wf is None:
-            # Create a shared object if not provided
-            if self._shared is None:
-                self._shared = StreamShared()
-
-
-            # Create an OA workflow
-            self._processing_wf = OAWorkflow(p_name='Broken Assessment Wf', p_class_shared=self._shared)
-
-
-        # 2. Create a reward task
-        if self._broken_task is None:
-            # Create a pseudo reward task
-            self._broken_task = OATask(p_name='Compute Broken',
-                p_visualize=self._visualize,
-                p_range_max=self.get_range(),
-                p_duplicate_data=True)
-
-            # Assign the task method to custom implementation
-            self._broken_task._run = self._run
-
-            # Add the task to workflow
-            self._processing_wf.add_task(self._broken_task)
-
-
-        # 4. Creating task level attributes for states
-        try:
-            self._broken_task._state
-        except AttributeError:
-            self._broken_task._state = p_state.copy()
-
-
-        # 5. creating new instance with new state
-        self._instance = Instance(p_state)
+        # # 1. check if the user has already created a workflow and added to tasks
+        # if self._processing_wf is None:
+        #     # Create a shared object if not provided
+        #     if self._shared is None:
+        #         self._shared = StreamShared()
+        #
+        #
+        #     # Create an OA workflow
+        #     self._processing_wf = OAWorkflow(p_name='Broken Assessment Wf', p_class_shared=self._shared)
+        #
+        #
+        # # 2. Create a reward task
+        # if self._broken_task is None:
+        #     # Create a pseudo reward task
+        #     self._broken_task = OATask(p_name='Compute Broken',
+        #         p_visualize=self._visualize,
+        #         p_range_max=self.get_range(),
+        #         p_duplicate_data=True)
+        #
+        #     # Assign the task method to custom implementation
+        #     self._broken_task._run = self._run
+        #
+        #     # Add the task to workflow
+        #     self._processing_wf.add_task(self._broken_task)
+        #
+        #
+        # # 4. Creating task level attributes for states
+        # try:
+        #     self._broken_task._state
+        # except AttributeError:
+        #     self._broken_task._state = p_state.copy()
+        #
+        #
+        # # 5. creating new instance with new state
+        # self._instance = Instance(p_state)
 
 
         # 6. Run the workflow
@@ -540,7 +621,7 @@ class OAFCtBroken(FctBroken):
 
 
         # 7. Return the results
-        return self._processing_wf.get_so().get_results()[self._broken_task.get_tid()]
+        return self._processing_wf.get_so().get_results()[self.get_id()]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -616,9 +697,8 @@ class OAFCtBroken(FctBroken):
         -------
 
         """
-        self._state.set_values(p_inst_new.get_feature_data().get_values())
-
-        return self._compute_broken(p_state=self._state)
+        self.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
+                                                                         p_state=self._state))
 
 
 
