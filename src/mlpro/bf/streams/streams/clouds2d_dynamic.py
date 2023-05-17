@@ -42,10 +42,19 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
     C_PATTERN           = ['random', 'random chain', 'static', 'merge']
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_pattern='random', p_no_clouds=4, p_variance=5.0, p_logging=Log.C_LOG_ALL, **p_kwargs):
-        StreamMLProBase.__init__(self, pattern='random', p_logging=Log.C_LOG_ALL, **p_kwargs)
+    def __init__(self, 
+                 p_pattern='random', 
+                 p_no_clouds=4, 
+                 p_variance=5.0, 
+                 p_logging=Log.C_LOG_ALL, 
+                 **p_kwargs):
+
+        StreamMLProBase.__init__(self, 
+                                 p_logging=p_logging, 
+                                 **p_kwargs)
+        
         if str.lower(p_pattern) not in self.C_PATTERN:
-            raise ValueError(f"Invalid value for pattern, allowed values are {self.ALLOWED_VALUES}")
+            raise ValueError(f"Invalid value for pattern, allowed values are {self.C_PATTERN}")
         self.pattern = str.lower(p_pattern)
         self.variance = p_variance
         self.no_clouds = int(p_no_clouds)
