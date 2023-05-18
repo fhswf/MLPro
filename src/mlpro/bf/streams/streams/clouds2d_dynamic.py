@@ -103,19 +103,6 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
                                                                     self.C_BOUNDARIES[1], size=(self.no_clouds, 2))
         final_centers = final_centers.astype(np.float64)
 
-        if self.pattern == 'merge':
-            if self.no_clouds%2==0:
-                e1 = self.no_clouds
-                e2 = 0
-                m = int(e1/2)
-            else:
-                e1 = self.no_clouds-1
-                e2 = e1
-                m = int(e1/2)
-            final_centers[m:e1] = final_centers[:m]
-            if e2!=0:
-                final_centers[e2] = final_centers[m-1]
-
         for x in range(self.no_clouds):
             mag = ((centers[x][0]-final_centers[x][0])**2 + (centers[x][1]-final_centers[x][1])**2)**0.5
             if mag != 0:
@@ -125,7 +112,30 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
             if x<(self.no_clouds-1) and self.pattern=='random chain':
                 centers[x+1] = centers[x] + final_centers[x]*250*self.velocity
 
-        final_centers = centers + 250*self.velocity*final_centers
+        if self.pattern == 'merge':
+            if self.no_clouds%2==0:
+                e1 = self.no_clouds
+                e2 = 0
+                m = int(e1/2)
+            else:
+                e1 = self.no_clouds-1
+                e2 = e1
+                m = int(e1/2)
+            final_centers[:m] = centers[:m] + 250*self.velocity*final_centers[:m]
+            final_centers[m:e1] = final_centers[:m]
+            if e2!=0:
+                final_centers[e2] = final_centers[e1-1]
+
+            for x in range(self.no_clouds-m):
+                mag = ((centers[m+x][0]-final_centers[m+x][0])**2 + (centers[m+x][1]-final_centers[m+x][1])**2)**0.5
+                if mag != 0:
+                    centers[m+x][:] = (final_centers[m+x][:] - centers[m+x][:])/ mag
+                else:
+                    centers[m+x][:] = 0.5**0.5
+            centers[m:] = final_centers[m:] + 250*self.velocity*centers[m:]
+
+        else:
+            final_centers = centers + 250*self.velocity*final_centers
 
 
 
