@@ -47,7 +47,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
                  p_pattern='random', 
                  p_no_clouds=4, 
                  p_variance=5.0,
-                 p_velocity=0.1, 
+                 p_velocity=10, 
                  p_logging=Log.C_LOG_ALL, 
                  **p_kwargs):
 
