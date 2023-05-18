@@ -39,7 +39,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
     C_VERSION           = '1.0.0'
     C_NUM_INSTANCES     = 1000
     C_SCIREF_ABSTRACT   = 'Demo stream provides 250 2-dimensional instances per cluster randomly positioned around centers which move over time.'
-    C_BOUNDARIES        = [-100,100]
+    C_BOUNDARIES        = [-60,60]
     C_PATTERN           = ['random', 'random chain', 'static', 'merge']
 
 ## -------------------------------------------------------------------------------------------------
