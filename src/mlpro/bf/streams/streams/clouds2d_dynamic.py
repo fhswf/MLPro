@@ -47,7 +47,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
                  p_pattern='random', 
                  p_no_clouds=4, 
                  p_variance=5.0,
-                 p_velocity=10, 
+                 p_velocity=0.1, 
                  p_logging=Log.C_LOG_ALL, 
                  **p_kwargs):
 
@@ -91,15 +91,18 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
         except:
             seed = random.seed(32)
 
-        self._dataset = np.empty( (self.C_NUM_INSTANCES, 2))
+        self._dataset = np.empty((self.C_NUM_INSTANCES, 2))
 
 
         # Compute the initial positions of the centers
-        centers = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0], self.C_BOUNDARIES[1], size=(self.no_clouds, 2))
+        centers = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0],
+                                                           self.C_BOUNDARIES[1], size=(self.no_clouds, 2))
 
         # Compute the final positions of the centers
         final_centers = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0],
                                                                     self.C_BOUNDARIES[1], size=(self.no_clouds, 2))
+        final_centers = final_centers.astype(np.float64)
+
         if self.pattern == 'merge':
             if self.no_clouds%2==0:
                 e1 = self.no_clouds
@@ -121,6 +124,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
                 final_centers[x][:] = 0.5**0.5
             if x<(self.no_clouds-1) and self.pattern=='random chain':
                 centers[x+1] = centers[x] + final_centers[x]*250*self.velocity
+
         final_centers = centers + 250*self.velocity*final_centers
 
 
@@ -157,4 +161,14 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
                 centers = centers + centers_diff
 
         self._dataset = dataset
+
+
+from mlpro.bf.various import Log
+
+
+
+logging     = Log.C_LOG_ALL
+
+stream = StreamMLProDynamicClouds2D(p_pattern = 'random', p_variance=7.0, p_logging=logging)
+stream._init_dataset()
 
