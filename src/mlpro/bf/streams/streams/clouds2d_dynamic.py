@@ -113,10 +113,10 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
             if e2!=0:
                 final_centers[e2] = final_centers[m-1]
 
-        mag = ((centers[:][0]-final_centers[:][0])**2 + (centers[:][1]-final_centers[:][1])**2)**0.5
         for x in range(self.no_clouds):
-            if mag[x] != 0:
-                final_centers[x][:] = (centers[x][:]-final_centers[x][:])/ mag[x]
+            mag = ((centers[x][0]-final_centers[x][0])**2 + (centers[x][1]-final_centers[x][1])**2)**0.5
+            if mag != 0:
+                final_centers[x][:] = (centers[x][:]-final_centers[x][:])/ mag
             else:
                 final_centers[x][:] = 0.5**0.5
             if x<(self.no_clouds-1) and self.pattern=='random chain':
