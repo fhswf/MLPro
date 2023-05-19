@@ -106,9 +106,9 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
         for x in range(self.no_clouds):
             mag = ((centers[x][0]-final_centers[x][0])**2 + (centers[x][1]-final_centers[x][1])**2)**0.5
             if mag != 0:
-                final_centers[x][:] = (centers[x][:]-final_centers[x][:])/ mag
+                final_centers[x][:] = centers[x][:] + ((centers[x][:]-final_centers[x][:])/ mag)*250*self.velocity
             else:
-                final_centers[x][:] = 0.5**0.5
+                final_centers[x][:] = centers[x][:] + (0.5**0.5)*250*self.velocity
             if x<(self.no_clouds-1) and self.pattern=='random chain':
                 centers[x+1] = centers[x] + final_centers[x]*250*self.velocity
 
@@ -121,7 +121,6 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
                 e1 = self.no_clouds-1
                 e2 = e1
                 m = int(e1/2)
-            final_centers[:m] = centers[:m] + 250*self.velocity*final_centers[:m]
             final_centers[m:e1] = final_centers[:m]
             if e2!=0:
                 final_centers[e2] = final_centers[e1-1]
@@ -129,14 +128,9 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
             for x in range(self.no_clouds-m):
                 mag = ((centers[m+x][0]-final_centers[m+x][0])**2 + (centers[m+x][1]-final_centers[m+x][1])**2)**0.5
                 if mag != 0:
-                    centers[m+x][:] = (final_centers[m+x][:] - centers[m+x][:])/ mag
+                    centers[m+x][:] = final_centers[m+x][:] + ((final_centers[m+x][:] - centers[m+x][:])/ mag)*250*self.velocity
                 else:
-                    centers[m+x][:] = 0.5**0.5
-            centers[m:] = final_centers[m:] + 250*self.velocity*centers[m:]
-
-        else:
-            final_centers = centers + 250*self.velocity*final_centers
-
+                    centers[m+x][:] = final_centers[m+x][:] + (0.5**0.5)*250*self.velocity
 
 
         # 2 Create 250 noisy inputs around each of the 4 hotspots
