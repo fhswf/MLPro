@@ -97,6 +97,8 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
         # Compute the initial positions of the centers
         centers = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0],
                                                            self.C_BOUNDARIES[1], size=(self.no_clouds, 2))
+        centers = centers.astype(np.float64)
+        print(centers)
 
         # Compute the final positions of the centers
         final_centers = np.random.RandomState(seed=seed).randint(self.C_BOUNDARIES[0],
@@ -112,6 +114,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
             if x<(self.no_clouds-1) and self.pattern=='random chain':
                 centers[x+1] = centers[x] + final_centers[x]*250*self.velocity
 
+        print(final_centers)
         if self.pattern == 'merge':
             if self.no_clouds%2==0:
                 e1 = self.no_clouds
@@ -124,13 +127,15 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
             final_centers[m:e1] = final_centers[:m]
             if e2!=0:
                 final_centers[e2] = final_centers[e1-1]
+            print(final_centers)
 
             for x in range(self.no_clouds-m):
                 mag = ((centers[m+x][0]-final_centers[m+x][0])**2 + (centers[m+x][1]-final_centers[m+x][1])**2)**0.5
                 if mag != 0:
-                    centers[m+x][:] = final_centers[m+x][:] + ((final_centers[m+x][:] - centers[m+x][:])/ mag)*250*self.velocity
+                    centers[m+x][:] = final_centers[m+x][:] - ((final_centers[m+x][:] - centers[m+x][:])/ mag)*250*self.velocity
                 else:
-                    centers[m+x][:] = final_centers[m+x][:] + (0.5**0.5)*250*self.velocity
+                    centers[m+x][:] = final_centers[m+x][:] - (0.5**0.5)*250*self.velocity
+            print(centers)
 
 
         # 2 Create 250 noisy inputs around each of the 4 hotspots
@@ -165,14 +170,4 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
                 centers = centers + centers_diff
 
         self._dataset = dataset
-
-
-from mlpro.bf.various import Log
-
-
-
-logging     = Log.C_LOG_ALL
-
-stream = StreamMLProDynamicClouds2D(p_pattern = 'random', p_variance=7.0, p_logging=logging)
-stream._init_dataset()
 
