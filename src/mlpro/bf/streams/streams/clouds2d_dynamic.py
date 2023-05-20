@@ -62,7 +62,7 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
         self.no_clouds = int(p_no_clouds)
         self.C_NUM_INSTANCES = 250*self.no_clouds
         self.velocity = p_velocity
-
+        
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_feature_space(self) -> MSpace:
