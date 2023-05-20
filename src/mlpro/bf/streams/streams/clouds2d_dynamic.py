@@ -107,11 +107,11 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
         for x in range(self.no_clouds):
             mag = ((centers[x][0]-final_centers[x][0])**2 + (centers[x][1]-final_centers[x][1])**2)**0.5
             if mag != 0:
-                final_centers[x][:] = centers[x][:] + ((centers[x][:]-final_centers[x][:])/ mag)*250*self.velocity
+                final_centers[x][:] = centers[x][:] + ((final_centers[x][:]-centers[x][:])/ mag)*250*self.velocity
             else:
                 final_centers[x][:] = centers[x][:] + (0.5**0.5)*250*self.velocity
             if x<(self.no_clouds-1) and self.pattern=='random chain':
-                centers[x+1] = centers[x] + final_centers[x]*250*self.velocity
+                centers[x+1] = final_centers[x]
 
         if self.pattern == 'merge':
             if self.no_clouds%2==0:
@@ -129,9 +129,9 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
             for x in range(self.no_clouds-m):
                 mag = ((centers[m+x][0]-final_centers[m+x][0])**2 + (centers[m+x][1]-final_centers[m+x][1])**2)**0.5
                 if mag != 0:
-                    centers[m+x][:] = final_centers[m+x][:] - ((final_centers[m+x][:] - centers[m+x][:])/ mag)*250*self.velocity
+                    centers[m+x][:] = final_centers[m+x][:] + ((centers[m+x][:] - final_centers[m+x][:])/ mag)*250*self.velocity
                 else:
-                    centers[m+x][:] = final_centers[m+x][:] - (0.5**0.5)*250*self.velocity
+                    centers[m+x][:] = final_centers[m+x][:] + (0.5**0.5)*250*self.velocity
 
 
         # 2 Create 250 noisy inputs around each of the 4 hotspots
@@ -144,8 +144,9 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
         # Create the dataset
         dataset = np.zeros((self.C_NUM_INSTANCES, 2))
 
+        centers_diff = (final_centers - centers) / 250
+
         if self.pattern == 'static':
-            centers_diff = (final_centers - centers) / 500
 
             i = 0
             while i<125:
@@ -159,7 +160,6 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
                 i += 1
 
         else:
-            centers_diff = (final_centers - centers) / 250
 
             for i in range(250):
                 dataset[i*self.no_clouds:(i+1)*self.no_clouds] = centers + c[i*self.no_clouds:(i+1)*self.no_clouds]

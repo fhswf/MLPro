@@ -50,7 +50,8 @@ if visualize:
     # Initialise the stream object using the StreamMLProDynamicClouds3D class
     # and creates an iterator my_iter for it.
     # The argument pattern can be random, random chain, static and merge.
-    stream = StreamMLProDynamicClouds2D(p_pattern = 'random', p_no_clouds=5, p_variance=7.0, p_velocity=0.3, p_logging=logging)
+    stream = StreamMLProDynamicClouds2D(p_pattern = 'random', p_no_clouds=5,
+                                        p_variance=7.0, p_velocity=0.8, p_logging=logging)
     stream.set_random_seed(3)
     my_iter = iter(stream)
 
@@ -72,8 +73,8 @@ if visualize:
     def animate(i):
         ax.clear()
         ax.scatter(x[:(i+1)], y[:(i+1)], s=1)
-        ax.set_xlim([-110,110])
-        ax.set_ylim([-110,110])
+        ax.set_xlim([-200,200])
+        ax.set_ylim([-200,200])
         ax.set_xlabel('x')
         ax.set_ylabel('y')
 
