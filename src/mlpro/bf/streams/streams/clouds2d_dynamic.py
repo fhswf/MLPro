@@ -144,8 +144,6 @@ class StreamMLProDynamicClouds2D (StreamMLProBase):
         # Create the dataset
         dataset = np.zeros((self.C_NUM_INSTANCES, 2))
 
-        centers_diff = np.float128
-
         centers_diff = (final_centers - centers) / 250
 
         if self.pattern == 'static':
