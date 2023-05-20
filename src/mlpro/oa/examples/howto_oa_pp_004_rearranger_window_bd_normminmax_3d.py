@@ -10,10 +10,11 @@
 ## -- 2023-01-01  1.0.0     DA       Completion
 ## -- 2023-01-09  1.1.0     DA       User input of cycles and visualization step rate
 ## -- 2023-04-10  1.2.0     DA       Refactoring after changes on class OAScenario
+## -- 2023-05-20  1.2.1     DA       Registered handler of boundary detector to window
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.0 (2023-04-10)
+Ver. 1.2.1 (2023-05-20)
 
 This module is an example of adaptive normalization of streaming data using MinMax normalizer. To 
 this regard, an online-adadptive custom scenario is set up. It combines a native 10-dimensional 
@@ -95,9 +96,9 @@ class MyAdaptiveScenario (OAScenario):
         task_bd = BoundaryDetector( p_name='t3', 
                                     p_ada=True, 
                                     p_visualize=True,   
-                                    p_logging=p_logging,
-                                    p_window=task_window )
+                                    p_logging=p_logging )
 
+        task_window.register_event_handler( p_event_id=Window.C_EVENT_DATA_REMOVED, p_event_handler=task_bd.adapt_on_event )
         workflow.add_task(p_task = task_bd, p_pred_tasks=[task_window])
 
         # # 2.2.4 MinMax-Normalizer
@@ -107,7 +108,6 @@ class MyAdaptiveScenario (OAScenario):
                                              p_logging=p_logging )
 
         task_bd.register_event_handler( p_event_id=BoundaryDetector.C_EVENT_ADAPTED, p_event_handler=task_norm_minmax.adapt_on_event )
-
         workflow.add_task(p_task = task_norm_minmax, p_pred_tasks=[task_bd])
 
 

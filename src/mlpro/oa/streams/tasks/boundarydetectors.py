@@ -27,10 +27,11 @@
 ## -- 2023-05-02  1.2.1     DA       Class BoundaryDetector
 ## --                                - constructor: removed parameter p_window
 ## --                                - method _adapt(): removed unnecessary code
+## -- 2023-05-20  1.2.2     DA       Method BoundaryDetector._adapt_on_event: refactoring, corrections
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-05-02)
+Ver. 1.2.2 (2023-05-20)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
@@ -189,12 +190,16 @@ class BoundaryDetector (OATask):
         adapted = False
         
         try:
-            boundaries = self._scaler*p_event_object.get_raising_object().get_boundaries()
-            self._related_set = p_event_object.get_data()["p_set"]
-            dims = [p_event_object.get_data()["p_set"].get_dim(i) for i in p_event_object.get_data()["p_set"].get_dim_ids()]
+            bd_new = self._scaler*p_event_object.get_raising_object().get_boundaries()
+            self._related_set = p_event_object.get_data()["p_related_set"]
+            dims = self._related_set.get_dims()
+
             for i,dim in enumerate(dims):
-                if dim.get_boundaries()[0] != boundaries[i][0] or dim.get_boundaries()[1] != boundaries[i][1]:
-                    dim.set_boundaries([boundaries[i]])
+                bd_dim_current = dim.get_boundaries()
+                bd_dim_new     = bd_new[i]
+
+                if ( bd_dim_new[0] != bd_dim_current[0] ) or ( bd_dim_new[1] != bd_dim_current[1] ):
+                    dim.set_boundaries(bd_dim_new)
                     adapted = True
         except: 
             raise ImplementationError("Event not raised by a window")
