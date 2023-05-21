@@ -50,7 +50,11 @@ if visualize:
     # Initialise the stream object using the StreamMLProDynamicClouds3D class
     # and creates an iterator my_iter for it.
     # The argument pattern can be random, random chain, static and merge.
-    stream = StreamMLProDynamicClouds3D(p_pattern = 'random', p_variance=7.0, p_logging=logging)
+    stream = StreamMLProDynamicClouds3D( p_pattern = 'random', 
+                                         p_no_clouds = 8,
+                                         p_variance = 7.0, 
+                                         p_velocity = 1.0, 
+                                         p_logging = logging )
     stream.set_random_seed(3)
     my_iter = iter(stream)
 

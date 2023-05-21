@@ -1,6 +1,6 @@
 .. _Howto_BF_STREAMS_004:
-Howto BF-STREAMS-003: Visualizing Moving 3D Clouds Provided By MLPro
-================================================
+Howto BF-STREAMS-004: Visualizing Moving 3D Clouds Provided By MLPro
+====================================================================
 
 .. automodule:: mlpro.bf.examples.howto_bf_streams_004_visualize_moving_clouds3d
 
@@ -15,17 +15,12 @@ Howto BF-STREAMS-003: Visualizing Moving 3D Clouds Provided By MLPro
 
 **Results**
 
-.. code-block:: bashh
-
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream "Dynamic Clouds 3D": Instantiated
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream "Dynamic Clouds 3D": Reset
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  I  Stream "Dynamic Clouds 3D": Reset 
-
 .. image::
     images/streams_moving_clouds_3d.gif
     :width: 600px
 
-**Cross Reference**
 
+
+**Cross Reference**
 
 + :ref:`API Reference: Streams <target_ap_bf_streams>`
