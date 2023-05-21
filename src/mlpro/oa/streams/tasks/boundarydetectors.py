@@ -28,10 +28,11 @@
 ## --                                - constructor: removed parameter p_window
 ## --                                - method _adapt(): removed unnecessary code
 ## -- 2023-05-20  1.2.2     DA       Method BoundaryDetector._adapt_on_event: refactoring, corrections
+## -- 2023-05-21  1.2.3     LSB      Bug Fix : p_scaler shall be generated as a vertical array
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.2 (2023-05-20)
+Ver. 1.2.3 (2023-05-21)
 
 This module provides pool of boundary detector object further used in the context of online adaptivity.
 """
@@ -133,7 +134,7 @@ class BoundaryDetector (OATask):
             dim = feature_data.get_related_set().get_dims()
 
             if len(self._scaler) == 1:
-                self._scaler = np.repeat(self._scaler, len(dim), axis=0)
+                self._scaler = np.repeat([self._scaler], len(dim), axis=0)
 
             for i,value in enumerate(feature_data.get_values()):
                 boundary = dim[i].get_boundaries()
