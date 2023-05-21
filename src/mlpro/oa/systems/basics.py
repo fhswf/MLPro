@@ -75,7 +75,7 @@ class PseudoTask(OATask):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAFctBase(OAWorkflow):
+class OAFctBase():
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -84,7 +84,6 @@ class OAFctBase(OAWorkflow):
 
         self._processing_wf: OAWorkflow = None
         self._first_fct_run:bool = True
-        OATask.__init__(self)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -185,7 +184,8 @@ class OAFctSTrans(AFctSTrans, OAFctBase):
               p_logging=p_logging,
               **p_kwargs)
 
-        self._processing_wf = p_processing_wf
+        OAFctBase.__init__(self)
+
         self._strans_task:StreamTask = None
         self._instance: Instance = None
         self._shared = p_class_shared
@@ -281,8 +281,13 @@ class OAFctSTrans(AFctSTrans, OAFctBase):
         -------
 
         """
-        pass
-
+        adapted = False
+        adapted = self._processing_wf.adapt(**p_kwargs) or adapted
+        try:
+            adapted = AFctSTrans._adapt(self, **p_kwargs) or adapted
+        except:
+            pass
+        return adapted
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
@@ -371,10 +376,9 @@ class OAFctSuccess(FctSuccess, OAFctBase):
               p_logging=p_logging,
               **p_kwargs)
 
-        Model.__init__()
+        OAFctBase.__init__(self)
 
         self._shared = p_class_shared
-        self._processing_wf = p_processing_wf
         self._success_task = None
         self._instance:Instance = None
         self._state:State = None
@@ -454,21 +458,6 @@ class OAFctSuccess(FctSuccess, OAFctBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, **p_kwargs) -> bool:
-        """
-
-        Parameters
-        ----------
-        p_kwargs
-
-        Returns
-        -------
-
-        """
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
     def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
         """
 
@@ -516,6 +505,26 @@ class OAFctSuccess(FctSuccess, OAFctBase):
                                                                             p_state=self._state))
 
 
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, **p_kwargs) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+        adapted = False
+        adapted = self._processing_wf.adapt(**p_kwargs) or adapted
+        try:
+            adapted = AFctBroken._adapt(self, **p_kwargs) or adapted
+        except:
+            pass
+        return adapted
+
 
 
 
@@ -555,9 +564,8 @@ class OAFCtBroken(FctBroken, OAFctBase):
               p_logging=p_logging,
               **p_kwargs)
 
-        Model.__init__()
+        OAFctBase.__init__(self)
 
-        self._processing_wf = p_processing_wf
         self._broken_task:StreamTask = None
         self._shared = p_class_shared
         self._instance:Instance = None
@@ -651,7 +659,7 @@ class OAFCtBroken(FctBroken, OAFctBase):
         -------
 
         """
-        pass
+        self._processing_wf._
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -667,6 +675,7 @@ class OAFCtBroken(FctBroken, OAFctBase):
         -------
 
         """
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -700,6 +709,26 @@ class OAFCtBroken(FctBroken, OAFctBase):
         self.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
                                                                          p_state=self._state))
 
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt(self, **p_kwargs) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+        adapted = False
+        adapted = self._processing_wf.adapt(**p_kwargs) or adapted
+        try:
+            adapted = AFctBroken._adapt(self, **p_kwargs) or adapted
+        except:
+            pass
+        return adapted
 
 
 
