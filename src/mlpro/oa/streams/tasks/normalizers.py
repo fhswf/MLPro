@@ -382,7 +382,7 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt_reverse(self, p_inst_del:list[Instance]) -> bool:
+    def _adapt_reverse(self, p_inst_del:List[Instance]) -> bool:
         """
         Custom method to for adapting of Z-transform parameters on deleted instances.
 
