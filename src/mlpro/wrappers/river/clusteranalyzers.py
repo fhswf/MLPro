@@ -142,4 +142,61 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
         pass
 
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
+
+    C_NAME              = 'CluStream'
+    
+    C_CLS_CLUSTER       = ClusterCentroid
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_name:str = None,
+                 p_range_max = MLTask.C_RANGE_THREAD,
+                 p_ada:bool = True,
+                 p_visualize:bool = False,
+                 p_logging = Log.C_LOG_ALL,
+                 p_n_macro_clusters:int = 5,
+                 p_max_micro_clusters:int = 100,
+                 p_micro_cluster_r_factor:int = 2,
+                 p_time_window:int = 1000,
+                 p_time_gap:int = 100,
+                 p_seed:int = None,
+                 p_halflife:float = 0.5,
+                 p_mu:float = 1,
+                 p_sigma:float = 1,
+                 p_p:int = 2,
+                 **p_kwargs):
+        
+        alg = cluster.CluStream(n_macro_clusters=p_n_macro_clusters,
+                                max_micro_clusters=p_max_micro_clusters,
+                                micro_cluster_r_factor=p_micro_cluster_r_factor,
+                                time_window=p_time_window,
+                                time_gap=p_time_gap,
+                                seed=p_seed,
+                                halflife=p_halflife,
+                                mu=p_mu,
+                                sigma=p_sigma,
+                                p=p_p)
+
+        super().__init__(p_river_algo=alg,
+                         p_name=p_name,
+                         p_range_max=p_range_max,
+                         p_ada=p_ada,
+                         p_visualize=p_visualize,
+                         p_logging=p_logging,
+                         **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_clusters(self):
+        # to be added
+        pass
+
+
     
