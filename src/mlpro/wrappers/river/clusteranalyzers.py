@@ -393,4 +393,66 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
         return self._clusters
 
 
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
+
+    C_NAME          = 'STREAMKMeans'
+    
+    C_CLS_CLUSTER   = ClusterCentroid
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_name:str = None,
+                 p_range_max = MLTask.C_RANGE_THREAD,
+                 p_ada:bool = True,
+                 p_visualize:bool = False,
+                 p_logging = Log.C_LOG_ALL,
+                 p_chunk_size:int = 10,
+                 p_n_clusters:int = 5,
+                 p_halflife:float = 0.5,
+                 p_mu:float = 0,
+                 p_sigma:float = 1,
+                 p_p:int = 2,
+                 p_seed:int = None,
+                 **p_kwargs):
+        
+        alg = cluster.STREAMKMeans(chunk_size=p_chunk_size,
+                                   n_clusters=p_n_clusters,
+                                   halflife=p_halflife,
+                                   mu=p_mu,
+                                   sigma=p_sigma,
+                                   p=p_p,
+                                   seed=p_seed)
+
+        super().__init__(p_river_algo=alg,
+                         p_name=p_name,
+                         p_range_max=p_range_max,
+                         p_ada=p_ada,
+                         p_visualize=p_visualize,
+                         p_logging=p_logging,
+                         **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_clusters(self) -> List[ClusterCentroid]:
+        
+        for x in range(len(self._river_algo.centers)):
+
+            key     = str(x)
+            center  = self._river_algo.centers[key]
+
+            if len(self._clusters) != len(self._river_algo.centers):
+                self._clusters.append(
+                    ClusterCentroid(p_center=center)
+                    )
+            else:
+                self._clusters[x].p_center = center
+
+        return self._clusters
+
+
     
