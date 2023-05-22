@@ -77,14 +77,14 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: List[Instance], p_inst_del: List[Instance]):
         
-
         # extract features data from instances
         first_instance = True
         for inst in p_inst_new:
             if first_instance:
-                feature_data = inst.get_feature_data().get_values()
+                feature_data    = inst.get_feature_data().get_values()
+                first_instance  = False
             else:
-                feature_data = np.append(feature_data, inst.get_feature_data().get_values())
+                feature_data    = np.append(feature_data, inst.get_feature_data().get_values())
 
         # transform np array to dict with enumeration
         input_data = dict(enumerate(feature_data.flatten(), 1))
@@ -94,32 +94,43 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self):
+    def get_clusters(self) -> List[Cluster]:
+
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_cluster_membership(self, p_inst:Instance) -> List[Tuple[str, float, Cluster]]:
-        # to be added
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def predict_cluster(self, p_inst:Instance) -> int:
         
         # extract features data from instances
         first_instance = True
         for inst in p_inst:
             if first_instance:
-                feature_data = inst.get_feature_data().get_values()
+                feature_data    = inst.get_feature_data().get_values()
+                first_instance  = False
             else:
-                feature_data = np.append(feature_data, inst.get_feature_data().get_values())
+                feature_data    = np.append(feature_data, inst.get_feature_data().get_values())
 
         # transform np array to dict with enumeration
         input_data = dict(enumerate(feature_data.flatten(), 1))
 
         # predict the cluster number according to a set of features
-        return self._river_algo.predict_one(input_data)
+        cluster_idx = self._river_algo.predict_one(input_data)
+
+        # get the corresponding cluster
+        list_clusters = self.get_clusters()
+
+        # return the cluster membership
+        memberships_rel = []
+        if list_clusters is not None:
+            for x in range(len(list_clusters)):
+                cluster = list_clusters[cluster_idx]
+                if x == cluster_idx:
+                    memberships_rel.append(cluster.get_id(), 1, cluster)
+                else:
+                    memberships_rel.append(cluster.get_id(), 0, cluster)
+
+        return memberships_rel
 
 
 
@@ -129,9 +140,9 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 ## -------------------------------------------------------------------------------------------------
 class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
-    C_NAME              = 'DBSTREAM'
+    C_NAME          = 'DBSTREAM'
     
-    C_CLS_CLUSTER       = ClusterCentroid
+    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -164,10 +175,27 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self):
-        # to be added
-        pass
+    def get_clusters(self) -> List[ClusterCentroid]:
+        
+        for x in range(self._river_algo.n_clusters):
 
+            key             = str(x)
+            cluster         = self._river_algo.clusters[key]
+            micro_cluster   = self._river_algo.micro_clusters[key]
+            center          = self._river_algo.centers[key]
+
+            if len(self._clusters) != self._river_algo.n_clusters:
+                self._clusters.append(
+                    ClusterCentroid(p_cluster=cluster,
+                                    p_micro_cluster=micro_cluster,
+                                    p_center=center)
+                    )
+            else:
+                self._clusters[x].p_cluster         = cluster
+                self._clusters[x].p_micro_cluster   = micro_cluster
+                self._clusters[x].p_center          = center
+
+        return self._clusters
 
 
 
@@ -176,9 +204,9 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 ## -------------------------------------------------------------------------------------------------
 class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
-    C_NAME              = 'CluStream'
+    C_NAME          = 'CluStream'
     
-    C_CLS_CLUSTER       = ClusterCentroid
+    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -221,9 +249,21 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self):
-        # to be added
-        pass
+    def get_clusters(self) -> List[ClusterCentroid]:
+        
+        for x in range(len(self._river_algo.centers)):
+
+            key     = str(x)
+            center  = self._river_algo.centers[key]
+
+            if len(self._clusters) != len(self._river_algo.centers):
+                self._clusters.append(
+                    ClusterCentroid(p_center=center)
+                    )
+            else:
+                self._clusters[x].p_center = center
+
+        return self._clusters
 
 
 
@@ -233,9 +273,9 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 ## -------------------------------------------------------------------------------------------------
 class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
-    C_NAME              = 'DenStream'
+    C_NAME          = 'DenStream'
     
-    C_CLS_CLUSTER       = ClusterCentroid
+    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -270,9 +310,27 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_clusters(self):
-        # to be added
-        pass
+    def get_clusters(self) -> List[ClusterCentroid]:
+        
+        for x in range(self._river_algo.n_clusters):
+
+            key             = str(x)
+            cluster         = self._river_algo.clusters[key]
+            micro_cluster   = self._river_algo.micro_clusters[key]
+            o_micro_cluster = self._river_algo.o_micro_clusters[key]
+
+            if len(self._clusters) != self._river_algo.n_clusters:
+                self._clusters.append(
+                    ClusterCentroid(p_cluster=cluster,
+                                    p_micro_cluster=micro_cluster,
+                                    p_o_micro_cluster=o_micro_cluster)
+                    )
+            else:
+                self._clusters[x].p_cluster         = cluster
+                self._clusters[x].p_micro_cluster   = micro_cluster
+                self._clusters[x].p_o_micro_cluster = o_micro_cluster
+
+        return self._clusters
 
 
     
