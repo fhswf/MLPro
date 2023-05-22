@@ -199,4 +199,53 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
         pass
 
 
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
+
+    C_NAME              = 'DenStream'
+    
+    C_CLS_CLUSTER       = ClusterCentroid
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_name:str = None,
+                 p_range_max = MLTask.C_RANGE_THREAD,
+                 p_ada:bool = True,
+                 p_visualize:bool = False,
+                 p_logging = Log.C_LOG_ALL,
+                 p_decaying_factor:float = 0.25,
+                 p_beta:float = 0.75,
+                 p_mu:float = 2,
+                 p_epsilon:float = 0.02,
+                 p_n_samples_init:int = 1000,
+                 p_stream_speed:int = 100,
+                 **p_kwargs):
+        
+        alg = cluster.DenStream(decaying_factor=p_decaying_factor,
+                                beta=p_beta,
+                                mu=p_mu,
+                                epsilon=p_epsilon,
+                                n_samples_init=p_n_samples_init,
+                                stream_speed=p_stream_speed)
+
+        super().__init__(p_river_algo=alg,
+                         p_name=p_name,
+                         p_range_max=p_range_max,
+                         p_ada=p_ada,
+                         p_visualize=p_visualize,
+                         p_logging=p_logging,
+                         **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_clusters(self):
+        # to be added
+        pass
+
+
     
