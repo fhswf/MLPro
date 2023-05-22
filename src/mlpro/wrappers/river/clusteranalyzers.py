@@ -28,7 +28,7 @@ https://www.riverml.xyz/
 
 
 from mlpro.wrappers.river.basics import WrapperRiver
-from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster
+from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster, ClusterCentroid
 from mlpro.bf.mt import Task as MLTask
 from mlpro.bf.various import Log
 from mlpro.bf.streams import *
@@ -93,7 +93,53 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
     def get_cluster_membership(self, p_inst:Instance) -> List[Tuple[str, float, Cluster]]:
         # to be added
         pass
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
+
+    C_NAME              = 'DBSTREAM'
+    
+    C_CLS_CLUSTER       = ClusterCentroid
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_name:str = None,
+                 p_range_max = MLTask.C_RANGE_THREAD,
+                 p_ada:bool = True,
+                 p_visualize:bool = False,
+                 p_logging = Log.C_LOG_ALL,
+                 p_clustering_threshold:float = 1.0,
+                 p_fading_factor:float = 0.01,
+                 p_cleanup_interval:float = 2,
+                 p_intersection_factor:float = 0.3,
+                 p_minimum_weight:float = 1.0,
+                 **p_kwargs):
         
+        alg = cluster.DBSTREAM(clustering_threshold=p_clustering_threshold,
+                               fading_factor=p_fading_factor,
+                               cleanup_interval=p_cleanup_interval,
+                               intersection_factor=p_intersection_factor,
+                               minimum_weight=p_minimum_weight)
+
+        super().__init__(p_river_algo=alg,
+                         p_name=p_name,
+                         p_range_max=p_range_max,
+                         p_ada=p_ada,
+                         p_visualize=p_visualize,
+                         p_logging=p_logging,
+                         **p_kwargs)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_clusters(self):
+        # to be added
+        pass
 
 
     
