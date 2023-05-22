@@ -76,12 +76,21 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: List[Instance], p_inst_del: List[Instance]):
-        # p_inst_del has no use
+        
 
-        # transform new instance to a dictionary of features
-        x = {0: 1, 1: 1} # example
+        # extract features data from instances
+        first_instance = True
+        for inst in p_inst_new:
+            if first_instance:
+                feature_data = inst.get_feature_data().get_values()
+            else:
+                feature_data = np.append(feature_data, inst.get_feature_data().get_values())
 
-        self._river_algo.learn_one(x)
+        # transform np array to dict with enumeration
+        input_data = dict(enumerate(feature_data.flatten(), 1))
+
+        # update the model with a set of features
+        self._river_algo.learn_one(input_data)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -93,6 +102,24 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
     def get_cluster_membership(self, p_inst:Instance) -> List[Tuple[str, float, Cluster]]:
         # to be added
         pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def predict_cluster(self, p_inst:Instance) -> int:
+        
+        # extract features data from instances
+        first_instance = True
+        for inst in p_inst:
+            if first_instance:
+                feature_data = inst.get_feature_data().get_values()
+            else:
+                feature_data = np.append(feature_data, inst.get_feature_data().get_values())
+
+        # transform np array to dict with enumeration
+        input_data = dict(enumerate(feature_data.flatten(), 1))
+
+        # predict the cluster number according to a set of features
+        return self._river_algo.predict_one(input_data)
 
 
 
