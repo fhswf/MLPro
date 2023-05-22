@@ -15,10 +15,11 @@
 ## -- 2023-02-13  1.1.2     LSB      Bugfix: Setting the default parameter update flag ot false
 ## -- 2023-04-09  1.2.0     DA       Class NormalizerZTransform: new methods _adapt(), _adapt_reverse()
 ## -- 2023-05-03  1.2.1     DA       Bugfix in NormalizerMinMax._update_plot_2d/3d/nd
+## -- 2023-05-22  1.2.2     SY       Refactoring
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-05-03)
+Ver. 1.2.2 (2023-05-22)
 
 This module provides implementation for adaptive normalizers for MinMax Normalization and ZTransformation
 """
@@ -358,7 +359,7 @@ class NormalizerZTransform (OATask, Norm.NormalizerZTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, p_inst_new:list[Instance]) -> bool:
+    def _adapt(self, p_inst_new:List[Instance]) -> bool:
         """
         Custom method to for adapting of Z-transform parameters on new instances.
 
