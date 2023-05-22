@@ -21,6 +21,10 @@ module includes three clustering algorithms from River that are embedded to MLPr
 
 3) DenStream (https://riverml.xyz/latest/api/cluster/DenStream/)
 
+4) KMeans (https://riverml.xyz/latest/api/cluster/KMeans/)
+
+4) STREAMKMeans (https://riverml.xyz/latest/api/cluster/STREAMKMeans/)
+
 Learn more:
 https://www.riverml.xyz/
 
@@ -176,6 +180,9 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 ## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> List[ClusterCentroid]:
+
+        if len(self._clusters) != self._river_algo.n_clusters:
+            self._clusters =[]
         
         for x in range(self._river_algo.n_clusters):
 
@@ -250,6 +257,9 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 ## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> List[ClusterCentroid]:
+
+        if len(self._clusters) != len(self._river_algo.centers):
+            self._clusters =[]
         
         for x in range(len(self._river_algo.centers)):
 
@@ -311,6 +321,9 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 ## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> List[ClusterCentroid]:
+
+        if len(self._clusters) != self._river_algo.n_clusters:
+            self._clusters =[]
         
         for x in range(self._river_algo.n_clusters):
 
@@ -377,6 +390,9 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 ## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> List[ClusterCentroid]:
+
+        if len(self._clusters) != len(self._river_algo.centers):
+            self._clusters =[]
         
         for x in range(len(self._river_algo.centers)):
 
@@ -439,6 +455,9 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
 
 ## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> List[ClusterCentroid]:
+
+        if len(self._clusters) != len(self._river_algo.centers):
+            self._clusters =[]
         
         for x in range(len(self._river_algo.centers)):
 
