@@ -107,7 +107,7 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_algorithm(self):
+    def get_algorithm(self) -> base.Clusterer:
 
         return self._river_algo
 
