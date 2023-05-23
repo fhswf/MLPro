@@ -23,7 +23,7 @@ module includes three clustering algorithms from River that are embedded to MLPr
 
 4) KMeans (https://riverml.xyz/latest/api/cluster/KMeans/)
 
-4) STREAMKMeans (https://riverml.xyz/latest/api/cluster/STREAMKMeans/)
+5) STREAMKMeans (https://riverml.xyz/latest/api/cluster/STREAMKMeans/)
 
 Learn more:
 https://www.riverml.xyz/
