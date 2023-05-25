@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-05-23  0.0.0     SY       Creation
 ## -- 2023-05-23  1.0.0     SY       First version release
+## -- 2023-05-25  1.0.1     SY       Refactoring related to ClusterCentroid
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-05-23)
+Ver. 1.0.1 (2023-05-25)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -180,7 +181,7 @@ else:
 river_centers       = myscenario.get_workflow()._tasks[0].get_algorithm().centers
 
 for x in range(wr_n_clusters):
-    if river_centers[x] == myscenario.get_workflow()._tasks[0].get_clusters()[x].p_center:
+    if list(river_centers[x].values()) == list(myscenario.get_workflow()._tasks[0].get_clusters()[x].get_centroid().get_values()):
         print("The center of cluster %s from river and mlpro matches!"%(x+1))
     else:
         print("The center of cluster %s from river and mlpro does not match!"%(x+1))
