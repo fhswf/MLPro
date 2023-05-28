@@ -23,6 +23,7 @@ from mlpro.bf.systems import *
 from mlpro.bf.ml import Model
 from mlpro.bf.streams import *
 from mlpro.oa.streams import *
+from typing import Callable, Dict
 
 
 
@@ -38,7 +39,9 @@ class PseudoTask(OATask):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_wrap_task:OATask = None,
+                 p_wrap_method:Callable[[List[Instance],
+                                         List[Instance]],
+                                         None],
                  p_name='PseudoTask',
                  p_range_max=Range.C_RANGE_NONE,
                  p_duplicate_data=True,
@@ -57,7 +60,7 @@ class PseudoTask(OATask):
                         **p_kwargs)
 
 
-        self._host_task = p_wrap_task
+        self._host_task = p_wrap_method
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -65,7 +68,7 @@ class PseudoTask(OATask):
               p_inst_new : list,
               p_inst_del : list ):
 
-        self._host_task._run(p_inst_new = p_inst_new,
+        self._host_task(p_inst_new = p_inst_new,
                         p_inst_del = p_inst_del)
 
 
@@ -75,85 +78,86 @@ class PseudoTask(OATask):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAFctBase():
+# class OAFctBase():
+#
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def __init__(self, p_workflow, p_wrap_method):
+#
+#
+#         self._processing_wf: OAWorkflow = p_workflow
+#         self._wrap_method = p_wrap_method
+#         self._first_fct_run:bool = True
+#
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def _setup_fct_workflow(self):
+#         """
+#
+#         Returns
+#         -------
+#
+#         """
+#
+#         self._processing_wf.add_task(PseudoTask(p_wrap_method = self._wrap_method))
+#         return False
+#
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def add_task(self, p_task : StreamTask, p_pred_tasks: list = None):
+#         """
+#
+#         Parameters
+#         ----------
+#         p_task
+#         p_pred_tasks
+#
+#         Returns
+#         -------
+#
+#         """
+#
+#         if p_task is not None:
+#             self._processing_wf.add_task(p_task = p_task, p_pred_tasks=p_pred_tasks)
+#
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def run( self,
+#              p_range : int = None,
+#              p_wait: bool = False,
+#              p_inst_new : list = None,
+#              p_inst_del : list = None ):
+#         """
+#
+#         Parameters
+#         ----------
+#         p_range
+#         p_wait
+#         p_inst_new
+#         p_inst_del
+#
+#         Returns
+#         -------
+#
+#         """
+#
+#         if self._first_fct_run:
+#             self._first_fct_run = self._setup_fct_workflow()
+#
+#         self._processing_wf.run(p_range = p_range,
+#                                 p_wait = p_wait,
+#                                 p_inst_new=p_inst_new,
+#                                 p_inst_del=p_inst_del)
+
+
+
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
-
-
-        self._processing_wf: OAWorkflow = None
-        self._first_fct_run:bool = True
-
-
 ## -------------------------------------------------------------------------------------------------
-    def _setup_fct_workflow(self):
-        """
-
-        Returns
-        -------
-
-        """
-
-        self._processing_wf.add_task(PseudoTask(p_wrap_task=self))
-        return False
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task : StreamTask, p_pred_tasks: list = None):
-        """
-
-        Parameters
-        ----------
-        p_task
-        p_pred_tasks
-
-        Returns
-        -------
-
-        """
-
-        if p_task is not None:
-            self._processing_wf.add_task(p_task = p_task, p_pred_tasks=p_pred_tasks)
-
-
-## -------------------------------------------------------------------------------------------------
-    def run( self,
-             p_range : int = None,
-             p_wait: bool = False,
-             p_inst_new : list = None,
-             p_inst_del : list = None ):
-        """
-
-        Parameters
-        ----------
-        p_range
-        p_wait
-        p_inst_new
-        p_inst_del
-
-        Returns
-        -------
-
-        """
-
-        if self._first_fct_run:
-            self._first_fct_run = self._setup_fct_workflow()
-
-        OAWorkflow.run(self,
-                       p_range=p_range,
-                       p_wait = p_wait,
-                       p_inst_new=p_inst_new,
-                       p_inst_del=p_inst_del)
-
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class OAFctSTrans(AFctSTrans, OAFctBase):
+class OAFctSTrans(AFctSTrans):
     """
 
     Parameters
@@ -172,7 +176,7 @@ class OAFctSTrans(AFctSTrans, OAFctBase):
               p_range_max=Async.C_RANGE_THREAD,
               p_class_shared=None,
               p_visualize:bool=False,
-              p_processing_wf: StreamWorkflow = None,
+              p_processing_wf: OAWorkflow = None,
               p_logging=Log.C_LOG_ALL,
               **p_kwargs):
 
@@ -184,9 +188,9 @@ class OAFctSTrans(AFctSTrans, OAFctBase):
               p_logging=p_logging,
               **p_kwargs)
 
-        OAFctBase.__init__(self)
-
-        self._strans_task:StreamTask = None
+        # OAFctBase.__init__(self)
+        self._wf = p_processing_wf
+        # self._strans_task:StreamTask = None
         self._instance: Instance = None
         self._shared = p_class_shared
         self._state:State = None
@@ -246,11 +250,11 @@ class OAFctSTrans(AFctSTrans, OAFctBase):
 
 
         # 6. Run the workflow
-        self._processing_wf.run(p_inst_new=[self._instance])
+        self._wf.run(p_inst_new=[self._instance])
 
 
         # 7. Return the results
-        return self._processing_wf.get_so().get_results()[self.get_id()]
+        return self._wf.get_so().get_results()[self.get_id()]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -279,10 +283,15 @@ class OAFctSTrans(AFctSTrans, OAFctBase):
 
         Returns
         -------
-
+        adapted: bool
+            Returns true if the Function has adapted
         """
+
         adapted = False
-        adapted = self._processing_wf.adapt(**p_kwargs) or adapted
+        try:
+            adapted = self._wf.adapt(**p_kwargs) or adapted
+        except:
+            pass
         try:
             adapted = AFctSTrans._adapt(self, **p_kwargs) or adapted
         except:
@@ -317,7 +326,7 @@ class OAFctSTrans(AFctSTrans, OAFctBase):
         -------
 
         """
-        self._processing_wf.add_task(p_task, p_pred_task)
+        self._wf.add_task(p_task, p_pred_task)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -344,7 +353,7 @@ class OAFctSTrans(AFctSTrans, OAFctBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAFctSuccess(FctSuccess, OAFctBase):
+class OAFctSuccess(AFctSuccess):
     """
 
     Parameters
@@ -364,7 +373,7 @@ class OAFctSuccess(FctSuccess, OAFctBase):
               p_range_max=Async.C_RANGE_THREAD,
               p_class_shared=None,
               p_visualize:bool=False,
-              p_processing_wf:StreamWorkflow = None,
+              p_wf_success:OAWorkflow = None,
               p_logging=Log.C_LOG_ALL,
               **p_kwargs):
 
@@ -376,8 +385,8 @@ class OAFctSuccess(FctSuccess, OAFctBase):
               p_logging=p_logging,
               **p_kwargs)
 
-        OAFctBase.__init__(self)
 
+        self._wf_success = p_wf_success
         self._shared = p_class_shared
         self._success_task = None
         self._instance:Instance = None
@@ -435,11 +444,11 @@ class OAFctSuccess(FctSuccess, OAFctBase):
 
 
         # 6. Run the workflow
-        self._processing_wf.run(p_inst_new=[self._instance])
+        self._wf_success.run(p_inst_new=[self._instance])
 
 
         # 7. Return the results
-        return self._processing_wf.get_so().get_results()[self.get_id()]
+        return self._wf_success.get_so().get_results()[self.get_id()]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -474,7 +483,7 @@ class OAFctSuccess(FctSuccess, OAFctBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _add_task(self, p_task:StreamTask):
+    def _add_task(self, p_task:StreamTask, p_pred_tasks:list = None):
         """
 
         Parameters
@@ -485,7 +494,7 @@ class OAFctSuccess(FctSuccess, OAFctBase):
         -------
 
         """
-        pass
+        self._wf_success.add_task(p_task = p_task, p_pred_tasks=p_pred_tasks)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -518,9 +527,12 @@ class OAFctSuccess(FctSuccess, OAFctBase):
 
         """
         adapted = False
-        adapted = self._processing_wf.adapt(**p_kwargs) or adapted
         try:
-            adapted = AFctBroken._adapt(self, **p_kwargs) or adapted
+            adapted = self._wf_success.adapt(**p_kwargs) or adapted
+        except:
+            pass
+        try:
+            adapted = AFctSuccess._adapt(self, **p_kwargs) or adapted
         except:
             pass
         return adapted
@@ -532,7 +544,7 @@ class OAFctSuccess(FctSuccess, OAFctBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAFCtBroken(FctBroken, OAFctBase):
+class OAFCtBroken(AFctBroken):
     """
 
     Parameters
@@ -552,7 +564,7 @@ class OAFCtBroken(FctBroken, OAFctBase):
               p_range_max=Async.C_RANGE_THREAD,
               p_class_shared=None,
               p_visualize:bool=False,
-              p_processing_wf:StreamWorkflow = None,
+              p_wf_broken:OAWorkflow = None,
               p_logging=Log.C_LOG_ALL,
               **p_kwargs):
 
@@ -564,9 +576,9 @@ class OAFCtBroken(FctBroken, OAFctBase):
               p_logging=p_logging,
               **p_kwargs)
 
-        OAFctBase.__init__(self)
 
-        self._broken_task:StreamTask = None
+        # self._broken_task:StreamTask = None
+        self._wf_broken = p_wf_broken
         self._shared = p_class_shared
         self._instance:Instance = None
         self._state:State = None
@@ -625,11 +637,11 @@ class OAFCtBroken(FctBroken, OAFctBase):
 
 
         # 6. Run the workflow
-        self._processing_wf.run(p_inst_new=[self._instance])
+        self._wf_broken.run(p_inst_new=[self._instance])
 
 
         # 7. Return the results
-        return self._processing_wf.get_so().get_results()[self.get_id()]
+        return self._wf_broken.get_so().get_results()[self.get_id()]
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -648,38 +660,7 @@ class OAFCtBroken(FctBroken, OAFctBase):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _adapt(self, **p_kwargs) -> bool:
-        """
-
-        Parameters
-        ----------
-        p_kwargs
-
-        Returns
-        -------
-
-        """
-        self._processing_wf._
-
-
-## -------------------------------------------------------------------------------------------------
-    def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
-        """
-
-        Parameters
-        ----------
-        p_event_id
-        p_event_object
-
-        Returns
-        -------
-
-        """
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task: StreamTask):
+    def add_task(self, p_task: StreamTask, p_pred_tasks:list = None):
         """
 
         Parameters
@@ -690,7 +671,7 @@ class OAFCtBroken(FctBroken, OAFctBase):
         -------
 
         """
-        pass
+        self._wf_broken.add_task(p_task = p_task, p_pred_tasks = p_pred_tasks)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -723,12 +704,32 @@ class OAFCtBroken(FctBroken, OAFctBase):
 
         """
         adapted = False
-        adapted = self._processing_wf.adapt(**p_kwargs) or adapted
+        try:
+            adapted = self._wf_broken.adapt(**p_kwargs) or adapted
+        except:
+            pass
         try:
             adapted = AFctBroken._adapt(self, **p_kwargs) or adapted
         except:
             pass
         return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
+        """
+
+        Parameters
+        ----------
+        p_event_id
+        p_event_object
+
+        Returns
+        -------
+
+        """
+        pass
+
 
 
 
