@@ -170,31 +170,56 @@ class OAFctSTrans(AFctSTrans):
     p_kwargs
     """
 
-## -------------------------------------------------------------------------------------------------
     def __init__(self,
-              p_name:str=None,
-              p_range_max=Async.C_RANGE_THREAD,
-              p_class_shared=None,
-              p_visualize:bool=False,
-              p_processing_wf: OAWorkflow = None,
-              p_logging=Log.C_LOG_ALL,
-              **p_kwargs):
+                 p_afct_cls = None,
+                 p_state_space: MSpace = None,
+                 p_action_space: MSpace = None,
+                 p_input_space_cls=ESpace,
+                 p_output_space_cls=ESpace,
+                 p_output_elem_cls=State,  # Specific output element type
+                 p_threshold=0,
+                 p_buffer_size=0,
+                 p_ada:bool=True,
+                 # p_visualize:bool=False,
+                 # p_logging=Log.C_LOG_ALL,
+                 # p_name:str=None,
+                 # p_range_max=Async.C_RANGE_THREAD,
+                 # p_class_shared=None,
+                 p_wf: OAWorkflow = None,
+                 p_visualize:bool=False,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
 
-        AFctSTrans.__init__(self,
-              p_name=p_name,
-              p_range_max=p_range_max,
-              p_class_shared=p_class_shared,
-              p_visualize=p_visualize,
-              p_logging=p_logging,
-              **p_kwargs)
+        if p_afct_cls is not None:
+            if (p_state_space is None) or (p_action_space is None):
+                raise ParamError("Please provide mandatory parameters state and action space.")
+
+            AFctSTrans.__init__(self,
+                                p_afct_cls = p_afct_cls,
+                                p_state_space=p_state_space,
+                                p_action_space=p_action_space,
+                                p_input_space_cls=p_input_space_cls,
+                                p_output_space_cls=p_output_space_cls,
+                                p_output_elem_cls=p_output_elem_cls,
+                                p_threshold=p_threshold,
+                                p_buffer_size=p_buffer_size,
+                                p_ada=p_ada,
+                                p_visualize=p_visualize,
+                                p_logging=p_logging,
+                                **p_kwargs)
+
+        else:
+            FctSTrans.__init__(self,
+                               p_logging = p_logging)
 
         # OAFctBase.__init__(self)
-        self._wf = p_processing_wf
+        self._wf = p_wf
         # self._strans_task:StreamTask = None
         self._instance: Instance = None
-        self._shared = p_class_shared
+        # self._shared = p_class_shared
         self._state:State = None
         self._action:Action = None
+    ## -------------------------------------------------------------------------------------------------
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -369,25 +394,50 @@ class OAFctSuccess(AFctSuccess):
 
     ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-              p_name:str=None,
-              p_range_max=Async.C_RANGE_THREAD,
-              p_class_shared=None,
-              p_visualize:bool=False,
-              p_wf_success:OAWorkflow = None,
-              p_logging=Log.C_LOG_ALL,
-              **p_kwargs):
+                 p_afct_cls = None,
+                 p_state_space: MSpace = None,
+                 p_action_space: MSpace = None,
+                 p_input_space_cls=ESpace,
+                 p_output_space_cls=ESpace,
+                 p_output_elem_cls=State,  # Specific output element type
+                 p_threshold=0,
+                 p_buffer_size=0,
+                 p_ada:bool=True,
+                 # p_visualize:bool=False,
+                 # p_logging=Log.C_LOG_ALL,
+                 # p_name:str=None,
+                 # p_range_max=Async.C_RANGE_THREAD,
+                 # p_class_shared=None,
+                 p_wf_success: OAWorkflow = None,
+                 p_visualize:bool=False,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
 
-        AFctSuccess.__init__(self,
-              p_name=p_name,
-              p_range_max=p_range_max,
-              p_class_shared=p_class_shared,
-              p_visualize=p_visualize,
-              p_logging=p_logging,
-              **p_kwargs)
+        if p_afct_cls is not None:
+            if (p_state_space is None) or (p_action_space is None):
+                raise ParamError("Please provide mandatory parameters state and action space.")
+
+            AFctSuccess.__init__(self,
+                                    p_afct_cls=p_afct_cls,
+                                    p_state_space=p_state_space,
+                                    p_action_space=p_action_space,
+                                    p_input_space_cls=p_input_space_cls,
+                                    p_output_space_cls=p_output_space_cls,
+                                    p_output_elem_cls=p_output_elem_cls,
+                                    p_threshold=p_threshold,
+                                    p_buffer_size=p_buffer_size,
+                                    p_ada=p_ada,
+                                    p_visualize=p_visualize,
+                                    p_logging=p_logging,
+                                    **p_kwargs)
+
+        else:
+            FctSuccess.__init__(self,
+                                p_logging=p_logging)
 
 
         self._wf_success = p_wf_success
-        self._shared = p_class_shared
+        # self._shared = p_class_shared
         self._success_task = None
         self._instance:Instance = None
         self._state:State = None
@@ -560,26 +610,51 @@ class OAFCtBroken(AFctBroken):
 
     ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-              p_name:str=None,
-              p_range_max=Async.C_RANGE_THREAD,
-              p_class_shared=None,
-              p_visualize:bool=False,
-              p_wf_broken:OAWorkflow = None,
-              p_logging=Log.C_LOG_ALL,
-              **p_kwargs):
+                 p_afct_cls = None,
+                 p_state_space: MSpace = None,
+                 p_action_space: MSpace = None,
+                 p_input_space_cls=ESpace,
+                 p_output_space_cls=ESpace,
+                 p_output_elem_cls=State,  # Specific output element type
+                 p_threshold=0,
+                 p_buffer_size=0,
+                 p_ada:bool=True,
+                 # p_visualize:bool=False,
+                 # p_logging=Log.C_LOG_ALL,
+                 # p_name:str=None,
+                 # p_range_max=Async.C_RANGE_THREAD,
+                 # p_class_shared=None,
+                 p_wf_broken: OAWorkflow = None,
+                 p_visualize:bool=False,
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
 
-        AFctBroken.__init__(self,
-              p_name=p_name,
-              p_range_max=p_range_max,
-              p_class_shared=p_class_shared,
-              p_visualize=p_visualize,
-              p_logging=p_logging,
-              **p_kwargs)
+        if p_afct_cls is not None:
+            if (p_state_space is None) or (p_action_space is None):
+                raise ParamError("Please provide mandatory parameters state and action space.")
+
+            AFctSuccess.__init__(self,
+                                    p_afct_cls=p_afct_cls,
+                                    p_state_space=p_state_space,
+                                    p_action_space=p_action_space,
+                                    p_input_space_cls=p_input_space_cls,
+                                    p_output_space_cls=p_output_space_cls,
+                                    p_output_elem_cls=p_output_elem_cls,
+                                    p_threshold=p_threshold,
+                                    p_buffer_size=p_buffer_size,
+                                    p_ada=p_ada,
+                                    p_visualize=p_visualize,
+                                    p_logging=p_logging,
+                                    **p_kwargs)
+
+        else:
+            FctBroken.__init__(self,
+                                p_logging=p_logging)
 
 
         # self._broken_task:StreamTask = None
         self._wf_broken = p_wf_broken
-        self._shared = p_class_shared
+        # self._shared = p_class_shared
         self._instance:Instance = None
         self._state:State = None
 
