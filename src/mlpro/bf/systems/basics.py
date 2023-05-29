@@ -1018,7 +1018,7 @@ class SystemShared(Shared):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class System (Task, FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, ScientificObject):
+class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persistent, ScientificObject):
     """
     Base class for state based systems.
 

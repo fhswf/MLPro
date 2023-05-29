@@ -462,6 +462,7 @@ class ASystem(System, Model):
                         p_visualize = p_visualize,
                         p_logging = p_logging)
 
+        Model.__init__(self, p_ada= p_adaptivity)
 
         self._fct_strans  = p_fct_strans
         self._fct_broken  = p_fct_broken
