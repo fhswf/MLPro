@@ -102,7 +102,7 @@ class PseudoTask(OATask):
 #         self._processing_wf.add_task(PseudoTask(p_wrap_method = self._wrap_method))
 #         return False
 #
-#
+
 # ## -------------------------------------------------------------------------------------------------
 #     def add_task(self, p_task : StreamTask, p_pred_tasks: list = None):
 #         """
@@ -275,7 +275,7 @@ class OAFctSTrans(AFctSTrans):
 
 
         # 6. Run the workflow
-        self._wf.run(p_inst_new=[self._instance])
+        self._wf.run(p_inst_new=[p_state])
 
 
         # 7. Return the results
@@ -367,10 +367,29 @@ class OAFctSTrans(AFctSTrans):
         -------
 
         """
-
-        self.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
+        try:
+            self.get_so().add_result(self.get_id(), AFctSTrans._simulate_reaction(self,
+                                                                                p_state=self._state,
+                                                                                p_action=self._action))
+        except:
+            self.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
                                                                             p_state=self._state,
                                                                             p_action=self._action))
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_fct_workflow(self):
+        """
+
+        Returns
+        -------
+
+        """
+
+        self._wf.add_task(PseudoTask(p_wrap_method = self._run))
+        return False
+
+
 
 
 
@@ -494,7 +513,7 @@ class OAFctSuccess(AFctSuccess):
 
 
         # 6. Run the workflow
-        self._wf_success.run(p_inst_new=[self._instance])
+        self._wf_success.run(p_inst_new=[p_state])
 
 
         # 7. Return the results
@@ -548,7 +567,7 @@ class OAFctSuccess(AFctSuccess):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new, p_inst_del):
+    def _run_wf_success(self, p_inst_new, p_inst_del):
         """
 
         Parameters
@@ -560,7 +579,11 @@ class OAFctSuccess(AFctSuccess):
         -------
 
         """
-        self.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
+        try:
+            self.get_so().add_result(self.get_id(), AFctSuccess._compute_success(self,
+                                                                                 p_state=self._state))
+        except:
+            self.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
                                                                             p_state=self._state))
 
 
@@ -586,6 +609,20 @@ class OAFctSuccess(AFctSuccess):
         except:
             pass
         return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_fct_workflow(self):
+        """
+
+        Returns
+        -------
+
+        """
+
+        self._wf_success.add_task(PseudoTask(p_wrap_method = self._run_wf_success))
+        return False
+
 
 
 
@@ -712,7 +749,7 @@ class OAFCtBroken(AFctBroken):
 
 
         # 6. Run the workflow
-        self._wf_broken.run(p_inst_new=[self._instance])
+        self._wf_broken.run(p_inst_new=[p_state])
 
 
         # 7. Return the results
@@ -750,7 +787,7 @@ class OAFCtBroken(AFctBroken):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new, p_inst_del):
+    def _run_wf_broken(self, p_inst_new, p_inst_del):
         """
 
         Parameters
@@ -762,7 +799,11 @@ class OAFCtBroken(AFctBroken):
         -------
 
         """
-        self.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
+        try:
+            self.get_so().add_result(self.get_id(), AFctBroken._compute_broken(self,
+                                                                         p_state=self._state))
+        except:
+            self.get_so().add_result(self.get_id(), FctBroken._compute_broken(self,
                                                                          p_state=self._state))
 
 
@@ -806,13 +847,27 @@ class OAFCtBroken(AFctBroken):
         pass
 
 
+## -------------------------------------------------------------------------------------------------
+    def _setup_fct_workflow(self):
+        """
+
+        Returns
+        -------
+
+        """
+
+        self._wf_broken.add_task(PseudoTask(p_wrap_method = self._run_wf_broken))
+        return False
+
+
+
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OASystem(ASystem):
+class OASystem(ASystem, OAFctSTrans, OAFctSuccess, OAFCtBroken):
     """
 
     Parameters
@@ -835,7 +890,9 @@ class OASystem(ASystem):
                p_fct_strans : FctSTrans = None,
                p_fct_success : FctSuccess = None,
                p_fct_broken : FctBroken = None,
-               p_processing_wf : StreamWorkflow = None,
+               p_wf : OAWorkflow = None,
+               p_wf_success : OAWorkflow = None,
+               p_wf_broken : OAWorkflow = None,
                p_visualize : bool = False,
                p_logging = Log.C_LOG_ALL):
 
@@ -848,7 +905,11 @@ class OASystem(ASystem):
                p_visualize = p_visualize,
                p_logging = p_logging)
 
-        self._processing_wf = p_processing_wf
+        OAFctSTrans.__init__(self, p_wf=p_wf)
+
+        OAFctSuccess.__init__(self, p_wf=p_wf_success)
+
+        OAFCtBroken.__init__(self, p_wf_broken=p_wf_broken)
 
 
 
