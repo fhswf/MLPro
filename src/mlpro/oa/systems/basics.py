@@ -190,23 +190,23 @@ class OAFctSTrans(FctSTrans, Model):
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
 
-        # if p_afct_cls is not None:
-        #     if (p_state_space is None) or (p_action_space is None):
-        #         raise ParamError("Please provide mandatory parameters state and action space.")
-        #
-        #     AFctSTrans.__init__(self,
-        #                         p_afct_cls = p_afct_cls,
-        #                         p_state_space=p_state_space,
-        #                         p_action_space=p_action_space,
-        #                         p_input_space_cls=p_input_space_cls,
-        #                         p_output_space_cls=p_output_space_cls,
-        #                         p_output_elem_cls=p_output_elem_cls,
-        #                         p_threshold=p_threshold,
-        #                         p_buffer_size=p_buffer_size,
-        #                         p_ada=p_ada,
-        #                         p_visualize=p_visualize,
-        #                         p_logging=p_logging,
-        #                         **p_kwargs)
+        self._afct_strans = None
+        if p_afct_cls is not None:
+            if (p_state_space is None) or (p_action_space is None):
+                raise ParamError("Please provide mandatory parameters state and action space.")
+
+            self._afct_strans = AFctSTrans(p_afct_cls = p_afct_cls,
+                                          p_state_space=p_state_space,
+                                          p_action_space=p_action_space,
+                                          p_input_space_cls=p_input_space_cls,
+                                          p_output_space_cls=p_output_space_cls,
+                                          p_output_elem_cls=p_output_elem_cls,
+                                          p_threshold=p_threshold,
+                                          p_buffer_size=p_buffer_size,
+                                          p_ada=p_ada,
+                                          p_visualize=p_visualize,
+                                          p_logging=p_logging,
+                                          **p_kwargs)
         #
         # else:
         FctSTrans.__init__(self, p_logging = p_logging)
@@ -300,11 +300,11 @@ class OAFctSTrans(FctSTrans, Model):
         try:
             adapted = self._wf.adapt(**p_kwargs) or adapted
         except:
-            pass
+            adapted = adapted or False
         try:
-            adapted = AFctSTrans._adapt(self, **p_kwargs) or adapted
+            adapted = self._afct_strans.adapt(**p_kwargs) or adapted
         except:
-            pass
+            adapted = adapted or False
         return adapted
 
 ## -------------------------------------------------------------------------------------------------
@@ -416,24 +416,24 @@ class OAFctSuccess(FctSuccess, Model):
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
 
-        # if p_afct_cls is not None:
-        #     if (p_state_space is None) or (p_action_space is None):
-        #         raise ParamError("Please provide mandatory parameters state and action space.")
-        #
-        #     AFctSuccess.__init__(self,
-        #                             p_afct_cls=p_afct_cls,
-        #                             p_state_space=p_state_space,
-        #                             p_action_space=p_action_space,
-        #                             p_input_space_cls=p_input_space_cls,
-        #                             p_output_space_cls=p_output_space_cls,
-        #                             p_output_elem_cls=p_output_elem_cls,
-        #                             p_threshold=p_threshold,
-        #                             p_buffer_size=p_buffer_size,
-        #                             p_ada=p_ada,
-        #                             p_visualize=p_visualize,
-        #                             p_logging=p_logging,
-        #                             **p_kwargs)
-        #
+        self._afct_success = None
+        if p_afct_cls is not None:
+            if (p_state_space is None) or (p_action_space is None):
+                raise ParamError("Please provide mandatory parameters state and action space.")
+
+            self._afct_success = AFctSuccess(p_afct_cls=p_afct_cls,
+                                            p_state_space=p_state_space,
+                                            p_action_space=p_action_space,
+                                            p_input_space_cls=p_input_space_cls,
+                                            p_output_space_cls=p_output_space_cls,
+                                            p_output_elem_cls=p_output_elem_cls,
+                                            p_threshold=p_threshold,
+                                            p_buffer_size=p_buffer_size,
+                                            p_ada=p_ada,
+                                            p_visualize=p_visualize,
+                                            p_logging=p_logging,
+                                            **p_kwargs)
+                #
         # else:
         FctSuccess.__init__(self, p_logging=p_logging)
 
@@ -520,7 +520,7 @@ class OAFctSuccess(FctSuccess, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _add_task(self, p_task:StreamTask, p_pred_tasks:list = None):
+    def add_task(self, p_task:StreamTask, p_pred_tasks:list = None):
         """
 
         Parameters
@@ -571,11 +571,11 @@ class OAFctSuccess(FctSuccess, Model):
         try:
             adapted = self._wf_success.adapt(**p_kwargs) or adapted
         except:
-            pass
+            adapted = False or adapted
         try:
-            adapted = AFctSuccess._adapt(self, **p_kwargs) or adapted
+            adapted = self._afct_success.adapt(**p_kwargs) or adapted
         except:
-            pass
+            adapted = False or adapted
         return adapted
 
 
@@ -634,23 +634,23 @@ class OAFctBroken(FctBroken, Model):
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
 
-        # if p_afct_cls is not None:
-        #     if (p_state_space is None) or (p_action_space is None):
-        #         raise ParamError("Please provide mandatory parameters state and action space.")
-        #
-        #     AFctSuccess.__init__(self,
-        #                             p_afct_cls=p_afct_cls,
-        #                             p_state_space=p_state_space,
-        #                             p_action_space=p_action_space,
-        #                             p_input_space_cls=p_input_space_cls,
-        #                             p_output_space_cls=p_output_space_cls,
-        #                             p_output_elem_cls=p_output_elem_cls,
-        #                             p_threshold=p_threshold,
-        #                             p_buffer_size=p_buffer_size,
-        #                             p_ada=p_ada,
-        #                             p_visualize=p_visualize,
-        #                             p_logging=p_logging,
-        #                             **p_kwargs)
+        self._afct_broken = None
+        if p_afct_cls is not None:
+            if (p_state_space is None) or (p_action_space is None):
+                raise ParamError("Please provide mandatory parameters state and action space.")
+
+            self._afct_broken = AFctSuccess(p_afct_cls=p_afct_cls,
+                                            p_state_space=p_state_space,
+                                            p_action_space=p_action_space,
+                                            p_input_space_cls=p_input_space_cls,
+                                            p_output_space_cls=p_output_space_cls,
+                                            p_output_elem_cls=p_output_elem_cls,
+                                            p_threshold=p_threshold,
+                                            p_buffer_size=p_buffer_size,
+                                            p_ada=p_ada,
+                                            p_visualize=p_visualize,
+                                            p_logging=p_logging,
+                                            **p_kwargs)
         #
         # else:
         FctBroken.__init__(self, p_logging=p_logging)
@@ -775,11 +775,11 @@ class OAFctBroken(FctBroken, Model):
         try:
             adapted = self._wf_broken.adapt(**p_kwargs) or adapted
         except:
-            pass
+            adapted = False or adapted
         try:
-            adapted = AFctBroken._adapt(self, **p_kwargs) or adapted
+            adapted = self._afct_broken.adapt(self, **p_kwargs) or adapted
         except:
-            pass
+            adapted = False or adapted
         return adapted
 
 
@@ -924,7 +924,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         try:
             adapted = self._fct_broken.adapt(**p_kwargs)
         except:
-            adapted = adapted or False
+            adapted = False or adapted
 
         return adapted
 
@@ -960,3 +960,42 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         """
         pass
 
+
+## -------------------------------------------------------------------------------------------------
+    def add_task(self, p_task:OATask, p_pred_tasks:list = None):
+
+        OAFctSuccess.add_task(self, p_task=p_task, p_pred_tasks=p_pred_tasks)
+
+## -------------------------------------------------------------------------------------------------
+    def add_task_success(self, p_task:OATask, p_pred_tasks:list = None):
+
+        OAFctSuccess.add_task(self, p_task=p_task, p_pred_tasks=p_pred_tasks)
+
+## -------------------------------------------------------------------------------------------------
+    def add_task_broken(self, p_task:OATask, p_pred_tasks:list = None):
+
+        OAFctBroken.add_task(self, p_task=p_task, p_pred_tasks=p_pred_tasks)
+
+## -------------------------------------------------------------------------------------------------
+    def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
+
+        if self._fct_strans is not None:
+            return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
+        else:
+            return OAFctSTrans.simulate_reaction(self, p_state, p_action, p_t_step)
+
+## -------------------------------------------------------------------------------------------------
+    def compute_success(self, p_state: State) -> bool:
+
+        if self._fct_success is not None:
+            return self._fct_success.compute_success(p_state)
+        else:
+            return OAFctSuccess.compute_success(self, p_state)
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state: State) -> bool:
+
+        if self._fct_broken is not None:
+            return self._fct_broken.compute_broken(p_state)
+        else:
+            return OAFctBroken.compute_broken(self, p_state)
