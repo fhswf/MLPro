@@ -283,22 +283,6 @@ class OAFctSTrans(AFctSTrans):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
-        """
-
-        Parameters
-        ----------
-        p_state
-        p_action
-
-        Returns
-        -------
-
-        """
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
         """
 
@@ -368,7 +352,7 @@ class OAFctSTrans(AFctSTrans):
 
         """
         try:
-            self.get_so().add_result(self.get_id(), AFctSTrans._simulate_reaction(self,
+            self.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self,
                                                                                 p_state=self._state,
                                                                                 p_action=self._action))
         except:
@@ -521,21 +505,6 @@ class OAFctSuccess(AFctSuccess):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_success(self, p_state: State) -> bool:
-        """
-
-        Parameters
-        ----------
-        p_state
-
-        Returns
-        -------
-
-        """
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
     def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:
         """
 
@@ -580,7 +549,7 @@ class OAFctSuccess(AFctSuccess):
 
         """
         try:
-            self.get_so().add_result(self.get_id(), AFctSuccess._compute_success(self,
+            self.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self,
                                                                                  p_state=self._state))
         except:
             self.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
@@ -757,21 +726,6 @@ class OAFCtBroken(AFctBroken):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _compute_broken(self, p_state: State) -> bool:
-        """
-
-        Parameters
-        ----------
-        p_state
-
-        Returns
-        -------
-
-        """
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
     def add_task(self, p_task: StreamTask, p_pred_tasks:list = None):
         """
 
@@ -800,10 +754,10 @@ class OAFCtBroken(AFctBroken):
 
         """
         try:
-            self.get_so().add_result(self.get_id(), AFctBroken._compute_broken(self,
+            self.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self,
                                                                          p_state=self._state))
         except:
-            self.get_so().add_result(self.get_id(), FctBroken._compute_broken(self,
+            self.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
                                                                          p_state=self._state))
 
 
