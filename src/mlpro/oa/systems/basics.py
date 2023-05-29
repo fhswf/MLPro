@@ -13,17 +13,14 @@ Ver. 0.0.0 (2023-02-16)
 
 This module provides modules and template classes for adaptive systems and adaptive functions.
 """
-
-
-
-
+import copy
 
 from mlpro.bf.ml.systems import *
 from mlpro.bf.systems import *
 from mlpro.bf.ml import Model
 from mlpro.bf.streams import *
 from mlpro.oa.streams import *
-from typing import Callable, Dict
+from typing import Callable
 
 
 
@@ -215,11 +212,11 @@ class OAFctSTrans(FctSTrans, Model):
         # OAFctBase.__init__(self)
         self._wf = p_wf
         # self._strans_task:StreamTask = None
-        self._instance: Instance = None
+        # self._instance: Instance = None
         # self._shared = p_class_shared
-        self._state:State = None
-        self._action:Action = None
-    ## -------------------------------------------------------------------------------------------------
+        # self._state:State = None
+        self._action_obj:Action = None
+        self._setup_wf_strans = False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -235,6 +232,8 @@ class OAFctSTrans(FctSTrans, Model):
         -------
 
         """
+        self._state_obj = p_state.copy()
+        self._action_obj = copy.deepcopy(p_action)
         self.log(Log.C_LOG_TYPE_I, 'Reaction Simulation Started...')
 
 
@@ -272,7 +271,8 @@ class OAFctSTrans(FctSTrans, Model):
         #
         # # 5. creating new instance with new state
         # self._instance = Instance(p_state)
-
+        if not self._setup_wf_strans:
+            self._setup_wf_strans = self._setup_oafct_strans()
 
         # 6. Run the workflow
         self._wf.run(p_inst_new=[p_state])
@@ -301,10 +301,13 @@ class OAFctSTrans(FctSTrans, Model):
             adapted = self._wf.adapt(**p_kwargs) or adapted
         except:
             adapted = adapted or False
-        try:
-            adapted = self._afct_strans.adapt(**p_kwargs) or adapted
-        except:
-            adapted = adapted or False
+
+        if self._afct_strans is not None:
+            try:
+                adapted = self._afct_strans.adapt(**p_kwargs) or adapted
+            except:
+                adapted = adapted or False
+
         return adapted
 
 ## -------------------------------------------------------------------------------------------------
@@ -324,7 +327,7 @@ class OAFctSTrans(FctSTrans, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task:StreamTask, p_pred_task = None):
+    def add_task(self, p_task:OATask, p_pred_task = None):
         """
 
         Parameters
@@ -351,18 +354,18 @@ class OAFctSTrans(FctSTrans, Model):
         -------
 
         """
-        try:
+        if self._afct_strans is not None:
             self.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self,
-                                                                                p_state=self._state,
-                                                                                p_action=self._action))
-        except:
+                                                                                p_state=self._state_obj,
+                                                                                p_action=self._action_obj))
+        else:
             self.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
-                                                                            p_state=self._state,
-                                                                            p_action=self._action))
+                                                                            p_state=self._state_obj,
+                                                                            p_action=self._action_obj))
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_fct_workflow(self):
+    def _setup_oafct_strans(self):
         """
 
         Returns
@@ -440,9 +443,10 @@ class OAFctSuccess(FctSuccess, Model):
         Model.__init__(self)
         self._wf_success = p_wf_success
         # self._shared = p_class_shared
-        self._success_task = None
-        self._instance:Instance = None
-        self._state:State = None
+        # self._success_task = None
+        # self._instance:Instance = None
+        # self._state:State = None
+        self._setup_wf_success = False
 
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
@@ -456,6 +460,7 @@ class OAFctSuccess(FctSuccess, Model):
         -------
 
         """
+        self._state_obj = p_state.copy()
         self.log(Log.C_LOG_TYPE_I, 'Assessing Success...')
 
         # # 1. check if the user has already created a workflow and added to tasks
@@ -493,7 +498,8 @@ class OAFctSuccess(FctSuccess, Model):
         #
         # # 5. creating new instance with new state
         # self._instance = Instance(p_state)
-
+        if not self._setup_wf_success:
+            self._setup_wf_success = self._setup_oafct_success()
 
         # 6. Run the workflow
         self._wf_success.run(p_inst_new=[p_state])
@@ -520,7 +526,7 @@ class OAFctSuccess(FctSuccess, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task:StreamTask, p_pred_tasks:list = None):
+    def add_task_success(self, p_task:StreamTask, p_pred_tasks:list = None):
         """
 
         Parameters
@@ -547,12 +553,12 @@ class OAFctSuccess(FctSuccess, Model):
         -------
 
         """
-        try:
+        if self._afct_success is not None:
             self.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self,
-                                                                                 p_state=self._state))
-        except:
+                                                                                 p_state=self._state_obj))
+        else:
             self.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
-                                                                            p_state=self._state))
+                                                                            p_state=self._state_obj))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -572,15 +578,18 @@ class OAFctSuccess(FctSuccess, Model):
             adapted = self._wf_success.adapt(**p_kwargs) or adapted
         except:
             adapted = False or adapted
-        try:
-            adapted = self._afct_success.adapt(**p_kwargs) or adapted
-        except:
-            adapted = False or adapted
+
+        if self._afct_success is not None:
+            try:
+                adapted = self._afct_success.adapt(**p_kwargs) or adapted
+            except:
+                adapted = False or adapted
+
         return adapted
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_fct_workflow(self):
+    def _setup_oafct_success(self):
         """
 
         Returns
@@ -659,9 +668,9 @@ class OAFctBroken(FctBroken, Model):
         # self._broken_task:StreamTask = None
         self._wf_broken = p_wf_broken
         # self._shared = p_class_shared
-        self._instance:Instance = None
-        self._state:State = None
-
+        # self._instance:Instance = None
+        # self._state:State = None
+        self._setup_wf_broken = False
 
 ## -------------------------------------------------------------------------------------------------
     def compute_broken(self, p_state: State) -> bool:
@@ -675,6 +684,7 @@ class OAFctBroken(FctBroken, Model):
         -------
 
         """
+        self._state_obj = p_state.copy()
         self.log(Log.C_LOG_TYPE_I, 'Assessing Broken...')
 
 
@@ -713,7 +723,8 @@ class OAFctBroken(FctBroken, Model):
         #
         # # 5. creating new instance with new state
         # self._instance = Instance(p_state)
-
+        if not self._setup_wf_broken:
+            self._setup_wf_broken = self._setup_oafct_broken()
 
         # 6. Run the workflow
         self._wf_broken.run(p_inst_new=[p_state])
@@ -724,7 +735,7 @@ class OAFctBroken(FctBroken, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task: StreamTask, p_pred_tasks:list = None):
+    def add_task_broken(self, p_task: StreamTask, p_pred_tasks:list = None):
         """
 
         Parameters
@@ -751,10 +762,10 @@ class OAFctBroken(FctBroken, Model):
         -------
 
         """
-        try:
+        if self._afct_broken is not None:
             self.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self,
                                                                          p_state=self._state))
-        except:
+        else:
             self.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
                                                                          p_state=self._state))
 
@@ -776,10 +787,13 @@ class OAFctBroken(FctBroken, Model):
             adapted = self._wf_broken.adapt(**p_kwargs) or adapted
         except:
             adapted = False or adapted
-        try:
-            adapted = self._afct_broken.adapt(self, **p_kwargs) or adapted
-        except:
-            adapted = False or adapted
+
+        if self._afct_broken is not None:
+            try:
+                adapted = self._afct_broken.adapt(**p_kwargs) or adapted
+            except:
+                adapted = False or adapted
+
         return adapted
 
 
@@ -800,7 +814,7 @@ class OAFctBroken(FctBroken, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_fct_workflow(self):
+    def _setup_oafct_broken(self):
         """
 
         Returns
@@ -848,6 +862,12 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
                  p_visualize : bool = False,
                  p_logging = Log.C_LOG_ALL):
 
+        OAFctSTrans.__init__(self, p_wf=p_wf)
+
+        OAFctSuccess.__init__(self, p_wf=p_wf_success)
+
+        OAFctBroken.__init__(self, p_wf_broken=p_wf_broken)
+
         ASystem.__init__(self,
                          p_mode = p_mode,
                          p_latency = p_latency,
@@ -857,19 +877,6 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
                          p_visualize = p_visualize,
                          p_logging = p_logging)
 
-        OAFctSTrans.__init__(self, p_wf=p_wf)
-
-        OAFctSuccess.__init__(self, p_wf=p_wf_success)
-
-        OAFctBroken.__init__(self, p_wf_broken=p_wf_broken)
-
-
-
-## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def setup_spaces():
-
-        return None, None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -899,6 +906,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         -------
 
         """
+
         adapted = False
 
         try:
@@ -927,7 +935,6 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
             adapted = False or adapted
 
         return adapted
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -962,39 +969,55 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task:OATask, p_pred_tasks:list = None):
-
-        OAFctSuccess.add_task(self, p_task=p_task, p_pred_tasks=p_pred_tasks)
-
-## -------------------------------------------------------------------------------------------------
-    def add_task_success(self, p_task:OATask, p_pred_tasks:list = None):
-
-        OAFctSuccess.add_task(self, p_task=p_task, p_pred_tasks=p_pred_tasks)
-
-## -------------------------------------------------------------------------------------------------
-    def add_task_broken(self, p_task:OATask, p_pred_tasks:list = None):
-
-        OAFctBroken.add_task(self, p_task=p_task, p_pred_tasks=p_pred_tasks)
-
-## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
+        """
 
+        Parameters
+        ----------
+        p_state
+        p_action
+        p_t_step
+
+        Returns
+        -------
+
+        """
         if self._fct_strans is not None:
             return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
         else:
             return OAFctSTrans.simulate_reaction(self, p_state, p_action, p_t_step)
 
+
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
+        """
 
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
         if self._fct_success is not None:
             return self._fct_success.compute_success(p_state)
         else:
             return OAFctSuccess.compute_success(self, p_state)
 
+
 ## -------------------------------------------------------------------------------------------------
     def compute_broken(self, p_state: State) -> bool:
+        """
 
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
         if self._fct_broken is not None:
             return self._fct_broken.compute_broken(p_state)
         else:
