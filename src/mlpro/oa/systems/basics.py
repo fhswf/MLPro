@@ -124,8 +124,19 @@ class OAFctSTrans(FctSTrans, Model):
         # else:
         FctSTrans.__init__(self, p_logging = p_logging)
 
-        Model.__init__(self)
-        self._wf = p_wf
+        Model.__init__(self,
+                       p_ada = p_ada,
+                       p_visualize = p_visualize,
+                       p_logging = p_logging,
+                       **p_kwargs)
+
+        if p_wf is None:
+            self._wf = OAWorkflow(p_visualize=p_visualize,
+                                  p_ada=p_ada,
+                                  p_logging=p_logging)
+        else:
+            self._wf = p_wf
+
         self._action_obj:Action = None
         self._setup_wf_strans = False
 
@@ -249,8 +260,12 @@ class OAFctSTrans(FctSTrans, Model):
         -------
 
         """
-
-        self._wf.add_task(PseudoTask(p_wrap_method = self._run))
+        if len(self._wf._tasks) == 0:
+            p_pred_tasks = None
+        else:
+            p_pred_tasks = self._wf._tasks[-1]
+            self._wf = OAWorkflow()
+        self._wf.add_task(p_task=PseudoTask(p_wrap_method = self._run), p_pred_tasks=p_pred_tasks)
         return False
 
 
@@ -312,8 +327,20 @@ class OAFctSuccess(FctSuccess, Model):
         # else:
         FctSuccess.__init__(self, p_logging=p_logging)
 
-        Model.__init__(self)
-        self._wf_success = p_wf_success
+        Model.__init__(self,
+                        p_ada=p_ada,
+                        p_visualize=p_visualize,
+                        p_logging=p_logging,
+                        **p_kwargs)
+
+        if p_wf_success is None:
+            self._wf_success = OAWorkflow(p_visualize=p_visualize,
+                                          p_ada=p_ada,
+                                          p_logging=p_logging)
+        else:
+            self._wf_success = p_wf_success
+
+        # self._wf_success = p_wf_success
         # self._shared = p_class_shared
         # self._success_task = None
         # self._instance:Instance = None
@@ -434,8 +461,13 @@ class OAFctSuccess(FctSuccess, Model):
         -------
 
         """
+        if len(self._wf_success._tasks) == 0:
+            p_pred_tasks = None
+        else:
+            p_pred_tasks = self._wf_success._tasks[-1]
 
-        self._wf_success.add_task(PseudoTask(p_wrap_method = self._run_wf_success))
+        self._wf_success.add_task(p_task = PseudoTask(p_wrap_method = self._run_wf_success),
+                                  p_pred_tasks=p_pred_tasks)
         return False
 
 
@@ -486,6 +518,7 @@ class OAFctBroken(FctBroken, Model):
             if (p_state_space is None) or (p_action_space is None):
                 raise ParamError("Please provide mandatory parameters state and action space.")
 
+
             self._afct_broken = AFctSuccess(p_afct_cls=p_afct_cls,
                                             p_state_space=p_state_space,
                                             p_action_space=p_action_space,
@@ -502,9 +535,20 @@ class OAFctBroken(FctBroken, Model):
         # else:
         FctBroken.__init__(self, p_logging=p_logging)
 
-        Model.__init__(self)
+        Model.__init__(self,
+                       p_ada=p_ada,
+                       p_visualize=p_visualize,
+                       p_logging=p_logging,
+                       **p_kwargs)
+        if p_wf_broken is None:
+            self._wf_broken = OAWorkflow(p_visualize=p_visualize,
+                                         p_ada=p_ada,
+                                         p_logging=p_logging)
+        else:
+            self._wf_broken = p_wf_broken
 
-        self._wf_broken = p_wf_broken
+
+        # self._wf_broken = p_wf_broken
         self._setup_wf_broken = False
 
 ## -------------------------------------------------------------------------------------------------
@@ -621,8 +665,12 @@ class OAFctBroken(FctBroken, Model):
         -------
 
         """
-
-        self._wf_broken.add_task(PseudoTask(p_wrap_method = self._run_wf_broken))
+        if len(self._wf_broken._tasks) == 0:
+            p_pred_tasks = None
+        else:
+            p_pred_tasks = self._wf_broken._tasks[-1]
+        self._wf_broken.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_broken),
+                                 p_pred_tasks=p_pred_tasks)
         return False
 
 
@@ -691,7 +739,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         -------
 
         """
-        pass
+        Model.set_adapted()
 
 
 ## -------------------------------------------------------------------------------------------------

@@ -470,20 +470,20 @@ class ASystem(System, Model):
         self.switch_adaptivity(p_ada = p_adaptivity)
 
 
-## -------------------------------------------------------------------------------------------------
-    def _set_adapted(self, p_adapted:bool):
-        """
-
-        Parameters
-        ----------
-        p_adapted
-
-        Returns
-        -------
-
-        """
-
-        Model._set_adapted(self, p_adapted=p_adapted)
+# ## -------------------------------------------------------------------------------------------------
+#     def _set_adapted(self, p_adapted:bool):
+#         """
+#
+#         Parameters
+#         ----------
+#         p_adapted
+#
+#         Returns
+#         -------
+#
+#         """
+#
+#         Model._set_adapted(self, p_adapted=p_adapted)
 
 
 ## -------------------------------------------------------------------------------------------------
