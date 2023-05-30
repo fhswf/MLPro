@@ -5,11 +5,11 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-mm-mm  0.0.0     LSB      Creation
+## -- 2023-05-30  1.0.0     LSB      Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2023-dd-mm)
+Ver. 1.0.0 (2023-05-30)
 
 This module provides the adaptive extensions of the Double Pendulum System.
 

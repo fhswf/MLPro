@@ -764,7 +764,7 @@ class DoublePendulumS7 (DoublePendulumSystemS7, DoublePendulumS4):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumOA4(oadp.DoublePendulumA4, OAEnvironment):
+class DoublePendulumOA4(OAEnvironment, oadp.DoublePendulumA4, DoublePendulumS4):
 
 
     C_NAME = 'Double Pendulum A4'
@@ -854,6 +854,39 @@ class DoublePendulumOA4(oadp.DoublePendulumA4, OAEnvironment):
                                        p_break_swinging = p_break_swinging,
                                        p_logging=p_logging)
 
+        DoublePendulumS4.__init__(self,p_mode = p_mode,
+                                       p_latency = p_latency,
+                                       p_max_torque=p_max_torque,
+                                       p_l1=p_l1,
+                                       p_l2=p_l2,
+                                       p_m1=p_m1,
+                                       p_m2=p_m2,
+                                       p_g=p_g,
+                                       p_init_angles=p_init_angles,
+                                       p_history_length=p_history_length,
+                                       p_fct_strans=p_fct_strans,
+                                       p_fct_success=p_fct_success,
+                                       p_fct_broken=p_fct_broken,
+                                       p_fct_reward=p_fct_reward,
+                                       p_mujoco_file=p_mujoco_file,
+                                       p_frame_skip=p_frame_skip,
+                                       p_state_mapping=p_state_mapping,
+                                       p_action_mapping=p_action_mapping,
+                                       p_camera_conf=p_camera_conf,
+                                       p_visualize=p_visualize,
+                                       p_plot_level=p_plot_level,
+                                       p_rst_balancing = p_rst_balancing,
+                                       p_rst_swinging = p_rst_swinging,
+                                       p_rst_swinging_outer_pole = p_rst_swinging_outer_pole,
+                                       p_reward_weights = p_reward_weights,
+                                       p_reward_trend=p_reward_trend,
+                                       p_reward_window= p_reward_window,
+                                       p_random_range=p_random_range,
+                                       p_balancing_range = p_balancing_range,
+                                       p_swinging_outer_pole_range = p_swinging_outer_pole_range,
+                                       p_break_swinging = p_break_swinging,
+                                       p_logging=p_logging)
+
         OAEnvironment.__init__(self,
                                  p_id = p_id,
                                  p_name = p_name,
@@ -893,10 +926,9 @@ class DoublePendulumOA4(oadp.DoublePendulumA4, OAEnvironment):
 
 
 
-
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumOA7(oadp.DoublePendulumA7, DoublePendulumOA4):
+class DoublePendulumOA7(oadp.DoublePendulumA7, DoublePendulumOA4, DoublePendulumS7):
 
     C_NAME = 'Double Pendulum A7'
 

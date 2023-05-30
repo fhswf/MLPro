@@ -270,11 +270,11 @@ class OAFctSTrans(FctSTrans, Model):
         """
 
         if self._afct_strans is not None:
-            self.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self,
+            self._wf.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self,
                                                                                 p_state=p_inst_new[0],
                                                                                 p_action=self._action_obj))
         else:
-            self.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
+            self._wf.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
                                                                             p_state=p_inst_new[0],
                                                                             p_action=self._action_obj))
 
@@ -294,11 +294,11 @@ class OAFctSTrans(FctSTrans, Model):
         if len(self._wf._tasks) == 0:
             p_pred_tasks = None
         else:
-            p_pred_tasks = self._wf._tasks[-1]
+            p_pred_tasks = [self._wf._tasks[-1]]
             self._wf = OAWorkflow()
         self._wf.add_task(p_task=PseudoTask(p_wrap_method = self._run), p_pred_tasks=p_pred_tasks)
 
-        return False
+        return True
 
 
 
@@ -464,10 +464,10 @@ class OAFctSuccess(FctSuccess, Model):
         """
 
         if self._afct_success is not None:
-            self.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self,
+            self._wf_success.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self,
                                                                                  p_state=p_inst_new[0]))
         else:
-            self.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
+            self._wf_success.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
                                                                             p_state=p_inst_new[0]))
 
 
@@ -516,11 +516,11 @@ class OAFctSuccess(FctSuccess, Model):
         if len(self._wf_success._tasks) == 0:
             p_pred_tasks = None
         else:
-            p_pred_tasks = self._wf_success._tasks[-1]
+            p_pred_tasks = [self._wf_success._tasks[-1]]
 
         self._wf_success.add_task(p_task = PseudoTask(p_wrap_method = self._run_wf_success),
                                   p_pred_tasks=p_pred_tasks)
-        return False
+        return True
 
 
 
@@ -669,10 +669,10 @@ class OAFctBroken(FctBroken, Model):
 
         """
         if self._afct_broken is not None:
-            self.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self,
+            self._wf_broken.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self,
                                                                          p_state=p_inst_new[0]))
         else:
-            self.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
+            self._wf_broken.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
                                                                          p_state=p_inst_new[0]))
 
 
@@ -730,10 +730,10 @@ class OAFctBroken(FctBroken, Model):
         if len(self._wf_broken._tasks) == 0:
             p_pred_tasks = None
         else:
-            p_pred_tasks = self._wf_broken._tasks[-1]
+            p_pred_tasks = [self._wf_broken._tasks[-1]]
         self._wf_broken.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_broken),
                                  p_pred_tasks=p_pred_tasks)
-        return False
+        return True
 
 
 

@@ -172,12 +172,13 @@ class OAFctReward(FctReward, Model):
         #
         # # creating new instance with new state
         # self._instance_new = Instance(p_state_new)
-        self._state_obj_old = p_state_old.copy()
+        if p_state_old is not None:
+            self._state_obj_old = p_state_old.copy()
         self._state_obj_new = p_state_new.copy()
         self.log(Log.C_LOG_TYPE_I, 'Assessing Broken...')
 
         if not self._setup_wf_reward:
-            self._setup_wf_broken = self._setup_oafct_reward()
+            self._setup_wf_reward = self._setup_oafct_reward()
 
         # 6. Run the workflow
         self._wf_reward.run(p_inst_new=[self._state_obj_new, self._state_obj_old])
@@ -232,11 +233,11 @@ class OAFctReward(FctReward, Model):
         """
 
         if self._afct_reward is not None:
-            self.get_so().add_result(self.get_id(), AFctReward.compute_reward(self,
+            self._wf_reward.get_so().add_result(self.get_id(), AFctReward.compute_reward(self,
                                                                               p_state_new=p_inst_new[0],
                                                                               p_state_old=p_inst_new[1]))
         else:
-            self.get_so().add_result(self.get_id(), FctReward.compute_reward(self,
+            self._wf_reward.get_so().add_result(self.get_id(), FctReward.compute_reward(self,
                                                                              p_state_new=p_inst_new[0],
                                                                              p_state_old=p_inst_new[1]))
 
@@ -289,7 +290,7 @@ class OAFctReward(FctReward, Model):
 
         self._wf_reward.add_task(p_task=PseudoTask(p_wrap_method=self._run_wf_reward),
                                   p_pred_tasks=p_pred_tasks)
-        return False
+        return True
 
 
 
@@ -452,8 +453,23 @@ class OAEnvironment(OAFctReward, OASystem, Environment):
             The new state of the System.
 
         """
+        if p_state_old is not None:
+            state_old = p_state_old
+        else:
+            state_old = self._prev_state
+
+        if state_old is None:
+            return None
+
+        if p_state_new is not None:
+            state_new = p_state_new
+
+        else:
+            state_new = self._state
 
         if self._fct_reward is not None:
-            return self._fct_reward.compute_reward(p_state_new=p_state_new, p_state_old=p_state_old)
+            self._last_reward = self._fct_reward.compute_reward(p_state_new=state_new, p_state_old=state_old)
         else:
-            return OAFctReward.compute_reward(self, p_state_new=p_state_new, p_state_old=p_state_old)
+            self._last_reward = OAFctReward.compute_reward(self, p_state_new=state_new, p_state_old=state_old)
+
+        return self._last_reward

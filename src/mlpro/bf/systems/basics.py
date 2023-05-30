@@ -198,7 +198,7 @@ class State(Instance, Element, TStamp):
                                       p_initial=initial,
                                       p_terminal=terminal,
                                       p_timeout=timeout)
-        copied_state.set_values(self.get_values)
+        copied_state.set_values(self.get_values())
         self.set_tstamp(self.get_tstamp())
         
         return copied_state
@@ -1511,6 +1511,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         # 1 State transition
         if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
+            # TODO: optimize the p_t_step handling, with an if else block, must not execute everything everytime
             try:
                 self._set_state(self.simulate_reaction(self.get_state(), p_action, p_t_step = p_t_step ))
             except TypeError:
