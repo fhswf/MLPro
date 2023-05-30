@@ -527,28 +527,28 @@ class ASystem(System, Model):
         adapted = False
 
         try:
-            self._fct_strans.adapt()
-            if self._fct_strans.get_adapted():
-                adapted = True
-
-        except: pass
+            self._fct_strans.adapt(**p_kwargs)
+            adapted = self._fct_strans.get_adapted() or adapted
 
 
-
-        try:
-            self._fct_broken.adapt()
-            if self._fct_broken.get_adapted():
-                adapted = True
-
-        except: pass
+        except: adapted = adapted or False
 
 
 
         try:
-            self._fct_success.adapt()
-            if self._fct_success.adapt():
-                adapted = True
+            self._fct_broken.adapt(**p_kwargs)
+            adapted = self._fct_broken.get_adapted() or adapted
 
-        except: pass
+
+        except: adapted = adapted or False
+
+
+
+        try:
+            self._fct_success.adapt(**p_kwargs)
+            adapted = self._fct_success.get_adapted() or adapted
+
+
+        except: adapted = adapted or False
 
         return adapted

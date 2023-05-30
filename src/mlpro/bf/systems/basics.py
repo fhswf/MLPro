@@ -1157,9 +1157,11 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
         Persistent.__init__(self, p_id=p_id, p_logging=p_logging)
+
+
         Task.__init__(self,
                         p_id=p_id,
-                        p_name = p_name,
+                        p_name =p_name,
                         p_range_max = p_range_max,
                         p_autorun = p_autorun,
                         p_class_shared=p_class_shared,
