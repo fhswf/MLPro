@@ -9,10 +9,11 @@
 ## -- 2023-04-18  0.1.0     DA       First implementation of classes ClusterMembership, ClusterAnalyzer
 ## -- 2023-05-06  0.2.0     DA       New class ClusterCentroid
 ## -- 2023-05-14  0.3.0     DA       Class ClusterAnalyzer: simplification
+## -- 2023-05-30  0.3.1     DA       Further comments, docstrings
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.3.0 (2023-05-14)
+Ver. 0.3.1 (2023-05-30)
 
 This module provides templates for cluster analysis to be used in the context of online adaptivity.
 """
@@ -35,8 +36,12 @@ class Cluster (Id, Plottable):
 
     Parameters
     ----------
+    p_id
+        Optional external id.
     p_visualize : bool
         Boolean switch for visualisation. Default = False.
+    **p_kwargs
+        Further optional keyword arguments.
     """
 
     C_PLOT_ACTIVE           = True
@@ -88,6 +93,10 @@ class ClusterAnalyzer (OATask):
 
     Parameters
     ----------
+    p_cls_cluster 
+        Cluster class (Class Cluster or a child class).
+    p_cluster_limit : int
+        Optional limit for clusters to be created. Default = 0 (no limit).
     p_name : str
         Optional name of the task. Default is None.
     p_range_max : int
@@ -100,10 +109,6 @@ class ClusterAnalyzer (OATask):
         Boolean switch for visualisation. Default = False.
     p_logging
         Log level (see constants of class Log). Default: Log.C_LOG_ALL
-    p_cls_cluster 
-        Cluster class (Class Cluster or a child class). Default = Cluster.
-    p_cluster_limit : int
-        Optional limit for clusters to be created. Default = 0 (no limit).
     p_kwargs : dict
         Further optional named parameters.
     """
@@ -118,20 +123,16 @@ class ClusterAnalyzer (OATask):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
+                  p_cls_cluster,
+                  p_cluster_limit : int = 0,
                   p_name: str = None, 
                   p_range_max = StreamTask.C_RANGE_THREAD, 
                   p_ada: bool = True, 
                   p_duplicate_data: bool = False, 
                   p_visualize: bool = False, 
                   p_logging = Log.C_LOG_ALL, 
-                  p_cls_cluster = Cluster,
-                  p_cluster_limit : int = 0,
                   **p_kwargs ):
         
-        self._cls_cluster   = p_cls_cluster
-        self._clusters      = []
-        self._cluster_limit = p_cluster_limit
-
         super().__init__( p_name = p_name, 
                           p_range_max = p_range_max, 
                           p_ada = p_ada, 
@@ -139,6 +140,10 @@ class ClusterAnalyzer (OATask):
                           p_visualize = p_visualize, 
                           p_logging = p_logging, 
                           **p_kwargs )
+
+        self._cls_cluster   = p_cls_cluster
+        self._clusters      = []
+        self._cluster_limit = p_cluster_limit
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -235,15 +240,27 @@ class ClusterAnalyzer (OATask):
 class ClusterCentroid (Cluster):
     """
     Extended cluster class with a centroid.
+
+    Parameters
+    ----------
+    p_id
+        Optional external id
+    p_visualize : bool
+        Boolean switch for visualisation. Default = False.
+    p_cls_centroid = Point
+        Name of a point class. Default = Point
+    **p_kwargs
+        Further optional keyword arguments.
     """
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self, 
-                  p_id=None, 
-                  p_visualize: bool = False, 
+                  p_id = None, 
+                  p_visualize : bool = False, 
+                  p_cls_centroid = Point,
                   **p_kwargs ):
         
-        self._centroid : Point = Point( p_visualize=p_visualize )
+        self._centroid : Point = p_cls_centroid( p_visualize=p_visualize )
         super().__init__( p_id = p_id, p_visualize = p_visualize, **p_kwargs )
 
 
