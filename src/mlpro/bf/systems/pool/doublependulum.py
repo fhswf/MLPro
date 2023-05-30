@@ -21,7 +21,7 @@ Pendulum consists of an input motor providing the torque in either directions to
 """
 
 import random
-
+from mlpro.bf.systems import *
 from mlpro.bf.various import *
 import numpy as np
 from numpy import sin, cos
