@@ -68,10 +68,13 @@
 ## -- 2023-03-05  2.3.0     LSB      Shifted the environment into a system in bf systems pool
 ## -- 2023-03-08  2.3.1     LSB      Refactoring for visualization
 ## -- 2023-03-09  2.3.2     LSB      Minor Bug Fix
+## -- 2023-05-30  3.0.0     LSB      Adaptive Extensions for Double Pendulum:
+##                                       - DoublePendulumA4
+##                                       - DoublePendulumA7
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.2 (2023-03-09)
+Ver. 3.0.0 (2023-05-30)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -760,7 +763,99 @@ class DoublePendulumS7 (DoublePendulumSystemS7, DoublePendulumS4):
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
 class DoublePendulumA4(DoublePendulumS4, OAEnvironment):
-    pass
+
+
+    C_NAME = 'Double Pendulum A4'
+## ------------------------------------------------------------------------------------------------------
+    def __init__(self,
+                   p_mode = Mode.C_MODE_SIM,
+                   p_ada = True,
+                   p_latency = None,
+                   p_max_torque=20,
+                   p_l1=1.0,
+                   p_l2=1.0,
+                   p_m1=1.0,
+                   p_m2=1.0,
+                   p_g=9.8,
+                   p_init_angles=DoublePendulumSystemRoot.C_ANGLES_RND,
+                   p_history_length=5,
+                   p_fct_strans:FctSTrans=None,
+                   p_fct_success:FctSuccess=None,
+                   p_fct_broken:FctBroken=None,
+                   p_fct_reward:FctReward=None,
+                   p_wf:OAWorkflow=None,
+                   p_wf_reward:OAWorkflow=None,
+                   p_wf_success:OAWorkflow=None,
+                   p_wf_broken:OAWorkflow=None,
+                   p_mujoco_file=None,
+                   p_frame_skip=None,
+                   p_state_mapping=None,
+                   p_action_mapping=None,
+                   p_camera_conf=None,
+                   p_visualize:bool=False,
+                   p_plot_level:int=2,
+                   p_rst_balancing = DoublePendulumS4.C_RST_BALANCING_002,
+                   p_rst_swinging = DoublePendulumS4.C_RST_SWINGING_001,
+                   p_rst_swinging_outer_pole = DoublePendulumS4.C_RST_SWINGING_OUTER_POLE_001,
+                   p_reward_weights: list = None,
+                   p_reward_trend: bool = False,
+                   p_reward_window:int = 0,
+                   p_random_range:list = None,
+                   p_balancing_range:list = (-0.2,0.2),
+                   p_swinging_outer_pole_range = (0.2,0.5),
+                   p_break_swinging:bool = False,
+                   p_logging=Log.C_LOG_ALL ):
+
+
+        OAEnvironment.__init__(self,
+                                 p_mode=p_mode,
+                                 p_latency = p_latency,
+                                 p_ada = p_ada,
+                                 p_fct_strans = p_fct_strans,
+                                 p_fct_reward = p_fct_reward,
+                                 p_fct_success = p_fct_success,
+                                 p_fct_broken = p_fct_broken,
+                                 p_wf = p_wf,
+                                 p_wf_success = p_wf_success,
+                                 p_wf_broken = p_wf_broken,
+                                 p_wf_reward = p_wf_reward,
+                                 p_visualize = p_visualize,
+                                 p_logging=p_logging)
+
+
+        DoublePendulumS4.__init__(self,
+                                   p_mode = p_mode,
+                                   p_latency = p_latency,
+                                   p_max_torque=p_max_torque,
+                                   p_l1=p_l1,
+                                   p_l2=p_l2,
+                                   p_m1=p_m1,
+                                   p_m2=p_m2,
+                                   p_g=p_g,
+                                   p_init_angles=p_init_angles,
+                                   p_history_length=p_history_length,
+                                   p_fct_strans=p_fct_strans,
+                                   p_fct_success=p_fct_success,
+                                   p_fct_broken=p_fct_broken,
+                                   p_fct_reward=p_fct_reward,
+                                   p_mujoco_file=p_mujoco_file,
+                                   p_frame_skip=p_frame_skip,
+                                   p_state_mapping=p_state_mapping,
+                                   p_action_mapping=p_action_mapping,
+                                   p_camera_conf=p_camera_conf,
+                                   p_visualize=p_visualize,
+                                   p_plot_level=p_plot_level,
+                                   p_rst_balancing = p_rst_balancing,
+                                   p_rst_swinging = p_rst_swinging,
+                                   p_rst_swinging_outer_pole = p_rst_swinging_outer_pole,
+                                   p_reward_weights = p_reward_weights,
+                                   p_reward_trend=p_reward_trend,
+                                   p_reward_window= p_reward_window,
+                                   p_random_range=p_random_range,
+                                   p_balancing_range = p_balancing_range,
+                                   p_swinging_outer_pole_range = p_swinging_outer_pole_range,
+                                   p_break_swinging = p_break_swinging,
+                                   p_logging=p_logging)
 
 
 
@@ -768,5 +863,8 @@ class DoublePendulumA4(DoublePendulumS4, OAEnvironment):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumA7(DoublePendulumS7, OAEnvironment):
-    pass
+class DoublePendulumA7(DoublePendulumA4, DoublePendulumS7, OAEnvironment):
+
+    C_NAME = 'Double Pendulum A7'
+
+
