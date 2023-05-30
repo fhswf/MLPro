@@ -89,6 +89,12 @@ class OAFctSTrans(FctSTrans, Model):
     """
 
     def __init__(self,
+                 p_id = None,
+                 p_name: str = None,
+                 p_range_max: int = Async.C_RANGE_PROCESS,
+                 p_autorun: int = Task.C_AUTORUN_NONE,
+                 p_class_shared = None,
+                 p_ada:bool=True,
                  p_afct_cls = None,
                  p_state_space: MSpace = None,
                  p_action_space: MSpace = None,
@@ -97,7 +103,6 @@ class OAFctSTrans(FctSTrans, Model):
                  p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
-                 p_ada:bool=True,
                  p_wf: OAWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
@@ -124,9 +129,14 @@ class OAFctSTrans(FctSTrans, Model):
         FctSTrans.__init__(self, p_logging = p_logging)
 
         Model.__init__(self,
-                       p_ada = p_ada,
-                       p_visualize = p_visualize,
-                       p_logging = p_logging,
+                       p_id= p_id,
+                       p_name=p_name,
+                       p_range_max=p_range_max,
+                       p_autorun=p_autorun,
+                       p_class_shared=p_class_shared,
+                       p_ada=p_ada,
+                       p_visualize=p_visualize,
+                       p_logging=p_logging,
                        **p_kwargs)
 
         if p_wf is None:
@@ -314,6 +324,12 @@ class OAFctSuccess(FctSuccess, Model):
 
     ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id = None,
+                 p_name: str = None,
+                 p_range_max: int = Async.C_RANGE_PROCESS,
+                 p_autorun: int = Task.C_AUTORUN_NONE,
+                 p_class_shared = None,
+                 p_ada:bool=True,
                  p_afct_cls = None,
                  p_state_space: MSpace = None,
                  p_action_space: MSpace = None,
@@ -322,7 +338,6 @@ class OAFctSuccess(FctSuccess, Model):
                  p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
-                 p_ada:bool=True,
                  p_wf_success: OAWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
@@ -350,10 +365,15 @@ class OAFctSuccess(FctSuccess, Model):
         FctSuccess.__init__(self, p_logging=p_logging)
 
         Model.__init__(self,
-                        p_ada=p_ada,
-                        p_visualize=p_visualize,
-                        p_logging=p_logging,
-                        **p_kwargs)
+                       p_id= p_id,
+                       p_name=p_name,
+                       p_range_max=p_range_max,
+                       p_autorun=p_autorun,
+                       p_class_shared=p_class_shared,
+                       p_ada=p_ada,
+                       p_visualize=p_visualize,
+                       p_logging=p_logging,
+                       **p_kwargs)
 
         if p_wf_success is None:
             self._wf_success = OAWorkflow(p_visualize=p_visualize,
@@ -526,6 +546,12 @@ class OAFctBroken(FctBroken, Model):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id = None,
+                 p_name: str = None,
+                 p_range_max: int = Async.C_RANGE_PROCESS,
+                 p_autorun: int = Task.C_AUTORUN_NONE,
+                 p_class_shared = None,
+                 p_ada:bool=True,
                  p_afct_cls = None,
                  p_state_space: MSpace = None,
                  p_action_space: MSpace = None,
@@ -534,7 +560,6 @@ class OAFctBroken(FctBroken, Model):
                  p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
-                 p_ada:bool=True,
                  p_wf_broken: OAWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
@@ -563,10 +588,16 @@ class OAFctBroken(FctBroken, Model):
         FctBroken.__init__(self, p_logging=p_logging)
 
         Model.__init__(self,
+                       p_id= p_id,
+                       p_name=p_name,
+                       p_range_max=p_range_max,
+                       p_autorun=p_autorun,
+                       p_class_shared=p_class_shared,
                        p_ada=p_ada,
                        p_visualize=p_visualize,
                        p_logging=p_logging,
                        **p_kwargs)
+
         if p_wf_broken is None:
             self._wf_broken = OAWorkflow(p_visualize=p_visualize,
                                          p_ada=p_ada,

@@ -122,8 +122,14 @@ class DoublePendulumSystemRoot (System):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__ ( self,
+                   p_id = None,
+                   p_name : str =None,
+                   p_range_max : int = Async.C_RANGE_NONE,
+                   p_autorun = Task.C_AUTORUN_NONE,
+                   p_class_shared = None,
                    p_mode = Mode.C_MODE_SIM,
                    p_latency = None,
+                   p_t_step = None,
                    p_max_torque=20,
                    p_l1=1.0,
                    p_l2=1.0,
@@ -145,7 +151,8 @@ class DoublePendulumSystemRoot (System):
                    p_balancing_range:list = (-0.2,0.2),
                    p_swinging_outer_pole_range = (0.2,0.5),
                    p_break_swinging:bool = False,
-                   p_logging=Log.C_LOG_ALL ):
+                   p_logging=Log.C_LOG_ALL,
+                   **p_kwargs):
 
         self._max_torque = p_max_torque
 
@@ -171,7 +178,14 @@ class DoublePendulumSystemRoot (System):
 
 
         System.__init__(self,
+                        p_id = p_id,
+                        p_name = p_name,
+                        p_range_max = p_range_max,
+                        p_autorun = p_autorun,
+                        p_class_shared = p_class_shared,
                         p_mode=p_mode,
+                        p_latency=p_latency,
+                        p_t_step = p_t_step,
                         p_fct_strans= p_fct_strans,
                         p_fct_broken= p_fct_broken,
                         p_fct_success= p_fct_success,
@@ -182,7 +196,7 @@ class DoublePendulumSystemRoot (System):
                         p_camera_conf=p_camera_conf,
                         p_visualize=p_visualize,
                         p_logging=p_logging,
-                        p_latency=p_latency)
+                        **p_kwargs)
 
         self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 

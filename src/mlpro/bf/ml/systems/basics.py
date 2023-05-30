@@ -450,6 +450,7 @@ class ASystem(System, Model):
                  p_class_shared:Shared = None,
                  p_mode = Mode.C_MODE_SIM,
                  p_ada: bool = True,
+                 p_buffer_size = 0,
                  p_latency = None,
                  p_t_step:timedelta = None,
                  p_fct_strans: Union[AFctSTrans, FctSTrans] = None,
@@ -494,9 +495,17 @@ class ASystem(System, Model):
 
         self._fcts = [self._fct_strans, self._fct_success, self._fct_broken]
 
-        Model.__init__(self, p_ada= p_ada,
+        Model.__init__(self,
+                        p_id = p_id,
+                        p_name=p_name,
+                        p_ada = p_ada,
+                        p_range_max = p_range_max,
+                        p_autorun = p_autorun,
+                        p_class_shared = p_class_shared,
+                        p_buffer_size = p_buffer_size,
                         p_visualize=p_visualize,
-                        p_logging=p_logging)
+                        p_logging=p_logging,
+                        **p_kwargs)
 
 
     # ## -------------------------------------------------------------------------------------------------

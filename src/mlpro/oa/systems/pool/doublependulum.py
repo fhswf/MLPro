@@ -45,7 +45,7 @@ class DoublePendulumOA4(DoublePendulumA4, OASystem):
                  p_l2: float = 1.0,
                  p_m1: float = 1.0,
                  p_m2: float = 1.0,
-                 p_init_angles: str = DoublePendulumSystemRoot.C_ANGLES_RND,
+                 p_init_angles = DoublePendulumSystemRoot.C_ANGLES_RND,
                  p_g: float = 9.8,
                  p_fct_strans: FctSTrans = None,
                  p_fct_success: FctSuccess = None,

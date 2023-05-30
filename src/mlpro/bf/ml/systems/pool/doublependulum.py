@@ -27,34 +27,38 @@ from mlpro.bf.ml.systems import *
 class DoublePendulumA4(ASystem, DoublePendulumSystemS4):
 
 
+    C_NAME = 'DoublePendulumSystemA4'
+
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_id = None,
-                 p_name: str | None = None,
+                 p_name: str = None,
                  p_range_max: int = Range.C_RANGE_NONE,
                  p_autorun: int = Task.C_AUTORUN_NONE,
-                 p_class_shared: Shared | None = None,
+                 p_class_shared: Shared = None,
                  p_ada: bool = True,
                  p_mode: int = Mode.C_MODE_SIM,
                  p_latency: timedelta = None,
-                 p_t_step: timedelta | None = None,
-                 p_max_torque: float | None = 20,
-                 p_l1: float | None = 1.0,
-                 p_l2: float | None = 1.0,
-                 p_m1: float | None = 1.0,
-                 p_m2: float | None = 1.0,
-                 p_init_angles: str | None = DoublePendulumSystemRoot.C_ANGLES_RND,
-                 p_g: float | None = 9.8,
-                 p_fct_strans: FctSTrans | None = None,
-                 p_fct_success: FctSuccess | None = None,
-                 p_fct_broken: FctBroken | None = None,
+                 p_t_step: timedelta = None,
+                 p_max_torque: float = 20,
+                 p_l1: float = 1.0,
+                 p_l2: float = 1.0,
+                 p_m1: float = 1.0,
+                 p_m2: float = 1.0,
+                 p_init_angles = DoublePendulumSystemRoot.C_ANGLES_RND,
+                 p_g: float = 9.8,
+                 p_fct_strans: FctSTrans = None,
+                 p_fct_success: FctSuccess = None,
+                 p_fct_broken: FctBroken = None,
                  p_mujoco_file = None,
                  p_frame_skip = None,
                  p_state_mapping = None,
                  p_action_mapping = None,
                  p_camera_conf = None,
-                 p_history_length: int | None = 5,
+                 p_history_length: int = 5,
                  p_visualize: bool = False,
-                 p_random_range: list | None = None,
+                 p_random_range: list = None,
                  p_balancing_range: list = (-0.2,0.2),
                  p_swinging_outer_pole_range: tuple[float, float] = (0.2,0.5),
                  p_break_swinging: bool = False,
@@ -63,8 +67,14 @@ class DoublePendulumA4(ASystem, DoublePendulumSystemS4):
 
 
         DoublePendulumSystemS4.__init__(self,
-                                         p_mode = p_mode,
+                                        p_id=p_id,
+                                        p_name=p_name,
+                                        p_range_max=p_range_max,
+                                        p_autorun=p_autorun,
+                                        p_class_shared=p_class_shared,
+                                        p_mode=p_mode,
                                          p_latency = p_latency,
+                                         p_t_step=p_t_step,
                                          p_max_torque = p_max_torque,
                                          p_l1 = p_l1,
                                          p_l2 = p_l2,
@@ -86,7 +96,8 @@ class DoublePendulumA4(ASystem, DoublePendulumSystemS4):
                                          p_balancing_range= p_balancing_range,
                                          p_swinging_outer_pole_range = p_swinging_outer_pole_range,
                                          p_break_swinging = p_break_swinging,
-                                         p_logging = p_logging)
+                                         p_logging = p_logging,
+                                         **p_kwargs)
 
         ASystem.__init__(self,
                          p_id = p_id,
@@ -116,4 +127,5 @@ class DoublePendulumA4(ASystem, DoublePendulumSystemS4):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class DoublePendulumA7(ASystem, DoublePendulumSystemS7):
-    pass
+
+    C_NAME = 'DoublePendulumSystemA7'

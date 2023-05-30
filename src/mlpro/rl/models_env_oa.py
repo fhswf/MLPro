@@ -41,6 +41,12 @@ class OAFctReward(FctReward, Model):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id = None,
+                 p_name: str = None,
+                 p_range_max: int = Async.C_RANGE_PROCESS,
+                 p_autorun: int = Task.C_AUTORUN_NONE,
+                 p_class_shared = None,
+                 p_ada:bool=True,
                  p_afct_cls = None,
                  p_state_space: MSpace = None,
                  p_action_space: MSpace = None,
@@ -49,7 +55,6 @@ class OAFctReward(FctReward, Model):
                  p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
-                 p_ada:bool=True,
                  p_wf_reward: OAWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
@@ -76,6 +81,11 @@ class OAFctReward(FctReward, Model):
         FctReward.__init__(self, p_logging = p_logging)
 
         Model.__init__(self,
+                       p_id= p_id,
+                       p_name=p_name,
+                       p_range_max=p_range_max,
+                       p_autorun=p_autorun,
+                       p_class_shared=p_class_shared,
                        p_ada=p_ada,
                        p_visualize=p_visualize,
                        p_logging=p_logging,
@@ -308,15 +318,15 @@ class OAEnvironment(OAFctReward, OASystem, Environment):
     ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_id = None,
-                 p_name: str | None = None,
+                 p_name: str = None,
                  p_buffer_size: int = 0,
                  p_ada: bool = True,
                  p_range_max: int = Range.C_RANGE_NONE,
                  p_autorun: int = Task.C_AUTORUN_NONE,
-                 p_class_shared: Shared | None = None,
+                 p_class_shared: Shared = None,
                  p_mode=Mode.C_MODE_SIM,
                  p_latency: timedelta = None,
-                 p_t_step: timedelta | None = None,
+                 p_t_step: timedelta = None,
                  p_fct_strans: FctSTrans = None,
                  p_fct_reward: FctReward = None,
                  p_fct_success: FctSuccess = None,
