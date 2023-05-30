@@ -36,8 +36,8 @@ class PseudoTask(OATask):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_wrap_method:Callable[[List[Instance],
-                                         List[Instance]],
+                 p_wrap_method:Callable[[List[State],
+                                         List[State]],
                                          None],
                  p_name='PseudoTask',
                  p_range_max=Range.C_RANGE_NONE,
@@ -120,8 +120,7 @@ class OAFctSTrans(FctSTrans, Model):
                                           p_visualize=p_visualize,
                                           p_logging=p_logging,
                                           **p_kwargs)
-        #
-        # else:
+
         FctSTrans.__init__(self, p_logging = p_logging)
 
         Model.__init__(self,
@@ -144,39 +143,53 @@ class OAFctSTrans(FctSTrans, Model):
 ## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
         """
+        Simulates a state transition based on a state and action. Custom method _simulate_reaction()
+        is called.
 
         Parameters
         ----------
-        p_state
-        p_action
+        p_state: State
+            State of the System.
+
+        p_action: Action
+            External action provided for the action simulation
+
+        p_t_step: timedelta, optional.
+            The timestep for which the system is to be simulated
 
         Returns
         -------
+        state: State
+            The new state of the System.
 
         """
+        # 1. copying the state and action object for the function level
         self._state_obj = p_state.copy()
         self._action_obj = copy.deepcopy(p_action)
         self.log(Log.C_LOG_TYPE_I, 'Reaction Simulation Started...')
 
-
+        # 2. Checking for the first run
         if not self._setup_wf_strans:
             self._setup_wf_strans = self._setup_oafct_strans()
 
-        # 6. Run the workflow
-        self._wf.run(p_inst_new=[p_state])
+        # 3. Running the workflow
+        self._wf.run(p_inst_new=[self._state_obj])
 
 
-        # 7. Return the results
-        return self._wf.get_so().get_results()[self.get_id()]
+        # 4. get the results
+        state = self._wf.get_so().get_results()[self.get_id()]
 
+        return state
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
         """
+        When called, the function and it's components adapt based on the provided parameters.
 
         Parameters
         ----------
         p_kwargs
+            additional parameters for adaptation.
 
         Returns
         -------
@@ -217,13 +230,15 @@ class OAFctSTrans(FctSTrans, Model):
 ## -------------------------------------------------------------------------------------------------
     def add_task(self, p_task:OATask, p_pred_task = None):
         """
+        Adds a task to the workflow.
 
         Parameters
         ----------
-        p_task
+        p_task: OATask, StreamTask
+            The task to be added to the workflow
 
-        Returns
-        -------
+        p_pred_task: list[Task]
+            Name of the predecessor tasks for the task to be added
 
         """
         self._wf.add_task(p_task, p_pred_task)
@@ -232,40 +247,47 @@ class OAFctSTrans(FctSTrans, Model):
 ## -------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new, p_inst_del):
         """
+        Runs the processing workflow, for state transition.
 
         Parameters
         ----------
-        p_inst_new
-        p_inst_del
+        p_inst_new: list[State]
+            List of new instances to be processed.
 
-        Returns
-        -------
+        p_inst_del: list[State]
+            List of old instances to be processed.
 
         """
+
         if self._afct_strans is not None:
             self.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self,
-                                                                                p_state=self._state_obj,
+                                                                                p_state=p_inst_new[0],
                                                                                 p_action=self._action_obj))
         else:
             self.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
-                                                                            p_state=self._state_obj,
+                                                                            p_state=p_inst_new[0],
                                                                             p_action=self._action_obj))
 
 
 ## -------------------------------------------------------------------------------------------------
     def _setup_oafct_strans(self):
         """
+        Adds a pseudo task to the processing workflow, with the method to be wrapped.
 
         Returns
         -------
+        bool
+            False when successfully setup.
 
         """
+
         if len(self._wf._tasks) == 0:
             p_pred_tasks = None
         else:
             p_pred_tasks = self._wf._tasks[-1]
             self._wf = OAWorkflow()
         self._wf.add_task(p_task=PseudoTask(p_wrap_method = self._run), p_pred_tasks=p_pred_tasks)
+
         return False
 
 
@@ -340,25 +362,24 @@ class OAFctSuccess(FctSuccess, Model):
         else:
             self._wf_success = p_wf_success
 
-        # self._wf_success = p_wf_success
-        # self._shared = p_class_shared
-        # self._success_task = None
-        # self._instance:Instance = None
-        # self._state:State = None
         self._setup_wf_success = False
 
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
         """
+        Assesses the given state regarding success criteria. Custom method _compute_success() is called.
 
         Parameters
         ----------
-        p_state
+        p_state : State
+            System state.
 
         Returns
         -------
-
+        success : bool
+            True, if given state is a success state. False otherwise.
         """
+
         self._state_obj = p_state.copy()
         self.log(Log.C_LOG_TYPE_I, 'Assessing Success...')
 
@@ -367,7 +388,7 @@ class OAFctSuccess(FctSuccess, Model):
             self._setup_wf_success = self._setup_oafct_success()
 
         # 6. Run the workflow
-        self._wf_success.run(p_inst_new=[p_state])
+        self._wf_success.run(p_inst_new=[self._state_obj])
 
 
         # 7. Return the results
@@ -393,13 +414,15 @@ class OAFctSuccess(FctSuccess, Model):
 ## -------------------------------------------------------------------------------------------------
     def add_task_success(self, p_task:StreamTask, p_pred_tasks:list = None):
         """
+        Adds a task to the workflow.
 
         Parameters
         ----------
-        p_task
+        p_task: OATask, StreamTask
+            The task to be added to the workflow
 
-        Returns
-        -------
+        p_pred_task: list[Task]
+            Name of the predecessor tasks for the task to be added
 
         """
         self._wf_success.add_task(p_task = p_task, p_pred_tasks=p_pred_tasks)
@@ -408,36 +431,42 @@ class OAFctSuccess(FctSuccess, Model):
 ## -------------------------------------------------------------------------------------------------
     def _run_wf_success(self, p_inst_new, p_inst_del):
         """
+        Runs the success computation workflow of the system.
 
         Parameters
         ----------
-        p_inst_new
-        p_inst_del
+        p_inst_new: list[State]
+            List of new instances to be processed by the workflow.
 
-        Returns
-        -------
+        p_inst_del: list[State]
+            List of old instances to be processed by the workflow.
 
         """
+
         if self._afct_success is not None:
             self.get_so().add_result(self.get_id(), AFctSuccess.compute_success(self,
-                                                                                 p_state=self._state_obj))
+                                                                                 p_state=p_inst_new[0]))
         else:
             self.get_so().add_result(self.get_id(), FctSuccess.compute_success(self,
-                                                                            p_state=self._state_obj))
+                                                                            p_state=p_inst_new[0]))
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
         """
+        When called, the function and it's components adapt based on the provided parameters.
 
         Parameters
         ----------
         p_kwargs
+            additional parameters for adaptation.
 
         Returns
         -------
-
+        adapted: bool
+            Returns true if the Function has adapted
         """
+
         adapted = False
         try:
             adapted = self._wf_success.adapt(**p_kwargs) or adapted
@@ -456,9 +485,12 @@ class OAFctSuccess(FctSuccess, Model):
 ## -------------------------------------------------------------------------------------------------
     def _setup_oafct_success(self):
         """
+        Adds a pseudo task to the success computation workflow, with the method to be wrapped.
 
         Returns
         -------
+        bool
+            False when successfully setup.
 
         """
         if len(self._wf_success._tasks) == 0:
@@ -503,11 +535,6 @@ class OAFctBroken(FctBroken, Model):
                  p_threshold=0,
                  p_buffer_size=0,
                  p_ada:bool=True,
-                 # p_visualize:bool=False,
-                 # p_logging=Log.C_LOG_ALL,
-                 # p_name:str=None,
-                 # p_range_max=Async.C_RANGE_THREAD,
-                 # p_class_shared=None,
                  p_wf_broken: OAWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
@@ -547,21 +574,22 @@ class OAFctBroken(FctBroken, Model):
         else:
             self._wf_broken = p_wf_broken
 
-
-        # self._wf_broken = p_wf_broken
         self._setup_wf_broken = False
 
 ## -------------------------------------------------------------------------------------------------
     def compute_broken(self, p_state: State) -> bool:
         """
+        Assesses the given state regarding breakdown criteria. Custom method _compute_success() is called.
 
         Parameters
         ----------
-        p_state
+        p_state : State
+            System state.
 
         Returns
         -------
-
+        broken : bool
+            True, if given state is a breakdown state. False otherwise.
         """
         self._state_obj = p_state.copy()
         self.log(Log.C_LOG_TYPE_I, 'Assessing Broken...')
@@ -571,7 +599,7 @@ class OAFctBroken(FctBroken, Model):
             self._setup_wf_broken = self._setup_oafct_broken()
 
         # 6. Run the workflow
-        self._wf_broken.run(p_inst_new=[p_state])
+        self._wf_broken.run(p_inst_new=[self._state_obj])
 
 
         # 7. Return the results
@@ -581,13 +609,15 @@ class OAFctBroken(FctBroken, Model):
 ## -------------------------------------------------------------------------------------------------
     def add_task_broken(self, p_task: StreamTask, p_pred_tasks:list = None):
         """
+        Adds a task to the workflow.
 
         Parameters
         ----------
-        p_task
+        p_task: OATask, StreamTask
+            The task to be added to the workflow
 
-        Returns
-        -------
+        p_pred_task: list[Task]
+            Name of the predecessor tasks for the task to be added
 
         """
         self._wf_broken.add_task(p_task = p_task, p_pred_tasks = p_pred_tasks)
@@ -596,22 +626,23 @@ class OAFctBroken(FctBroken, Model):
 ## -------------------------------------------------------------------------------------------------
     def _run_wf_broken(self, p_inst_new, p_inst_del):
         """
+        Runs the success computation workflow of the system.
 
         Parameters
         ----------
-        p_inst_new
-        p_inst_del
+        p_inst_new: list[State]
+            List of new instances to be processed by the workflow.
 
-        Returns
-        -------
+        p_inst_del: list[State]
+            List of old instances to be processed by the workflow.
 
         """
         if self._afct_broken is not None:
             self.get_so().add_result(self.get_id(), AFctBroken.compute_broken(self,
-                                                                         p_state=self._state))
+                                                                         p_state=p_inst_new[0]))
         else:
             self.get_so().add_result(self.get_id(), FctBroken.compute_broken(self,
-                                                                         p_state=self._state))
+                                                                         p_state=p_inst_new[0]))
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -727,31 +758,36 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 
 
 
-## -------------------------------------------------------------------------------------------------
-    def _set_adapted(self, p_adapted:bool):
-        """
-
-        Parameters
-        ----------
-        p_adapted
-
-        Returns
-        -------
-
-        """
-        Model.set_adapted()
+# ## -------------------------------------------------------------------------------------------------
+#     def _set_adapted(self, p_adapted:bool):
+#         """
+#
+#         Parameters
+#         ----------
+#         p_adapted
+#
+#         Returns
+#         -------
+#
+#         """
+#         Model.set_adapted()
 
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
         """
+        Adapts the system based on the parameters provided. Calls the adapt methods of all the adaptive
+        elements of the system.
 
         Parameters
         ----------
         p_kwargs
+            Additional parameters for the adaptation of the system.
 
         Returns
         -------
+        bool
+            True if any of the element has adapted.
 
         """
 
@@ -819,17 +855,27 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 ## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
         """
+        Simulates a state transition based on a state and action. Custom method _simulate_reaction()
+        is called.
 
         Parameters
         ----------
-        p_state
-        p_action
-        p_t_step
+        p_state: State
+            State of the System.
+
+        p_action: Action
+            External action provided for the action simulation
+
+        p_t_step: timedelta, optional.
+            The timestep for which the system is to be simulated
 
         Returns
         -------
+        state: State
+            The new state of the System.
 
         """
+
         if self._fct_strans is not None:
             return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
         else:
@@ -839,15 +885,20 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
         """
+        Assesses the given state regarding success criteria. Custom method _compute_success() is called.
 
         Parameters
         ----------
-        p_state
+        p_state : State
+            System state.
 
         Returns
         -------
+        success : bool
+            True, if given state is a success state. False otherwise.
 
         """
+
         if self._fct_success is not None:
             return self._fct_success.compute_success(p_state)
         else:
@@ -857,14 +908,17 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 ## -------------------------------------------------------------------------------------------------
     def compute_broken(self, p_state: State) -> bool:
         """
+        Assesses the given state regarding breakdown criteria. Custom method _compute_success() is called.
 
         Parameters
         ----------
-        p_state
+        p_state : State
+            System state.
 
         Returns
         -------
-
+        broken : bool
+            True, if given state is a breakdown state. False otherwise.
         """
         if self._fct_broken is not None:
             return self._fct_broken.compute_broken(p_state)
