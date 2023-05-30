@@ -731,7 +731,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_id=None,
-                 p_name: str | None = None,
+                 p_name: str = None,
                  p_range_max: int = Range.C_RANGE_NONE,
                  p_autorun: int = Task.C_AUTORUN_NONE,
                  p_class_shared: Shared = None,

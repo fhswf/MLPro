@@ -89,13 +89,13 @@ class OAFctReward(FctReward, Model):
             self._wf_reward = p_wf_reward
 
 
-        self._state_obj:State = None
+        self._state_obj_old:State = None
         self._state_obj_new:State = None
         self._setup_wf_reward = False
 
 
 ## -------------------------------------------------------------------------------------------------
-    def compute_reward(self, p_state: State = None, p_state_new: State = None) -> Reward:
+    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
 
         Parameters
@@ -162,10 +162,15 @@ class OAFctReward(FctReward, Model):
         #
         # # creating new instance with new state
         # self._instance_new = Instance(p_state_new)
+        self._state_obj_old = p_state_old.copy()
+        self._state_obj_new = p_state_new.copy()
+        self.log(Log.C_LOG_TYPE_I, 'Assessing Broken...')
 
+        if not self._setup_wf_reward:
+            self._setup_wf_broken = self._setup_oafct_reward()
 
         # 6. Run the workflow
-        self._wf_reward.run(p_inst_new=[self._state_obj_new, self._state_obj])
+        self._wf_reward.run(p_inst_new=[self._state_obj_new, self._state_obj_old])
 
         # 7. Return the results
         return self._wf_reward.get_so().get_results()[self.get_tid()]
@@ -257,7 +262,7 @@ class OAFctReward(FctReward, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup_oafct_success(self):
+    def _setup_oafct_reward(self):
         """
         Adds a pseudo task to the success computation workflow, with the method to be wrapped.
 
@@ -283,7 +288,7 @@ class OAFctReward(FctReward, Model):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class OAEnvironment(OASystem, Environment, OAFctReward):
+class OAEnvironment(OAFctReward, OASystem, Environment):
     """
 
     Parameters
@@ -414,3 +419,31 @@ class OAEnvironment(OASystem, Environment, OAFctReward):
 #
 #
 #         return adapted
+## -------------------------------------------------------------------------------------------------
+    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+        """
+        Simulates a state transition based on a state and action. Custom method _simulate_reaction()
+        is called.
+
+        Parameters
+        ----------
+        p_state: State
+            State of the System.
+
+        p_action: Action
+            External action provided for the action simulation
+
+        p_t_step: timedelta, optional.
+            The timestep for which the system is to be simulated
+
+        Returns
+        -------
+        state: State
+            The new state of the System.
+
+        """
+
+        if self._fct_reward is not None:
+            return self._fct_reward.compute_reward(p_state_new=p_state_new, p_state_old=p_state_old)
+        else:
+            return OAFctReward.compute_reward(self, p_state_new=p_state_new, p_state_old=p_state_old)

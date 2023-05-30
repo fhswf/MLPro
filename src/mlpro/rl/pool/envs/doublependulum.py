@@ -770,7 +770,7 @@ class DoublePendulumOA4(mldp.DoublePendulumA4, OAEnvironment):
 ## ------------------------------------------------------------------------------------------------------
     def __init__(self,
                    p_id = None,
-                   p_name: str | None = None,
+                   p_name: str = None,
                    p_buffer_size: int = 0,
                    p_range_max: int = Range.C_RANGE_NONE,
                    p_autorun: int = Task.C_AUTORUN_NONE,
@@ -880,6 +880,9 @@ class DoublePendulumOA4(mldp.DoublePendulumA4, OAEnvironment):
                                        p_logging=p_logging)
 
 
+    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+        pass
+
 
 
 
@@ -888,5 +891,8 @@ class DoublePendulumOA4(mldp.DoublePendulumA4, OAEnvironment):
 class DoublePendulumOA7(mldp.DoublePendulumA7, DoublePendulumOA4):
 
     C_NAME = 'Double Pendulum A7'
+
+    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
+        pass
 
 
