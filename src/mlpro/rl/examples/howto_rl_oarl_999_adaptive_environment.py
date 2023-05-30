@@ -42,7 +42,7 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        self._env   = DoublePendulumOA4(p_init_angles='random', p_max_torque=10, p_visualize=p_visualize,
+        self._env   = DoublePendulumOA7(p_name = '', p_init_angles='random', p_max_torque=10, p_visualize=True,
             p_logging=p_logging)
 
 
@@ -51,7 +51,7 @@ class ScenarioDoublePendulum(RLScenario):
                                         p_action_space=self._env.get_action_space(),
                                         p_buffer_size=1,
                                         p_ada=1,
-                                        p_visualize=p_visualize,
+                                        p_visualize=True,
                                         p_logging=p_logging)
 
         return Agent(
@@ -59,11 +59,11 @@ class ScenarioDoublePendulum(RLScenario):
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
-            p_visualize=p_visualize,
+            p_visualize=True,
             p_logging=p_logging
         )
 
 
-scenario = ScenarioDoublePendulum()
+scenario = ScenarioDoublePendulum(p_visualize=True)
 
 scenario.run()

@@ -925,11 +925,11 @@ class DoublePendulumOA4(OAEnvironment, oadp.DoublePendulumA4, DoublePendulumS4):
 
 
 
-
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
 class DoublePendulumOA7(oadp.DoublePendulumA7, DoublePendulumOA4, DoublePendulumS7):
 
     C_NAME = 'Double Pendulum A7'
+    C_PLOT_ACTIVE = True
 
 

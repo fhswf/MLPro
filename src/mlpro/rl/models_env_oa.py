@@ -347,6 +347,8 @@ class OAEnvironment(OAFctReward, OASystem, Environment):
 
 
 
+        OAFctReward.__init__(self, p_wf_reward=p_wf_reward)
+
         Environment.__init__(self,
                              p_mode = p_mode,
                              p_latency = p_latency,
@@ -387,7 +389,6 @@ class OAEnvironment(OAFctReward, OASystem, Environment):
                             p_logging=p_logging,
                             **p_kwargs)
 
-        OAFctReward.__init__(self, p_wf_reward=p_wf_reward)
 
         self._workflows.append(self._wf_reward)
         self._fcts.append(self._fct_reward)
