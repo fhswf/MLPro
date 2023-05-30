@@ -22,11 +22,11 @@ You will learn:
 
 """
 
-from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4, DoublePendulumRoot
+from mlpro.rl.pool.envs.doublependulum import *
 from mlpro.rl.models_env_oa import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
-from numpy import integrate
+# from numpy import integrate
 
 
 
@@ -42,7 +42,7 @@ class ScenarioDoublePendulum(RLScenario):
 
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
         # 1.1 Setup environment
-        self._env   = DoublePendulumS4(p_init_angles='random', p_max_torque=10, p_visualize=p_visualize,
+        self._env   = DoublePendulumOA4(p_init_angles='random', p_max_torque=10, p_visualize=p_visualize,
             p_logging=p_logging)
 
 
@@ -64,6 +64,6 @@ class ScenarioDoublePendulum(RLScenario):
         )
 
 
-class DPRewardFunction(OAFctReward):
+scenario = ScenarioDoublePendulum()
 
-    pass
+scenario.run()

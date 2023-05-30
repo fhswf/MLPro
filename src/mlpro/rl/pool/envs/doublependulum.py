@@ -95,6 +95,7 @@ from collections import deque
 from mlpro.bf.systems.pool.doublependulum import *
 from mlpro.rl.models_env_oa import *
 import mlpro.bf.ml.systems.pool.doublependulum as mldp
+import mlpro.oa.systems.pool.doublependulum as oadp
 
 
 
@@ -763,7 +764,7 @@ class DoublePendulumS7 (DoublePendulumSystemS7, DoublePendulumS4):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumOA4(mldp.DoublePendulumA4, OAEnvironment):
+class DoublePendulumOA4(oadp.DoublePendulumA4, OAEnvironment):
 
 
     C_NAME = 'Double Pendulum A4'
@@ -774,11 +775,11 @@ class DoublePendulumOA4(mldp.DoublePendulumA4, OAEnvironment):
                    p_buffer_size: int = 0,
                    p_range_max: int = Range.C_RANGE_NONE,
                    p_autorun: int = Task.C_AUTORUN_NONE,
-                   p_class_shared: Shared | None = None,
+                   p_class_shared: Shared = None,
                    p_mode = Mode.C_MODE_SIM,
                    p_ada = True,
                    p_latency = None,
-                   p_t_step: timedelta | None = None,
+                   p_t_step: timedelta = None,
                    p_max_torque=20,
                    p_l1=1.0,
                    p_l2=1.0,
@@ -815,6 +816,43 @@ class DoublePendulumOA4(mldp.DoublePendulumA4, OAEnvironment):
                    p_logging: bool = Log.C_LOG_ALL,
                    **p_kwargs):
 
+        oadp.DoublePendulumOA4.__init__(self,
+                                       p_mode = p_mode,
+                                       p_latency = p_latency,
+                                       p_max_torque=p_max_torque,
+                                       p_l1=p_l1,
+                                       p_l2=p_l2,
+                                       p_m1=p_m1,
+                                       p_m2=p_m2,
+                                       p_g=p_g,
+                                       p_init_angles=p_init_angles,
+                                       p_history_length=p_history_length,
+                                       p_fct_strans=p_fct_strans,
+                                       p_fct_success=p_fct_success,
+                                       p_fct_broken=p_fct_broken,
+                                       p_fct_reward=p_fct_reward,
+                                       p_wf = p_wf,
+                                       p_wf_success = p_wf_success,
+                                       p_wf_broken = p_wf_broken,
+                                       p_wf_reward = p_wf_reward,
+                                       p_mujoco_file=p_mujoco_file,
+                                       p_frame_skip=p_frame_skip,
+                                       p_state_mapping=p_state_mapping,
+                                       p_action_mapping=p_action_mapping,
+                                       p_camera_conf=p_camera_conf,
+                                       p_visualize=p_visualize,
+                                       p_plot_level=p_plot_level,
+                                       p_rst_balancing = p_rst_balancing,
+                                       p_rst_swinging = p_rst_swinging,
+                                       p_rst_swinging_outer_pole = p_rst_swinging_outer_pole,
+                                       p_reward_weights = p_reward_weights,
+                                       p_reward_trend=p_reward_trend,
+                                       p_reward_window= p_reward_window,
+                                       p_random_range=p_random_range,
+                                       p_balancing_range = p_balancing_range,
+                                       p_swinging_outer_pole_range = p_swinging_outer_pole_range,
+                                       p_break_swinging = p_break_swinging,
+                                       p_logging=p_logging)
 
         OAEnvironment.__init__(self,
                                  p_id = p_id,
@@ -844,55 +882,22 @@ class DoublePendulumOA4(mldp.DoublePendulumA4, OAEnvironment):
                                  p_logging = p_logging,
                                  **p_kwargs)
 
+        self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
 
-        mldp.DoublePendulumA4.__init__(self,
-                                       p_mode = p_mode,
-                                       p_latency = p_latency,
-                                       p_max_torque=p_max_torque,
-                                       p_l1=p_l1,
-                                       p_l2=p_l2,
-                                       p_m1=p_m1,
-                                       p_m2=p_m2,
-                                       p_g=p_g,
-                                       p_init_angles=p_init_angles,
-                                       p_history_length=p_history_length,
-                                       p_fct_strans=p_fct_strans,
-                                       p_fct_success=p_fct_success,
-                                       p_fct_broken=p_fct_broken,
-                                       p_fct_reward=p_fct_reward,
-                                       p_mujoco_file=p_mujoco_file,
-                                       p_frame_skip=p_frame_skip,
-                                       p_state_mapping=p_state_mapping,
-                                       p_action_mapping=p_action_mapping,
-                                       p_camera_conf=p_camera_conf,
-                                       p_visualize=p_visualize,
-                                       p_plot_level=p_plot_level,
-                                       p_rst_balancing = p_rst_balancing,
-                                       p_rst_swinging = p_rst_swinging,
-                                       p_rst_swinging_outer_pole = p_rst_swinging_outer_pole,
-                                       p_reward_weights = p_reward_weights,
-                                       p_reward_trend=p_reward_trend,
-                                       p_reward_window= p_reward_window,
-                                       p_random_range=p_random_range,
-                                       p_balancing_range = p_balancing_range,
-                                       p_swinging_outer_pole_range = p_swinging_outer_pole_range,
-                                       p_break_swinging = p_break_swinging,
-                                       p_logging=p_logging)
+        self._state = State(self._state_space)
+        self._target_state = State(self._state_space)
+        self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
 
 
-    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
-        pass
+
 
 
 
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumOA7(mldp.DoublePendulumA7, DoublePendulumOA4):
+class DoublePendulumOA7(oadp.DoublePendulumA7, DoublePendulumOA4):
 
     C_NAME = 'Double Pendulum A7'
-
-    def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
-        pass
 
 

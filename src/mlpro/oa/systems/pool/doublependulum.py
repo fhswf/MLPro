@@ -67,6 +67,33 @@ class DoublePendulumOA4(DoublePendulumA4, OASystem):
                  p_logging: bool = Log.C_LOG_ALL,
                  **p_kwargs):
 
+        self._max_torque = p_max_torque
+
+        OASystem.__init__(self,
+                             p_id = p_id,
+                             p_name = p_name,
+                             p_range_max = p_range_max,
+                             p_autorun = p_autorun,
+                             p_class_shared = p_class_shared,
+                             p_ada = p_ada,
+                             p_mode = p_mode,
+                             p_latency = p_latency,
+                             p_t_step = p_t_step,
+                             p_fct_strans = p_fct_strans,
+                             p_fct_success = p_fct_success,
+                             p_fct_broken = p_fct_broken,
+                             p_wf = p_wf,
+                             p_wf_success = p_wf_success,
+                             p_wf_broken = p_wf_broken,
+                             p_mujoco_file = p_mujoco_file,
+                             p_frame_skip = p_frame_skip,
+                             p_state_mapping = p_state_mapping,
+                             p_action_mapping = p_action_mapping,
+                             p_camera_conf = p_camera_conf,
+                             p_visualize = p_visualize,
+                             p_logging = p_logging,
+                             **p_kwargs)
+
         DoublePendulumA4.__init__(   self,
                                      p_id = p_id,
                                      p_name = p_name,
@@ -101,30 +128,7 @@ class DoublePendulumOA4(DoublePendulumA4, OASystem):
                                      p_logging = p_logging,
                                      **p_kwargs)
 
-        OASystem.__init__(self,
-                             p_id = p_id,
-                             p_name = p_name,
-                             p_range_max = p_range_max,
-                             p_autorun = p_autorun,
-                             p_class_shared = p_class_shared,
-                             p_ada = p_ada,
-                             p_mode = p_mode,
-                             p_latency = p_latency,
-                             p_t_step = p_t_step,
-                             p_fct_strans = p_fct_strans,
-                             p_fct_success = p_fct_success,
-                             p_fct_broken = p_fct_broken,
-                             p_wf = p_wf,
-                             p_wf_success = p_wf_success,
-                             p_wf_broken = p_wf_broken,
-                             p_mujoco_file = p_mujoco_file,
-                             p_frame_skip = p_frame_skip,
-                             p_state_mapping = p_state_mapping,
-                             p_action_mapping = p_action_mapping,
-                             p_camera_conf = p_camera_conf,
-                             p_visualize = p_visualize,
-                             p_logging = p_logging,
-                             **p_kwargs)
+
 
 
 

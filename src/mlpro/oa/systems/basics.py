@@ -785,11 +785,16 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
                  p_logging: bool = Log.C_LOG_ALL,
                  **p_kwargs):
 
+        self._workflows = []
+        self._fcts =[]
+
         OAFctSTrans.__init__(self, p_wf=p_wf)
 
         OAFctSuccess.__init__(self, p_wf=p_wf_success)
 
         OAFctBroken.__init__(self, p_wf_broken=p_wf_broken)
+
+        self._workflows = [self._wf, self._wf_success, self._wf_broken]
 
         ASystem.__init__(self,
                          p_id = p_id,
@@ -814,7 +819,6 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
                          **p_kwargs)
 
 
-        self._workflows = [self._wf, self._wf_success, self._wf_broken]
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
