@@ -43,10 +43,11 @@
 ## -- 2023-02-02  1.7.2     DA       All methods compute_reward(): unified name of first parameter 
 ## --                                to p_state_old
 ## -- 2023-02-13  1.7.3     MRD       Simplify State Space and Action Space generation
+## -- 2023-05-30  1.7.4     LSB      Redefining the inheritence order in EnvBase to resolve MRO in OAEnv
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.7.3 (2023-02-13)
+Ver. 1.7.4 (2023-05-30)
 
 This module provides model classes for environments.
 """
