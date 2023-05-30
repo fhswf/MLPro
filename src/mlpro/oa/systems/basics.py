@@ -756,22 +756,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
                          p_visualize = p_visualize,
                          p_logging = p_logging)
 
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _set_adapted(self, p_adapted:bool):
-#         """
-#
-#         Parameters
-#         ----------
-#         p_adapted
-#
-#         Returns
-#         -------
-#
-#         """
-#         Model.set_adapted()
-
+        self._workflows = [self._wf, self._wf_success, self._wf_broken]
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
@@ -793,30 +778,18 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 
         adapted = False
 
-        try:
-            adapted = self._wf.adapt(**p_kwargs)
-        except:
-            adapted = False or adapted
-        try:
-            adapted = self._wf_success.adapt(**p_kwargs)
-        except:
-            adapted = False or adapted
-        try:
-            adapted = self._wf_broken.adapt(**p_kwargs)
-        except:
-            adapted = False or adapted
-        try:
-            adapted = self._fct_strans.adapt(**p_kwargs)
-        except:
-            adapted = False or adapted
-        try:
-            adapted = self._fct_success.adapt(**p_kwargs)
-        except:
-            adapted = False or adapted
-        try:
-            adapted = self._fct_broken.adapt(**p_kwargs)
-        except:
-            adapted = False or adapted
+        for workflow in self._workflows:
+            try:
+                adapted = workflow.adapt(**p_kwargs) or adapted
+            except:
+                pass
+
+        for fct in self._fcts:
+            try:
+                adapted = fct.adapt(**p_kwargs) or adapted
+            except:
+                pass
+
 
         return adapted
 
@@ -833,8 +806,19 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         -------
 
         """
-        pass
+        for workflow in self._workflows:
+            try:
+                workflow.switch_adaptivity(p_ada=p_ada)
+            except:
+                pass
 
+        for fct in self._fcts:
+            try:
+                fct.switch_adaptivity(p_ada = p_ada)
+            except:
+                pass
+
+        Model.switch_adaptivity(self, p_ada=p_ada)
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt_on_event(self, p_event_id:str, p_event_object:Event) -> bool:

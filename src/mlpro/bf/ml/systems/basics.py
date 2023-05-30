@@ -445,9 +445,9 @@ class ASystem(System, Model):
     def __init__(self,
                  p_mode = Mode.C_MODE_SIM,
                  p_latency = None,
-                 p_fct_strans: Union[FctSTrans, AFctSTrans] = None,
-                 p_fct_success: Union[FctSuccess, AFctSuccess] = None,
-                 p_fct_broken: Union[FctBroken, AFctBroken] = None,
+                 p_fct_strans: Union[AFctSTrans, FctSTrans] = None,
+                 p_fct_success: Union[AFctSuccess, FctSuccess] = None,
+                 p_fct_broken: Union[AFctBroken, FctBroken] = None,
                  p_adaptivity: bool = True,
                  p_visualize: bool = False,
                  p_logging =Log.C_LOG_ALL):
@@ -462,28 +462,31 @@ class ASystem(System, Model):
                         p_visualize = p_visualize,
                         p_logging = p_logging)
 
-        Model.__init__(self, p_ada= p_adaptivity)
+
 
         self._fct_strans  = p_fct_strans
         self._fct_broken  = p_fct_broken
         self._fct_success = p_fct_success
-        self.switch_adaptivity(p_ada = p_adaptivity)
+
+        self._fcts = [self._fct_strans, self._fct_success, self._fct_broken]
+
+        Model.__init__(self, p_ada= p_adaptivity)
 
 
-# ## -------------------------------------------------------------------------------------------------
-#     def _set_adapted(self, p_adapted:bool):
-#         """
-#
-#         Parameters
-#         ----------
-#         p_adapted
-#
-#         Returns
-#         -------
-#
-#         """
-#
-#         Model._set_adapted(self, p_adapted=p_adapted)
+    # ## -------------------------------------------------------------------------------------------------
+    #     def _set_adapted(self, p_adapted:bool):
+    #         """
+    #
+    #         Parameters
+    #         ----------
+    #         p_adapted
+    #
+    #         Returns
+    #         -------
+    #
+    #         """
+    #
+    #         Model._set_adapted(self, p_adapted=p_adapted)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -499,17 +502,12 @@ class ASystem(System, Model):
 
         """
         self.log(Log.C_LOG_TYPE_I, 'Switched Adaptivity')
-        self._adaptivity = p_ada
 
-        try: self._fct_strans.switch_adaptivity(p_ada=p_ada)
-        except: pass
+        for fct in self._fcts:
+            try: fct.switch_adaptivity(p_ada=p_ada)
+            except: pass
 
-        try: self._fct_broken.switch_adaptivity(p_ada=p_ada)
-        except:pass
-
-        try: self._fct_success.switch_adaptivity(p_ada=p_ada)
-        except: pass
-
+        Model.switch_adaptivity(self, p_ada=p_ada)
 
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
