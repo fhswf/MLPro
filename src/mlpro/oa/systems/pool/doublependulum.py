@@ -17,3 +17,10 @@ This module provides the adaptive extensions of the Double Pendulum System.
 
 from mlpro.bf.systems import *
 from mlpro.bf.systems.pool.doublependulum import *
+
+
+
+
+
+class DoublePendulumASystem():
+    pass

@@ -244,7 +244,7 @@ class FctReward (Log):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class EnvBase (System, FctReward):
+class EnvBase (FctReward, System):
     """
     Base class for all environment classes. It defines the interface and elementary properties for
     an environment in the context of reinforcement learning.
