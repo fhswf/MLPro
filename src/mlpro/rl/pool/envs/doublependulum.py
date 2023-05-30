@@ -90,6 +90,8 @@ from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
 from collections import deque
 from mlpro.bf.systems.pool.doublependulum import *
+from mlpro.rl.models_env_oa import *
+
 
 
 
@@ -751,3 +753,20 @@ class DoublePendulumS7 (DoublePendulumSystemS7, DoublePendulumS4):
 
     C_NAME = 'DoublePendulumS7'
 
+
+
+
+
+## ------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------
+class DoublePendulumA4(DoublePendulumS4, OAEnvironment):
+    pass
+
+
+
+
+
+## ------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------
+class DoublePendulumA7(DoublePendulumS7, OAEnvironment):
+    pass

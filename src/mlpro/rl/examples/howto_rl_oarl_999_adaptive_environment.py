@@ -23,7 +23,7 @@ You will learn:
 """
 
 from mlpro.rl.pool.envs.doublependulum import DoublePendulumS4, DoublePendulumRoot
-from mlpro.rl.models_env_adaptive_environment import *
+from mlpro.rl.models_env_oa import *
 from mlpro.rl.models import *
 from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 from numpy import integrate
