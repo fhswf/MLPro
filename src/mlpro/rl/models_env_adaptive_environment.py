@@ -309,10 +309,23 @@ class OAEnvironment(OASystem, Environment, OAFctReward):
                  p_fct_reward: FctReward = None,
                  p_fct_success: FctSuccess = None,
                  p_fct_broken: FctBroken = None,
+                 p_wf : OAWorkflow = None,
+                 p_wf_success : OAWorkflow = None,
+                 p_wf_broken : OAWorkflow = None,
+                 p_wf_reward : OAWorkflow = None,
                  p_visualize: bool = False,
-                 p_logging=Log.C_LOG_ALL
-                 ):
+                 p_logging=Log.C_LOG_ALL):
 
+        OASystem.__init__(self, p_mode = p_mode,
+                             p_latency = p_latency,
+                             p_fct_strans = p_fct_strans,
+                             p_fct_success = p_fct_success,
+                             p_fct_broken = p_fct_broken,
+                             p_wf = p_wf,
+                             p_wf_success = p_wf_success,
+                             p_wf_broken = p_wf_broken,
+                             p_visualize = p_visualize,
+                             p_logging = p_logging)
 
         Environment.__init__(self,
                              p_mode=p_mode,
@@ -324,13 +337,12 @@ class OAEnvironment(OASystem, Environment, OAFctReward):
                              p_visualize = p_visualize,
                              p_logging=p_logging)
 
-        OASystem.__init__(self)
-
         Model.__init__(self,
                        p_logging=p_logging,
                        p_ada = p_ada,
                        p_visualize=p_visualize)
 
+        self._wf_reward = p_wf_reward
         self._workflows.append(self._wf_reward)
         self._fcts.append(self._fct_reward)
 
@@ -350,23 +362,25 @@ class OAEnvironment(OASystem, Environment, OAFctReward):
 #         pass
 
 
-## -------------------------------------------------------------------------------------------------
-    def _adapt(self, **p_kwargs):
-
-
-        adapted = False
-
-        for workflow in self._workflows:
-            try:
-                adapted = workflow.adapt(**p_kwargs) or adapted
-            except:
-                pass
-
-        for fct in self._fcts:
-            try:
-                adapted = fct.adapt(**p_kwargs) or adapted
-            except:
-                pass
-
-
-        return adapted
+# ## -------------------------------------------------------------------------------------------------
+#     def _adapt(self, **p_kwargs):
+#
+#           This is exactly the same method as that of OASystem, thus I dont need it here,
+#           since I have already added the functions and workflows to the list
+#
+#         adapted = False
+#
+#         for workflow in self._workflows:
+#             try:
+#                 adapted = workflow.adapt(**p_kwargs) or adapted
+#             except:
+#                 pass
+#
+#         for fct in self._fcts:
+#             try:
+#                 adapted = fct.adapt(**p_kwargs) or adapted
+#             except:
+#                 pass
+#
+#
+#         return adapted
