@@ -302,9 +302,16 @@ class OAEnvironment(OASystem, Environment, OAFctReward):
 
     ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id = None,
+                 p_name: str | None = None,
+                 p_buffer_size: int = 0,
+                 p_ada: bool = True,
+                 p_range_max: int = Range.C_RANGE_NONE,
+                 p_autorun: int = Task.C_AUTORUN_NONE,
+                 p_class_shared: Shared | None = None,
                  p_mode=Mode.C_MODE_SIM,
                  p_latency: timedelta = None,
-                 p_ada: bool = True,
+                 p_t_step: timedelta | None = None,
                  p_fct_strans: FctSTrans = None,
                  p_fct_reward: FctReward = None,
                  p_fct_success: FctSuccess = None,
@@ -313,36 +320,59 @@ class OAEnvironment(OASystem, Environment, OAFctReward):
                  p_wf_success : OAWorkflow = None,
                  p_wf_broken : OAWorkflow = None,
                  p_wf_reward : OAWorkflow = None,
+                 p_mujoco_file = None,
+                 p_frame_skip: int = 1,
+                 p_state_mapping = None,
+                 p_action_mapping = None,
+                 p_camera_conf: tuple = (None, None, None),
                  p_visualize: bool = False,
-                 p_logging=Log.C_LOG_ALL):
+                 p_logging: bool = Log.C_LOG_ALL,
+                 **p_kwargs):
 
-        OASystem.__init__(self, p_mode = p_mode,
+
+
+        Environment.__init__(self,
+                             p_mode = p_mode,
                              p_latency = p_latency,
                              p_fct_strans = p_fct_strans,
+                             p_fct_reward = p_fct_reward,
                              p_fct_success = p_fct_success,
                              p_fct_broken = p_fct_broken,
-                             p_wf = p_wf,
-                             p_wf_success = p_wf_success,
-                             p_wf_broken = p_wf_broken,
+                             p_mujoco_file = p_mujoco_file,
+                             p_frame_skip = p_frame_skip,
+                             p_state_mapping = p_state_mapping,
+                             p_action_mapping = p_action_mapping,
+                             p_camera_conf = p_camera_conf,
                              p_visualize = p_visualize,
                              p_logging = p_logging)
 
-        Environment.__init__(self,
-                             p_mode=p_mode,
-                             p_latency = p_latency,
-                             p_fct_strans=p_fct_strans,
-                             p_fct_reward = p_fct_reward,
-                             p_fct_success = p_fct_success,
-                             p_fct_broken= p_fct_broken,
-                             p_visualize = p_visualize,
-                             p_logging=p_logging)
+        OASystem.__init__(self,
+                            p_id=p_id,
+                            p_name=p_name,
+                            p_range_max=p_range_max,
+                            p_autorun=p_autorun,
+                            p_class_shared=p_class_shared,
+                            p_ada=p_ada,
+                            p_mode=p_mode,
+                            p_latency=p_latency,
+                            p_t_step=p_t_step,
+                            p_fct_strans=p_fct_strans,
+                            p_fct_success=p_fct_success,
+                            p_fct_broken=p_fct_broken,
+                            p_wf=p_wf,
+                            p_wf_success=p_wf_success,
+                            p_wf_broken=p_wf_broken,
+                            p_mujoco_file=p_mujoco_file,
+                            p_frame_skip=p_frame_skip,
+                            p_state_mapping=p_state_mapping,
+                            p_action_mapping=p_action_mapping,
+                            p_camera_conf=p_camera_conf,
+                            p_visualize=p_visualize,
+                            p_logging=p_logging,
+                            **p_kwargs)
 
-        Model.__init__(self,
-                       p_logging=p_logging,
-                       p_ada = p_ada,
-                       p_visualize=p_visualize)
+        OAFctReward.__init__(self, p_wf_reward=p_wf_reward)
 
-        self._wf_reward = p_wf_reward
         self._workflows.append(self._wf_reward)
         self._fcts.append(self._fct_reward)
 

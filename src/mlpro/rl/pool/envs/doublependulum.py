@@ -94,6 +94,7 @@ import scipy.integrate as integrate
 from collections import deque
 from mlpro.bf.systems.pool.doublependulum import *
 from mlpro.rl.models_env_oa import *
+import mlpro.bf.ml.systems.pool.doublependulum as mldp
 
 
 
@@ -762,7 +763,7 @@ class DoublePendulumS7 (DoublePendulumSystemS7, DoublePendulumS4):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumA4(DoublePendulumS4, OAEnvironment):
+class DoublePendulumOA4(mldp.DoublePendulumA4, OAEnvironment):
 
 
     C_NAME = 'Double Pendulum A4'
@@ -823,7 +824,7 @@ class DoublePendulumA4(DoublePendulumS4, OAEnvironment):
                                  p_logging=p_logging)
 
 
-        DoublePendulumS4.__init__(self,
+        mldp.DoublePendulumA4.__init__(self,
                                    p_mode = p_mode,
                                    p_latency = p_latency,
                                    p_max_torque=p_max_torque,
@@ -863,7 +864,7 @@ class DoublePendulumA4(DoublePendulumS4, OAEnvironment):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumA7(DoublePendulumA4, DoublePendulumS7, OAEnvironment):
+class DoublePendulumOA7(mldp.DoublePendulumA7, DoublePendulumOA4):
 
     C_NAME = 'Double Pendulum A7'
 

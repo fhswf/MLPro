@@ -443,24 +443,48 @@ class ASystem(System, Model):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_id = None,
+                 p_name:str = None,
+                 p_range_max = Range.C_RANGE_NONE,
+                 p_autorun:int = Task.C_AUTORUN_NONE,
+                 p_class_shared:Shared = None,
                  p_mode = Mode.C_MODE_SIM,
+                 p_ada: bool = True,
                  p_latency = None,
+                 p_t_step:timedelta = None,
                  p_fct_strans: Union[AFctSTrans, FctSTrans] = None,
                  p_fct_success: Union[AFctSuccess, FctSuccess] = None,
                  p_fct_broken: Union[AFctBroken, FctBroken] = None,
-                 p_adaptivity: bool = True,
+                 p_mujoco_file = None,
+                 p_frame_skip: int = 1,
+                 p_state_mapping = None,
+                 p_action_mapping = None,
+                 p_camera_conf: tuple = (None, None, None),
                  p_visualize: bool = False,
-                 p_logging =Log.C_LOG_ALL):
+                 p_logging =Log.C_LOG_ALL,
+                 **p_kwargs):
 
 
         System.__init__(self,
-                        p_mode = p_mode,
-                        p_latency = p_latency,
-                        p_fct_strans = p_fct_strans,
-                        p_fct_success = p_fct_success,
-                        p_fct_broken = p_fct_broken,
-                        p_visualize = p_visualize,
-                        p_logging = p_logging)
+                          p_id = p_id,
+                          p_name =p_name,
+                          p_range_max = p_range_max,
+                          p_autorun = p_autorun,
+                          p_class_shared = p_class_shared,
+                          p_mode = p_mode,
+                          p_latency = p_latency,
+                          p_t_step = p_t_step,
+                          p_fct_strans = p_fct_strans,
+                          p_fct_success = p_fct_success,
+                          p_fct_broken = p_fct_broken,
+                          p_mujoco_file = p_mujoco_file,
+                          p_frame_skip = p_frame_skip,
+                          p_state_mapping = p_state_mapping,
+                          p_action_mapping = p_action_mapping,
+                          p_camera_conf = p_camera_conf,
+                          p_visualize = p_visualize,
+                          p_logging = p_logging,
+                          **p_kwargs)
 
 
 
@@ -470,7 +494,9 @@ class ASystem(System, Model):
 
         self._fcts = [self._fct_strans, self._fct_success, self._fct_broken]
 
-        Model.__init__(self, p_ada= p_adaptivity)
+        Model.__init__(self, p_ada= p_ada,
+                        p_visualize=p_visualize,
+                        p_logging=p_logging)
 
 
     # ## -------------------------------------------------------------------------------------------------
