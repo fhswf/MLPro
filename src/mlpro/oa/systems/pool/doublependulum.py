@@ -61,7 +61,7 @@ class DoublePendulumOA4(DoublePendulumA4, OASystem):
                  p_history_length: int = 5,
                  p_random_range: list = None,
                  p_balancing_range: list = (-0.2,0.2),
-                 p_swinging_outer_pole_range: tuple[float, float] = (0.2,0.5),
+                 p_swinging_outer_pole_range = (0.2,0.5),
                  p_break_swinging: bool = False,
                  p_visualize: bool = False,
                  p_logging: bool = Log.C_LOG_ALL,
