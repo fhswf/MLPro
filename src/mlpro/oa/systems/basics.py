@@ -5,11 +5,12 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-mm-mm  0.0.0     LSB      Creation
+## -- 2023-05-30  0.0.0     LSB      Creation
+## -- 2023-05-31  0.1.0     LSB      Visualization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2023-02-16)
+Ver. 0.1.0 (2023-05-31)
 
 This module provides modules and template classes for adaptive systems and adaptive functions.
 """
@@ -148,6 +149,7 @@ class OAFctSTrans(FctSTrans, Model):
 
         self._action_obj:Action = None
         self._setup_wf_strans = False
+        self._state_id = 0
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -174,6 +176,12 @@ class OAFctSTrans(FctSTrans, Model):
 
         """
         # 1. copying the state and action object for the function level
+        try:
+            p_state.get_id()
+        except:
+            p_state.set_id(self._state_id)
+            self._state_id += 1
+
         self._state_obj = p_state.copy()
         self._action_obj = copy.deepcopy(p_action)
         self.log(Log.C_LOG_TYPE_I, 'Reaction Simulation Started...')
@@ -188,6 +196,10 @@ class OAFctSTrans(FctSTrans, Model):
 
         # 4. get the results
         state = self._wf.get_so().get_results()[self.get_id()]
+
+        # state.set_id(self._state_id)
+        state.set_id(self._state_id)
+        self._state_id += 1
 
         return state
 
@@ -788,11 +800,11 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         self._workflows = []
         self._fcts =[]
 
-        OAFctSTrans.__init__(self, p_wf=p_wf)
+        OAFctSTrans.__init__(self, p_name=p_name, p_wf=p_wf, p_visualize=p_visualize)
 
-        OAFctSuccess.__init__(self, p_wf=p_wf_success)
+        OAFctSuccess.__init__(self, p_name=p_name, p_wf=p_wf_success, p_visualize=p_visualize)
 
-        OAFctBroken.__init__(self, p_wf_broken=p_wf_broken)
+        OAFctBroken.__init__(self, p_name=p_name, p_wf_broken=p_wf_broken, p_visualize=p_visualize)
 
         self._workflows = [self._wf, self._wf_success, self._wf_broken]
 
@@ -970,3 +982,50 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
             return self._fct_broken.compute_broken(p_state)
         else:
             return OAFctBroken.compute_broken(self, p_state)
+
+
+## -------------------------------------------------------------------------------------------------
+    def init_plot(self,
+                      p_figure: Figure = None,
+                      p_plot_settings: PlotSettings = None,
+                      **p_kwargs):
+
+        super().init_plot(p_figure=p_figure, p_plot_settings=p_plot_settings, **p_kwargs)
+
+        for fct in self._fcts:
+            try:
+                fct.init_plot(p_figure=p_figure, p_plot_settings=p_plot_settings, **p_kwargs)
+            except:
+                pass
+
+        for workflow in self._workflows:
+            try:
+                workflow.init_plot(p_figure=p_figure, p_plot_settings=p_plot_settings)
+            except:
+                pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, **p_kwargs):
+        """
+
+        Parameters
+        ----------
+        p_kwargs
+
+        Returns
+        -------
+
+        """
+        super().update_plot(**p_kwargs)
+        for fct in self._fcts:
+            try:
+                fct.update_plot(**p_kwargs)
+            except:
+                pass
+
+        for workflow in self._workflows:
+            try:
+                workflow.update_plot(**p_kwargs)
+            except:
+                pass

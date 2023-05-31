@@ -200,6 +200,12 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__ ( self,
+                   p_id=None,
+                   p_name=None,
+                   p_buffer_size=0,
+                   p_range_max=Range.C_RANGE_NONE,
+                   p_autorun=Task.C_AUTORUN_NONE,
+                   p_class_shared=None,
                    p_mode = Mode.C_MODE_SIM,
                    p_latency = None,
                    p_max_torque=20,
@@ -234,7 +240,12 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
                    p_logging=Log.C_LOG_ALL ):
 
 
-        DoublePendulumSystemRoot.__init__(self,
+        DoublePendulumSystemRoot.__init__(self,p_id = p_id,
+                         p_name=p_name,
+                         p_buffer_size = p_buffer_size,
+                         p_range_max = p_range_max,
+                         p_autorun = p_autorun,
+                         p_class_shared = p_class_shared,
                          p_mode = p_mode,
                          p_latency = p_latency,
                          p_max_torque=p_max_torque,
@@ -764,7 +775,7 @@ class DoublePendulumS7 (DoublePendulumSystemS7, DoublePendulumS4):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumOA4(OAEnvironment, oadp.DoublePendulumA4, DoublePendulumS4):
+class DoublePendulumOA4(OAEnvironment, oadp.DoublePendulumOA4, DoublePendulumS4):
 
 
     C_NAME = 'Double Pendulum A4'
@@ -816,7 +827,12 @@ class DoublePendulumOA4(OAEnvironment, oadp.DoublePendulumA4, DoublePendulumS4):
                    p_logging: bool = Log.C_LOG_ALL,
                    **p_kwargs):
 
-        oadp.DoublePendulumOA4.__init__(self,
+        oadp.DoublePendulumOA4.__init__(self,p_id = p_id,
+                                       p_name=p_name,
+                                       p_buffer_size = p_buffer_size,
+                                       p_range_max = p_range_max,
+                                       p_autorun = p_autorun,
+                                       p_class_shared = p_class_shared,
                                        p_mode = p_mode,
                                        p_latency = p_latency,
                                        p_max_torque=p_max_torque,
@@ -854,7 +870,13 @@ class DoublePendulumOA4(OAEnvironment, oadp.DoublePendulumA4, DoublePendulumS4):
                                        p_break_swinging = p_break_swinging,
                                        p_logging=p_logging)
 
-        DoublePendulumS4.__init__(self,p_mode = p_mode,
+        DoublePendulumS4.__init__(self,p_id = p_id,
+                                       p_name=p_name,
+                                       p_buffer_size = p_buffer_size,
+                                       p_range_max = p_range_max,
+                                       p_autorun = p_autorun,
+                                       p_class_shared = p_class_shared,
+                                       p_mode = p_mode,
                                        p_latency = p_latency,
                                        p_max_torque=p_max_torque,
                                        p_l1=p_l1,
