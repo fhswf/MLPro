@@ -141,7 +141,8 @@ class OAFctSTrans(FctSTrans, Model):
                        **p_kwargs)
 
         if p_wf is None:
-            self._wf = OAWorkflow(p_visualize=p_visualize,
+            self._wf = OAWorkflow(p_name='State Transition',
+                                  p_visualize=p_visualize,
                                   p_ada=p_ada,
                                   p_logging=p_logging)
         else:
@@ -388,7 +389,8 @@ class OAFctSuccess(FctSuccess, Model):
                        **p_kwargs)
 
         if p_wf_success is None:
-            self._wf_success = OAWorkflow(p_visualize=p_visualize,
+            self._wf_success = OAWorkflow(p_name='Success Computation',
+                                          p_visualize=p_visualize,
                                           p_ada=p_ada,
                                           p_logging=p_logging)
         else:
@@ -611,7 +613,8 @@ class OAFctBroken(FctBroken, Model):
                        **p_kwargs)
 
         if p_wf_broken is None:
-            self._wf_broken = OAWorkflow(p_visualize=p_visualize,
+            self._wf_broken = OAWorkflow(p_name='Broken Computation',
+                                         p_visualize=p_visualize,
                                          p_ada=p_ada,
                                          p_logging=p_logging)
         else:

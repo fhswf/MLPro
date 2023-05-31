@@ -5,11 +5,12 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- yyyy-mm-dd  0.0.0     LSB      Creation
+## -- 2023-05-30  0.0.0     LSB      Creation
+## -- 2023-05-31  0.1.0     LSB      Visulization
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (yyyy-mm-dd)
+Ver. 0.1.0 (2023-05-31)
 
 This module provides model classes for adaptive environments
 """
@@ -92,7 +93,8 @@ class OAFctReward(FctReward, Model):
                        **p_kwargs)
 
         if p_wf_reward is None:
-            self._wf_reward = OAWorkflow(p_visualize=p_visualize,
+            self._wf_reward = OAWorkflow(p_name='Reward Computation',
+                                         p_visualize=p_visualize,
                                          p_ada=p_ada,
                                          p_logging=p_logging)
         else:
@@ -347,7 +349,7 @@ class OAEnvironment(OAFctReward, OASystem, Environment):
 
 
 
-        OAFctReward.__init__(self, p_wf_reward=p_wf_reward)
+        OAFctReward.__init__(self, p_wf_reward=p_wf_reward, p_visualize=p_visualize)
 
         Environment.__init__(self,
                              p_mode = p_mode,
