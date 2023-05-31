@@ -31,14 +31,38 @@ from mlpro.rl.pool.policies.randomgenerator import RandomGenerator
 
 
 
+
+
+# 1 Create scenario and run the scenario
+if __name__ == "__main__":
+    # 2.1 Parameters for demo mode
+    cycle_limit         = 300
+    logging             = Log.C_LOG_ALL
+    visualize           = True
+    plotting            = True
+else:
+    # 2.2 Parameters for unittest
+    cycle_limit         = 2
+    logging             = Log.C_LOG_NOTHING
+    visualize           = False
+    plotting            = False
+
+
+
+# Defining further parameters
+adaptivity = True
+range = Range.C_RANGE_NONE
+
+
+
 # Creating the Online Adaptive Double Pendulum Environment
-environment = DoublePendulumOA7(p_name = '', p_ada=True, p_visualize=True)
+environment = DoublePendulumOA7(p_name = '', p_ada=adaptivity, p_visualize=visualize)
 
 # Creating the Boundary Detector Task
-task_bd = BoundaryDetector(p_name='Boundary Detector', p_visualize=True, p_range_max=Range.C_RANGE_NONE)
+task_bd = BoundaryDetector(p_name='Boundary Detector', p_visualize=visualize, p_range_max=range)
 
 # Creating the Normalizer Task
-task_norm = NormalizerMinMax(p_name='Normalizer', p_visualize=True, p_range_max=Range.C_RANGE_NONE)
+task_norm = NormalizerMinMax(p_name='Normalizer', p_visualize=visualize, p_range_max=range)
 
 # Adding the boundary detector task to the Reward Workflow
 environment.add_task_reward(p_task=task_bd)
@@ -58,16 +82,16 @@ class OADPScenario(RLScenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
-        # 1.1 Setup environment
+        # 2.1 Setup environment
         self._env   = environment
 
 
-        # 1.2 Setup and return random action agent
+        # 2.2 Setup and return random action agent
         policy_random = RandomGenerator(p_observation_space=self._env.get_state_space(),
                                         p_action_space=self._env.get_action_space(),
                                         p_buffer_size=1,
-                                        p_ada=True,
-                                        p_visualize=True,
+                                        p_ada=p_ada,
+                                        p_visualize=p_visualize,
                                         p_logging=p_logging)
 
         return Agent(
@@ -75,31 +99,16 @@ class OADPScenario(RLScenario):
             p_envmodel=None,
             p_name='Smith',
             p_ada=p_ada,
-            p_visualize=True,
+            p_visualize=p_visualize,
             p_logging=p_logging
         )
 
 
 
-# 2 Create scenario and run the scenario
-if __name__ == "__main__":
-    # 2.1 Parameters for demo mode
-    cycle_limit         = 300
-    logging             = Log.C_LOG_ALL
-    visualize           = True
-    plotting            = True
-else:
-    # 2.2 Parameters for unittest
-    cycle_limit         = 2
-    logging             = Log.C_LOG_NOTHING
-    visualize           = False
-    plotting            = False
-
-
 
 # 3 Create your scenario and run some cycles
 myscenario  = OADPScenario( p_mode=Mode.C_MODE_SIM,
-                            p_ada=True,
+                            p_ada=adaptivity,
                             p_cycle_limit=cycle_limit,
                             p_visualize=visualize,
                             p_logging=logging )
