@@ -8,10 +8,11 @@
 ## -- 2023-05-30  0.0.0     LSB      Creation
 ## -- 2023-05-31  0.1.0     LSB      Visulization
 ## -- 2023-05-31  0.1.1     LSB      Cleaning
+## -- 2023-05-31  0.1.2     LSB      Visualization fixed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2023-05-31)
+Ver. 0.1.2 (2023-05-31)
 
 This module provides model classes for adaptive environments
 """
@@ -120,6 +121,7 @@ class OAFctReward(FctReward, Model):
         self._state_obj_old:State = None
         self._state_obj_new:State = None
         self._setup_wf_reward = False
+        self._inst_old:State = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -142,12 +144,18 @@ class OAFctReward(FctReward, Model):
             self._state_obj_old = p_state_old.copy()
         self._state_obj_new = p_state_new.copy()
 
-        # 2. Set up the workflow, if not already
+        # 2. Check for the first run
         if not self._setup_wf_reward:
             self._setup_wf_reward = self._setup_oafct_reward()
 
+        # 2.1 Check if the first instance (old state) is already processed
+        if self._inst_old is None:
+            inst_new = [self._state_obj_old, self._state_obj_new]
+        else:
+            inst_new = [self._state_obj_new]
+
         # 3. Run the workflow
-        self._wf_reward.run(p_inst_new=[self._state_obj_new, self._state_obj_old])
+        self._wf_reward.run(p_inst_new=inst_new)
 
         # 4. Return the results
         return self._wf_reward.get_so().get_results()[self.get_tid()]
@@ -197,15 +205,28 @@ class OAFctReward(FctReward, Model):
             List of old instances to be processed by the workflow.
 
         """
+        if len(p_inst_new) == 2 :
+            state_new = p_inst_new[1]
+            self._inst_old = p_inst_new[0]
+
+        elif len(p_inst_new) == 1:
+            state_new = p_inst_new[0]
+
+        if self._inst_old is not None:
+            state_old = self._inst_old
+
+        else:
+            state_old = p_inst_new[0]
+
 
         if self._afct_reward is not None:
             self._wf_reward.get_so().add_result(self.get_id(), AFctReward.compute_reward(self,
-                                                                              p_state_new=p_inst_new[0],
-                                                                              p_state_old=p_inst_new[1]))
+                                                                              p_state_new=state_new,
+                                                                              p_state_old=state_old))
         else:
             self._wf_reward.get_so().add_result(self.get_id(), FctReward.compute_reward(self,
-                                                                             p_state_new=p_inst_new[0],
-                                                                             p_state_old=p_inst_new[1]))
+                                                                             p_state_new=state_new,
+                                                                             p_state_old=state_old))
 
 # -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:

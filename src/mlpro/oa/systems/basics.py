@@ -8,10 +8,11 @@
 ## -- 2023-05-30  0.0.0     LSB      Creation
 ## -- 2023-05-31  0.1.0     LSB      Visualization
 ## -- 2023-05-31  0.1.1     LSB      cleaning
+## -- 2023-05-31  0.1.2     LSB      Visualization bug fixed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.1 (2023-05-31)
+Ver. 0.1.2 (2023-05-31)
 
 This module provides modules and template classes for adaptive systems and adaptive functions.
 """
@@ -1119,14 +1120,15 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 
         """
         super().update_plot(**p_kwargs)
+
         for fct in self._fcts:
             try:
                 fct.update_plot(**p_kwargs)
             except:
                 pass
 
-        for workflow in self._workflows:
-            try:
-                workflow.update_plot(**p_kwargs)
-            except:
-                pass
+        # for workflow in self._workflows:
+        #     try:
+        #         workflow.update_plot(**p_kwargs)
+        #     except:
+        #         pass
