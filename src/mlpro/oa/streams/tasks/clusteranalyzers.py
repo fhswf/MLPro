@@ -180,7 +180,7 @@ class ClusterAnalyzer (OATask):
         -------
         membership : List[Tuple[str, float, Cluster]]
             List of membership tuples for each cluster. A tuple consists of a cluster id, a
-            relative membership value in percent and a reference to the cluster.
+            relative membership value in [0,1] and a reference to the cluster.
         """
 
         sum_memberships = 0
