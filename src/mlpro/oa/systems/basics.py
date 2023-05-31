@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-05-30  0.0.0     LSB      Creation
 ## -- 2023-05-31  0.1.0     LSB      Visualization
+## -- 2023-05-31  0.1.1     LSB      cleaning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2023-05-31)
+Ver. 0.1.1 (2023-05-31)
 
 This module provides modules and template classes for adaptive systems and adaptive functions.
 """
@@ -32,7 +33,20 @@ from typing import Callable
 ## -------------------------------------------------------------------------------------------------
 class PseudoTask(OATask):
 
+    """
+    A template class PseudoTask, only to be used by the OASystem. This functions runs a wrapped method as it's run
+    method.
 
+    Parameters
+    ----------
+    p_wrap_method
+    p_name
+    p_range_max
+    p_duplicate_data
+    p_logging
+    p_visualize
+    p_kwargs
+    """
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -46,7 +60,6 @@ class PseudoTask(OATask):
                  p_logging=Log.C_LOG_ALL,
                  p_visualize=False,
                  **p_kwargs):
-
 
         OATask.__init__(self,
                         p_name = p_name,
@@ -78,17 +91,34 @@ class PseudoTask(OATask):
 ## -------------------------------------------------------------------------------------------------
 class OAFctSTrans(FctSTrans, Model):
     """
+    This is a template class for Online Adaptive State Transition function. Please overwrite the
+    _simulate_reaction() method or provide an adaptive class as a parameter with all the additional
+    required parameters.
 
     Parameters
     ----------
+    p_id
     p_name
     p_range_max
+    p_autorun
     p_class_shared
+    p_ada
+    p_afct_cls
+    p_state_space
+    p_action_space
+    p_input_space_cls
+    p_output_space_cls
+    p_output_elem_cls
+    p_threshold
+    p_buffer_size
+    p_wf
     p_visualize
     p_logging
     p_kwargs
     """
 
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_id = None,
                  p_name: str = None,
@@ -323,19 +353,34 @@ class OAFctSTrans(FctSTrans, Model):
 ## -------------------------------------------------------------------------------------------------
 class OAFctSuccess(FctSuccess, Model):
     """
+    This is a template class for Online Adaptive Success Computation function. Please overwrite the
+    _compute_success() method or provide an adaptive class as a parameter with all the additional
+    required parameters.
 
     Parameters
     ----------
+    p_id
     p_name
     p_range_max
+    p_autorun
     p_class_shared
+    p_ada
+    p_afct_cls
+    p_state_space
+    p_action_space
+    p_input_space_cls
+    p_output_space_cls
+    p_output_elem_cls
+    p_threshold
+    p_buffer_size
+    p_wf_success
     p_visualize
     p_logging
     p_kwargs
     """
 
 
-    ## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_id = None,
                  p_name: str = None,
@@ -373,8 +418,7 @@ class OAFctSuccess(FctSuccess, Model):
                                             p_visualize=p_visualize,
                                             p_logging=p_logging,
                                             **p_kwargs)
-                #
-        # else:
+
         FctSuccess.__init__(self, p_logging=p_logging)
 
         Model.__init__(self,
@@ -413,19 +457,19 @@ class OAFctSuccess(FctSuccess, Model):
         success : bool
             True, if given state is a success state. False otherwise.
         """
-
+        # 1. Create copy of the state parameter
         self._state_obj = p_state.copy()
         self.log(Log.C_LOG_TYPE_I, 'Assessing Success...')
 
-
+        # 2. Set up the Success workflow, if not already
         if not self._setup_wf_success:
             self._setup_wf_success = self._setup_oafct_success()
 
-        # 6. Run the workflow
+        # 3. Run the workflow
         self._wf_success.run(p_inst_new=[self._state_obj])
 
 
-        # 7. Return the results
+        # 4. Return the results
         return self._wf_success.get_so().get_results()[self.get_id()]
 
 
@@ -546,17 +590,31 @@ class OAFctSuccess(FctSuccess, Model):
 ## -------------------------------------------------------------------------------------------------
 class OAFctBroken(FctBroken, Model):
     """
+    This is a template class for Online Adaptive Broken Computation function. Please
+    overwrite the _compute_broken() method or provide an adaptive class as a parameter with all the
+    additional required parameters.
 
     Parameters
     ----------
+    p_id
     p_name
     p_range_max
+    p_autorun
     p_class_shared
+    p_ada
+    p_afct_cls
+    p_state_space
+    p_action_space
+    p_input_space_cls
+    p_output_space_cls
+    p_output_elem_cls
+    p_threshold
+    p_buffer_size
+    p_wf_broken
     p_visualize
     p_logging
     p_kwargs
     """
-
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -637,18 +695,19 @@ class OAFctBroken(FctBroken, Model):
         broken : bool
             True, if given state is a breakdown state. False otherwise.
         """
+        # 1. Create a copy of the state parameter
         self._state_obj = p_state.copy()
         self.log(Log.C_LOG_TYPE_I, 'Assessing Broken...')
 
-
+        # 2. Set up the broken computation workflow, if not already
         if not self._setup_wf_broken:
             self._setup_wf_broken = self._setup_oafct_broken()
 
-        # 6. Run the workflow
+        # 3. Run the workflow
         self._wf_broken.run(p_inst_new=[self._state_obj])
 
 
-        # 7. Return the results
+        # 4. Return the results
         return self._wf_broken.get_so().get_results()[self.get_id()]
 
 
@@ -694,15 +753,19 @@ class OAFctBroken(FctBroken, Model):
 ## -------------------------------------------------------------------------------------------------
     def _adapt(self, **p_kwargs) -> bool:
         """
+        Custom method to adapt all the internal adaptive elements of the OAFct Broken.
 
         Parameters
         ----------
-        p_kwargs
+        p_kwargs:
+            Parameters to be used for adaptation.
 
         Returns
         -------
-
+        bool
+            True if any of the element has adapted.
         """
+
         adapted = False
         try:
             adapted = self._wf_broken.adapt(**p_kwargs) or adapted
@@ -737,11 +800,15 @@ class OAFctBroken(FctBroken, Model):
 ## -------------------------------------------------------------------------------------------------
     def _setup_oafct_broken(self):
         """
+        Adds the PseudoTask with broken computation function as the host task to the workflow
 
         Returns
         -------
+        bool
+            True after the setup is completed.
 
         """
+
         if len(self._wf_broken._tasks) == 0:
             p_pred_tasks = None
         else:
@@ -759,19 +826,38 @@ class OAFctBroken(FctBroken, Model):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
+
+    """
+    The template class for Online Adaptive Systems. Each function in this system is
+    executed in the form of an Online Adaptive Workflow.
+
+        Parameters
+        ----------
+        p_id
+        p_name
+        p_range_max
+        p_autorun
+        p_class_shared
+        p_ada
+        p_mode
+        p_latency
+        p_t_step
+        p_fct_strans
+        p_fct_success
+        p_fct_broken
+        p_wf
+        p_wf_success
+        p_wf_broken
+        p_mujoco_file
+        p_frame_skip
+        p_state_mapping
+        p_action_mapping
+        p_camera_conf
+        p_visualize
+        p_logging
+        p_kwargs
     """
 
-    Parameters
-    ----------
-    p_mode
-    p_latency
-    p_fct_strans
-    p_fct_success
-    p_fct_broken
-    p_processing_wf
-    p_visualize
-    p_logging
-    """
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -874,13 +960,12 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 ## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada:bool):
         """
+        Switches the adaptivity of all the internal adaptive elements of OASystem.
 
         Parameters
         ----------
-        p_ada
-
-        Returns
-        -------
+        p_ada: bool
+            The boolean flag indicating if the adaptivity shall be switched on or off.
 
         """
         for workflow in self._workflows:
@@ -992,6 +1077,21 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
                       p_figure: Figure = None,
                       p_plot_settings: PlotSettings = None,
                       **p_kwargs):
+        """
+        Initializes the plot for all the internal elements of OASystem.
+
+        Parameters
+        ----------
+        p_figure: Figure, optional
+            Matplotlib figure, if one exists already
+
+        p_plot_settings: PlotSettings
+            Additional plot settings
+
+        p_kwargs:
+            Additional plot parameters
+
+        """
 
         super().init_plot(p_figure=p_figure, p_plot_settings=p_plot_settings, **p_kwargs)
 
@@ -1011,13 +1111,11 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 ## -------------------------------------------------------------------------------------------------
     def update_plot(self, **p_kwargs):
         """
+        Updates the all the internal plots.
 
         Parameters
         ----------
-        p_kwargs
-
-        Returns
-        -------
+        p_kwargs: additional plot parameters
 
         """
         super().update_plot(**p_kwargs)
