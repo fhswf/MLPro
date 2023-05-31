@@ -70,6 +70,9 @@ environment.add_task_reward(p_task=task_bd)
 # Adding the normalizer task to the reward workflow
 environment.add_task_reward(p_task=task_norm, p_pred_tasks=[task_bd])
 
+# Registering the event handler to Normalizer
+task_bd.register_event_handler(p_event_id=task_bd.C_EVENT_ADAPTED, p_event_handler=task_norm.adapt_on_event)
+
 
 
 
