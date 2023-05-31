@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-05-30  0.0.0     LSB      Creation
 ## -- 2023-05-31  0.1.0     LSB      Visulization
+## -- 2023-05-31  0.1.1     LSB      Cleaning
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.1.0 (2023-05-31)
+Ver. 0.1.1 (2023-05-31)
 
 This module provides model classes for adaptive environments
 """
@@ -28,12 +29,27 @@ from mlpro.rl.models import *
 ## -------------------------------------------------------------------------------------------------
 class OAFctReward(FctReward, Model):
     """
-    Online adaptive function for reward computation.
+    This is a template class for Online Adaptive Reward Computation function. Please overwrite the
+    _compute_reward() method or provide an adaptive class as a parameter with all the additional
+    required parameters.
+
     Parameters
     ----------
+    p_id
     p_name
     p_range_max
+    p_autorun
     p_class_shared
+    p_ada
+    p_afct_cls
+    p_state_space
+    p_action_space
+    p_input_space_cls
+    p_output_space_cls
+    p_output_elem_cls
+    p_threshold
+    p_buffer_size
+    p_wf_reward
     p_visualize
     p_logging
     p_kwargs
@@ -120,72 +136,20 @@ class OAFctReward(FctReward, Model):
 
         """
 
-
+        # 1. Copy the state parameters for further processing
         self.log(Log.C_LOG_TYPE_I, 'Start Computing the Reward....')
-        #
-        #
-        # # 1. check if the user has already created a workflow and added to tasks
-        # if self._processing_wf is None:
-        #     # Create a shared object if not provided
-        #     if self._shared is None:
-        #         self._shared = StreamShared()
-        #
-        #     # Create an OA workflow
-        #     self._processing_wf = OAWorkflow(p_name = 'Reward Wf', p_class_shared=self._shared)
-        #
-        #
-        # # 2. Create a reward task
-        # if self._reward_task is None:
-        #
-        #     # Create a pseudo reward task
-        #     self._reward_task = OATask(p_name='Compute Reward',
-        #                                p_visualize = self._visualize,
-        #                                p_range_max=self.get_range(),
-        #                                p_duplicate_data = True)
-        #
-        #     # Assign the task method to custom implementation
-        #     self._reward_task._run = self._run
-        #
-        #     # Add the task to workflow
-        #     self._processing_wf.add_task(self._reward_task)
-        #
-        #
-        #
-        # # 4. Creating task level attributes for states
-        # try:
-        #     self._reward_task._state
-        # except AttributeError:
-        #     self._reward_task._state = p_state.copy()
-        # try:
-        #     self._reward_task._state_new
-        # except AttributeError:
-        #     self._reward_task._state_new = p_state_new.copy()
-        #
-        #
-        #
-        # # 5. Creating new and old instances
-        # # creating old instance object if this is the first run
-        # if self._instance_new == None:
-        #     self._instance_old = Instance(p_state)
-        #
-        # # assigning the previous new instance to old instance
-        # else:
-        #     self._instance_old = self._instance_new.copy()
-        #
-        # # creating new instance with new state
-        # self._instance_new = Instance(p_state_new)
         if p_state_old is not None:
             self._state_obj_old = p_state_old.copy()
         self._state_obj_new = p_state_new.copy()
-        self.log(Log.C_LOG_TYPE_I, 'Assessing Broken...')
 
+        # 2. Set up the workflow, if not already
         if not self._setup_wf_reward:
             self._setup_wf_reward = self._setup_oafct_reward()
 
-        # 6. Run the workflow
+        # 3. Run the workflow
         self._wf_reward.run(p_inst_new=[self._state_obj_new, self._state_obj_old])
 
-        # 7. Return the results
+        # 4. Return the results
         return self._wf_reward.get_so().get_results()[self.get_tid()]
 
 ## -------------------------------------------------------------------------------------------------
@@ -204,7 +168,7 @@ class OAFctReward(FctReward, Model):
         pass
 
 ## -------------------------------------------------------------------------------------------------
-    def add_task_success(self, p_task: StreamTask, p_pred_tasks: list = None):
+    def add_task_reward(self, p_task: StreamTask, p_pred_tasks: list = None):
         """
         Adds a task to the workflow.
         Parameters
@@ -303,18 +267,37 @@ class OAFctReward(FctReward, Model):
 ## -------------------------------------------------------------------------------------------------
 class OAEnvironment(OAFctReward, OASystem, Environment):
     """
+    Template class for Online Adaptive Environments, which adds the Online Adaptive Reward Computation functionality
+    over OASystem.
 
     Parameters
     ----------
+    p_id
+    p_name
+    p_buffer_size
+    p_ada
+    p_range_max
+    p_autorun
+    p_class_shared
     p_mode
     p_latency
-    p_ada
+    p_t_step
     p_fct_strans
     p_fct_reward
     p_fct_success
     p_fct_broken
+    p_wf
+    p_wf_success
+    p_wf_broken
+    p_wf_reward
+    p_mujoco_file
+    p_frame_skip
+    p_state_mapping
+    p_action_mapping
+    p_camera_conf
     p_visualize
     p_logging
+    p_kwargs
     """
 
 
@@ -346,7 +329,6 @@ class OAEnvironment(OAFctReward, OASystem, Environment):
                  p_visualize: bool = False,
                  p_logging: bool = Log.C_LOG_ALL,
                  **p_kwargs):
-
 
 
         OAFctReward.__init__(self, p_wf_reward=p_wf_reward, p_visualize=p_visualize)
@@ -396,43 +378,6 @@ class OAEnvironment(OAFctReward, OASystem, Environment):
         self._fcts.append(self._fct_reward)
 
 
-# ## -------------------------------------------------------------------------------------------------
-#     def _set_adapted(self, p_adapted:bool):
-#         """
-#
-#         Parameters
-#         ----------
-#         p_adapted
-#
-#         Returns
-#         -------
-#
-#         """
-#         pass
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _adapt(self, **p_kwargs):
-#
-#           This is exactly the same method as that of OASystem, thus I dont need it here,
-#           since I have already added the functions and workflows to the list
-#
-#         adapted = False
-#
-#         for workflow in self._workflows:
-#             try:
-#                 adapted = workflow.adapt(**p_kwargs) or adapted
-#             except:
-#                 pass
-#
-#         for fct in self._fcts:
-#             try:
-#                 adapted = fct.adapt(**p_kwargs) or adapted
-#             except:
-#                 pass
-#
-#
-#         return adapted
 ## -------------------------------------------------------------------------------------------------
     def compute_reward(self, p_state_old: State = None, p_state_new: State = None) -> Reward:
         """
