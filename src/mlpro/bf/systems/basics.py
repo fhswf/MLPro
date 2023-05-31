@@ -40,6 +40,7 @@
 ## -- 2023-05-13  1.13.0    LSB      New parameter p_t_step in simulate reaction method
 ## -- 2023-05-31  1.13.1    LSB      Updated the copy method of state, for copying the ID
 ## -- 2023-05-31  1.13.2    LSB      Refactored the t_step handling, to avoid unncessary execution of try block
+## -- 2023-05-31  1.13.3    LSB      Removing obsolete env attribute from function
 ## -- 2023-05-dd  2.0.0     LSB      New class MultiSystem
 ## -------------------------------------------------------------------------------------------------
 
@@ -326,7 +327,7 @@ class FctSTrans (Log):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL ):
         Log.__init__( self, p_logging=p_logging ) 
-        self._system = None
+
 
 ## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
@@ -388,7 +389,7 @@ class FctSuccess (Log):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL ):
         Log.__init__( self, p_logging=p_logging )
-        self._system = None
+
 
 ## -------------------------------------------------------------------------------------------------
     def compute_success(self, p_state: State) -> bool:
@@ -439,7 +440,7 @@ class FctBroken (Log):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL ):
         Log.__init__( self, p_logging=p_logging )
-        self._system = None
+
 
 ## -------------------------------------------------------------------------------------------------
     def compute_broken(self, p_state: State) -> bool:
