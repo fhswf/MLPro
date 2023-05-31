@@ -540,16 +540,17 @@ class GTCompetition (GTCoaltion):
 
         self.log(Log.C_LOG_TYPE_I, p_coalition.C_TYPE + ' ' + p_coalition.get_name() + ' added.')
 
-        for coal in p_coalition.get_players():
-            if coal.get_solver().get_hyperparam() is not None:
-                self._hyperparam_space.append(p_set=coal._solver.get_hyperparam().get_related_set(),
-                                              p_new_dim_ids=False,
-                                              p_ignore_duplicates=True)
-            
-            if self._hyperparam_tuple is None:
-                self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+        for coal in p_coalition.get_coalitions():
+            for pl in coal.get_players():
+                if pl.get_solver().get_hyperparam() is not None:
+                    self._hyperparam_space.append(p_set=pl._solver.get_hyperparam().get_related_set(),
+                                                  p_new_dim_ids=False,
+                                                  p_ignore_duplicates=True)
                 
-            self._hyperparam_tuple.add_hp_tuple(coal.get_hyperparam())
+                if self._hyperparam_tuple is None:
+                    self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+                    
+                self._hyperparam_tuple.add_hp_tuple(pl.get_hyperparam())
                             
 
 ## -------------------------------------------------------------------------------------------------
