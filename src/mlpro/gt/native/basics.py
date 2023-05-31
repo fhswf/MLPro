@@ -38,49 +38,6 @@ class GTTraining (Training):
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class GTGame (Scenario):
-
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_visualize:bool=False,
-                 p_logging=Log.C_LOG_ALL):
-        
-        super().__init__(p_mode=Mode.C_MODE_SIM,
-                         p_ada=False,
-                         p_cycle_limit=1,
-                         p_visualize=p_visualize,
-                         p_logging=p_logging)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
-        """
-        Custom setup of ML scenario.
-
-        Parameters
-        ----------
-        p_mode
-            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
-        p_ada : bool
-            Boolean switch for adaptivity.
-        p_visualize : bool
-            Boolean switch for visualisation. 
-        p_logging
-            Log level (see constants of class Log). 
-
-        Returns
-        -------
-        player : GTPlayer
-            GTPlayer model (object of type GTPlayer, GTCoalition or GTCoalitions).
-        """
-
-        raise NotImplementedError
-
-
-
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -566,6 +523,32 @@ class GTCompetition (GTCoalition):
 ## -------------------------------------------------------------------------------------------------
     def get_coalition(self, p_coalition_id) -> GTCoalition:
         return self._coalitions[self._coalitions_ids.index(p_coalition_id)]
+                        
+
+## -------------------------------------------------------------------------------------------------
+    def get_players(self) -> list:
+
+        players = []
+        for coal in self._coalitions:
+            players.extend(coal.get_players())
+
+        return players
+                        
+
+## -------------------------------------------------------------------------------------------------
+    def get_players_ids(self) -> list:
+
+        ids = []
+        for coal in self._coalitions:
+            ids.extend(coal.get_players_ids())
+
+        return ids
+                        
+
+## -------------------------------------------------------------------------------------------------
+    def get_player(self, p_player_id) -> GTPlayer:
+
+        return self.get_players()[self.get_players_ids().index(p_player_id)]
 
     
 ## -------------------------------------------------------------------------------------------------
@@ -586,6 +569,94 @@ class GTCompetition (GTCoalition):
             strategy.add_elem(coal.get_id(), strategy_elem)
         
         return strategy
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class GTGame (Scenario):
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_payoff_matrix:GTPayoffMatrix,
+                 p_visualize:bool=False,
+                 p_logging=Log.C_LOG_ALL):
+        
+        super().__init__(p_mode=Mode.C_MODE_SIM,
+                         p_ada=False,
+                         p_cycle_limit=1,
+                         p_visualize=p_visualize,
+                         p_logging=p_logging)
+        
+        self._payoff        = p_payoff_matrix
+        self._strategies    = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
+        """
+        Custom setup of ML scenario.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
+        p_ada : bool
+            Boolean switch for adaptivity.
+        p_visualize : bool
+            Boolean switch for visualisation. 
+        p_logging
+            Log level (see constants of class Log). 
+
+        Returns
+        -------
+        player : GTPlayer
+            GTPlayer model (object of type GTPlayer, GTCoalition or GTCompetition).
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run_cycle(self):
+        """
+        ........
+
+        Returns
+        -------
+        success : bool
+            True on success. False otherwise.
+        error : bool
+            True on error. False otherwise.
+        adapted : bool
+            True, if something within the scenario has adapted something in this cycle. False otherwise.
+        end_of_data : bool
+            True, if the end of the related data source has been reached. False otherwise.
+        """
+
+        self.log(self.C_LOG_TYPE_I, 'Compute strategies...')
+        self._strategies = self._model.compute_strategy(self._payoff)
+
+        return False, False, False, False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_evaluation(self, p_player_ids:Union[str, list]=None, p_coalition_id=None) -> Union[float, list]:
+        
+        if (p_player_ids is None) and (p_coalition_id is None):
+            raise ParamError("p_player_ids and p_coalition_id are both none! Either of them needs to be defined.")
+
+        if p_player_ids is not None:
+            return self._payoff.get_payoff(self._strategies.get_sorted_values(), p_player_ids)
+        else:
+            if isinstance(self._model, GTCompetition):
+                ids = self._model.get_coalition(p_coalition_id)
+                pl_ids = ids.get_players()
+            else:
+                pl_ids = self._model.get_players()
+
+            return self._payoff.get_payoff(self._strategies.get_sorted_values(), pl_ids)
     
 
 
