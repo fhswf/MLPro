@@ -494,7 +494,7 @@ class GTCoalition (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTCompetition (GTCoaltion):
+class GTCompetition (GTCoalition):
 
     C_TYPE  = 'GTCompetition'
     C_NAME  = ''
