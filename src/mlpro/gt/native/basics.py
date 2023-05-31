@@ -44,8 +44,41 @@ class GTGame (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
+    def __init__(self,
+                 p_visualize:bool=False,
+                 p_logging=Log.C_LOG_ALL):
+        
+        super().__init__(p_mode=Mode.C_MODE_SIM,
+                         p_ada=False,
+                         p_cycle_limit=1,
+                         p_visualize=p_visualize,
+                         p_logging=p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
+        """
+        Custom setup of ML scenario.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
+        p_ada : bool
+            Boolean switch for adaptivity.
+        p_visualize : bool
+            Boolean switch for visualisation. 
+        p_logging
+            Log level (see constants of class Log). 
+
+        Returns
+        -------
+        player : GTPlayer
+            GTPlayer model (object of type GTPlayer, GTCoalition or GTCoalitions).
+        """
+
+        raise NotImplementedError
+
 
 
 
@@ -454,6 +487,104 @@ class GTCoalition (GTPlayer):
 
             coalition_strategy = GTStrategy(self.get_id(), Element(self.get_strategy_space), value)
             return coalition_strategy
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class GTCompetition (GTCoaltion):
+
+    C_TYPE  = 'GTCompetition'
+    C_NAME  = ''
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_name:str = " ",
+                 p_logging = Log.C_LOG_ALL):
+        
+        self._coalitions      = []
+        self._coalitions_ids  = []
+
+        if p_name != '':
+            self.set_name(p_name)
+        else:
+            self.set_name(self.C_NAME)
+        
+        self.switch_logging(p_logging)
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_logging(self, p_logging) -> None:
+        Log.switch_logging(self, p_logging=p_logging)
+
+        for coal in self._coalitions:
+            coal.switch_loggin(p_logging)
+
+    
+## -------------------------------------------------------------------------------------------------
+    def set_log_level(self, p_level):
+        Log.set_log_level(self, p_level)
+
+        for coal in self._coalitions:
+            coal.set_log_level(p_level)
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_coalition(self, p_coalition:GTCoalition):
+
+        self._coalitions.append(p_coalition)
+        self._coalitions_ids.append(p_coalition.get_id())
+
+        self.log(Log.C_LOG_TYPE_I, p_coalition.C_TYPE + ' ' + p_coalition.get_name() + ' added.')
+
+        for coal in p_coalition.get_players():
+            if coal.get_solver().get_hyperparam() is not None:
+                self._hyperparam_space.append(p_set=coal._solver.get_hyperparam().get_related_set(),
+                                              p_new_dim_ids=False,
+                                              p_ignore_duplicates=True)
+            
+            if self._hyperparam_tuple is None:
+                self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
+                
+            self._hyperparam_tuple.add_hp_tuple(coal.get_hyperparam())
+                            
+
+## -------------------------------------------------------------------------------------------------
+    def get_coalitions(self) -> list:
+        return self._coalitions
+                        
+
+## -------------------------------------------------------------------------------------------------
+    def get_coalitions_ids(self) -> list:
+        return self._coalitions_ids
+                        
+
+## -------------------------------------------------------------------------------------------------
+    def get_coalition(self, p_coalition_id) -> GTCoalition:
+        return self._coalitions[self._coalitions_ids.index(p_coalition_id)]
+
+    
+## -------------------------------------------------------------------------------------------------
+    def set_random_seed(self, p_seed=None):
+
+        for coal in self._coalitions:
+            coal.set_random_seed(p_seed)
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
+
+        strategy = GTStrategy()
+
+        for coal in self._coalitions:
+            strategy_coal   = coal.compute_strategy(p_payoff)
+            strategy_elem   = strategy_coal.get_elem(coal.get_id())
+            strategy.add_elem(coal.get_id(), strategy_elem)
+        
+        return strategy
     
 
 
