@@ -38,7 +38,8 @@
 ## -- 2023-05-03  1.11.1    LSB      Bug Fix: Visualization for DemoScenario
 ## -- 2023-05-05  1.12.0    LSB      New Class SystemShared
 ## -- 2023-05-13  1.13.0    LSB      New parameter p_t_step in simulate reaction method
-## -- 2023-05-31  1.14.0    LSB      Updated the copy method of state, for copying the ID
+## -- 2023-05-31  1.13.1    LSB      Updated the copy method of state, for copying the ID
+## -- 2023-05-31  1.13.2    LSB      Refactored the t_step handling, to avoid unncessary execution of try block
 ## -- 2023-05-dd  2.0.0     LSB      New class MultiSystem
 ## -------------------------------------------------------------------------------------------------
 
@@ -347,9 +348,12 @@ class FctSTrans (Log):
         """
 
         self.log(Log.C_LOG_TYPE_I, 'Start simulating a state transition...')
-        try:
-            return self._simulate_reaction( p_state = p_state, p_action = p_action, p_t_step = p_t_step )
-        except TypeError:
+        if p_t_step is not None:
+            try:
+                return self._simulate_reaction( p_state = p_state, p_action = p_action, p_t_step = p_t_step )
+            except TypeError:
+                return self._simulate_reaction(p_state=p_state, p_action=p_action)
+        else:
             return self._simulate_reaction(p_state=p_state, p_action=p_action)
 
 
@@ -1483,9 +1487,17 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
         state = self.get_state()
 
-        try:
-            result = self._process_action(p_action, p_t_step = p_t_step)
-        except TypeError:
+        if p_t_step is None:
+            t_step = self._t_step
+        else:
+            t_step = p_t_step
+
+        if t_step is not None:
+            try:
+                result = self._process_action(p_action, p_t_step = t_step)
+            except TypeError:
+                result = self._process_action(p_action)
+        else:
             result = self._process_action(p_action)
 
         self._prev_state = state
@@ -1514,11 +1526,13 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
             # TODO: optimize the p_t_step handling, with an if else block, must not execute everything everytime
-            try:
-                self._set_state(self.simulate_reaction(self.get_state(), p_action, p_t_step = p_t_step ))
-            except TypeError:
+            if p_t_step is not None:
+                try:
+                    self._set_state(self.simulate_reaction(self.get_state(), p_action, p_t_step = p_t_step ))
+                except TypeError:
+                    self._set_state(self.simulate_reaction(self.get_state(), p_action))
+            else:
                 self._set_state(self.simulate_reaction(self.get_state(), p_action))
-
 
         elif self._mode == self.C_MODE_REAL:
             # 1.2 Real state transition
@@ -1568,9 +1582,12 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         """
 
         if self._fct_strans is not None:
-            try:
-                return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
-            except TypeError:
+            if p_t_step is not None:
+                try:
+                    return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
+                except TypeError:
+                    return self._fct_strans.simulate_reaction(p_state, p_action)
+            else:
                 return self._fct_strans.simulate_reaction(p_state, p_action)
 
         elif self._mujoco_handler is not None:
@@ -1586,10 +1603,14 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
             return current_state
         else:
-            try:
-                return self._simulate_reaction(p_state, p_action, p_t_step)
-            except TypeError:
+            if p_t_step is not None:
+                try:
+                    return self._simulate_reaction(p_state, p_action, p_t_step)
+                except TypeError:
+                    return self._simulate_reaction(p_state, p_action)
+            else:
                 return self._simulate_reaction(p_state, p_action)
+
 
 ## -------------------------------------------------------------------------------------------------
     def _simulate_reaction(self, p_state: State, p_action: Action, p_step:timedelta = None) -> State:
