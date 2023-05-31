@@ -348,6 +348,7 @@ class FctSTrans (Log):
         """
 
         self.log(Log.C_LOG_TYPE_I, 'Start simulating a state transition...')
+        # Check if the p_t_step is to be ignored
         if p_t_step is not None:
             try:
                 return self._simulate_reaction( p_state = p_state, p_action = p_action, p_t_step = p_t_step )
@@ -1492,6 +1493,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         else:
             t_step = p_t_step
 
+        # Check if the t_step shall be ignored, when None
         if t_step is not None:
             try:
                 result = self._process_action(p_action, p_t_step = t_step)
@@ -1525,7 +1527,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         # 1 State transition
         if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
-            # TODO: optimize the p_t_step handling, with an if else block, must not execute everything everytime
+            # Check if the p_t_step shall be ignored
             if p_t_step is not None:
                 try:
                     self._set_state(self.simulate_reaction(self.get_state(), p_action, p_t_step = p_t_step ))
@@ -1580,8 +1582,10 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         State
             Subsequent state after transition
         """
-
+        # 1. Check if there is an external simulation function provided to the System
         if self._fct_strans is not None:
+
+            # 1.1 Check if there is a valid timestep, or if it shall be ignored?
             if p_t_step is not None:
                 try:
                     return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
@@ -1590,6 +1594,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
             else:
                 return self._fct_strans.simulate_reaction(p_state, p_action)
 
+        # 2. Check if there's is Mujoco Handler
         elif self._mujoco_handler is not None:
             # Check if there is changing in action
             action = self.action_to_mujoco(p_action)
@@ -1602,7 +1607,10 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
             current_state = self.state_from_mujoco(ob)
 
             return current_state
+
+        # 3. Or else execute the user defined reaction simulation
         else:
+            # 3.1 Check if the p_t_step shall be ignored
             if p_t_step is not None:
                 try:
                     return self._simulate_reaction(p_state, p_action, p_t_step)
