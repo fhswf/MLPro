@@ -21,6 +21,20 @@ from mlpro.bf.systems import *
 from mlpro.bf.ml import *
 from mlpro.bf.mt import *
 from mlpro.bf.math import *
+from typing import Union
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class GTTraining (Training):
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self):
+        pass
 
 
 
@@ -39,10 +53,63 @@ class GTGame (Scenario):
 ## -------------------------------------------------------------------------------------------------
 class GTPayoffMatrix (TStamp):
 
+    C_TYPE          = 'GTPayoffMatrix'
+
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
+    def __init__(self,
+                 p_function:Function = None,
+                 p_player_ids:list = None):
+        
+        TStamp.__init__(self)
+
+        self._function      = p_function
+        self._player_ids    = p_player_ids
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_payoff(self,
+                   p_strategies:Union[np.ndarray, int, str, float],
+                   p_player_ids:Union[str, list]=None) -> Union[float, list]:
+        
+        if self._function is not None:
+            strategies = Element(Set(self._function._input_space))
+        else:
+            strategies = Element(Set())
+        
+        strategies.set_values(p_strategies)
+        payoffs = self.call_mapping(strategies)
+
+        if p_player_ids is None:
+            return payoffs.get_values()
+        elif isinstance(p_player_ids, list):
+            payoff_values = payoffs.get_values()
+            list_payoff = []
+            for ids in range(len(p_player_ids)):
+                idx = self._player_ids.index(ids)
+                list_payoff.append(payoff_values[idx])
+            return list_payoff
+        else:
+            payoff_values = payoffs.get_values()
+            idx = self._player_ids.index(p_player_ids)
+            return payoff_values[idx]
+
+
+## -------------------------------------------------------------------------------------------------
+    def call_mapping(self, p_input:Element) -> Element:
+        
+        if self._function is not None:
+            return self._function(p_input)
+        else:
+            return self._call_mapping(p_input)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _call_mapping(self, p_input:Element) -> Element:
+        
+        raise NotImplementedError
+        
+        
 
 
 
@@ -56,7 +123,7 @@ class GTStrategy (Action):
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_player_id = 0, 
-                 p_strategy_space : Set = None,
+                 p_strategy_space: Set = None,
                  p_values: np.ndarray = None):
         
         super().__init__(p_agent_id=p_player_id,
