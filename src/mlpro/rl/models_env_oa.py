@@ -252,7 +252,7 @@ class OAFctReward(FctReward, Model):
         if len(self._wf_reward._tasks) == 0:
             p_pred_tasks = None
         else:
-            p_pred_tasks = self._wf_reward._tasks[-1]
+            p_pred_tasks = [self._wf_reward._tasks[-1]]
 
         self._wf_reward.add_task(p_task=PseudoTask(p_wrap_method=self._run_wf_reward),
                                   p_pred_tasks=p_pred_tasks)
