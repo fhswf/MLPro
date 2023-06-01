@@ -723,31 +723,78 @@ class  ScientificObject:
     C_SCIREF_EDITOR = None
     C_SCIREF_ADDRESS = None
     C_SCIREF_HOWPUBLISHED = None
+    C_SCIREF_NUMPAGES= None
+    C_SCIREF_ISSN = None
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_bibtex(self):
 
-        if self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_NONE:
-            raise ParamError('Type of the scientific reference is not defined!')
-        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_ARTICLE:
-            field = 'article'
+        if self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_ARTICLE:
+            field = '@article{CitekeyArticle,'
         elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_BOOK:
-            field = 'article'
+            field = '@book{CitekeyBook,'
         elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_BOOKLET:
-            field = 'article'
+            field = '@booklet{CitekeyBooklet,'
         elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_INBOOK:
-            field = 'article'
+            field = '@inbook{CitekeyInbook,'
         elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_ONLINE:
-            field = 'article'
+            field = '@misc{CitekeyMisc,'
         elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_PROCEEDINGS:
-            field = 'article'
+            field = '@proceedings{CitekeyProceedings,'
         elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_INPROCEEDINGS:
-            field = 'article'
+            field = '@inproceedings{CitekeyInproceedings,'
         elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_TECHREPORT:
-            field = 'article'
+            field = '@techreport{CitekeyTechreport,'
         elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_UNPUBLISHED:
-            field = 'article'
+            field = '@unpublished{CitekeyUnpublished,'
+        else:
+            raise ParamError('Type of the scientific reference is not defined!')
+        
+
+        content = '\n'
+
+        if self.C_SCIREF_AUTHOR is not None:
+            content += 'author = {%s},\n'%self.C_SCIREF_AUTHOR
+        if self.C_SCIREF_TITLE is not None:
+            content += 'title = {%s},\n'%self.C_SCIREF_TITLE
+        if self.C_SCIREF_JOURNAL is not None:
+            content += 'journal = {%s},\n'%self.C_SCIREF_JOURNAL
+        if self.C_SCIREF_ABSTRACT is not None:
+            content += 'abstract = {%s},\n'%self.C_SCIREF_ABSTRACT
+        if self.C_SCIREF_VOLUME is not None:
+            content += 'volume = {%s},\n'%self.C_SCIREF_VOLUME
+        if self.C_SCIREF_NUMBER is not None:
+            content += 'number = {%s},\n'%self.C_SCIREF_NUMBER
+        if self.C_SCIREF_PAGES is not None:
+            content += 'pages = {%s},\n'%self.C_SCIREF_PAGES
+        if self.C_SCIREF_YEAR is not None:
+            content += 'year = {%s},\n'%self.C_SCIREF_YEAR
+
+
+    C_SCIREF_VOLUME = None
+    C_SCIREF_NUMBER = None
+    C_SCIREF_PAGES = None
+    C_SCIREF_YEAR = None
+    C_SCIREF_MONTH = None
+    C_SCIREF_DAY = None
+    C_SCIREF_DOI = None
+    C_SCIREF_KEYWORDS = None
+    C_SCIREF_ISBN = None
+    C_SCIREF_SERIES = None
+    C_SCIREF_PUBLISHER = None
+    C_SCIREF_CITY = None
+    C_SCIREF_COUNTRY = None
+    C_SCIREF_URL = None
+    C_SCIREF_CHAPTER = None
+    C_SCIREF_BOOKTITLE = None
+    C_SCIREF_INSTITUTION = None
+    C_SCIREF_CONFERENCE = None
+    C_SCIREF_NOTES = None
+    C_SCIREF_EDITOR = None
+    C_SCIREF_ADDRESS = None
+    C_SCIREF_HOWPUBLISHED = None
+
         
 
 
