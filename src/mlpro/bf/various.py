@@ -814,7 +814,7 @@ class  ScientificObject:
         if self.C_SCIREF_VERSION is not None:
             content += 'version = {%s},\n'%self.C_SCIREF_VERSION
 
-        print(field+content+'}')
+        print(field+content[:-2]+'\n}')
 
         
 
