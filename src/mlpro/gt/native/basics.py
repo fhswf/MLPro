@@ -228,7 +228,7 @@ class GTPlayer (GTSolver):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_solver: GTSolver,
+                 p_solver:GTSolver,
                  p_name='',
                  p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL,
@@ -386,7 +386,7 @@ class GTCoalition (GTPlayer):
                         
 
 ## -------------------------------------------------------------------------------------------------
-    def get_coaltion_strategy(self) -> int:
+    def get_coalition_strategy(self) -> int:
         return self._co_strategy
 
     
@@ -565,6 +565,7 @@ class GTCompetition (GTCoalition):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class GTDataStoring (DataStoring):
+
     # Frame ID renamed
     C_VAR0          = 'Trial'
 
@@ -624,12 +625,15 @@ class GTDataStoring (DataStoring):
 ## -------------------------------------------------------------------------------------------------
 class GTGame (Scenario):
 
+    C_TYPE  = 'GTCompetition'
+    C_NAME  = ''
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_payoff_matrix:GTPayoffMatrix,
-                 p_visualize:bool=False,
-                 p_logging=Log.C_LOG_ALL):
+                 p_visualize:bool = False,
+                 p_logging = Log.C_LOG_ALL):
         
         super().__init__(p_mode=Mode.C_MODE_SIM,
                          p_ada=False,
@@ -727,8 +731,8 @@ class GTGame (Scenario):
     def connect_data_logger(self,
                             p_ds_strategies:GTDataStoring=None,
                             p_ds_payoffs:GTDataStoring = None):
-        self._ds_strategies  = p_ds_strategies
-        self._ds_payoffs = p_ds_payoffs
+        self._ds_strategies = p_ds_strategies
+        self._ds_payoffs    = p_ds_payoffs
     
 
 
@@ -760,7 +764,11 @@ class GTTrainingResults (TrainingResults):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:GTGame, p_run, p_cycle_id, p_logging=Log.C_LOG_WE):
+    def __init__(self,
+                 p_scenario:GTGame,
+                 p_run:int,
+                 p_cycle_id:int,
+                 p_logging=Log.C_LOG_WE):
         super().__init__(p_scenario=p_scenario,
                          p_run=p_run,
                          p_cycle_id=p_cycle_id,
@@ -813,7 +821,7 @@ class GTTraining (Training):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_results(self) -> TrainingResults:
+    def _init_results(self) -> GTTrainingResults:
         
         results = super()._init_results()
 
