@@ -29,18 +29,6 @@ from typing import Union
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class GTTraining (Training):
-
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self):
-        pass
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
 class GTPayoffMatrix (TStamp):
 
     C_TYPE          = 'GTPayoffMatrix'
@@ -660,3 +648,77 @@ class GTGame (Scenario):
     
 
 
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class GTTrainingResults (TrainingResults):
+    """
+    Results of a native GT training.
+
+    Parameters
+    ----------
+    p_scenario : GTScenario
+        Related native GT scenario.
+    p_run : int
+        Run id.
+    p_cycle_id : int
+        Id of first cycle of this run.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+
+    """
+
+    C_NAME                  = 'GTTrainingResults'
+
+    C_FNAME_COAL_STRATEGIES = 'coalitions_stategies'
+    C_FNAME_COAL_PAYOFFS    = 'coalitions_payoffs'
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_scenario:GTGame, p_run, p_cycle_id, p_logging=Log.C_LOG_WE):
+        super().__init__(p_scenario=p_scenario,
+                         p_run=p_run,
+                         p_cycle_id=p_cycle_id,
+                         p_logging=p_logging)
+
+        self.ds_strategies = None
+        self.ds_payoffs = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def save(self, p_path, p_filename='summary.csv') -> bool:
+        if not super().save(p_path, p_filename=p_filename):
+            return False
+
+        if self.ds_strategies is not None:
+            self.ds_strategies.save_data(p_path, self.C_FNAME_COAL_STRATEGIES)
+        if self.ds_payoffs is not None:
+            self.ds_payoffs.save_data(p_path, self.C_FNAME_COAL_PAYOFFS)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class GTTraining (Training):
+
+    C_TYPE          = 'GTTraining'
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, **p_kwargs):
+
+        super().__init__(**p_kwargs)
+
+        try:
+            self._collect_strategy = self._kwargs['p_collect_strategy']
+        except KeyError:
+            self._collect_strategy = True
+            self._kwargs['p_collect_strategy'] = self._collect_strategy
+
+        try:
+            self._collect_payoff = self._kwargs['p_collect_payoff']
+        except KeyError:
+            self._collect_payoff = True
+            self._kwargs['p_collect_payoff'] = self._collect_payoff
