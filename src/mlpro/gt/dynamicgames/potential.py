@@ -1,6 +1,6 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.gt.dp
+## -- Package : mlpro.gt
 ## -- Module  : potential.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :

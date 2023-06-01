@@ -1,16 +1,16 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
-## -- Package : mlpro.gt
+## -- Package : mlpro.gt.native
 ## -- Module  : basics.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-30  0.0.0     SY       Creation
-## -- 2023-??-??  1.0.0     SY       Release of first version
+## -- 2023-06-01  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-??-??)
+Ver. 1.0.0 (2023-06-01)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
