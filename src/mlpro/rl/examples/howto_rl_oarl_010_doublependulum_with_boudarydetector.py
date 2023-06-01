@@ -1,15 +1,16 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.rl.examples
-## -- Module  : howto_rl_oarl_999_adaptive_environment.py
+## -- Module  : howto_rl_oarl_010_doublependulum_with_boudarydetector.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-05-31  1.0.0     LSB      Creation/release
+## -- 2023-06-01  1.0.1     LSB      Beutified, Renamed
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-01-12)
+Ver. 1.0.1 (2023-06-01)
 
 This module is an illustration of howto run the online adaptive double pendulum (OADP) environment.
 
@@ -55,26 +56,6 @@ range = Range.C_RANGE_NONE
 
 
 
-# Creating the Online Adaptive Double Pendulum Environment
-environment = DoublePendulumOA7(p_name = '', p_ada=adaptivity, p_visualize=visualize)
-
-# Creating the Boundary Detector Task
-task_bd = BoundaryDetector(p_name='Boundary Detector', p_visualize=visualize, p_range_max=range)
-
-# Creating the Normalizer Task
-task_norm = NormalizerMinMax(p_name='Normalizer', p_visualize=visualize, p_range_max=range)
-
-# Adding the boundary detector task to the Reward Workflow
-environment.add_task_reward(p_task=task_bd)
-
-# Adding the normalizer task to the reward workflow
-environment.add_task_reward(p_task=task_norm, p_pred_tasks=[task_bd])
-
-# Registering the event handler to Normalizer
-task_bd.register_event_handler(p_event_id=task_bd.C_EVENT_ADAPTED, p_event_handler=task_norm.adapt_on_event)
-
-
-
 
 
 
@@ -85,6 +66,28 @@ class OADPScenario(RLScenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging) -> Model:
+
+
+
+        # Creating the Online Adaptive Double Pendulum Environment
+        environment = DoublePendulumOA7(p_name='', p_ada=adaptivity, p_visualize=visualize)
+
+        # Creating the Boundary Detector Task
+        task_bd = BoundaryDetector(p_name='Boundary Detector', p_visualize=visualize, p_range_max=range)
+
+        # Creating the Normalizer Task
+        task_norm = NormalizerMinMax(p_name='Normalizer', p_visualize=visualize, p_range_max=range)
+
+        # Adding the boundary detector task to the Reward Workflow
+        environment.add_task_reward(p_task=task_bd)
+
+        # Adding the normalizer task to the reward workflow
+        environment.add_task_reward(p_task=task_norm, p_pred_tasks=[task_bd])
+
+        # Registering the event handler to Normalizer
+        task_bd.register_event_handler(p_event_id=task_bd.C_EVENT_ADAPTED, p_event_handler=task_norm.adapt_on_event)
+
+
         # 2.1 Setup environment
         self._env   = environment
 
