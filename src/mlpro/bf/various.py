@@ -725,6 +725,7 @@ class  ScientificObject:
     C_SCIREF_HOWPUBLISHED = None
     C_SCIREF_NUMPAGES= None
     C_SCIREF_ISSN = None
+    C_SCIREF_VERSION = None
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -770,34 +771,52 @@ class  ScientificObject:
             content += 'pages = {%s},\n'%self.C_SCIREF_PAGES
         if self.C_SCIREF_YEAR is not None:
             content += 'year = {%s},\n'%self.C_SCIREF_YEAR
+        if self.C_SCIREF_MONTH is not None:
+            content += 'month = {%s},\n'%self.C_SCIREF_MONTH
+        if self.C_SCIREF_DAY is not None:
+            content += 'day = {%s},\n'%self.C_SCIREF_DAY
+        if self.C_SCIREF_DOI is not None:
+            content += 'doi = {%s},\n'%self.C_SCIREF_DOI
+        if self.C_SCIREF_KEYWORDS is not None:
+            content += 'keywords = {%s},\n'%self.C_SCIREF_KEYWORDS
+        if self.C_SCIREF_ISBN is not None:
+            content += 'isbn = {%s},\n'%self.C_SCIREF_ISBN
+        if self.C_SCIREF_SERIES is not None:
+            content += 'series = {%s},\n'%self.C_SCIREF_SERIES
+        if self.C_SCIREF_PUBLISHER is not None:
+            content += 'publisher = {%s},\n'%self.C_SCIREF_PUBLISHER
+        if self.C_SCIREF_CITY is not None:
+            content += 'city = {%s},\n'%self.C_SCIREF_CITY
+        if self.C_SCIREF_COUNTRY is not None:
+            content += 'country = {%s},\n'%self.C_SCIREF_COUNTRY
+        if self.C_SCIREF_URL is not None:
+            content += 'url = {%s},\n'%self.C_SCIREF_URL
+        if self.C_SCIREF_CHAPTER is not None:
+            content += 'chapter = {%s},\n'%self.C_SCIREF_CHAPTER
+        if self.C_SCIREF_BOOKTITLE is not None:
+            content += 'booktitle = {%s},\n'%self.C_SCIREF_BOOKTITLE
+        if self.C_SCIREF_INSTITUTION is not None:
+            content += 'institution = {%s},\n'%self.C_SCIREF_INSTITUTION
+        if self.C_SCIREF_CONFERENCE is not None:
+            content += 'booktitle = {%s},\n'%self.C_SCIREF_CONFERENCE
+        if self.C_SCIREF_NOTES is not None:
+            content += 'note = {%s},\n'%self.C_SCIREF_NOTES
+        if self.C_SCIREF_EDITOR is not None:
+            content += 'editor = {%s},\n'%self.C_SCIREF_EDITOR
+        if self.C_SCIREF_ADDRESS is not None:
+            content += 'address = {%s},\n'%self.C_SCIREF_ADDRESS
+        if self.C_SCIREF_HOWPUBLISHED is not None:
+            content += 'howpublished = {%s},\n'%self.C_SCIREF_HOWPUBLISHED
+        if self.C_SCIREF_NUMPAGES is not None:
+            content += 'numpages = {%s},\n'%self.C_SCIREF_NUMPAGES
+        if self.C_SCIREF_ISSN is not None:
+            content += 'issn = {%s},\n'%self.C_SCIREF_ISSN
+        if self.C_SCIREF_VERSION is not None:
+            content += 'version = {%s},\n'%self.C_SCIREF_VERSION
 
-
-    C_SCIREF_VOLUME = None
-    C_SCIREF_NUMBER = None
-    C_SCIREF_PAGES = None
-    C_SCIREF_YEAR = None
-    C_SCIREF_MONTH = None
-    C_SCIREF_DAY = None
-    C_SCIREF_DOI = None
-    C_SCIREF_KEYWORDS = None
-    C_SCIREF_ISBN = None
-    C_SCIREF_SERIES = None
-    C_SCIREF_PUBLISHER = None
-    C_SCIREF_CITY = None
-    C_SCIREF_COUNTRY = None
-    C_SCIREF_URL = None
-    C_SCIREF_CHAPTER = None
-    C_SCIREF_BOOKTITLE = None
-    C_SCIREF_INSTITUTION = None
-    C_SCIREF_CONFERENCE = None
-    C_SCIREF_NOTES = None
-    C_SCIREF_EDITOR = None
-    C_SCIREF_ADDRESS = None
-    C_SCIREF_HOWPUBLISHED = None
+        print(field+content+'}')
 
         
-
-
 
 
 
