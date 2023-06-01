@@ -752,9 +752,7 @@ class  ScientificObject:
         else:
             raise ParamError('Type of the scientific reference is not defined!')
         
-
         content = '\n'
-
         if self.C_SCIREF_AUTHOR is not None:
             content += 'author = {%s},\n'%self.C_SCIREF_AUTHOR
         if self.C_SCIREF_TITLE is not None:
