@@ -561,189 +561,6 @@ class GTCompetition (GTCoalition):
 
 
 
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class GTGame (Scenario):
-
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self,
-                 p_payoff_matrix:GTPayoffMatrix,
-                 p_visualize:bool=False,
-                 p_logging=Log.C_LOG_ALL):
-        
-        super().__init__(p_mode=Mode.C_MODE_SIM,
-                         p_ada=False,
-                         p_cycle_limit=1,
-                         p_visualize=p_visualize,
-                         p_logging=p_logging)
-        
-        self._payoff        = p_payoff_matrix
-        self._strategies    = None
-
-
-## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
-        """
-        Custom setup of ML scenario.
-
-        Parameters
-        ----------
-        p_mode
-            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
-        p_ada : bool
-            Boolean switch for adaptivity.
-        p_visualize : bool
-            Boolean switch for visualisation. 
-        p_logging
-            Log level (see constants of class Log). 
-
-        Returns
-        -------
-        player : GTPlayer
-            GTPlayer model (object of type GTPlayer, GTCoalition or GTCompetition).
-        """
-
-        raise NotImplementedError
-
-
-## -------------------------------------------------------------------------------------------------
-    def _run_cycle(self):
-        """
-        ........
-
-        Returns
-        -------
-        success : bool
-            True on success. False otherwise.
-        error : bool
-            True on error. False otherwise.
-        adapted : bool
-            True, if something within the scenario has adapted something in this cycle. False otherwise.
-        end_of_data : bool
-            True, if the end of the related data source has been reached. False otherwise.
-        """
-
-        self.log(self.C_LOG_TYPE_I, 'Compute strategies...')
-        self._strategies = self._model.compute_strategy(self._payoff)
-
-        return False, False, False, False
-
-
-## -------------------------------------------------------------------------------------------------
-    def _get_evaluation(self, p_player_ids:Union[str, list]=None, p_coalition_id=None) -> Union[float, list]:
-        
-        if (p_player_ids is None) and (p_coalition_id is None):
-            raise ParamError("p_player_ids and p_coalition_id are both none! Either of them needs to be defined.")
-
-        if p_player_ids is not None:
-            return self._payoff.get_payoff(self._strategies.get_sorted_values(), p_player_ids)
-        else:
-            if isinstance(self._model, GTCompetition):
-                ids = self._model.get_coalition(p_coalition_id)
-                pl_ids = ids.get_players()
-            else:
-                pl_ids = self._model.get_players()
-
-            return self._payoff.get_payoff(self._strategies.get_sorted_values(), pl_ids)
-    
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class GTTrainingResults (TrainingResults):
-    """
-    Results of a native GT training.
-
-    Parameters
-    ----------
-    p_scenario : GTScenario
-        Related native GT scenario.
-    p_run : int
-        Run id.
-    p_cycle_id : int
-        Id of first cycle of this run.
-    p_logging
-        Log level (see constants of class Log). Default: Log.C_LOG_ALL
-
-    """
-
-    C_NAME                  = 'GTTrainingResults'
-
-    C_FNAME_COAL_STRATEGIES = 'coalitions_stategies'
-    C_FNAME_COAL_PAYOFFS    = 'coalitions_payoffs'
-
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, p_scenario:GTGame, p_run, p_cycle_id, p_logging=Log.C_LOG_WE):
-        super().__init__(p_scenario=p_scenario,
-                         p_run=p_run,
-                         p_cycle_id=p_cycle_id,
-                         p_logging=p_logging)
-
-        self.ds_strategies = None
-        self.ds_payoffs = None
-
-
-## -------------------------------------------------------------------------------------------------
-    def save(self, p_path, p_filename='summary.csv') -> bool:
-        if not super().save(p_path, p_filename=p_filename):
-            return False
-
-        if self.ds_strategies is not None:
-            self.ds_strategies.save_data(p_path, self.C_FNAME_COAL_STRATEGIES)
-        if self.ds_payoffs is not None:
-            self.ds_payoffs.save_data(p_path, self.C_FNAME_COAL_PAYOFFS)
-
-
-
-
-
-## -------------------------------------------------------------------------------------------------
-## -------------------------------------------------------------------------------------------------
-class GTTraining (Training):
-
-    C_TYPE          = 'GTTraining'
-
-    C_CLS_RESULTS   = GTTrainingResults
-
-
-## -------------------------------------------------------------------------------------------------
-    def __init__(self, **p_kwargs):
-
-        super().__init__(**p_kwargs)
-
-        try:
-            self._collect_strategy = self._kwargs['p_collect_strategy']
-        except KeyError:
-            self._collect_strategy = True
-            self._kwargs['p_collect_strategy'] = self._collect_strategy
-
-        try:
-            self._collect_payoff = self._kwargs['p_collect_payoff']
-        except KeyError:
-            self._collect_payoff = True
-            self._kwargs['p_collect_payoff'] = self._collect_payoff
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_results(self) -> TrainingResults:
-        
-        results = super()._init_results()
-
-        if self._collect_strategy:
-            strategy_space = Set()
-            results.ds_strategies = GTDataStoring(strategy_space)
-
-        if self._collect_payoff:
-            payoff_space = Set()
-            results.ds_strategies = GTDataStoring(payoff_space)
-
-        return results
-
-
-
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
@@ -800,3 +617,243 @@ class GTDataStoring (DataStoring):
 
         for i, var in enumerate(self.var_space):
             self.memorize(var, self.current_trial, p_data[i])
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class GTGame (Scenario):
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_payoff_matrix:GTPayoffMatrix,
+                 p_visualize:bool=False,
+                 p_logging=Log.C_LOG_ALL):
+        
+        super().__init__(p_mode=Mode.C_MODE_SIM,
+                         p_ada=False,
+                         p_cycle_limit=1,
+                         p_visualize=p_visualize,
+                         p_logging=p_logging)
+        
+        self._payoff        = p_payoff_matrix
+        self._strategies    = None
+
+        self.connect_data_logger()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
+        """
+        Custom setup of ML scenario.
+
+        Parameters
+        ----------
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM
+        p_ada : bool
+            Boolean switch for adaptivity.
+        p_visualize : bool
+            Boolean switch for visualisation. 
+        p_logging
+            Log level (see constants of class Log). 
+
+        Returns
+        -------
+        player : GTPlayer
+            GTPlayer model (object of type GTPlayer, GTCoalition or GTCompetition).
+        """
+
+        raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run_cycle(self):
+        """
+        ........
+
+        Returns
+        -------
+        success : bool
+            True on success. False otherwise.
+        error : bool
+            True on error. False otherwise.
+        adapted : bool
+            True, if something within the scenario has adapted something in this cycle. False otherwise.
+        end_of_data : bool
+            True, if the end of the related data source has been reached. False otherwise.
+        """
+
+        self.log(self.C_LOG_TYPE_I, 'Compute strategies...')
+        self._strategies = self._model.compute_strategy(self._payoff)
+
+        if self._ds_strategies is not None:
+            ts = self._timer.get_time()
+            self._ds_strategies.memorize_row(self._cycle_id, ts, self._strategies.get_sorted_values())
+
+        if self._ds_payoffs is not None:
+            ts = self._timer.get_time()
+            if isinstance(self._model, GTCompetition):
+                payoff = []
+                for coal in self._model.get_coalitions():
+                    payoff.append(self._get_evaluation(p_coalition_id=coal.get_id()))
+            else:
+                payoff = self._get_evaluation(p_coalition_id=self._model.get_id())
+            self._ds_payoffs.memorize_row(self._cycle_id, ts, payoff)
+
+        return False, False, False, False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_evaluation(self, p_player_ids:Union[str, list]=None, p_coalition_id=None) -> Union[float, list]:
+        
+        if (p_player_ids is None) and (p_coalition_id is None):
+            raise ParamError("p_player_ids and p_coalition_id are both none! Either of them needs to be defined.")
+
+        if p_player_ids is not None:
+            return self._payoff.get_payoff(self._strategies.get_sorted_values(), p_player_ids)
+        else:
+            if isinstance(self._model, GTCompetition):
+                ids = self._model.get_coalition(p_coalition_id)
+                pl_ids = ids.get_players()
+            else:
+                pl_ids = self._model.get_players()
+
+            return self._payoff.get_payoff(self._strategies.get_sorted_values(), pl_ids)
+
+
+## -------------------------------------------------------------------------------------------------
+    def connect_data_logger(self,
+                            p_ds_strategies:GTDataStoring=None,
+                            p_ds_payoffs:GTDataStoring = None):
+        self._ds_strategies  = p_ds_strategies
+        self._ds_payoffs = p_ds_payoffs
+    
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class GTTrainingResults (TrainingResults):
+    """
+    Results of a native GT training.
+
+    Parameters
+    ----------
+    p_scenario : GTScenario
+        Related native GT scenario.
+    p_run : int
+        Run id.
+    p_cycle_id : int
+        Id of first cycle of this run.
+    p_logging
+        Log level (see constants of class Log). Default: Log.C_LOG_ALL
+
+    """
+
+    C_NAME                  = 'GTTrainingResults'
+
+    C_FNAME_COAL_STRATEGIES = 'coalitions_stategies'
+    C_FNAME_COAL_PAYOFFS    = 'coalitions_payoffs'
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_scenario:GTGame, p_run, p_cycle_id, p_logging=Log.C_LOG_WE):
+        super().__init__(p_scenario=p_scenario,
+                         p_run=p_run,
+                         p_cycle_id=p_cycle_id,
+                         p_logging=p_logging)
+
+        self.ds_strategies  = None
+        self.ds_payoffs     = None
+        self.num_trials     = 0
+
+
+## -------------------------------------------------------------------------------------------------
+    def save(self, p_path, p_filename='summary.csv') -> bool:
+        if not super().save(p_path, p_filename=p_filename):
+            return False
+
+        if self.ds_strategies is not None:
+            self.ds_strategies.save_data(p_path, self.C_FNAME_COAL_STRATEGIES)
+        if self.ds_payoffs is not None:
+            self.ds_payoffs.save_data(p_path, self.C_FNAME_COAL_PAYOFFS)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class GTTraining (Training):
+
+    C_TYPE          = 'GTTraining'
+
+    C_CLS_RESULTS   = GTTrainingResults
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, **p_kwargs):
+
+        super().__init__(**p_kwargs)
+
+        try:
+            self._collect_strategy = self._kwargs['p_collect_strategy']
+        except KeyError:
+            self._collect_strategy = True
+            self._kwargs['p_collect_strategy'] = self._collect_strategy
+
+        try:
+            self._collect_payoff = self._kwargs['p_collect_payoff']
+        except KeyError:
+            self._collect_payoff = True
+            self._kwargs['p_collect_payoff'] = self._collect_payoff
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_results(self) -> TrainingResults:
+        
+        results = super()._init_results()
+
+        if self._collect_strategy:
+            strategy_space = Set()
+            results.ds_strategies = GTDataStoring(strategy_space)
+
+        if self._collect_payoff:
+            payoff_space = Set()
+            results.ds_payoffs = GTDataStoring(payoff_space)
+
+        self._scenario.connect_data_logger(p_ds_strategies=results.ds_strategies,
+                                           p_ds_payoffs=results.ds_payoffs)
+
+        return results
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_trial(self):
+
+        self._scenario.reset()
+
+        if (self._results.ds_strategies and self._scenario.ds_strategies) is not None:
+            self._results.ds_strategies.add_trial(self._results.num_trials)
+
+        if (self._results.ds_payoffs and self._scenario.ds_payoffs) is not None:
+            self._results.ds_payoffs.add_trial(self._results.num_trials)
+
+
+## -------------------------------------------------------------------------------------------------
+    def _close_trial(self):
+
+        self._results.num_trials += 1
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run_cycle(self) -> bool:
+
+        self._init_trial()
+        self._scenario.run_cycle()
+        self._close_trial()
+
+        return False
