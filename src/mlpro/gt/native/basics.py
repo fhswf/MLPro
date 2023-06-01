@@ -398,6 +398,7 @@ class GTCoalition (GTPlayer):
 
 ## -------------------------------------------------------------------------------------------------
     def get_strategy_space(self) -> ESpace:
+
         if self.get_coaltion_strategy == 0:
             return None
         else:
@@ -705,6 +706,8 @@ class GTTraining (Training):
 
     C_TYPE          = 'GTTraining'
 
+    C_CLS_RESULTS   = GTTrainingResults
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, **p_kwargs):
@@ -722,3 +725,78 @@ class GTTraining (Training):
         except KeyError:
             self._collect_payoff = True
             self._kwargs['p_collect_payoff'] = self._collect_payoff
+
+
+## -------------------------------------------------------------------------------------------------
+    def _init_results(self) -> TrainingResults:
+        
+        results = super()._init_results()
+
+        if self._collect_strategy:
+            strategy_space = Set()
+            results.ds_strategies = GTDataStoring(strategy_space)
+
+        if self._collect_payoff:
+            payoff_space = Set()
+            results.ds_strategies = GTDataStoring(payoff_space)
+
+        return results
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class GTDataStoring (DataStoring):
+    # Frame ID renamed
+    C_VAR0          = 'Trial'
+
+    # Variables for episodic detail data storage
+    C_VAR_CYCLE     = 'Cycle'
+    C_VAR_DAY       = 'Day'
+    C_VAR_SEC       = 'Second'
+    C_VAR_MICROSEC  = 'Microsecond'
+
+ ## -------------------------------------------------------------------------------------------------
+    def __init__(self, p_space:Set = None):
+        self.space = p_space
+
+        # Initialization as an episodic detail data storage
+        self.variables = [self.C_VAR_CYCLE, self.C_VAR_DAY, self.C_VAR_SEC, self.C_VAR_MICROSEC]
+        self.var_space = []
+
+        for dim_id in self.space.get_dim_ids():
+            dim = self.space.get_dim(dim_id)
+            self.var_space.append(dim.get_name_short())
+
+        self.variables.extend(self.var_space)
+
+        super().__init__(self.variables)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_variables(self):
+        return self.variables
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_space(self):
+        return self.space
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_trial(self, p_trial_id):
+        self.add_frame(p_trial_id)
+        self.current_trial = p_trial_id
+
+
+## -------------------------------------------------------------------------------------------------
+    def memorize_row(self, p_cycle_id, p_tstamp: timedelta, p_data):
+
+        self.memorize(self.C_VAR_CYCLE, self.current_trial, p_cycle_id)
+        self.memorize(self.C_VAR_DAY, self.current_trial, p_tstamp.days)
+        self.memorize(self.C_VAR_SEC, self.current_trial, p_tstamp.seconds)
+        self.memorize(self.C_VAR_MICROSEC, self.current_trial, p_tstamp.microseconds)
+
+        for i, var in enumerate(self.var_space):
+            self.memorize(var, self.current_trial, p_data[i])
