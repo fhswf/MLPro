@@ -46,10 +46,11 @@
 ## --                                - merged classes Load, Save into Persistent
 ## --                                - logging
 ## -- 2023-04-12  2.1.1     MRD      Safe guarding open file with "with" 
+## -- 2023-06-01  2.1.2     SY       Scientific Referencing to bibtex format
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.1 (2023-04-12)
+Ver. 2.1.2 (2023-06-01)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -685,10 +686,13 @@ class  ScientificObject:
     """
 
     C_SCIREF_TYPE_NONE = None
-    C_SCIREF_TYPE_ARTICLE = "Journal Article"
+    C_SCIREF_TYPE_ARTICLE = "Article"
     C_SCIREF_TYPE_BOOK = "Book"
+    C_SCIREF_TYPE_BOOKLET = "Booklet"
+    C_SCIREF_TYPE_INBOOK = "Inbook"
     C_SCIREF_TYPE_ONLINE = "Online"
     C_SCIREF_TYPE_PROCEEDINGS = "Proceedings"
+    C_SCIREF_TYPE_INPROCEEDINGS = "Inproceedings"
     C_SCIREF_TYPE_TECHREPORT = "Technical Report"
     C_SCIREF_TYPE_UNPUBLISHED = "Unpublished"
 
@@ -717,6 +721,34 @@ class  ScientificObject:
     C_SCIREF_CONFERENCE = None
     C_SCIREF_NOTES = None
     C_SCIREF_EDITOR = None
+    C_SCIREF_ADDRESS = None
+    C_SCIREF_HOWPUBLISHED = None
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_bibtex(self):
+
+        if self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_NONE:
+            raise ParamError('Type of the scientific reference is not defined!')
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_ARTICLE:
+            field = 'article'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_BOOK:
+            field = 'article'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_BOOKLET:
+            field = 'article'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_INBOOK:
+            field = 'article'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_ONLINE:
+            field = 'article'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_PROCEEDINGS:
+            field = 'article'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_INPROCEEDINGS:
+            field = 'article'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_TECHREPORT:
+            field = 'article'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_UNPUBLISHED:
+            field = 'article'
+        
 
 
 
@@ -743,6 +775,7 @@ class PersonalisedStamp (Id):
     """
 
     C_NAME = ''
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name:str, p_id:int=None):
