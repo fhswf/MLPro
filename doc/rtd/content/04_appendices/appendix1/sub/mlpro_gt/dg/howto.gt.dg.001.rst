@@ -100,4 +100,4 @@ Three Gym Cartpole game board windows should appear and the following output sho
 
 **Cross Reference**
 
-+ :ref:`API Reference: Game Theory <target_api_gt>`
++ :ref:`API Reference: Game Theory in Dynamic Games <target_api_gt>`

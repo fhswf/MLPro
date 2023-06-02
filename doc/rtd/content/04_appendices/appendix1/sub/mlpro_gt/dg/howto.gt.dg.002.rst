@@ -52,4 +52,4 @@ and the final training result should show up at the end of the script.
 
 **Cross Reference**
 
-+ :ref:`API Reference: Game Theory <target_api_gt>`
++ :ref:`API Reference: Game Theory in Dynamic Games <target_api_gt>`
