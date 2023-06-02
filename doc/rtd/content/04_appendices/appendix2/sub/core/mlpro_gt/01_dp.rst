@@ -5,19 +5,19 @@ GT-DP - Dynamic Games
 .. image:: images/MLPro-GT_class_diagram.drawio.png
    :scale: 50%
    
-.. automodule:: mlpro.gt.basics
+.. automodule:: mlpro.gt.dynamicgames.basics
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
    
-.. automodule:: mlpro.gt.potential
+.. automodule:: mlpro.gt.dynamicgames.potential
    :members:
    :undoc-members:
    :private-members:
    :show-inheritance:
    
-.. automodule:: mlpro.gt.stackelberg
+.. automodule:: mlpro.gt.dynamicgames.stackelberg
    :members:
    :undoc-members:
    :private-members:
