@@ -41,7 +41,21 @@ The type and detail of the related scientific reference in a class can be initia
             self.C_SCIREF_VOLUME  = "01"
             self.C_SCIREF_DOI     = "10.XXXX"
 
-Shortly, the MLPro team is planning to add a citing functionality. Therefore, the users can obtain the citation of the specific class in the form of BibTeX. 
+MLPro team has added a citing functionality. Therefore, the users can obtain the citation of the specific class in the form of BibTeX, as follows:
+
+.. code-block:: python
+
+    @article{CitekeyArticle,
+    author = {Max Mustermann},
+    title = {Analysis of MLPro},
+    journal = {My Journal},
+    volume = {01},
+    year = {2023},
+    month = {01},
+    day = {01},
+    doi = {10.XXXX}
+    }
+
 
 **Cross Reference**
     + :ref:`API Reference <target_api_bf_various>`

@@ -46,10 +46,11 @@
 ## --                                - merged classes Load, Save into Persistent
 ## --                                - logging
 ## -- 2023-04-12  2.1.1     MRD      Safe guarding open file with "with" 
+## -- 2023-06-01  2.1.2     SY       Scientific Referencing to bibtex format
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.1.1 (2023-04-12)
+Ver. 2.1.2 (2023-06-01)
 
 This module provides various classes with elementry functionalities for reuse in higher level classes. 
 For example: logging, persistence, timer...
@@ -685,10 +686,13 @@ class  ScientificObject:
     """
 
     C_SCIREF_TYPE_NONE = None
-    C_SCIREF_TYPE_ARTICLE = "Journal Article"
+    C_SCIREF_TYPE_ARTICLE = "Article"
     C_SCIREF_TYPE_BOOK = "Book"
+    C_SCIREF_TYPE_BOOKLET = "Booklet"
+    C_SCIREF_TYPE_INBOOK = "Inbook"
     C_SCIREF_TYPE_ONLINE = "Online"
     C_SCIREF_TYPE_PROCEEDINGS = "Proceedings"
+    C_SCIREF_TYPE_INPROCEEDINGS = "Inproceedings"
     C_SCIREF_TYPE_TECHREPORT = "Technical Report"
     C_SCIREF_TYPE_UNPUBLISHED = "Unpublished"
 
@@ -717,8 +721,100 @@ class  ScientificObject:
     C_SCIREF_CONFERENCE = None
     C_SCIREF_NOTES = None
     C_SCIREF_EDITOR = None
+    C_SCIREF_ADDRESS = None
+    C_SCIREF_HOWPUBLISHED = None
+    C_SCIREF_NUMPAGES= None
+    C_SCIREF_ISSN = None
+    C_SCIREF_VERSION = None
 
 
+## -------------------------------------------------------------------------------------------------
+    def get_bibtex(self):
+
+        if self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_ARTICLE:
+            field = '@article{CitekeyArticle,'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_BOOK:
+            field = '@book{CitekeyBook,'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_BOOKLET:
+            field = '@booklet{CitekeyBooklet,'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_INBOOK:
+            field = '@inbook{CitekeyInbook,'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_ONLINE:
+            field = '@misc{CitekeyMisc,'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_PROCEEDINGS:
+            field = '@proceedings{CitekeyProceedings,'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_INPROCEEDINGS:
+            field = '@inproceedings{CitekeyInproceedings,'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_TECHREPORT:
+            field = '@techreport{CitekeyTechreport,'
+        elif self.C_SCIREF_TYPE == self.C_SCIREF_TYPE_UNPUBLISHED:
+            field = '@unpublished{CitekeyUnpublished,'
+        else:
+            raise ParamError('Type of the scientific reference is not defined!')
+        
+        content = '\n'
+        if self.C_SCIREF_AUTHOR is not None:
+            content += 'author = {%s},\n'%self.C_SCIREF_AUTHOR
+        if self.C_SCIREF_TITLE is not None:
+            content += 'title = {%s},\n'%self.C_SCIREF_TITLE
+        if self.C_SCIREF_JOURNAL is not None:
+            content += 'journal = {%s},\n'%self.C_SCIREF_JOURNAL
+        if self.C_SCIREF_ABSTRACT is not None:
+            content += 'abstract = {%s},\n'%self.C_SCIREF_ABSTRACT
+        if self.C_SCIREF_VOLUME is not None:
+            content += 'volume = {%s},\n'%self.C_SCIREF_VOLUME
+        if self.C_SCIREF_NUMBER is not None:
+            content += 'number = {%s},\n'%self.C_SCIREF_NUMBER
+        if self.C_SCIREF_PAGES is not None:
+            content += 'pages = {%s},\n'%self.C_SCIREF_PAGES
+        if self.C_SCIREF_YEAR is not None:
+            content += 'year = {%s},\n'%self.C_SCIREF_YEAR
+        if self.C_SCIREF_MONTH is not None:
+            content += 'month = {%s},\n'%self.C_SCIREF_MONTH
+        if self.C_SCIREF_DAY is not None:
+            content += 'day = {%s},\n'%self.C_SCIREF_DAY
+        if self.C_SCIREF_DOI is not None:
+            content += 'doi = {%s},\n'%self.C_SCIREF_DOI
+        if self.C_SCIREF_KEYWORDS is not None:
+            content += 'keywords = {%s},\n'%self.C_SCIREF_KEYWORDS
+        if self.C_SCIREF_ISBN is not None:
+            content += 'isbn = {%s},\n'%self.C_SCIREF_ISBN
+        if self.C_SCIREF_SERIES is not None:
+            content += 'series = {%s},\n'%self.C_SCIREF_SERIES
+        if self.C_SCIREF_PUBLISHER is not None:
+            content += 'publisher = {%s},\n'%self.C_SCIREF_PUBLISHER
+        if self.C_SCIREF_CITY is not None:
+            content += 'city = {%s},\n'%self.C_SCIREF_CITY
+        if self.C_SCIREF_COUNTRY is not None:
+            content += 'country = {%s},\n'%self.C_SCIREF_COUNTRY
+        if self.C_SCIREF_URL is not None:
+            content += 'url = {%s},\n'%self.C_SCIREF_URL
+        if self.C_SCIREF_CHAPTER is not None:
+            content += 'chapter = {%s},\n'%self.C_SCIREF_CHAPTER
+        if self.C_SCIREF_BOOKTITLE is not None:
+            content += 'booktitle = {%s},\n'%self.C_SCIREF_BOOKTITLE
+        if self.C_SCIREF_INSTITUTION is not None:
+            content += 'institution = {%s},\n'%self.C_SCIREF_INSTITUTION
+        if self.C_SCIREF_CONFERENCE is not None:
+            content += 'booktitle = {%s},\n'%self.C_SCIREF_CONFERENCE
+        if self.C_SCIREF_NOTES is not None:
+            content += 'note = {%s},\n'%self.C_SCIREF_NOTES
+        if self.C_SCIREF_EDITOR is not None:
+            content += 'editor = {%s},\n'%self.C_SCIREF_EDITOR
+        if self.C_SCIREF_ADDRESS is not None:
+            content += 'address = {%s},\n'%self.C_SCIREF_ADDRESS
+        if self.C_SCIREF_HOWPUBLISHED is not None:
+            content += 'howpublished = {%s},\n'%self.C_SCIREF_HOWPUBLISHED
+        if self.C_SCIREF_NUMPAGES is not None:
+            content += 'numpages = {%s},\n'%self.C_SCIREF_NUMPAGES
+        if self.C_SCIREF_ISSN is not None:
+            content += 'issn = {%s},\n'%self.C_SCIREF_ISSN
+        if self.C_SCIREF_VERSION is not None:
+            content += 'version = {%s},\n'%self.C_SCIREF_VERSION
+
+        print(field+content[:-2]+'\n}')
+
+        
 
 
 
@@ -743,6 +839,7 @@ class PersonalisedStamp (Id):
     """
 
     C_NAME = ''
+
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_name:str, p_id:int=None):
