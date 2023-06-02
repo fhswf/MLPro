@@ -1,0 +1,24 @@
+.. _target_api_gt:
+GT-DP - Dynamic Games
+=======================
+
+.. image:: images/MLPro-GT_class_diagram.drawio.png
+   :scale: 50%
+   
+.. automodule:: mlpro.gt.basics
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+   
+.. automodule:: mlpro.gt.potential
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:
+   
+.. automodule:: mlpro.gt.stackelberg
+   :members:
+   :undoc-members:
+   :private-members:
+   :show-inheritance:

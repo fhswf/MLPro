@@ -1,5 +1,5 @@
-.. _Howto GT 003:
-Howto GT-003: Train Multi-Player in Stackelberg Games
+.. _Howto GT 004:
+Howto GT-004: Train Multi-Player in Stackelberg Games
 ===========================================================================
 
 .. automodule:: mlpro.gt.examples.howto_gt_dg_004_train_own_multi_player_in_stackelberg_games
