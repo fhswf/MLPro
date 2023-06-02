@@ -61,15 +61,15 @@ Please install the following packages to run this examples properly:
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Training "GT Training": ------------------------------------------------------------------------------ 
     
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Results stored in : "C:\Users\Yuwono\2023-06-02  10.10.23 Training GT Training" 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Results stored in : "C:\Users\%username%\YYYY-MM-DD  HH:MM:SS Training GT" 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": ------------------------------------------------------------------------------ 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Training Results of run 0 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": ------------------------------------------------------------------------------ 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": ------------------------------------------------------------------------------ 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Scenario          : GT Game Matrix 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Model             : GT Multi-Player BGLP Players with Random Policies 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Start time stamp  : 2023-06-02 10:10:23.922732 
-    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- End time stamp    : 2023-06-02 10:10:25.586919 
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Start time stamp  : YYYY-MM-DD  HH:MM:SS.SSSSSS  
+    YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- End time stamp    : YYYY-MM-DD  HH:MM:SS.SSSSSS 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Duration          : 0:00:01.664187 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- Start cycle id    : 0 
     YYYY-MM-DD  HH:MM:SS.SSSSSS  W  Results  "RL": -- End cycle id      : 199 
