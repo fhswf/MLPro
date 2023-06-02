@@ -6,11 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-30  0.0.0     SY       Creation
-## -- 2023-06-01  1.0.0     SY       Release of first version
+## -- 2023-06-02  1.0.0     SY       Release of first version
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-06-01)
+Ver. 1.0.0 (2023-06-02)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -167,7 +167,7 @@ class GTSolver (Task, ScientificObject):
 
         Parameters
         ----------
-        p_par : Dict
+        p_param : Dict
             Further model specific hyperparameters, that are passed through constructor.
         """
 
@@ -248,16 +248,15 @@ class GTPlayer (GTSolver):
                           p_logging = p_logging,
                           **p_param)
 
-
+        
 ## -------------------------------------------------------------------------------------------------
     def _init_hyperparam(self, **p_param):
-
-        # 1 Create a dispatcher hyperparameter tuple for the player
+        
         self._hyperparam_tuple = HyperParamDispatcher(p_set=self._hyperparam_space)
-
-        # 2 Extend agent's hp space and tuple from policy
+        
         try:
-            self._hyperparam_space.append( self.get_solver().get_hyperparam().get_related_set(), p_new_dim_ids=False)
+            self._hyperparam_space.append(self.get_solver().get_hyperparam().get_related_set(),
+                                          p_new_dim_ids=False)
             self._hyperparam_tuple.add_hp_tuple(self.get_solver().get_hyperparam())
         except:
             pass
