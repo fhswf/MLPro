@@ -68,10 +68,13 @@
 ## -- 2023-03-05  2.3.0     LSB      Shifted the environment into a system in bf systems pool
 ## -- 2023-03-08  2.3.1     LSB      Refactoring for visualization
 ## -- 2023-03-09  2.3.2     LSB      Minor Bug Fix
+## -- 2023-05-30  3.0.0     LSB      Adaptive Extensions for Double Pendulum:
+##                                       - DoublePendulumA4
+##                                       - DoublePendulumA7
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 2.3.2 (2023-03-09)
+Ver. 3.0.0 (2023-05-30)
 
 The Double Pendulum environment is an implementation of a classic control problem of Double Pendulum system. The
 dynamics of the system are based on the `Double Pendulum <https://matplotlib.org/stable/gallery/animation/double_pendulum.html>`_  implementation by
@@ -90,6 +93,10 @@ from matplotlib.patches import Arc, RegularPolygon
 import scipy.integrate as integrate
 from collections import deque
 from mlpro.bf.systems.pool.doublependulum import *
+from mlpro.rl.models_env_oa import *
+import mlpro.bf.ml.systems.pool.doublependulum as mldp
+import mlpro.oa.systems.pool.doublependulum as oadp
+
 
 
 
@@ -193,6 +200,12 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__ ( self,
+                   p_id=None,
+                   p_name=None,
+                   p_buffer_size=0,
+                   p_range_max=Range.C_RANGE_NONE,
+                   p_autorun=Task.C_AUTORUN_NONE,
+                   p_class_shared=None,
                    p_mode = Mode.C_MODE_SIM,
                    p_latency = None,
                    p_max_torque=20,
@@ -227,7 +240,12 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
                    p_logging=Log.C_LOG_ALL ):
 
 
-        DoublePendulumSystemRoot.__init__(self,
+        DoublePendulumSystemRoot.__init__(self,p_id = p_id,
+                         p_name=p_name,
+                         p_buffer_size = p_buffer_size,
+                         p_range_max = p_range_max,
+                         p_autorun = p_autorun,
+                         p_class_shared = p_class_shared,
                          p_mode = p_mode,
                          p_latency = p_latency,
                          p_max_torque=p_max_torque,
@@ -262,7 +280,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
                              p_logging = p_logging)
 
 
-
+        self._t_step = self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
         self._state = State(self._state_space)
         self._target_state = State(self._state_space)
         self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
@@ -750,4 +768,190 @@ class DoublePendulumS7 (DoublePendulumSystemS7, DoublePendulumS4):
     """
 
     C_NAME = 'DoublePendulumS7'
+
+
+
+
+
+## ------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------
+class DoublePendulumOA4(OAEnvironment, oadp.DoublePendulumOA4, DoublePendulumS4):
+
+
+    C_NAME = 'Double Pendulum A4'
+## ------------------------------------------------------------------------------------------------------
+    def __init__(self,
+                   p_id = None,
+                   p_name: str = None,
+                   p_buffer_size: int = 0,
+                   p_range_max: int = Range.C_RANGE_NONE,
+                   p_autorun: int = Task.C_AUTORUN_NONE,
+                   p_class_shared: Shared = None,
+                   p_mode = Mode.C_MODE_SIM,
+                   p_ada = True,
+                   p_latency = None,
+                   p_t_step: timedelta = None,
+                   p_max_torque=20,
+                   p_l1=1.0,
+                   p_l2=1.0,
+                   p_m1=1.0,
+                   p_m2=1.0,
+                   p_g=9.8,
+                   p_init_angles=DoublePendulumSystemRoot.C_ANGLES_RND,
+                   p_history_length=5,
+                   p_fct_strans:FctSTrans=None,
+                   p_fct_success:FctSuccess=None,
+                   p_fct_broken:FctBroken=None,
+                   p_fct_reward:FctReward=None,
+                   p_wf:OAWorkflow=None,
+                   p_wf_reward:OAWorkflow=None,
+                   p_wf_success:OAWorkflow=None,
+                   p_wf_broken:OAWorkflow=None,
+                   p_plot_level:int=2,
+                   p_rst_balancing = DoublePendulumS4.C_RST_BALANCING_002,
+                   p_rst_swinging = DoublePendulumS4.C_RST_SWINGING_001,
+                   p_rst_swinging_outer_pole = DoublePendulumS4.C_RST_SWINGING_OUTER_POLE_001,
+                   p_reward_weights: list = None,
+                   p_reward_trend: bool = False,
+                   p_reward_window:int = 0,
+                   p_random_range:list = None,
+                   p_balancing_range:list = (-0.2,0.2),
+                   p_swinging_outer_pole_range = (0.2,0.5),
+                   p_break_swinging:bool = False,
+                   p_mujoco_file = None,
+                   p_frame_skip: int = 1,
+                   p_state_mapping = None,
+                   p_action_mapping = None,
+                   p_camera_conf: tuple = (None, None, None),
+                   p_visualize: bool = False,
+                   p_logging: bool = Log.C_LOG_ALL,
+                   **p_kwargs):
+
+        oadp.DoublePendulumOA4.__init__(self,p_id = p_id,
+                                       p_name=p_name,
+                                       p_buffer_size = p_buffer_size,
+                                       p_range_max = p_range_max,
+                                       p_autorun = p_autorun,
+                                       p_class_shared = p_class_shared,
+                                       p_mode = p_mode,
+                                       p_latency = p_latency,
+                                       p_max_torque=p_max_torque,
+                                       p_l1=p_l1,
+                                       p_l2=p_l2,
+                                       p_m1=p_m1,
+                                       p_m2=p_m2,
+                                       p_g=p_g,
+                                       p_init_angles=p_init_angles,
+                                       p_history_length=p_history_length,
+                                       p_fct_strans=p_fct_strans,
+                                       p_fct_success=p_fct_success,
+                                       p_fct_broken=p_fct_broken,
+                                       p_fct_reward=p_fct_reward,
+                                       p_wf = p_wf,
+                                       p_wf_success = p_wf_success,
+                                       p_wf_broken = p_wf_broken,
+                                       p_wf_reward = p_wf_reward,
+                                       p_mujoco_file=p_mujoco_file,
+                                       p_frame_skip=p_frame_skip,
+                                       p_state_mapping=p_state_mapping,
+                                       p_action_mapping=p_action_mapping,
+                                       p_camera_conf=p_camera_conf,
+                                       p_visualize=p_visualize,
+                                       p_plot_level=p_plot_level,
+                                       p_rst_balancing = p_rst_balancing,
+                                       p_rst_swinging = p_rst_swinging,
+                                       p_rst_swinging_outer_pole = p_rst_swinging_outer_pole,
+                                       p_reward_weights = p_reward_weights,
+                                       p_reward_trend=p_reward_trend,
+                                       p_reward_window= p_reward_window,
+                                       p_random_range=p_random_range,
+                                       p_balancing_range = p_balancing_range,
+                                       p_swinging_outer_pole_range = p_swinging_outer_pole_range,
+                                       p_break_swinging = p_break_swinging,
+                                       p_logging=p_logging)
+
+        DoublePendulumS4.__init__(self,p_id = p_id,
+                                       p_name=p_name,
+                                       p_buffer_size = p_buffer_size,
+                                       p_range_max = p_range_max,
+                                       p_autorun = p_autorun,
+                                       p_class_shared = p_class_shared,
+                                       p_mode = p_mode,
+                                       p_latency = p_latency,
+                                       p_max_torque=p_max_torque,
+                                       p_l1=p_l1,
+                                       p_l2=p_l2,
+                                       p_m1=p_m1,
+                                       p_m2=p_m2,
+                                       p_g=p_g,
+                                       p_init_angles=p_init_angles,
+                                       p_history_length=p_history_length,
+                                       p_fct_strans=p_fct_strans,
+                                       p_fct_success=p_fct_success,
+                                       p_fct_broken=p_fct_broken,
+                                       p_fct_reward=p_fct_reward,
+                                       p_mujoco_file=p_mujoco_file,
+                                       p_frame_skip=p_frame_skip,
+                                       p_state_mapping=p_state_mapping,
+                                       p_action_mapping=p_action_mapping,
+                                       p_camera_conf=p_camera_conf,
+                                       p_visualize=p_visualize,
+                                       p_plot_level=p_plot_level,
+                                       p_rst_balancing = p_rst_balancing,
+                                       p_rst_swinging = p_rst_swinging,
+                                       p_rst_swinging_outer_pole = p_rst_swinging_outer_pole,
+                                       p_reward_weights = p_reward_weights,
+                                       p_reward_trend=p_reward_trend,
+                                       p_reward_window= p_reward_window,
+                                       p_random_range=p_random_range,
+                                       p_balancing_range = p_balancing_range,
+                                       p_swinging_outer_pole_range = p_swinging_outer_pole_range,
+                                       p_break_swinging = p_break_swinging,
+                                       p_logging=p_logging)
+
+        OAEnvironment.__init__(self,
+                                 p_id = p_id,
+                                 p_name = p_name,
+                                 p_buffer_size = p_buffer_size,
+                                 p_ada = p_ada,
+                                 p_range_max = p_range_max,
+                                 p_autorun = p_autorun,
+                                 p_class_shared = p_class_shared,
+                                 p_mode = p_mode,
+                                 p_latency = p_latency,
+                                 p_t_step = p_t_step,
+                                 p_fct_strans = p_fct_strans,
+                                 p_fct_reward = p_fct_reward,
+                                 p_fct_success = p_fct_success,
+                                 p_fct_broken = p_fct_broken,
+                                 p_wf = p_wf,
+                                 p_wf_success = p_wf_success,
+                                 p_wf_broken = p_wf_broken,
+                                 p_wf_reward = p_wf_reward,
+                                 p_mujoco_file = p_mujoco_file,
+                                 p_frame_skip = p_frame_skip,
+                                 p_state_mapping = p_state_mapping,
+                                 p_action_mapping = p_action_mapping,
+                                 p_camera_conf = p_camera_conf,
+                                 p_visualize = p_visualize,
+                                 p_logging = p_logging,
+                                 **p_kwargs)
+
+        self._t_step = self.get_latency().seconds + self.get_latency().microseconds / 1000000
+
+        self._state = State(self._state_space)
+        self._target_state = State(self._state_space)
+        self._target_state.set_values(np.zeros(self._state_space.get_num_dim()))
+
+
+
+
+
+## ------------------------------------------------------------------------------------------------------
+## ------------------------------------------------------------------------------------------------------
+class DoublePendulumOA7(oadp.DoublePendulumA7, DoublePendulumOA4, DoublePendulumS7):
+
+    C_NAME = 'Double Pendulum A7'
+    C_PLOT_ACTIVE = True
+
 
