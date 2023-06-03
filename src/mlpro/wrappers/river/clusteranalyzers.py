@@ -8,10 +8,11 @@
 ## -- 2023-05-12  0.0.0     DA       Creation
 ## -- 2023-05-23  1.0.0     SY       First version release
 ## -- 2023-05-25  1.0.1     SY       Refactoring related to ClusterCentroid
+## -- 2023-06-03  1.0.2     DA       Renaming of method ClusterAnalyzer.get_cluster_memberships
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-05-25)
+Ver. 1.0.2 (2023-06-03)
 
 This module provides wrapper classes from River to MLPro, specifically for cluster analyzers. This
 module includes three clustering algorithms from River that are embedded to MLPro, such as:
@@ -32,6 +33,7 @@ https://www.riverml.xyz/
 """
 
 
+from mlpro.bf.streams import Instance, List
 from mlpro.wrappers.river.basics import WrapperRiver
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster, ClusterCentroid
 from mlpro.bf.mt import Task as MLTask
@@ -132,7 +134,7 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         self._river_algo.learn_one(input_data)
 
         # get cluster membership
-        self.get_cluster_membership(p_inst_new)
+        self.get_cluster_memberships(p_inst_new)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -167,7 +169,9 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_cluster_membership(self, p_inst:Instance) -> List[Tuple[str, float, Cluster]]:
+    def get_cluster_memberships( self, 
+                                 p_inst: Instance, 
+                                 p_scope: int = ClusterAnalyzer.C_MS_SCOPE_MAX ) -> List[Tuple[str, float, Cluster]]:
         """
         Public custom method to determine the membership of the given instance to each cluster as
         a value in percent.
