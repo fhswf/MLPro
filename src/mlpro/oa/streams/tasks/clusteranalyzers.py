@@ -14,6 +14,7 @@
 ## --                                - renaming
 ## --                                - new parameter p_scope
 ## --                                - refactoring
+## --                                New Method ClusterAnalyzer.new_cluster_allowed()
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -170,6 +171,20 @@ class ClusterAnalyzer (OATask):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def new_cluster_allowed(self) -> bool:
+        """
+        Determines whether adding a new cluster is allowed.
+
+        Returns
+        -------
+        bool
+           True, if adding a new cluster allowed. False otherwise.
+        """
+
+        return ( self._cluster_limit == 0 ) or ( len(self._clusters) < self._cluster_limit )
+    
+
+## -------------------------------------------------------------------------------------------------
     def get_clusters(self) -> List[Cluster]:
         """
         This method returns the current list of clusters. 
@@ -242,23 +257,6 @@ class ClusterAnalyzer (OATask):
         return list_ms_rel
 
 
-## -------------------------------------------------------------------------------------------------
-    def init_plot(self, p_figure: Figure = None, p_plot_settings: PlotSettings = None):
-        Plottable.init_plot(self, p_figure, p_plot_settings)
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_2d(self, p_figure: Figure, p_settings: PlotSettings): pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_3d(self, p_figure: Figure, p_settings: PlotSettings): pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _init_plot_nd(self, p_figure: Figure, p_settings: PlotSettings): pass
-        
-    
 ## -------------------------------------------------------------------------------------------------
     def update_plot( self, 
                      p_inst_new: List[Instance] = None, 
