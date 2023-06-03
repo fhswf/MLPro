@@ -134,7 +134,7 @@ class ClusterAnalyzer (OATask):
     C_PLOT_ACTIVE           = True
     C_PLOT_STANDALONE       = False
 
-    # Possible membership scopes for method get_cluster_membership
+    # Possible membership scopes for method get_cluster_memberships
     C_MS_SCOPE_ALL : int    = 0
     C_MS_SCOPE_NONZERO :int = 1
     C_MS_SCOPE_MAX :int     = 2
