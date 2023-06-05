@@ -218,7 +218,7 @@ class ClusterAnalyzer (OATask):
         -------
         membership : List[Tuple[str, float, Cluster]]
             List of membership tuples. A tuple consists of a cluster id, a relative membership 
-            value in ]0,1] and a reference to the cluster object.
+            value in [0,1] and a reference to the cluster object.
         """
 
         # 1 Determination of membership values of the instance for all clusters

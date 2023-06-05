@@ -9,10 +9,11 @@
 ## -- 2023-05-23  1.0.0     SY       First version release
 ## -- 2023-05-25  1.0.1     SY       Refactoring related to ClusterCentroid
 ## -- 2023-06-03  1.0.2     DA       Renaming of method ClusterAnalyzer.get_cluster_memberships
+## -- 2023-06-05  1.0.3     SY       Updating get_cluster_memberships and _adapt
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-06-03)
+Ver. 1.0.3 (2023-06-05)
 
 This module provides wrapper classes from River to MLPro, specifically for cluster analyzers. This
 module includes three clustering algorithms from River that are embedded to MLPro, such as:
@@ -137,7 +138,7 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         self._river_algo.learn_one(input_data)
 
         # get cluster membership
-        # self.get_cluster_memberships(p_inst_new)
+        self.get_cluster_memberships(p_inst_new)
 
         return True
 
@@ -219,9 +220,11 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
                 cluster = list_clusters[cluster_idx]
                 if x == cluster_idx:
                     memberships_rel.append((cluster.get_id(), 1, cluster))
-                    self.log(self.C_LOG_TYPE_I, 'Actual instances belongs to cluster %s'%(cluster.get_id()))
+                    self.log(self.C_LOG_TYPE_I,
+                             'Actual instances belongs to cluster %s'%(cluster.get_id()))
                 else:
-                    memberships_rel.append((cluster.get_id(), 0, cluster))
+                    if p_scope == ClusterAnalyzer.C_MS_SCOPE_ALL:
+                        memberships_rel.append((cluster.get_id(), 0, cluster))
 
         return memberships_rel
 
