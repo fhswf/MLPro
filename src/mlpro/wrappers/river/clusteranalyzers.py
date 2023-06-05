@@ -104,7 +104,7 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: List[Instance], p_inst_del: List[Instance]):
+    def _adapt(self, p_inst_new:List[Instance]) -> bool:
         """
         This method is to adapt the current clusters according to the incoming instances.
 
@@ -112,8 +112,11 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         ----------
         p_inst_new : List[Instance]
             incoming instances.
-        p_inst_del : List[Instance]
-            removed instances. In this method, this variable is not used.
+
+        Returns
+        -------
+        adapted : bool
+            True, if something has been adapted. False otherwise.
             
         """
         
@@ -134,7 +137,9 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         self._river_algo.learn_one(input_data)
 
         # get cluster membership
-        self.get_cluster_memberships(p_inst_new)
+        # self.get_cluster_memberships(p_inst_new)
+
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------

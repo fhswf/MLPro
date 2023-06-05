@@ -1,4 +1,4 @@
-<mxfile host="Electron" modified="2023-06-05T12:21:42.238Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="DMyUbJz1v5RMQl1leNXU" version="21.2.8" type="device">
+<mxfile host="Electron" modified="2023-06-05T12:23:28.748Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="gUyHcWBvlZRAekd6tISW" version="21.2.8" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="1434" dy="956" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2336" pageHeight="1654" math="0" shadow="0">
       <root>
@@ -119,7 +119,7 @@
         <mxCell id="2FA-AZclAdWKTxUtMzAQ-26" value="__init__( p_river_algo : river.base.Clusterer,&#xa;               p_name : str = None,&#xa;               p_range_max=MLTask.C_RANGE_THREAD,&#xa;               p_ada : bool = True,&#xa;               p_visualize : bool = False,&#xa;               p_logging = Log.C_LOG_ALL,&#xa;               **p_kwargs )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="2FA-AZclAdWKTxUtMzAQ-14" vertex="1">
           <mxGeometry y="208" width="330" height="104" as="geometry" />
         </mxCell>
-        <mxCell id="2FA-AZclAdWKTxUtMzAQ-27" value="_adapt( p_inst_new : list[Instance] )" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="2FA-AZclAdWKTxUtMzAQ-14" vertex="1">
+        <mxCell id="2FA-AZclAdWKTxUtMzAQ-27" value="_adapt( p_inst_new : list[Instance] ): bool" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=default;" parent="2FA-AZclAdWKTxUtMzAQ-14" vertex="1">
           <mxGeometry y="312" width="330" height="27" as="geometry" />
         </mxCell>
         <mxCell id="2FA-AZclAdWKTxUtMzAQ-28" value="get_clusters() -&gt; list[Cluster]" style="text;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontColor=#0000FF;" parent="2FA-AZclAdWKTxUtMzAQ-14" vertex="1">
