@@ -9,7 +9,7 @@
 ## -- 2023-05-23  1.0.0     SY       First version release
 ## -- 2023-05-25  1.0.1     SY       Refactoring related to ClusterCentroid
 ## -- 2023-06-03  1.0.2     DA       Renaming of method ClusterAnalyzer.get_cluster_memberships
-## -- 2023-06-05  1.0.3     SY       Updating get_cluster_memberships and _adapt
+## -- 2023-06-05  1.0.3     SY       Updating get_cluster_memberships, p_cls_cluster, and _adapt
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -56,6 +56,8 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
     Parameters
     ----------
+    p_cls_cluster 
+        Cluster class (Class Cluster or a child class).
     p_river_algo : river.base.Clusterer
         Instantiated river-based clusterer.
     p_name : str
@@ -78,12 +80,11 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
     
     C_WRAPPED_PACKAGE   = 'river'
     C_MINIMUM_VERSION   = '0.15.0'
-    
-    C_CLS_CLUSTER       = Cluster
 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_cls_cluster,
                  p_river_algo:base.Clusterer,
                  p_name:str = None,
                  p_range_max = MLTask.C_RANGE_THREAD,
@@ -97,6 +98,7 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         WrapperRiver.__init__(self, p_logging=p_logging)
 
         ClusterAnalyzer.__init__(self,
+                                 p_cls_cluster=p_cls_cluster,
                                  p_name=p_name,
                                  p_range_max=p_range_max,
                                  p_ada=p_ada,
@@ -186,6 +188,9 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         ----------
         p_inst : Instance
             Instance to be evaluated.
+        p_scope : int
+            Scope of the result list. See class attributes C_MS_SCOPE_* for possible values. Default
+            value is C_MS_SCOPE_MAX.
 
         Returns
         -------
@@ -282,8 +287,6 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
     """
 
     C_NAME          = 'DBSTREAM'
-    
-    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -306,7 +309,8 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
                                intersection_factor=p_intersection_factor,
                                minimum_weight=p_minimum_weight)
 
-        super().__init__(p_river_algo=alg,
+        super().__init__(p_cls_cluster=ClusterCentroid(),
+                         p_river_algo=alg,
                          p_name=p_name,
                          p_range_max=p_range_max,
                          p_ada=p_ada,
@@ -408,8 +412,6 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
     """
 
     C_NAME          = 'CluStream'
-    
-    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -442,7 +444,8 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
                                 sigma=p_sigma,
                                 p=p_p)
 
-        super().__init__(p_river_algo=alg,
+        super().__init__(p_cls_cluster=ClusterCentroid(),
+                         p_river_algo=alg,
                          p_name=p_name,
                          p_range_max=p_range_max,
                          p_ada=p_ada,
@@ -533,8 +536,6 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
     """
 
     C_NAME          = 'DenStream'
-    
-    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -559,7 +560,8 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
                                 n_samples_init=p_n_samples_init,
                                 stream_speed=p_stream_speed)
 
-        super().__init__(p_river_algo=alg,
+        super().__init__(p_cls_cluster=ClusterCentroid(),
+                         p_river_algo=alg,
                          p_name=p_name,
                          p_range_max=p_range_max,
                          p_ada=p_ada,
@@ -652,8 +654,6 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
     """
 
     C_NAME          = 'KMeans'
-    
-    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -678,7 +678,8 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
                              p=p_p,
                              seed=p_seed)
 
-        super().__init__(p_river_algo=alg,
+        super().__init__(p_cls_cluster=ClusterCentroid(),
+                         p_river_algo=alg,
                          p_name=p_name,
                          p_range_max=p_range_max,
                          p_ada=p_ada,
@@ -771,8 +772,6 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
     """
 
     C_NAME          = 'STREAMKMeans'
-    
-    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -799,7 +798,8 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
                                    p=p_p,
                                    seed=p_seed)
 
-        super().__init__(p_river_algo=alg,
+        super().__init__(p_cls_cluster=ClusterCentroid(),
+                         p_river_algo=alg,
                          p_name=p_name,
                          p_range_max=p_range_max,
                          p_ada=p_ada,
