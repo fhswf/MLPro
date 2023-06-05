@@ -74,7 +74,7 @@ class Stream4DenStream (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _init_dataset(self):
 
-        # Prepare a test dataset from https://riverml.xyz/latest/api/cluster/DBSTREAM/
+        # Prepare a test dataset from https://riverml.xyz/latest/api/cluster/DenStream/
         
         X = [ [-1, -0.5], [-1, -0.625], [-1, -0.75], [-1, -1], [-1, -1.125],
              [-1, -1.25], [-1.5, -0.5], [-1.5, -0.625], [-1.5, -0.75], [-1.5, -1],

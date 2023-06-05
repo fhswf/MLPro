@@ -5,14 +5,12 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-05-23  0.0.0     SY       Creation
-## -- 2023-05-23  1.0.0     SY       First version release
-## -- 2023-05-25  1.0.1     SY       Refactoring related to ClusterCentroid
-## -- 2023-06-05  1.0.2     SY       Renaming module
+## -- 2023-06-05  0.0.0     SY       Creation
+## -- 2023-06-05  1.0.0     SY       First version release
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.2 (2023-06-05)
+Ver. 1.0.0 (2023-06-05)
 
 This module demonstrates the principles of stream processing with MLPro. To this regard, a stream of
 a stream provider is combined with a stream workflow to a stream scenario. The workflow consists of 
@@ -76,7 +74,7 @@ class Stream4CluStream (StreamMLProBase):
 ## -------------------------------------------------------------------------------------------------
     def _init_dataset(self):
 
-        # Prepare a test dataset from https://riverml.xyz/latest/api/cluster/DBSTREAM/
+        # Prepare a test dataset from https://riverml.xyz/latest/api/cluster/CluStream/
         
         X = [ [1, 2],
              [1, 4],

@@ -714,7 +714,7 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
             
             list_center = []
             for y in range(len(self._river_algo.centers[x])):
-                list_center.append(self._river_algo.centers[x][y])
+                list_center.append(self._river_algo.centers[x][y+1])
             
             self._clusters[x].get_centroid().set_values(list_center)
 
