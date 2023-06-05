@@ -139,9 +139,6 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         self.log(self.C_LOG_TYPE_I, 'Cluster is adapted...')
         self._river_algo.learn_one(input_data)
 
-        # get cluster membership
-        self.get_cluster_memberships(p_inst_new)
-
         return True
 
 
