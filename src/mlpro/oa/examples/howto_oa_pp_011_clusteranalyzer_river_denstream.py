@@ -1,7 +1,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.oa.examples
-## -- Module  : howto_oa_pp_009_clusteranalyzer_river_dbstream.py
+## -- Module  : howto_oa_pp_011_clusteranalyzer_river_denstream.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
@@ -27,7 +27,7 @@ You will learn:
 3) How to add a task ClusterAnalyzer.
 
 4) How to reuse a cluster analyzer algorithm from river (https://www.riverml.xyz/), specifically
-DBSTREAM
+DenStream
 
 """
 
@@ -44,14 +44,14 @@ from mlpro.wrappers.river.clusteranalyzers import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Stream4DBStream (StreamMLProBase):
+class Stream4DenStream (StreamMLProBase):
 
-    C_ID                = 'St4DBStream'
-    C_NAME              = 'Stream4DBStream'
+    C_ID                = 'St4DenStream'
+    C_NAME              = 'Stream4DenStream'
     C_VERSION           = '1.0.0'
-    C_NUM_INSTANCES     = 12
+    C_NUM_INSTANCES     = 24
 
-    C_SCIREF_URL        = 'https://riverml.xyz/latest/api/cluster/DBSTREAM/'
+    C_SCIREF_URL        = 'https://riverml.xyz/latest/api/cluster/DenStream/'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -76,8 +76,12 @@ class Stream4DBStream (StreamMLProBase):
 
         # Prepare a test dataset from https://riverml.xyz/latest/api/cluster/DBSTREAM/
         
-        X = [ [1, 0.5], [1, 0.625], [1, 0.75], [1, 1.125], [1, 1.5], [1, 1.75], [4, 1.5], [4, 2.25],
-             [4, 2.5], [4, 3], [4, 3.25], [4, 3.5] ]
+        X = [ [-1, -0.5], [-1, -0.625], [-1, -0.75], [-1, -1], [-1, -1.125],
+             [-1, -1.25], [-1.5, -0.5], [-1.5, -0.625], [-1.5, -0.75], [-1.5, -1],
+             [-1.5, -1.125], [-1.5, -1.25], [1, 1.5], [1, 1.75], [1, 2],
+             [4, 1.25], [4, 1.5], [4, 2.25], [4, 2.5], [4, 3],
+             [4, 3.25], [4, 3.5], [4, 3.75], [4, 4],
+             ]
 
         self._dataset   = np.array(X)
 
@@ -87,15 +91,15 @@ class Stream4DBStream (StreamMLProBase):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class AdScenario4DBStream (OAScenario):
+class AdScenario4DenStream (OAScenario):
 
-    C_NAME = 'AdScenario4DBStream'
+    C_NAME = 'AdScenario4DenStream'
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
-        # 1 Get stream from Stream4DBStream
-        stream = Stream4DBStream( p_logging=0 )
+        # 1 Get stream from Stream4DenStream
+        stream = Stream4DenStream( p_logging=0 )
 
         # 2 Set up a stream workflow based on a custom stream task
 
@@ -108,11 +112,11 @@ class AdScenario4DBStream (OAScenario):
 
 
         # 2.2 Creation of a cluster analzer task
-        clusterer = WrRiverDBStream2MLPro( p_clustering_threshold = 1.5,
-                                          p_fading_factor = 0.05,
-                                          p_cleanup_interval = 4,
-                                          p_intersection_factor = 0.5,
-                                          p_minimum_weight = 1.0 )
+        clusterer = WrRiverDenStream2MLPro( p_decaying_factor=0.01,
+                                           p_beta=0.5,
+                                           p_mu=2.5,
+                                           p_epsilon=0.5,
+                                           p_n_samples_init=10 )
 
         workflow.add_task( p_task=clusterer )
 
@@ -131,7 +135,7 @@ if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
     visualize   = True
-    cycle_limit = 12
+    cycle_limit = 24
     step_rate   = 1
 
 else:
@@ -144,10 +148,10 @@ else:
 
 
 # 2 Instantiate the stream scenario
-myscenario = AdScenario4DBStream( p_mode=Mode.C_MODE_REAL,
-                                 p_cycle_limit=cycle_limit,
-                                 p_visualize=visualize,
-                                 p_logging=logging )
+myscenario = AdScenario4DenStream( p_mode=Mode.C_MODE_REAL,
+                                  p_cycle_limit=cycle_limit,
+                                  p_visualize=visualize,
+                                  p_logging=logging )
 
 
 
@@ -168,7 +172,7 @@ myscenario.log(Log.C_LOG_TYPE_S, 'Duration [sec]:', round(duraction_sec,2), ', C
 
 
 
-# 4 Validating the number of clusters and centers of each cluster between original algorithm and wrapper
+# 4 Validating the number of clusters between original algorithm and wrapper
 river_n_clusters    = myscenario.get_workflow()._tasks[0].get_algorithm().n_clusters
 wr_n_clusters       = len(myscenario.get_workflow()._tasks[0].get_clusters())
 
@@ -176,15 +180,6 @@ if river_n_clusters == wr_n_clusters:
     print("The number of clusters from river and mlpro matches!")
 else:
     print("The number of clusters from river and mlpro does not match!")
-    
-    
-river_centers       = myscenario.get_workflow()._tasks[0].get_algorithm().centers
-
-for x in range(wr_n_clusters):
-    if list(river_centers[x].values()) == list(myscenario.get_workflow()._tasks[0].get_clusters()[x].get_centroid().get_values()):
-        print("The center of cluster %s from river and mlpro matches!"%(x+1))
-    else:
-        print("The center of cluster %s from river and mlpro does not match!"%(x+1))
 
 
 

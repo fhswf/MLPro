@@ -53,7 +53,7 @@ class Stream4CluStream (StreamMLProBase):
     C_VERSION           = '1.0.0'
     C_NUM_INSTANCES     = 9
 
-    C_SCIREF_URL        = 'https://riverml.xyz/latest/api/cluster/DBSTREAM/'
+    C_SCIREF_URL        = 'https://riverml.xyz/latest/api/cluster/CluStream/'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -104,7 +104,7 @@ class AdScenario4CluStream (OAScenario):
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada: bool, p_visualize: bool, p_logging):
 
-        # 1 Get stream from Stream4DBStream
+        # 1 Get stream from Stream4CluStream
         stream = Stream4CluStream( p_logging=0 )
 
         # 2 Set up a stream workflow based on a custom stream task
@@ -141,7 +141,7 @@ if __name__ == "__main__":
     # 1.1 Parameters for demo mode
     logging     = Log.C_LOG_ALL
     visualize   = True
-    cycle_limit = 12
+    cycle_limit = 10
     step_rate   = 1
 
 else:
