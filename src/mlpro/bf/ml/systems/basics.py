@@ -508,21 +508,6 @@ class ASystem(System, Model):
                         **p_kwargs)
 
 
-    # ## -------------------------------------------------------------------------------------------------
-    #     def _set_adapted(self, p_adapted:bool):
-    #         """
-    #
-    #         Parameters
-    #         ----------
-    #         p_adapted
-    #
-    #         Returns
-    #         -------
-    #
-    #         """
-    #
-    #         Model._set_adapted(self, p_adapted=p_adapted)
-
 
 ## -------------------------------------------------------------------------------------------------
     def switch_adaptivity(self, p_ada:bool):
@@ -564,29 +549,5 @@ class ASystem(System, Model):
             except:
                 pass
 
-        # try:
-        #     self._fct_strans.adapt(**p_kwargs)
-        #     adapted = self._fct_strans.get_adapted() or adapted
-        #
-        #
-        # except: adapted = adapted or False
-        #
-        #
-        #
-        # try:
-        #     self._fct_broken.adapt(**p_kwargs)
-        #     adapted = self._fct_broken.get_adapted() or adapted
-        #
-        #
-        # except: adapted = adapted or False
-        #
-        #
-        #
-        # try:
-        #     self._fct_success.adapt(**p_kwargs)
-        #     adapted = self._fct_success.get_adapted() or adapted
-        #
-        #
-        # except: adapted = adapted or False
 
         return adapted
