@@ -41,6 +41,7 @@
 ## -- 2023-05-31  1.13.1    LSB      Updated the copy method of state, for copying the ID
 ## -- 2023-05-31  1.13.2    LSB      Refactored the t_step handling, to avoid unncessary execution of try block
 ## -- 2023-05-31  1.13.3    LSB      Removing obsolete env attribute from function
+## -- 2023-06-06  1.14.0    LSB      New functions to fetch the functions of a system
 ## -- 2023-05-dd  2.0.0     LSB      New class MultiSystem
 ## -------------------------------------------------------------------------------------------------
 
@@ -1287,6 +1288,57 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 ## -------------------------------------------------------------------------------------------------
     def get_action_space(self) -> MSpace:
         return self._action_space
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_fct_strans(self):
+        """
+        Returns the state transition function of the system, if exists, otherwise, the system itself.
+
+        Returns
+        -------
+        fct_strans: FctSTrans
+            State transition function of the system, if exists. Otherwise, system itself.
+
+        """
+        if self._fct_strans is not None:
+            return self._fct_strans
+        else:
+            return self
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_fct_broken(self):
+        """
+        Returns the broken computation function of the system, if exists, otherwise, the system itself.
+
+        Returns
+        -------
+        fct_broken: FctBroken
+            Broken computation function of the system, if exists. Otherwise, system itself.
+
+        """
+        if self._fct_broken is not None:
+            return self._fct_broken
+        else:
+            return self
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_fct_success(self):
+        """
+        Returns the Success computation function of the system, if exists, otherwise, the system itself.
+
+        Returns
+        -------
+        fct_success: FctSuccess
+            Success computation function of the system, if exists. Otherwise, system itself.
+
+        """
+        if self._fct_success is not None:
+            return self._fct_success
+        else:
+            return self
 
 
 ## -------------------------------------------------------------------------------------------------
