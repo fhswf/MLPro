@@ -860,35 +860,52 @@ class SystemShared(Shared):
             The State of the system which affects the action.
 
         """
+
+        # 1. Check is the state is to be mapped?
         if p_state is not None:
+
+            # 1.1 Extract the values of state for each dimension
             for id in p_state.get_dim_ids():
                 value = p_state.get_value(id)
+
+                # 1.2 Extract mappings for each of the dimension
                 for output_sys, output_dim_type, output_dim in self._map(p_input_dim=id):
+                    # Update the values if the receiver dimension is a State
                     if output_dim_type == 'S':
                         self._states[output_sys].set_value(p_dim_id=output_dim, p_value=value)
+                    # Update the values if the receiver dimension is an Action
                     if output_dim_type == 'A':
                         action_space = self._spaces[output_sys][1]
                         self._actions[output_sys][action_space.index(output_dim)] = value
 
         # TODO: Check how to get the action dimensions from the action object
 
+        # 2. Check if action is to be mapped?
         if p_action is not None:
             elem_ids = p_action.get_elem_ids()
             action_dims = []
             action_values = []
+
+            # 1.1 Extract the ids and values of action for each element
             for elem_id in elem_ids:
                 action_dims.extend(p_action.get_elem(elem_id).get_related_set().get_dim_ids())
                 action_values.extend(p_action.get_elem(elem_id).get_values())
+
+            # 1.2 Iterate over the dimensions
             for i,id in enumerate(action_dims):
                 value = action_values[i]
+
+                # 1.3 Extract mappings for each dimension
                 for output_sys, output_dim_type, output_dim in self._map(p_input_dim=id):
+
+                    # Update the values if receiver dim is a State
                     if output_dim_type == 'S':
                         self._states[output_sys].set_value(p_dim_id=output_dim, p_value=value)
+                    # Update the values if the receiver is an Action
                     if output_dim_type == 'A':
                         action_space = self._spaces[output_sys][1]
                         self._actions[output_sys][action_space.index(output_dim)] = value
 
-        # TODO: Check if there actually exists a mapping among them, here and also in _map function
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1444,7 +1461,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 ## -------------------------------------------------------------------------------------------------
     def get_so(self) -> SystemShared:
 
-        return super().get_so()
+        return Task.get_so(self)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1461,7 +1478,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
         """
 
         p_action = self.get_so().get_action(p_sys_id = self.get_id())
-        self.process_action(p_action=p_action)
+        self.process_action(p_action=p_action, p_t_step = p_t_step)
         self.get_so().update_state(p_sys_id = self.get_id(), p_state = self.get_state())
 
 
