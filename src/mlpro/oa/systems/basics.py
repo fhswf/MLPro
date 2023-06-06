@@ -9,6 +9,7 @@
 ## -- 2023-05-31  0.1.0     LSB      Visualization
 ## -- 2023-05-31  0.1.1     LSB      cleaning
 ## -- 2023-05-31  0.1.2     LSB      Visualization bug fixed
+## -- 2023-06-06  0.1.3     LSB      Renaming _wf and run methods with *_strans
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -172,12 +173,12 @@ class OAFctSTrans(FctSTrans, Model):
                        **p_kwargs)
 
         if p_wf is None:
-            self._wf = OAWorkflow(p_name='State Transition',
+            self._wf_strans = OAWorkflow(p_name='State Transition',
                                   p_visualize=p_visualize,
                                   p_ada=p_ada,
                                   p_logging=p_logging)
         else:
-            self._wf = p_wf
+            self._wf_strans = p_wf
 
         self._action_obj:Action = None
         self._setup_wf_strans = False
@@ -223,11 +224,11 @@ class OAFctSTrans(FctSTrans, Model):
             self._setup_wf_strans = self._setup_oafct_strans()
 
         # 3. Running the workflow
-        self._wf.run(p_inst_new=[self._state_obj])
+        self._wf_strans.run(p_inst_new=[self._state_obj])
 
 
         # 4. get the results
-        state = self._wf.get_so().get_results()[self.get_id()]
+        state = self._wf_strans.get_so().get_results()[self.get_id()]
 
         # state.set_id(self._state_id)
         state.set_id(self._state_id)
@@ -253,7 +254,7 @@ class OAFctSTrans(FctSTrans, Model):
 
         adapted = False
         try:
-            adapted = self._wf.adapt(**p_kwargs) or adapted
+            adapted = self._wf_strans.adapt(**p_kwargs) or adapted
         except:
             adapted = adapted or False
 
@@ -295,11 +296,11 @@ class OAFctSTrans(FctSTrans, Model):
             Name of the predecessor tasks for the task to be added
 
         """
-        self._wf.add_task(p_task, p_pred_task)
+        self._wf_strans.add_task(p_task, p_pred_task)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new, p_inst_del):
+    def _run_strans(self, p_inst_new, p_inst_del):
         """
         Runs the processing workflow, for state transition.
 
@@ -314,11 +315,11 @@ class OAFctSTrans(FctSTrans, Model):
         """
 
         if self._afct_strans is not None:
-            self._wf.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self,
+            self._wf_strans.get_so().add_result(self.get_id(), AFctSTrans.simulate_reaction(self,
                                                                                 p_state=p_inst_new[0],
                                                                                 p_action=self._action_obj))
         else:
-            self._wf.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
+            self._wf_strans.get_so().add_result(self.get_id(), FctSTrans.simulate_reaction(self,
                                                                             p_state=p_inst_new[0],
                                                                             p_action=self._action_obj))
 
@@ -335,12 +336,12 @@ class OAFctSTrans(FctSTrans, Model):
 
         """
 
-        if len(self._wf._tasks) == 0:
+        if len(self._wf_strans._tasks) == 0:
             p_pred_tasks = None
         else:
-            p_pred_tasks = [self._wf._tasks[-1]]
-            self._wf = OAWorkflow()
-        self._wf.add_task(p_task=PseudoTask(p_wrap_method = self._run), p_pred_tasks=p_pred_tasks)
+            p_pred_tasks = [self._wf_strans._tasks[-1]]
+            self._wf_strans = OAWorkflow()
+        self._wf_strans.add_task(p_task=PseudoTask(p_wrap_method = self._run_strans), p_pred_tasks=p_pred_tasks)
 
         return True
 
@@ -896,7 +897,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
 
         OAFctBroken.__init__(self, p_name=p_name, p_wf_broken=p_wf_broken, p_visualize=p_visualize)
 
-        self._workflows = [self._wf, self._wf_success, self._wf_broken]
+        self._workflows = [self._wf_strans, self._wf_success, self._wf_broken]
 
         ASystem.__init__(self,
                          p_id = p_id,
