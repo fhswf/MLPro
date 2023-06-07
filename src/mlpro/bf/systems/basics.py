@@ -822,11 +822,11 @@ class SystemShared(Shared):
 
         self._states.clear()
         self._actions.clear()
-        # self.initiate_values()
+
         for system in self._spaces.keys():
             self._states[system] = State(p_state_space=self._spaces[system][0])
             self._actions[system] = np.zeros(len(self._spaces[system][1].get_dims()))
-        pass
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -843,8 +843,10 @@ class SystemShared(Shared):
         -------
             bool
         """
-
+        # 1. Add the system state to the shared object for further access
         self._states[p_sys_id] = p_state.copy()
+
+        # 2. Also forward the state values to corresponding mapped dimensions
         self._map_values(p_state=self._states[p_sys_id])
 
 
@@ -939,6 +941,14 @@ class SystemShared(Shared):
 
 ## -------------------------------------------------------------------------------------------------
     def get_states(self):
+        """
+        Fetch the states of all the internal systems
+
+        Returns
+        -------
+        states: dict
+            Returns the state of each of the system registered on the shared object.
+        """
 
         return self._states
 
@@ -984,9 +994,9 @@ class SystemShared(Shared):
         """
 
 
-        output_dims = self._mappings[p_input_dim]
+        mappings = self._mappings[p_input_dim]
 
-        return output_dims
+        return mappings
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -1019,18 +1029,22 @@ class SystemShared(Shared):
             action_space = p_action_space
 
             # :TODO: Also check if the system is already registered and raise error
-
+            # Register the state and action spaces of the system
             self._spaces[system_id] = (state_space.copy(p_new_dim_ids=False), action_space.copy(p_new_dim_ids=False))
+            # Create an initial dummy state of the system in the shared object
             self._states[system_id] = State(self._spaces[system_id][0])
 
+            # Not needed
+            # self._action_dimensions.update(*action_space.get_dim_ids())
 
-            self._action_dimensions.update(*action_space.get_dim_ids())
+            # Create dummy zero actions for the system in Shared object
             self._actions[system_id] = np.zeros(len(action_space.get_dim_ids()))
 
+            # If no mappings to be taken care of, Return
             if p_mappings is None:
-
                 return
 
+            # Setup mappings in the shared object
             for (in_dim_type, output_dim_type), (input_sys_id, input_dim), (output_sys_id, output_dim) in p_mappings:
 
                 if input_dim not in self._mappings.keys():
@@ -1042,7 +1056,7 @@ class SystemShared(Shared):
 
         except:
 
-            return
+            raise Error("Registration of the system failed. Possible reason maybe false provision of mappings")
 
 
 
@@ -2047,24 +2061,29 @@ class MultiSystem(Workflow, System):
         p_system : System
             The system to be added.
 
-        p_mappings : tuple
+        p_mappings : list
             The mappings corresponding the system in the form :
-            ( ((ip dim_type, op dim_type), (input_sys_id, input_dim_id), (op_sys_id, op_dimension_id)), ... )
+            [ ((ip dim_type, op dim_type), (input_sys_id, input_dim_id), (op_sys_id, op_dimension_id)), ... ]
 
         Returns
         -------
 
         """
+        # Register the systems in native list.
         self._subsystems.append(p_system)
 
+        # Register the systems ids in a native list
         self._subsystem_ids.append(p_system.get_id())
 
+        # Register the system on the shared object (SystemShared).
         p_system._registered_on_so = self.get_so().register_system(p_sys_id = p_system.get_id(),
-                                      p_state_space=p_system.get_state_space(),
-                                      p_action_space=p_system.get_action_space(),
-                                      p_mappings = p_mappings)
+                                                                      p_state_space=p_system.get_state_space(),
+                                                                      p_action_space=p_system.get_action_space(),
+                                                                      p_mappings = p_mappings)
 
+        # Add the system as a task in the workflow
         self.add_task(p_system)
+
 
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed=None) -> None:
@@ -2073,16 +2092,16 @@ class MultiSystem(Workflow, System):
 
         Parameters
         ----------
-        p_seed
-
-        Returns
-        -------
+        p_seed: int
+            Seed for the purpose of reproducibility
 
         """
+        # Reset the shared object (SystemShared).
+        self.get_so().reset(p_seed=p_seed)
+
+        # Reset all the subsystems
         for system in self._subsystems:
             system.reset(p_seed = p_seed)
-
-        self.get_so().reset(p_seed=p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -2093,9 +2112,12 @@ class MultiSystem(Workflow, System):
         Parameters
         ----------
         p_system_id
+            Id of the system to be returned
 
         Returns
         -------
+        sub_system: System
+            The system to be returned by ID.
 
         """
         return self._subsystems[self._subsystem_ids.index(p_system_id)]
@@ -2108,7 +2130,7 @@ class MultiSystem(Workflow, System):
 
         Returns
         -------
-        states : list
+        states : dict
             States of all the subsystems.
         """
 
@@ -2120,24 +2142,42 @@ class MultiSystem(Workflow, System):
 ## -------------------------------------------------------------------------------------------------
     def simulate_reaction(self, p_state: State = None, p_action: Action = None, p_t_step : timedelta = None) -> State:
         """
-        Simulates the system.
+        Simulates the multisystem, based on the action and time step.
 
         Parameters
         ----------
-        p_state
-        p_action
+        p_state: State
+            State of the system.
+
+        p_action: Action
+            Action provided externally for the simulation of the system.
 
         Returns
         -------
+        current_state: State
+            The new state of the system after simulation.
 
         """
+
+        # 1. Register the Multisystem in the SO, as it is not yet registered, unlike subsystems are
+        # registered in the add system call.
+
         if not self._registered_on_so:
             self._registered_on_so = self.get_so().register_system(p_sys_id=self.get_id(),
                                                                    p_state_space=self.get_state_space(),
                                                                    p_action_space = self.get_action_space())
-        self.get_so()._map_values(p_action=p_action)
+
+        # 2. Get SO
+        so = self.get_so()
+
+        # 3. Forward the input action to the corresponding systems
+        so._map_values(p_action=p_action)
+
+        # 4. Run the workflow
         self.run(p_action = self.get_so().get_actions(), p_t_step = self._t_step)
-        return self.get_so().get_state(p_sys_id=self.get_id())
+
+        # 5. Return the new state at current timestep
+        return so.get_state(p_sys_id=self.get_id())
 
 
 ## -------------------------------------------------------------------------------------------------
