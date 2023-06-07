@@ -204,8 +204,10 @@ class State(Instance, Element, TStamp):
                                       p_timeout=timeout)
         copied_state.set_values(self.get_values())
         copied_state.set_tstamp(self.get_tstamp())
-        copied_state.set_id(self.get_id())
-        
+        try:
+            copied_state.set_id(self.get_id())
+        except:
+            pass
         return copied_state
 
 
@@ -844,7 +846,7 @@ class SystemShared(Shared):
 
         self._states[p_sys_id] = p_state.copy()
         self._map_values(p_state=self._states[p_sys_id])
-        return True
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -877,7 +879,7 @@ class SystemShared(Shared):
                     # Update the values if the receiver dimension is an Action
                     if output_dim_type == 'A':
                         action_space = self._spaces[output_sys][1]
-                        self._actions[output_sys][action_space.index(output_dim)] = value
+                        self._actions[output_sys][action_space.get_dim_ids().index(output_dim)] = value
 
         # TODO: Check how to get the action dimensions from the action object
 
@@ -905,7 +907,7 @@ class SystemShared(Shared):
                     # Update the values if the receiver is an Action
                     if output_dim_type == 'A':
                         action_space = self._spaces[output_sys][1]
-                        self._actions[output_sys][action_space.index(output_dim)] = value
+                        self._actions[output_sys][action_space.get_dim_ids().index(output_dim)] = value
 
 
 
@@ -992,7 +994,7 @@ class SystemShared(Shared):
                         p_sys_id = None,
                         p_state_space : MSpace = None,
                         p_action_space : MSpace = None,
-                        p_mappings: tuple = None):
+                        p_mappings = None):
         """
         Registers the system in the Shared Object and sets up the dimension to dimension mapping.
 
@@ -1001,7 +1003,9 @@ class SystemShared(Shared):
         p_system : System
             The system to be registered.
 
-        p_mapping : ( (dim_type, dim_type), (input_sys_id, input_dim) , (action_sys_id, action_dimension) )
+        p_mappings :
+            Mappings corresponding the system in the form:
+            ( (ip dim_type, op dim_type), (input_sys_id, input_dim_id) , (op_sys_id, op_dimension_id) )
 
 
         Returns
@@ -1016,25 +1020,29 @@ class SystemShared(Shared):
 
             # :TODO: Also check if the system is already registered and raise error
 
-            self._spaces[system_id] = (state_space.copy(), action_space.copy())
-            self._states[system_id] = State(self._spaces[system_id])
+            self._spaces[system_id] = (state_space.copy(p_new_dim_ids=False), action_space.copy(p_new_dim_ids=False))
+            self._states[system_id] = State(self._spaces[system_id][0])
 
 
             self._action_dimensions.update(*action_space.get_dim_ids())
             self._actions[system_id] = np.zeros(len(action_space.get_dim_ids()))
+
+            if p_mappings is None:
+
+                return
 
             for (in_dim_type, output_dim_type), (input_sys_id, input_dim), (output_sys_id, output_dim) in p_mappings:
 
                 if input_dim not in self._mappings.keys():
                     self._mappings[input_dim] = []
 
-                self._mappings[input_dim].append(output_sys_id, output_dim_type, output_dim)
+                self._mappings[input_dim].append((output_sys_id, output_dim_type, output_dim))
 
-            return True
+            return
 
         except:
 
-            return False
+            return
 
 
 
@@ -1195,6 +1203,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
                         p_logging=p_logging,
                         **p_kwargs)
 
+        self._registered_on_so = False
 
  ## -------------------------------------------------------------------------------------------------
     @staticmethod
@@ -1517,7 +1526,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_t_step : timedelta = None):
+    def _run(self, p_action:Action, p_t_step : timedelta = None):
         """
         Run method that runs the system as a task. It runs the process_action() method of the system with
         action as a parameter.
@@ -1529,8 +1538,8 @@ class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persisten
 
         """
 
-        p_action = self.get_so().get_action(p_sys_id = self.get_id())
-        self.process_action(p_action=p_action, p_t_step = p_t_step)
+        action = self.get_so().get_action(p_sys_id = self.get_id())
+        self.process_action(p_action=action, p_t_step = p_t_step)
         self.get_so().update_state(p_sys_id = self.get_id(), p_state = self.get_state())
 
 
@@ -1960,7 +1969,7 @@ class MultiSystem(Workflow, System):
     def __init__(self, 
                  p_name: str = None, 
                  p_id = None,
-                 p_range_max=Async.C_RANGE_THREAD, 
+                 p_range_max=Async.C_RANGE_NONE,
                  p_autorun = Task.C_AUTORUN_NONE,
                  p_class_shared = SystemShared,
                  p_mode=Mode.C_MODE_SIM, 
@@ -2008,10 +2017,9 @@ class MultiSystem(Workflow, System):
                           p_logging = p_logging,
                           **p_kwargs)
         
-        self._subsystems = None
-        self._subsystem_ids = None
+        self._subsystems = []
+        self._subsystem_ids = []
         self._t_step = p_t_step
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -2036,8 +2044,12 @@ class MultiSystem(Workflow, System):
 
         Parameters
         ----------
-        p_system
-        p_mapping
+        p_system : System
+            The system to be added.
+
+        p_mappings : tuple
+            The mappings corresponding the system in the form :
+            ( ((ip dim_type, op dim_type), (input_sys_id, input_dim_id), (op_sys_id, op_dimension_id)), ... )
 
         Returns
         -------
@@ -2047,7 +2059,7 @@ class MultiSystem(Workflow, System):
 
         self._subsystem_ids.append(p_system.get_id())
 
-        self.get_so().register_system(p_sys_id = p_system.get_id(),
+        p_system._registered_on_so = self.get_so().register_system(p_sys_id = p_system.get_id(),
                                       p_state_space=p_system.get_state_space(),
                                       p_action_space=p_system.get_action_space(),
                                       p_mappings = p_mappings)
@@ -2119,9 +2131,13 @@ class MultiSystem(Workflow, System):
         -------
 
         """
+        if not self._registered_on_so:
+            self._registered_on_so = self.get_so().register_system(p_sys_id=self.get_id(),
+                                                                   p_state_space=self.get_state_space(),
+                                                                   p_action_space = self.get_action_space())
         self.get_so()._map_values(p_action=p_action)
         self.run(p_action = self.get_so().get_actions(), p_t_step = self._t_step)
-        return self.get_state()
+        return self.get_so().get_state(p_sys_id=self.get_id())
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -2129,7 +2145,9 @@ class MultiSystem(Workflow, System):
         """
         Returns true if the system is broken
         """
-        pass
+        # TODO: Shall return true if any of the system returns true?
+
+        return False
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -2144,8 +2162,10 @@ class MultiSystem(Workflow, System):
         Returns
         -------
 
+        # TODO: Shall return true if any of the system returns true?
+
         """
-        pass
+        return False
 
 
 
