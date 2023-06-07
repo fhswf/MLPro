@@ -33,12 +33,23 @@ else:
     visualize = False
     cycle_limit = 2
 
+
+
+
+# 1. Creating subsystems
 sub_system_1 = Flipflop()
 
 sub_system_2 = Flipflop()
 
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
 class MultiFlipFlop(MultiSystem):
 
+    C_NAME = 'MultiFlipFlop'
+
+## -------------------------------------------------------------------------------------------------
     @staticmethod
     def setup_spaces():
         action_space = ESpace()
@@ -54,8 +65,13 @@ class MultiFlipFlop(MultiSystem):
         return state_space, action_space
 
 
+
+
+# Creating MultiSystem Object
 system = MultiFlipFlop()
 
+
+# Add systems to MultiSystem
 system.add_system(p_system=sub_system_1,
                   p_mappings=[(('A', 'A'), (system.get_id(), system.get_action_space().get_dim_ids()[0]), (sub_system_1.get_id(), sub_system_1.get_action_space().get_dim_ids()[0]))])
 
@@ -63,6 +79,8 @@ system.add_system(p_system=sub_system_2,
                   p_mappings=[(('S', 'A'),(sub_system_1.get_id(), sub_system_1.get_state_space().get_dim_ids()[0]),(sub_system_2.get_id(), sub_system_2.get_action_space().get_dim_ids()[0])),
                               (('S', 'S'),(sub_system_2.get_id(), sub_system_2.get_state_space().get_dim_ids()[0]),(system.get_id(), system.get_state_space().get_dim_ids()[0]))])
 
+
+# Create the demo scenario object
 scenario = DemoScenario(p_system=system,
                         p_mode=Mode.C_MODE_SIM,
                         p_action_pattern=DemoScenario.C_ACTION_RANDOM,
@@ -71,4 +89,5 @@ scenario = DemoScenario(p_system=system,
                         p_logging=logging)
 
 
+# Run the scenario
 scenario.run()
