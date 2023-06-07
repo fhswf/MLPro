@@ -136,7 +136,7 @@ class OAFctSTrans(FctSTrans, Model):
                  p_output_elem_cls=State,  # Specific output element type
                  p_threshold=0,
                  p_buffer_size=0,
-                 p_wf: OAWorkflow = None,
+                 p_wf_strans: OAWorkflow = None,
                  p_visualize:bool=False,
                  p_logging=Log.C_LOG_ALL,
                  **p_kwargs):
@@ -172,13 +172,13 @@ class OAFctSTrans(FctSTrans, Model):
                        p_logging=p_logging,
                        **p_kwargs)
 
-        if p_wf is None:
+        if p_wf_strans is None:
             self._wf_strans = OAWorkflow(p_name='State Transition',
                                   p_visualize=p_visualize,
                                   p_ada=p_ada,
                                   p_logging=p_logging)
         else:
-            self._wf_strans = p_wf
+            self._wf_strans = p_wf_strans
 
         self._action_obj:Action = None
         self._setup_wf_strans = False
@@ -828,38 +828,58 @@ class OAFctBroken(FctBroken, Model):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
-
     """
-    The template class for Online Adaptive Systems. Each function in this system is
-    executed in the form of an Online Adaptive Workflow.
+    This ist a template class for Adaptive State Based System.
 
-        Parameters
-        ----------
-        p_id
-        p_name
-        p_range_max
-        p_autorun
-        p_class_shared
-        p_ada
-        p_mode
-        p_latency
-        p_t_step
-        p_fct_strans
-        p_fct_success
-        p_fct_broken
-        p_wf
-        p_wf_success
-        p_wf_broken
-        p_mujoco_file
-        p_frame_skip
-        p_state_mapping
-        p_action_mapping
-        p_camera_conf
-        p_visualize
-        p_logging
-        p_kwargs
+    Parameters
+    ----------
+    p_id
+        Id of the system.
+    p_name:str
+        Name of the system.
+    p_range_max
+        Range of the system.
+    p_autorun
+        Whether the system should autorun as a Task.
+    p_class_shared
+        The shared class for multisystem.
+    p_mode
+        Mode of the System. Simulation or real.
+    p_ada:bool
+        The adaptability of the system.
+    p_latency:timedelta
+        Latency of the system.
+    p_t_step:timedelta
+        Simulation timestep of the system.
+    p_fct_strans: FctSTrans | AFctSTrans | OAFctSTrans
+        External state transition function.
+    p_fct_success: FctSuccess | AFctSuccess | OAFctSuccess
+        External success computation function.
+    p_fct_broken: FctBroken | AFctBroken | OAFctBroken
+        External broken computation function.
+    p_wf_strans: OAWorkflow
+        State transition workflow. Optional.
+    p_wf_success: OAWorkflow
+        Success computation workflow. Optional.
+    p_wf_broken: OAWorkflow
+        Broken computation workflow. Optional
+    p_mujoco_file
+        Mujoco file for simulation using mujoco engine.
+    p_frame_skip
+        Number of frames to be skipped during visualization.
+    p_state_mapping:
+        State mapping for Mujoco.
+    p_action_mapping:
+        Action Mapping for Mujoco.
+    p_camera_conf:
+        Camera Configuration for Mujoco.
+    p_visualize:
+        Visualization switch.
+    p_logging
+        Logging level for the system.
+    p_kwargs
+        Additional Parameters
     """
-
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -876,7 +896,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
                  p_fct_strans : FctSTrans = None,
                  p_fct_success : FctSuccess = None,
                  p_fct_broken : FctBroken = None,
-                 p_wf : OAWorkflow = None,
+                 p_wf_strans : OAWorkflow = None,
                  p_wf_success : OAWorkflow = None,
                  p_wf_broken : OAWorkflow = None,
                  p_mujoco_file = None,
@@ -891,7 +911,7 @@ class OASystem(OAFctBroken, OAFctSTrans, OAFctSuccess, ASystem):
         self._workflows = []
         self._fcts =[]
 
-        OAFctSTrans.__init__(self, p_name=p_name, p_wf=p_wf, p_visualize=p_visualize)
+        OAFctSTrans.__init__(self, p_name=p_name, p_wf_strans=p_wf_strans, p_visualize=p_visualize)
 
         OAFctSuccess.__init__(self, p_name=p_name, p_wf=p_wf_success, p_visualize=p_visualize)
 
