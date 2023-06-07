@@ -94,7 +94,6 @@ import scipy.integrate as integrate
 from collections import deque
 from mlpro.bf.systems.pool.doublependulum import *
 from mlpro.rl.models_env_oa import *
-import mlpro.bf.ml.systems.pool.doublependulum as mldp
 import mlpro.oa.systems.pool.doublependulum as oadp
 
 
@@ -611,7 +610,7 @@ class DoublePendulumRoot (DoublePendulumSystemRoot, Environment):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumS4 (DoublePendulumSystemS4, DoublePendulumRoot):
+class DoublePendulumS4 (DoublePendulumRoot, DoublePendulumSystemS4):
     """
     This is the Double Pendulum Static 4 dimensional environment that inherits from the double pendulum root
     class, inheriting the dynamics and default reward strategy.
@@ -710,7 +709,7 @@ class DoublePendulumS4 (DoublePendulumSystemS4, DoublePendulumRoot):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumS7 (DoublePendulumSystemS7, DoublePendulumS4):
+class DoublePendulumS7 (DoublePendulumS4, DoublePendulumSystemS7):
     """
     This is the classic implementation of Double Pendulum with 7 dimensional state space including derived
     accelerations of both the poles and the input torque. The dynamics of the system are inherited from the Double
@@ -775,7 +774,7 @@ class DoublePendulumS7 (DoublePendulumSystemS7, DoublePendulumS4):
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumOA4(OAEnvironment, oadp.DoublePendulumOA4, DoublePendulumS4):
+class DoublePendulumOA4(OAEnvironment, DoublePendulumS4, oadp.DoublePendulumOA4):
 
 
     C_NAME = 'Double Pendulum A4'
@@ -949,7 +948,7 @@ class DoublePendulumOA4(OAEnvironment, oadp.DoublePendulumOA4, DoublePendulumS4)
 
 ## ------------------------------------------------------------------------------------------------------
 ## ------------------------------------------------------------------------------------------------------
-class DoublePendulumOA7(oadp.DoublePendulumA7, DoublePendulumOA4, DoublePendulumS7):
+class DoublePendulumOA7(DoublePendulumOA4, oadp.DoublePendulumOA7):
 
     C_NAME = 'Double Pendulum A7'
     C_PLOT_ACTIVE = True

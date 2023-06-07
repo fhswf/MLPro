@@ -6,10 +6,11 @@
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-05-30  1.0.0     LSB      Creation
+## -- 2023-06-07  1.0.1     LSB      Refactoring due to removal of DP at BF-ML-Pool level
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-05-30)
+Ver. 1.0.1 (2023-06-07)
 
 This module provides the online adaptive extensions of the Double Pendulum System.
 
@@ -17,7 +18,6 @@ This module provides the online adaptive extensions of the Double Pendulum Syste
 
 
 from mlpro.oa.systems import *
-from mlpro.bf.ml.systems.pool.doublependulum import *
 from mlpro.bf.systems.pool.doublependulum import *
 
 
@@ -26,7 +26,7 @@ from mlpro.bf.systems.pool.doublependulum import *
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DoublePendulumOA4(DoublePendulumA4, OASystem):
+class DoublePendulumOA4(OASystem, DoublePendulumSystemS4):
 
     C_NAME = 'DoublePendulumOA4'
 
@@ -94,7 +94,7 @@ class DoublePendulumOA4(DoublePendulumA4, OASystem):
                              p_logging = p_logging,
                              **p_kwargs)
 
-        DoublePendulumA4.__init__(   self,
+        DoublePendulumOA4.__init__(   self,
                                      p_id = p_id,
                                      p_name = p_name,
                                      p_range_max = p_range_max,
@@ -136,7 +136,7 @@ class DoublePendulumOA4(DoublePendulumA4, OASystem):
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class DoublePendulumOA7(DoublePendulumA7, DoublePendulumOA4):
+class DoublePendulumOA7(DoublePendulumSystemS7, DoublePendulumOA4):
 
     C_NAME = 'DoublePendulumOA7'
 

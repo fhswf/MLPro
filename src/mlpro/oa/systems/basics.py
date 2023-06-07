@@ -283,7 +283,7 @@ class OAFctSTrans(FctSTrans, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_task(self, p_task:OATask, p_pred_task = None):
+    def add_task_strans(self, p_task:OATask, p_pred_task = None):
         """
         Adds a task to the workflow.
 
@@ -300,7 +300,7 @@ class OAFctSTrans(FctSTrans, Model):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run_strans(self, p_inst_new, p_inst_del):
+    def _run_wf_strans(self, p_inst_new, p_inst_del):
         """
         Runs the processing workflow, for state transition.
 
@@ -341,7 +341,7 @@ class OAFctSTrans(FctSTrans, Model):
         else:
             p_pred_tasks = [self._wf_strans._tasks[-1]]
             self._wf_strans = OAWorkflow()
-        self._wf_strans.add_task(p_task=PseudoTask(p_wrap_method = self._run_strans), p_pred_tasks=p_pred_tasks)
+        self._wf_strans.add_task(p_task=PseudoTask(p_wrap_method = self._run_wf_strans), p_pred_tasks=p_pred_tasks)
 
         return True
 

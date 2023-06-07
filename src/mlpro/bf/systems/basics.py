@@ -2070,6 +2070,8 @@ class MultiSystem(Workflow, System):
         for system in self._subsystems:
             system.reset(p_seed = p_seed)
 
+        self.get_so().reset(p_seed=p_seed)
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_subsystem(self, p_system_id) -> System:
