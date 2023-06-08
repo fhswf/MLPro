@@ -2037,21 +2037,6 @@ class MultiSystem(Workflow, System):
 
 
 ## -------------------------------------------------------------------------------------------------
-    @staticmethod
-    def setup_spaces():
-        """
-        Sets up the state and action spaces of the system. Please provide the state space and the action spaces at
-        the MultiSystem level.
-
-        Returns
-        -------
-        state_space, action_space : MSpace, MSpace
-            State and Action space of the MultiSystem.
-        """
-        return None, None
-
-
-## -------------------------------------------------------------------------------------------------
     def add_system(self, p_system : System, p_mappings):
         """
         Adds sub system to the MultiSystem.
