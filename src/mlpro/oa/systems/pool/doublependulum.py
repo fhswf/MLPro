@@ -94,7 +94,7 @@ class DoublePendulumOA4(OASystem, DoublePendulumSystemS4):
                              p_logging = p_logging,
                              **p_kwargs)
 
-        DoublePendulumOA4.__init__(   self,
+        DoublePendulumSystemS4.__init__(   self,
                                      p_id = p_id,
                                      p_name = p_name,
                                      p_range_max = p_range_max,

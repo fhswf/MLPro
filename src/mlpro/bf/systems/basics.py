@@ -2088,6 +2088,15 @@ class MultiSystem(Workflow, System):
         for system in self._subsystems:
             system.reset(p_seed = p_seed)
 
+## -------------------------------------------------------------------------------------------------
+    def get_subsystem_ids(self):
+        return self._subsystem_ids
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_subsystems(self):
+        return self._subsystems
+
 
 ## -------------------------------------------------------------------------------------------------
     def get_subsystem(self, p_system_id) -> System:
@@ -2134,7 +2143,7 @@ class MultiSystem(Workflow, System):
         p_state: State
             State of the system.
 
-        p_action: Action
+        p_action: Action.
             Action provided externally for the simulation of the system.
 
         Returns
@@ -2144,13 +2153,26 @@ class MultiSystem(Workflow, System):
 
         """
 
-        # 1. Register the Multisystem in the SO, as it is not yet registered, unlike subsystems are
+        # 1. Register the MultiSystem in the SO, as it is not yet registered, unlike subsystems are
         # registered in the add system call.
 
         if not self._registered_on_so:
             self._registered_on_so = self.get_so().register_system(p_sys_id=self.get_id(),
                                                                    p_state_space=self.get_state_space(),
                                                                    p_action_space = self.get_action_space())
+
+        # Calculate the greatest possible timestep
+        # if self._t_step is None:
+        #     ts_list = []
+        #     for id in self.get_subsystem_ids():
+        #         sys_ts = self.get_subsystem(id)._t_step
+        #         if sys_ts is not None:
+        #             ts_list.append(self.get_subsystem(id)._t_step)
+
+
+
+
+        # Recommend using Time() instead of using timedelta
 
         # 2. Get SO
         so = self.get_so()
