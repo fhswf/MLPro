@@ -73,11 +73,18 @@ system = MultiFlipFlop()
 
 # Add systems to MultiSystem
 system.add_system(p_system=sub_system_1,
-                  p_mappings=[(('A', 'A'), (system.get_id(), system.get_action_space().get_dim_ids()[0]), (sub_system_1.get_id(), sub_system_1.get_action_space().get_dim_ids()[0]))])
+                  p_mappings=[(('A', 'A'),
+                               (system.get_id(), system.get_action_space().get_dim_ids()[0]),
+                               (sub_system_1.get_id(), sub_system_1.get_action_space().get_dim_ids()[0]))])
 
 system.add_system(p_system=sub_system_2,
-                  p_mappings=[(('S', 'A'),(sub_system_1.get_id(), sub_system_1.get_state_space().get_dim_ids()[0]),(sub_system_2.get_id(), sub_system_2.get_action_space().get_dim_ids()[0])),
-                              (('S', 'S'),(sub_system_2.get_id(), sub_system_2.get_state_space().get_dim_ids()[0]),(system.get_id(), system.get_state_space().get_dim_ids()[0]))])
+                  p_mappings=[(('S', 'A'),
+                               (sub_system_1.get_id(), sub_system_1.get_state_space().get_dim_ids()[0]),
+                               (sub_system_2.get_id(), sub_system_2.get_action_space().get_dim_ids()[0])),
+
+                              (('S', 'S'),
+                               (sub_system_2.get_id(), sub_system_2.get_state_space().get_dim_ids()[0]),
+                               (system.get_id(), system.get_state_space().get_dim_ids()[0]))])
 
 
 # Create the demo scenario object
