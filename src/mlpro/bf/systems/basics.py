@@ -793,6 +793,7 @@ class SystemShared(Shared):
 
     C_NAME = 'System Shared'
 
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
                  p_range: int = Range.C_RANGE_NONE):
@@ -804,10 +805,12 @@ class SystemShared(Shared):
         self._spaces: dict = {}
         self._states: dict = {}
         self._actions: dict = {}
-        self._action_dimensions: set = set()
+        # self._action_dimensions: set = set()
 
         # Mappings in the form 'dim : [(output_sys, out_dim), ]'
         self._mappings = {}
+
+
 ## -------------------------------------------------------------------------------------------------
     def reset(self, p_seed: int = None):
         """
@@ -818,7 +821,10 @@ class SystemShared(Shared):
         p_seed : int
             Seed for reproducibility.
         """
+
         #  TODO: How do you reset systems in a multiprocess, through the shared object or the workflow itself?
+        # TODO: Maybe try to raise an event in the shared object for resetting the system.
+        #  But events are not yet supported in the multiprocessing.
 
         self._states.clear()
         self._actions.clear()
@@ -848,7 +854,6 @@ class SystemShared(Shared):
 
         # 2. Also forward the state values to corresponding mapped dimensions
         self._map_values(p_state=self._states[p_sys_id])
-
 
 
 ## -------------------------------------------------------------------------------------------------

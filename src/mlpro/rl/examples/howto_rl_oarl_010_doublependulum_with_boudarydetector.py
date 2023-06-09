@@ -70,7 +70,7 @@ class OADPScenario(RLScenario):
 
 
         # Creating the Online Adaptive Double Pendulum Environment
-        environment = DoublePendulumOA7(p_name='', p_ada=adaptivity, p_visualize=visualize)
+        environment = DoublePendulumOA7(p_range_max=Range.C_RANGE_THREAD, p_name='', p_ada=adaptivity, p_visualize=visualize)
 
         # Creating the Boundary Detector Task
         task_bd = BoundaryDetector(p_name='Boundary Detector', p_visualize=visualize, p_range_max=range)
