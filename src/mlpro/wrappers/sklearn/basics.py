@@ -15,10 +15,11 @@
 ## -- 2022-11-19  1.3.0     DA       Method WrStreamSklearn._get_string(): new parameter p_name
 ## -- 2022-12-09  1.3.1     DA       Bugfix
 ## -- 2022-12-13  1.3.2     DA       Bugfix
+## -- 2023-06-09  1.4.0     DA       Made the wrapper a sub-package
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.3.2 (2022-12-13)
+Ver. 1.4.0 (2023-06-09)
 
 This module provides wrapper functionalities to incorporate public data sets of the Scikit-learn ecosystem.
 
