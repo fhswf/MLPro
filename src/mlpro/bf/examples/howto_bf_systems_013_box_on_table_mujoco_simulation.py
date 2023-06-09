@@ -1,18 +1,19 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- Project : MLPro - A Synoptic Framework for Standardized Machine Learning Tasks
 ## -- Package : mlpro.bf.examples
-## -- Module  : howto_bf_systems_004_box_on_table_mujoco_simulation.py
+## -- Module  : howto_bf_systems_013_box_on_table_mujoco_simulation.py
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-04-10  0.0.0     MRD      Creation
 ## -- 2023-04-12  1.0.0     MRD      First Release
 ## -- 2023-04-12  1.0.1     MRD      Refactor reset
+## -- 2023-04-19  1.0.2     LSB      Renamed the module
 ## -------------------------------------------------------------------------------------------------
 
 
 """
-Ver. 1.0.1 (2023-04-12)
+Ver. 1.0.2 (2023-04-19)
 
 This module demonstrates the principles of using classes System and uses MuJoCo wrapper to simulate 
 the pre-defined model. A camera is integrated in the simulation model. The camera is extracted from

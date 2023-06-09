@@ -28,30 +28,52 @@
 ## -- 2023-03-07  1.7.2     DA       Bugfix in method System._save()
 ## -- 2023-03-08  1.7.3     MRD      Auto rename System, set latency from MuJoCo xml file
 ## -- 2023-03-27  1.8.0     DA       Class System: refactoring of persistence
-## -- 2023-04-11  1.8.1     MRD      Add custom reset functionality for MuJoCo
+## -- 2023-04-04  1.9.0     LSB      Class State inherits form Instance
+## -- 2023-04-04  1.9.1     LSB      Class State: New method Copy()
+## -- 2023-04-05  1.9.2     LSB      Refactor: Copy method of State, copying all the attributes
+## -- 2023-04-11  1.9.3     MRD      Add custom reset functionality for MuJoCo
+## -- 2023-04-19  1.10.1    LSB      Mew DemoScenario class for system demonstration
+## -- 2023-04-20  1.10.2    LSB      Refactoring State-Instance inheritence
+## -- 2023-05-03  1.11.0    LSB      Enhancing System Class for task and workflow architecture 
+## -- 2023-05-03  1.11.1    LSB      Bug Fix: Visualization for DemoScenario
+## -- 2023-05-05  1.12.0    LSB      New Class SystemShared
+## -- 2023-05-13  1.13.0    LSB      New parameter p_t_step in simulate reaction method
+## -- 2023-05-31  1.13.1    LSB      Updated the copy method of state, for copying the ID
+## -- 2023-05-31  1.13.2    LSB      Refactored the t_step handling, to avoid unncessary execution of try block
+## -- 2023-05-31  1.13.3    LSB      Removing obsolete env attribute from function
+## -- 2023-05-dd  2.0.0     LSB      New class MultiSystem
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.8.1 (2023-04-11)
+Ver. 2.0.0 (2023-05-dd)
 
 This module provides models and templates for state based systems.
 """
 
 
 from time import sleep
+from typing import List
+
+import numpy as np
+
+from mlpro.bf.mt import Range
+from mlpro.bf.streams.models import Instance
 from mlpro.bf.various import TStamp, ScientificObject, Persistent
 from mlpro.bf.data import *
 from mlpro.bf.plot import Plottable, PlotSettings
 from matplotlib.figure import Figure
-from mlpro.bf.ops import Mode
+from mlpro.bf.ops import Mode, ScenarioBase
 from mlpro.bf.math import *
+from mlpro.bf.mt import *
+
+
 
 
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class State(Element, TStamp):
+class State(Instance, Element, TStamp):
     """
     State of a system as an element of a given state space. Additionally, the state can be
     labeled with various properties.
@@ -79,10 +101,12 @@ class State(Element, TStamp):
                  p_terminal: bool = False,
                  p_success: bool = False,
                  p_broken: bool = False,
-                 p_timeout: bool = False):
+                 p_timeout: bool = False,
+                 **p_kwargs):
 
         TStamp.__init__(self)
         Element.__init__(self, p_state_space)
+        Instance.__init__(self, p_feature_data=self, **p_kwargs)
         self.set_initial(p_initial)
         self.set_terminal(p_terminal)
         self.set_success(p_success)
@@ -143,6 +167,45 @@ class State(Element, TStamp):
     def set_terminal(self, p_terminal: bool):
         self._terminal = p_terminal
 
+
+## -------------------------------------------------------------------------------------------------
+    def get_feature_data(self) -> Element:
+        return self
+    
+
+## -------------------------------------------------------------------------------------------------
+    def set_feature_data(self, p_feature_data: Element):
+        self.set_values(p_feature_data.get_values())
+
+
+## -------------------------------------------------------------------------------------------------
+    def copy(self):
+        """
+        Returns a copy of the state element
+
+        Returns
+        -------
+        copied_state: State
+            The copy of original state object.
+        """
+
+        broken = self.get_broken()
+        success = self.get_success()
+        initial = self.get_initial()
+        terminal = self.get_terminal()
+        timeout = self.get_timeout()
+        state_space = self.get_related_set()
+        copied_state = self.__class__(p_state_space=state_space,
+                                      p_broken= broken,
+                                      p_success=success,
+                                      p_initial=initial,
+                                      p_terminal=terminal,
+                                      p_timeout=timeout)
+        copied_state.set_values(self.get_values())
+        copied_state.set_tstamp(self.get_tstamp())
+        copied_state.set_id(self.get_id())
+        
+        return copied_state
 
 
 
@@ -267,7 +330,7 @@ class FctSTrans (Log):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def simulate_reaction(self, p_state: State, p_action: Action, p_t_step : timedelta = None) -> State:
         """
         Simulates a state transition based on a state and action. Custom method _simulate_reaction()
         is called.
@@ -286,11 +349,18 @@ class FctSTrans (Log):
         """
 
         self.log(Log.C_LOG_TYPE_I, 'Start simulating a state transition...')
-        return self._simulate_reaction( p_state = p_state, p_action = p_action )
+        # Check if the p_t_step is to be ignored
+        if p_t_step is not None:
+            try:
+                return self._simulate_reaction( p_state = p_state, p_action = p_action, p_t_step = p_t_step )
+            except TypeError:
+                return self._simulate_reaction(p_state=p_state, p_action=p_action)
+        else:
+            return self._simulate_reaction(p_state=p_state, p_action=p_action)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def _simulate_reaction(self, p_state: State, p_action: Action, p_t_step: timedelta = None) -> State:
         """
         Custom method for a simulated state transition. See method simulate_reaction() for further
         details.
@@ -318,7 +388,7 @@ class FctSuccess (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL ):
-        Log.__init__( self, p_logging=p_logging ) 
+        Log.__init__( self, p_logging=p_logging )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -369,7 +439,7 @@ class FctBroken (Log):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self, p_logging=Log.C_LOG_ALL ):
-        Log.__init__( self, p_logging=p_logging ) 
+        Log.__init__( self, p_logging=p_logging )
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -679,14 +749,284 @@ class Controller (EventManager):
         """
 
         raise NotImplementedError
-        
+
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SystemShared(Shared):
+    """
+    A specialised shared object for managing IPC between MultiSystems.
+
+    :TODO: Entry Systems to be handled yet, that get action from outside.
+
+    Parameters
+    ----------
+    p_range
+        The multiprocessing range for the specific process. Default is None.
+
+
+    Attributes
+    ----------
+    _spaces
+        Spaces of all the systems registered in the Shared Object.
+
+    _states
+        States of all the systems registered in the Shared Object.
+
+    _actions
+        Corresponding Actions for all the systems.
+
+    _action_dimensions
+        All the dimensions present in the Shared Object.
+
+    _mappings
+        Mapping configurations for system to action mapping.
+
+    """
+
+    C_NAME = 'System Shared'
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_range: int = Range.C_RANGE_NONE):
+
+
+        Shared.__init__(self,
+                        p_range=p_range)
+
+        self._spaces: dict = {}
+        self._states: dict = {}
+        self._actions: dict = {}
+        self._action_dimensions: set = set()
+
+        # Mappings in the form 'dim : [(output_sys, out_dim), ]'
+        self._mappings = {}
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_seed: int = None):
+        """
+        Resets the shared object.
+
+        Parameters
+        ----------
+        p_seed : int
+            Seed for reproducibility.
+        """
+        #  TODO: How do you reset systems in a multiprocess, through the shared object or the workflow itself?
+
+        self._states.clear()
+        self._actions.clear()
+        # self.initiate_values()
+        for system in self._spaces.keys():
+            self._states[system] = State(p_state_space=self._spaces[system][0])
+            self._actions[system] = np.zeros(len(self._spaces[system][1].get_dims()))
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def update_state(self, p_sys_id, p_state: State) -> bool:
+        """
+        Updates the states in the Shared Object.
+
+        Parameters
+        ----------
+            p_state : State
+                The id of the system, for which action is to be fetched.
+
+        Returns
+        -------
+            bool
+        """
+
+        self._states[p_sys_id] = p_state.copy()
+        self._map_values(p_state=self._states[p_sys_id])
+        return True
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map_values(self, p_state: State = None, p_action:Action = None):
+        """
+        Updates the action values based on a new state, in a MultiSystem Context.
+
+        Parameters
+        ----------
+        p_sys_id
+            Id of the system from which the state is received.
+
+        p_state : State
+            The State of the system which affects the action.
+
+        """
+        if p_state is not None:
+            for id in p_state.get_dim_ids():
+                value = p_state.get_value(id)
+                for output_sys, output_dim_type, output_dim in self._map(p_input_dim=id):
+                    if output_dim_type == 'S':
+                        self._states[output_sys].set_value(p_dim_id=output_dim, p_value=value)
+                    if output_dim_type == 'A':
+                        action_space = self._spaces[output_sys][1]
+                        self._actions[output_sys][action_space.index(output_dim)] = value
+
+        # TODO: Check how to get the action dimensions from the action object
+
+        if p_action is not None:
+            elem_ids = p_action.get_elem_ids()
+            action_dims = []
+            action_values = []
+            for elem_id in elem_ids:
+                action_dims.extend(p_action.get_elem(elem_id).get_related_set().get_dim_ids())
+                action_values.extend(p_action.get_elem(elem_id).get_values())
+            for i,id in enumerate(action_dims):
+                value = action_values[i]
+                for output_sys, output_dim_type, output_dim in self._map(p_input_dim=id):
+                    if output_dim_type == 'S':
+                        self._states[output_sys].set_value(p_dim_id=output_dim, p_value=value)
+                    if output_dim_type == 'A':
+                        action_space = self._spaces[output_sys][1]
+                        self._actions[output_sys][action_space.index(output_dim)] = value
+
+        # TODO: Check if there actually exists a mapping among them, here and also in _map function
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_actions(self):
+
+        return self._actions
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_action(self, p_sys_id) -> Action:
+        """
+        Fetches the corresponding action for a particular system.
+
+        Parameters
+        ----------
+        p_sys_id
+            The id of the system, for which action is to be fetched.
+
+        Returns
+        -------
+        action : Action
+            The corresponding action for the system.
+        """
+
+        action = Action(p_action_space=self._spaces[p_sys_id][1], p_values=self._actions[p_sys_id])
+        return action
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_states(self):
+
+        return self._states
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_state(self, p_sys_id) -> State:
+        """
+        Fetches the state of a particular system from the Shared Object.
+
+        Parameters
+        ----------
+        p_sys_id
+            The id of the system, of which state is to be fetched.
+
+        Returns
+        -------
+        state : State
+            The corresponding state of the system.
+        """
+
+        state = self._states[p_sys_id].copy()
+
+        return state
+
+
+## -------------------------------------------------------------------------------------------------
+    def _map(self, p_input_dim = None):
+        """
+        Maps a dimension to output dimension with info about output sys, output dim type and output dim.
+
+        Parameters
+        ----------
+        p_sys_id
+            Id of the system for which action is to be mapped into the mappings.
+
+        p_state : State
+            The State to be mapped into the 'states' dictionary.
+
+        Returns
+        -------
+        mapping : (output_sys, output_dim_type, output_dim)
+            A tuple of tuples of System id and dimension id mappings from State to Action respectively.
+        """
+
+
+        output_dims = self._mappings[p_input_dim]
+
+        return output_dims
+
+
+## -------------------------------------------------------------------------------------------------
+    def register_system(self,
+                        p_sys_id = None,
+                        p_state_space : MSpace = None,
+                        p_action_space : MSpace = None,
+                        p_mappings: tuple = None):
+        """
+        Registers the system in the Shared Object and sets up the dimension to dimension mapping.
+
+        Parameters
+        ----------
+        p_system : System
+            The system to be registered.
+
+        p_mapping : ( (dim_type, dim_type), (input_sys_id, input_dim) , (action_sys_id, action_dimension) )
+
+
+        Returns
+        -------
+
+        """
+        try:
+
+            system_id = p_sys_id
+            state_space = p_state_space
+            action_space = p_action_space
+
+            # :TODO: Also check if the system is already registered and raise error
+
+            self._spaces[system_id] = (state_space.copy(), action_space.copy())
+            self._states[system_id] = State(self._spaces[system_id])
+
+
+            self._action_dimensions.update(*action_space.get_dim_ids())
+            self._actions[system_id] = np.zeros(len(action_space.get_dim_ids()))
+
+            for (in_dim_type, output_dim_type), (input_sys_id, input_dim), (output_sys_id, output_dim) in p_mappings:
+
+                if input_dim not in self._mappings.keys():
+                    self._mappings[input_dim] = []
+
+                self._mappings[input_dim].append(output_sys_id, output_dim_type, output_dim)
+
+            return True
+
+        except:
+
+            return False
+
+
+
         
         
 
 
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, ScientificObject):
+class System (FctSTrans, FctSuccess, FctBroken, Task, Mode, Plottable, Persistent, ScientificObject):
     """
     Base class for state based systems.
 
@@ -746,19 +1086,25 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
 
 ## -------------------------------------------------------------------------------------------------
     def __init__( self,
+                  p_id = None,
+                  p_name : str =None,
+                  p_range_max : int = Async.C_RANGE_NONE,
+                  p_autorun = Task.C_AUTORUN_NONE,
+                  p_class_shared = None,
                   p_mode = Mode.C_MODE_SIM,
                   p_latency : timedelta = None,
+                  p_t_step : timedelta = None,
                   p_fct_strans : FctSTrans = None,
                   p_fct_success : FctSuccess = None,
                   p_fct_broken : FctBroken = None,
                   p_mujoco_file = None,
-                  p_name = None,
                   p_frame_skip : int = 1,
                   p_state_mapping = None,
                   p_action_mapping = None,
                   p_camera_conf : tuple = (None, None, None),
                   p_visualize : bool = False,
-                  p_logging = Log.C_LOG_ALL ):
+                  p_logging = Log.C_LOG_ALL,
+                  **p_kwargs ):
 
         self._fct_strans            = p_fct_strans
         self._fct_success           = p_fct_success
@@ -772,15 +1118,16 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         self._controllers           = []
         self._mapping_actions       = {}
         self._mapping_states        = {}
-            
+        self._t_step = p_t_step
+
         if p_mujoco_file is not None:
             from mlpro.wrappers.mujoco import MujocoHandler
-            
+
             if p_name is not None:
                 self.C_NAME = p_name
             else:
                 self.C_NAME = p_mujoco_file.split("/")[-1][:p_mujoco_file.split("/")[-1].find(".")]
-                
+
             self._mujoco_file    = p_mujoco_file
             self._frame_skip     = p_frame_skip
             self._state_mapping  = p_state_mapping
@@ -788,18 +1135,18 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
             self._camera_conf    = p_camera_conf
 
             self._mujoco_handler = MujocoHandler(
-                                        p_mujoco_file=self._mujoco_file, 
+                                        p_mujoco_file=self._mujoco_file,
                                         p_frame_skip=self._frame_skip,
                                         p_state_mapping=self._state_mapping,
                                         p_action_mapping=self._action_mapping,
                                         p_camera_conf=self._camera_conf,
                                         p_visualize=p_visualize,
                                         p_logging=p_logging)
-            
+
             self._state_space, self._action_space = self._mujoco_handler.setup_spaces()
             # Get Latency
             mujoco_latency = self._mujoco_handler.get_latency()
-            
+
             if mujoco_latency is not None:
                 self.set_latency(timedelta(0,mujoco_latency,0))
             else:
@@ -817,7 +1164,18 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         FctBroken.__init__(self, p_logging=p_logging)
         Mode.__init__(self, p_mode=p_mode, p_logging=p_logging)
         Plottable.__init__(self, p_visualize=p_visualize)
-        Persistent.__init__(self, p_id=None, p_logging=p_logging)
+        Persistent.__init__(self, p_id=p_id, p_logging=p_logging)
+
+
+        Task.__init__(self,
+                        p_id=p_id,
+                        p_name =p_name,
+                        p_range_max = p_range_max,
+                        p_autorun = p_autorun,
+                        p_class_shared=p_class_shared,
+                        p_visualize=p_visualize,
+                        p_logging=p_logging,
+                        **p_kwargs)
 
 
  ## -------------------------------------------------------------------------------------------------
@@ -843,18 +1201,18 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         """
         An embedded MuJoCo system can not be pickled and needs to be removed from the pickle stream.
         """
-        
+
         p_state['_mujoco_handler'] = None
 
 
 ## -------------------------------------------------------------------------------------------------
     def _complete_state(self, p_path:str, p_os_sep:str, p_filename_stub:str):
-        
+
         if self._mujoco_file is None: return
 
         from mlpro.wrappers.mujoco import MujocoHandler
 
-        self._mujoco_handler = MujocoHandler( p_mujoco_file=self._mujoco_file, 
+        self._mujoco_handler = MujocoHandler( p_mujoco_file=self._mujoco_file,
                                               p_frame_skip=self._frame_skip,
                                               p_state_mapping=self._state_mapping,
                                               p_action_mapping=self._action_mapping,
@@ -912,8 +1270,8 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
 ## -------------------------------------------------------------------------------------------------
     def get_action_space(self) -> MSpace:
         return self._action_space
-        
-        
+
+
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
         """
@@ -1022,10 +1380,10 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
                 except:
                     self.log(Log.C_LOG_TYPE_E, 'Invalid sensor "' + entry[2] + '"')
                     successful = False
-                
+
                 if successful:
                     mapping_int.append( ( entry[0], entry[1], entry[2], state_id, sensor_id ) )
-                    
+
             elif entry[0] == 'A':
                 # 1.2 Check action and actuator
                 try:
@@ -1039,7 +1397,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
                 except:
                     self.log(Log.C_LOG_TYPE_E, 'Invalid sensor "' + entry[2] + '"')
                     successful = False
-                
+
                 if successful:
                     mapping_int.append( ( entry[0], entry[1], entry[2], action_id, actuator_id ) )
 
@@ -1084,7 +1442,31 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
 
 
 ## -------------------------------------------------------------------------------------------------
-    def process_action(self, p_action: Action) -> bool:
+    def get_so(self) -> SystemShared:
+
+        return super().get_so()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run(self, p_t_step : timedelta = None):
+        """
+        Run method that runs the system as a task. It runs the process_action() method of the system with
+        action as a parameter.
+
+        Parameters
+        ----------
+        p_t_step : timedelta
+            Time for which the system must be simulated.
+
+        """
+
+        p_action = self.get_so().get_action(p_sys_id = self.get_id())
+        self.process_action(p_action=p_action)
+        self.get_so().update_state(p_sys_id = self.get_id(), p_state = self.get_state())
+
+
+## -------------------------------------------------------------------------------------------------
+    def process_action(self, p_action: Action, p_t_step: timedelta = None) -> bool:
         """
         Processes a state transition based on the current state and a given action. The state
         transition itself is implemented in child classes in the custom method _process_action().
@@ -1093,6 +1475,9 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         ----------
         p_action : Action
             Action to be processed
+
+        p_t_step : timedelta
+            The timestep for which the system is to be simulated
 
         Returns
         -------
@@ -1103,7 +1488,21 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         self.log(self.C_LOG_TYPE_I, 'Start processing action')
 
         state = self.get_state()
-        result = self._process_action(p_action)
+
+        if p_t_step is None:
+            t_step = self._t_step
+        else:
+            t_step = p_t_step
+
+        # Check if the t_step shall be ignored, when None
+        if t_step is not None:
+            try:
+                result = self._process_action(p_action, p_t_step = t_step)
+            except TypeError:
+                result = self._process_action(p_action)
+        else:
+            result = self._process_action(p_action)
+
         self._prev_state = state
         self._last_action = p_action
 
@@ -1116,7 +1515,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _process_action(self, p_action: Action) -> bool:
+    def _process_action(self, p_action: Action, p_t_step : timedelta = None) -> bool:
         """
         Internal custom method for state transition with default implementation. To be redefined in 
         a child class on demand. See method process_action() for further details.
@@ -1129,7 +1528,14 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         # 1 State transition
         if self._mode == self.C_MODE_SIM:
             # 1.1 Simulated state transition
-            self._set_state(self.simulate_reaction(self.get_state(), p_action))
+            # Check if the p_t_step shall be ignored
+            if p_t_step is not None:
+                try:
+                    self._set_state(self.simulate_reaction(self.get_state(), p_action, p_t_step = p_t_step ))
+                except TypeError:
+                    self._set_state(self.simulate_reaction(self.get_state(), p_action))
+            else:
+                self._set_state(self.simulate_reaction(self.get_state(), p_action))
 
         elif self._mode == self.C_MODE_REAL:
             # 1.2 Real state transition
@@ -1159,7 +1565,7 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
 
 
 ## -------------------------------------------------------------------------------------------------
-    def simulate_reaction(self, p_state: State = None, p_action: Action = None) -> State:
+    def simulate_reaction(self, p_state: State = None, p_action: Action = None, p_t_step:timedelta = None) -> State:
         """
         Simulates a state transition based on a state and an action. The simulation step itself is
         carried out either by an internal custom implementation in method _simulate_reaction() or
@@ -1177,9 +1583,19 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         State
             Subsequent state after transition
         """
-
+        # 1. Check if there is an external simulation function provided to the System
         if self._fct_strans is not None:
-            return self._fct_strans.simulate_reaction(p_state, p_action)
+
+            # 1.1 Check if there is a valid timestep, or if it shall be ignored?
+            if p_t_step is not None:
+                try:
+                    return self._fct_strans.simulate_reaction(p_state, p_action, p_t_step)
+                except TypeError:
+                    return self._fct_strans.simulate_reaction(p_state, p_action)
+            else:
+                return self._fct_strans.simulate_reaction(p_state, p_action)
+
+        # 2. Check if there's is Mujoco Handler
         elif self._mujoco_handler is not None:
             # Check if there is changing in action
             action = self.action_to_mujoco(p_action)
@@ -1192,21 +1608,30 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
             current_state = self.state_from_mujoco(ob)
 
             return current_state
+
+        # 3. Or else execute the user defined reaction simulation
         else:
-            return self._simulate_reaction(p_state, p_action)
+            # 3.1 Check if the p_t_step shall be ignored
+            if p_t_step is not None:
+                try:
+                    return self._simulate_reaction(p_state, p_action, p_t_step)
+                except TypeError:
+                    return self._simulate_reaction(p_state, p_action)
+            else:
+                return self._simulate_reaction(p_state, p_action)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _simulate_reaction(self, p_state: State, p_action: Action) -> State:
+    def _simulate_reaction(self, p_state: State, p_action: Action, p_step:timedelta = None) -> State:
         """
         Custom method for a simulated state transition. Implement this method if no external state
         transition function is used. See method simulate_reaction() for further
         details.
         """
-        
+
         raise NotImplementedError('External FctSTrans object not provided. Please implement inner state transition here.')
-    
-    
+
+
 ## -------------------------------------------------------------------------------------------------
     def action_to_mujoco(self, p_mlpro_action):
         """
@@ -1214,8 +1639,8 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         """
         action = p_mlpro_action.get_sorted_values()
         return self._action_to_mujoco(action)
-    
-    
+
+
 ## -------------------------------------------------------------------------------------------------
     def _action_to_mujoco(self, p_mlpro_action):
         """
@@ -1232,11 +1657,11 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
         Numpy
             Modified MLPro action
         """
-        
+
         return p_mlpro_action
 
 
-## -------------------------------------------------------------------------------------------------    
+## -------------------------------------------------------------------------------------------------
     def state_from_mujoco(self, p_mujoco_state):
         """
         State conversion method from converting MuJoCo state to MLPro state.
@@ -1289,12 +1714,12 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
             else:
                 sensor_value = mapping[0].get_sensor_value( p_id = mapping[1] )
 
-                if sensor_value is None: 
+                if sensor_value is None:
                     successful = False
                 else:
                     new_state.set_value(p_dim_id=state_dim_id, p_value = sensor_value )
 
-        if not successful: 
+        if not successful:
             return False
 
         # 3 Assessment of new state
@@ -1407,14 +1832,14 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
     def get_broken(self) -> bool:
         if self._state is None: return False
         return self._state.get_broken()
-    
+
 
 ## -------------------------------------------------------------------------------------------------
-    def init_plot( self, 
+    def init_plot( self,
                    p_figure:Figure = None,
-                   p_plot_settings : PlotSettings = None, 
+                   p_plot_settings : PlotSettings = None,
                    **p_kwargs):
-        
+
         if self._mujoco_handler is not None: return
         super().init_plot(p_figure=p_figure, p_plot_settings=p_plot_settings, **p_kwargs)
 
@@ -1423,3 +1848,393 @@ class System (FctSTrans, FctSuccess, FctBroken, Mode, Plottable, Persistent, Sci
     def update_plot(self, **p_kwargs):
         if self._mujoco_handler is not None: return
         super().update_plot(**p_kwargs)
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MultiSystem(Workflow, System):
+
+    """
+    A complex system of systems.
+    
+    Parameters
+    ----------
+    p_name
+    p_id
+    p_range_max
+    p_autorun
+    p_class_shared
+    p_mode
+    p_latency
+    p_t_step
+    p_fct_strans
+    p_fct_success
+    p_fct_broken
+    p_mujoco_file
+    p_frame_skip
+    p_state_mapping
+    p_action_mapping
+    p_camera_conf
+    p_visualize
+    p_logging
+    p_kwargs
+    """
+
+
+    C_TYPE = 'Multi-System'
+
+    
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, 
+                 p_name: str = None, 
+                 p_id = None,
+                 p_range_max=Async.C_RANGE_THREAD, 
+                 p_autorun = Task.C_AUTORUN_NONE,
+                 p_class_shared = SystemShared,
+                 p_mode=Mode.C_MODE_SIM, 
+                 p_latency: timedelta = None,
+                 p_t_step:timedelta = None, 
+                 p_fct_strans: FctSTrans = None, 
+                 p_fct_success: FctSuccess = None, 
+                 p_fct_broken: FctBroken = None, 
+                 p_mujoco_file=None, 
+                 p_frame_skip: int = 1, 
+                 p_state_mapping=None, 
+                 p_action_mapping=None, 
+                 p_camera_conf: tuple = (None, None, None), 
+                 p_visualize: bool = False, 
+                 p_logging=Log.C_LOG_ALL,
+                 **p_kwargs):
+        
+
+        System.__init__( self,
+                         p_name=p_name,
+                         p_id = p_id,
+                         p_range_max = p_range_max,
+                         p_autorun=p_autorun,
+                         p_class_shared = p_class_shared,
+                         p_mode = p_mode, 
+                         p_latency=p_latency, 
+                         p_t_step = p_t_step,
+                         p_fct_strans=p_fct_strans, 
+                         p_fct_success=p_fct_success, 
+                         p_fct_broken=p_fct_broken,
+                         p_mujoco_file=p_mujoco_file,
+                         p_frame_skip=p_frame_skip, 
+                         p_state_mapping=p_state_mapping,
+                         p_action_mapping=p_action_mapping, 
+                         p_camera_conf=p_camera_conf, 
+                         p_visualize=p_visualize, 
+                         p_logging=p_logging )
+
+
+        Workflow.__init__(self, 
+                          p_name = p_name, 
+                          p_range_max = p_range_max, 
+                          p_class_shared = p_class_shared,
+                          p_visualize = p_visualize, 
+                          p_logging = p_logging,
+                          **p_kwargs)
+        
+        self._subsystems = None
+        self._subsystem_ids = None
+        self._t_step = p_t_step
+
+
+
+## -------------------------------------------------------------------------------------------------
+    @staticmethod
+    def setup_spaces():
+        """
+        Sets up the state and action spaces of the system. Please provide the state space and the action spaces at
+        the MultiSystem level.
+
+        Returns
+        -------
+        state_space, action_space : MSpace, MSpace
+            State and Action space of the MultiSystem.
+        """
+        return None, None
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_system(self, p_system : System, p_mappings):
+        """
+        Adds sub system to the MultiSystem.
+
+        Parameters
+        ----------
+        p_system
+        p_mapping
+
+        Returns
+        -------
+
+        """
+        self._subsystems.append(p_system)
+
+        self._subsystem_ids.append(p_system.get_id())
+
+        self.get_so().register_system(p_sys_id = p_system.get_id(),
+                                      p_state_space=p_system.get_state_space(),
+                                      p_action_space=p_system.get_action_space(),
+                                      p_mappings = p_mappings)
+
+        self.add_task(p_system)
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed=None) -> None:
+        """
+        Resets the MultiSystem and all the sub-systems inside.
+
+        Parameters
+        ----------
+        p_seed
+
+        Returns
+        -------
+
+        """
+        for system in self._subsystems:
+            system.reset(p_seed = p_seed)
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_subsystem(self, p_system_id) -> System:
+        """
+        Returns a sub system from the MultiSystem.
+
+        Parameters
+        ----------
+        p_system_id
+
+        Returns
+        -------
+
+        """
+        return self._subsystems[self._subsystem_ids.index(p_system_id)]
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_states(self):
+        """
+        Returns a list of the states of all the Sub-Systems in the MultiSystem.
+
+        Returns
+        -------
+        states : list
+            States of all the subsystems.
+        """
+
+        so = self.get_so()
+
+        return so.get_states()
+
+
+## -------------------------------------------------------------------------------------------------
+    def simulate_reaction(self, p_state: State = None, p_action: Action = None, p_t_step : timedelta = None) -> State:
+        """
+        Simulates the system.
+
+        Parameters
+        ----------
+        p_state
+        p_action
+
+        Returns
+        -------
+
+        """
+        self.get_so()._map_values(p_action=p_action)
+        self.run(p_action = self.get_so().get_actions(), p_t_step = self._t_step)
+        return self.get_state()
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_broken(self, p_state: State) -> bool:
+        """
+        Returns true if the system is broken
+        """
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute_success(self, p_state: State) -> bool:
+        """
+        Returns true if the system has reached success.
+        
+        Parameters
+        ----------
+        p_state
+
+        Returns
+        -------
+
+        """
+        pass
+
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class DemoScenario(ScenarioBase):
+
+    """
+        Demo Scenario Class to demonstrate systems, inherits from the ScenarioBase.
+        
+        Parameters
+        ----------
+        p_system : System
+            Mandatory parameter, takes the system for the scenario.
+        p_mode
+            Operation mode. See Mode.C_VALID_MODES for valid values. Default = Mode.C_MODE_SIM.
+        p_action_pattern : str
+            The action pattern to be used for demonstration. Default is C_ACTION_RANDOM
+        p_action_random : list
+            The action to be executed in constant mode. Mandatory when the mdoe is constant.
+        p_id
+            Optional external id
+        p_cycle_limit : int
+            Maximum number of cycles. Default = 0 (no limit).
+        p_auto_setup : bool
+            If True custom method setup() is called after initialization.
+        p_visualize : bool
+            Boolean switch for visualisation. Default = True.
+        p_logging
+            Log level (see constants of class Log). Default: Log.C_LOG_ALL.  
+    """    
+
+    C_NAME = 'Demo System Scenario'
+    C_ACTION_RANDOM = 'random'
+    C_ACTION_CONSTANT = 'constant'
+
+    
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self, 
+                 p_system : System,
+                 p_mode, 
+                 p_action_pattern : str = 'random',
+                 p_action : list = None,
+                 p_id=None, 
+                 p_cycle_limit=0, 
+                 p_auto_setup: bool = True, 
+                 p_visualize: bool = True, 
+                 p_logging=Log.C_LOG_ALL):
+        
+
+        self._system = p_system
+        self._action_pattern = p_action_pattern
+        self._action = p_action
+        
+
+        ScenarioBase.__init__(self,
+                              p_mode = p_mode, 
+                              p_id = p_id, 
+                              p_cycle_limit = p_cycle_limit, 
+                              p_auto_setup = p_auto_setup, 
+                              p_visualize = p_visualize, 
+                              p_logging = p_logging)
+        
+
+
+        self._action_length = len(self._system.get_action_space().get_dims())
+
+        if (self._action_pattern == DemoScenario.C_ACTION_CONSTANT): 
+
+            if self._action is None:
+                raise ParamError("Please provide a value for action, when running in constant action mode.")
+            
+            if self._action_length == len(self._action):
+                raise ParamError("Please provide the action as a list of length equal to the number"+
+                                 " of dimenstions in the action space of the system.")
+        
+        self.reset()
+
+
+## -------------------------------------------------------------------------------------------------
+    def setup(self):
+
+        """Set's up the system spaces."""
+
+        self._system.setup_spaces()
+
+## -------------------------------------------------------------------------------------------------
+    def get_latency(self) -> timedelta:
+        
+        """
+        Returns the latency of the system.
+        """
+        
+        return self._system.get_latency()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed):
+
+        """
+        Resets the Scenario and the system. Sets up the action and state spaces of the system.
+
+        Parameters
+        ----------
+        p_seed
+            Seed for the purpose of reproducibility.
+        """
+
+        self._system.reset(p_seed = p_seed)
+        self._system.init_plot()
+
+
+## -------------------------------------------------------------------------------------------------
+    def _run_cycle(self):
+
+        """
+        Runs the custom scenario cycle, through the run method of the scenario base. 
+        Checks and returns the brokent state, false otherwise.
+        """
+        
+        self.log(Log.C_LOG_TYPE_I, "Generating new action")
+        
+        action = self._get_next_action()
+
+        self._system.process_action(p_action=action)
+
+        broken = self._system.compute_broken(p_state=self._system.get_state()) 
+
+        return False, broken, False, False
+
+
+## -------------------------------------------------------------------------------------------------
+    def _get_next_action(self):
+
+        """
+        Generates new action based on the pattern provided by the user.
+        """
+        
+        action_space = self._system.get_action_space()
+
+        if self._action_pattern == self.C_ACTION_CONSTANT:
+            return Action(p_action_space = action_space, p_values = self._action)
+
+        action = []
+
+        for dim in action_space.get_dims():
+            if dim.get_base_set() in (Dimension.C_BASE_SET_N, Dimension.C_BASE_SET_R):
+                action.append(random.uniform(*dim.get_boundaries()))
+
+            elif dim.get_base_set() == Dimension.C_BASE_SET_Z:
+                action.append(random.randint(*dim.get_boundaries()))
+
+        return Action(p_action_space=action_space, p_values=action)
+ 
+## -------------------------------------------------------------------------------------------------
+    def update_plot(self, **p_kwargs):
+       
+       super().update_plot(**p_kwargs)
+       self._system.update_plot(**p_kwargs)

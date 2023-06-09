@@ -8,10 +8,12 @@
 ## -- 2023-05-12  0.0.0     DA       Creation
 ## -- 2023-05-23  1.0.0     SY       First version release
 ## -- 2023-05-25  1.0.1     SY       Refactoring related to ClusterCentroid
+## -- 2023-06-03  1.0.2     DA       Renaming of method ClusterAnalyzer.get_cluster_memberships
+## -- 2023-06-05  1.0.3     SY       Updating get_cluster_memberships, p_cls_cluster, and _adapt
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.1 (2023-05-25)
+Ver. 1.0.3 (2023-06-05)
 
 This module provides wrapper classes from River to MLPro, specifically for cluster analyzers. This
 module includes three clustering algorithms from River that are embedded to MLPro, such as:
@@ -32,6 +34,7 @@ https://www.riverml.xyz/
 """
 
 
+from mlpro.bf.streams import Instance, List
 from mlpro.wrappers.river.basics import WrapperRiver
 from mlpro.oa.streams.tasks.clusteranalyzers import ClusterAnalyzer, Cluster, ClusterCentroid
 from mlpro.bf.mt import Task as MLTask
@@ -53,6 +56,8 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
     Parameters
     ----------
+    p_cls_cluster 
+        Cluster class (Class Cluster or a child class).
     p_river_algo : river.base.Clusterer
         Instantiated river-based clusterer.
     p_name : str
@@ -75,12 +80,11 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
     
     C_WRAPPED_PACKAGE   = 'river'
     C_MINIMUM_VERSION   = '0.15.0'
-    
-    C_CLS_CLUSTER       = Cluster
 
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
+                 p_cls_cluster,
                  p_river_algo:base.Clusterer,
                  p_name:str = None,
                  p_range_max = MLTask.C_RANGE_THREAD,
@@ -94,6 +98,7 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         WrapperRiver.__init__(self, p_logging=p_logging)
 
         ClusterAnalyzer.__init__(self,
+                                 p_cls_cluster=p_cls_cluster,
                                  p_name=p_name,
                                  p_range_max=p_range_max,
                                  p_ada=p_ada,
@@ -102,7 +107,7 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self, p_inst_new: List[Instance], p_inst_del: List[Instance]):
+    def _adapt(self, p_inst_new:List[Instance]) -> bool:
         """
         This method is to adapt the current clusters according to the incoming instances.
 
@@ -110,8 +115,11 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         ----------
         p_inst_new : List[Instance]
             incoming instances.
-        p_inst_del : List[Instance]
-            removed instances. In this method, this variable is not used.
+
+        Returns
+        -------
+        adapted : bool
+            True, if something has been adapted. False otherwise.
             
         """
         
@@ -131,8 +139,7 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         self.log(self.C_LOG_TYPE_I, 'Cluster is adapted...')
         self._river_algo.learn_one(input_data)
 
-        # get cluster membership
-        self.get_cluster_membership(p_inst_new)
+        return True
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -167,7 +174,9 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def get_cluster_membership(self, p_inst:Instance) -> List[Tuple[str, float, Cluster]]:
+    def get_cluster_memberships( self, 
+                                 p_inst: Instance, 
+                                 p_scope: int = ClusterAnalyzer.C_MS_SCOPE_MAX ) -> List[Tuple[str, float, Cluster]]:
         """
         Public custom method to determine the membership of the given instance to each cluster as
         a value in percent.
@@ -176,6 +185,9 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
         ----------
         p_inst : Instance
             Instance to be evaluated.
+        p_scope : int
+            Scope of the result list. See class attributes C_MS_SCOPE_* for possible values. Default
+            value is C_MS_SCOPE_MAX.
 
         Returns
         -------
@@ -210,9 +222,11 @@ class WrClusterAnalyzerRiver2MLPro (WrapperRiver, ClusterAnalyzer):
                 cluster = list_clusters[cluster_idx]
                 if x == cluster_idx:
                     memberships_rel.append((cluster.get_id(), 1, cluster))
-                    self.log(self.C_LOG_TYPE_I, 'Actual instances belongs to cluster %s'%(cluster.get_id()))
+                    self.log(self.C_LOG_TYPE_I,
+                             'Actual instances belongs to cluster %s'%(cluster.get_id()))
                 else:
-                    memberships_rel.append((cluster.get_id(), 0, cluster))
+                    if p_scope == ClusterAnalyzer.C_MS_SCOPE_ALL:
+                        memberships_rel.append((cluster.get_id(), 0, cluster))
 
         return memberships_rel
 
@@ -270,8 +284,6 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
     """
 
     C_NAME          = 'DBSTREAM'
-    
-    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -294,7 +306,8 @@ class WrRiverDBStream2MLPro (WrClusterAnalyzerRiver2MLPro):
                                intersection_factor=p_intersection_factor,
                                minimum_weight=p_minimum_weight)
 
-        super().__init__(p_river_algo=alg,
+        super().__init__(p_cls_cluster=ClusterCentroid(),
+                         p_river_algo=alg,
                          p_name=p_name,
                          p_range_max=p_range_max,
                          p_ada=p_ada,
@@ -396,8 +409,6 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
     """
 
     C_NAME          = 'CluStream'
-    
-    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -430,7 +441,8 @@ class WrRiverCluStream2MLPro (WrClusterAnalyzerRiver2MLPro):
                                 sigma=p_sigma,
                                 p=p_p)
 
-        super().__init__(p_river_algo=alg,
+        super().__init__(p_cls_cluster=ClusterCentroid(),
+                         p_river_algo=alg,
                          p_name=p_name,
                          p_range_max=p_range_max,
                          p_ada=p_ada,
@@ -521,8 +533,6 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
     """
 
     C_NAME          = 'DenStream'
-    
-    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -547,7 +557,8 @@ class WrRiverDenStream2MLPro (WrClusterAnalyzerRiver2MLPro):
                                 n_samples_init=p_n_samples_init,
                                 stream_speed=p_stream_speed)
 
-        super().__init__(p_river_algo=alg,
+        super().__init__(p_cls_cluster=ClusterCentroid(),
+                         p_river_algo=alg,
                          p_name=p_name,
                          p_range_max=p_range_max,
                          p_ada=p_ada,
@@ -640,8 +651,6 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
     """
 
     C_NAME          = 'KMeans'
-    
-    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -666,7 +675,8 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
                              p=p_p,
                              seed=p_seed)
 
-        super().__init__(p_river_algo=alg,
+        super().__init__(p_cls_cluster=ClusterCentroid(),
+                         p_river_algo=alg,
                          p_name=p_name,
                          p_range_max=p_range_max,
                          p_ada=p_ada,
@@ -701,7 +711,7 @@ class WrRiverKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
             
             list_center = []
             for y in range(len(self._river_algo.centers[x])):
-                list_center.append(self._river_algo.centers[x][y])
+                list_center.append(self._river_algo.centers[x][y+1])
             
             self._clusters[x].get_centroid().set_values(list_center)
 
@@ -759,8 +769,6 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
     """
 
     C_NAME          = 'STREAMKMeans'
-    
-    C_CLS_CLUSTER   = ClusterCentroid
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -787,7 +795,8 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
                                    p=p_p,
                                    seed=p_seed)
 
-        super().__init__(p_river_algo=alg,
+        super().__init__(p_cls_cluster=ClusterCentroid(),
+                         p_river_algo=alg,
                          p_name=p_name,
                          p_range_max=p_range_max,
                          p_ada=p_ada,
@@ -822,9 +831,12 @@ class WrRiverStreamKMeans2MLPro (WrClusterAnalyzerRiver2MLPro):
             
             list_center = []
             for y in range(len(self._river_algo.centers[x])):
-                list_center.append(self._river_algo.centers[x][y])
+                list_center.append(self._river_algo.centers[x][y+1])
             
-            self._clusters[x].get_centroid().set_values(list_center)
+            try:
+                self._clusters[x].get_centroid().set_values(list_center)
+            except:
+                pass
 
         return self._clusters
 
