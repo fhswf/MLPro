@@ -5,7 +5,7 @@
 ## -------------------------------------------------------------------------------------------------
 ## -- History :
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
-## -- 2023-06-13  0.0.0     LSB       Creation
+## -- 2023-06-13  0.0.0     LSB      Creation
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -32,15 +32,14 @@ class SLDataStoring(DataStoring):
     C_VAR_DAY = "Day"
     C_VAR_SEC = "Second"
     C_VAR_MICROSEC = "Microsecond"
-    C_VAR_LEARN_RATE = "Learning Rate"
-    C_VAR_LOSS = "Loss"
+    # C_VAR_LEARN_RATE = "Learning Rate"
+    # C_VAR_LOSS = "Loss"
 
-    def __init__(self, p_metric_space):
+    def __init__(self, p_logging_space:MSpace):
 
-        self.space = p_metric_space.get_space()
+        self.space = p_logging_space
 
-        self.variables = [self.C_VAR_CYCLE, self.C_VAR_DAY, self.C_VAR_SEC, self.C_VAR_MICROSEC,
-                          self.C_VAR_LEARN_RATE, self.C_VAR_LEARN_RATE]
+        self.variables = [self.C_VAR_CYCLE, self.C_VAR_DAY, self.C_VAR_SEC, self.C_VAR_MICROSEC]
 
         self.var_space = []
         for dim in self.space.get_dims():
@@ -52,15 +51,15 @@ class SLDataStoring(DataStoring):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def memorize_row(self, p_cycle_id, p_tstamp, p_lr, p_loss, p_data):
+    def memorize_row(self, p_cycle_id, p_data):
 
 
         self.memorize(self.C_VAR_CYCLE, self.current_epoch, p_cycle_id)
-        self.memorize(self.C_VAR_DAY, self.current_epoch, p_tstamp.days)
-        self.memorize(self.C_VAR_SEC, self.current_epoch, p_tstamp.seconds)
-        self.memorize(self.C_VAR_MICROSEC, self.current_epoch, p_tstamp.microseconds)
-        self.memorize(self.C_VAR_LEARN_RATE, self.current_epoch, p_lr)
-        self.memorize(self.C_VAR_LOSS, self.current_epoch, p_loss)
+        # self.memorize(self.C_VAR_DAY, self.current_epoch, p_tstamp.days)
+        # self.memorize(self.C_VAR_SEC, self.current_epoch, p_tstamp.seconds)
+        # self.memorize(self.C_VAR_MICROSEC, self.current_epoch, p_tstamp.microseconds)
+        # self.memorize(self.C_VAR_LEARN_RATE, self.current_epoch, p_lr)
+        # self.memorize(self.C_VAR_LOSS, self.current_epoch, p_loss)
 
         for i, var in enumerate(self.var_space):
             self.memorize(var, self.current_epoch, p_data[i])
@@ -89,6 +88,8 @@ class SLScenario (Scenario):
     """
 
     C_TYPE = 'SL-Scenario'
+    C_DS_DATA = 'Data Logger'
+    C_DS_MAPPING = 'Mapping Logger'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -104,7 +105,8 @@ class SLScenario (Scenario):
         self._dataset = None
         # save the lengths of all the datasets
         self._model : SLAdaptiveFunction = None
-        self._data_loggers : dict = {}
+        self.ds : dict = {}
+        self._metrics = []
         Scenario.__init__(self,
                           p_mode = p_mode,
                           p_ada = p_ada,
@@ -123,14 +125,32 @@ class SLScenario (Scenario):
         success = False
         error = False
         adapted = False
-        end_of_data = False
+        # end_of_data = False
 
-        # if self._cycle_id >= ( len(self.get_dataset()) - 1 ):
-        #     end_of_data = True
-        # else:
-        #     end_of_data = False
+        if self._cycle_id >= ( len(self.get_dataset()) - 1 ):
+            end_of_data = True
+        else:
+            end_of_data = False
 
-        # adapted = self._model.adapt(p_dataset = self.get_dataset().get_next())
+        if not end_of_data:
+            data = self.get_dataset().get_next()
+            adapted = self._model.adapt(p_dataset = data)
+
+            pervious_mapping = self._model.get_previous_mapping()
+            logging_data = self._model.get_logging_data()
+
+            metrics_scores = []
+
+            for metric in self._metrics:
+                # Metric shall return metric if it's an instance based metric,
+                # otherwise previous result if it's a cumulative metric
+                logging_data.extend(metric.update(self._model, self._data_counter, data))
+
+            if self.ds[self.C_DS_DATA] is not None:
+                self.ds[self.C_DS_DATA].memorize_row(p_cycle_id=self._cycle_id, p_data = logging_data)
+
+            if self.ds[self.C_DS_MAPPING] is not None:
+                self.ds[self.C_DS_MAPPING].memorize_row(p_cycle_id=self.get_cycle_id(), p_data= pervious_mapping)
 
         # Need to optimize the adapt method of the SLAdaptiveFunction which currently just adapts only when the
         # distance is more than threshold
@@ -138,6 +158,8 @@ class SLScenario (Scenario):
         # get success from the model
 
         # Error computations such as Stagnation, etc.
+
+        self._data_counter += 1
 
         return success, error, adapted, end_of_data
 
@@ -150,16 +172,19 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
 
+        self._data_counter = 0
         self._model.reset(p_seed)
         if self._visualize:
             self._model.init_plot()
 
 
 ## -------------------------------------------------------------------------------------------------
-    def connect_dataloggers(self, p_ds = None, p_name = None):
+    def connect_dataloggers(self, p_data_logger:SLDataStoring = None, p_name = None):
 
-        if p_ds is not None and p_name is not None:
-            self._data_loggers[p_name] = p_ds
+        if p_name is not None:
+            self.ds[p_name] = p_data_logger
+
+
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -183,8 +208,38 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
 class SLTrainingResults(TrainingResults):
-    pass
 
+    C_NAME = "SL"
+
+    C_FNAME = 'evaluation'
+    C_FNAME_TRAIN = 'training'
+    C_FNAME_VAL = 'validation'
+
+    C_CPAR_NUM_EPOCH_TRAIN = 'Training Epochs'
+    C_CPAR_NUM_EPOCH_EVAL = 'Evaluation Epochs'
+    C_CPAR_NUM_EPOCH_VAL = 'Validation Epochs'
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_scenario: SLScenario,
+                 p_run,
+                 p_cycle_id,
+                 p_logging = Log.C_LOG_WE ):
+
+
+        TrainingResults.__init__(self,
+                                 p_scenario=p_scenario,
+                                 p_run=p_run,
+                                 p_cycle_id=p_cycle_id,
+                                 p_logging=p_logging)
+
+        self.num_epochs_train = 0
+        self.num_epochs_eval = 0
+        self.num_epoch_val = 0
+        self.ds_train = None
+        self.ds_eval = None
+        self.ds_val = None
 
 ## -------------------------------------------------------------------------------------------------
     def close(self):
