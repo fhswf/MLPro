@@ -15,8 +15,68 @@ This module provides training classes for supervised learning tasks.
 """
 
 
-from mlpro.bf.ml import *
+from mlpro.bf.data import *
 from mlpro.sl.basics import *
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class SLDataStoring(DataStoring):
+
+
+    C_VAR0 = "Epoch ID"
+    C_VAR_CYCLE = "Cycle ID"
+    C_VAR_DAY = "Day"
+    C_VAR_SEC = "Second"
+    C_VAR_MICROSEC = "Microsecond"
+    C_VAR_LEARN_RATE = "Learning Rate"
+    C_VAR_LOSS = "Loss"
+
+    def __init__(self, p_metric_space):
+
+        self.space = p_metric_space.get_space()
+
+        self.variables = [self.C_VAR_CYCLE, self.C_VAR_DAY, self.C_VAR_SEC, self.C_VAR_MICROSEC,
+                          self.C_VAR_LEARN_RATE, self.C_VAR_LEARN_RATE]
+
+        self.var_space = []
+        for dim in self.space.get_dims():
+            self.var_space.append(dim.get_name_short())
+
+        self.variables.extend(self.var_space)
+
+        DataStoring.__init__(self,p_variables=self.variables)
+
+
+## -------------------------------------------------------------------------------------------------
+    def memorize_row(self, p_cycle_id, p_tstamp, p_lr, p_loss, p_data):
+
+
+        self.memorize(self.C_VAR_CYCLE, self.current_epoch, p_cycle_id)
+        self.memorize(self.C_VAR_DAY, self.current_epoch, p_tstamp.days)
+        self.memorize(self.C_VAR_SEC, self.current_epoch, p_tstamp.seconds)
+        self.memorize(self.C_VAR_MICROSEC, self.current_epoch, p_tstamp.microseconds)
+        self.memorize(self.C_VAR_LEARN_RATE, self.current_epoch, p_lr)
+        self.memorize(self.C_VAR_LOSS, self.current_epoch, p_loss)
+
+        for i, var in enumerate(self.var_space):
+            self.memorize(var, self.current_epoch, p_data[i])
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_variables(self):
+        return self.variables
+
+
+## -------------------------------------------------------------------------------------------------
+    def add_epoch(self, p_epoch_id):
+        self.add_frame(p_frame_id=p_epoch_id)
+        self.current_epoch = p_epoch_id
+
+
 
 
 
@@ -138,53 +198,143 @@ class SLTraining (Training):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _run(self):
-        pass
+    def _init_results(self) -> TrainingResults:
+
+        results = Training._init_results(self)
+
+        # If collect mappings, then create an input, target and output data logging object
+        #     For this datalogger please get the input out put space and add dimensions
+        #     accordingly to the data logger object
+
+        # Add the rest three epochs based on conditions
+        # Connect the training datalogger
+        # If there is an evaluation dataset and test dataset
+        # connect rest three data logging objects
+
+
+        # connect the similar data logger to the scenario class
+
+        return results
 
 
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self) -> bool:
+        # Set eof_epoch and eof_training to False
+
+        # Initiate a new epoch if the cycles in a new epoch is set to 0 in a different place
+
+        # get results from a cycle run
+        # add number to the num epochs
+
+        # if adapted is true add a number to num adaptations
+
+        # if mode is evaluation update the evaluation
+
+        # if mode is train update the epoch
+
+        # get last loss from the model abd also get the last learning rate of the model
+
+        # test if this is the end of epoch if the dataset counter has reached
+        # to the last deliverable item in the dataset
+
+        # If this is the end of the epoch then log it in the training console, based on what is the reason for the end of the epoch
+
+        # if this is eof close the epoch and do the rituals
+
+        # check if the adaptation limit is reached, and close the training if the adaptation limit is reached
+
+        # return end of training
+
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_epoch(self):
+
+        # check if the epoch needs to initiated in training mode or in the evaluation mode
+        # if self._eval_dataset is not None:
+        #     if self._mode is Train
+        # if this is the first cycle in a new epoch, turn on the adaptivity
+        # do the logging
+
+        # if the mode is eval and, it's the first cycle in a new eval epoch
+        #    Turn off the adaptivity of the model
+        #    Initiate the evaluation epoch
+        #    do the logging
+
+        # But if there is no evaluation dataset
+        # just do the logging normally, no need to take care of the adaptivity
+
+        #The initialization still needs adding epoch to the corresponding datastoring object
+        # In this case these would be, train, eval and validation
+        # There would be another data storing object that will store the input, target and output
+
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def setup_dataset(self):
+        # get the dataset setup config, and call the split method of the dataset with names to the splitted datasets
+        # and assign the returned dataset to self._dataset
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_epoch(self):
+        #Not required at the moment
+        # For updating the scores for the epoch
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _close_epoch(self):
+        # Check if the evaluation dataset is there,
+        # then you must handle the evalutation epochs before closing the training epochs
+
+        # If the mode is training
+        #    Logging for training epoch finished
+        #    Increase the num epochs in the results
+
+        #    If the mode is train change it to evaluation
+        #       set the step in the particular evaluation epoch to +0
+
+        # If the mode is to evaluation
+        #     Logging for the epoch finished
+        #     Increase the evaluation cycles by +1
+        #     Calculate the scores in case of end of evaluation, calling the method close evaluation
+        #     assign the high-score and corresponding model and epoch to the results
+
+        #     If the mode is eval and the cycle limit is not reached, change it to train
+        #     update the evaluation epoch +1
+        #     update the train step to 0
+
+        # If you dont have to handle the evaluation
+        # just log everything and increase the number of epochs by +1
+        # Reset the step counter to 0
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_eval(self):
+        # Change the data loggers to the evaluation data loggers
+
+        # change the particular evaluation cycles to 0
+
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_eval(self):
+        # Update the evaluation
+        # Calculate moving averages
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _close_eval(self):
+
         pass
 
-
-## -------------------------------------------------------------------------------------------------
-    def get_results(self) -> TrainingResults:
-        pass
 
 
 ## -------------------------------------------------------------------------------------------------
