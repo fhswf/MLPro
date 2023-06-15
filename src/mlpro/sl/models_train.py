@@ -391,28 +391,46 @@ class SLTraining (Training):
             if self._mode == self.C_MODE_TRAIN:
                 self._results.num_train_epochs += 1
 
-                if self._eval_freq > 0 or self._test_freq > 0:
-
-                    if self._eval_freq > 0:
-                        if self._results.num_train_epochs % self._eval_freq == 0:
-                            if self._eval_split:
-                                self._init_eval()
-
-                    if self._test_freq > 0:
-                        if self._results.num_train_epochs % self._test_freq == 0:
-                            if self._test_split:
-                                self._init_test()
-
-                else:
-                    eof_epoch = True
-
             elif self._mode == self.C_MODE_EVAL:
                 self._results.num_eval_epochs += 1
-                eof_epoch = True
+                self._epoch_eval = False
 
             elif self._mode == self.C_MODE_TEST:
                 self._results.num_test_epochs += 1
+                self._epoch_test = False
+
+            if self._epoch_eval:
+                self._mode = self.C_MODE_EVAL
+                self._init_eval()
+
+            elif self._epoch_test:
+                self._mode = self.C_MODE_TEST
+                self._init_test()
+
+            else:
                 eof_epoch = True
+                # if self._eval_freq > 0 or self._test_freq > 0:
+                #
+                #     if self._eval_freq > 0:
+                #         if self._results.num_train_epochs % self._eval_freq == 0:
+                #             if self._eval_split:
+                #                 self._init_eval()
+                #
+                #     if self._test_freq > 0:
+                #         if self._results.num_train_epochs % self._test_freq == 0:
+                #             if self._test_split:
+                #                 self._init_test()
+
+            # else:
+            #     eof_epoch = True
+
+            # elif self._mode == self.C_MODE_EVAL:
+            #     self._results.num_eval_epochs += 1
+            #     eof_epoch = True
+            #
+            # elif self._mode == self.C_MODE_TEST:
+            #     self._results.num_test_epochs += 1
+            #     eof_epoch = True
 
         if eof_epoch:
             self._close_epoch()
@@ -456,6 +474,12 @@ class SLTraining (Training):
     def _init_epoch(self):
 
         self._epoch_id += 1
+
+        if self._epoch_id % self._eval_freq == 0:
+            self._epoch_eval = True
+
+        if self._epoch_id % self._test_freq == 0:
+            self._epoch_test = True
 
         for ds in self._ds_list:
             ds.add_epoch(self._epoch_id)
