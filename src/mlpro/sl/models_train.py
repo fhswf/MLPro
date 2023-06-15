@@ -276,11 +276,16 @@ class SLTraining (Training):
                  p_collect_cycles = True,
                  p_eval_split = 0,
                  p_test_split = 0,
+                 p_eval_freq = 0,
+                 p_test_freq = 0,
                  **p_kwargs):
 
         self._collect_epoch_scores = p_collect_epoch_scores
         self._collect_mappings = p_collect_mappings
         self._collect_cycles = p_collect_cycles
+
+        self._eval_freq = p_eval_freq
+        self._test_freq = p_test_freq
 
         Training.__init__(self, **p_kwargs)
 
@@ -378,23 +383,34 @@ class SLTraining (Training):
         if adapted:
             self._results.num_adaptatios += 1
 
-        if self._mode == self.C_MODE_TRAIN:
-            self._update_epoch()
-
-        elif self._mode == self.C_MODE_EVAL:
-            self._update_eval()
+        self._update_epoch()
 
         if end_of_data:
 
             if self._mode == self.C_MODE_TRAIN:
                 self._results.num_train_epochs += 1
-                if self._eval_split:
-                    self._init_eval()
+
+                if self._eval_freq > 0 or self._test_freq > 0:
+
+                    if self._eval_freq > 0:
+                        if self._results.num_train_epochs % self._eval_freq == 0:
+                            if self._eval_split:
+                                self._init_eval()
+
+                    if self._test_freq > 0:
+                        if self._results.num_train_epochs % self._test_freq == 0:
+                            if self._test_split:
+                                self._init_test()
+
                 else:
                     eof_epoch = True
 
             elif self._mode == self.C_MODE_EVAL:
-                self._results.num_train_epochs += 1
+                self._results.num_eval_epochs += 1
+                eof_epoch = True
+
+            elif self._mode == self.C_MODE_TEST:
+                self._results.num_test_epochs += 1
                 eof_epoch = True
 
         if eof_epoch:
@@ -472,7 +488,7 @@ class SLTraining (Training):
         # But if there is no evaluation dataset
         # just do the logging normally, no need to take care of the adaptivity
 
-        #The initialization still needs adding epoch to the corresponding datastoring object
+        # The initialization still needs adding epoch to the corresponding data storing object
         # In this case these would be, train, eval and validation
         # There would be another data storing object that will store the input, target and output
 
@@ -487,7 +503,6 @@ class SLTraining (Training):
         self._dataset_train, self._dataset_eval, self._dataset_train  = dataset.split(self._train_split, self._eval_split, self._test_split)
         # get the dataset setup config, and call the split method of the dataset with names to the split datasets
         # and assign the returned dataset to self._dataset
-        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -500,8 +515,6 @@ class SLTraining (Training):
             self.metric_list_eval.append(self._model._prev_metrics)
         elif self._mode == self.C_MODE_TEST:
             self.metric_list_test.append(self._model._prev_metrics)
-
-        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -520,9 +533,9 @@ class SLTraining (Training):
         if self._results.highscore < score_metric_value:
             self._results.highscore = score_metric_value
 
+        self._cycles_epoch = 0
         # Logg the data to the corresponding epoch data storing object
         # Reset the dataset if needed
-        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -540,9 +553,12 @@ class SLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_eval(self):
+
         # Update the evaluation
         # Calculate moving averages
-        self.metric_sum_train = np.nansum((self.metric_sum_train, self._model._prev_metrics), axis=0)
+        # self.metric_sum_train = np.nansum((self.metric_sum_train, self._model._prev_metrics), axis=0)
+
+        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -552,8 +568,12 @@ class SLTraining (Training):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def add_metric(self):
+    def _init_test(self):
+        self._model.switch_adaptivity(p_ada=False)
+        self._mode = self.C_MODE_TEST
+        self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_test, p_cycle=self._results.ds_cycle_test)
         pass
+
 
 
 
