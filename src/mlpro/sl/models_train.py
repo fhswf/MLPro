@@ -387,6 +387,7 @@ class SLTraining (Training):
 
         if end_of_data:
 
+
             if self._mode == self.C_MODE_TRAIN:
                 self._results.num_train_epochs += 1
 
