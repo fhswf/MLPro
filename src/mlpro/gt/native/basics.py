@@ -7,10 +7,11 @@
 ## -- yyyy-mm-dd  Ver.      Auth.    Description
 ## -- 2023-03-30  0.0.0     SY       Creation
 ## -- 2023-06-02  1.0.0     SY       Release of first version
+## -- 2023-06-15  1.0.1     SY       Add solver configuration methods in GTTraining
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.0.0 (2023-06-02)
+Ver. 1.0.1 (2023-06-15)
 
 This module provides model classes for tasks related to a Native Game Theory.
 """
@@ -21,6 +22,7 @@ from mlpro.bf.systems import *
 from mlpro.bf.ml import *
 from mlpro.bf.mt import *
 from mlpro.bf.math import *
+from mlpro.gt.pool.solvers import *
 from typing import Union
 
 
@@ -228,10 +230,11 @@ class GTPlayer (GTSolver):
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_solver:GTSolver,
+                 p_solver:Union[list, GTSolver],
                  p_name='',
                  p_visualize:bool=True,
                  p_logging=Log.C_LOG_ALL,
+                 p_random_solver:bool=False,
                  **p_param):
 
         if p_name != '':
@@ -239,14 +242,19 @@ class GTPlayer (GTSolver):
         else:
             self.set_name(self.C_NAME)
 
-        self._solver = p_solver
+        self._idx_solvers = 0
+        if isinstance(p_solver, list):
+            self._random_solver = p_random_solver
+            self._list_solvers  = p_solver
+        else:
+            self._random_solver = False
+            self._list_solvers  = [p_solver]
+        self._num_solvers = len(self._list_solvers)
+        self.switch_solver()
 
-        GTSolver.__init__(self,
-                          p_strategy_space = self._solver.get_strategy_space(),
-                          p_id = self._solver.get_id(),
-                          p_visualize = p_visualize,
-                          p_logging = p_logging,
-                          **p_param)
+        self._visualize = p_visualize
+        self._logging   = p_logging
+        self._param     = p_param
 
         
 ## -------------------------------------------------------------------------------------------------
@@ -264,34 +272,62 @@ class GTPlayer (GTSolver):
         
 ## -------------------------------------------------------------------------------------------------
     def switch_logging(self, p_logging):
+
         super().switch_logging(p_logging)
         self.get_solver().switch_logging(p_logging)
 
 
 ## -------------------------------------------------------------------------------------------------
     def set_log_level(self, p_level):
+
         super().set_log_level(p_level)
         self.get_solver().set_log_level(p_level)
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_strategy_space(self) -> MSpace:
+
         return self.get_solver().get_strategy_space()
 
 
 ## -------------------------------------------------------------------------------------------------
     def set_random_seed(self, p_seed=None):
+
         self.get_solver().set_random_seed(p_seed)
 
 
 ## -------------------------------------------------------------------------------------------------
     def compute_strategy(self, p_payoff:GTPayoffMatrix) -> GTStrategy:
+
         return self.get_solver().compute_strategy(p_payoff)
 
 
 ## -------------------------------------------------------------------------------------------------
     def get_solver(self) -> GTSolver:
+
         return self._solver
+
+
+## -------------------------------------------------------------------------------------------------
+    def switch_solver(self):
+
+        if self._random_solver:
+            rnd             = random.randint(0, self._num_solvers-1)
+            self._solver    = self._list_solvers[rnd]
+        else:
+            if self._idx_solvers == self._num_solvers:
+                self._idx_solvers = 0
+            self._solver    = self._list_solvers[self._idx_solvers]
+            self._idx_solvers += 1
+
+        GTSolver.__init__(self,
+                          p_strategy_space = self._solver.get_strategy_space(),
+                          p_id = self._solver.get_id(),
+                          p_visualize = self._visualize,
+                          p_logging = self._logging,
+                          **self._param)
+        
+        self.log(self.C_LOG_TYPE_I, 'Player %s is switching to solver %s'%(self._id, self._solver.get_id()))
 
 
 
@@ -688,7 +724,18 @@ class GTGame (Scenario):
             True, if the end of the related data source has been reached. False otherwise.
         """
 
+        self.log(self.C_LOG_TYPE_I, 'Switch solvers...')
+
+        if isinstance(self._model, GTCompetition):
+            ids = self._model.get_coalition(coal.get_id())
+            pl_ids = ids.get_players()
+        else:
+            pl_ids = self._model.get_players()
+        for pl in pl_ids:
+            pl.switch_solver()
+
         self.log(self.C_LOG_TYPE_I, 'Compute strategies...')
+        
         self._strategies = self._model.compute_strategy(self._payoff)
 
         if self._ds_strategies is not None:
