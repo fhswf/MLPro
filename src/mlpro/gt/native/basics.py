@@ -22,7 +22,6 @@ from mlpro.bf.systems import *
 from mlpro.bf.ml import *
 from mlpro.bf.mt import *
 from mlpro.bf.math import *
-from mlpro.gt.pool.solvers import *
 from typing import Union
 
 
@@ -735,7 +734,7 @@ class GTGame (Scenario):
             pl.switch_solver()
 
         self.log(self.C_LOG_TYPE_I, 'Compute strategies...')
-        
+
         self._strategies = self._model.compute_strategy(self._payoff)
 
         if self._ds_strategies is not None:
