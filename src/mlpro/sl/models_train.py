@@ -35,15 +35,15 @@ class SLDataStoring(DataStoring):
     # C_VAR_LEARN_RATE = "Learning Rate"
     # C_VAR_LOSS = "Loss"
 
-    def __init__(self, p_logging_space:MSpace):
+    def __init__(self, p_variables:list):
 
-        self.space = p_logging_space
+        self.space = p_variables
 
         self.variables = [self.C_VAR_CYCLE, self.C_VAR_DAY, self.C_VAR_SEC, self.C_VAR_MICROSEC]
 
         self.var_space = []
-        for dim in self.space.get_dims():
-            self.var_space.append(dim.get_name_short())
+        for dim in self.space:
+            self.var_space.append(dim)
 
         self.variables.extend(self.var_space)
 
@@ -179,12 +179,10 @@ class SLScenario (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def connect_dataloggers(self, p_data_logger:SLDataStoring = None, p_name = None):
+    def connect_dataloggers(self, p_mapping = None, p_cycle = None):
 
-        if p_name is not None:
-            self.ds[p_name] = p_data_logger
-
-
+        self.ds_mappings = p_mapping
+        self.ds_cycles = p_cycle
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -272,9 +270,34 @@ class SLTraining (Training):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def __init__(self, **p_kwargs):
+    def __init__(self,
+                 p_collect_epoch_scores = True,
+                 p_collect_mappings = True,
+                 p_collect_cycles = True,
+                 p_eval_split = 0,
+                 p_test_split = 0,
+                 **p_kwargs):
 
-        Training.__init__(self)
+        self._collect_epoch_scores = p_collect_epoch_scores
+        self._collect_mappings = p_collect_mappings
+        self._collect_cycles = p_collect_cycles
+
+        Training.__init__(self, **p_kwargs)
+
+        self._model = self.get_scenario().get_model()
+        self.metrics = self._model.get_metrics()
+        self.metric_space = []
+
+        for metric in self.metrics:
+            dims = metric.get_relate_set().get_dims()
+            for dim in dims:
+                self.metric_space.append(dim.get_name_short())
+
+        self._logging_space = self._model.get_logging_space()
+
+        self._eval_split = p_eval_split
+        self._test_split = p_test_split
+        self._epoch_id = 0
 
         raise NotImplementedError
 
@@ -283,6 +306,46 @@ class SLTraining (Training):
     def _init_results(self) -> TrainingResults:
 
         results = Training._init_results(self)
+
+        self._ds_list = []
+
+        if self._collect_epoch_scores:
+            variables = self.metric_space
+            results.ds_epoch = SLDataStoring(variables)
+            self._ds_list.append(results.ds_epoch)
+
+        if self._collect_cycles:
+            variables = self._logging_space.extend(self.metric_space)
+            results.ds_cycles_train = SLDataStoring(p_variables=variables)
+            self._ds_list.append(results.ds_cycles_train)
+
+            if self._eval_split > 0:
+                results.ds_cycles_eval = SLDataStoring(p_variables=variables)
+                self._ds_list.append(results.ds_cycles_eval)
+
+            if self._test_split > 0:
+                results.ds_cycles_test = SLDataStoring(p_variables=variables)
+                self._ds_list.append(results.ds_cycles_test)
+
+
+        if self._collect_mappings:
+            variables = []
+            for dim in self._model.get_input_space().get_dims():
+                variables.append(dim.get_name_long())
+            for dim in self._model.get_output_space().get_dims():
+                variables.append(dim.get_name_long())
+            for dim in self._model.get_output_space().get_dims():
+                variables.append("pred"+dim.get_name_long())
+
+            results.ds_mapping_train = SLDataStoring(p_variables=variables)
+            if self._eval_split > 0:
+                results.ds_mapping_eval = SLDataStoring(p_variables=variables)
+            if self._test_split > 0:
+                results.ds_mapping_test = SLDataStoring(p_variables=variables)
+
+
+        self._scenario.connect_datalogger(p_mapping = results.ds_mapping_train, p_cycle = results.ds_cycles_train)
+
 
         # If collect mappings, then create an input, target and output data logging object
         #     For this datalogger please get the input out put space and add dimensions
@@ -301,6 +364,46 @@ class SLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self) -> bool:
+
+        eof_training = False
+        eof_epoch = False
+
+        if self._cycles_epoch == 0:
+            self._init_epoch()
+
+        success, error, timeout, limit, adapted, end_of_data = self._scenario.run_cycle()
+        self._cycles_epoch += 1
+
+        if adapted:
+            self._results.num_adaptatios += 1
+
+        if end_of_data:
+
+            if self._mode == self.C_MODE_TRAIN:
+                self._update_epoch()
+                self._results.num_train_epochs += 1
+                if self._eval_split:
+                    self._model.switch_adaptivity(p_ada = False)
+                    self._mode = self.C_MODE_EVAL
+                    self._scenario.connect_datalogger(p_mapping = self._results.ds_mapping_eval, p_cycle = self._results.ds_cycle_eval)
+                else:
+                    eof_epoch = True
+
+            elif self._mode == self.C_MODE_EVAL:
+                self._update_eval()
+                self._results.num_train_epochs += 1
+                eof_epoch = True
+
+        if eof_epoch:
+            self._results.num_epochs += 1
+            self._close_epoch()
+
+        if (self._adaptation_limit > 0) and (self._results.num_adaptations == self._adaptation_limit):
+            self.log(self.C_LOG_TYPE_W, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
+            eof_training = True
+
+
+
         # Set eof_epoch and eof_training to False
 
         # Initiate a new epoch if the cycles in a new epoch is set to 0 in a different place
@@ -327,11 +430,24 @@ class SLTraining (Training):
 
         # return end of training
 
-        pass
+        return eof_training
 
 
 ## -------------------------------------------------------------------------------------------------
     def _init_epoch(self):
+
+        self._epoch_id += 1
+
+        for ds in self._ds_list:
+            ds.add_epoch(self._epoch_id)
+
+        self._mode = self.C_MODE_TRAIN
+
+        self._model.switch_adaptivity(p_ada = True)
+
+        self._scenario.connect_datalogger(p_mapping = self._results.ds_mapping_train,
+                                          p_cycle = self._results.ds_cycle_train)
+
 
         # check if the epoch needs to initiated in training mode or in the evaluation mode
         # if self._eval_dataset is not None:
@@ -363,36 +479,16 @@ class SLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _update_epoch(self):
-        #Not required at the moment
-        # For updating the scores for the epoch
+        # Update the score for a specific type of epoch, train, test and epoch
+        # add the corresponding scores to the attributes
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _close_epoch(self):
-        # Check if the evaluation dataset is there,
-        # then you must handle the evalutation epochs before closing the training epochs
-
-        # If the mode is training
-        #    Logging for training epoch finished
-        #    Increase the num epochs in the results
-
-        #    If the mode is train change it to evaluation
-        #       set the step in the particular evaluation epoch to +0
-
-        # If the mode is to evaluation
-        #     Logging for the epoch finished
-        #     Increase the evaluation cycles by +1
-        #     Calculate the scores in case of end of evaluation, calling the method close evaluation
-        #     assign the high-score and corresponding model and epoch to the results
-
-        #     If the mode is eval and the cycle limit is not reached, change it to train
-        #     update the evaluation epoch +1
-        #     update the train step to 0
-
-        # If you dont have to handle the evaluation
-        # just log everything and increase the number of epochs by +1
-        # Reset the step counter to 0
+        self._cycles_epoch = 0
+        # Logg the data to the corresponding epoch data storing object
+        # Reset the dataset if needed
         pass
 
 
