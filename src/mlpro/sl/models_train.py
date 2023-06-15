@@ -525,7 +525,8 @@ class SLTraining (Training):
 
         dataset = self._scenario.get_dataset()
 
-        self._dataset_train, self._dataset_eval, self._dataset_train  = dataset.split(self._train_split, self._eval_split, self._test_split)
+        self._dataset_train, self._dataset_eval, self._dataset_test  = dataset.split(self._train_split,
+                                                                                        self._eval_split, self._test_split)
         # get the dataset setup config, and call the split method of the dataset with names to the split datasets
         # and assign the returned dataset to self._dataset
 
@@ -569,6 +570,7 @@ class SLTraining (Training):
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_EVAL
         self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_eval, p_cycle=self._results.ds_cycle_eval)
+        self._scenario.set_dataset(self._dataset_eval)
         # Change the data loggers to the evaluation data loggers
 
         # change the particular evaluation cycles to 0
@@ -576,20 +578,20 @@ class SLTraining (Training):
         pass
 
 
-## -------------------------------------------------------------------------------------------------
-    def _update_eval(self):
-
-        # Update the evaluation
-        # Calculate moving averages
-        # self.metric_sum_train = np.nansum((self.metric_sum_train, self._model._prev_metrics), axis=0)
-
-        pass
-
-
-## -------------------------------------------------------------------------------------------------
-    def _close_eval(self):
-
-        pass
+# ## -------------------------------------------------------------------------------------------------
+#     def _update_eval(self):
+#
+#         # Update the evaluation
+#         # Calculate moving averages
+#         # self.metric_sum_train = np.nansum((self.metric_sum_train, self._model._prev_metrics), axis=0)
+#
+#         pass
+#
+#
+# ## -------------------------------------------------------------------------------------------------
+#     def _close_eval(self):
+#
+#         pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -597,6 +599,7 @@ class SLTraining (Training):
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_TEST
         self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_test, p_cycle=self._results.ds_cycle_test)
+        self._scenario.set_dataset(self._dataset_test)
         pass
 
 
