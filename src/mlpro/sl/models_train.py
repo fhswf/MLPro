@@ -286,17 +286,18 @@ class SLTraining (Training):
 
         self._model = self.get_scenario().get_model()
         self.metrics = self._model.get_metrics()
-        self.metric_space = []
+        self.metric_variables = []
 
         for metric in self.metrics:
-            dims = metric.get_relate_set().get_dims()
+            dims = metric.get_output_space().get_dims()
             for dim in dims:
-                self.metric_space.append(dim.get_name_short())
+                self.metric_variables.append(dim.get_name_short())
 
         self._logging_space = self._model.get_logging_space()
 
         self._eval_split = p_eval_split
         self._test_split = p_test_split
+        self._train_split = 1 - (p_test_split + p_eval_split)
         self._epoch_id = 0
 
         raise NotImplementedError
@@ -310,12 +311,12 @@ class SLTraining (Training):
         self._ds_list = []
 
         if self._collect_epoch_scores:
-            variables = self.metric_space
+            variables = self.metric_variables
             results.ds_epoch = SLDataStoring(variables)
             self._ds_list.append(results.ds_epoch)
 
         if self._collect_cycles:
-            variables = self._logging_space.extend(self.metric_space)
+            variables = self._logging_space.extend(self.metric_variables)
             results.ds_cycles_train = SLDataStoring(p_variables=variables)
             self._ds_list.append(results.ds_cycles_train)
 
@@ -377,25 +378,26 @@ class SLTraining (Training):
         if adapted:
             self._results.num_adaptatios += 1
 
+        if self._mode == self.C_MODE_TRAIN:
+            self._update_epoch()
+
+        elif self._mode == self.C_MODE_EVAL:
+            self._update_eval()
+
         if end_of_data:
 
             if self._mode == self.C_MODE_TRAIN:
-                self._update_epoch()
                 self._results.num_train_epochs += 1
                 if self._eval_split:
-                    self._model.switch_adaptivity(p_ada = False)
-                    self._mode = self.C_MODE_EVAL
-                    self._scenario.connect_datalogger(p_mapping = self._results.ds_mapping_eval, p_cycle = self._results.ds_cycle_eval)
+                    self._init_eval()
                 else:
                     eof_epoch = True
 
             elif self._mode == self.C_MODE_EVAL:
-                self._update_eval()
                 self._results.num_train_epochs += 1
                 eof_epoch = True
 
         if eof_epoch:
-            self._results.num_epochs += 1
             self._close_epoch()
 
         if (self._adaptation_limit > 0) and (self._results.num_adaptations == self._adaptation_limit):
@@ -448,6 +450,13 @@ class SLTraining (Training):
         self._scenario.connect_datalogger(p_mapping = self._results.ds_mapping_train,
                                           p_cycle = self._results.ds_cycle_train)
 
+        self._scenario.get_dataset().reset(self._epoch_id)
+
+        self._scenario.set_dataset(self._dataset_train)
+
+        self.metric_sum_train = np.repeat(np.nan, repeats=len(self.metric_variables))
+        self.metric_sum_eval = np.repeat(np.nan, repeats=len(self.metric_variables))
+        self.metric_sum_test = np.repeat(np.nan, repeats=len(self.metric_variables))
 
         # check if the epoch needs to initiated in training mode or in the evaluation mode
         # if self._eval_dataset is not None:
@@ -472,6 +481,10 @@ class SLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def setup_dataset(self):
+
+        dataset = self._scenario.get_dataset()
+
+        self._dataset_train, self._dataset_eval, self._dataset_train  = dataset.split(self._train_split, self._eval_split, self._test_split)
         # get the dataset setup config, and call the split method of the dataset with names to the splitted datasets
         # and assign the returned dataset to self._dataset
         pass
@@ -481,12 +494,16 @@ class SLTraining (Training):
     def _update_epoch(self):
         # Update the score for a specific type of epoch, train, test and epoch
         # add the corresponding scores to the attributes
+        self.metric_sum_train = np.nansum((self.metric_sum_train, self._model._prev_metrics), axis=0)
+
         pass
 
 
 ## -------------------------------------------------------------------------------------------------
     def _close_epoch(self):
-        self._cycles_epoch = 0
+
+        metrics = np.concatenate(self.metric_sum_train)
+
         # Logg the data to the corresponding epoch data storing object
         # Reset the dataset if needed
         pass
@@ -494,6 +511,10 @@ class SLTraining (Training):
 
 ## -------------------------------------------------------------------------------------------------
     def _init_eval(self):
+        
+        self._model.switch_adaptivity(p_ada=False)
+        self._mode = self.C_MODE_EVAL
+        self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_eval, p_cycle=self._results.ds_cycle_eval)
         # Change the data loggers to the evaluation data loggers
 
         # change the particular evaluation cycles to 0
@@ -505,7 +526,7 @@ class SLTraining (Training):
     def _update_eval(self):
         # Update the evaluation
         # Calculate moving averages
-        pass
+        self.metric_sum_train = np.nansum((self.metric_sum_train, self._model._prev_metrics), axis=0)
 
 
 ## -------------------------------------------------------------------------------------------------
