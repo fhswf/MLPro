@@ -267,7 +267,7 @@ class SLTraining (Training):
     """
 
     C_NAME = 'SL'
-
+    C_MODE_TEST = 2
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -454,9 +454,9 @@ class SLTraining (Training):
 
         self._scenario.set_dataset(self._dataset_train)
 
-        self.metric_sum_train = np.repeat(np.nan, repeats=len(self.metric_variables))
-        self.metric_sum_eval = np.repeat(np.nan, repeats=len(self.metric_variables))
-        self.metric_sum_test = np.repeat(np.nan, repeats=len(self.metric_variables))
+        self.metric_list_train = []
+        self.metric_list_eval = []
+        self.metric_list_test = []
 
         # check if the epoch needs to initiated in training mode or in the evaluation mode
         # if self._eval_dataset is not None:
@@ -485,7 +485,7 @@ class SLTraining (Training):
         dataset = self._scenario.get_dataset()
 
         self._dataset_train, self._dataset_eval, self._dataset_train  = dataset.split(self._train_split, self._eval_split, self._test_split)
-        # get the dataset setup config, and call the split method of the dataset with names to the splitted datasets
+        # get the dataset setup config, and call the split method of the dataset with names to the split datasets
         # and assign the returned dataset to self._dataset
         pass
 
@@ -494,7 +494,12 @@ class SLTraining (Training):
     def _update_epoch(self):
         # Update the score for a specific type of epoch, train, test and epoch
         # add the corresponding scores to the attributes
-        self.metric_sum_train = np.nansum((self.metric_sum_train, self._model._prev_metrics), axis=0)
+        if self._mode == self.C_MODE_TRAIN:
+            self.metric_list_train.append(self._model._prev_metrics)
+        elif self._mode == self.C_MODE_EVAL:
+            self.metric_list_eval.append(self._model._prev_metrics)
+        elif self._mode == self.C_MODE_TEST:
+            self.metric_list_test.append(self._model._prev_metrics)
 
         pass
 
@@ -502,7 +507,18 @@ class SLTraining (Training):
 ## -------------------------------------------------------------------------------------------------
     def _close_epoch(self):
 
-        metrics = np.concatenate(self.metric_sum_train)
+        # self.metric_list_train.extend(self.metric_list_eval)
+        score_train = np.nanmean(self.metric_list_train, dtype=float, axis=0)
+        score_eval = np.nanmean(self.metric_list_eval, dtype=float, axis=0)
+        score_test = np.nanmean(self.metric_list_test, dtype=float, axis=0)
+
+        score = [*score_train, *score_eval, *score_test]
+        self._results.ds_epoch.memorize_row(p_data=score)
+
+        score_metric_value = score_eval[self.metric_variables.index(self.score_metric.get_state_space().get_dims()[0].get_name_long())]
+
+        if self._results.highscore < score_metric_value:
+            self._results.highscore = score_metric_value
 
         # Logg the data to the corresponding epoch data storing object
         # Reset the dataset if needed
