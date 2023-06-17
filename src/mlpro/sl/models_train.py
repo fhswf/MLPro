@@ -88,8 +88,6 @@ class SLScenario (Scenario):
     """
 
     C_TYPE = 'SL-Scenario'
-    C_DS_DATA = 'Data Logger'
-    C_DS_MAPPING = 'Mapping Logger'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -149,7 +147,7 @@ class SLScenario (Scenario):
         for metric in self._metrics:
                 # Metric shall return metric if it's an instance based metric,
                 # otherwise previous result if it's a cumulative metric
-            logging_data.extend(metric.update(self._model, self._data_counter, data))
+            logging_data.extend(metric.update(self._model))
 
         if self._cycle_id >= ( self._dataset.num_batches - 1 ):
             end_of_data = True
@@ -169,7 +167,6 @@ class SLScenario (Scenario):
 
         # Error computations such as Stagnation, etc.
 
-        self._data_counter += 1
 
         return success, error, adapted, end_of_data
 
@@ -183,7 +180,6 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def _reset(self, p_seed):
 
-        self._data_counter = 0
         if self._visualize:
             self._model.init_plot()
 
@@ -324,8 +320,6 @@ class SLTraining (Training):
                  p_collect_epoch_scores = True,
                  p_collect_mappings = True,
                  p_collect_cycles = True,
-                 p_eval_split = 0,
-                 p_val_split = 0,
                  p_eval_freq = 0,
                  p_val_freq = 0,
                  **p_kwargs):
@@ -352,9 +346,8 @@ class SLTraining (Training):
 
         self._logging_space = self._model.get_logging_space()
 
-        self._eval_freq = p_eval_split
-        self._val_freq = p_val_split
-        self._train_split = 1 - (p_val_split + p_eval_split)
+        self._eval_freq = p_eval_freq
+        self._val_freq = p_val_freq
         self._epoch_id = 0
 
         raise NotImplementedError
