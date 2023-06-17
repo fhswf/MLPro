@@ -99,14 +99,23 @@ class SLScenario (Scenario):
                  p_cycle_limit: int = 0,
                  p_visualize: bool = True,
                  p_logging=Log.C_LOG_ALL):
+        """
 
-        # If dataset config given, setup dataset
-        # Assign Datasets
+        Parameters
+        ----------
+        p_mode
+        p_ada
+        p_cycle_limit
+        p_visualize
+        p_logging
+        """
+
         self._dataset = None
-        # save the lengths of all the datasets
         self._model : SLAdaptiveFunction = None
         self.ds : dict = {}
         self._metrics = []
+
+
         Scenario.__init__(self,
                           p_mode = p_mode,
                           p_ada = p_ada,
@@ -114,9 +123,15 @@ class SLScenario (Scenario):
                           p_visualize = p_visualize,
                           p_logging = p_logging)
 
+        # TODO: Check if i need a cycle limit specific to models
+
         self.connect_dataloggers()
         # raise NotImplementedError
 
+        if self._dataset is None:
+            raise ImplementationError("Please bind your SL dataset to the _dataset attribute in the _setup method.")
+
+        self._metrics = self._model.get_metrics()
 
 ## -------------------------------------------------------------------------------------------------
     def _run_cycle(self):
@@ -124,33 +139,28 @@ class SLScenario (Scenario):
         # Check if the first run
         success = False
         error = False
-        adapted = False
-        # end_of_data = False
 
-        if self._cycle_id >= ( len(self.get_dataset()) - 1 ):
+        data = self._dataset.get_next()
+        adapted = self._model.adapt(p_dataset = data)
+
+        pervious_mapping = self._model.get_previous_mapping()
+        logging_data = self._model.get_logging_data()
+
+        for metric in self._metrics:
+                # Metric shall return metric if it's an instance based metric,
+                # otherwise previous result if it's a cumulative metric
+            logging_data.extend(metric.update(self._model, self._data_counter, data))
+
+        if self._cycle_id >= ( self._dataset.num_batches - 1 ):
             end_of_data = True
         else:
             end_of_data = False
 
-        if not end_of_data:
-            data = self.get_dataset().get_next()
-            adapted = self._model.adapt(p_dataset = data)
+        if self.ds_cycles is not None:
+            self.ds_cycles.memorize_row(p_cycle_id=self.get_cycle_id(), p_data = logging_data)
 
-            pervious_mapping = self._model.get_previous_mapping()
-            logging_data = self._model.get_logging_data()
-
-            metrics_scores = []
-
-            for metric in self._metrics:
-                # Metric shall return metric if it's an instance based metric,
-                # otherwise previous result if it's a cumulative metric
-                logging_data.extend(metric.update(self._model, self._data_counter, data))
-
-            if self.ds[self.C_DS_DATA] is not None:
-                self.ds[self.C_DS_DATA].memorize_row(p_cycle_id=self._cycle_id, p_data = logging_data)
-
-            if self.ds[self.C_DS_MAPPING] is not None:
-                self.ds[self.C_DS_MAPPING].memorize_row(p_cycle_id=self.get_cycle_id(), p_data= pervious_mapping)
+        if self.ds_mappings is not None:
+            self.ds_mappings.memorize_row(p_cycle_id=self.get_cycle_id(), p_data= pervious_mapping)
 
         # Need to optimize the adapt method of the SLAdaptiveFunction which currently just adapts only when the
         # distance is more than threshold
@@ -166,6 +176,7 @@ class SLScenario (Scenario):
 
 ## -------------------------------------------------------------------------------------------------
     def _setup(self, p_mode, p_ada:bool, p_visualize:bool, p_logging) -> Model:
+
         raise NotImplementedError
 
 
@@ -173,7 +184,6 @@ class SLScenario (Scenario):
     def _reset(self, p_seed):
 
         self._data_counter = 0
-        self._model.reset(p_seed)
         if self._visualize:
             self._model.init_plot()
 
@@ -188,6 +198,11 @@ class SLScenario (Scenario):
 ## -------------------------------------------------------------------------------------------------
     def get_dataset(self):
         return self._dataset
+
+
+## -------------------------------------------------------------------------------------------------
+    def set_dataset(self, p_dataset):
+        self._dataset = p_dataset
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -322,13 +337,14 @@ class SLTraining (Training):
         self._eval_freq = p_eval_freq
         self._val_freq = p_val_freq
 
+        self._scenario : SLScenario = None
+
         Training.__init__(self, **p_kwargs)
 
-        self._model = self.get_scenario().get_model()
-        self.metrics = self._model.get_metrics()
+        self._model:SLAdaptiveFunction = self.get_scenario().get_model()
         self.metric_variables = []
 
-        for metric in self.metrics:
+        for metric in self._scenario.get_metrics():
             dims = metric.get_output_space().get_dims()
             for dim in dims:
                 self.metric_variables.append(dim.get_name_short())
@@ -512,6 +528,12 @@ class SLTraining (Training):
     def _init_epoch(self):
 
         self._epoch_id += 1
+        self._mode = self.C_MODE_TRAIN
+        self._model.switch_adaptivity(p_ada = True)
+
+        self._dataset_train, \
+        self._dataset_eval, \
+        self._dataset_val = self._scenario.get_dataset().reset(self._epoch_id)
 
         if self._epoch_id % self._eval_freq == 0:
             self._epoch_eval = True
@@ -522,14 +544,10 @@ class SLTraining (Training):
         for ds in self._results._ds_list:
             ds.add_epoch(self._epoch_id)
 
-        self._mode = self.C_MODE_TRAIN
-
-        self._model.switch_adaptivity(p_ada = True)
 
         self._scenario.connect_datalogger(p_mapping = self._results.ds_mapping_train,
-                                          p_cycle = self._results.ds_cycle_train)
+            p_cycle = self._results.ds_cycle_train)
 
-        self._scenario.get_dataset().reset(self._epoch_id)
 
         self._scenario.set_dataset(self._dataset_train)
 
