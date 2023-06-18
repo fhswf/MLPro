@@ -46,10 +46,15 @@ class Dataset(Log, EventManager):
     C_MODE_SINGLE = 0
     C_MODE_BATCH = 1
 
+    C_SPLIT_NONE = 0
+    C_SPLIT_TRAIN = 1
+    C_SPLIT_EVAL = 2
+    C_SPLIT_VAL = 3
+
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
-                 p_input_space : ESpace,
-                 p_output_space : ESpace,
+                 p_feature_space : ESpace,
+                 p_label_space : ESpace,
                  p_output_cls : type,
                  p_data_class : type,
                  p_feature_dataset,
@@ -57,12 +62,13 @@ class Dataset(Log, EventManager):
                  p_batch_size : int,
                  p_drop_short : bool,
                  p_shuffle : bool,
+                 p_settings,
                  p_logging = Log.C_LOG_ALL):
 
 
         Log.__init__(self, p_logging = p_logging)
-        self._input_space = p_input_space
-        self._output_space = p_output_space
+        self._feature_space = p_feature_space
+        self._label_space = p_label_space
         self._output_cls = p_output_cls
         self._data_class = p_data_class
         self._feature_dataset = p_feature_dataset
@@ -74,12 +80,16 @@ class Dataset(Log, EventManager):
 
         self._shuffle = p_shuffle
         self._drop_short = p_drop_short
+
+        self._split = self.C_SPLIT_NONE
+        self._settings = p_settings
+        self.setup(p_datasettings=self._settings)
         self._num_instances = self.__len__()
         self._feature_space = self.get_label_space()
         self._label_space = self.get_feature_space()
-        self._dataset = self.get_data()
+        # self._dataset = self.get_data()
         self._indexes = list(range(self._num_instances))
-        self.reset(p_shuffle = p_shuffle)
+        self.reset(p_shuffle = self._shuffle)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -99,6 +109,12 @@ class Dataset(Log, EventManager):
 
 
 ## -------------------------------------------------------------------------------------------------
+    def __getitem__(self, p_index):
+
+        return self.get_data(p_index)
+
+
+## -------------------------------------------------------------------------------------------------
     def __len__(self):
 
         return len(self._feature_dataset)
@@ -106,6 +122,14 @@ class Dataset(Log, EventManager):
 
 ## -------------------------------------------------------------------------------------------------
     def setup(self, p_datasettings):
+
+        if p_datasettings.eval_split is not None:
+            self._indexes_eval = self._indexes[0:int(p_datasettings.eval_split*len(self._indexes))]
+            del self._indexes[0:int(p_datasettings.val_split*len(self._indexes))]
+
+        if p_datasettings.val_split is not None:
+            self._indexes_val = self._indexes[0:int(p_datasettings.val_split * len(self._indexes))]
+            del self._indexes[0:int(p_datasettings.val_split*len(self._indexes))]
 
         return self._setup(p_datasettings)
 
@@ -128,6 +152,15 @@ class Dataset(Log, EventManager):
     def _reset(self, p_shuffle, p_seed):
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_data(self, p_index):
+
+        features = self._feature_dataset[p_index]
+        labels = self._label_space[p_index]
+
+        return features, labels
 
 
 ## -------------------------------------------------------------------------------------------------
