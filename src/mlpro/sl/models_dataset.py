@@ -43,13 +43,14 @@ class Dataset(Log, EventManager):
     p_shuffle
     p_logging
     """
-    C_MODE_SINGLE = 0
-    C_MODE_BATCH = 1
+    C_FETCH_SINGLE = 0
+    C_FETCH_BATCH = 1
 
     C_SPLIT_NONE = 0
-    C_SPLIT_TRAIN = 1
-    C_SPLIT_EVAL = 2
-    C_SPLIT_VAL = 3
+
+    C_MODE_TRAIN = 1
+    C_MODE_EVAL = 2
+    C_MODE_TEST = 3
 
 ## -------------------------------------------------------------------------------------------------
     def __init__(self,
@@ -62,6 +63,8 @@ class Dataset(Log, EventManager):
                  p_batch_size : int,
                  p_drop_short : bool,
                  p_shuffle : bool,
+                 p_eval_split : float,
+                 p_test_split : float,
                  p_settings,
                  p_logging = Log.C_LOG_ALL):
 
@@ -76,19 +79,23 @@ class Dataset(Log, EventManager):
         self._batch_size = p_batch_size
 
         if self._batch_size > 1:
-            self._mode = self.C_MODE_BATCH
+            self._mode = self.C_FETCH_BATCH
 
         self._shuffle = p_shuffle
         self._drop_short = p_drop_short
+        self._eval_split = p_eval_split
+        self._test_split = p_test_split
 
-        self._split = self.C_SPLIT_NONE
+        if self._eval_split is None and self._test_split is None:
+            self._split = self.C_SPLIT_NONE
+        else:
+            self.setup_splits()
+
         self._settings = p_settings
-        self.setup(p_datasettings=self._settings)
+
         self._num_instances = self.__len__()
-        self._feature_space = self.get_label_space()
-        self._label_space = self.get_feature_space()
-        # self._dataset = self.get_data()
-        self._indexes = list(range(self._num_instances))
+        self._feature_space, self._label_space = self._setup_spaces()
+        self._indexes_train = list(range(self._num_instances))
         self.reset(p_shuffle = self._shuffle)
 
 
@@ -102,7 +109,7 @@ class Dataset(Log, EventManager):
 ## -------------------------------------------------------------------------------------------------
     def __next__(self):
 
-        if self._mode == self.C_MODE_BATCH:
+        if self._mode == self.C_FETCH_BATCH:
             return self.get_next_batch()
         else:
             return self.get_next()
@@ -121,30 +128,46 @@ class Dataset(Log, EventManager):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self, p_datasettings):
+    def setup(self, p_settings):
 
-        if p_datasettings.eval_split is not None:
-            self._indexes_eval = self._indexes[0:int(p_datasettings.eval_split*len(self._indexes))]
-            del self._indexes[0:int(p_datasettings.val_split*len(self._indexes))]
-
-        if p_datasettings.val_split is not None:
-            self._indexes_val = self._indexes[0:int(p_datasettings.val_split * len(self._indexes))]
-            del self._indexes[0:int(p_datasettings.val_split*len(self._indexes))]
-
-        return self._setup(p_datasettings)
+        self._setup(p_settings)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self, p_datasettings):
+    def _setup(self, p_settings):
 
         raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
-    def reset(self, p_shuffle = None, p_seed = None):
+    @staticmethod
+    def _setup_spaces():
+
+
+        return None, None
+
+## -------------------------------------------------------------------------------------------------
+    def _setup_split(self):
+
+        if self.eval_split is not None:
+            self._indexes_eval = self._indexes_train[0:int(self.eval_split * len(self._indexes_train))]
+            del self._indexes_train[0:int(self.eval_split * len(self._indexes_train))]
+
+        if self.test_split is not None:
+            self._indexes_test = self._indexes_train[0:int(self.test_split * len(self._indexes_train))]
+            del self._indexes_train[0:int(self.test_split * len(self._indexes_train))]
+
+
+## -------------------------------------------------------------------------------------------------
+    def reset(self, p_shuffle = None, p_seed = None, p_epoch = 0):
+
         self._indexes = list(range(self._num_instances))
+
         if p_shuffle:
             random.shuffle(self._indexes)
+
+        self.setup(self._settings)
+
         return self._reset(p_seed = p_seed, p_shuffle = p_shuffle)
 
 
