@@ -84,6 +84,7 @@ class Dataset(Log, EventManager):
 
 ## -------------------------------------------------------------------------------------------------
     def __iter__(self, p_seed = 0):
+
         self.reset(p_seed)
         return self
 
@@ -99,17 +100,20 @@ class Dataset(Log, EventManager):
 
 ## -------------------------------------------------------------------------------------------------
     def __len__(self):
+
         return len(self._feature_dataset)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def setup(self):
-        pass
+    def setup(self, p_datasettings):
+
+        return self._setup(p_datasettings)
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _setup(self):
-        pass
+    def _setup(self, p_datasettings):
+
+        raise NotImplementedError
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -130,6 +134,7 @@ class Dataset(Log, EventManager):
     def get_next(self):
         # Return an Instance with first 'batch size' features and corresponding labels as a single label
         raise NotImplementedError
+
 
 
 ## -------------------------------------------------------------------------------------------------
