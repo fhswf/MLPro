@@ -15,7 +15,6 @@ This module provides dataset classes for supervised learning tasks.
 """
 
 
-from mlpro.bf.various import Log
 from mlpro.bf.math import *
 from mlpro.bf.events import *
 import random
@@ -23,9 +22,10 @@ import random
 
 
 
+
 ## -------------------------------------------------------------------------------------------------
 ## -------------------------------------------------------------------------------------------------
-class Dataset(Log, EventManager):
+class Dataset(Log):
 
 
     """
@@ -87,7 +87,7 @@ class Dataset(Log, EventManager):
         if self._eval_split is None and self._test_split is None:
             self._split = False
         else:
-            self.setup_splits()
+            self._setup_split()
             self._split = True
             self._mode = self.C_MODE_TRAIN
 
@@ -148,13 +148,13 @@ class Dataset(Log, EventManager):
 ## -------------------------------------------------------------------------------------------------
     def _setup_split(self):
 
-        if self.eval_split is not None:
-            self._indexes_eval = self._indexes_train[0:int(self.eval_split * len(self._indexes_train))]
-            del self._indexes_train[0:int(self.eval_split * len(self._indexes_train))]
+        if self._eval_split is not None:
+            self._indexes_eval = self._indexes_train[0:int(self._eval_split * len(self._indexes_train))]
+            del self._indexes_train[0:int(self._eval_split * len(self._indexes_train))]
 
-        if self.test_split is not None:
-            self._indexes_test = self._indexes_train[0:int(self.test_split * len(self._indexes_train))]
-            del self._indexes_train[0:int(self.test_split * len(self._indexes_train))]
+        if self._test_split is not None:
+            self._indexes_test = self._indexes_train[0:int(self._test_split * len(self._indexes_train))]
+            del self._indexes_train[0:int(self._test_split * len(self._indexes_train))]
 
 
 ## -------------------------------------------------------------------------------------------------
