@@ -16,10 +16,11 @@
 ## -- 2023-03-01  0.4.2     SY       - Renaming module
 ## --                                - Remove SLNetwork
 ## -- 2023-03-10  0.4.3     DA       Class SLAdaptiveFunction: refactoring of constructor parameters
+## -- 2023-06-20  0.4.4     LSB      Moved the quality check to the adapt online method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.4.3 (2023-03-10)
+Ver. 0.4.4 (2023-06-20)
 
 This module provides model classes for supervised learning tasks. 
 """
@@ -158,26 +159,9 @@ class SLAdaptiveFunction (AdaptiveFunction):
             return False
         self.log(self.C_LOG_TYPE_I, 'Adaptation started')
 
-        # Quality check
-        if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
-            # Quality of function ok. No need to adapt.
-            self._mappings_total += 1
-            self._mappings_good += 1
 
-        else:
-            # Quality of function not ok. Adaptation is to be triggered.
-            self._set_adapted(self._adapt(p_input, p_output, p_dataset))
-            if self.get_adapted():
-                self._mappings_total = 1
+        self._set_adapted(self._adapt(p_input, p_output, p_dataset))
 
-                # Second quality check after adaptation
-                if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
-                    self._mappings_good = 1
-                else:
-                    self._mappings_good = 0
-
-            else:
-                self._mappings_total += 1
 
         return self.get_adapted()
 
@@ -205,9 +189,39 @@ class SLAdaptiveFunction (AdaptiveFunction):
         """
 
         if ( p_input is not None ) and ( p_output is not None ):
-            adapted = self._adapt_online(p_input, p_output)
+            adapted = self.adapt_online(p_input, p_output)
         else:
             adapted = self._adapt_offline(p_dataset)
+
+        return adapted
+
+
+## -------------------------------------------------------------------------------------------------
+    def adapt_online(self, p_input:Element, p_output:Element) -> bool:
+        # Quality check
+
+        adapted = False
+
+        if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
+            # Quality of function ok. No need to adapt.
+            self._mappings_total += 1
+            self._mappings_good += 1
+
+        elif (p_input is not None) and (p_output is not None):
+            adapted = self.adapt_online(p_input, p_output)
+
+        if adapted:
+            self._mappings_total = 1
+
+            # Second quality check after adaptation
+            if self._output_space.distance(p_output, self.map(p_input)) <= self._threshold:
+                self._mappings_good = 1
+            else:
+                self._mappings_good = 0
+
+        else:
+            self._mappings_total += 1
+
 
         return adapted
 
