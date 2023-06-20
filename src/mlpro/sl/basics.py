@@ -155,9 +155,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
             A set of data for offline learning
         """
 
-        if not self._adaptivity:
-            return False
-        self.log(self.C_LOG_TYPE_I, 'Adaptation started')
+
 
 
         self._set_adapted(self._adapt(p_input, p_output, p_dataset))
@@ -199,6 +197,11 @@ class SLAdaptiveFunction (AdaptiveFunction):
 ## -------------------------------------------------------------------------------------------------
     def adapt_online(self, p_input:Element, p_output:Element) -> bool:
         # Quality check
+
+        if not self._adaptivity:
+            return False
+
+        self.log(self.C_LOG_TYPE_I, 'Adaptation started')
 
         adapted = False
 
@@ -244,6 +247,39 @@ class SLAdaptiveFunction (AdaptiveFunction):
         """
 
         raise NotImplementedError
+
+
+## -------------------------------------------------------------------------------------------------
+    def adapt_offline(self, p_dataset) -> bool:
+        """
+        Adapts the model offline based on an offline dataset.
+
+        Parameters
+        ----------
+        p_dataset: Buffer.
+            Dataset on which the Model can adapt offline.
+
+        Returns
+        -------
+        bool
+            Returns true if the model has adapted.
+        """
+
+        adapted = False
+
+        self.log(self.C_LOG_TYPE_I, 'Adaptation started')
+
+        input = p_dataset[0]
+        target = p_dataset[1]
+
+        if self._adaptivity:
+            adapted = self._adapt_offline(p_dataset)
+
+        output = self.map(p_dataset[0])
+
+        self._last_mapping = (input, target, output)
+
+        return adapted
 
 
 ## -------------------------------------------------------------------------------------------------
