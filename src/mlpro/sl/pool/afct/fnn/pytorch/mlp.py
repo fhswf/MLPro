@@ -11,11 +11,11 @@
 ## -- 2023-03-28  1.2.0     SY       - Add _complete_state, _reduce_state due to new class Persistent
 ## --                                - Update _map
 ## -- 2023-05-03  1.2.1     SY       Updating _adapt_offline method
-## -- 2023-05-03  1.2.1     LSB       Updating _adapt_offline method
+## -- 2023-06-21  1.2.2     LSB       Updating _adapt_offline method
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 1.2.1 (2023-05-03)
+Ver. 1.2.2 (2023-06-20)
 
 This module provides a template ready-to-use MLP model using PyTorch. 
 """
