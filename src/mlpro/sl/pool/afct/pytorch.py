@@ -154,7 +154,7 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
         trainer         = {}
         tester          = {}
         
-        trainer = torch.utils.data.DataLoader(self[:],
+        trainer = torch.utils.data.DataLoader(self,
                                               batch_size=self._batch_size,
                                               sampler=train_sampler
                                               )
@@ -162,7 +162,7 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
         #                                                 batch_size=self._batch_size,
         #                                                 sampler=train_sampler
         #                                                 )
-        tester = torch.utils.data.DataLoader(self[:],
+        tester = torch.utils.data.DataLoader(self,
                                              batch_size=self._batch_size,
                                              sampler=test_sampler
                                              )
