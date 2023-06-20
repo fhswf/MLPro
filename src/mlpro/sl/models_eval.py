@@ -53,3 +53,45 @@ class Metric(Log):
     def _compute(self, p_model):
 
         raise NotImplementedError
+
+
+
+
+
+
+## -------------------------------------------------------------------------------------------------
+## -------------------------------------------------------------------------------------------------
+class MetricAccuracy(Metric):
+
+
+## -------------------------------------------------------------------------------------------------
+    def __init__(self,
+                 p_threshold = 0,
+                 p_buffer_size = 1,
+                 p_logging = Log.C_LOG_ALL):
+
+        Metric.__init__(p_logging)
+        self._threshold = p_threshold
+        self._mappings_good = 0
+        self._mappings_total = 0
+
+
+## -------------------------------------------------------------------------------------------------
+    def compute(self, p_model):
+
+        input, target, output = p_model.get_last_mapping()
+
+        distance = output.get_related_set().distance(target, output)
+        self._mappings_total += 1
+
+        if distance > self._threshold:
+            self._mappings_good += 1
+
+        return self._mappings_good/self._mappings_good
+
+
+## -------------------------------------------------------------------------------------------------
+    def _reset(self, p_seed):
+
+        self._mappings_total = 0
+        self._mappings_good = 0
