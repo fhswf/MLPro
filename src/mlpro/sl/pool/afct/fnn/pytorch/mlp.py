@@ -11,6 +11,7 @@
 ## -- 2023-03-28  1.2.0     SY       - Add _complete_state, _reduce_state due to new class Persistent
 ## --                                - Update _map
 ## -- 2023-05-03  1.2.1     SY       Updating _adapt_offline method
+## -- 2023-05-03  1.2.1     LSB       Updating _adapt_offline method
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -442,15 +443,15 @@ class PyTorchMLP (MLP, PyTorchHelperFunctions):
 
         self._sl_model.train()
         
-        for itr in range(len(p_dataset["input"])):
+        for input, target in p_dataset:
             
             torch.manual_seed(self._sampling_seed)
-            outputs = self.forward(torch.squeeze(next(iter(p_dataset["input"]))))
+            outputs = self.forward(torch.squeeze(input))
             
             torch.manual_seed(self._sampling_seed)
-            loss    = self._calc_loss(outputs, torch.squeeze(next(iter(p_dataset["output"]))))
+            self._loss    = self._calc_loss(outputs, torch.squeeze(target))
             
-            self._optimize(loss)
+            self._optimize(self._loss)
             self._sampling_seed += 1
             
         return True

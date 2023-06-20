@@ -17,6 +17,7 @@
 ## --                                - Remove SLNetwork
 ## -- 2023-03-10  0.4.3     DA       Class SLAdaptiveFunction: refactoring of constructor parameters
 ## -- 2023-06-20  0.4.4     LSB      Moved the quality check to the adapt online method
+## -- 2023-06-20  0.5.0     LSB      New methods: adapt_offline and adapt_online
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -156,8 +157,6 @@ class SLAdaptiveFunction (AdaptiveFunction):
         """
 
 
-
-
         self._set_adapted(self._adapt(p_input, p_output, p_dataset))
 
 
@@ -211,7 +210,7 @@ class SLAdaptiveFunction (AdaptiveFunction):
             self._mappings_good += 1
 
         elif (p_input is not None) and (p_output is not None):
-            adapted = self.adapt_online(p_input, p_output)
+            adapted = self._adapt_online(p_input, p_output)
 
         if adapted:
             self._mappings_total = 1

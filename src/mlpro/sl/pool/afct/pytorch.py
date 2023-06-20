@@ -16,6 +16,7 @@
 ## -- 2023-03-10  3.0.2     SY        Refactoring PyTorchBuffer
 ## -- 2023-04-09  3.0.3     SY        Refactoring
 ## -- 2023-05-03  3.0.4     SY        Updating sampling method
+## -- 2023-06-20  3.0.5     LSB       Updating the sampling method
 ## -------------------------------------------------------------------------------------------------
 
 """
@@ -153,22 +154,22 @@ class PyTorchBuffer (Buffer, torch.utils.data.Dataset):
         trainer         = {}
         tester          = {}
         
-        trainer["input"] = torch.utils.data.DataLoader(self._data_buffer["input"],
-                                                       batch_size=self._batch_size,
-                                                       sampler=train_sampler
-                                                       )
-        trainer["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
-                                                        batch_size=self._batch_size,
-                                                        sampler=train_sampler
-                                                        )
-        tester["input"] = torch.utils.data.DataLoader(self._data_buffer["input"],
-                                                      batch_size=self._batch_size,
-                                                      sampler=test_sampler
-                                                      )
-        tester["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
-                                                       batch_size=self._batch_size,
-                                                       sampler=test_sampler
-                                                       )
+        trainer = torch.utils.data.DataLoader(self[:],
+                                              batch_size=self._batch_size,
+                                              sampler=train_sampler
+                                              )
+        # trainer["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
+        #                                                 batch_size=self._batch_size,
+        #                                                 sampler=train_sampler
+        #                                                 )
+        tester = torch.utils.data.DataLoader(self[:],
+                                             batch_size=self._batch_size,
+                                             sampler=test_sampler
+                                             )
+        # tester["output"] = torch.utils.data.DataLoader(self._data_buffer["output"],
+        #                                                batch_size=self._batch_size,
+        #                                                sampler=test_sampler
+        #                                                )
         
         return trainer, tester
     
