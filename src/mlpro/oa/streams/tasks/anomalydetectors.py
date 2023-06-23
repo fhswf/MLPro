@@ -10,7 +10,7 @@
 ## -------------------------------------------------------------------------------------------------
 
 """
-Ver. 0.0.0 (2023-06-08)
+Ver. 1.0.0 (2023-06-23)
 This module provides templates for anomaly detection to be used in the context of online adaptivity.
 """
 
@@ -52,16 +52,11 @@ class AnomalyDetector(OATask):
         self.data_points = []
         self.anomaly_scores = None
         self.counter = 0
+        self.anomaly_scores = []
 
 
     ## ------------------------------------------------------------------------------------------------
     def _run(self, p_inst_new: list, p_inst_del: list):
-        pass
-
-
-    ## ------------------------------------------------------------------------------------------------
-    def _plot( p_figure:Figure=None,
-               p_plot_settings : PlotSettings = None ):
         pass
 
 
@@ -79,9 +74,21 @@ class AnomalyEvent (EventManager):
         super().__init__(p_logging)
  
 
-    def do_something(self):
+    def do_something(self, data_points, anomaly_scores, counter):
         eventobj = Event(p_raising_object=self, p_par1='Anomaly detected')
         self._raise_event(self.C_EVENT_OWN, eventobj)
+        self.anomaly_characteristics(data_points, anomaly_scores, counter)
+
+
+    def anomaly_characteristics(self, data_points, anomaly_scores, counter):
+            
+            count = 0
+            for x in anomaly_scores:
+                if x < 0:
+                    count += 1
+            
+            frequency = len(data_points)/count
+
 
 
 ## ---------------------------------------------------------
@@ -110,7 +117,7 @@ class DriftEvent (AnomalyEvent):
         super().__init__(p_logging)
  
 
-    def do_something(self):
+    def do_something(self, data_points, anomaly_scores, counter):
         eventobj = Event(p_raising_object=self, p_par1='Drift detected')
         self._raise_event(self.C_EVENT_OWN, eventobj)
 
