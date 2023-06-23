@@ -86,7 +86,7 @@ class LOF(AnomalyDetector):
                 handler_obj = AnomalyEventHandler()
                 event_obj = AnomalyEvent()
                 event_obj.register_event_handler(AnomalyEvent.C_EVENT_OWN, handler_obj.myhandler)
-                event_obj.do_something()
+                event_obj.do_something(self.data_points, self.anomaly_scores, self.counter)
 
 
 
