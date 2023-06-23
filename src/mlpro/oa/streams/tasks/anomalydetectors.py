@@ -74,7 +74,7 @@ class AnomalyEvent (EventManager):
         super().__init__(p_logging)
  
 
-    def do_something(self, data_points, anomaly_scores, counter):
+    def raise_anomaly(self, data_points, anomaly_scores, counter):
         eventobj = Event(p_raising_object=self, p_par1='Anomaly detected')
         self._raise_event(self.C_EVENT_OWN, eventobj)
         self.anomaly_characteristics(data_points, anomaly_scores, counter)
@@ -109,7 +109,7 @@ class AnomalyEventHandler (Log):
 ## -------------------------------------------------------------------------
 class DriftEvent (AnomalyEvent):
 
-    C_NAME          = 'Drift class'
+    C_NAME          = 'Drift Anomaly'
 
     C_EVENT_OWN     = 'DRIFT'
 
