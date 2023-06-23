@@ -312,6 +312,17 @@ class SLAdaptiveFunction (AdaptiveFunction):
         return self._mappings_good / self._mappings_total
 
 
+## -------------------------------------------------------------------------------------------------
+    def get_metrics(self) -> list:
+        pass
+
+
+## -------------------------------------------------------------------------------------------------
+    def get_log_params(self) -> list:
+        pass
+
+
+
 
 
 

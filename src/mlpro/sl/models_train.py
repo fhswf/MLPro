@@ -32,9 +32,9 @@ class SLDataStoring(DataStoring):
     C_VAR_DAY = "Day"
     C_VAR_SEC = "Second"
     C_VAR_MICROSEC = "Microsecond"
-    # C_VAR_LEARN_RATE = "Learning Rate"
-    # C_VAR_LOSS = "Loss"
 
+
+## -------------------------------------------------------------------------------------------------
     def __init__(self, p_variables:list):
 
         self.space = p_variables
@@ -55,11 +55,7 @@ class SLDataStoring(DataStoring):
 
 
         self.memorize(self.C_VAR_CYCLE, self.current_epoch, p_cycle_id)
-        # self.memorize(self.C_VAR_DAY, self.current_epoch, p_tstamp.days)
-        # self.memorize(self.C_VAR_SEC, self.current_epoch, p_tstamp.seconds)
-        # self.memorize(self.C_VAR_MICROSEC, self.current_epoch, p_tstamp.microseconds)
-        # self.memorize(self.C_VAR_LEARN_RATE, self.current_epoch, p_lr)
-        # self.memorize(self.C_VAR_LOSS, self.current_epoch, p_loss)
+
 
         for i, var in enumerate(self.var_space):
             self.memorize(var, self.current_epoch, p_data[i])
@@ -141,13 +137,12 @@ class SLScenario (Scenario):
         data = self._dataset.get_next()
         adapted = self._model.adapt(p_dataset = data)
 
-        pervious_mapping = self._model.get_previous_mapping()
+        output = self._model(data[0])
+        mapping = (data[0], data[1], output)
         logging_data = self._model.get_logging_data()
 
         for metric in self._metrics:
-                # Metric shall return metric if it's an instance based metric,
-                # otherwise previous result if it's a cumulative metric
-            logging_data.extend(metric.update(self._model))
+            logging_data.extend(metric.compute(self._model))
 
         if self._cycle_id >= ( self._dataset.num_batches - 1 ):
             end_of_data = True
@@ -158,15 +153,13 @@ class SLScenario (Scenario):
             self.ds_cycles.memorize_row(p_cycle_id=self.get_cycle_id(), p_data = logging_data)
 
         if self.ds_mappings is not None:
-            self.ds_mappings.memorize_row(p_cycle_id=self.get_cycle_id(), p_data= pervious_mapping)
-
-        # Need to optimize the adapt method of the SLAdaptiveFunction which currently just adapts only when the
-        # distance is more than threshold
+            self.ds_mappings.memorize_row(p_cycle_id=self.get_cycle_id(), p_data= mapping)
 
         # get success from the model
+        # Future implementation to terminate a training based on a goal criterion
 
         # Error computations such as Stagnation, etc.
-
+        # Future implementation to terminate a training based on an undesirable criterion
 
         return success, error, adapted, end_of_data
 
@@ -197,11 +190,6 @@ class SLScenario (Scenario):
 
 
 ## -------------------------------------------------------------------------------------------------
-    def set_dataset(self, p_dataset):
-        self._dataset = p_dataset
-
-
-## -------------------------------------------------------------------------------------------------
     def _init_plot(self):
         pass
 
@@ -223,14 +211,14 @@ class SLTrainingResults(TrainingResults):
     C_FNAME_EPOCH = 'Epoch Scores'
     C_FNAME_TRAIN_SCORE = 'Training Scores'
     C_FNAME_EVAL_SCORE = 'Evaluation Scores'
-    C_FNAME_VAL_SCORE = 'Validation Scores'
+    C_FNAME_TEST_SCORE = 'Test Scores'
     C_FNAME_TRAIN_MAP = 'Training Predictions'
     C_FNAME_EVAL_MAP = 'Evaluation Predictions'
-    C_FNAME_VAL_MAP = 'Validation Predictions'
+    C_FNAME_TEST_MAP = 'Test Predictions'
 
     C_CPAR_NUM_EPOCH_TRAIN = 'Training Epochs'
     C_CPAR_NUM_EPOCH_EVAL = 'Evaluation Epochs'
-    C_CPAR_NUM_EPOCH_VAL = 'Validation Epochs'
+    C_CPAR_NUM_EPOCH_TEST = 'Test Epochs'
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -249,14 +237,14 @@ class SLTrainingResults(TrainingResults):
 
         self.num_epochs_train = 0
         self.num_epochs_eval = 0
-        self.num_epochs_val = 0
+        self.num_epochs_test = 0
         self.ds_epoch = None
         self.ds_cycles_train = None
         self.ds_cycles_eval = None
-        self.ds_cycles_val = None
+        self.ds_cycles_test = None
         self.ds_mapping_train = None
         self.ds_mapping_eval = None
-        self.ds_mapping_val = None
+        self.ds_mapping_test = None
 
 ## -------------------------------------------------------------------------------------------------
     def close(self):
@@ -264,7 +252,7 @@ class SLTrainingResults(TrainingResults):
 
         self.add_custom_result(self.C_CPAR_NUM_EPOCH_TRAIN, self.num_epochs_train)
         self.add_custom_result(self.C_CPAR_NUM_EPOCH_EVAL, self.num_epochs_eval)
-        self.add_custom_result(self.C_CPAR_NUM_EPOCH_VAL, self.num_epochs_val)
+        self.add_custom_result(self.C_CPAR_NUM_EPOCH_TEST, self.num_epochs_test)
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -273,7 +261,7 @@ class SLTrainingResults(TrainingResults):
 
         self.log(Log.C_LOG_WE, "Training Epochs:", self.num_epochs_train)
         self.log(Log.C_LOG_WE, "Evaluation Epochs:", self.num_epochs_eval)
-        self.log(Log.C_LOG_WE, "Validation Epochs:", self.num_epochs_val)
+        self.log(Log.C_LOG_WE, "Test Epochs:", self.num_epochs_test)
 
 
 
@@ -288,14 +276,14 @@ class SLTrainingResults(TrainingResults):
             self.ds_cycles_train.save_data(p_path, self.C_FNAME_TRAIN_SCORE)
         if self.ds_cycles_eval is not None:
             self.ds_cycles_eval.save_data(p_path, self.C_FNAME_EVAL_SCORE)
-        if self.ds_cycles_val is not None:
-            self.ds_cycles_val.save_data(p_path, self.C_FNAME_VAL_SCORE)
+        if self.ds_cycles_test is not None:
+            self.ds_cycles_test.save_data(p_path, self.C_FNAME_TEST_SCORE)
         if self.ds_mapping_train is not None:
             self.ds_mapping_train.save_data(p_path, self.C_FNAME_TRAIN_MAP)
         if self.ds_mapping_eval is not None:
             self.ds_mapping_eval.save_data(p_path, self.C_FNAME_EVAL_MAP)
-        if self.ds_mapping_val is not None:
-            self.ds_mapping_val.save_data(p_path, self.C_FNAME_VAL_MAP)
+        if self.ds_mapping_test is not None:
+            self.ds_mapping_test.save_data(p_path, self.C_FNAME_TEST_MAP)
 
 
 
@@ -311,7 +299,7 @@ class SLTraining (Training):
     """
 
     C_NAME = 'SL'
-    C_MODE_VAL = 2
+    C_MODE_TEST = 2
 
     C_CLS_RESULTS = SLTrainingResults
 
@@ -321,7 +309,7 @@ class SLTraining (Training):
                  p_collect_mappings = True,
                  p_collect_cycles = True,
                  p_eval_freq = 0,
-                 p_val_freq = 0,
+                 p_test_freq = 0,
                  **p_kwargs):
 
         self._collect_epoch_scores = p_collect_epoch_scores
@@ -329,7 +317,7 @@ class SLTraining (Training):
         self._collect_cycles = p_collect_cycles
 
         self._eval_freq = p_eval_freq
-        self._val_freq = p_val_freq
+        self._test_freq = p_test_freq
 
         self._scenario : SLScenario = None
 
@@ -347,7 +335,7 @@ class SLTraining (Training):
         self._logging_space = self._model.get_logging_space()
 
         self._eval_freq = p_eval_freq
-        self._val_freq = p_val_freq
+        self._test_freq = p_test_freq
         self._epoch_id = 0
 
         raise NotImplementedError
@@ -376,9 +364,9 @@ class SLTraining (Training):
                 results.ds_cycles_eval = SLDataStoring(p_variables=variables)
                 self._results._ds_list.append(results.ds_cycles_eval)
 
-            if self._val_freq > 0:
-                results.ds_cycles_val = SLDataStoring(p_variables=variables)
-                self._results._ds_list.append(results.ds_cycles_val)
+            if self._test_freq > 0:
+                results.ds_cycles_test = SLDataStoring(p_variables=variables)
+                self._results._ds_list.append(results.ds_cycles_test)
 
 
         if self._collect_mappings:
@@ -393,24 +381,12 @@ class SLTraining (Training):
             results.ds_mapping_train = SLDataStoring(p_variables=variables)
             if self._eval_freq > 0:
                 results.ds_mapping_eval = SLDataStoring(p_variables=variables)
-            if self._val_freq > 0:
-                results.ds_mapping_val = SLDataStoring(p_variables=variables)
+            if self._test_freq > 0:
+                results.ds_mapping_test = SLDataStoring(p_variables=variables)
 
 
         self._scenario.connect_datalogger(p_mapping = results.ds_mapping_train, p_cycle = results.ds_cycles_train)
 
-
-        # If collect mappings, then create an input, target and output data logging object
-        #     For this datalogger please get the input out put space and add dimensions
-        #     accordingly to the data logger object
-
-        # Add the rest three epochs based on conditions
-        # Connect the training datalogger
-        # If there is an evaluation dataset and test dataset
-        # connect rest three data logging objects
-
-
-        # connect the similar data logger to the scenario class
 
         return results
 
@@ -442,42 +418,21 @@ class SLTraining (Training):
                 self._results.num_eval_epochs += 1
                 self._epoch_eval = False
 
-            elif self._mode == self.C_MODE_VAL:
-                self._results.num_val_epochs += 1
-                self._epoch_val = False
+            elif self._mode == self.C_MODE_TEST:
+                self._results.num_test_epochs += 1
+                self._epoch_test = False
 
             if self._epoch_eval:
                 self._mode = self.C_MODE_EVAL
                 self._init_eval()
 
-            elif self._epoch_val:
-                self._mode = self.C_MODE_VAL
-                self._init_val()
+            elif self._epoch_test:
+                self._mode = self.C_MODE_TEST
+                self._init_test()
 
             else:
                 eof_epoch = True
-                # if self._eval_freq > 0 or self._val_freq > 0:
-                #
-                #     if self._eval_freq > 0:
-                #         if self._results.num_train_epochs % self._eval_freq == 0:
-                #             if self._eval_freq:
-                #                 self._init_eval()
-                #
-                #     if self._val_freq > 0:
-                #         if self._results.num_train_epochs % self._val_freq == 0:
-                #             if self._val_freq:
-                #                 self._init_test()
 
-            # else:
-            #     eof_epoch = True
-
-            # elif self._mode == self.C_MODE_EVAL:
-            #     self._results.num_eval_epochs += 1
-            #     eof_epoch = True
-            #
-            # elif self._mode == self.C_MODE_VAL:
-            #     self._results.num_test_epochs += 1
-            #     eof_epoch = True
 
         if eof_epoch:
             self._close_epoch()
@@ -486,33 +441,6 @@ class SLTraining (Training):
             self.log(self.C_LOG_TYPE_W, 'Adaptation limit ', str(self._adaptation_limit), ' reached')
             eof_training = True
 
-
-
-        # Set eof_epoch and eof_training to False
-
-        # Initiate a new epoch if the cycles in a new epoch is set to 0 in a different place
-
-        # get results from a cycle run
-        # add number to the num epochs
-
-        # if adapted is true add a number to num adaptations
-
-        # if mode is evaluation update the evaluation
-
-        # if mode is train update the epoch
-
-        # get last loss from the model abd also get the last learning rate of the model
-
-        # test if this is the end of epoch if the dataset counter has reached
-        # to the last deliverable item in the dataset
-
-        # If this is the end of the epoch then log it in the training console, based on what is the reason for the end of the epoch
-
-        # if this is eof close the epoch and do the rituals
-
-        # check if the adaptation limit is reached, and close the training if the adaptation limit is reached
-
-        # return end of training
 
         return eof_training
 
@@ -524,15 +452,13 @@ class SLTraining (Training):
         self._mode = self.C_MODE_TRAIN
         self._model.switch_adaptivity(p_ada = True)
 
-        self._dataset_train, \
-        self._dataset_eval, \
-        self._dataset_val = self._scenario.get_dataset().reset(self._epoch_id)
+        self._scenario.get_dataset().reset(self._epoch_id)
 
         if self._epoch_id % self._eval_freq == 0:
             self._epoch_eval = True
 
-        if self._epoch_id % self._val_freq == 0:
-            self._epoch_val = True
+        if self._epoch_id % self._test_freq == 0:
+            self._epoch_test = True
 
         for ds in self._results._ds_list:
             ds.add_epoch(self._epoch_id)
@@ -546,27 +472,8 @@ class SLTraining (Training):
 
         self.metric_list_train = []
         self.metric_list_eval = []
-        self.metric_list_val = []
+        self.metric_list_test = []
 
-        # check if the epoch needs to initiated in training mode or in the evaluation mode
-        # if self._eval_dataset is not None:
-        #     if self._mode is Train
-        # if this is the first cycle in a new epoch, turn on the adaptivity
-        # do the logging
-
-        # if the mode is eval and, it's the first cycle in a new eval epoch
-        #    Turn off the adaptivity of the model
-        #    Initiate the evaluation epoch
-        #    do the logging
-
-        # But if there is no evaluation dataset
-        # just do the logging normally, no need to take care of the adaptivity
-
-        # The initialization still needs adding epoch to the corresponding data storing object
-        # In this case these would be, train, eval and validation
-        # There would be another data storing object that will store the input, target and output
-
-        pass
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -574,30 +481,28 @@ class SLTraining (Training):
 
         dataset = self._scenario.get_dataset()
 
-        self._dataset_train, self._dataset_eval, self._dataset_val  = dataset.setup()
-        # get the dataset setup config, and call the split method of the dataset with names to the split datasets
-        # and assign the returned dataset to self._dataset
+        dataset.setup()
 
 
 ## -------------------------------------------------------------------------------------------------
     def _update_epoch(self):
-        # Update the score for a specific type of epoch, train, test and epoch
-        # add the corresponding scores to the attributes
+
+
         if self._mode == self.C_MODE_TRAIN:
             self.metric_list_train.append(self._model._prev_metrics)
         elif self._mode == self.C_MODE_EVAL:
             self.metric_list_eval.append(self._model._prev_metrics)
-        elif self._mode == self.C_MODE_VAL:
-            self.metric_list_val.append(self._model._prev_metrics)
+        elif self._mode == self.C_MODE_TEST:
+            self.metric_list_test.append(self._model._prev_metrics)
 
 
 ## -------------------------------------------------------------------------------------------------
     def _close_epoch(self):
 
-        # self.metric_list_train.extend(self.metric_list_eval)
+
         score_train = np.nanmean(self.metric_list_train, dtype=float, axis=0)
         score_eval = np.nanmean(self.metric_list_eval, dtype=float, axis=0)
-        score_val = np.nanmean(self.metric_list_val, dtype=float, axis=0)
+        score_val = np.nanmean(self.metric_list_test, dtype=float, axis=0)
 
         score = [*score_train, *score_eval, *score_val]
         self._results.ds_epoch.memorize_row(p_data=score)
@@ -608,8 +513,6 @@ class SLTraining (Training):
             self._results.highscore = score_metric_value
 
         self._cycles_epoch = 0
-        # Logg the data to the corresponding epoch data storing object
-        # Reset the dataset if needed
 
 
 ## -------------------------------------------------------------------------------------------------
@@ -618,38 +521,16 @@ class SLTraining (Training):
         self._model.switch_adaptivity(p_ada=False)
         self._mode = self.C_MODE_EVAL
         self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_eval, p_cycle=self._results.ds_cycle_eval)
-        self._scenario.set_dataset(self._dataset_eval)
-        # Change the data loggers to the evaluation data loggers
-
-        # change the particular evaluation cycles to 0
-
-        pass
-
-
-# ## -------------------------------------------------------------------------------------------------
-#     def _update_eval(self):
-#
-#         # Update the evaluation
-#         # Calculate moving averages
-#         # self.metric_sum_train = np.nansum((self.metric_sum_train, self._model._prev_metrics), axis=0)
-#
-#         pass
-#
-#
-# ## -------------------------------------------------------------------------------------------------
-#     def _close_eval(self):
-#
-#         pass
+        self._scenario.get_dataset().set_mode("evaluation")
 
 
 ## -------------------------------------------------------------------------------------------------
-    def _init_val(self):
+    def _init_test(self):
 
         self._model.switch_adaptivity(p_ada=False)
-        self._mode = self.C_MODE_VAL
-        self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_val, p_cycle=self._results.ds_cycle_val)
-        self._scenario.set_dataset(self._dataset_val)
-        pass
+        self._mode = self.C_MODE_TEST
+        self._scenario.connect_datalogger(p_mapping=self._results.ds_mapping_test, p_cycle=self._results.ds_cycle_test)
+        self._scenario.get_dataset().set_mode("test")
 
 
 
